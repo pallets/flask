@@ -57,7 +57,7 @@ def format_datetime(timestamp):
 def gravatar_url(email, size=80):
     """Return the gravatar image for the given email address"""
     return 'http://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
-        (md5(email.lower().encode('utf-8')).hexdigest(), size)
+        (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
 
 @app.request_init
