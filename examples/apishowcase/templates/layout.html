@@ -1,0 +1,8 @@
+<!doctype html>
+<title>Flask API Showcase</title>
+<link rel=stylesheet href="{{ url_for('static', filename='style.css') }}" type=text/css>
+<h1>Flask API Showcase</h1>
+{% if request.endpoint != 'index' %}
+<div class=backlink><a href="{{ url_for('index') }}">&laquo; back to index</a></div>
+{% endif %}
+{% block body %}{% endblock %}

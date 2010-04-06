@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if name %}
+  <h2>Hello {{ name }}!</h2>
+  {% else %}
+  <h3>Hello Stranger …</h3>
+  <form action="{{ url_for('hello_user') }}" method="post">
+    <p>… What's your name?
+    <p><input type=text name=name size=30>
+       <input type=submit value="That's me">
+  </form>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+<p>
+  This is an example application that shows how
+  the Werkzeug powered Flask microframework works.
+<p>
+  The various parts of the example application:
+<ul>
+  <li><a href="{{ url_for('hello_user') }}">Hello World</a>
+  <li><a href="{{ url_for('counter') }}">Counter</a>
+</ul>
+{% endblock %}
