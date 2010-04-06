@@ -1,0 +1,21 @@
+
+                        / MiniTwit /
+
+           because writing todo lists is not fun
+
+
+    ~ What is MiniTwit?
+
+      A SQLite and Flask powered twitter clone
+
+    ~ How do I use it?
+
+      1. edit the configurtion in the minitwit.py file
+
+      2. fire up a python shell and run this:
+
+         >>> from minitwit import init_db; init_db()
+
+      3. now you can run the minitwit.py file with your
+         python interpreter and the application will
+         greet you on http://localhost:5000/
