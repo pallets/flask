@@ -13,25 +13,17 @@ import os
 import sys
 import pkg_resources
 from threading import local
+from contextlib import contextmanager
 from jinja2 import Environment, PackageLoader
-from werkzeug import Request, Response, LocalStack, LocalProxy
+from werkzeug import Request, Response, LocalStack, LocalProxy, \
+     create_environ, cached_property
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError
 from werkzeug.contrib.securecookie import SecureCookie
 
-# try to import the json helpers
-try:
-    from simplejson import loads as load_json, dumps as dump_json
-except ImportError:
-    try:
-        from json import loads as load_json, dumps as dump_json
-    except ImportError:
-        pass
-
 # utilities we import from Werkzeug and Jinja2 that are unused
 # in the module but are exported as public interface.
-from werkzeug import abort, redirect, secure_filename, cached_property, \
-     html, import_string, generate_password_hash, check_password_hash
+from werkzeug import abort, redirect
 from jinja2 import Markup, escape
 
 
@@ -83,12 +75,6 @@ def url_for(endpoint, **values):
     return _request_ctx_stack.top.url_adapter.build(endpoint, values)
 
 
-def jsonified(**values):
-    """Returns a json response"""
-    return current_app.response_class(dump_json(values),
-                                      mimetype='application/json')
-
-
 def flash(message):
     """Flashes a message to the next request.  In order to remove the
     flashed message from the session and to display it to the user,
@@ -113,6 +99,7 @@ def render_template(template_name, **context):
     """Renders a template from the template folder with the given
     context.
     """
+    current_app.update_template_context(context)
     return current_app.jinja_env.get_template(template_name).render(context)
 
 
@@ -120,6 +107,7 @@ def render_template_string(source, **context):
     """Renders a template from the given template source string
     with the given context.
     """
+    current_app.update_template_context(context)
     return current_app.jinja_env.from_string(source).render(context)
 
 
@@ -220,9 +208,6 @@ class Flask(object):
                                      **self.jinja_options)
         self.jinja_env.globals.update(
             url_for=url_for,
-            request=request,
-            session=session,
-            g=g,
             get_flashed_messages=get_flashed_messages
         )
 
@@ -233,6 +218,15 @@ class Flask(object):
         override this method.
         """
         return PackageLoader(self.package_name)
+
+    def update_template_context(self, context):
+        """Update the template context with some commonly used variables.
+        This injects request, session and g into the template context.
+        """
+        reqctx = _request_ctx_stack.top
+        context['request'] = reqctx.request
+        context['session'] = reqctx.session
+        context['g'] = reqctx.g
 
     def run(self, host='localhost', port=5000, **options):
         """Runs the application on a local development server.  If the
@@ -443,16 +437,37 @@ class Flask(object):
 
             app.wsgi_app = MyMiddleware(app.wsgi_app)
         """
-        _request_ctx_stack.push(_RequestContext(self, environ))
-        try:
+        with self.request_context(environ):
             rv = self.preprocess_request()
             if rv is None:
                 rv = self.dispatch_request()
             response = self.make_response(rv)
             response = self.process_response(response)
             return response(environ, start_response)
+
+    @contextmanager
+    def request_context(self, environ):
+        """Creates a request context from the given environment and binds
+        it to the current context.  This must be used in combination with
+        the `with` statement because the request is only bound to the
+        current context for the duration of the `with` block.
+
+        Example usage::
+
+            with app.request_context(environ):
+                do_something_with(request)
+        """
+        _request_ctx_stack.push(_RequestContext(self, environ))
+        try:
+            yield
         finally:
             _request_ctx_stack.pop()
+
+    def test_request_context(self, *args, **kwargs):
+        """Creates a WSGI environment from the given values (see
+        :func:`werkzeug.create_environ` for more information).
+        """
+        return self.request_context(create_environ(*args, **kwargs))
 
     def __call__(self, environ, start_response):
         """Shortcut for :attr:`wsgi_app`"""
