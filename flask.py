@@ -326,11 +326,25 @@ class Flask(object):
             def show_post(post_id):
                 pass
 
+        An important detail to keep in mind is how Flask deals with trailing
+        slashes.  The idea is to keep each URL unique so the following rules
+        apply:
+
+        1. If a rule ends with a slash and is requested without a slash
+           by the user, the user is automatically redirected to the same
+           page with a trailing slash attached.
+        2. If a rule does not end with a trailing slash and the user request
+           the page with a trailing slash, a 404 not found is raised.
+
+        This is consistent with how web servers deal with static files.  This
+        also makes it possible to use relative link targets safely.
+
         The :meth:`route` decorator accepts a couple of other arguments
         as well:
 
         :param methods: a list of methods this rule should be limited
-                        to (``GET``, ``POST`` etc.)
+                        to (``GET``, ``POST`` etc.).  By default a rule
+                        just listens for ``GET`` (and implicitly ``HEAD``).
         :param subdomain: specifies the rule for the subdoain in case
                           subdomain matching is in use.
         :param strict_slashes: can be used to disable the strict slashes
@@ -339,6 +353,7 @@ class Flask(object):
         def decorator(f):
             if 'endpoint' not in options:
                 options['endpoint'] = f.__name__
+            options.setdefault('methods', ('GET',))
             self.url_map.add(Rule(rule, **options))
             self.view_functions[options['endpoint']] = f
             return f

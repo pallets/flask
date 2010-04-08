@@ -148,7 +148,7 @@ def unfollow_user(username):
     return redirect(url_for('user_timeline', username=username))
 
 
-@app.route('/add_message')
+@app.route('/add_message', methods=['POST'])
 def add_message():
     if 'user_id' not in session:
         abort(401)
@@ -161,7 +161,7 @@ def add_message():
     return redirect(url_for('timeline'))
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if 'user_id' in session:
         return redirect(url_for('timeline'))
@@ -181,7 +181,7 @@ def login():
     return render_template('login.html', error=error)
 
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if 'user_id' in session:
         return redirect(url_for('timeline'))
