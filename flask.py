@@ -288,6 +288,27 @@ class Flask(object):
         if session is not None:
             session.save_cookie(response, self.session_cookie_name)
 
+    def add_url_rule(self, endpoint, **options):
+        """Connects a URL rule.  Works exactly like the :meth:`route`
+        decorator but does not register the view function for the endpoint.
+
+        Basically this example::
+
+            @app.route('/')
+            def index():
+                pass
+
+        Is equivalent to the following:
+
+            def index():
+                pass
+            app.add_url_rule('index', '/')
+            app.view_functions['index'] = index
+        """
+        options['endpoint'] = f.__name__
+        options.setdefault('methods', ('GET',))
+        self.url_map.add(Rule(rule, **options))
+
     def route(self, rule, **options):
         """A decorator that is used to register a view function for a
         given URL rule.  Example::
@@ -351,11 +372,8 @@ class Flask(object):
                                setting for this rule.  See above.
         """
         def decorator(f):
-            if 'endpoint' not in options:
-                options['endpoint'] = f.__name__
-            options.setdefault('methods', ('GET',))
-            self.url_map.add(Rule(rule, **options))
-            self.view_functions[options['endpoint']] = f
+            self.add_url_rule(f.__name__, **options)
+            self.view_functions[f.__name__] = f
             return f
         return decorator
 
@@ -366,6 +384,14 @@ class Flask(object):
             @app.errorhandler(404)
             def page_not_found():
                 return 'This page does not exist', 404
+
+        You can also register a function as error handler without using
+        the :meth:`errorhandler` decorator.  The following example is
+        equivalent to the one above::
+
+            def page_not_found():
+                return 'This page does not exist', 404
+            app.error_handlers[404] = page_not_found
         """
         def decorator(f):
             self.error_handlers[code] = f
