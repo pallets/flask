@@ -65,7 +65,7 @@ def before_request():
     """Make sure we are connected to the database each request and look
     up the current user so that we know he's there.
     """
-    g.db = sqlite3.connect(DATABASE)
+    g.db = connect_db()
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                           [session['user_id']], one=True)

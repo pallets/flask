@@ -1,3 +1,5 @@
+.. _quickstart:
+
 Quickstart
 ==========
 
@@ -148,6 +150,22 @@ don't have to deal with that.  It will also make sure that ``HEAD``
 requests are handled like the RFC demands, so you can completely ignore
 that part of the HTTP specification.
 
+Static Files
+------------
+
+Dynamic web applications need static files as well.  That's usually where
+the CSS and JavaScript files are coming from.  Ideally your web server is
+configured to serve them for you, but during development Flask can do that
+as well.  Just create a folder called `static` in your package or next to
+your module and it will be available at `/static` on the application.
+
+To generate URLs to that part of the URL, use the special ``'static'`` URL
+name::
+
+    url_for('static', filename='style.css')
+
+The file has to be stored on the filesystem as ``static/style.css``.
+
 Rendering Templates
 -------------------
 
@@ -204,6 +222,11 @@ Here an example template:
 Inside templates you also have access to the :class:`~flask.request`,
 :class:`~flask.session` and :class:`~flask.g` objects as well as the
 :func:`~flask.get_flashed_messages` function.
+
+Templates are especially useful if inheritance is used.  If you want to
+know how that works, head over to the :ref:`template-inheritance` pattern
+documentation.  Basically template inheritance makes it possible to keep
+certain elements on each page (like header, navigation and footer).
 
 Automatic escaping is enabled, so if name contains HTML it will be escaped
 automatically.  If you can trust a variable and you know that it will be
