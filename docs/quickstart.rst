@@ -93,6 +93,40 @@ The following converters exist:
 `path`      like the default but also accepts slashes
 =========== ===========================================
 
+URL Building
+````````````
+
+If it can match URLs, can it also generate them?  Of course you can.  To
+build a URL to a specific function you can use the :func:`~flask.url_for`
+function.  It accepts the name of the function as first argument and a
+number of keyword arguments, each corresponding to the variable part of
+the URL rule.  Here some examples:
+
+>>> from flask import Flask, url_for
+>>> app = Flask(__name__)
+>>> @app.route('/')
+... def index(): pass
+... 
+>>> @app.route('/login')
+... def login(): pass
+... 
+>>> @app.route('/user/<username>')
+... def profile(username): pass
+... 
+>>> with app.test_request_context():
+...  print url_for('index')
+...  print url_for('login')
+...  print url_for('profile', username='John Doe')
+... 
+/
+/login
+/user/John%20Doe
+
+(This also uses the :meth:`~flask.Flask.test_request_context` method
+explained below.  It basically tells flask to think we are handling a
+request even though we are not, we are in an interactive Python shell.
+Have a look at the explanation below. :ref:`context-locals`).
+
 
 HTTP Methods
 ````````````
@@ -114,6 +148,80 @@ don't have to deal with that.  It will also make sure that ``HEAD``
 requests are handled like the RFC demands, so you can completely ignore
 that part of the HTTP specification.
 
+Rendering Templates
+-------------------
+
+Generating HTML from within Python is not fun, and actually pretty
+cumbersome because you have to do the HTML escaping on your own to keep
+the application secure.  Because of that Flask configures the `Jinja2
+<http://jinja.pocoo.org/2/>`_ template engine for you automatically.
+
+To render a template you can use the :func:`~flask.render_template`
+method.  All you have to do is to provide the name of the template and the
+variables you want to pass to the template engine as keyword arguments.
+Here a simple example of how to render a template::
+
+    from flask import render_template
+
+    @app.route('/hello/')
+    @app.route('/hello/<name>')
+    def hello(name=None):
+        return render_template('hello.html', name=name)
+
+Flask will look for templates in the `templates` folder.  So if your
+application is a module, that folder is next to that module, if it's a
+pacakge it's actually inside your package:
+
+**Case 1**: a module::
+    
+    /application.py
+    /templates
+        /hello.html
+
+**Case 2**: a package::
+
+    /application
+        /__init__.py
+        /templates
+            /hello.html
+
+For templates you can use the full power of Jinja2 templates.  Head over
+to the `Jinja2 Template Documentation
+<http://jinja.pocoo.org/2/documentation/templates>`_ for more information.
+
+Here an example template:
+
+.. sourcecode:: html+jinja
+
+    <!doctype html>
+    <title>Hello from Flask</title>
+    {% if name %}
+      <h1>Hello {{ name }}!</h1>
+    {% else %}
+      <h1>Hello World!</h1>
+    {% endif %}
+
+Inside templates you also have access to the :class:`~flask.request`,
+:class:`~flask.session` and :class:`~flask.g` objects as well as the
+:func:`~flask.get_flashed_messages` function.
+
+Automatic escaping is enabled, so if name contains HTML it will be escaped
+automatically.  If you can trust a variable and you know that it will be
+safe HTML (because for example it came from a module that converts wiki
+markup to HTML) you can mark it as safe by using the
+:class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
+template.  Head over to the Jinja 2 documentation for more examples.
+
+Here a basic introduction in how the :class:`~jinja2.Markup` class works:
+
+>>> from flask import Markup
+>>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
+Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
+>>> Markup.escape('<blink>hacker</blink>')
+Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
+>>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
+u'Marked up \xbb HTML'
+
 
 Accessing Request Data
 ----------------------
@@ -123,6 +231,9 @@ the server.  In Flask this information is provided by the global
 :class:`~flask.request` object.  If you have some experience with Python
 you might be wondering how that object can be global and how Flask
 manages to still be threadsafe.  The answer are context locals:
+
+
+.. _context-locals:
 
 Context Locals
 ``````````````
@@ -271,6 +382,39 @@ transmits.  If you want to use sessions, do not use the cookies directly
 but instead use the :ref:`sessions` in Flask that add some security on top
 of cookies for you.
 
+
+Redirects and Errors
+--------------------
+
+To redirect a user to somewhere else you can use the
+:func:`~flask.redirect` function, to abort a request early with an error
+code the :func:`~flask.abort` function.  Here an example how this works::
+
+    from flask import abort, redirect, url_for
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('login'))
+
+    @app.route('/login')
+    def login():
+        abort(401)
+        this_is_never_executed()
+
+This is a rather pointless example because a user will be redirected from
+the index to a page he cannot access (401 means access denied) but it
+shows how that works.
+
+By default a black and white error page is shown for each error code.  If
+you want to customize the error page, you can use the
+:meth:`~flask.Flask.errorhandler` decorator::
+
+    from flask import render_template
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template('page_not_found.html')
+
 .. _sessions:
 
 Sessions
@@ -310,3 +454,83 @@ sessions work::
     def logout():
         # remove the username from the session if its there
         session.pop('username', None)
+
+Message Flashing
+----------------
+
+Good applications and user interfaces are all about feedback.  If the user
+does not get enough feedback he will probably end up hating the
+application.  Flask provides a really simple way to give feedback to a
+user with the flashing system.  The flashing system basically makes it
+possible to record a message at the end of a request and access it next
+request and only next request.  This is usually combined with a layout
+template that does this.
+
+So here a full example::
+
+    from flask import flash, redirect, url_for, render_template
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        error = None
+        if request.method == 'POST':
+            if request.form['username'] != 'admin' or \
+               request.form['password'] != 'secret':
+                error = 'Invalid credentials'
+            else:
+                flash('You were sucessfully logged in')
+                return redirect(url_for('index'))
+        return render_template('login.html', error=error)
+
+And here the ``layout.html`` template which does the magic:
+
+.. sourcecode:: html+jinja
+
+   <!doctype html>
+   <title>My Application</title>
+   {% with messages = get_flashed_messages() %}
+     {% if messages %}
+       <ul class=flashes>
+       {% for message in messages %}
+         <li>{{ message }}</li>
+       {% endfor %}
+       </ul>
+     {% endif %}
+   {% endwith %}
+   {% block body %}{% endblock %}
+
+And here the index.html template:
+
+.. sourcecode:: html+jinja
+
+   {% extends "layout.html" %}
+   {% block body %}
+     <h1>Overview</h1>
+     <p>Do you want to <a href="{{ url_for('login') }}">log in?</a>
+   {% endblock %}
+
+And of course the login template:
+
+.. sourcecode:: html+jinja
+
+   {% extends "layout.html" %}
+   {% block body %}
+     <h1>Login</h1>
+     {% if error %}
+       <p class=error><strong>Error:</strong> {{ error }}
+     {% endif %}
+     <form action="" method=post>
+       <dl>
+         <dt>Username:
+         <dd><input type=text name=username value="{{
+             request.form.username }}">
+         <dt>Password:
+         <dd><input type=password name=password>
+       </dl>
+       <p><input type=submit value=Login>
+     </form>
+   {% endblock %}
