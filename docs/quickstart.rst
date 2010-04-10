@@ -478,6 +478,9 @@ sessions work::
         # remove the username from the session if its there
         session.pop('username', None)
 
+    # set the secret key.  keep this really secret:
+    app.secret_key = 'the secret key'
+
 Message Flashing
 ----------------
 
