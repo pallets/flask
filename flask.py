@@ -288,7 +288,7 @@ class Flask(object):
         if session is not None:
             session.save_cookie(response, self.session_cookie_name)
 
-    def add_url_rule(self, endpoint, **options):
+    def add_url_rule(self, rule, endpoint, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator but does not register the view function for the endpoint.
 
@@ -298,14 +298,14 @@ class Flask(object):
             def index():
                 pass
 
-        Is equivalent to the following:
+        Is equivalent to the following::
 
             def index():
                 pass
             app.add_url_rule('index', '/')
             app.view_functions['index'] = index
         """
-        options['endpoint'] = f.__name__
+        options['endpoint'] = endpoint
         options.setdefault('methods', ('GET',))
         self.url_map.add(Rule(rule, **options))
 
@@ -372,7 +372,7 @@ class Flask(object):
                                setting for this rule.  See above.
         """
         def decorator(f):
-            self.add_url_rule(f.__name__, **options)
+            self.add_url_rule(rule, f.__name__, **options)
             self.view_functions[f.__name__] = f
             return f
         return decorator
