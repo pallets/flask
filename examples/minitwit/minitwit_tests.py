@@ -11,7 +11,6 @@
 import minitwit
 import unittest
 import tempfile
-from contextlib import closing
 
 
 class MiniTwitTestCase(unittest.TestCase):
