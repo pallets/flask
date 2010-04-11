@@ -24,7 +24,10 @@ A minimal Flask application looks something like that::
         app.run()
 
 Just save it as `hello.py` or something similar and run it with your
-Python interpreter::
+Python interpreter.  Make sure to not call your application `flask.py`
+because this would conflict with Flask itself.
+
+::
 
     $ python hello.py
      * Running on http://localhost:5000/

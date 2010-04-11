@@ -9,7 +9,7 @@ setup(
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',
     description='A microframework based on Werkzeug, Jinja2 and good intentions',
-    modules=['flask'],
+    py_modules=['flask'],
     zip_safe=False,
     platforms='any',
     install_requires=[
