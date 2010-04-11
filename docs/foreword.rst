@@ -45,6 +45,34 @@ framework.  Flask itself is just one way to implement a framework on top
 of existing libraries.  Unlike many other microframeworks Flask does not
 try to implement anything on its own, it reuses existing code.
 
+Web Development is Dangerous
+----------------------------
+
+I'm not even joking.  Well, maybe a little.  If you write a web
+application you are probably allowing users to register and leave their
+data on your server.  The users are entrusting you with data.  And even if
+you are the only user that might leave data in your application, you still
+want that data to be stored in a secure manner.
+
+Unfortunately there are many ways security of a web application can be
+compromised.  Flask protects you against one of the most common security
+problems of modern web applications: cross site scripting (XSS).  Unless
+you deliberately mark insecure HTML as secure Flask (and the underlying
+Jinja2 template engine) have you covered.  But there are many more ways to
+cause security problems.
+
+Whenever something is dangerous where you have to watch out, the
+documentation will tell you so.  Some of the security concerns of web
+development are far more complex than one might think and often we all end
+up in situations where we think "well, this is just far fetched, how could
+that possibly be exploited" and then an intelligent guy comes along and
+figures a way out to exploit that application.  And don't think, your
+application is not important enough for hackers to take notice.  Depending
+ont he kind of attack, chances are there are automated botnets out there
+trying to figure out how to fill your database with viagra adverisments.
+
+So always keep that in mind when doing web development.
+
 Target Audience
 ---------------
 

@@ -16,6 +16,8 @@ In Flask you can implement such things with the
 special :class:`~flask.g` object.
 
 
+.. _database-pattern:
+
 Using SQLite 3 with Flask
 -------------------------
 

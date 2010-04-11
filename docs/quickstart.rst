@@ -313,8 +313,8 @@ Here an example template:
     {% endif %}
 
 Inside templates you also have access to the :class:`~flask.request`,
-:class:`~flask.session` and :class:`~flask.g` objects as well as the
-:func:`~flask.get_flashed_messages` function.
+:class:`~flask.session` and :class:`~flask.g` [#]_ objects
+as well as the :func:`~flask.get_flashed_messages` function.
 
 Templates are especially useful if inheritance is used.  If you want to
 know how that works, head over to the :ref:`template-inheritance` pattern
@@ -337,6 +337,11 @@ Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
 Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
 >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
 u'Marked up \xbb HTML'
+
+.. [#] Unsure what that :class:`~flask.g` object is? It's something you
+   can store information on yourself, check the documentation of that
+   object (:class:`~flask.g`) and the :ref:`database-pattern` for more
+   information.
 
 
 Accessing Request Data

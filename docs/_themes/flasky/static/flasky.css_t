@@ -243,10 +243,16 @@ table.docutils td, table.docutils th {
     padding: 0.25em 0.7em;
 }
 
-table.field-list {
+table.field-list, table.footnote {
     border: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+}
+
+table.footnote {
+    border: 1px solid #eee;
+    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
+    -moz-box-shadow: 1px 1px 1px #d8d8d8;
 }
 
 table.field-list th {
@@ -255,6 +261,10 @@ table.field-list th {
 
 table.field-list td {
     padding: 0;
+}
+
+table.footnote td {
+    padding: 0.5em;
 }
  
 pre {
