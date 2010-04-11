@@ -250,6 +250,7 @@ table.field-list, table.footnote {
 }
 
 table.footnote {
+    width: 100%;
     border: 1px solid #eee;
     -webkit-box-shadow: 1px 1px 1px #d8d8d8;
     -moz-box-shadow: 1px 1px 1px #d8d8d8;
