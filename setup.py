@@ -12,8 +12,9 @@ setup(
     modules=['flask'],
     zip_safe=False,
     platforms='any',
-    install_requires=[ # yes, as of now we need the development versions
-        'Werkzeug==dev',
-        'Jinja2==dev',
+    install_requires=[
+        ## disabled until release, install yourself
+        # 'Werkzeug',
+        # 'Jinja2'
     ]
 )

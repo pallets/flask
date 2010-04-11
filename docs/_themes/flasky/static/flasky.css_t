@@ -86,7 +86,7 @@ div.sphinxsidebarwrapper p.logo {
  
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
-    font-family: 'Georgia', serif;
+    font-family: 'Garamond', 'Georgia', serif;
     color: #222;
     font-size: 1.2em;
     font-weight: normal;
@@ -96,7 +96,7 @@ div.sphinxsidebar h4 {
     text-shadow: 1px 1px 0 white
 }
 
-div.sphinxsidebar h4{
+div.sphinxsidebar h4 {
     font-size: 1.1em;
 }
  
@@ -151,12 +151,12 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: 'Georiga', serif;
+    font-family: 'Garamond', 'Georiga', serif;
     background-color: #bbb;
     font-weight: normal;
     color: #212224;
     margin: 30px 0px 10px 0px;
-    padding: 8px 0 5px 10px;
+    padding: 5px 0 5px 10px;
     text-shadow: 0px 1px 0 white;
 }
  

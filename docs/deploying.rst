@@ -67,7 +67,8 @@ A basic FastCGI configuration for lighttpd looks like that::
 
 This configuration binds the application to `/yourapplication`.  If you
 want the application to work in the URL root you have to work around a
-lighttpd bug with the `~werkzeug.contrib.fixers.LighttpdCGIRootFix` middleware.
+lighttpd bug with the :class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix`
+middleware.
 
 Make sure to apply it only if you are mounting the application the URL
 root.
