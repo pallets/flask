@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""
+    MiniTwit
+    ~~~~~~~~
+
+    A microblogging application written with Flask and sqlite3.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
 from __future__ import with_statement
 import re
 import time
@@ -66,21 +75,26 @@ def before_request():
     up the current user so that we know he's there.
     """
     g.db = connect_db()
+    g.user = None
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                           [session['user_id']], one=True)
 
 
 @app.request_shutdown
-def after_request(request):
+def after_request(response):
     """Closes the database again at the end of the request."""
     g.db.close()
-    return request
+    return response
 
 
 @app.route('/')
 def timeline():
-    if not 'user_id' in session:
+    """Shows a users timeline or if no user is logged in it will
+    redirect to the public timeline.  This timeline shows the user's
+    messages as well as all the messages of followed users.
+    """
+    if not g.user:
         return redirect(url_for('public_timeline'))
     offset = request.args.get('offset', type=int)
     return render_template('timeline.html', messages=query_db('''
@@ -95,6 +109,7 @@ def timeline():
 
 @app.route('/public')
 def public_timeline():
+    """Displays the latest messages of all users."""
     return render_template('timeline.html', messages=query_db('''
         select message.*, user.* from message, user
         where message.author_id = user.user_id
@@ -103,12 +118,13 @@ def public_timeline():
 
 @app.route('/<username>')
 def user_timeline(username):
+    """Display's a users tweets."""
     profile_user = query_db('select * from user where username = ?',
                             [username], one=True)
     if profile_user is None:
         abort(404)
     followd = False
-    if 'user_id' in session:
+    if g.user:
         followed = query_db('''select 1 from follower where
             follower.who_id = ? and follower.whom_id = ?''',
             [session['user_id'], profile_user['user_id']], one=True) is not None
@@ -122,7 +138,8 @@ def user_timeline(username):
 
 @app.route('/<username>/follow')
 def follow_user(username):
-    if not 'user_id' in session:
+    """Adds the current user as follower of the given user"""
+    if not g.user:
         abort(401)
     whom_id = get_user_id(username)
     if whom_id is None:
@@ -136,7 +153,8 @@ def follow_user(username):
 
 @app.route('/<username>/unfollow')
 def unfollow_user(username):
-    if not 'user_id' in session:
+    """Removes the current user as follower of the given user"""
+    if not g.user:
         abort(401)
     whom_id = get_user_id(username)
     if whom_id is None:
@@ -150,6 +168,7 @@ def unfollow_user(username):
 
 @app.route('/add_message', methods=['POST'])
 def add_message():
+    """Registers a new message for the user"""
     if 'user_id' not in session:
         abort(401)
     if request.form['text']:
@@ -163,7 +182,8 @@ def add_message():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'user_id' in session:
+    """Logs the user in"""
+    if g.user:
         return redirect(url_for('timeline'))
     error = None
     if request.method == 'POST':
@@ -183,7 +203,8 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if 'user_id' in session:
+    """Registers the user"""
+    if g.user:
         return redirect(url_for('timeline'))
     error = None
     if request.method == 'POST':
@@ -211,6 +232,7 @@ def register():
 
 @app.route('/logout')
 def logout():
+    """Logs the user out"""
     flash('You were logged out')
     session.pop('user_id', None)
     return redirect(url_for('public_timeline'))
