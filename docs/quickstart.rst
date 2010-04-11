@@ -177,10 +177,10 @@ templates?  There are three good reasons for this:
 HTTP Methods
 ````````````
 
-HTTP knows different methods to access URLs.  By default a route only
-answers to ``GET`` requests, but that can be changed by providing the
-`methods` argument to the :meth:`~flask.Flask.route` decorator.  Here some
-examples::
+HTTP (the protocol web applications are speaking) knows different methods
+to access URLs.  By default a route only answers to `GET` requests, but
+that can be changed by providing the `methods` argument to the
+:meth:`~flask.Flask.route` decorator.  Here some examples::
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -189,10 +189,11 @@ examples::
         else:
             show_the_login_form()
 
-If ``GET`` is present, ``HEAD`` will be added automatically for you.  You
-don't have to deal with that.  It will also make sure that ``HEAD``
-requests are handled like the RFC demands, so you can completely ignore
-that part of the HTTP specification.
+If `GET` is present, `HEAD` will be added automatically for you.  You
+don't have to deal with that.  It will also make sure that `HEAD` requests
+are handled like the `HTTP RFC`_ (the document describing the HTTP
+protocol) demands, so you can completely ignore that part of the HTTP
+specification.
 
 You have no idea what an HTTP method is?  Worry not, here quick
 introduction in HTTP methods and why they matter:
@@ -239,6 +240,8 @@ and future HTML standards you can use other methods as well.  Furthermore
 HTTP became quite popular lately and there are more things than browsers
 that are speaking HTTP.  (Your revision control system for instance might
 speak HTTP)
+
+.. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
 
 Static Files
 ------------
