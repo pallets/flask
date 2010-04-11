@@ -583,6 +583,9 @@ sessions work::
     # set the secret key.  keep this really secret:
     app.secret_key = 'the secret key'
 
+The here mentioned :func:`~flask.escape` does escaping for you if you are
+not using the template engine (like in this example).
+
 Message Flashing
 ----------------
 
