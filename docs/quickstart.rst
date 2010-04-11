@@ -161,6 +161,18 @@ explained below.  It basically tells flask to think we are handling a
 request even though we are not, we are in an interactive Python shell.
 Have a look at the explanation below. :ref:`context-locals`).
 
+Why would you want to build URLs instead of hardcoding them in your
+templates?  There are three good reasons for this:
+
+1. reversing is often more descriptive than hardcoding the URLs.  Also and
+   more importantly you can change URLs in one go without having to change
+   the URLs all over the place.
+2. URL building will handle escaping of special characters and unicode
+   data transparently for you, you don't have to deal with that.
+3. If your application is placed outside the URL root (so say in
+   ``/myapplication`` instead of ``/``), :func:`~flask.url_for` will
+   handle that properly for you.
+
 
 HTTP Methods
 ````````````
@@ -181,6 +193,51 @@ If ``GET`` is present, ``HEAD`` will be added automatically for you.  You
 don't have to deal with that.  It will also make sure that ``HEAD``
 requests are handled like the RFC demands, so you can completely ignore
 that part of the HTTP specification.
+
+You have no idea what an HTTP method is?  Worry not, here quick
+introduction in HTTP methods and why they matter:
+
+The HTTP method (also often called "the verb") tells the server what the
+clients wants to *do* with the requested page.  The following methods are
+very common:
+
+`GET`
+    The Browser tells the server: just *get* me the information stored on
+    that page and send them to me.  This is probably the most common
+    method.
+
+`HEAD`
+    The Browser tells the server: get me the information, but I am only
+    interested in the *headers*, not the content of the page.  An
+    application is supposed to handle that as if a `GET` request was
+    received but not deliver the actual contents.  In Flask you don't have
+    to deal with that at all, the underlying Werkzeug library handles that
+    for you.
+
+`POST`
+    The browser tells the server that it wants to *post* some new
+    information to that URL and that the server must ensure the data is
+    stored and only stored once.
+
+`PUT`
+    Similar to `POST` but the server might trigger the store procedure
+    multiple times by overwriting the old values more than once.  Now you
+    might be asking why this is any useful, but there are some good
+    reasons to do that.  Consider the connection is lost during
+    transmission, in that situation a system between the browser and the
+    server might sent the request safely a second time without breaking
+    things.  With `POST` that would not be possible because it might only
+    be triggered once.
+
+`DELETE`
+    Remove the information that the given location.
+
+Now the interesting part is that in HTML4 and XHTML1, the only methods a
+form might submit to the server are `GET` and `POST`.  But with JavaScript
+and future HTML standards you can use other methods as well.  Furthermore
+HTTP became quite popular lately and there are more things than browsers
+that are speaking HTTP.  (Your revision control system for instance might
+speak HTTP)
 
 Static Files
 ------------
