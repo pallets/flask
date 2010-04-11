@@ -265,9 +265,8 @@ class Flask(object):
         options.setdefault('use_debugger', self.debug)
         return run_simple(host, port, self, **options)
 
-    @cached_property
-    def test(self):
-        """A test client for this application"""
+    def test_client(self):
+        """Creates a test client for this application"""
         from werkzeug import Client
         return Client(self, self.response_class, use_cookies=True)
 
