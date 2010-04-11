@@ -534,7 +534,11 @@ you want to customize the error page, you can use the
 
     @app.errorhandler(404)
     def page_not_found(error):
-        return render_template('page_not_found.html')
+        return render_template('page_not_found.html'), 404
+
+Note the ``404`` after the :func:`~flask.render_template` call.  This
+tells Flask that the status code of that page should be 404 which means
+not found.  By default 200 is assumed which translats to: all went well.
 
 .. _sessions:
 
