@@ -52,6 +52,30 @@ So what did that code do?
    makes sure the server only runs if the script is executed directly from
    the Python interpreter and not used as imported module.
 
+To stop the server, hit control-C.
+
+
+Debug Mode
+----------
+
+Now that :meth:`~flask.Flask.run` method is nice to start a local
+development server, but you would have to restart it manually after each
+change you do to code.  That is not very nice and Flask can do better.  If
+you enable the debug support the server will reload itself on code changes
+and also provide you with a helpful debugger if things go wrong.
+
+There are two ways to enable debugging.  Either set that flag on the
+applciation object::
+
+    app.debug = True
+    app.run()
+
+Or pass it to run::
+
+    app.run(debug=True)
+
+Both will have exactly the same effect.
+
 
 Routing
 -------
