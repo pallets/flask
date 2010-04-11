@@ -31,7 +31,7 @@ app = Flask(__name__)
 
 
 def connect_db():
-    """Returns a new database connection to the database."""
+    """Returns a new connection to the database."""
     return sqlite3.connect(DATABASE)
 
 
@@ -52,19 +52,19 @@ def query_db(query, args=(), one=False):
 
 
 def get_user_id(username):
-    """Convenience method to look up the id for a username"""
+    """Convenience method to look up the id for a username."""
     rv = g.db.execute('select user_id from user where username = ?',
                        [username]).fetchone()
     return rv[0] if rv else None
 
 
 def format_datetime(timestamp):
-    """Format a timestamp for display"""
+    """Format a timestamp for display."""
     return datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d @ %H:%M')
 
 
 def gravatar_url(email, size=80):
-    """Return the gravatar image for the given email address"""
+    """Return the gravatar image for the given email address."""
     return 'http://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
         (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
@@ -138,7 +138,7 @@ def user_timeline(username):
 
 @app.route('/<username>/follow')
 def follow_user(username):
-    """Adds the current user as follower of the given user"""
+    """Adds the current user as follower of the given user."""
     if not g.user:
         abort(401)
     whom_id = get_user_id(username)
@@ -153,7 +153,7 @@ def follow_user(username):
 
 @app.route('/<username>/unfollow')
 def unfollow_user(username):
-    """Removes the current user as follower of the given user"""
+    """Removes the current user as follower of the given user."""
     if not g.user:
         abort(401)
     whom_id = get_user_id(username)
@@ -168,7 +168,7 @@ def unfollow_user(username):
 
 @app.route('/add_message', methods=['POST'])
 def add_message():
-    """Registers a new message for the user"""
+    """Registers a new message for the user."""
     if 'user_id' not in session:
         abort(401)
     if request.form['text']:
@@ -182,7 +182,7 @@ def add_message():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Logs the user in"""
+    """Logs the user in."""
     if g.user:
         return redirect(url_for('timeline'))
     error = None
@@ -203,7 +203,7 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """Registers the user"""
+    """Registers the user."""
     if g.user:
         return redirect(url_for('timeline'))
     error = None
