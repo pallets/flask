@@ -217,7 +217,8 @@ very common:
 `POST`
     The browser tells the server that it wants to *post* some new
     information to that URL and that the server must ensure the data is
-    stored and only stored once.
+    stored and only stored once.  This is how HTML forms are usually
+    transmitting data to the server.
 
 `PUT`
     Similar to `POST` but the server might trigger the store procedure
@@ -226,7 +227,7 @@ very common:
     reasons to do that.  Consider the connection is lost during
     transmission, in that situation a system between the browser and the
     server might sent the request safely a second time without breaking
-    things.  With `POST` that would not be possible because it might only
+    things.  With `POST` that would not be possible because it must only
     be triggered once.
 
 `DELETE`
