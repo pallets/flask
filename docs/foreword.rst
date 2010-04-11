@@ -36,6 +36,15 @@ something the framework just cannot do for you without modification.
 If you are ever in that situation, check out the :ref:`becomingbig`
 chapter.
 
+A Framework and An Example
+--------------------------
+
+Flask is not only a microframework, it is also an example.  Based on
+Flask, there will be a series of blog posts that explain how to create a
+framework.  Flask itself is just one way to implement a framework on top
+of existing libraries.  Unlike many other microframeworks Flask does not
+try to implement anything on its own, it reuses existing code.
+
 Target Audience
 ---------------
 

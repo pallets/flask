@@ -163,7 +163,13 @@ Useful Functions and Classes
 
 .. autofunction:: url_for
 
-.. autofunction:: abort
+.. function:: abort(code)
+
+   Raises an :exc:`~werkzeug.exception.HTTPException` for the given
+   status code.  For example to abort request handling with a page not
+   found exception, you would call ``abort(404)``.
+
+   :param code: the HTTP error code.
 
 .. autofunction:: redirect
 

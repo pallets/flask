@@ -16,10 +16,7 @@ class FlaskyStyle(Style):
         Other:                     "#000000",                # class 'x'
 
         Comment:                   "italic #8f5902", # class: 'c'
-        Comment.Multiline:         "italic #8f5902", # class: 'cm'
-        Comment.Preproc:           "italic #8f5902", # class: 'cp'
-        Comment.Single:            "italic #8f5902", # class: 'c1'
-        Comment.Special:           "italic #8f5902", # class: 'cs'
+        Comment.Preproc:           "noitalic",       # class: 'cp'
 
         Keyword:                   "bold #004461",   # class: 'k'
         Keyword.Constant:          "bold #004461",   # class: 'kc'
@@ -43,7 +40,7 @@ class FlaskyStyle(Style):
         Name.Builtin.Pseudo:       "#3465a4",        # class: 'bp'
         Name.Class:                "#000000",        # class: 'nc' - to be revised
         Name.Constant:             "#000000",        # class: 'no' - to be revised
-        Name.Decorator:            "#999",           # class: 'nd' - to be revised
+        Name.Decorator:            "#888",           # class: 'nd' - to be revised
         Name.Entity:               "#ce5c00",        # class: 'ni'
         Name.Exception:            "bold #cc0000",   # class: 'ne'
         Name.Function:             "#000000",        # class: 'nf'
@@ -57,14 +54,7 @@ class FlaskyStyle(Style):
         Name.Variable.Global:      "#000000",        # class: 'vg' - to be revised
         Name.Variable.Instance:    "#000000",        # class: 'vi' - to be revised
 
-        # since the tango light blue does not show up well in text, we choose
-        # a pure blue instead.
-        Number:                    "bold #0000cf",   # class: 'm'
-        Number.Float:              "bold #0000cf",   # class: 'mf'
-        Number.Hex:                "bold #0000cf",   # class: 'mh'
-        Number.Integer:            "bold #0000cf",   # class: 'mi'
-        Number.Integer.Long:       "bold #0000cf",   # class: 'il'
-        Number.Oct:                "bold #0000cf",   # class: 'mo'
+        Number:                    "#990000",        # class: 'm'
 
         Literal:                   "#000000",        # class: 'l'
         Literal.Date:              "#000000",        # class: 'ld'
@@ -88,8 +78,8 @@ class FlaskyStyle(Style):
         Generic.Error:             "#ef2929",        # class: 'gr'
         Generic.Heading:           "bold #000080",   # class: 'gh'
         Generic.Inserted:          "#00A000",        # class: 'gi'
-        Generic.Output:            "italic #000000", # class: 'go'
-        Generic.Prompt:            "#8f5902",        # class: 'gp'
+        Generic.Output:            "#888",           # class: 'go'
+        Generic.Prompt:            "#745334",        # class: 'gp'
         Generic.Strong:            "bold #000000",   # class: 'gs'
         Generic.Subheading:        "bold #800080",   # class: 'gu'
         Generic.Traceback:         "bold #a40000",   # class: 'gt'

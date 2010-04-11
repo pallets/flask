@@ -79,6 +79,8 @@ def flash(message):
     """Flashes a message to the next request.  In order to remove the
     flashed message from the session and to display it to the user,
     the template has to call :func:`get_flashed_messages`.
+
+    :param message: the message to be flashed.
     """
     session['_flashes'] = (session.get('_flashes', [])) + [message]
 
@@ -98,6 +100,10 @@ def get_flashed_messages():
 def render_template(template_name, **context):
     """Renders a template from the template folder with the given
     context.
+
+    :param template_name: the name of the template to be rendered
+    :param context: the variables that should be available in the
+                    context of the template.
     """
     current_app.update_template_context(context)
     return current_app.jinja_env.get_template(template_name).render(context)
@@ -106,6 +112,11 @@ def render_template(template_name, **context):
 def render_template_string(source, **context):
     """Renders a template from the given template source string
     with the given context.
+
+    :param template_name: the sourcecode of the template to be
+                          rendered
+    :param context: the variables that should be available in the
+                    context of the template.
     """
     current_app.update_template_context(context)
     return current_app.jinja_env.from_string(source).render(context)
@@ -222,6 +233,9 @@ class Flask(object):
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.
         This injects request, session and g into the template context.
+
+        :param context: the context as a dictionary that is updated in place
+                        to add extra variables.
         """
         reqctx = _request_ctx_stack.top
         context['request'] = reqctx.request
@@ -232,6 +246,13 @@ class Flask(object):
         """Runs the application on a local development server.  If the
         :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
+
+        :param host: the hostname to listen on.  set this to ``'0.0.0.0'``
+                     to have the server available externally as well.
+        :param port: the port of the webserver
+        :param options: the options to be forwarded to the underlying
+                        Werkzeug server.  See :func:`werkzeug.run_simple`
+                        for more information.
         """
         from werkzeug import run_simple
         if 'debug' in options:
@@ -268,6 +289,9 @@ class Flask(object):
             with app.open_resource('schema.sql') as f:
                 contents = f.read()
                 do_something_with(contents)
+
+        :param resource: the name of the resource.  To access resources within
+                         subfolders use forward slashes as separator.
         """
         return pkg_resources.resource_stream(self.package_name, resource)
 
@@ -275,6 +299,8 @@ class Flask(object):
         """Creates or opens a new session.  Default implementation stores all
         session data in a signed cookie.  This requires that the
         :attr:`secret_key` is set.
+
+        :param request: an instance of :attr:`request_class`.
         """
         key = self.secret_key
         if key is not None:
@@ -284,6 +310,11 @@ class Flask(object):
     def save_session(self, session, response):
         """Saves the session if it needs updates.  For the default
         implementation, check :meth:`open_session`.
+
+        :param session: the session to be saved (a
+                        :class:`~werkzeug.contrib.securecookie.SecureCookie`
+                        object)
+        :param request: an instance of :attr:`response_class`
         """
         if session is not None:
             session.save_cookie(response, self.session_cookie_name)
@@ -304,6 +335,13 @@ class Flask(object):
                 pass
             app.add_url_rule('index', '/')
             app.view_functions['index'] = index
+
+        :param rule: the URL rule as string
+        :param endpoint: the endpoint for the registered URL rule.  Flask
+                         itself assumes the name of the view function as
+                         endpoint
+        :param options: the options to be forwarded to the underlying
+                        :class:`~werkzeug.routing.Rule` object
         """
         options['endpoint'] = endpoint
         options.setdefault('methods', ('GET',))
@@ -363,6 +401,7 @@ class Flask(object):
         The :meth:`route` decorator accepts a couple of other arguments
         as well:
 
+        :param rule: the URL rule as string
         :param methods: a list of methods this rule should be limited
                         to (``GET``, ``POST`` etc.).  By default a rule
                         just listens for ``GET`` (and implicitly ``HEAD``).
@@ -370,6 +409,8 @@ class Flask(object):
                           subdomain matching is in use.
         :param strict_slashes: can be used to disable the strict slashes
                                setting for this rule.  See above.
+        :param options: other options to be forwarded to the underlying
+                        :class:`~werkzeug.routing.Rule` object.
         """
         def decorator(f):
             self.add_url_rule(rule, f.__name__, **options)
@@ -392,6 +433,8 @@ class Flask(object):
             def page_not_found():
                 return 'This page does not exist', 404
             app.error_handlers[404] = page_not_found
+
+        :param code: the code as integer for the handler
         """
         def decorator(f):
             self.error_handlers[code] = f
@@ -440,6 +483,22 @@ class Flask(object):
     def make_response(self, rv):
         """Converts the return value from a view function to a real
         response object that is an instance of :attr:`response_class`.
+
+        The following types are allowd for `rv`:
+
+        ======================= ===========================================
+        :attr:`response_class`  the object is returned unchanged
+        :class:`str`            a response object is created with the
+                                string as body
+        :class:`unicode`        a response object is created with the
+                                string encoded to utf-8 as body
+        :class:`tuple`          the response object is created with the
+                                contents of the tuple as arguments
+        a WSGI function         the function is called as WSGI application
+                                and buffered as response object
+        ======================= ===========================================
+
+        :param rv: the return value from the view function
         """
         if isinstance(rv, self.response_class):
             return rv
@@ -464,6 +523,10 @@ class Flask(object):
     def process_response(self, response):
         """Can be overridden in order to modify the response object
         before it's sent to the WSGI server.
+
+        :param response: a :attr:`response_class` object.
+        :return: a new response object or the same, has to be an
+                 instance of :attr:`response_class`.
         """
         session = _request_ctx_stack.top.session
         if session is not None:
@@ -477,6 +540,11 @@ class Flask(object):
         `__call__` so that middlewares can be applied:
 
             app.wsgi_app = MyMiddleware(app.wsgi_app)
+
+        :param environ: a WSGI environment
+        :param start_response: a callable accepting a status code,
+                               a list of headers and an optional
+                               exception context to start the response
         """
         with self.request_context(environ):
             rv = self.preprocess_request()
@@ -497,6 +565,8 @@ class Flask(object):
 
             with app.request_context(environ):
                 do_something_with(request)
+
+        :params environ: a WSGI environment
         """
         _request_ctx_stack.push(_RequestContext(self, environ))
         try:
@@ -506,7 +576,8 @@ class Flask(object):
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
-        :func:`werkzeug.create_environ` for more information).
+        :func:`werkzeug.create_environ` for more information, this
+        function accepts the same arguments).
         """
         return self.request_context(create_environ(*args, **kwargs))
 

@@ -41,18 +41,19 @@ So let's see how that works!
 If you are on OS X or Linux chances are that one of the following two
 commands will for for you::
 
-    sudo easy_install virtualenv
+    $ sudo easy_install virtualenv
 
 or even better::
 
-    sudo pip install virtualenv
+    $ sudo pip install virtualenv
 
 Changes are you have virtualenv installed on your system then.  Maybe it's
 even in your package manager (on ubuntu try ``sudo apt-get install
 python-virtualenv``).
 
-On windows, just installed virtualenv from the `Python Package Index
-<http://pypi.python.org/pypi/virtualenv>`_.
+If you are on Windows and missing the `easy_install` command you have to
+install it first.  Check the :ref:`windows-easy-install` section for more
+information about how to do that.
 
 So now that you have virtualenv running just fire up a shell and create
 your own environment.  I usually create a folder and a `env` folder
@@ -101,3 +102,37 @@ The Drop into Place Version
 Now I really don't recommend this way on using Flask, but you can do that
 of course as well.  Download the `dip` zipfile from the website and unzip
 it next to your application.
+
+.. _windows-easy-install:
+
+`easy_install` on Windows
+-------------------------
+
+On Windows installation of `easy_install` is a little bit tricker because
+on Windows slightly different rules apply, but it's not a biggy.  The
+easiest way to accomplish that is downloading the `ez_setup.py`_ file and
+running it.  (Double clicking should do the trick)
+
+Once you have done that it's important to add the `easy_install` command
+and other Python scripts to the path.  To do that you have to add the
+Python installation's Script folder to the `PATH` variable.
+
+To do that, click right on your "Computer" desktop icon and click
+"Properties".  On Windows Vista and Windows 7 then click on "Advanced System
+settings", on Windows XP click on the "Advanced" tab instead.  Then click
+on the "Environment variables" button and double click on the "Path"
+variable in the "System variables" section.
+
+There append the path of your Python interpreter's Script folder to the
+end of the last (make sure you delimit it from existing values with a
+semicolon).  Assuming you are using Python 2.6 on the default path, add
+the following value::
+
+    ;C:\Python26\Scripts
+
+Then you are done.  To check if it worked, open the cmd and execute
+"easy_install".  If you have UAC enabled it should prompt you for admin
+privileges.
+
+
+.. _ez_setup.py: http://peak.telecommunity.com/dist/ez_setup.py

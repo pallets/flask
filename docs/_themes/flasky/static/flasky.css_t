@@ -16,7 +16,7 @@
 body {
     font-family: 'Georgia', serif;
     font-size: 100%;
-    background-color: #111;
+    background-color: #555;
     color: #555;
     margin: 0;
     padding: 0;
@@ -47,15 +47,13 @@ div.body {
 }
  
 div.footer {
-    color: #555;
-    width: 100%;
-    padding: 13px 0;
-    text-align: center;
-    font-size: 75%;
+    color: #ccc;
+    padding: 10px;
+    font-size: 0.8em;
 }
  
 div.footer a {
-    color: #444;
+    color: white;
     text-decoration: underline;
 }
  
@@ -138,7 +136,7 @@ div.sphinxsidebar input[type=text]{
 /* -- body styles ----------------------------------------------------------- */
  
 a {
-    color: #003B55;
+    color: #004B6B;
     text-decoration: none;
 }
  
@@ -159,7 +157,7 @@ div.body h6 {
     color: #212224;
     margin: 30px 0px 10px 0px;
     padding: 8px 0 5px 10px;
-    text-shadow: 0px 1px 0 white
+    text-shadow: 0px 1px 0 white;
 }
  
 div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 200%; }
@@ -170,14 +168,14 @@ div.body h5 { font-size: 100%; background-color: #eee; }
 div.body h6 { font-size: 100%; background-color: #eee; }
  
 a.headerlink {
-    color: #c60f0f;
+    color: white;
     padding: 0 4px;
     text-decoration: none;
 }
  
 a.headerlink:hover {
-    background-color: #c60f0f;
-    color: white;
+    color: #444;
+    background: #eaeaea;
 }
  
 div.body p, div.body dd, div.body li {
@@ -218,22 +216,78 @@ p.admonition-title {
 p.admonition-title:after {
     content: ":";
 }
+
+pre, tt {
+    font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    font-size: 0.9em;
+}
+
+tt.descname, tt.descclassname {
+    font-size: 0.95em;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+tt.descname {
+    padding-right: 0.08em;
+}
+
+table.docutils {
+    border: 1px solid #888;
+    -webkit-box-shadow: 2px 2px 1px #d8d8d8;
+    -moz-box-shadow: 2px 2px 1px #d8d8d8;
+}
+
+table.docutils td, table.docutils th {
+    border: 1px solid #888;
+    padding: 0.25em 0.7em;
+}
+
+table.field-list {
+    border: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+table.field-list th {
+    padding: 0 0.8em 0 0;
+}
+
+table.field-list td {
+    padding: 0;
+}
  
 pre {
+    background: #FDFDFD;
     padding: 10px;
     color: #222;
-    line-height: 1.2em;
-    border: 1px solid #C6C9CB;
-    font-size: 1.1em;
-    margin: 1.5em 0 1.5em 0;
-    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
-    -moz-box-shadow: 1px 1px 1px #d8d8d8;
+    line-height: 1.3em;
+    border: 1px solid #f9f9f9;
+    margin: 1.5em 3px 1.5em 0;
+    -webkit-box-shadow: 2px 2px 1px #d8d8d8;
+    -moz-box-shadow: 2px 2px 1px #d8d8d8;
 }
  
 tt {
     background-color: #ecf0f3;
     color: #222;
     /* padding: 1px 2px; */
-    font-size: 1.1em;
-    font-family: monospace;
+    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
+    -moz-box-shadow: 1px 1px 1px #d8d8d8;
+}
+
+tt.xref, a tt {
+    background-color: #FBFBFB;
+}
+
+a:hover tt {
+    background: #EEE;
+}
+
+div.document + div.related {
+    background: #aaa;
+}
+
+div.document + div.related a {
+    color: white;
 }

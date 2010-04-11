@@ -23,9 +23,14 @@ A minimal Flask application looks something like that::
     if __name__ == '__main__':
         app.run()
 
-If you now start that application with your Python interpreter and head
-over to `http://localhost:5000/ <http://localhost:5000/>`_, you should see
-your hello world application.
+Just save it as `hello.py` or something similar and run it with your
+Python interpreter::
+
+    $ python hello.py
+     * Running on http://localhost:5000/
+
+Head over to `http://localhost:5000/ <http://localhost:5000/>`_, you should
+see your hello world greeting.
 
 So what did that code do?
 
