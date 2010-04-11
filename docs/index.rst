@@ -21,4 +21,5 @@ you want to dive into all the internal parts of Flask, check out the
    patterns
    api
    deploying
+   testing
    becomingbig

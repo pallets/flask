@@ -15,8 +15,8 @@ import pkg_resources
 from threading import local
 from contextlib import contextmanager
 from jinja2 import Environment, PackageLoader
-from werkzeug import Request, Response, LocalStack, LocalProxy, \
-     create_environ, cached_property
+from werkzeug import Request as RequestBase, Response as ResponseBase, \
+     LocalStack, LocalProxy, create_environ, cached_property
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError
 from werkzeug.contrib.securecookie import SecureCookie
@@ -27,21 +27,29 @@ from werkzeug import abort, redirect
 from jinja2 import Markup, escape
 
 
-class FlaskRequest(Request):
+class Request(RequestBase):
     """The request object used by default in flask.  Remembers the
     matched endpoint and view arguments.
+
+    It is what ends up as :class:`~flask.request`.  If you want to replace
+    the request object used you can subclass this and set
+    :attr:`~flask.Flask.request_class` to your subclass.
     """
 
     def __init__(self, environ):
-        Request.__init__(self, environ)
+        RequestBase.__init__(self, environ)
         self.endpoint = None
         self.view_args = None
 
 
-class FlaskResponse(Response):
+class Response(ResponseBase):
     """The response object that is used by default in flask.  Works like the
     response object from Werkzeug but is set to have a HTML mimetype by
-    default.
+    default.  Quite often you don't have to create this object yourself because
+    :meth:`~flask.Flask.make_response` will take care of that for you.
+
+    If you want to replace the response object used you can subclass this and
+    set :attr:`~flask.Flask.request_class` to your subclass.
     """
     default_mimetype = 'text/html'
 
@@ -142,11 +150,13 @@ class Flask(object):
         app = Flask(__name__)
     """
 
-    #: the class that is used for request objects
-    request_class = FlaskRequest
+    #: the class that is used for request objects.  See :class:`~flask.request`
+    #: for more information.
+    request_class = Request
 
-    #: the class that is used for response objects
-    response_class = FlaskResponse
+    #: the class that is used for response objects.  See
+    #: :class:`~flask.Response` for more information.
+    response_class = Response
 
     #: path for the static files.  If you don't want to use static files
     #: you can set this value to `None` in which case no URL rule is added
@@ -266,7 +276,9 @@ class Flask(object):
         return run_simple(host, port, self, **options)
 
     def test_client(self):
-        """Creates a test client for this application"""
+        """Creates a test client for this application.  For information
+        about unit testing head over to :ref:`testing`.
+        """
         from werkzeug import Client
         return Client(self, self.response_class, use_cookies=True)
 
@@ -356,7 +368,7 @@ class Flask(object):
 
         Variables parts in the route can be specified with angular
         brackets (``/user/<username>``).  By default a variable part
-        in the URL accepts any string without a slash however a differnt
+        in the URL accepts any string without a slash however a different
         converter can be specified as well by using ``<converter:name>``.
 
         Variable parts are passed to the view function as keyword

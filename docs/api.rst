@@ -19,6 +19,8 @@ Application Object
 Incoming Request Data
 ---------------------
 
+.. autoclass:: Request
+
 .. class:: request
 
    To access incoming request data, you can use the global `request`
@@ -103,6 +105,20 @@ Incoming Request Data
       `base_url`    ``http://www.example.com/myapplication/page.html?x=y``
       `root_url`    ``http://www.example.com/myapplication/``
       ============= ======================================================
+
+Response Objects
+----------------
+
+.. autoclass:: flask.Response
+   :members: set_cookie, data, mimetype
+
+   .. attribute:: headers
+
+      A :class:`Headers` object representing the response headers.
+
+   .. attribute:: status_code
+
+      The response status as integer.
 
 
 Sessions
