@@ -13,8 +13,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        ## disabled until release, install yourself
-        # 'Werkzeug',
-        # 'Jinja2'
+        'Werkzeug>=0.6.1',
+        'Jinja2>=2.4'
     ]
 )
