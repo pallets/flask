@@ -9,7 +9,7 @@ What does Micro Mean?
 ---------------------
 
 The micro in microframework for me means on the one hand being small in
-size, complexity but on the other hand also that the complexity of the
+size and complexity but on the other hand also that the complexity of the
 applications that are written with these frameworks do not exceed a
 certain size.  A microframework like Flask sacrifices a few things in
 order to be approachable and to be as concise as possible.

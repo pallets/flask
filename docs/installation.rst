@@ -14,7 +14,7 @@ templates.  Now you are maybe asking, what is WSGI?  WSGI is a standard
 in Python that is basically responsible for ensuring that your application
 is behaving in a specific way that you can run it on different
 environments (for example on a local development server, on an Apache2, on
-lighttpd, on Google's appengine or whatever you have in mind).
+lighttpd, on Google's App Engine or whatever you have in mind).
 
 So how do you get all that on your computer in no time?  The most kick-ass
 method is virtualenv, so let's look at that first.
@@ -93,7 +93,7 @@ This is possible as well, but I would not recommend it.  Just run
 
     sudo easy_install Flask
 
-(Run it in an Admin shell on Windows systems and without the `sudo`). 
+(Run it in an Admin shell on Windows systems and without the `sudo`).
 
 
 The Drop into Place Version
