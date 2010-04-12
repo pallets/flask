@@ -18,10 +18,10 @@
 
     ~ What do I need?
 
-      Currently the development versions of Jinja2 and Werkzeug.
-      Because of Flask I did some refactoring in Werkzeug and
-      Jinja2 and the next versions (out April 10th) will contain
-      these changes.
+      Jinja 2.4 and Werkzeug 0.6.1.  `easy_install` will
+      install them for you if you do `easy_install Flask==dev`.
+      I encourage you to use a virtualenv.  Check the docs for
+      complete installation and usage instructions.
 
     ~ Where are the docs?
 
