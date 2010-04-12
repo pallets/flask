@@ -69,6 +69,14 @@ class ContextTestCase(unittest.TestCase):
         assert c.post('/set', data={'value': '42'}).data == 'value set'
         assert c.get('/get').data == '42'
 
+    def test_url_generation(self):
+        app = flask.Flask(__name__)
+        @app.route('/hello/<name>', methods=['POST'])
+        def hello():
+            pass
+        with app.test_request_context():
+            assert flask.url_for('hello', name='test x') == '/hello/test%20x'
+
 
 if __name__ == '__main__':
     unittest.main()
