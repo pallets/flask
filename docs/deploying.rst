@@ -223,6 +223,44 @@ For more information consult the `mod_wsgi wiki`_.
 .. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
 
 
+
+Tornado
+--------
+
+`Tornado`_ is an open source version of the scalable, non-blocking web server and tools that power `FriendFeed`_.
+Because it is non-blocking and uses epoll, it can handle thousands of simultaneous standing connections, which means it is ideal for real-time web services.
+Integrating this service with Flask is a trivial task::
+
+    
+    from tornado.wsgi import WSGIContainer
+    from tornado.httpserver import HTTPServer
+    from tornado.ioloop import IOLoop
+    from yourapplication import app
+    
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5000)
+    IOLoop.instance().start()
+
+
+.. _Tornado: http://www.tornadoweb.org/
+.. _FriendFeed: http://friendfeed.com/
+
+
+Gevent
+-------
+
+`Gevent`_ is a coroutine-based Python networking library that uses `greenlet`_ to provide a high-level synchronous API on top of `libevent`_ event loop::
+
+    from gevent.wsgi import WSGIServer
+    from yourapplication import app
+
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
+
+.. _Gevent: http://www.gevent.org/
+.. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
+.. _libevent: http://monkey.org/~provos/libevent/
+
 CGI
 ---
 
@@ -265,3 +303,4 @@ In Apache for example you can put a like like this into the config:
     ScriptName /app /path/to/the/application.cgi
 
 For more information consult the documentation of your webserver.
+
