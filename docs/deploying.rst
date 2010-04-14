@@ -204,7 +204,7 @@ application under a different user for security reasons:
     <VirtualHost *>
         ServerName example.com
 
-        WSGIDaemonProcess yourapplication user=user1 group=group1 processes=1 threads=5
+        WSGIDaemonProcess yourapplication user=user1 group=group1 threads=5
         WSGIScriptAlias / /var/www/yourapplication/yourapplication.wsgi
 
         <Directory /var/www/yourapplication>
