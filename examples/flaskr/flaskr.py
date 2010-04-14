@@ -10,12 +10,10 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
-import time
 import sqlite3
 from contextlib import closing
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
-from werkzeug import secure_filename
 
 # configuration
 DATABASE = '/tmp/flaskr.db'
