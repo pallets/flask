@@ -143,6 +143,15 @@ class BasicFunctionality(unittest.TestCase):
         with app.test_request_context():
             assert flask.url_for('hello', name='test x') == '/hello/test%20x'
 
+    def test_static_files(self):
+        app = flask.Flask(__name__)
+        rv = app.test_client().get('/static/index.html')
+        assert rv.status_code == 200
+        assert rv.data.strip() == '<h1>Hello World!</h1>'
+        with app.test_request_context():
+            assert flask.url_for('static', filename='index.html') \
+                == '/static/index.html'
+
 
 class Templating(unittest.TestCase):
 

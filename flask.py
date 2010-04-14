@@ -16,7 +16,8 @@ from threading import local
 from contextlib import contextmanager
 from jinja2 import Environment, PackageLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
-     LocalStack, LocalProxy, create_environ, cached_property
+     LocalStack, LocalProxy, create_environ, cached_property, \
+     SharedDataMiddleware
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError
 from werkzeug.contrib.securecookie import SecureCookie
@@ -241,6 +242,9 @@ class Flask(object):
         if self.static_path is not None:
             self.url_map.add(Rule(self.static_path + '/<filename>',
                                   build_only=True, endpoint='static'))
+            self.wsgi_app = SharedDataMiddleware(self.wsgi_app, {
+                self.static_path: (self.package_name, 'static')
+            })
 
         #: the Jinja2 environment.  It is created from the
         #: :attr:`jinja_options` and the loader that is returned
@@ -286,10 +290,6 @@ class Flask(object):
         from werkzeug import run_simple
         if 'debug' in options:
             self.debug = options.pop('debug')
-        if self.static_path is not None:
-            options['static_files'] = {
-                self.static_path:   (self.package_name, 'static')
-            }
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
         return run_simple(host, port, self, **options)
