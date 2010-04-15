@@ -43,11 +43,8 @@ def init_db():
 
 @app.request_init
 def before_request():
-    """Make sure we are connected to the database each request.  Also
-    set `g.logged_in` to `True` if we are logged in.
-    """
+    """Make sure we are connected to the database each request."""
     g.db = connect_db()
-    g.logged_in = session.get('logged_in', False)
 
 
 @app.request_shutdown
@@ -66,7 +63,7 @@ def show_entries():
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-    if not g.logged_in:
+    if not session.get('logged_in'):
         abort(401)
     g.db.execute('insert into entries (title, text) values (?, ?)',
                  [request.form['title'], request.form['text']])

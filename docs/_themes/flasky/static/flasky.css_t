@@ -181,6 +181,13 @@ a.headerlink:hover {
 div.body p, div.body dd, div.body li {
     line-height: 1.5em;
 }
+
+div.admonition {
+    border: 1px solid #ddd;
+    background: white;
+    -webkit-box-shadow: 2px 2px 1px #d8d8d8;
+    -moz-box-shadow: 2px 2px 1px #d8d8d8;
+}
  
 div.admonition p.admonition-title + p {
     display: inline;
@@ -220,6 +227,11 @@ p.admonition-title:after {
 pre, tt {
     font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
     font-size: 0.9em;
+}
+
+img.screenshot {
+    -webkit-box-shadow: 4px 4px 3px #cdcdcd;
+    -moz-box-shadow: 4px 4px 3px #cdcdcd;
 }
 
 tt.descname, tt.descclassname {

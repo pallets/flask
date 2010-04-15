@@ -4,7 +4,7 @@
 <div class=page>
   <h1>Flaskr</h1>
   <div class=metanav>
-  {% if not g.logged_in %}
+  {% if not session.logged_in %}
     <a href="{{ url_for('login') }}">log in</a>
   {% else %}
     <a href="{{ url_for('logout') }}">log out</a>

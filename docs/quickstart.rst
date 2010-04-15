@@ -54,6 +54,19 @@ So what did that code do?
 
 To stop the server, hit control-C.
 
+.. admonition:: Troubleshooting
+
+   The browser is unable to access the server?  Sometimes this is
+   unfortunately caused by broken IPv6 support in your operating system,
+   browser or a combination.  For example on Snow Leopard Google Chrome is
+   known to exhibit this behaviour.
+
+   If the browser does not load up the page, you can change the `app.run`
+   call to force IPv4 usage::
+
+      if __name__ == '__main__':
+          app.run(host='127.0.0.1')
+
 
 Debug Mode
 ----------
