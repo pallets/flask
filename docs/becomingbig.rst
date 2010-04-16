@@ -33,7 +33,7 @@ scale applications:
     also requires that the whole application is imported when the system
     initializes or certain URLs will not be available right away.   A
     better solution would be to have one module with all URLs in there and
-    specifing the target functions explictliy or by name and importing
+    specifing the target functions explictly or by name and importing
     them when needed.
 -   switch to explicit request object passing.  This makes it more to type
     (because you now have something to pass around) but it makes it a
