@@ -31,7 +31,10 @@ scale applications:
 -   get rid of the decorator function registering which causes a lot
     of troubles for applications that have circular dependencies.  It
     also requires that the whole application is imported when the system
-    initializes or certain URLs will not be available right away.
+    initializes or certain URLs will not be available right away.   A
+    better solution would be to have one module with all URLs in there and
+    specifing the target functions explictliy or by name and importing
+    them when needed.
 -   switch to explicit request object passing.  This makes it more to type
     (because you now have something to pass around) but it makes it a
     whole lot easier to debug hairy situations and to test the code.
