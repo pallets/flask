@@ -75,10 +75,10 @@ class BasicFunctionality(unittest.TestCase):
     def test_request_processing(self):
         app = flask.Flask(__name__)
         evts = []
-        @app.request_init
+        @app.before_request
         def before_request():
             evts.append('before')
-        @app.request_shutdown
+        @app.after_request
         def after_request(response):
             response.data += '|after'
             evts.append('after')

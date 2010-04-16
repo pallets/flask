@@ -41,13 +41,13 @@ def init_db():
         db.commit()
 
 
-@app.request_init
+@app.before_request
 def before_request():
     """Make sure we are connected to the database each request."""
     g.db = connect_db()
 
 
-@app.request_shutdown
+@app.after_request
 def after_request(response):
     """Closes the database again at the end of the request."""
     g.db.close()

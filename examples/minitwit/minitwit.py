@@ -69,7 +69,7 @@ def gravatar_url(email, size=80):
         (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
 
-@app.request_init
+@app.before_request
 def before_request():
     """Make sure we are connected to the database each request and look
     up the current user so that we know he's there.
@@ -81,7 +81,7 @@ def before_request():
                           [session['user_id']], one=True)
 
 
-@app.request_shutdown
+@app.after_request
 def after_request(response):
     """Closes the database again at the end of the request."""
     g.db.close()

@@ -11,8 +11,8 @@ request and get the information of the currently logged in user.  At the
 end of the request, the database connection is closed again.
 
 In Flask you can implement such things with the
-:meth:`~flask.Flask.request_init` and
-:meth:`~flask.Flask.request_shutdown` decorators in combination with the
+:meth:`~flask.Flask.before_request` and
+:meth:`~flask.Flask.after_request` decorators in combination with the
 special :class:`~flask.g` object.
 
 
@@ -31,11 +31,11 @@ So here a simple example how you can use SQLite 3 with Flask::
     def connect_db():
         return sqlite3.connect(DATABASE)
 
-    @app.request_init
+    @app.before_request
     def before_request():
         g.db = connect_db()
 
-    @app.request_shutdown
+    @app.after_request
     def after_request(response):
         g.db.close()
         return response

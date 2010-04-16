@@ -225,21 +225,21 @@ but how can we elegantly do that for requests?  We will need the database
 connection in all our functions so it makes sense to initialize them
 before each request and shut them down afterwards.
 
-Flask allows us to do that with the :meth:`~flask.Flask.request_init` and
-:meth:`~flask.Flask.request_shutdown` decorators::
+Flask allows us to do that with the :meth:`~flask.Flask.before_request` and
+:meth:`~flask.Flask.after_request` decorators::
 
-    @app.request_init
+    @app.before_request
     def before_request():
         g.db = connect_db()
 
-    @app.request_shutdown
+    @app.after_request
     def after_request(response):
         g.db.close()
         return response
 
-Functions marked with :meth:`~flask.Flask.request_init` are called before
+Functions marked with :meth:`~flask.Flask.before_request` are called before
 a request and passed no arguments, functions marked with
-:meth:`~flask.Flask.request_shutdown` are called after a request and
+:meth:`~flask.Flask.after_request` are called after a request and
 passed the response that will be sent to the client.  They have to return
 that response object or a different one.  In this case we just return it
 unchanged.
@@ -255,7 +255,7 @@ Step 5: The View Functions
 --------------------------
 
 Now that the database connections are working we can start writing the
-view functions.  We will need for of them:
+view functions.  We will need four of them:
 
 Show Entries
 ````````````

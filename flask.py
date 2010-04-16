@@ -249,16 +249,16 @@ class Flask(object):
         #: of the request before request dispatching kicks in.  This
         #: can for example be used to open database connections or
         #: getting hold of the currently logged in user.
-        #: To register a function here, use the :meth:`request_init`
+        #: To register a function here, use the :meth:`before_request`
         #: decorator.
-        self.request_init_funcs = []
+        self.before_request_funcs = []
 
         #: a list of functions that are called at the end of the
         #: request.  Tha function is passed the current response
         #: object and modify it in place or replace it.
-        #: To register a function here use the :meth:`request_shtdown`
+        #: To register a function here use the :meth:`after_request`
         #: decorator.
-        self.request_shutdown_funcs = []
+        self.after_request_funcs = []
 
         #: a list of functions that are called without arguments
         #: to populate the template context.  Each returns a dictionary
@@ -509,14 +509,14 @@ class Flask(object):
             return f
         return decorator
 
-    def request_init(self, f):
+    def before_request(self, f):
         """Registers a function to run before each request."""
-        self.request_init_funcs.append(f)
+        self.before_request_funcs.append(f)
         return f
 
-    def request_shutdown(self, f):
+    def after_request(self, f):
         """Register a function to be run after each request."""
-        self.request_shutdown_funcs.append(f)
+        self.after_request_funcs.append(f)
         return f
 
     def context_processor(self, f):
@@ -583,19 +583,20 @@ class Flask(object):
 
     def preprocess_request(self):
         """Called before the actual request dispatching and will
-        call every as :func:`request_init` decorated function.
+        call every as :meth:`before_request` decorated function.
         If any of these function returns a value it's handled as
         if it was the return value from the view and further
         request handling is stopped.
         """
-        for func in self.request_init_funcs:
+        for func in self.before_request_funcs:
             rv = func()
             if rv is not None:
                 return rv
 
     def process_response(self, response):
         """Can be overridden in order to modify the response object
-        before it's sent to the WSGI server.
+        before it's sent to the WSGI server.  By default this will
+        call all the :meth:`after_request` decorated functions.
 
         :param response: a :attr:`response_class` object.
         :return: a new response object or the same, has to be an
@@ -604,7 +605,7 @@ class Flask(object):
         session = _request_ctx_stack.top.session
         if session is not None:
             self.save_session(session, response)
-        for handler in self.request_shutdown_funcs:
+        for handler in self.after_request_funcs:
             response = handler(response)
         return response
 
