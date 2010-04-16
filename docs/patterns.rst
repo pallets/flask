@@ -280,12 +280,12 @@ Querying is simple as well:
    http://www.sqlalchemy.org/docs/reference/ext/declarative.html
 
 Manual Object Relational Mapping
---------------------------------
+````````````````````````````````
 
 *coming soon*
 
 SQL Abstraction Layer
----------------------
+`````````````````````
 
 *coming soon*
 
