@@ -14,7 +14,6 @@ import os
 import sys
 
 from threading import local
-from contextlib import contextmanager
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
      LocalStack, LocalProxy, create_environ, cached_property, \
@@ -83,6 +82,16 @@ class _RequestContext(object):
         self.session = app.open_session(self.request)
         self.g = _RequestGlobals()
         self.flashes = None
+
+    def __enter__(self):
+        _request_ctx_stack.push(self)
+
+    def __exit__(self, exc_type, exc_value, tb):
+        # do not pop the request stack if we are in debug mode and an
+        # exception happened.  This will allow the debugger to still
+        # access the request object in the interactive shell.
+        if tb is None or not self.app.debug:
+            _request_ctx_stack.pop()
 
 
 def url_for(endpoint, **values):
@@ -618,7 +627,6 @@ class Flask(object):
             response = self.process_response(response)
             return response(environ, start_response)
 
-    @contextmanager
     def request_context(self, environ):
         """Creates a request context from the given environment and binds
         it to the current context.  This must be used in combination with
@@ -632,11 +640,7 @@ class Flask(object):
 
         :params environ: a WSGI environment
         """
-        _request_ctx_stack.push(_RequestContext(self, environ))
-        try:
-            yield
-        finally:
-            _request_ctx_stack.pop()
+        return _RequestContext(self, environ)
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
