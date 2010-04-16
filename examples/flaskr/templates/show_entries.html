@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if g.logged_in %}
+  {% if session.logged_in %}
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
         <dt>Title:

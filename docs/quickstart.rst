@@ -89,6 +89,14 @@ Or pass it to run::
 
 Both will have exactly the same effect.
 
+.. admonition:: Attention
+
+   The interactive debugger however does not work in forking environments
+   which makes it nearly impossible to use on production servers but the
+   debugger still allows the execution of arbitrary code which makes it a
+   major security risk and **must never be used on production machines**
+   because of that.
+
 
 Routing
 -------

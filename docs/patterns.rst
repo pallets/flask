@@ -40,6 +40,8 @@ So here a simple example how you can use SQLite 3 with Flask::
         g.db.close()
         return response
 
+.. _easy-querying:
+
 Easy Querying
 `````````````
 

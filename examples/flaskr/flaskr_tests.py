@@ -33,6 +33,11 @@ class FlaskrTestCase(unittest.TestCase):
 
     # testing functions
 
+    def test_empty_db(self):
+        """Start with a blank database."""
+        rv = self.app.get('/')
+        assert 'No entries here so far' in rv.data
+
     def test_login_logout(self):
         """Make sure login and logout works"""
         rv = self.login(flaskr.USERNAME, flaskr.PASSWORD)
@@ -46,9 +51,6 @@ class FlaskrTestCase(unittest.TestCase):
 
     def test_messages(self):
         """Test that messages work"""
-        # start with a blank state
-        rv = self.app.get('/')
-        assert 'No entries here so far' in rv.data
         self.login(flaskr.USERNAME, flaskr.PASSWORD)
         rv = self.app.post('/add', data=dict(
             title='<Hello>',
