@@ -153,6 +153,14 @@ def _default_template_ctx_processor():
     )
 
 
+def _get_package_path(name):
+    """Returns the path to a package or cwd if that cannot be found."""
+    try:
+        return os.path.abspath(os.path.dirname(sys.modules[name].__file__))
+    except (KeyError, AttributeError):
+        return os.getcwd()
+
+
 class Flask(object):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
@@ -213,8 +221,7 @@ class Flask(object):
         self.package_name = package_name
 
         #: where is the app root located?
-        self.root_path = os.path.abspath(os.path.dirname(
-            sys.modules[self.package_name].__file__))
+        self.root_path = _get_package_path(self.package_name)
 
         #: a dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and

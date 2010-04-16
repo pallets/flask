@@ -97,6 +97,13 @@ Both will have exactly the same effect.
    major security risk and **must never be used on production machines**
    because of that.
 
+Screenshot of the debugger in action:
+
+.. image:: _static/debugger.png
+   :align: center
+   :class: screenshot
+   :alt: screenshot of debugger in action
+
 
 Routing
 -------
