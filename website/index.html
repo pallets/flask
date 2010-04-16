@@ -1,0 +1,56 @@
+<!doctype html>
+<title>Flask (A Python Microframework)</title>
+<style type=text/css>
+  body  { font-family: 'Georgia', serif; font-size: 17px; color: #000; }
+  a     { color: #444; font-weight: bold; }
+  .box  { width: 540px; margin: 40px auto; }
+  h1    { margin: 0 0 30px 0; background: url(logo.png) no-repeat center; height: 165px; }
+  h2    { font-size: 26px; margin: 15px 0 5px 0; font-variant: small-caps; }
+  code,
+  pre   { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
+          monospace; font-size: 15px; background: #eee; }
+  pre   { padding: 7px 30px; margin: 15px -30px; }
+  .ig   { color: #888; }
+  ul    { margin: 15px 0; padding: 0; }
+  h1 span, p.tagline { display: none; }
+  blockquote { margin: 0; font-style: italic; color: #444; }
+  .footer { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
+  pre a, blockquote a, .footer a { font-weight: normal; color: inherit; }
+</style>
+<div class=box>
+  <h1><span>Flask</span></h1>
+  <p class=tagline>because sometimes a pocket knife is not enough
+  <blockquote>
+    Flask is a microframework for Python based on Werkzeug, Jinja 2 and good intentions.
+    And before you ask: It's <a href=http://github.com/mitsuhiko/flask/blob/master/LICENSE>BSD licensed</a>!
+  </blockquote>
+  <h2>Flask is Fun</h2>
+  <pre><span class=ig>from flask import Flask
+app = Flask(__name__)</span>
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+<span class=ig>if __name__ == "__main__":
+    app.run()</span></pre>
+  <h2>And Easy to Setup</h2>
+  <pre><span class=ig>$ </span>easy_install Flask
+<span class=ig>$ </span>python hello.py
+<span class=ig> * Running on <a href=http://localhost:5000/>http://localhost:5000/</a></span></pre>
+  <h2>Interested?</h2>
+  <ul>
+    <li><a href=docs/>Read the documentation</a>
+    <li><a href=http://github.com/mitsuhiko/flask>fork it on github</a>
+    <li><a href=http://pypi.python.org/pypi/Flask>download it from PyPI</a>
+  </ul>
+  <h2>Contribute</h2>
+  <p>Found a bug? Have a good idea for improving Flask? Head over to
+    <a href=http://github.com/mitsuhiko/flask>Flask's github</a> page and
+    create a new ticket or fork.  If you just want to chat with the
+    developers, go to <code>#pocoo</code> on irc.freenode.net 
+  <p class=footer>&copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a>
+</div>
+
+<a href="http://github.com/mitsuhiko/flask"><img style="position: fixed; top: 0; right: 0; border: 0;"
+  src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
