@@ -226,7 +226,10 @@ Here the example `database.py` module for your application::
         Base.metadata.create_all(bind=engine)
 
 To define your models, just subclass the `Base` class that was created by
-the code above.
+the code above.  If you are wondering why we don't have to care about
+threads here (like we did in the SQLite3 example above with the
+:data:`~flask.g` object): that's because SQLAlchemy does that for us
+already with the :class:`~sqlalchemy.orm.scoped_session`.
 
 To use SQLAlchemy in a declarative way with your application, you just
 have to put the following code into your application module.  Flask will
@@ -275,6 +278,16 @@ Querying is simple as well:
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _declarative:
    http://www.sqlalchemy.org/docs/reference/ext/declarative.html
+
+Manual Object Relational Mapping
+--------------------------------
+
+*coming soon*
+
+SQL Abstraction Layer
+---------------------
+
+*coming soon*
 
 
 .. _template-inheritance:

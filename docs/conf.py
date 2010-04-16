@@ -241,5 +241,6 @@ latex_documents = [
 
 intersphinx_mapping = {
     'http://docs.python.org/dev': None,
-    'http://werkzeug.pocoo.org/documentation/dev/': None
+    'http://werkzeug.pocoo.org/documentation/dev/': None,
+    'http://www.sqlalchemy.org/docs/': None
 }
