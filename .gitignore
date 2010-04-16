@@ -2,4 +2,5 @@
 *.pyc
 *.pyo
 env
+dist
 *.egg-info
