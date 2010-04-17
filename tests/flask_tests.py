@@ -72,6 +72,20 @@ class BasicFunctionality(unittest.TestCase):
         assert c.post('/set', data={'value': '42'}).data == 'value set'
         assert c.get('/get').data == '42'
 
+    def test_missing_session(self):
+        app = flask.Flask(__name__)
+        def expect_exception(f, *args, **kwargs):
+            try:
+                f(*args, **kwargs)
+            except RuntimeError, e:
+                assert e.args and 'session is unavailable' in e.args[0]
+            else:
+                assert False, 'expected exception'
+        with app.test_request_context():
+            assert flask.session.get('missing_key') is None
+            expect_exception(flask.session.__setitem__, 'foo', 42)
+            expect_exception(flask.session.pop, 'foo')
+
     def test_request_processing(self):
         app = flask.Flask(__name__)
         evts = []
