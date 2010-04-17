@@ -11,6 +11,133 @@ how to use a WSGI app with it.  Just remember that your application object
 is the actual WSGI application.
 
 
+mod_wsgi (Apache)
+-----------------
+
+If you are using the `Apache`_ webserver you should consider using `mod_wsgi`_.
+
+.. _Apache: http://httpd.apache.org/
+
+Installing `mod_wsgi`
+`````````````````````
+
+If you don't have `mod_wsgi` installed yet you have to either install it using
+a package manager or compile it yourself.
+
+The mod_wsgi `installation instructions`_ cover installation instructions for
+source installations on UNIX systems.
+
+If you are using ubuntu / debian you can apt-get it and activate it as follows::
+
+    # apt-get install libapache2-mod-wsgi
+
+On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by using
+pkg_add::
+
+    # pkg_add -r mod_wsgi
+
+If you are using pkgsrc you can install `mod_wsgi` by compiling the
+`www/ap2-wsgi` package.
+
+If you encounter segfaulting child processes after the first apache reload you
+can safely ignore them.  Just restart the server.
+
+Creating a `.wsgi` file
+```````````````````````
+
+To run your application you need a `yourapplication.wsgi` file.  This file
+contains the code `mod_wsgi` is executing on startup to get the application
+object.  The object called `application` in that file is then used as
+application.
+
+For most applications the following file should be sufficient::
+
+    from yourapplication import app as application
+
+If you don't have a factory function for application creation but a singleton
+instance you can directly import that one as `application`.
+
+Store that file somewhere where you will find it again (eg:
+`/var/www/yourapplication`) and make sure that `yourapplication` and all
+the libraries that are in use are on the python load path.  If you don't
+want to install it system wide consider using a `virtual python`_ instance.
+
+Configuring Apache
+``````````````````
+
+The last thing you have to do is to create an Apache configuration file for
+your application.  In this example we are telling `mod_wsgi` to execute the
+application under a different user for security reasons:
+
+.. sourcecode:: apache
+
+    <VirtualHost *>
+        ServerName example.com
+
+        WSGIDaemonProcess yourapplication user=user1 group=group1 threads=5
+        WSGIScriptAlias / /var/www/yourapplication/yourapplication.wsgi
+
+        <Directory /var/www/yourapplication>
+            WSGIProcessGroup yourapplication
+            WSGIApplicationGroup %{GLOBAL}
+            Order deny,allow
+            Allow from all
+        </Directory>
+    </VirtualHost>
+
+For more information consult the `mod_wsgi wiki`_.
+
+.. _mod_wsgi: http://code.google.com/p/modwsgi/
+.. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
+.. _virtual python: http://pypi.python.org/pypi/virtualenv
+.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
+
+
+CGI
+---
+
+If all other deployment methods do not work, CGI will work for sure.  CGI
+is supported by all major servers but usually has a less-than-optimal
+performance.
+
+This is also the way you can use a Flask application on Google's
+`AppEngine`_, there however the execution does happen in a CGI-like
+environment.  The application's performance is unaffected because of that.
+
+.. _AppEngine: http://code.google.com/appengine/
+
+Creating a `.cgi` file
+``````````````````````
+
+First you need to create the CGI application file.  Let's call it
+`yourapplication.cgi`::
+
+    #!/usr/bin/python
+    from wsgiref.handlers import CGIHandler
+    from yourapplication import app
+
+    CGIHandler().run(app)
+
+If you're running Python 2.4 you will need the :mod:`wsgiref` package.  Python
+2.5 and higher ship this as part of the standard library.
+
+Server Setup
+````````````
+
+Usually there are two ways to configure the server.  Either just copy the
+`.cgi` into a `cgi-bin` (and use `mod_rerwite` or something similar to
+rewrite the URL) or let the server point to the file directly.
+
+In Apache for example you can put a like like this into the config:
+
+.. sourcecode:: apache
+
+    ScriptName /app /path/to/the/application.cgi
+
+For more information consult the documentation of your webserver.
+
+
+
 FastCGI
 -------
 
@@ -141,88 +268,6 @@ path.  Common problems are:
 .. _flup: http://trac.saddi.com/flup
 
 
-mod_wsgi (Apache)
------------------
-
-If you are using the `Apache`_ webserver you should consider using `mod_wsgi`_.
-
-.. _Apache: http://httpd.apache.org/
-
-Installing `mod_wsgi`
-`````````````````````
-
-If you don't have `mod_wsgi` installed yet you have to either install it using
-a package manager or compile it yourself.
-
-The mod_wsgi `installation instructions`_ cover installation instructions for
-source installations on UNIX systems.
-
-If you are using ubuntu / debian you can apt-get it and activate it as follows::
-
-    # apt-get install libapache2-mod-wsgi
-
-On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by using
-pkg_add::
-
-    # pkg_add -r mod_wsgi
-
-If you are using pkgsrc you can install `mod_wsgi` by compiling the
-`www/ap2-wsgi` package.
-
-If you encounter segfaulting child processes after the first apache reload you
-can safely ignore them.  Just restart the server.
-
-Creating a `.wsgi` file
-```````````````````````
-
-To run your application you need a `yourapplication.wsgi` file.  This file
-contains the code `mod_wsgi` is executing on startup to get the application
-object.  The object called `application` in that file is then used as
-application.
-
-For most applications the following file should be sufficient::
-
-    from yourapplication import app as application
-
-If you don't have a factory function for application creation but a singleton
-instance you can directly import that one as `application`.
-
-Store that file somewhere where you will find it again (eg:
-`/var/www/yourapplication`) and make sure that `yourapplication` and all
-the libraries that are in use are on the python load path.  If you don't
-want to install it system wide consider using a `virtual python`_ instance.
-
-Configuring Apache
-``````````````````
-
-The last thing you have to do is to create an Apache configuration file for
-your application.  In this example we are telling `mod_wsgi` to execute the
-application under a different user for security reasons:
-
-.. sourcecode:: apache
-
-    <VirtualHost *>
-        ServerName example.com
-
-        WSGIDaemonProcess yourapplication user=user1 group=group1 threads=5
-        WSGIScriptAlias / /var/www/yourapplication/yourapplication.wsgi
-
-        <Directory /var/www/yourapplication>
-            WSGIProcessGroup yourapplication
-            WSGIApplicationGroup %{GLOBAL}
-            Order deny,allow
-            Allow from all
-        </Directory>
-    </VirtualHost>
-
-For more information consult the `mod_wsgi wiki`_.
-
-.. _mod_wsgi: http://code.google.com/p/modwsgi/
-.. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
-.. _virtual python: http://pypi.python.org/pypi/virtualenv
-.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
-
-
 
 Tornado
 --------
@@ -260,47 +305,3 @@ Gevent
 .. _Gevent: http://www.gevent.org/
 .. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
 .. _libevent: http://monkey.org/~provos/libevent/
-
-CGI
----
-
-If all other deployment methods do not work, CGI will work for sure.  CGI
-is supported by all major browsers but usually has a less-than-optimal
-performance.
-
-This is also the way you can use a Flask application on Google's
-`AppEngine`_, there however the execution does happen in a CGI-like
-environment.  The application's performance is unaffected because of that.
-
-.. _AppEngine: http://code.google.com/appengine/
-
-Creating a `.cgi` file
-``````````````````````
-
-First you need to create the CGI application file.  Let's call it
-`yourapplication.cgi`::
-
-    #!/usr/bin/python
-    from wsgiref.handlers import CGIHandler
-    from yourapplication import app
-
-    CGIHandler().run(app)
-
-If you're running Python 2.4 you will need the :mod:`wsgiref` package.  Python
-2.5 and higher ship this as part of the standard library.
-
-Server Setup
-````````````
-
-Usually there are two ways to configure the server.  Either just copy the
-`.cgi` into a `cgi-bin` (and use `mod_rerwite` or something similar to
-rewrite the URL) or let the server point to the file directly.
-
-In Apache for example you can put a like like this into the config:
-
-.. sourcecode:: apache
-
-    ScriptName /app /path/to/the/application.cgi
-
-For more information consult the documentation of your webserver.
-
