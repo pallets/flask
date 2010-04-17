@@ -325,7 +325,6 @@ class Flask(object):
         :param context: the context as a dictionary that is updated in place
                         to add extra variables.
         """
-        reqctx = _request_ctx_stack.top
         for func in self.template_context_processors:
             context.update(func())
 
