@@ -1,21 +1,24 @@
 <!doctype html>
 <title>Flask (A Python Microframework)</title>
+<meta charset=utf-8>
 <style type=text/css>
-  body  { font-family: 'Georgia', serif; font-size: 17px; color: #000; }
-  a     { color: #444; font-weight: bold; }
-  .box  { width: 540px; margin: 40px auto; }
-  h1    { margin: 0 0 30px 0; background: url(logo.png) no-repeat center; height: 165px; }
-  h2    { font-size: 26px; margin: 15px 0 5px 0; font-variant: small-caps; }
+  body    { font-family: 'Georgia', serif; font-size: 17px; color: #000; }
+  a       { color: #004B6B; }
+  a:hover { color: #6D4100; }
+  .box    { width: 540px; margin: 40px auto; }
+  h1, h2  { font-family: 'Garamond', 'Georgia', serif; font-weight: normal; }
+  h1      { margin: 0 0 30px 0; background: url(logo.png) no-repeat center; height: 165px; }
+  h2      { font-size: 28px; margin: 15px 0 5px 0; }
   code,
-  pre   { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
+  pre     { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
           monospace; font-size: 15px; background: #eee; }
-  pre   { padding: 7px 30px; margin: 15px -30px; }
-  .ig   { color: #888; }
-  ul    { margin: 15px 0; padding: 0; }
+  pre     { padding: 7px 30px; margin: 15px -30px; }
+  .ig     { color: #888; }
+  ul      { margin: 15px 0 15px 0; padding: 0; list-style: none; }
+  ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-left: -19px; }
   h1 span, p.tagline { display: none; }
   blockquote { margin: 0; font-style: italic; color: #444; }
   .footer { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
-  pre a, blockquote a, .footer a { font-weight: normal; color: inherit; }
 </style>
 <div class=box>
   <h1><span>Flask</span></h1>
@@ -37,18 +40,39 @@ def hello():
   <h2>And Easy to Setup</h2>
   <pre><span class=ig>$ </span>easy_install Flask
 <span class=ig>$ </span>python hello.py
-<span class=ig> * Running on <a href=http://localhost:5000/>http://localhost:5000/</a></span></pre>
+<span class=ig> * Running on http://localhost:5000/</span></pre>
   <h2>Interested?</h2>
   <ul>
     <li><a href=docs/>Read the documentation</a>
     <li><a href=http://github.com/mitsuhiko/flask>Fork it on github</a>
     <li><a href=http://pypi.python.org/pypi/Flask>Download it from PyPI</a>
   </ul>
+  <h2>What’s in the Box?</h2>
+  <ul>
+    <li>built in development server and <a href=docs/quickstart.html#debug-mode>debugger</a>
+    <li>integrated support for <a href=docs/testing.html>unittesting support</a>
+    <li>RESTful <a href=docs/quickstart.html#routing>request dispatching</a>
+    <li>uses <a href=http://jinja.pocoo.org/2/documentation/templates>Jinja2 templating</a>
+    <li>support for <a href=docs/quickstart.html#sessions>secure cookies</a> (client side sessions)
+    <li>100% <a href=http://www.python.org/dev/peps/pep-0333/>WSGI 1.0</a> compliant
+    <li>Unicode based
+  </ul>
+  <h2>What do Flask Apps look like?</h2>
+  <p>
+    If you are looking for some example code of applications written with Flask,
+    have a look at the sources of the examples on github:
+  <ul>
+    <li><a href=http://github.com/mitsuhiko/flask/tree/master/examples/flaskr/>flaskr</a>
+      — a microblog
+    <li><a href=http://github.com/mitsuhiko/flask/tree/master/examples/minitwit/>minitwit</a>
+      — a twitter clone
+  </ul>
   <h2>Contribute</h2>
   <p>Found a bug? Have a good idea for improving Flask? Head over to
     <a href=http://github.com/mitsuhiko/flask>Flask's github</a> page and
-    create a new ticket or fork.  If you just want to chat with the
-    developers, go to <code>#pocoo</code> on irc.freenode.net 
+    create a new ticket or fork.  If you just want to chat with fellow
+    developers, go to <code>#pocoo</code> on irc.freenode.net.
+
   <p class=footer>&copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a>
 </div>
 
