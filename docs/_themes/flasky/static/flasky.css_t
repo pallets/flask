@@ -213,6 +213,10 @@ div.highlight{
     background-color: white;
 }
 
+dt:target, .highlight {
+    background: #FAF3E8;
+}
+
 div.note {
     background-color: #eee;
     border: 1px solid #ccc;
