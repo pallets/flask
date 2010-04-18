@@ -3,7 +3,7 @@ Welcome to Flask
 
 .. image:: _static/logo-full.png
    :alt: The Flask Logo with Subtitle
-   :align: right
+   :class: floatingflask
 
 Welcome to Flask's documentation.  This documentation is divided in
 different parts.  I would suggest to get started with the
@@ -38,7 +38,7 @@ web development.
    foreword
    installation
    quickstart
-   tutorial
+   tutorial/index
    testing
    patterns
    deploying

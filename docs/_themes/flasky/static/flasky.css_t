@@ -15,11 +15,15 @@
  
 body {
     font-family: 'Georgia', serif;
-    font-size: 16px;
-    background-color: #555;
-    color: #555;
+    font-size: 17px;
+    background-color: #ddd;
+    color: #000;
     margin: 0;
     padding: 0;
+}
+
+div.document {
+    background: #fafafa;
 }
 
 div.documentwrapper {
@@ -35,50 +39,57 @@ hr {
     border: 1px solid #B1B4B6;
 }
  
-div.document {
-    background-color: #eee;
-}
- 
 div.body {
     background-color: #ffffff;
     color: #3E4349;
     padding: 0 30px 30px 30px;
+    min-height: 34em;
+}
+
+img.floatingflask {
+    padding: 0 0 10px 10px;
+    float: right;
 }
  
 div.footer {
-    color: #ccc;
+    position: absolute;
+    right: 0;
+    margin-top: -70px;
+    text-align: right;
+    color: #888;
     padding: 10px;
-    font-size: 0.8em;
+    font-size: 14px;
 }
  
 div.footer a {
-    color: white;
+    color: #888;
     text-decoration: underline;
 }
  
 div.related {
-    background-color: #774117;
     line-height: 32px;
-    color: #fff;
-    text-shadow: 0px 1px 0 #444;
-    font-size: 0.9em;
+    color: #888;
+}
+
+div.related ul {
+    padding: 0 0 0 10px;
 }
  
 div.related a {
-    color: #E9D1C1;
+    color: #444;
 }
  
 div.sphinxsidebar {
-    font-size: 0.85em;
-    line-height: 1.5em;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 div.sphinxsidebarwrapper {
-    padding: 20px 0 20px 0;
+    padding: 0 20px;
 }
 
 div.sphinxsidebarwrapper p.logo {
-    padding: 0 0 10px 0;
+    padding: 20px 0 10px 0;
     margin: 0;
     text-align: center;
 }
@@ -87,39 +98,38 @@ div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
     font-family: 'Garamond', 'Georgia', serif;
     color: #222;
-    font-size: 1.2em;
+    font-size: 24px;
     font-weight: normal;
-    margin: 0;
-    padding: 5px 10px;
-    background-color: #ddd;
-    text-shadow: 1px 1px 0 white
+    margin: 20px 0 5px 0;
+    padding: 0;
 }
 
 div.sphinxsidebar h4 {
-    font-size: 1.1em;
+    font-size: 20px;
 }
  
 div.sphinxsidebar h3 a {
     color: #444;
 }
  
- 
 div.sphinxsidebar p {
     color: #555;
-    padding: 5px 20px;
-}
- 
-div.sphinxsidebar p.topless {
+    margin: 10px 0;
 }
  
 div.sphinxsidebar ul {
-    margin: 10px 20px;
+    margin: 10px 0;
     padding: 0;
     color: #000;
 }
  
 div.sphinxsidebar a {
     color: #444;
+    text-decoration: none;
+}
+
+div.sphinxsidebar a:hover {
+    text-decoration: underline;
 }
  
 div.sphinxsidebar input {
@@ -127,21 +137,21 @@ div.sphinxsidebar input {
     font-family: 'Georgia', serif;
     font-size: 1em;
 }
-
-div.sphinxsidebar input[type=text]{
-    margin-left: 20px;
-}
  
 /* -- body styles ----------------------------------------------------------- */
  
 a {
     color: #004B6B;
-    text-decoration: none;
+    text-decoration: underline;
 }
  
 a:hover {
     color: #6D4100;
     text-decoration: underline;
+}
+
+div.body {
+    padding-bottom: 40px; /* saved for footer */
 }
  
 div.body h1,
@@ -151,20 +161,17 @@ div.body h4,
 div.body h5,
 div.body h6 {
     font-family: 'Garamond', 'Georiga', serif;
-    background-color: #bbb;
     font-weight: normal;
-    color: #212224;
     margin: 30px 0px 10px 0px;
-    padding: 5px 0 5px 10px;
-    text-shadow: 0px 1px 0 white;
+    padding: 0;
 }
  
-div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 200%; }
-div.body h2 { font-size: 150%; background-color: #ddd; }
-div.body h3 { font-size: 120%; background-color: #eee; }
-div.body h4 { font-size: 110%; background-color: #eee; }
-div.body h5 { font-size: 100%; background-color: #eee; }
-div.body h6 { font-size: 100%; background-color: #eee; }
+div.body h1 { margin-top: 0; padding-top: 20px; font-size: 240%; }
+div.body h2 { font-size: 180%; }
+div.body h3 { font-size: 150%; }
+div.body h4 { font-size: 130%; }
+div.body h5 { font-size: 100%; }
+div.body h6 { font-size: 100%; }
  
 a.headerlink {
     color: white;
@@ -182,14 +189,24 @@ div.body p, div.body dd, div.body li {
 }
 
 div.admonition {
-    border: 1px solid #ddd;
-    background: white;
-    -webkit-box-shadow: 2px 2px 1px #d8d8d8;
-    -moz-box-shadow: 2px 2px 1px #d8d8d8;
+    background: #fafafa;
+    margin: 20px -30px;
+    padding: 10px 30px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
 }
- 
-div.admonition p.admonition-title + p {
-    display: inline;
+
+div.admonition p.admonition-title {
+    font-family: 'Garamond', 'Georiga', serif;
+    font-weight: normal;
+    font-size: 24px;
+    margin: 0 0 10px 0;
+    padding: 0;
+    line-height: 1;
+}
+
+div.admonition p.last {
+    margin-bottom: 0;
 }
 
 div.highlight{
@@ -229,24 +246,27 @@ pre, tt {
 }
 
 img.screenshot {
-    -webkit-box-shadow: 4px 4px 3px #cdcdcd;
-    -moz-box-shadow: 4px 4px 3px #cdcdcd;
 }
 
 tt.descname, tt.descclassname {
     font-size: 0.95em;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
 }
 
 tt.descname {
     padding-right: 0.08em;
 }
 
+img.screenshot {
+    -moz-box-shadow: 2px 2px 4px #eee;
+    -webkit-box-shadow: 2px 2px 4px #eee;
+    box-shadow: 2px 2px 4px #eee;
+}
+
 table.docutils {
     border: 1px solid #888;
-    -webkit-box-shadow: 2px 2px 1px #d8d8d8;
-    -moz-box-shadow: 2px 2px 1px #d8d8d8;
+    -moz-box-shadow: 2px 2px 4px #eee;
+    -webkit-box-shadow: 2px 2px 4px #eee;
+    box-shadow: 2px 2px 4px #eee;
 }
 
 table.docutils td, table.docutils th {
@@ -256,15 +276,15 @@ table.docutils td, table.docutils th {
 
 table.field-list, table.footnote {
     border: none;
-    -webkit-box-shadow: none;
     -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }
 
 table.footnote {
+    margin: 15px 0;
     width: 100%;
     border: 1px solid #eee;
-    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
-    -moz-box-shadow: 1px 1px 1px #d8d8d8;
 }
 
 table.field-list th {
@@ -278,24 +298,37 @@ table.field-list td {
 table.footnote td {
     padding: 0.5em;
 }
+
+dl {
+    margin: 0;
+    padding: 0;
+}
+
+dl dd {
+    margin-left: 30px;
+}
  
 pre {
-    background: #FDFDFD;
-    padding: 10px;
-    color: #222;
+    background: #eee;
+    padding: 7px 30px;
+    margin: 15px -30px;
     line-height: 1.3em;
-    border: 1px solid #f9f9f9;
-    margin: 1.5em 3px 1.5em 0;
-    -webkit-box-shadow: 2px 2px 1px #d8d8d8;
-    -moz-box-shadow: 2px 2px 1px #d8d8d8;
+}
+
+dl pre {
+    margin-left: -60px;
+    padding-left: 60px;
+}
+
+dl dl pre {
+    margin-left: -90px;
+    padding-left: 90px;
 }
  
 tt {
     background-color: #ecf0f3;
     color: #222;
     /* padding: 1px 2px; */
-    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
-    -moz-box-shadow: 1px 1px 1px #d8d8d8;
 }
 
 tt.xref, a tt {
@@ -304,12 +337,4 @@ tt.xref, a tt {
 
 a:hover tt {
     background: #EEE;
-}
-
-div.document + div.related {
-    background: #aaa;
-}
-
-div.document + div.related a {
-    color: white;
 }

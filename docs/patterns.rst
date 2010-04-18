@@ -86,10 +86,11 @@ And this is what `views.py` would look like::
 
 .. admonition:: Circular Imports
 
-   Every Python programmer hates it, and yet we just did that: circular
-   imports (That's when two module depend on each one.  In this case
-   `views.py` depends on `__init__.py`).  Be advised that this is a bad
-   idea in general but here it is actually fine.  The reason for this is
+   Every Python programmer hates them, and yet we just added some:
+   circular imports (That's when two module depend on each one.  In this
+   case `views.py` depends on `__init__.py`).  Be advised that this is a
+   bad idea in general but here it is actually fine.  The reason for this
+   is
    that we are not actually using the views in `__init__.py` and just
    ensuring the module is imported and we are doing that at the bottom of
    the file.
