@@ -197,6 +197,12 @@ class Templating(unittest.TestCase):
             '<p>Hello World!'
         ]
 
+    def test_macros(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            macro = flask.get_template_attribute('_macro.html', 'hello')
+            assert macro('World') == 'Hello World!'
+
 
 if __name__ == '__main__':
     unittest.main()

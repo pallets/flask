@@ -120,6 +120,27 @@ def url_for(endpoint, **values):
     return _request_ctx_stack.top.url_adapter.build(endpoint, values)
 
 
+def get_template_attribute(template_name, attribute):
+    """Loads a macro (or variable) a template exports.  This can be used to
+    invoke a macro from within Python code.  If you for example have a
+    template named `_foo.html` with the following contents:
+
+    .. sourcecode:: html+jinja
+
+       {% macro hello(name) %}Hello {{ name }}!{% endmacro %}
+
+    You can access this from Python code like this::
+
+        hello = get_template_attribute('_foo.html', 'hello')
+        return hello('World')
+
+    :param template_name: the name of the template
+    :param attribute: the name of the variable of macro to acccess
+    """
+    return getattr(current_app.jinja_env.get_template(template_name).module,
+                   attribute)
+
+
 def flash(message):
     """Flashes a message to the next request.  In order to remove the
     flashed message from the session and to display it to the user,
@@ -626,9 +647,17 @@ class Flask(object):
 
     def wsgi_app(self, environ, start_response):
         """The actual WSGI application.  This is not implemented in
-        `__call__` so that middlewares can be applied:
+        `__call__` so that middlewares can be applied without losing a
+        reference to the class.  So instead of doing this::
+
+            app = MyMiddleware(app)
+
+        It's a better idea to do this instead::
 
             app.wsgi_app = MyMiddleware(app.wsgi_app)
+
+        Then you still have the original application object around and
+        can continue to call methods on it.
 
         :param environ: a WSGI environment
         :param start_response: a callable accepting a status code,

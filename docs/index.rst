@@ -43,6 +43,7 @@ web development.
    patterns/index
    deploying
    becomingbig
+   design
 
 Reference
 ---------
