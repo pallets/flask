@@ -15,10 +15,9 @@ import sys
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
-     LocalStack, LocalProxy, create_environ, cached_property, \
-     SharedDataMiddleware
+     LocalStack, LocalProxy, create_environ, SharedDataMiddleware
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException, InternalServerError
+from werkzeug.exceptions import HTTPException
 from werkzeug.contrib.securecookie import SecureCookie
 
 # utilities we import from Werkzeug and Jinja2 that are unused
