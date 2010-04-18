@@ -53,7 +53,8 @@ python-virtualenv``).
 
 If you are on Windows and missing the `easy_install` command you have to
 install it first.  Check the :ref:`windows-easy-install` section for more
-information about how to do that.
+information about how to do that.  Once you have it installed, run the
+same commands as above, but without the `sudo` part.
 
 So now that you have virtualenv running just fire up a shell and create
 your own environment.  I usually create a folder and a `env` folder
