@@ -55,3 +55,9 @@ importing and calling that function::
 
 >>> from flaskr import init_db
 >>> init_db()
+
+.. admonition:: Troubleshooting
+
+   If you get an exception later that a table cannot be found check that
+   you did call the `init_db` function and that your table names are
+   correct (singular vs. plural for example).
