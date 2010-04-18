@@ -92,9 +92,99 @@ Querying is simple as well:
 Manual Object Relational Mapping
 --------------------------------
 
-*coming soon*
+Manual object relational mapping has a few upsides and a few downsides
+versus the declarative approach from above.  The main difference is that
+you define tables and classes separately and map them together.  It's more
+flexible but a little more to type.  In general it works similar to the
+declarative approach, so make sure to also split up your application into
+multiple modules in a package.
+
+Here the example `database.py` module for your application::
+
+    from sqlalchemy import create_engine, MetaData
+    from sqlalchemy.orm import scoped_session, sessionmaker
+
+    engine = create_engine('sqlite:////tmp/test.db')
+    metadata = MetaData()
+    db_session = scoped_session(sessionmaker(autocommit=False,
+                                             autoflush=False,
+                                             bind=engine)) 
+    def init_db():
+        metadata.create_all(bind=engine)
+
+As for the declarative approach you need to close down the session after
+each request.  Put this into your application module::
+
+    from yourapplication.database import db_session
+
+    @app.after_request
+    def shutdown_session(response):
+        db_session.remove()
+        return response
+
+Here an example table and model (put that into `models.py` for instance)::
+
+    from sqlalchemy import Table, Column, Integer, String
+    from sqlalchemy.orm import mapper
+    from yourapplication.database import metadata, db_session
+
+    class User(object):
+        query = db_session.query_property()
+
+        def __init__(self, name=None, email=None):
+            self.name = name
+            self.email = email
+
+        def __repr__(self):
+            return '<User %r>' % (self.name, self.email)
+
+    users = Table('users', metadata,
+        Column('id', Integer, primary_key=True),
+        Column('name', String(50), unique=True),
+        Column('email', String(120), unique=True)
+    )
+    mapper(User, users)
+
+Querying and inserting works exactly the same as in the example above.
+
 
 SQL Abstraction Layer
 ---------------------
 
-*coming soon*
+If you just want to use the database system (and SQL) abstraction layer
+you basically only need the engine::
+
+    from sqlalchemy import create_engine, MetaData
+
+    engine = create_engine('sqlite:////tmp/test.db')
+    metadata = MetaData(bind=engine)
+
+Then you can either declare the tables in your code like in the examples
+above, or automatically load them::
+
+    users = Table('users', metadata, autoload=True)
+
+To insert data you can use the `insert` method.  We have to get a
+connection first so that we can use a transaction:
+
+>>> con = engine.connect()
+>>> con.execute(users.insert(name='admin', email='admin@localhost'))
+
+SQLAlchemy will automatically commit for us.
+
+To query your database, yu use the engine directly or use a connection:
+
+>>> users.select(users.c.id == 1).execute().first()
+(1, u'admin', u'admin@localhost')
+
+These results are also dict-like tuples:
+
+>>> r = users.select(users.c.id == 1).execute().first()
+>>> r['name']
+u'admin'
+
+You can also pass string of SQL statements to the
+:meth:`~sqlalchemy.engine.base.Connection.execute` method:
+
+>>> engine.execute('select * from users where id = :1', [1]).first()
+(1, u'admin', u'admin@localhost')
