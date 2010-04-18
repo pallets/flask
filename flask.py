@@ -13,7 +13,6 @@ from __future__ import with_statement
 import os
 import sys
 
-from threading import local
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
      LocalStack, LocalProxy, create_environ, cached_property, \
