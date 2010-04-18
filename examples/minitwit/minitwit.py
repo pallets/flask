@@ -9,7 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
-import re
 import time
 import sqlite3
 from hashlib import md5
@@ -96,7 +95,6 @@ def timeline():
     """
     if not g.user:
         return redirect(url_for('public_timeline'))
-    offset = request.args.get('offset', type=int)
     return render_template('timeline.html', messages=query_db('''
         select message.*, user.* from message, user
         where message.author_id = user.user_id and (
@@ -123,7 +121,7 @@ def user_timeline(username):
                             [username], one=True)
     if profile_user is None:
         abort(404)
-    followd = False
+    followed = False
     if g.user:
         followed = query_db('''select 1 from follower where
             follower.who_id = ? and follower.whom_id = ?''',
