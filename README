@@ -1,7 +1,7 @@
 
                           // Flask //
 
-	 because sometimes a pocket knife is not enough
+         because sometimes a pocket knife is not enough
 
 
     ~ What is Flask?
@@ -12,8 +12,10 @@
 
     ~ Is it ready?
 
-      Nope, this is still work in progress, but I am happy to
-      accept patches and improvements already.
+      A preview release is out now, and I'm hoping for some
+      input about what you want from a microframework and
+      how it should look like.  Consider the API to slightly
+      improve over time.
 
     ~ What do I need?
 
