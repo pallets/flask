@@ -160,7 +160,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: 'Garamond', 'Georiga', serif;
+    font-family: 'Garamond', 'Georgia', serif;
     font-weight: normal;
     margin: 30px 0px 10px 0px;
     padding: 0;
@@ -197,7 +197,7 @@ div.admonition {
 }
 
 div.admonition p.admonition-title {
-    font-family: 'Garamond', 'Georiga', serif;
+    font-family: 'Garamond', 'Georgia', serif;
     font-weight: normal;
     font-size: 24px;
     margin: 0 0 10px 0;
