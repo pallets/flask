@@ -40,7 +40,7 @@ web development.
    quickstart
    tutorial/index
    testing
-   patterns
+   patterns/index
    deploying
    becomingbig
 
