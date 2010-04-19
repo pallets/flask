@@ -96,6 +96,44 @@ This is possible as well, but I would not recommend it.  Just run
 
 (Run it in an Admin shell on Windows systems and without the `sudo`).
 
+
+Leaving on the Edge
+-------------------
+
+You want to work with the latest version of Flask, there are two ways: you
+can either let `easy_install` pull in the development version or tell it
+to operate on a git checkout.  Either way it's recommended to do that in a
+virtualenv.
+
+Get the git checkout in a new virtualenv and run in develop mode::
+
+    $ git clone http://github.com/mitsuhiko/flask.git
+    Initialized empty Git repository in ~/dev/flask/.git/
+    $ cd flask
+    $ virtualenv env
+    $ source env/bin/activate
+    New python executable in env/bin/python
+    Installing setuptools............done.
+    $ python setup.py develop
+    ...
+    Finished processing dependencies for Flask
+
+This will pull in the depdenencies and activate the git head as current
+version.  Then you just have to ``git pull origin`` to get the latest
+version.
+
+To just get the development version without git, do this instead::
+
+    $ mkdir flask
+    $ cd flask
+    $ virtualenv env
+    $ source env/bin/activate
+    New python executable in env/bin/python
+    Installing setuptools............done.
+    $ easy_install Flask==dev
+    ...
+    Finished processing dependencies for Flask==dev
+
 .. _windows-easy-install:
 
 `easy_install` on Windows
