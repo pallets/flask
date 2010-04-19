@@ -57,6 +57,30 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 405
         assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
 
+    def test_url_mapping(self):
+        app = flask.Flask(__name__)
+        def index():
+            return flask.request.method
+        def more():
+            return flask.request.method
+        
+        app.add_url_rule('/', 'index', index)
+        app.add_url_rule('/more', 'more', more, methods=['GET', 'POST'])
+
+        c = app.test_client()
+        assert c.get('/').data == 'GET'
+        rv = c.post('/')
+        assert rv.status_code == 405
+        assert sorted(rv.allow) == ['GET', 'HEAD']
+        rv = c.head('/')
+        assert rv.status_code == 200
+        assert not rv.data # head truncates
+        assert c.post('/more').data == 'POST'
+        assert c.get('/more').data == 'GET'
+        rv = c.delete('/more')
+        assert rv.status_code == 405
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
+
     def test_session(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'
