@@ -41,7 +41,7 @@ web development.
    tutorial/index
    testing
    patterns/index
-   deploying
+   deploying/index
    becomingbig
    design
 
