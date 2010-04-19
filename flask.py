@@ -508,6 +508,8 @@ class Flask(object):
         :param view_func: the function to call when servicing a request to the provided endpoint
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object
+
+        .. versionadded:: 0.2
         """
         options['endpoint'] = endpoint
         options.setdefault('methods', ('GET',))
@@ -581,8 +583,7 @@ class Flask(object):
                         :class:`~werkzeug.routing.Rule` object.
         """
         def decorator(f):
-            self.add_url_rule(rule, f.__name__, **options)
-            self.view_functions[f.__name__] = f
+            self.add_url_rule(rule, f.__name__, f, **options)
             return f
         return decorator
 
