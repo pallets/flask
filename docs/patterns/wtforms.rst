@@ -95,7 +95,7 @@ takes advantage of the `_formhelpers.html` template:
 .. sourcecode:: html+jinja
 
     {% from "_formhelpers.html" import render_field %}
-    <form method="POST" action="/register">
+    <form method="post" action="/register">
       <dl>
         {{ render_field(form.username) }}
         {{ render_field(form.email) }}
