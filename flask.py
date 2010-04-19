@@ -261,7 +261,7 @@ def _get_package_path(name):
 
 def _tojson_filter(string, *args, **kwargs):
     """Calls dumps for the template engine, escaping Slashes properly."""
-    return json.dumps(string, *args, **kwargs).replace('/', '\\/')
+    return json.dumps(string, *args, **kwargs).replace('</', '<\\/')
 
 
 class Flask(object):
