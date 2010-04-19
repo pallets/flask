@@ -69,7 +69,11 @@ within::
 Now you only have to activate it, whenever you work with it.  On OS X and
 Linux do the following::
 
-    $ source env/bin/activate
+    $ . env/bin/activate
+
+(Note the whitespace between the dot and the script name.  This means
+execute this file in context of the shell.  If the dot does not work for
+whatever reason in your shell, try substituting it with ``source``)
 
 If you are a Windows user, the following command is for you::
 
@@ -111,7 +115,7 @@ Get the git checkout in a new virtualenv and run in develop mode::
     Initialized empty Git repository in ~/dev/flask/.git/
     $ cd flask
     $ virtualenv env
-    $ source env/bin/activate
+    $ . env/bin/activate
     New python executable in env/bin/python
     Installing setuptools............done.
     $ python setup.py develop
@@ -127,7 +131,7 @@ To just get the development version without git, do this instead::
     $ mkdir flask
     $ cd flask
     $ virtualenv env
-    $ source env/bin/activate
+    $ . env/bin/activate
     New python executable in env/bin/python
     Installing setuptools............done.
     $ easy_install Flask==dev
