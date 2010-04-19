@@ -1,4 +1,4 @@
-AJAX With jQuery
+AJAX with jQuery
 ================
 
 `jQuery`_ is a small JavaScript library commonly used to simplify working
