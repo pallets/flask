@@ -106,7 +106,7 @@ Incoming Request Data
       `script_root` ``/myapplication``
       `url`         ``http://www.example.com/myapplication/page.html``
       `base_url`    ``http://www.example.com/myapplication/page.html?x=y``
-      `root_url`    ``http://www.example.com/myapplication/``
+      `url_root`    ``http://www.example.com/myapplication/``
       ============= ======================================================
 
    .. attribute:: is_xhr

@@ -63,7 +63,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             return flask.request.method
         def more():
             return flask.request.method
-        
+
         app.add_url_rule('/', 'index', index)
         app.add_url_rule('/more', 'more', more, methods=['GET', 'POST'])
 
@@ -180,6 +180,21 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             pass
         with app.test_request_context():
             assert flask.url_for('hello', name='test x') == '/hello/test%20x'
+
+    def test_custom_converters(self):
+        from werkzeug.routing import BaseConverter
+        class ListConverter(BaseConverter):
+            def to_python(self, value):
+                return value.split(',')
+            def to_url(self, value):
+                return ','.join(super(ListConverter, self).to_url(x) for x in value)
+        app = flask.Flask(__name__)
+        app.url_map.converters['list'] = ListConverter
+        @app.route('/<list:args>')
+        def index(args):
+            return '|'.join(args)
+        c = app.test_client()
+        assert c.get('/1,2,3').data == '1|2|3'
 
     def test_static_files(self):
         app = flask.Flask(__name__)

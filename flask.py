@@ -16,7 +16,7 @@ import sys
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
      LocalStack, LocalProxy, create_environ, SharedDataMiddleware, \
-     cached_property
+     ImmutableDict, cached_property
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException
 from werkzeug.contrib.securecookie import SecureCookie
@@ -306,7 +306,7 @@ class Flask(object):
     session_cookie_name = 'session'
 
     #: options that are passed directly to the Jinja2 environment
-    jinja_options = dict(
+    jinja_options = ImmutableDict(
         autoescape=True,
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
@@ -361,11 +361,26 @@ class Flask(object):
         #: decorator.
         self.template_context_processors = [_default_template_ctx_processor]
 
+        #: the :class:`~werkzeug.routing.Map` for this instance.  You can use
+        #: this to change the routing converters after the class was created
+        #: but before any routes are connected.  Example::
+        #:
+        #:    from werkzeug import BaseConverter
+        #:
+        #:    class ListConverter(BaseConverter):
+        #:        def to_python(self, value):
+        #:            return value.split(',')
+        #:        def to_url(self, values):
+        #:            return ','.join(BaseConverter.to_url(value)
+        #:                            for value in values)
+        #:
+        #:    app = Flask(__name__)
+        #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
         if self.static_path is not None:
-            self.url_map.add(Rule(self.static_path + '/<filename>',
-                                  build_only=True, endpoint='static'))
+            self.add_url_rule(self.static_path + '/<filename>',
+                              build_only=True, endpoint='static')
             if pkg_resources is not None:
                 target = (self.package_name, 'static')
             else:
