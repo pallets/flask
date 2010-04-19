@@ -56,12 +56,15 @@ Incoming Request Data
 
    .. attribute:: stream
 
-      If the incoming form data was not encoded with a known encoding (for
-      example it was transmitted as JSON) the data is stored unmodified in
-      this stream for consumption.  For example to read the incoming
-      request data as JSON, one can do the following::
+      If the incoming form data was not encoded with a known mimetype
+      the data is stored unmodified in this stream for consumption.  Most
+      of the time it is a better idea to use :attr:`data` which will give
+      you that data as a string.  The stream only returns the data once.
+      
+   .. attribute:: data
 
-          json_body = simplejson.load(request.stream)
+      Contains the incoming request data as string in case it came with
+      a mimetype Flask does not handle.
 
    .. attribute:: files
 
@@ -105,6 +108,20 @@ Incoming Request Data
       `base_url`    ``http://www.example.com/myapplication/page.html?x=y``
       `root_url`    ``http://www.example.com/myapplication/``
       ============= ======================================================
+
+   .. attribute:: is_xhr
+
+      `True` if the request was triggered via a JavaScript
+      `XMLHttpRequest`. This only works with libraries that support the
+      ``X-Requested-With`` header and set it to `XMLHttpRequest`.
+      Libraries that do that are prototype, jQuery and Mochikit and
+      probably some more.
+
+   .. attribute:: json
+
+      Contains the parsed body of the JSON request if the mimetype of
+      the incoming data was `application/json`.  This requires Python 2.6
+      or an installed version of simplejson.
 
 Response Objects
 ----------------
@@ -200,6 +217,38 @@ Message Flashing
 .. autofunction:: flash
 
 .. autofunction:: get_flashed_messages
+
+Returning JSON
+--------------
+
+.. autofunction:: jsonify
+
+.. data:: json
+
+    If JSON support is picked up, this will be the module that Flask is
+    using to parse and serialize JSON.  So instead of doing this yourself::
+
+        try:
+            import simplejson as json
+        except ImportError:
+            import json
+
+    You can instead just do this::
+
+        from flask import json
+
+    For usage examples, read the :mod:`json` documentation.
+
+    The :func:`~json.dumps` function of this json module is also available
+    as filter called ``|tojson`` in Jinja2.  Note that inside `script`
+    tags no escaping must take place, so make sure to disable escaping
+    with ``|safe`` if you intend to use it inside `script` tags:
+
+    .. sourcecode:: html+jinja
+
+        <script type=text/javascript>
+            doSomethingWith({{ user.username|tojson|safe }});
+        </script>
 
 Template Rendering
 ------------------

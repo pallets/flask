@@ -19,3 +19,4 @@ end of the request, the database connection is closed again.
    wtforms
    templateinheritance
    flashing
+   jquery

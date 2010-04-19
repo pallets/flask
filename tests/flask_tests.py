@@ -32,7 +32,7 @@ class ContextTestCase(unittest.TestCase):
             assert meh() == 'http://localhost/meh'
 
 
-class BasicFunctionality(unittest.TestCase):
+class BasicFunctionalityTestCase(unittest.TestCase):
 
     def test_request_dispatching(self):
         app = flask.Flask(__name__)
@@ -167,7 +167,35 @@ class BasicFunctionality(unittest.TestCase):
                 == '/static/index.html'
 
 
-class Templating(unittest.TestCase):
+class JSONTestCase(unittest.TestCase):
+
+    def test_jsonify(self):
+        d = dict(a=23, b=42, c=[1, 2, 3])
+        app = flask.Flask(__name__)
+        @app.route('/kw')
+        def return_kwargs():
+            return flask.jsonify(**d)
+        @app.route('/dict')
+        def return_dict():
+            return flask.jsonify(d)
+        c = app.test_client()
+        for url in '/kw', '/dict':
+            rv = c.get(url)
+            assert rv.mimetype == 'application/json'
+            assert flask.json.loads(rv.data) == d
+
+    def test_json_attr(self):
+        app = flask.Flask(__name__)
+        @app.route('/add', methods=['POST'])
+        def add():
+            return unicode(flask.request.json['a'] + flask.request.json['b'])
+        c = app.test_client()
+        rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
+                            content_type='application/json')
+        assert rv.data == '3'
+
+
+class TemplatingTestCase(unittest.TestCase):
 
     def test_context_processing(self):
         app = flask.Flask(__name__)
