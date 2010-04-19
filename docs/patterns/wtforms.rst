@@ -73,14 +73,12 @@ Here an example `_formhelpers.html` template with such a macro:
     {% macro render_field(field) %}
       <dt>{{ field.label }}
       <dd>{{ field(**kwargs)|safe }}
-     {% if field.errors %}
-       <ul class="errors">
-       {% for error in field.errors %}
-         <li>{{ error }}</li>
-       {% endfor %}
-       </ul>
-     {% endif %}
-     </dd>
+      {% if field.errors %}
+        <ul class="errors">
+        {% for error in field.errors %}<li>{{ error }}{% endfor %}
+        </ul>
+      {% endif %}
+      </dd>
     {% endmacro %}
 
 This macro accepts a couple of keyword arguments that are forwarded to
