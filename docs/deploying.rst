@@ -132,7 +132,7 @@ In Apache for example you can put a like like this into the config:
 
 .. sourcecode:: apache
 
-    ScriptName /app /path/to/the/application.cgi
+    ScriptAlias /app /path/to/the/application.cgi
 
 For more information consult the documentation of your webserver.
 
