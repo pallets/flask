@@ -188,3 +188,6 @@ You can also pass string of SQL statements to the
 
 >>> engine.execute('select * from users where id = :1', [1]).first()
 (1, u'admin', u'admin@localhost')
+
+For more information about SQLAlchemy, head over to the
+`website <http://sqlalchemy.org/>`_.

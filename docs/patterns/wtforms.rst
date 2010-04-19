@@ -107,3 +107,8 @@ takes advantage of the `_formhelpers.html` template:
       </dl>
       <p><input type=submit value=Register>
     </form>
+
+For more information about WTForms, head over to the `WTForms
+website`_.
+
+.. _WTForms website: http://wtforms.simplecodes.com/
