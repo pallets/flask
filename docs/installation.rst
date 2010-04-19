@@ -97,8 +97,8 @@ This is possible as well, but I would not recommend it.  Just run
 (Run it in an Admin shell on Windows systems and without the `sudo`).
 
 
-Leaving on the Edge
--------------------
+Living on the Edge
+------------------
 
 You want to work with the latest version of Flask, there are two ways: you
 can either let `easy_install` pull in the development version or tell it
