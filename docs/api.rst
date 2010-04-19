@@ -250,6 +250,8 @@ Returning JSON
             doSomethingWith({{ user.username|tojson|safe }});
         </script>
 
+    Note that the ``|tojson`` filter escapes forward slashes properly.
+
 Template Rendering
 ------------------
 

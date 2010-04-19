@@ -259,6 +259,11 @@ def _get_package_path(name):
         return os.getcwd()
 
 
+def _tojson_filter(string, *args, **kwargs):
+    """Calls dumps for the template engine, escaping Slashes properly."""
+    return json.dumps(string, *args, **kwargs).replace('/', '\\/')
+
+
 class Flask(object):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
@@ -379,7 +384,7 @@ class Flask(object):
             get_flashed_messages=get_flashed_messages
         )
         if json_available:
-            self.jinja_env.filters['tojson'] = json.dumps
+            self.jinja_env.filters['tojson'] = _tojson_filter
 
     def create_jinja_loader(self):
         """Creates the Jinja loader.  By default just a package loader for

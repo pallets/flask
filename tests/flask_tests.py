@@ -194,6 +194,12 @@ class JSONTestCase(unittest.TestCase):
                             content_type='application/json')
         assert rv.data == '3'
 
+    def test_template_escaping(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.render_template_string('{{ "</script>"|tojson|safe }}')
+            assert rv == '"<\\/script>"'
+
 
 class TemplatingTestCase(unittest.TestCase):
 
