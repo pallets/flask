@@ -96,14 +96,6 @@ This is possible as well, but I would not recommend it.  Just run
 
 (Run it in an Admin shell on Windows systems and without the `sudo`).
 
-
-The Drop into Place Version
----------------------------
-
-Now I really don't recommend this way on using Flask, but you can do that
-of course as well.  Download the `dip` zipfile from the website and unzip
-it next to your application.
-
 .. _windows-easy-install:
 
 `easy_install` on Windows

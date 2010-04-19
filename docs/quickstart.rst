@@ -368,7 +368,7 @@ u'Marked up \xbb HTML'
 
 .. [#] Unsure what that :class:`~flask.g` object is? It's something you
    can store information on yourself, check the documentation of that
-   object (:class:`~flask.g`) and the :ref:`database-pattern` for more
+   object (:class:`~flask.g`) and the :ref:`sqlite3` for more
    information.
 
 
