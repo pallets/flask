@@ -3,7 +3,7 @@ Form Validation with WTForms
 
 When you have to work with form data submitted by a browser view code
 quickly becomes very hard to read.  There are libraries out there designed
-to make this process easier to manage.  One of them is WTForms which we
+to make this process easier to manage.  One of them is `WTForms`_ which we
 will handle here.  If you find yourself in the situation of having many
 forms, you might want to give it a try.
 
@@ -109,4 +109,5 @@ takes advantage of the `_formhelpers.html` template:
 For more information about WTForms, head over to the `WTForms
 website`_.
 
+.. _WTForms: http://wtforms.simplecodes.com/
 .. _WTForms website: http://wtforms.simplecodes.com/
