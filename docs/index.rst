@@ -44,6 +44,7 @@ web development.
    deploying/index
    becomingbig
    design
+   license
 
 Reference
 ---------

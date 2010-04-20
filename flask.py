@@ -358,7 +358,7 @@ class Flask(object):
         self.before_request_funcs = []
 
         #: a list of functions that are called at the end of the
-        #: request.  Tha function is passed the current response
+        #: request.  The function is passed the current response
         #: object and modify it in place or replace it.
         #: To register a function here use the :meth:`after_request`
         #: decorator.
