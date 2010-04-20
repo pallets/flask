@@ -88,7 +88,7 @@ Now let's create a server side function that accepts two URL arguments of
 numbers which should be added together and then sent back to the
 application in a JSON object.  This is a really ridiculous example and is
 something you usually would do on the client side alone, but a simple
-example that shows how you would use jQuer and Flask nonetheless::
+example that shows how you would use jQuery and Flask nonetheless::
 
     from flask import Flask, jsonify, render_template, request
     app = Flask(__name__)
@@ -107,6 +107,13 @@ As you can see I also added an `index` method here that renders a
 template.  This template will load jQuery as above and have a little form
 we can add two numbers and a link to trigger the function on the server
 side.
+
+Note that we are using the :meth:`~werkzeug.MultiDict.get` method here
+which will never fail.  If the key is missing a default value (here ``0``)
+is returned.  Furthermore it can convert values to a specific type (like
+in our case `int`).  This is especially handy for code that that is
+triggered by a script (APIs, JavaScript etc.) because you don't need
+special error reporting in that case.
 
 The HTML
 --------

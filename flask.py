@@ -66,8 +66,8 @@ class Request(RequestBase):
         """If the mimetype is `application/json` this will contain the
         parsed JSON data.
         """
-        if not json_available:
-            raise AttributeError('simplejson not available')
+        if __debug__:
+            _assert_have_json()
         if self.mimetype == 'application/json':
             return json.loads(self.data)
 
@@ -210,6 +210,8 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.2
     """
+    if __debug__:
+        _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
@@ -251,6 +253,12 @@ def _default_template_ctx_processor():
     )
 
 
+def _assert_have_json():
+    """Helper function that fails if JSON is unavailable"""
+    if not json_available:
+        raise RuntimeError('simplejson not installed')
+
+
 def _get_package_path(name):
     """Returns the path to a package or cwd if that cannot be found."""
     try:
@@ -261,6 +269,8 @@ def _get_package_path(name):
 
 def _tojson_filter(string, *args, **kwargs):
     """Calls dumps for the template engine, escaping Slashes properly."""
+    if __debug__:
+        _assert_have_json()
     return json.dumps(string, *args, **kwargs).replace('</', '<\\/')
 
 
@@ -398,8 +408,7 @@ class Flask(object):
             url_for=url_for,
             get_flashed_messages=get_flashed_messages
         )
-        if json_available:
-            self.jinja_env.filters['tojson'] = _tojson_filter
+        self.jinja_env.filters['tojson'] = _tojson_filter
 
     def create_jinja_loader(self):
         """Creates the Jinja loader.  By default just a package loader for
@@ -498,7 +507,8 @@ class Flask(object):
 
     def add_url_rule(self, rule, endpoint, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
-        decorator. If a view_func is provided it will be registered with the endpoint.
+        decorator. If a view_func is provided it will be registered with the
+        endpoint.
 
         Basically this example::
 
@@ -511,20 +521,23 @@ class Flask(object):
             def index():
                 pass
             app.add_url_rule('/', 'index', index)
-            
-         If the view_func is not provided you will need to connect the endpoint to a 
-         view function like so:
+
+        If the view_func is not provided you will need to connect the endpoint
+        to a view function like so::
+
             app.view_functions['index'] = index
+
+        .. versionchanged:: 0.2
+           `view_func` parameter added
 
         :param rule: the URL rule as string
         :param endpoint: the endpoint for the registered URL rule.  Flask
                          itself assumes the name of the view function as
                          endpoint
-        :param view_func: the function to call when servicing a request to the provided endpoint
+        :param view_func: the function to call when servicing a request to the
+                          provided endpoint
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object
-
-        .. versionadded:: 0.2
         """
         options['endpoint'] = endpoint
         options.setdefault('methods', ('GET',))
