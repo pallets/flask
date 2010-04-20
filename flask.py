@@ -49,8 +49,7 @@ except (ImportError, AttributeError):
 
 # figure out if simplejson escapes slashes.  This behaviour was changed
 # from one version to another without reason.
-if json_available:
-    _json_escapes_slashes = '\\/' in json.dumps('/')
+_json_escapes_slashes = json_available and '\\/' in json.dumps('/')
 
 
 class Request(RequestBase):
@@ -273,14 +272,14 @@ def _get_package_path(name):
         return os.getcwd()
 
 
-def _tojson_filter(string, *args, **kwargs):
-    """Calls dumps for the template engine, escaping Slashes properly."""
-    if __debug__:
-        _assert_have_json()
-    rv = json.dumps(string, *args, **kwargs)
-    if not _json_escapes_slashes:
-        rv = rv.replace('/', '\\/')
-    return rv
+if not _json_escapes_slashes:
+    def _tojson_filter(string, *args, **kwargs):
+        """Calls dumps for the template engine, escaping slashes properly."""
+        if __debug__:
+            _assert_have_json()
+        return json.dumps(string, *args, **kwargs).replace('/', '\\/')
+else:
+    _tojson_filter = json.dumps
 
 
 class Flask(object):
