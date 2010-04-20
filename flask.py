@@ -56,10 +56,7 @@ class Request(RequestBase):
     :attr:`~flask.Flask.request_class` to your subclass.
     """
 
-    def __init__(self, environ):
-        RequestBase.__init__(self, environ)
-        self.endpoint = None
-        self.view_args = None
+    endpoint = view_args = None
 
     @cached_property
     def json(self):
@@ -170,7 +167,7 @@ def flash(message):
 
     :param message: the message to be flashed.
     """
-    session['_flashes'] = (session.get('_flashes', [])) + [message]
+    session['_flashes'] = session.get('_flashes', ()) + (message,)
 
 
 def get_flashed_messages():
@@ -180,8 +177,7 @@ def get_flashed_messages():
     """
     flashes = _request_ctx_stack.top.flashes
     if flashes is None:
-        _request_ctx_stack.top.flashes = flashes = \
-            session.pop('_flashes', [])
+        _request_ctx_stack.top.flashes = flashes = session.pop('_flashes', ())
     return flashes
 
 
