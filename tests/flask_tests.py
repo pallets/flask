@@ -10,9 +10,16 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
+import os
+import sys
 import flask
 import unittest
 import tempfile
+
+
+example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
+sys.path.append(os.path.join(example_path, 'flaskr'))
+sys.path.append(os.path.join(example_path, 'minitwit'))
 
 
 class ContextTestCase(unittest.TestCase):
@@ -277,5 +284,19 @@ class TemplatingTestCase(unittest.TestCase):
             assert macro('World') == 'Hello World!'
 
 
+def suite():
+    from minitwit_tests import MiniTwitTestCase
+    from flaskr_tests import FlaskrTestCase
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(ContextTestCase))
+    suite.addTest(unittest.makeSuite(BasicFunctionalityTestCase))
+    suite.addTest(unittest.makeSuite(TemplatingTestCase))
+    if flask.json_available:
+        suite.addTest(unittest.makeSuite(JSONTestCase))
+    suite.addTest(unittest.makeSuite(MiniTwitTestCase))
+    suite.addTest(unittest.makeSuite(FlaskrTestCase))
+    return suite
+
+
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(defaultTest='suite')
