@@ -42,25 +42,32 @@ In order to test that, we add a second module (
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db = tempfile.NamedTemporaryFile()
+            self.db_fd, flaskr.DATABASE = tempfile.mkstemp()
             self.app = flaskr.app.test_client()
-            flaskr.DATABASE = self.db.name
             flaskr.init_db()
+
+        def tearDown(self):
+            os.close(self.db_fd)
+            os.unlink(flaskr.DATABASE)
 
     if __name__ == '__main__':
         unittest.main()
 
-The code in the `setUp` function creates a new test client and initializes
-a new database.  That function is called before each individual test function.
-What the test client does is give us a simple interface to the
-application.  We can trigger test requests to the application and the
-client will also keep track of cookies for us.
+The code in the :meth:`~unittest.TestCase.setUp` method creates a new test
+client and initializes a new database.  That function is called before
+each individual test function.  To delete the database after the test, we
+close the file and remove it from the filesystem in the
+:meth:`~unittest.TestCase.tearDown` method.  What the test client does is
+give us a simple interface to the application.  We can trigger test
+requests to the application and the client will also keep track of cookies
+for us.
 
 Because SQLite3 is filesystem-based we can easily use the tempfile module
-to create a temporary database and initialize it.  Just make sure that you
-keep a reference to the :class:`~tempfile.NamedTemporaryFile` around (we
-store it as `self.db` because of that) so that the garbage collector does
-not remove that object and with it the database from the filesystem.
+to create a temporary database and initialize it.  The
+:func:`~tempfile.mkstemp` function does two things for us: it returns a
+low-level file handle and a random file name, the latter we use as
+database name.  We just have to keep the `db_fd` around so that we can use
+the :func:`os.close` function to close the function.
 
 If we now run that testsuite, we should see the following output::
 
@@ -86,10 +93,13 @@ this::
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db = tempfile.NamedTemporaryFile()
+            self.db_fd, flaskr.DATABASE = tempfile.mkstemp()
             self.app = flaskr.app.test_client()
-            flaskr.DATABASE = self.db.name
             flaskr.init_db()
+
+        def tearDown(self):
+            os.close(self.db_fd)
+            os.unlink(flaskr.DATABASE)
 
         def test_empty_db(self):
             rv = self.app.get('/')

@@ -8,6 +8,7 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import os
 import flaskr
 import unittest
 import tempfile
@@ -17,10 +18,14 @@ class FlaskrTestCase(unittest.TestCase):
 
     def setUp(self):
         """Before each test, set up a blank database"""
-        self.db = tempfile.NamedTemporaryFile()
+        self.db_fd, flaskr.DATABASE = tempfile.mkstemp()
         self.app = flaskr.app.test_client()
-        flaskr.DATABASE = self.db.name
         flaskr.init_db()
+
+    def tearDown(self):
+        """Get rid of the database again after each test."""
+        os.close(self.db_fd)
+        os.unlink(flaskr.DATABASE)
 
     def login(self, username, password):
         return self.app.post('/login', data=dict(
