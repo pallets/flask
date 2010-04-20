@@ -117,6 +117,18 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             expect_exception(flask.session.__setitem__, 'foo', 42)
             expect_exception(flask.session.pop, 'foo')
 
+    def test_flashes(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'testkey'
+
+        with app.test_request_context():
+            assert not flask.session.modified
+            flask.flash('Zap')
+            flask.session.modified = False
+            flask.flash('Zip')
+            assert flask.session.modified
+            assert list(flask.get_flashed_messages()) == ['Zap', 'Zip']
+
     def test_request_processing(self):
         app = flask.Flask(__name__)
         evts = []
