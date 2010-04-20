@@ -186,7 +186,7 @@ different values for each request.  In a nutshell: it does the right
 thing, like it does for :class:`request` and :class:`session`.
 
 .. data:: g
-   
+
    Just store on this whatever you want.  For example a database
    connection or the user that is currently logged in.
 

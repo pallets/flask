@@ -125,7 +125,8 @@ def user_timeline(username):
     if g.user:
         followed = query_db('''select 1 from follower where
             follower.who_id = ? and follower.whom_id = ?''',
-            [session['user_id'], profile_user['user_id']], one=True) is not None
+            [session['user_id'], profile_user['user_id']],
+            one=True) is not None
     return render_template('timeline.html', messages=query_db('''
             select message.*, user.* from message, user where
             user.user_id = message.author_id and user.user_id = ?
@@ -230,7 +231,7 @@ def register():
 
 @app.route('/logout')
 def logout():
-    """Logs the user out"""
+    """Logs the user out."""
     flash('You were logged out')
     session.pop('user_id', None)
     return redirect(url_for('public_timeline'))

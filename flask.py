@@ -10,7 +10,6 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
-import re
 import os
 import sys
 
@@ -261,7 +260,7 @@ def _default_template_ctx_processor():
 
 
 def _assert_have_json():
-    """Helper function that fails if JSON is unavailable"""
+    """Helper function that fails if JSON is unavailable."""
     if not json_available:
         raise RuntimeError('simplejson not installed')
 
@@ -517,7 +516,7 @@ class Flask(object):
 
     def add_url_rule(self, rule, endpoint, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
-        decorator. If a view_func is provided it will be registered with the
+        decorator.  If a view_func is provided it will be registered with the
         endpoint.
 
         Basically this example::
@@ -544,7 +543,7 @@ class Flask(object):
         :param endpoint: the endpoint for the registered URL rule.  Flask
                          itself assumes the name of the view function as
                          endpoint
-        :param view_func: the function to call when servicing a request to the
+        :param view_func: the function to call when serving a request to the
                           provided endpoint
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object
@@ -798,7 +797,7 @@ class Flask(object):
         return self.request_context(create_environ(*args, **kwargs))
 
     def __call__(self, environ, start_response):
-        """Shortcut for :attr:`wsgi_app`"""
+        """Shortcut for :attr:`wsgi_app`."""
         return self.wsgi_app(environ, start_response)
 
 

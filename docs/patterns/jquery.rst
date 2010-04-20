@@ -111,7 +111,7 @@ side.
 Note that we are using the :meth:`~werkzeug.MultiDict.get` method here
 which will never fail.  If the key is missing a default value (here ``0``)
 is returned.  Furthermore it can convert values to a specific type (like
-in our case `int`).  This is especially handy for code that that is
+in our case `int`).  This is especially handy for code that is
 triggered by a script (APIs, JavaScript etc.) because you don't need
 special error reporting in that case.
 
