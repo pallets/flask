@@ -270,6 +270,7 @@ def _get_package_path(name):
 # figure out if simplejson escapes slashes.  This behaviour was changed
 # from one version to another without reason.
 if not json_available or '\\/' not in json.dumps('/'):
+
     def _tojson_filter(*args, **kwargs):
         if __debug__:
             _assert_have_json()

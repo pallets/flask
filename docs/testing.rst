@@ -68,7 +68,7 @@ to create a temporary database and initialize it.  The
 :func:`~tempfile.mkstemp` function does two things for us: it returns a
 low-level file handle and a random file name, the latter we use as
 database name.  We just have to keep the `db_fd` around so that we can use
-the :func:`os.close` function to close the function.
+the :func:`os.close` function to close the file.
 
 If we now run that testsuite, we should see the following output::
 
@@ -76,7 +76,7 @@ If we now run that testsuite, we should see the following output::
 
     ----------------------------------------------------------------------
     Ran 0 tests in 0.000s
-    
+
     OK
 
 Even though it did not run any tests, we already know that our flaskr
