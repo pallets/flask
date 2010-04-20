@@ -1,0 +1,20 @@
+Flask Changelog
+===============
+
+Here you can see the full list of changes between each Flask release.
+
+Version 0.2
+-----------
+
+[unreleased; current development version]
+
+- various bugfixes
+- integrated JSON support
+- added :func:`~flask.get_template_attribute` helper function.
+- :meth:`~flask.Flask.add_url_rule` can now also register a
+  view function.
+
+Version 0.1
+-----------
+
+First public preview release.

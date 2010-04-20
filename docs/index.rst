@@ -25,8 +25,8 @@ following links:
 .. _Jinja2: http://jinja.pocoo.org/2/
 .. _Werkzeug: http://werkzeug.pocoo.org/
 
-Textual Documentation
----------------------
+User's Guide
+------------
 
 This part of the documentation is written text and should give you an idea
 how to work with Flask.  It's a series of step-by-step instructions for
@@ -43,11 +43,21 @@ web development.
    patterns/index
    deploying/index
    becomingbig
+
+Additional Notes
+----------------
+
+Design notes, legal information and changelog are here for the interested:
+
+.. toctree::
+   :maxdepth: 2
+
    design
    license
+   changelog
 
-Reference
----------
+API Reference
+-------------
 
 If you are looking for information on a specific function, class or
 method, this part of the documentation is for you:
