@@ -2,7 +2,7 @@ Design Decisions in Flask
 =========================
 
 If you are curious why Flask does certain things the way it does and not
-different, this section is for you.  This should give you an idea about
+differently, this section is for you.  This should give you an idea about
 some of the design decisions that may appear arbitrary and surprising at
 first, especially in direct comparison with other frameworks.
 
@@ -44,10 +44,10 @@ something it can be very helpful to create a minimal application to test
 specific behavior.  When the application object is deleted everything it
 allocated will be freed again.
 
-Another thing that becomes possible with having an explicit object laying
+Another thing that becomes possible when you have an explicit object laying
 around in your code is that you can subclass the base class
 (:class:`~flask.Flask`) to alter specific behaviour.  This would not be
-possible without hacks if the object was created ahead of time for you
+possible without hacks if the object were created ahead of time for you
 based on a class that is not exposed to you.
 
 But there is another very important reason why Flask depends on an
@@ -83,23 +83,23 @@ that limitation that Jinja2 is *always* configured will probably go away,
 the decision to bundle one template engine and use that will not.
 
 Template engines are like programming languages and each of those engines
-has a certain understandment about how things work.  On the surface they
+has a certain understanding about how things work.  On the surface they
 all work the same: you tell the engine to evaluate a template with a set
 of variables and take the return value as string.
 
 But that's about where similarities end.  Jinja2 for example has an
 extensive filter system, a certain way to do template inheritance, support
 for reusable blocks (macros) that can be used from inside templates and
-also from Python code, is using unicode for all operations, supports
+also from Python code, uses unicode for all operations, supports
 iterative template rendering, configurable syntax and more.  On the other
 hand an engine like Genshi is based on XML stream evaluation, template
 inheritance by taking the availability of XPath into account and more.
 Mako on the other hand treats templates similar to Python modules.
 
-When it comes to bridge a template engine with an application or framework
-there is more than just rendering templates.  Flask uses Jinja2's
-extensive autoescaping support for instance.  Also it provides ways to
-access macros from Jinja2 templates.
+When it comes to connecting a template engine with an application or 
+framework there is more than just rendering templates.  For instance,
+Flask uses Jinja2's extensive autoescaping support.  Also it provides 
+ways to access macros from Jinja2 templates.
 
 A template abstraction layer that would not take the unique features of
 the template engines away is a science on its own and a too large
@@ -115,9 +115,9 @@ over to the Ruby side of web development there we have a protocol very
 similar to WSGI.  Just that it's called Rack there, but besides that it
 looks very much like a WSGI rendition for Ruby.  But nearly all
 applications in Ruby land do not work with Rack directly, but on top of a
-lirbary with the same name.  This Rack library has two equivalents in
+library with the same name.  This Rack library has two equivalents in
 Python: WebOb (formerly Paste) and Werkzeug.  Paste is still around but
-from my understanding it's sortof deprecated in favour of WebOb.  The
+from my understanding it's sort of deprecated in favour of WebOb.  The
 development of WebOb and Werkzeug started side by side with similar ideas
 in mind: be a good implementation of WSGI for other applications to take
 advantage.

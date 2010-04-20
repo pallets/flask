@@ -8,14 +8,14 @@ Testing Flask Applications
 Not sure where that is coming from, and it's not entirely correct, but
 also not that far from the truth.  Untested applications make it hard to
 improve existing code and developers of untested applications tend to
-become pretty paranoid.  If an application however has automated tests you
-can savely change things and you will instantly know if your change broke
+become pretty paranoid.  If an application however has automated tests, you
+can safely change things and you will instantly know if your change broke
 something.
 
 Flask gives you a couple of ways to test applications.  It mainly does
 that by exposing the Werkzeug test :class:`~werkzeug.Client` class to your
 code and handling the context locals for you.  You can then use that with
-your favourite testing solution.  In this documentation we will us the
+your favourite testing solution.  In this documentation we will use the
 :mod:`unittest` package that comes preinstalled with each Python
 installation.
 
@@ -50,13 +50,13 @@ In order to test that, we add a second module (
     if __name__ == '__main__':
         unittest.main()
 
-The code in the `setUp` function creates a new test client and initialize
+The code in the `setUp` function creates a new test client and initializes
 a new database.  That function is called before each individual test function.
-What the test client does for us is giving us a simple interface to the
+What the test client does is give us a simple interface to the
 application.  We can trigger test requests to the application and the
 client will also keep track of cookies for us.
 
-Because SQLite3 is filesystem based we can easily use the tempfile module
+Because SQLite3 is filesystem-based we can easily use the tempfile module
 to create a temporary database and initialize it.  Just make sure that you
 keep a reference to the :class:`~tempfile.NamedTemporaryFile` around (we
 store it as `self.db` because of that) so that the garbage collector does
@@ -112,20 +112,20 @@ Run it again and you should see one passing test::
 
     OK
 
-Of course you can submit forms with the test client as well which we will
+Of course you can submit forms with the test client as well, which we will
 use now to log our user in.
 
 Logging In and Out
 ------------------
 
 The majority of the functionality of our application is only available for
-the administration user.  So we need a way to log our test client into the
+the administration user.  So we need a way to log our test client in to the
 application and out of it again.  For that we fire some requests to the
 login and logout pages with the required form data (username and
 password).  Because the login and logout pages redirect, we tell the
 client to `follow_redirects`.
 
-Add the following two methods do your `FlaskrTestCase` class::
+Add the following two methods to your `FlaskrTestCase` class::
 
    def login(self, username, password):
        return self.app.post('/login', data=dict(
@@ -137,7 +137,7 @@ Add the following two methods do your `FlaskrTestCase` class::
        return self.app.get('/logout', follow_redirects=True)
 
 Now we can easily test if logging in and out works and that it fails with
-invalid credentials.  Add this as new test to the class::
+invalid credentials.  Add this new test to the class::
 
    def test_login_logout(self):
        rv = self.login(flaskr.USERNAME, flaskr.PASSWORD)
@@ -165,7 +165,7 @@ like this::
         assert '&lt;Hello&gt' in rv.data
         assert '<strong>HTML</strong> allowed here' in rv.data
 
-Here we also check that HTML is allowed in the text but not in the title
+Here we check that HTML is allowed in the text but not in the title,
 which is the intended behavior.
 
 Running that should now give us three passing tests::

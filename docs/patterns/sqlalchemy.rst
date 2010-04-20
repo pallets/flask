@@ -6,7 +6,7 @@ SQLAlchemy in Flask
 Many people prefer `SQLAlchemy`_ for database access.  In this case it's
 encouraged to use a package instead of a module for your flask application
 and drop the models into a separate module (:ref:`larger-applications`).
-Although that is not necessary but makes a lot of sense.
+While that is not necessary, it makes a lot of sense.
 
 There are three very common ways to use SQLAlchemy.  I will outline each
 of them here:
@@ -52,7 +52,7 @@ automatically remove database sessions at the end of the request for you::
         db_session.remove()
         return response
 
-Here an example model (put that into `models.py` for instance)::
+Here is an example model (put this into `models.py`, e.g.)::
 
     from sqlalchemy import Column, Integer, String
     from yourapplication.database import Base
@@ -70,7 +70,7 @@ Here an example model (put that into `models.py` for instance)::
         def __repr__(self):
             return '<User %r>' % (self.name, self.email)
 
-You can insert entries into the database like this then:
+You can insert entries into the database like this:
 
 >>> from yourapplication.database import db_session
 >>> from yourapplication.models import User
@@ -95,11 +95,11 @@ Manual Object Relational Mapping
 Manual object relational mapping has a few upsides and a few downsides
 versus the declarative approach from above.  The main difference is that
 you define tables and classes separately and map them together.  It's more
-flexible but a little more to type.  In general it works similar to the
+flexible but a little more to type.  In general it works like the
 declarative approach, so make sure to also split up your application into
 multiple modules in a package.
 
-Here the example `database.py` module for your application::
+Here is an example `database.py` module for your application::
 
     from sqlalchemy import create_engine, MetaData
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -112,7 +112,7 @@ Here the example `database.py` module for your application::
     def init_db():
         metadata.create_all(bind=engine)
 
-As for the declarative approach you need to close down the session after
+As for the declarative approach you need to close the session after
 each request.  Put this into your application module::
 
     from yourapplication.database import db_session
@@ -122,7 +122,7 @@ each request.  Put this into your application module::
         db_session.remove()
         return response
 
-Here an example table and model (put that into `models.py` for instance)::
+Here is an example table and model (put this into `models.py`)::
 
     from sqlalchemy import Table, Column, Integer, String
     from sqlalchemy.orm import mapper
@@ -172,7 +172,7 @@ connection first so that we can use a transaction:
 
 SQLAlchemy will automatically commit for us.
 
-To query your database, yu use the engine directly or use a connection:
+To query your database, you use the engine directly or use a connection:
 
 >>> users.select(users.c.id == 1).execute().first()
 (1, u'admin', u'admin@localhost')
@@ -183,7 +183,7 @@ These results are also dict-like tuples:
 >>> r['name']
 u'admin'
 
-You can also pass string of SQL statements to the
+You can also pass strings of SQL statements to the
 :meth:`~sqlalchemy.engine.base.Connection.execute` method:
 
 >>> engine.execute('select * from users where id = :1', [1]).first()

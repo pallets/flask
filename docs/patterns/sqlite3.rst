@@ -3,12 +3,12 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can implement opening of dabase connections at the beginning
+In Flask you can implement opening of database connections at the beginning
 of the request and closing at the end with the
 :meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`
 decorators in combination with the special :class:`~flask.g` object.
 
-So here a simple example how you can use SQLite 3 with Flask::
+So here a simple example of how you can use SQLite 3 with Flask::
 
     import sqlite3
     from flask import g
@@ -70,7 +70,7 @@ Initial Schemas
 
 Relational databases need schemas, so applications often ship a
 `schema.sql` file that creates the database.  It's a good idea to provide
-a function that creates the database bases on that schema.  This function
+a function that creates the database based on that schema.  This function
 can do that for you::
 
     from contextlib import closing

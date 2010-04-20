@@ -9,10 +9,10 @@ way and why there are multiple ways.
 
 Flask depends on two external libraries: `Werkzeug
 <http://werkzeug.pocoo.org/>`_ and `Jinja2 <http://jinja.pocoo.org/2/>`_.
-The first on is responsible for interfacing WSGI the latter to render
+The first one is responsible for interfacing WSGI the latter for rendering
 templates.  Now you are maybe asking, what is WSGI?  WSGI is a standard
 in Python that is basically responsible for ensuring that your application
-is behaving in a specific way that you can run it on different
+is behaving in a specific way so that you can run it on different
 environments (for example on a local development server, on an Apache2, on
 lighttpd, on Google's App Engine or whatever you have in mind).
 
@@ -26,10 +26,10 @@ Virtualenv is what you want to use during development and in production if
 you have shell access.  So first: what does virtualenv do?  If you are
 like me and you like Python, chances are you want to use it for another
 project as well.  Now the more projects you have, the more likely it is
-that you will be working with different versions of Python itself or a
-library involved.  Because let's face it: quite often libraries break
-backwards compatibility and it's unlikely that your application will
-not have any dependencies, that just won't happen.  So virtualenv for the
+that you will be working with different versions of Python itself or at
+least an individual library.  Because let's face it: quite often libraries 
+break backwards compatibility and it's unlikely that your application will
+not have any dependencies, that just won't happen.  So virtualenv to the
 rescue!
 
 It basically makes it possible to have multiple side-by-side
@@ -47,7 +47,7 @@ or even better::
 
     $ sudo pip install virtualenv
 
-Changes are you have virtualenv installed on your system then.  Maybe it's
+Chances are you have virtualenv installed on your system then.  Maybe it's
 even in your package manager (on ubuntu try ``sudo apt-get install
 python-virtualenv``).
 
@@ -152,7 +152,7 @@ Once you have done that it's important to add the `easy_install` command
 and other Python scripts to the path.  To do that you have to add the
 Python installation's Script folder to the `PATH` variable.
 
-To do that, click right on your "Computer" desktop icon and click
+To do that, right-click on your "Computer" desktop icon and click
 "Properties".  On Windows Vista and Windows 7 then click on "Advanced System
 settings", on Windows XP click on the "Advanced" tab instead.  Then click
 on the "Environment variables" button and double click on the "Path"
@@ -165,7 +165,7 @@ the following value::
 
     ;C:\Python26\Scripts
 
-Then you are done.  To check if it worked, open the cmd and execute
+Then you are done.  To check that it worked, open the cmd and execute
 "easy_install".  If you have UAC enabled it should prompt you for admin
 privileges.
 

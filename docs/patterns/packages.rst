@@ -48,12 +48,12 @@ What did we gain from this?  Now we can restructure the application a bit
 into multiple modules.  The only thing you have to remember is the
 following quick checklist:
 
-1. the `Flask` application object creation have to be in the
+1. the `Flask` application object creation has to be in the
    `__init__.py` file.  That way each module can import it safely and the
-   `__name__` variable will resole to the correct package.
+   `__name__` variable will resolve to the correct package.
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
    decorator on top) have to be imported when in the `__init__.py` file.
-   Not the objects itself, but the module it is in.  Do the importing at
+   Not the object itself, but the module it is in.  Do the importing at
    the *bottom* of the file.
 
 Here an example `__init__.py`::
