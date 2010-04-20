@@ -47,11 +47,6 @@ except (ImportError, AttributeError):
     pkg_resources = None
 
 
-# figure out if simplejson escapes slashes.  This behaviour was changed
-# from one version to another without reason.
-_json_escapes_slashes = json_available and '\\/' in json.dumps('/')
-
-
 class Request(RequestBase):
     """The request object used by default in flask.  Remembers the
     matched endpoint and view arguments.
@@ -272,12 +267,13 @@ def _get_package_path(name):
         return os.getcwd()
 
 
-if not _json_escapes_slashes:
-    def _tojson_filter(string, *args, **kwargs):
-        """Calls dumps for the template engine, escaping slashes properly."""
+# figure out if simplejson escapes slashes.  This behaviour was changed
+# from one version to another without reason.
+if not json_available or '\\/' not in json.dumps('/'):
+    def _tojson_filter(*args, **kwargs):
         if __debug__:
             _assert_have_json()
-        return json.dumps(string, *args, **kwargs).replace('/', '\\/')
+        return json.dumps(*args, **kwargs).replace('/', '\\/')
 else:
     _tojson_filter = json.dumps
 
