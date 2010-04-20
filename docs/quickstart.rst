@@ -30,9 +30,9 @@ because this would conflict with Flask itself.
 ::
 
     $ python hello.py
-     * Running on http://localhost:5000/
+     * Running on http://127.0.0.1:5000/
 
-Head over to `http://localhost:5000/ <http://localhost:5000/>`_, you should
+Head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, you should
 see your hello world greeting.
 
 So what did that code do?
@@ -53,19 +53,6 @@ So what did that code do?
    the Python interpreter and not used as imported module.
 
 To stop the server, hit control-C.
-
-.. admonition:: Troubleshooting
-
-   The browser is unable to access the server?  Sometimes this is
-   unfortunately caused by broken IPv6 support in your operating system,
-   browser or a combination.  For example on Snow Leopard Google Chrome is
-   known to exhibit this behaviour.
-
-   If the browser does not load up the page, you can change the `app.run`
-   call to force IPv4 usage::
-
-      if __name__ == '__main__':
-          app.run(host='127.0.0.1')
 
 
 Debug Mode

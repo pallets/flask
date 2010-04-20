@@ -434,7 +434,7 @@ class Flask(object):
         for func in self.template_context_processors:
             context.update(func())
 
-    def run(self, host='localhost', port=5000, **options):
+    def run(self, host='127.0.0.1', port=5000, **options):
         """Runs the application on a local development server.  If the
         :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
