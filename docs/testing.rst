@@ -35,8 +35,9 @@ The Testing Skeleton
 In order to test that, we add a second module (
 `flaskr_tests.py`) and create a unittest skeleton there::
 
-    import unittest
+    import os
     import flaskr
+    import unittest
     import tempfile
 
     class FlaskrTestCase(unittest.TestCase):
