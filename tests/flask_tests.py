@@ -245,6 +245,8 @@ class JSONTestCase(unittest.TestCase):
         with app.test_request_context():
             rv = flask.render_template_string('{{ "</script>"|tojson|safe }}')
             assert rv == '"<\\/script>"'
+            rv = flask.render_template_string('{{ "<\0/script>"|tojson|safe }}')
+            assert rv == '"<\\u0000\\/script>"'
 
 
 class TemplatingTestCase(unittest.TestCase):

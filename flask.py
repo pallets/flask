@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
+import re
 import os
 import sys
 
@@ -45,6 +46,12 @@ try:
     pkg_resources.resource_stream
 except (ImportError, AttributeError):
     pkg_resources = None
+
+
+# figure out if simplejson escapes slashes.  This behaviour was changed
+# from one version to another without reason.
+if json_available:
+    _json_escapes_slashes = '\\/' in json.dumps('/')
 
 
 class Request(RequestBase):
@@ -271,7 +278,10 @@ def _tojson_filter(string, *args, **kwargs):
     """Calls dumps for the template engine, escaping Slashes properly."""
     if __debug__:
         _assert_have_json()
-    return json.dumps(string, *args, **kwargs).replace('</', '<\\/')
+    rv = json.dumps(string, *args, **kwargs)
+    if not _json_escapes_slashes:
+        rv = rv.replace('/', '\\/')
+    return rv
 
 
 class Flask(object):
