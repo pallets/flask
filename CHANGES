@@ -13,6 +13,7 @@ Version 0.2
 - added :func:`~flask.get_template_attribute` helper function.
 - :meth:`~flask.Flask.add_url_rule` can now also register a
   view function.
+- server listens on 127.0.0.1 by default now to fix issues with chrome.
 
 Version 0.1
 -----------
