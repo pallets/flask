@@ -167,7 +167,7 @@ def flash(message):
 
     :param message: the message to be flashed.
     """
-    session['_flashes'] = session.get('_flashes', ()) + (message,)
+    session.setdefault('_flashes', []).append(message)
 
 
 def get_flashed_messages():
@@ -177,7 +177,7 @@ def get_flashed_messages():
     """
     flashes = _request_ctx_stack.top.flashes
     if flashes is None:
-        _request_ctx_stack.top.flashes = flashes = session.pop('_flashes', ())
+        _request_ctx_stack.top.flashes = flashes = session.pop('_flashes', [])
     return flashes
 
 
