@@ -14,7 +14,7 @@
     <a href="{{ url_for('mailinglist_index') }}">list information</a>
     {% endif %}
     {% if request.endpoint != 'mailinglist_archive' %}//
-    <a href="{{ url_for('mailinglist_archive') }}">go to archive</a>
+    <a href="{{ url_for('mailinglist_archive') }}">go to the archive</a>
     {% endif %}
   </div>
   {% block mailbody %}{% endblock %}
