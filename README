@@ -29,3 +29,8 @@
       Go to http://flask.pocoo.org/ for a prebuilt version of
       the current documentation.  Otherwise build them yourself
       from the sphinx sources in the docs folder.
+
+    ~ Where can I get help?
+
+      Either use the #pocoo IRC channel on irc.freenode.net or
+      ask on the mailinglist: http://flask.pocoo.org/mailinglist/
