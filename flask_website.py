@@ -81,7 +81,7 @@ def mailinglist_index():
 
 
 @app.route('/mailinglist/archive/', defaults={'page': 1})
-@app.route('/mailinglist/archive/page/<int:page>')
+@app.route('/mailinglist/archive/page/<int:page>/')
 def mailinglist_archive(page):
     all_threads = Thread.get_list()
     offset = (page - 1) * THREADS_PER_PAGE
@@ -93,7 +93,7 @@ def mailinglist_archive(page):
                            page=page, threads=threads)
 
 
-@app.route('/mailinglist/archives/<int:year>/<int:month>/<int:day>/<slug>')
+@app.route('/mailinglist/archives/<int:year>/<int:month>/<int:day>/<slug>/')
 def mailinglist_show_thread(year, month, day, slug):
     thread = Thread.get(year, month, day, slug)
     if thread is None:
