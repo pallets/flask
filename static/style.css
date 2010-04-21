@@ -21,9 +21,10 @@ blockquote { margin: 0; font-style: italic; color: #444; }
 .pagination         { text-align: center; font-size: 15px; margin: 20px 0 0 0; }
 .disabled           { color: #888; }
 .archive .meta      { font-size: 0.9em; display: block; margin: 0 0 0.5em 1em; }
-.mailtree           { border-top: 1px solid black; padding: 5px 10px 0 10px;
+.mailtree           { border-top: 1px solid black; padding: 5px 10px 5px 10px;
                       border-bottom: 1px solid black; font-size: 14px; }
-.mailtree ul        { margin: 5px 0 5px 15px; }
+.mailtree ul        { margin: 0 0 0 15px; }
+.mailtree li        { line-height: 1.5; }
 .mailtree li:before { display: none; }
 .mailtree .selected:before { content: "\00BB \0020"; color: #888;
                              position: absolute; margin-left: -10px; }
