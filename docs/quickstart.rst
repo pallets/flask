@@ -285,7 +285,7 @@ the application secure.  Because of that Flask configures the `Jinja2
 To render a template you can use the :func:`~flask.render_template`
 method.  All you have to do is to provide the name of the template and the
 variables you want to pass to the template engine as keyword arguments.
-Here a simple example of how to render a template::
+Here's a simple example of how to render a template::
 
     from flask import render_template
 
