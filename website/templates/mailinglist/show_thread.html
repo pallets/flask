@@ -1,0 +1,34 @@
+{% extends "mailinglist/layout.html" %}
+{% block title %}{{ thread.title }}{% endblock %}
+{% block head %}
+  {{ super() }}
+  <script type=text/javascript src=/static/mailinglist.js></script>
+{% endblock %}
+{% block mailbody %}
+  <h2>{{ thread.title }}</h2>
+
+  <ul class=mailtree>
+  {% for mail in [thread.root] recursive %}
+    <li><div class=link id="link-{{ mail.id }}"><a href="#{{
+      mail.id }}">{{ mail.subject }}</a> by {{
+      mail.author_name or mail.author_email }}</div>
+    {% if mail.children %}<ul>{{ loop(mail.children) }}</ul>{% endif %}
+  {% endfor %}
+  </ul>
+
+  {% for mail in [thread.root] recursive %}
+    <div class=mail id="{{ mail.id }}">
+      <h3>{{ mail.subject }}</h3>
+      <dl>
+        <dt>From:
+        <dd class=from>{{ mail.author_name or mail.author_email }}
+        <dt>Date:
+        <dd>{{ mail.date.strftime('%Y-%m-%d @ %H:%M') }}
+      </dl>
+      <pre>{{ mail.rendered_text }}</pre>
+      {% if mail.children %}
+        <div class=children>{{ loop(mail.children) }}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endblock %}

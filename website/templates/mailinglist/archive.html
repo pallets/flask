@@ -1,0 +1,27 @@
+{% extends "mailinglist/layout.html" %}
+{% block title %}Mailinglist Archive{% endblock %}
+{% block mailbody %}
+  <h2>Mailinglist Archive</h2>
+  <ul class=archive>
+  {% for thread in threads %}
+    <li><a href="{{ thread.url }}">{{ thread.title }}</a>
+      <span class=meta>
+        by {{ thread.author_name or thread.author_email }}
+        on {{ thread.date.strftime('%Y-%m-%d @ %H:%M') }}
+        ({{ thread.reply_count }} repl{{ thread.reply_count == 1 and 'y' or 'ies' }})</span>
+  {% endfor %}
+  </ul>
+  <div class=pagination>
+    {% if page > 1 %}
+      <a href="{{ url_for('mailinglist_archive', page=page - 1) }}">&laquo; Previous</a>
+    {% else %}
+      <span class=disabled>&laquo; Previous</span>
+    {% endif %}
+    | <strong>{{ page }}</strong> |
+    {% if page < page_count %}
+      <a href="{{ url_for('mailinglist_archive', page=page + 1) }}">Next &raquo;</a>
+    {% else %}
+      <span class=disabled>Next &raquo;</span>
+    {% endif %}
+  </div>
+{% endblock %}

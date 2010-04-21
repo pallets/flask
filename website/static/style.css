@@ -1,0 +1,41 @@
+body       { font-family: 'Georgia', serif; font-size: 17px; color: #000; }
+a          { color: #004B6B; }
+a:hover    { color: #6D4100; }
+.box       { width: 540px; margin: 40px auto; }
+h1, h2, h3 { font-family: 'Garamond', 'Georgia', serif; font-weight: normal; }
+h2         { font-size: 28px; margin: 15px 0 5px 0; }
+h3         { font-size: 22px; margin: 15px 0 5px 0; }
+code,
+pre        { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
+           monospace; font-size: 15px; background: #eee; }
+pre        { padding: 7px 30px; margin: 15px -30px; line-height: 1.3; }
+.ig        { color: #888; }
+p          { line-height: 1.4; }
+ul         { margin: 15px 0 15px 0; padding: 0; list-style: none; }
+ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-left: -19px; }
+blockquote { margin: 0; font-style: italic; color: #444; }
+.footer    { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
+.backnav   { text-align: center; color: #444; font-style: italic; }
+
+/* mailinglist */
+.pagination         { text-align: center; font-size: 15px; margin: 20px 0 0 0; }
+.disabled           { color: #888; }
+.archive .meta      { font-size: 0.9em; display: block; margin: 0 0 0.5em 1em; }
+.mailtree           { border-top: 1px solid black; padding: 5px 10px 0 10px;
+                      border-bottom: 1px solid black; font-size: 14px; }
+.mailtree ul        { margin: 5px 0 5px 15px; }
+.mailtree li:before { display: none; }
+.mailtree .selected:before { content: "\00BB \0020"; color: #888;
+                             position: absolute; margin-left: -10px; }
+.mail               { margin: 15px 0; }
+.children .mail     { margin: 15px 0 15px 20px; }
+.dynamic-mail       { margin-left: 0!important; }
+.mail dl            { margin: 0; padding-bottom: 10px;
+                      border-bottom: 1px solid black; }
+.mail dl dt         { color: #888; width: 70px; float: left; height: 20px; }
+.mail dl dd         { height: 20px; width: 500px; }
+.mail dl dd.from    { text-decoration: underline; }
+.mail pre           { background: transparent; font-size: 13px;
+                      line-height: 1.15; }
+.mail .quote        { color: #004B6B; }
+.mail .sig          { color: #888; }

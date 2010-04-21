@@ -1,0 +1,20 @@
+{% extends "mailinglist/layout.html" %}
+{% block title %}Mailinglist{% endblock %}
+{% block mailbody %}
+  <p>
+    There is a mailinglist for Flask hosted on <a
+    href=http://librelist.com/>librelist</a> you can use for both user requests
+    and development discussions.
+
+  <p>
+    To subscribe, send a mail to <em>flask@librelist.com</em> and reply
+    to the confirmation mail. Make sure to check your Spam folder, just in
+    case. To unsubscribe again, send a mail to
+    <em>flask-unsubscribe@librelist.com</em> and reply to the
+    confirmation mail.
+
+  <p>
+    The <a href="{{ url_for('mailinglist_archive') }}">mailinglist archive</a>
+    is synched every hour. Go there to read up old discussions grouped by
+    thread. 
+{% endblock %}

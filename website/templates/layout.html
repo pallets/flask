@@ -1,0 +1,12 @@
+<!doctype html>
+{% block head %}
+<title>{% block title %}Welcome{% endblock %} | Flask (A Python Microframework)</title>
+<meta charset=utf-8>
+<link rel=stylesheet type=text/css href="/static/style.css">
+<script type=text/javascript
+  src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+{% endblock %}
+<div class=box>
+  {% block body %}{% endblock %}
+  <p class=footer>&copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a>
+</div>

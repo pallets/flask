@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { margin: 0 0 30px 0; background: url(/static/mailinglist.png) no-repeat center; height: 165px; }
+    h1 span { display: none; }
+  </style>
+{% endblock %}
+{% block body %}
+  <h1><span>Flask Mailinglist</span></h1>
+  <div class=backnav>
+    <a href="{{ url_for('index') }}">back to website</a>
+    {% if request.endpoint != 'mailinglist_index' %}//
+    <a href="{{ url_for('mailinglist_index') }}">list information</a>
+    {% endif %}
+    {% if request.endpoint != 'mailinglist_archive' %}//
+    <a href="{{ url_for('mailinglist_archive') }}">go to archive</a>
+    {% endif %}
+  </div>
+  {% block mailbody %}{% endblock %}
+{% endblock %}

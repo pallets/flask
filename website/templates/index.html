@@ -1,27 +1,12 @@
-<!doctype html>
-<title>Flask (A Python Microframework)</title>
-<meta charset=utf-8>
-<style type=text/css>
-  body    { font-family: 'Georgia', serif; font-size: 17px; color: #000; }
-  a       { color: #004B6B; }
-  a:hover { color: #6D4100; }
-  .box    { width: 540px; margin: 40px auto; }
-  h1, h2  { font-family: 'Garamond', 'Georgia', serif; font-weight: normal; }
-  h1      { margin: 0 0 30px 0; background: url(logo.png) no-repeat center; height: 165px; }
-  h2      { font-size: 28px; margin: 15px 0 5px 0; }
-  code,
-  pre     { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
-          monospace; font-size: 15px; background: #eee; }
-  pre     { padding: 7px 30px; margin: 15px -30px; line-height: 1.3; }
-  .ig     { color: #888; }
-  p       { line-height: 1.4; }
-  ul      { margin: 15px 0 15px 0; padding: 0; list-style: none; }
-  ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-left: -19px; }
-  h1 span, p.tagline { display: none; }
-  blockquote { margin: 0; font-style: italic; color: #444; }
-  .footer { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
-</style>
-<div class=box>
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { margin: 0 0 30px 0; background: url(/static/logo.png) no-repeat center; height: 165px; }
+    h1 span, p.tagline { display: none; }
+  </style>
+{% endblock %}
+{% block body %}
   <h1><span>Flask</span></h1>
   <p class=tagline>because sometimes a pocket knife is not enough
   <blockquote>
@@ -45,6 +30,7 @@ def hello():
   <h2>Interested?</h2>
   <ul>
     <li><a href=docs/>Read the documentation</a>
+    <li><a href=mailinglist/>Join the mailinglist</a>
     <li><a href=http://github.com/mitsuhiko/flask>Fork it on github</a>
     <li><a href=http://pypi.python.org/pypi/Flask>Download it from PyPI</a>
   </ul>
@@ -74,8 +60,6 @@ def hello():
     create a new ticket or fork.  If you just want to chat with fellow
     developers, go to <code>#pocoo</code> on irc.freenode.net.
 
-  <p class=footer>&copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a>
-</div>
-
 <a href="http://github.com/mitsuhiko/flask"><img style="position: fixed; top: 0; right: 0; border: 0;"
   src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+{% endblock %}
