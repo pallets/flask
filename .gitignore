@@ -3,5 +3,5 @@
 *.pyo
 env
 dist
-website/_mailinglist/*
+_mailinglist/*
 *.egg-info
