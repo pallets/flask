@@ -27,9 +27,9 @@ from werkzeug import Headers, parse_date
 
 INCOMING_MAIL_FOLDER = '_mailinglist/incoming'
 THREAD_FOLDER = '_mailinglist/threads'
-LIST_NAME = 'zine'
+LIST_NAME = 'flask'
 RSYNC_PATH = 'librelist.com::json/%s'
-SUBJECT_PREFIX = '[zine]'
+SUBJECT_PREFIX = '[flask]'
 
 
 _punctuation_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+')
