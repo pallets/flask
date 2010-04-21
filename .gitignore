@@ -4,3 +4,4 @@
 env
 dist
 *.egg-info
+_mailinglist
