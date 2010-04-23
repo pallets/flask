@@ -315,12 +315,47 @@ class ModuleTestCase(unittest.TestCase):
         @app.route('/')
         def index():
             return 'the index'
-        app.register_module('admin', admin)
+        app.register_module(admin)
         c = app.test_client()
         assert c.get('/').data == 'the index'
         assert c.get('/admin/').data == 'admin index'
         assert c.get('/admin/login').data == 'admin login'
         assert c.get('/admin/logout').data == 'admin logout'
+
+    def test_request_processing(self):
+        catched = []
+        app = flask.Flask(__name__)
+        admin = flask.Module('admin', url_prefix='/admin')
+        @admin.before_request
+        def before_admin_request():
+            catched.append('before-admin')
+        @admin.after_request
+        def after_admin_request(response):
+            catched.append('after-admin')
+            return response
+        @admin.route('/')
+        def index():
+            return 'the admin'
+        @app.before_request
+        def before_request():
+            catched.append('before-app')
+        @app.after_request
+        def after_request(response):
+            catched.append('after-app')
+            return response
+        @app.route('/')
+        def index():
+            return 'the index'
+        app.register_module(admin)
+        c = app.test_client()
+
+        assert c.get('/').data == 'the index'
+        assert catched == ['before-app', 'after-app']
+        del catched[:]
+
+        assert c.get('/admin/').data == 'the admin'
+        assert catched == ['before-app', 'before-admin',
+                           'after-admin', 'after-app']
 
 
 def suite():
@@ -334,6 +369,7 @@ def suite():
         suite.addTest(unittest.makeSuite(JSONTestCase))
     suite.addTest(unittest.makeSuite(MiniTwitTestCase))
     suite.addTest(unittest.makeSuite(FlaskrTestCase))
+    suite.addTest(unittest.makeSuite(ModuleTestCase))
     return suite
 
 

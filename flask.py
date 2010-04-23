@@ -336,8 +336,8 @@ class Module(object):
     def _register_rule(self, state, rule, endpoint, view_func, options):
         if self.url_prefix:
             rule = state.url_prefix + rule
-        self.app.add_url_rule(rule, '%s.%s' % (self.name, endpoint),
-                              view_func, **options)
+        state.app.add_url_rule(rule, '%s.%s' % (self.name, endpoint),
+                               view_func, **options)
 
 
 class Flask(object):
@@ -573,8 +573,8 @@ class Flask(object):
 
     def register_module(self, module, **options):
         """Registers a module with this application."""
-        options.setdefault('url_prefix', self.url_prefix)
-        state = _ModuleSetupState(app, options)
+        options.setdefault('url_prefix', module.url_prefix)
+        state = _ModuleSetupState(self, **options)
         for func, args in module._register_events:
             func(state, *args)
 
@@ -809,9 +809,11 @@ class Flask(object):
         mod = ctx.request.module
         if not isinstance(ctx.session, _NullSession):
             self.save_session(ctx.session, response)
-        funcs = self.after_request_funcs.get(None, ())
+        funcs = ()
         if mod and mod in self.after_request_funcs:
             funcs = chain(funcs, self.after_request_funcs[mod])
+        if None in self.after_request_funcs:
+            funcs = chain(funcs, self.after_request_funcs[None])
         for handler in funcs:
             response = handler(response)
         return response
