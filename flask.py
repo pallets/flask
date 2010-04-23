@@ -687,7 +687,7 @@ class Flask(object):
         """Converts the return value from a view function to a real
         response object that is an instance of :attr:`response_class`.
 
-        The following types are allowd for `rv`:
+        The following types are allowed for `rv`:
 
         ======================= ===========================================
         :attr:`response_class`  the object is returned unchanged
@@ -703,6 +703,11 @@ class Flask(object):
 
         :param rv: the return value from the view function
         """
+        if rv is None:
+            from warnings import warn
+            warn(Warning('View function did not return a response'),
+                 stacklevel=2)
+            return u''
         if isinstance(rv, self.response_class):
             return rv
         if isinstance(rv, basestring):

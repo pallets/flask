@@ -15,6 +15,7 @@ import sys
 import flask
 import unittest
 import tempfile
+import warnings
 
 
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
@@ -223,6 +224,19 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         with app.test_request_context():
             assert flask.url_for('static', filename='index.html') \
                 == '/static/index.html'
+
+    def test_none_response(self):
+        warnings.filterwarnings('error', 'View function did not return')
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def test():
+            return None
+        try:
+            app.test_client().get('/')
+        except Warning:
+            pass
+        else:
+            assert "Expected warning"
 
 
 class JSONTestCase(unittest.TestCase):
