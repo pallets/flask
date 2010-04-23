@@ -56,7 +56,7 @@ class Request(RequestBase):
     :attr:`~flask.Flask.request_class` to your subclass.
     """
 
-    endpoint = view_args = None
+    endpoint = view_args = routing_exception = None
 
     @cached_property
     def json(self):
@@ -117,6 +117,12 @@ class _RequestContext(object):
         self.g = _RequestGlobals()
         self.flashes = None
 
+        try:
+            self.request.endpoint, self.request.view_args = \
+                self.url_adapter.match()
+        except HTTPException, e:
+            self.request.routing_exception = e
+
     def __enter__(self):
         _request_ctx_stack.push(self)
 
@@ -134,7 +140,12 @@ def url_for(endpoint, **values):
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
     """
-    return _request_ctx_stack.top.url_adapter.build(endpoint, values)
+    ctx = _request_ctx_stack.top
+    if '.' not in endpoint and \
+       ctx.request.endpoint is not None \
+       and '.' in ctx.request.endpoint:
+        endpoint = ctx.request.endpoint.rsplit('.', 1)[0] + '.' + endpoint
+    return ctx.url_adapter.build(endpoint.lstrip('.'), values)
 
 
 def get_template_attribute(template_name, attribute):
@@ -548,7 +559,7 @@ class Flask(object):
         for func, args in module._register_events:
             func(state, *args)
 
-    def add_url_rule(self, rule, endpoint, view_func=None, **options):
+    def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
         endpoint.
@@ -571,7 +582,7 @@ class Flask(object):
             app.view_functions['index'] = index
 
         .. versionchanged:: 0.2
-           `view_func` parameter added
+           `view_func` parameter added.
 
         :param rule: the URL rule as string
         :param endpoint: the endpoint for the registered URL rule.  Flask
@@ -582,6 +593,10 @@ class Flask(object):
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object
         """
+        if endpoint is None:
+            assert view_func is not None, 'expected view func if endpoint ' \
+                                          'is not provided.'
+            endpoint = view_func.__name__
         options['endpoint'] = endpoint
         options.setdefault('methods', ('GET',))
         self.url_map.add(Rule(rule, **options))
@@ -654,7 +669,7 @@ class Flask(object):
                         :class:`~werkzeug.routing.Rule` object.
         """
         def decorator(f):
-            self.add_url_rule(rule, f.__name__, f, **options)
+            self.add_url_rule(rule, None, f, **options)
             return f
         return decorator
 
@@ -696,24 +711,17 @@ class Flask(object):
         self.template_context_processors.append(f)
         return f
 
-    def match_request(self):
-        """Matches the current request against the URL map and also
-        stores the endpoint and view arguments on the request object
-        is successful, otherwise the exception is stored.
-        """
-        rv = _request_ctx_stack.top.url_adapter.match()
-        request.endpoint, request.view_args = rv
-        return rv
-
     def dispatch_request(self):
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
         be a response object.  In order to convert the return value to a
         proper response object, call :func:`make_response`.
         """
+        req = _request_ctx_stack.top.request
         try:
-            endpoint, values = self.match_request()
-            return self.view_functions[endpoint](**values)
+            if req.routing_exception is not None:
+                raise req.routing_exception
+            return self.view_functions[req.endpoint](**req.view_args)
         except HTTPException, e:
             handler = self.error_handlers.get(e.code)
             if handler is None:
