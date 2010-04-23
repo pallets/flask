@@ -298,6 +298,31 @@ class TemplatingTestCase(unittest.TestCase):
             assert macro('World') == 'Hello World!'
 
 
+class ModuleTestCase(unittest.TestCase):
+
+    def test_basic_module(self):
+        app = flask.Flask(__name__)
+        admin = flask.Module('admin', url_prefix='/admin')
+        @admin.route('/')
+        def index():
+            return 'admin index'
+        @admin.route('/login')
+        def login():
+            return 'admin login'
+        @admin.route('/logout')
+        def logout():
+            return 'admin logout'
+        @app.route('/')
+        def index():
+            return 'the index'
+        app.register_module('admin', admin)
+        c = app.test_client()
+        assert c.get('/').data == 'the index'
+        assert c.get('/admin/').data == 'admin index'
+        assert c.get('/admin/login').data == 'admin login'
+        assert c.get('/admin/logout').data == 'admin logout'
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
