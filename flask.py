@@ -305,9 +305,8 @@ class _ModuleSetupState(object):
 class Module(object):
     """Container object that enables pluggable applications"""
 
-    def __init__(self, name, url_prefix=None, package_name=None):
+    def __init__(self, name, url_prefix=None):
         self.name = name
-        self.package_name = package_name
         self.url_prefix = url_prefix
         self._register_events = []
 
