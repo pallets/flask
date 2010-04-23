@@ -275,6 +275,41 @@ else:
     _tojson_filter = json.dumps
 
 
+class _ModuleSetupState(object):
+
+    def __init__(self, app, url_prefix=None):
+        self.app = app
+        self.url_prefix = url_prefix
+
+
+class Module(object):
+    """Container object that enables pluggable applications"""
+
+    def __init__(self, name, url_prefix=None, package_name=None):
+        self.name = name
+        self.package_name = package_name
+        self.url_prefix = url_prefix
+        self._register_events = []
+
+    def route(self, rule, **options):
+        def decorator(f):
+            self.add_url_rule(rule, f.__name__, f, **options)
+            return f
+        return decorator
+
+    def add_url_rule(self, rule, endpoint, view_func=None, **options):
+        self._record(self._register_rule, (rule, endpoint, view_func, options))
+
+    def _record(self, func, args):
+        self._register_events.append((func, args))
+
+    def _register_rule(self, state, rule, endpoint, view_func, options):
+        if self.url_prefix:
+            rule = state.url_prefix + rule
+        self.app.add_url_rule(rule, '%s.%s' % (self.name, endpoint),
+                              view_func, **options)
+
+
 class Flask(object):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
@@ -505,6 +540,13 @@ class Flask(object):
         :param response: an instance of :attr:`response_class`
         """
         session.save_cookie(response, self.session_cookie_name)
+
+    def register_module(self, module, **options):
+        """Registers a module with this application."""
+        options.setdefault('url_prefix', self.url_prefix)
+        state = _ModuleSetupState(app, options)
+        for func, args in module._register_events:
+            func(state, *args)
 
     def add_url_rule(self, rule, endpoint, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
