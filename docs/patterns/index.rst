@@ -16,6 +16,7 @@ end of the request, the database connection is closed again.
    packages
    sqlite3
    sqlalchemy
+   fileuploads
    wtforms
    templateinheritance
    flashing
