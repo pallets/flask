@@ -302,7 +302,7 @@ class ModuleTestCase(unittest.TestCase):
 
     def test_basic_module(self):
         app = flask.Flask(__name__)
-        admin = flask.Module('admin', url_prefix='/admin')
+        admin = flask.Module(__name__, 'admin', url_prefix='/admin')
         @admin.route('/')
         def index():
             return 'admin index'
@@ -325,7 +325,7 @@ class ModuleTestCase(unittest.TestCase):
     def test_request_processing(self):
         catched = []
         app = flask.Flask(__name__)
-        admin = flask.Module('admin', url_prefix='/admin')
+        admin = flask.Module(__name__, 'admin', url_prefix='/admin')
         @admin.before_request
         def before_admin_request():
             catched.append('before-admin')

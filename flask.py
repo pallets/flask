@@ -295,6 +295,43 @@ else:
     _tojson_filter = json.dumps
 
 
+class _PackageBoundObject(object):
+
+    def __init__(self, import_name):
+        #: the name of the package or module.  Do not change this once
+        #: it was set by the constructor.
+        self.import_name = import_name
+
+        #: where is the app root located?
+        self.root_path = _get_package_path(self.import_name)
+
+    def open_resource(self, resource):
+        """Opens a resource from the application's resource folder.  To see
+        how this works, consider the following folder structure::
+
+            /myapplication.py
+            /schemal.sql
+            /static
+                /style.css
+            /template
+                /layout.html
+                /index.html
+
+        If you want to open the `schema.sql` file you would do the
+        following::
+
+            with app.open_resource('schema.sql') as f:
+                contents = f.read()
+                do_something_with(contents)
+
+        :param resource: the name of the resource.  To access resources within
+                         subfolders use forward slashes as separator.
+        """
+        if pkg_resources is None:
+            return open(os.path.join(self.root_path, resource), 'rb')
+        return pkg_resources.resource_stream(self.import_name, resource)
+
+
 class _ModuleSetupState(object):
 
     def __init__(self, app, url_prefix=None):
@@ -302,44 +339,53 @@ class _ModuleSetupState(object):
         self.url_prefix = url_prefix
 
 
-class Module(object):
+class Module(_PackageBoundObject):
     """Container object that enables pluggable applications"""
 
-    def __init__(self, name, url_prefix=None):
+    def __init__(self, import_name, name=None, url_prefix=None):
+        if name is None:
+            assert '.' in import_name, 'name required if package name ' \
+                'does not point to a submodule'
+            name = import_name.rsplit('.', 1)[1]
+        _PackageBoundObject.__init__(self, import_name)
         self.name = name
         self.url_prefix = url_prefix
         self._register_events = []
 
     def route(self, rule, **options):
+        """Like :meth:`flask.Flask.route` but for a module"""
         def decorator(f):
             self.add_url_rule(rule, f.__name__, f, **options)
             return f
         return decorator
 
     def add_url_rule(self, rule, endpoint, view_func=None, **options):
-        self._record(self._register_rule, (rule, endpoint, view_func, options))
+        """Like :meth:`flask.Flask.add_url_rule` but for a module"""
+        def register_rule(state):
+            the_rule = rule
+            if self.url_prefix:
+                the_rule = state.url_prefix + rule
+            state.app.add_url_rule(the_rule, '%s.%s' % (self.name, endpoint),
+                                   view_func, **options)
+        self._record(register_rule)
 
     def before_request(self, f):
+        """Like :meth:`flask.Flask.before_request` but for a module"""
         self._record(lambda s: s.app.before_request_funcs
-            .setdefault(self.name, []).append(f), ())
+            .setdefault(self.name, []).append(f))
         return f
 
     def after_request(self, f):
+        """Like :meth:`flask.Flask.after_request` but for a module"""
         self._record(lambda s: s.app.after_request_funcs
-            .setdefault(self.name, []).append(f), ())
+            .setdefault(self.name, []).append(f))
         return f
 
-    def _record(self, func, args):
-        self._register_events.append((func, args))
-
-    def _register_rule(self, state, rule, endpoint, view_func, options):
-        if self.url_prefix:
-            rule = state.url_prefix + rule
-        state.app.add_url_rule(rule, '%s.%s' % (self.name, endpoint),
-                               view_func, **options)
+    def _record(self, func):
+        self._register_events.append(func)
 
 
-class Flask(object):
+class Flask(_PackageBoundObject):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
     application.  Once it is created it will act as a central registry for
@@ -386,20 +432,15 @@ class Flask(object):
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
 
-    def __init__(self, package_name):
+    def __init__(self, import_name):
+        _PackageBoundObject.__init__(self, import_name)
+
         #: the debug flag.  Set this to `True` to enable debugging of
         #: the application.  In debug mode the debugger will kick in
         #: when an unhandled exception ocurrs and the integrated server
         #: will automatically reload the application if changes in the
         #: code are detected.
         self.debug = False
-
-        #: the name of the package or module.  Do not change this once
-        #: it was set by the constructor.
-        self.package_name = package_name
-
-        #: where is the app root located?
-        self.root_path = _get_package_path(self.package_name)
 
         #: a dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
@@ -414,27 +455,31 @@ class Flask(object):
         #: decorator.
         self.error_handlers = {}
 
-        #: a list of functions that should be called at the beginning
-        #: of the request before request dispatching kicks in.  This
-        #: can for example be used to open database connections or
-        #: getting hold of the currently logged in user.
-        #: To register a function here, use the :meth:`before_request`
-        #: decorator.
+        #: a dictionary with lists of functions that should be called at the
+        #: beginning of the request.  The key of the dictionary is the name of
+        #: the module this function is active for, `None` for all requests.
+        #: This can for example be used to open database connections or
+        #: getting hold of the currently logged in user.  To register a
+        #: function here, use the :meth:`before_request` decorator.
         self.before_request_funcs = {}
 
-        #: a list of functions that are called at the end of the
-        #: request.  The function is passed the current response
-        #: object and modify it in place or replace it.
-        #: To register a function here use the :meth:`after_request`
-        #: decorator.
+        #: a dictionary with lists of functions that should be called after
+        #: each request.  The key of the dictionary is the name of the module
+        #: this function is active for, `None` for all requests.  This can for
+        #: example be used to open database connections or getting hold of the
+        #: currently logged in user.  To register a function here, use the
+        #: :meth:`before_request` decorator.
         self.after_request_funcs = {}
 
-        #: a list of functions that are called without arguments
-        #: to populate the template context.  Each returns a dictionary
-        #: that the template context is updated with.
-        #: To register a function here, use the :meth:`context_processor`
-        #: decorator.
-        self.template_context_processors = [_default_template_ctx_processor]
+        #: a dictionary with list of functions that are called without arguments
+        #: to populate the template context.  They key of the dictionary is the
+        #: name of the module this function is active for, `None` for all
+        #: requests.  Each returns a dictionary that the template context is
+        #: updated with.  To register a function here, use the
+        #: :meth:`context_processor` decorator.
+        self.template_context_processors = {
+            None: [_default_template_ctx_processor]
+        }
 
         #: the :class:`~werkzeug.routing.Map` for this instance.  You can use
         #: this to change the routing converters after the class was created
@@ -457,7 +502,7 @@ class Flask(object):
             self.add_url_rule(self.static_path + '/<filename>',
                               build_only=True, endpoint='static')
             if pkg_resources is not None:
-                target = (self.package_name, 'static')
+                target = (self.import_name, 'static')
             else:
                 target = os.path.join(self.root_path, 'static')
             self.wsgi_app = SharedDataMiddleware(self.wsgi_app, {
@@ -483,7 +528,7 @@ class Flask(object):
         """
         if pkg_resources is None:
             return FileSystemLoader(os.path.join(self.root_path, 'templates'))
-        return PackageLoader(self.package_name)
+        return PackageLoader(self.import_name)
 
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.
@@ -492,7 +537,11 @@ class Flask(object):
         :param context: the context as a dictionary that is updated in place
                         to add extra variables.
         """
-        for func in self.template_context_processors:
+        funcs = self.template_context_processors[None]
+        mod = _request_ctx_stack.top.request.module
+        if mod is not None and mod in self.template_context_processors:
+            funcs = chain(funcs, self.template_context_processors[mod])
+        for func in funcs:
             context.update(func())
 
     def run(self, host='127.0.0.1', port=5000, **options):
@@ -521,32 +570,6 @@ class Flask(object):
         from werkzeug import Client
         return Client(self, self.response_class, use_cookies=True)
 
-    def open_resource(self, resource):
-        """Opens a resource from the application's resource folder.  To see
-        how this works, consider the following folder structure::
-
-            /myapplication.py
-            /schemal.sql
-            /static
-                /style.css
-            /template
-                /layout.html
-                /index.html
-
-        If you want to open the `schema.sql` file you would do the
-        following::
-
-            with app.open_resource('schema.sql') as f:
-                contents = f.read()
-                do_something_with(contents)
-
-        :param resource: the name of the resource.  To access resources within
-                         subfolders use forward slashes as separator.
-        """
-        if pkg_resources is None:
-            return open(os.path.join(self.root_path, resource), 'rb')
-        return pkg_resources.resource_stream(self.package_name, resource)
-
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
         session data in a signed cookie.  This requires that the
@@ -574,8 +597,8 @@ class Flask(object):
         """Registers a module with this application."""
         options.setdefault('url_prefix', module.url_prefix)
         state = _ModuleSetupState(self, **options)
-        for func, args in module._register_events:
-            func(state, *args)
+        for func in module._register_events:
+            func(state)
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
@@ -726,7 +749,7 @@ class Flask(object):
 
     def context_processor(self, f):
         """Registers a template context processor function."""
-        self.template_context_processors.append(f)
+        self.template_context_processors[None].append(f)
         return f
 
     def dispatch_request(self):
