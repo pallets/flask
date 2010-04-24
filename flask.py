@@ -12,6 +12,7 @@
 from __future__ import with_statement
 import os
 import sys
+import types
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
@@ -636,6 +637,27 @@ class Flask(object):
         """
         def decorator(f):
             self.error_handlers[code] = f
+            return f
+        return decorator
+
+    def template_filter(self, arg=None):
+        """A decorator that is used to register custom template filter.
+        You can specify a name for the filter, otherwise the function
+        name will be used. Example::
+
+          @app.template_filter
+          def reverse(s):
+              return s[::-1]
+
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
+        """
+        if type(arg) is types.FunctionType:
+            self.jinja_env.filters[arg.__name__] = arg
+            return arg
+
+        def decorator(f):
+            self.jinja_env.filters[arg or f.__name__] = f
             return f
         return decorator
 
