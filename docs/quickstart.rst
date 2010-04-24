@@ -54,6 +54,24 @@ So what did that code do?
 
 To stop the server, hit control-C.
 
+.. _public-server:
+
+.. admonition:: Externally Visible Server
+
+   If you run the server you will notice that the server is only available
+   from your own computer, not from any other in the network.  This is the
+   default because in debugging mode a user of the application can execute
+   arbitrary Python code on your computer.  If you have `debug` disabled
+   or trust the users on your network, you can make the server publicly
+   available.
+
+   Just change the call of the :meth:`~flask.Flask.run` method to look
+   like this::
+
+       app.run(host='0.0.0.0')
+
+   This tells your operating system to listen on a public IP.
+
 
 Debug Mode
 ----------

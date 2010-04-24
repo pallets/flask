@@ -57,13 +57,8 @@ without problems.  When you head over to the server you will get an 404
 page not found error because we don't have any views yet.  But we will
 focus on that a little later.  First we should get the database working.
 
-.. admonition:: Troubleshooting
+.. admonition:: Externally Visible Server
 
-   If you notice later that the browser cannot connect to the server
-   during development, you might want to try this line instead::
-
-       app.run(host='127.0.0.1')
-
-   In a nutshell: Werkzeug starts up as IPv6 on many operating systems by
-   default and not every browser is happy with that.  This forces IPv4
-   usage.
+   Want your server to be publically available?  Check out the
+   :ref:`externally visible server <public-server>` section for more
+   information.
