@@ -143,6 +143,19 @@ class _RequestContext(object):
 
 def url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
+    The endpoint is relative to the active module if modules are in use.
+
+    Here some examples:
+
+    ==================== ======================= =============================
+    Active Module        Target Endpoint         Target Function
+    ==================== ======================= =============================
+    `None`               ``'index'``             `index` of the application
+    `None`               ``'.index'``            `index` of the application
+    ``'admin'``          ``'index'``             `index` of the `admin` module
+    any                  ``'.index'``            `index` of the application
+    any                  ``'admin.index'``       `index` of the `admin` module
+    ==================== ======================= =============================
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
@@ -382,6 +395,9 @@ class Module(_PackageBoundObject):
         @admin.route('/login')
         def login():
             pass
+
+    For a gentle introduction into modules, checkout the
+    :ref:`working-with-modules` section.
     """
 
     def __init__(self, import_name, name=None, url_prefix=None):
