@@ -311,6 +311,46 @@ class TemplatingTestCase(unittest.TestCase):
             macro = flask.get_template_attribute('_macro.html', 'hello')
             assert macro('World') == 'Hello World!'
 
+    def test_template_filter(self):
+        app = flask.Flask(__name__)
+        @app.template_filter()
+        def my_reverse(s):
+            return s[::-1]
+        assert 'my_reverse' in  app.jinja_env.filters.keys()
+        assert app.jinja_env.filters['my_reverse'] == my_reverse
+        assert app.jinja_env.filters['my_reverse']('abcd') == 'dcba'
+
+    def test_template_filter_with_name(self):
+        app = flask.Flask(__name__)
+        @app.template_filter('strrev')
+        def my_reverse(s):
+            return s[::-1]
+        assert 'strrev' in  app.jinja_env.filters.keys()
+        assert app.jinja_env.filters['strrev'] == my_reverse
+        assert app.jinja_env.filters['strrev']('abcd') == 'dcba'
+
+    def test_template_filter_with_template(self):
+        app = flask.Flask(__name__)
+        @app.template_filter()
+        def super_reverse(s):
+            return s[::-1]
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        assert rv.data == 'dcba'
+
+    def test_template_filter_with_name_and_template(self):
+        app = flask.Flask(__name__)
+        @app.template_filter('super_reverse')
+        def my_reverse(s):
+            return s[::-1]
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        assert rv.data == 'dcba'
+
 
 class ModuleTestCase(unittest.TestCase):
 
