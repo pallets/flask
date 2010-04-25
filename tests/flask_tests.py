@@ -311,16 +311,7 @@ class TemplatingTestCase(unittest.TestCase):
             macro = flask.get_template_attribute('_macro.html', 'hello')
             assert macro('World') == 'Hello World!'
 
-    def test_template_filter_not_called(self):
-        app = flask.Flask(__name__)
-        @app.template_filter
-        def my_reverse(s):
-            return s[::-1]
-        assert 'my_reverse' in  app.jinja_env.filters.keys()
-        assert app.jinja_env.filters['my_reverse'] == my_reverse
-        assert app.jinja_env.filters['my_reverse']('abcd') == 'dcba'
-
-    def test_template_filter_called(self):
+    def test_template_filter(self):
         app = flask.Flask(__name__)
         @app.template_filter()
         def my_reverse(s):

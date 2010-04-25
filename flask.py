@@ -640,24 +640,20 @@ class Flask(object):
             return f
         return decorator
 
-    def template_filter(self, arg=None):
+    def template_filter(self, name=None):
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
 
-          @app.template_filter
+          @app.template_filter()
           def reverse(s):
               return s[::-1]
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
         """
-        if type(arg) is types.FunctionType:
-            self.jinja_env.filters[arg.__name__] = arg
-            return arg
-
         def decorator(f):
-            self.jinja_env.filters[arg or f.__name__] = f
+            self.jinja_env.filters[name or f.__name__] = f
             return f
         return decorator
 
