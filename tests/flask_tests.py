@@ -329,6 +329,29 @@ class TemplatingTestCase(unittest.TestCase):
         assert app.jinja_env.filters['strrev'] == my_reverse
         assert app.jinja_env.filters['strrev']('abcd') == 'dcba'
 
+    def test_template_filter_with_template(self):
+        app = flask.Flask(__name__)
+        @app.template_filter()
+        def super_reverse(s):
+            return s[::-1]
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        assert rv.data == 'dcba'
+
+    def test_template_filter_with_name_and_template(self):
+        app = flask.Flask(__name__)
+        @app.template_filter('super_reverse')
+        def my_reverse(s):
+            return s[::-1]
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        assert rv.data == 'dcba'
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
