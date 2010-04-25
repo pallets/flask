@@ -25,4 +25,4 @@ following links:
 .. _Jinja2: http://jinja.pocoo.org/2/
 .. _Werkzeug: http://werkzeug.pocoo.org/
 
-.. include:: contents.rst
+.. include:: contents.rst.inc

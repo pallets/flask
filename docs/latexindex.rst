@@ -1,4 +1,4 @@
 Flask Documentation
 ===================
 
-.. include:: contents.rst
+.. include:: contents.rst.inc
