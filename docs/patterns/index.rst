@@ -17,6 +17,8 @@ end of the request, the database connection is closed again.
    sqlite3
    sqlalchemy
    fileuploads
+   caching
+   viewdecorators
    wtforms
    templateinheritance
    flashing
