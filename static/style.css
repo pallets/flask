@@ -11,7 +11,7 @@ pre        { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream V
 pre        { padding: 7px 30px; margin: 15px -30px; line-height: 1.3; }
 .ig        { color: #888; }
 p          { line-height: 1.4; }
-ul         { margin: 15px 0 15px 0; padding: 0; list-style: none; }
+ul         { margin: 15px 0 15px 0; padding: 0; list-style: none; line-height: 1.4; }
 ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-left: -19px; }
 blockquote { margin: 0; font-style: italic; color: #444; }
 .footer    { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
@@ -23,8 +23,7 @@ blockquote { margin: 0; font-style: italic; color: #444; }
 .archive .meta      { font-size: 0.9em; display: block; margin: 0 0 0.5em 1em; }
 .mailtree           { border-top: 1px solid black; padding: 5px 10px 5px 10px;
                       border-bottom: 1px solid black; font-size: 14px; }
-.mailtree ul        { margin: 0 0 0 15px; }
-.mailtree li        { line-height: 1.5; }
+.mailtree ul        { margin: 0 0 0 15px; line-height: 1.5; }
 .mailtree li:before { display: none; }
 .mailtree .selected:before { content: "\00BB \0020"; color: #888;
                              position: absolute; margin-left: -10px; }
