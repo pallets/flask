@@ -42,7 +42,7 @@ In the view function, the usage of this form looks like this::
                         form.password.data)
             db_session.add(user)
             flash('Thanks for registering')
-            redirect(url_for('login'))
+            return redirect(url_for('login'))
         return render_template('register.html', form=form)
 
 Notice that we are implying that the view is using SQLAlchemy here
