@@ -1,4 +1,4 @@
-.PHONY: clean-pyc test
+.PHONY: clean-pyc test upload-docs
 
 all: clean-pyc test
 

@@ -13,6 +13,7 @@ from __future__ import with_statement
 import os
 import sys
 import types
+from datetime import datetime, timedelta
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
@@ -86,7 +87,20 @@ class _RequestGlobals(object):
     pass
 
 
-class _NullSession(SecureCookie):
+class Session(SecureCookie):
+    """Expands the session for support for switching between permanent
+    and non-permanent sessions.
+    """
+
+    def _get_permanent(self):
+        return self.get('_permanent', False)
+    def _set_permanent(self, value):
+        self['_permanent'] = bool(value)
+    permanent = property(_get_permanent, _set_permanent)
+    del _get_permanent, _set_permanent
+
+
+class _NullSession(Session):
     """Class used to generate nicer error messages if sessions are not
     available.  Will still allow read-only access to the empty session
     but fail on setting.
@@ -317,6 +331,11 @@ class Flask(object):
     #: The secure cookie uses this for the name of the session cookie
     session_cookie_name = 'session'
 
+    #: A :class:`~datetime.timedelta` which is used to set the expiration
+    #: date of a permanent session.  The default is 31 days which makes a
+    #: permanent session survive for roughly one month.
+    permanent_session_lifetime = timedelta(days=31)
+
     #: options that are passed directly to the Jinja2 environment
     jinja_options = ImmutableDict(
         autoescape=True,
@@ -493,8 +512,8 @@ class Flask(object):
         """
         key = self.secret_key
         if key is not None:
-            return SecureCookie.load_cookie(request, self.session_cookie_name,
-                                            secret_key=key)
+            return Session.load_cookie(request, self.session_cookie_name,
+                                       secret_key=key)
 
     def save_session(self, session, response):
         """Saves the session if it needs updates.  For the default
@@ -505,7 +524,11 @@ class Flask(object):
                         object)
         :param response: an instance of :attr:`response_class`
         """
-        session.save_cookie(response, self.session_cookie_name)
+        expires = None
+        if session.permanent:
+            expires = datetime.utcnow() + self.permanent_session_lifetime
+        session.save_cookie(response, self.session_cookie_name,
+                            expires=expires, httponly=True)
 
     def add_url_rule(self, rule, endpoint, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
