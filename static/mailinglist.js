@@ -9,7 +9,7 @@ $(function() {
     $('ul.mailtree div.link').removeClass('selected');
     $('#link-' + id).addClass('selected').focus();
     $('div.mail').hide();
-    $('#' + id).show();
+    $('h2:first').text($('h3', $('#' + id).show()).text());
     if (!(document.location.hash == '' && id == first_mail))
       document.location.href = '#' + id;
     window.scrollTo(pos.x, pos.y);
@@ -19,6 +19,7 @@ $(function() {
     .addClass('dynamic-mail')
     .appendTo($('<div></div>').insertBefore('div.mail:first'))
     .hide();
+  $('div.mail h3').hide();
 
   $('div.link').each(function() {
     var id = $('a', $(this).parent()).attr('href').substr(1);

@@ -4,7 +4,9 @@
   {{ super() }}
   <script type=text/javascript src=/static/mailinglist.js></script>
 {% endblock %}
-{% block mailbody %}
+{% block body %}
+  <p class=backnav>
+    <a href=/mailinglist/archive/>&laquo; back to archive</a>
   <h2>{{ thread.title }}</h2>
 
   <ul class=mailtree>

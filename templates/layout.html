@@ -7,6 +7,14 @@
   src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 {% endblock %}
 <div class=box>
+  {% block body_title %}
+    <h1><span>{{ self.title() }}</span></h1>
+  {% endblock %}
+  <p class=nav>
+    <a href=/>overview</a> //
+    <a href=/docs/>documentation</a> //
+    <a href=/mailinglist/>mailinglist</a> //
+    <a href=/snippets/>snippets</a>
   {% block body %}{% endblock %}
   <p class=footer>&copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a>
 </div>

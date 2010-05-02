@@ -1,0 +1,17 @@
+{% extends "snippets/layout.html" %}
+{% block title %}Snippets Archive{% endblock %}
+{% block body %}
+  <p>
+    Welcome to the Flask snippet archive.  This is the place where anyone
+    can drop helpful pieces of code for others to use.
+  <p>
+    In order to add snippets to this page or to add comments, all you need
+    is an <a href=http://en.wikipedia.org/wiki/OpenID>OpenID</a> account.
+  <form action=/snippets/search/ method=get>
+    <p>
+      Search snippets:
+      <input type=text name=q size=30>
+      <input type=submit value=Search>
+  </form>
+  <h2>Snippets by Category</h2>
+{% endblock %}

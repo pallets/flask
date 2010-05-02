@@ -6,9 +6,11 @@
     h1 span, p.tagline { display: none; }
   </style>
 {% endblock %}
-{% block body %}
-  <h1><span>Flask</span></h1>
+{% block body_title %}
+  {{ super() }}
   <p class=tagline>because sometimes a pocket knife is not enough
+{% endblock %}
+{% block body %}
   <blockquote>
     Flask is a microframework for Python based on Werkzeug, Jinja 2 and good intentions.
     And before you ask: It's <a href=docs/license/>BSD licensed</a>!

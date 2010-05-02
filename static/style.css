@@ -15,22 +15,28 @@ ul         { margin: 15px 0 15px 0; padding: 0; list-style: none; line-height: 1
 ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-left: -19px; }
 blockquote { margin: 0; font-style: italic; color: #444; }
 .footer    { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
-.backnav   { text-align: center; color: #444; font-style: italic; }
+.nav       { text-align: center; }
+.nav a     { font-style: italic; }
+.backnav   { float: right; color: #444; font-style: italic;
+             margin: 5px 0 0 0; font-size: 0.9em; }
 
 /* mailinglist */
 .pagination         { text-align: center; font-size: 15px; margin: 20px 0 0 0; }
 .disabled           { color: #888; }
 .archive .meta      { font-size: 0.9em; display: block; margin: 0 0 0.5em 1em; }
-.mailtree           { border-top: 1px solid black; padding: 5px 10px 5px 10px;
-                      border-bottom: 1px solid black; font-size: 14px; }
+.mailtree           { border-top: 1px solid black; padding: 5px 12px 5px 12px;
+                      border-bottom: 1px solid black; font-size: 14px;
+                      max-height: 100px; overflow: auto; }
 .mailtree ul        { margin: 0 0 0 15px; line-height: 1.5; }
 .mailtree li:before { display: none; }
-.mailtree .selected:before { content: "\00BB \0020"; color: #888;
-                             position: absolute; margin-left: -10px; }
+.mailtree .selected { background: #fafafa; }
+.mailtree .selected:before { content: "\00BB\0020"; color: #888;
+                             position: relative; margin-left: -12px;
+                             width: 12px!important; }
 .mail               { margin: 15px 0; }
 .children .mail     { margin: 15px 0 15px 20px; }
 .dynamic-mail       { margin-left: 0!important; }
-.mail dl            { margin: 0; padding-bottom: 10px;
+.mail dl            { margin: 0; padding-bottom: 15px;
                       border-bottom: 1px solid black; }
 .mail dl dt         { color: #888; width: 70px; float: left; height: 20px; }
 .mail dl dd         { height: 20px; width: 500px; }

@@ -93,12 +93,17 @@ def mailinglist_archive(page):
                            page=page, threads=threads)
 
 
-@app.route('/mailinglist/archives/<int:year>/<int:month>/<int:day>/<slug>/')
+@app.route('/mailinglist/archive/<int:year>/<int:month>/<int:day>/<slug>/')
 def mailinglist_show_thread(year, month, day, slug):
     thread = Thread.get(year, month, day, slug)
     if thread is None:
         abort(404)
     return render_template('mailinglist/show_thread.html', thread=thread)
+
+
+@app.route('/snippets/')
+def snippets():
+    return render_template('snippets/index.html')
 
 
 @app.errorhandler(404)
