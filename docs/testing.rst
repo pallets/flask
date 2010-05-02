@@ -195,3 +195,22 @@ suite.
 
 .. _MiniTwit Example:
    http://github.com/mitsuhiko/flask/tree/master/examples/minitwit/
+
+
+Other Testing Tricks
+--------------------
+
+Besides using the test client we used above there is also the
+:meth:`~flask.Flask.test_request_context` method that in combination with
+the `with` statement can be used to activate a request context
+temporarily.  With that you can access the :class:`~flask.request`,
+:class:`~flask.g` and :class:`~flask.session` objects like in view
+functions.  Here a full example that showcases this::
+
+    app = flask.Flask(__name__)
+
+    with app.test_request_context('/?name=Peter'):
+        assert flask.request.path == '/'
+        assert flask.request.args['name'] == 'Peter'
+
+All the other objects that are context bound can be used the same.
