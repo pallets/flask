@@ -11,11 +11,14 @@
 """
 from __future__ import with_statement
 import os
+import re
 import sys
 import flask
 import unittest
 import tempfile
 import warnings
+from datetime import datetime
+from werkzeug import parse_date
 
 
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
@@ -117,6 +120,30 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             assert flask.session.get('missing_key') is None
             expect_exception(flask.session.__setitem__, 'foo', 42)
             expect_exception(flask.session.pop, 'foo')
+
+    def test_session_expiration(self):
+        permanent = True
+        app = flask.Flask(__name__)
+        app.secret_key = 'testkey'
+        @app.route('/')
+        def index():
+            flask.session['test'] = 42
+            flask.session.permanent = permanent
+            return ''
+        rv = app.test_client().get('/')
+        assert 'set-cookie' in rv.headers
+        match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
+        expires = parse_date(match.group())
+        expected = datetime.utcnow() + app.permanent_session_lifetime
+        assert expires.year == expected.year
+        assert expires.month == expected.month
+        assert expires.day == expected.day
+
+        permanent = False
+        rv = app.test_client().get('/')
+        assert 'set-cookie' in rv.headers
+        match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
+        assert match is None
 
     def test_flashes(self):
         app = flask.Flask(__name__)

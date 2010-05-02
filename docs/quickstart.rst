@@ -160,6 +160,8 @@ The following converters exist:
 `path`      like the default but also accepts slashes
 =========== ===========================================
 
+.. _url-building:
+
 URL Building
 ````````````
 
@@ -167,7 +169,8 @@ If it can match URLs, can it also generate them?  Of course you can.  To
 build a URL to a specific function you can use the :func:`~flask.url_for`
 function.  It accepts the name of the function as first argument and a
 number of keyword arguments, each corresponding to the variable part of
-the URL rule.  Here some examples:
+the URL rule.  Unknown variable parts are appended to the URL as query
+parameter.  Here some examples:
 
 >>> from flask import Flask, url_for
 >>> app = Flask(__name__)
@@ -184,9 +187,11 @@ the URL rule.  Here some examples:
 ...  print url_for('index')
 ...  print url_for('login')
 ...  print url_for('profile', username='John Doe')
+...  print url_for('login', next='/')
 ... 
 /
 /login
+/login?next=/
 /user/John%20Doe
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method
@@ -452,7 +457,7 @@ transmitted in a `POST` or `PUT` request) you can use the
 :attr:`~flask.request.form` attribute.  Here a full example of the two
 attributes mentioned above::
 
-    @app.route('/login', method=['POST', 'GET'])
+    @app.route('/login', methods=['POST', 'GET'])
     def login():
         error = None
         if request.method == 'POST':

@@ -91,3 +91,52 @@ Here the code::
 
 Notice that this assumes an instanciated `cache` object is available, see
 :ref:`caching-pattern` for more information.
+
+
+Templating Decorator
+--------------------
+
+A common pattern invented by the TurboGears guys a while back is a
+templating decorator.  The idea of that decorator is that you return a
+dictionary with the values passed to the template from the view function
+and the template is automatically rendered.  With that, the following
+three examples do exactly the same::
+
+    @app.route('/')
+    def index():
+        return render_template('index.html', value=42)
+
+    @app.route('/')
+    @templated('index.html')
+    def index():
+        return dict(value=42)
+
+    @app.route('/')
+    @templated()
+    def index():
+        return dict(value=42)
+
+As you can see, if no template name is provided it will use the endpoint
+of the URL map + ``'.html'``.  Otherwise the provided template name is
+used.  When the decorated function returns, the dictionary returned is
+passed to the template rendering function.  If `None` is returned, an
+empty dictionary is assumed.
+
+Here the code for that decorator::
+
+    from functools import wraps
+    from flask import request
+
+    def templated(template=None):
+        def decorator(f):
+            @wraps(f)
+            def decorated_function(*args, **kwargs):
+                template_name = template
+                if template_name is None:
+                    template_name = request.endpoint + '.html'
+                ctx = f(*args, **kwargs)
+                if ctx is None:
+                    ctx = {}
+                return render_template(template_name, **ctx)
+            return decorated_function
+        return decorator
