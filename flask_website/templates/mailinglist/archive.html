@@ -13,13 +13,13 @@
   </ul>
   <div class=pagination>
     {% if page > 1 %}
-      <a href="{{ url_for('mailinglist_archive', page=page - 1) }}">&laquo; Previous</a>
+      <a href="{{ url_for('mailinglist.archive', page=page - 1) }}">&laquo; Previous</a>
     {% else %}
       <span class=disabled>&laquo; Previous</span>
     {% endif %}
     | <strong>{{ page }}</strong> |
     {% if page < page_count %}
-      <a href="{{ url_for('mailinglist_archive', page=page + 1) }}">Next &raquo;</a>
+      <a href="{{ url_for('mailinglist.archive', page=page + 1) }}">Next &raquo;</a>
     {% else %}
       <span class=disabled>Next &raquo;</span>
     {% endif %}

@@ -1,12 +1,13 @@
 from __future__ import with_statement
+import os
 from hashlib import md5
 from werkzeug import parse_date
-from flask import Flask, render_template, json, url_for, abort, Markup
 from jinja2.utils import urlize
-app = Flask(__name__)
+from flask import Module, render_template, json, url_for, abort, Markup
 
-
+mailinglist = Module(__name__)
 THREADS_PER_PAGE = 15
+MAILINGLIST_PATH = os.path.join(os.path.dirname(__file__), '..', '..', '_mailinglist')
 
 
 class Mail(object):
@@ -52,37 +53,32 @@ class Thread(object):
     @staticmethod
     def get(year, month, day, slug):
         try:
-            with app.open_resource('_mailinglist/threads/%s-%02d-%02d/%s' %
-                                   (year, month, day, slug)) as f:
+            with open('%s/threads/%s-%02d-%02d/%s' %
+                      (MAILINGLIST_PATH, year, month, day, slug)) as f:
                 return Thread(json.load(f))
         except IOError:
             pass
 
     @staticmethod
     def get_list():
-        with app.open_resource('_mailinglist/threads/threadlist') as f:
+        with open('%s/threads/threadlist' % MAILINGLIST_PATH) as f:
             return [Thread(x) for x in json.load(f)]
 
     @property
     def url(self):
-        return url_for('mailinglist_show_thread', year=self.date.year,
+        return url_for('mailinglist.show_thread', year=self.date.year,
                        month=self.date.month, day=self.date.day,
                        slug=self.slug)
 
 
-@app.route('/')
+@mailinglist.route('/mailinglist/')
 def index():
-    return render_template('index.html')
-
-
-@app.route('/mailinglist/')
-def mailinglist_index():
     return render_template('mailinglist/index.html')
 
 
-@app.route('/mailinglist/archive/', defaults={'page': 1})
-@app.route('/mailinglist/archive/page/<int:page>/')
-def mailinglist_archive(page):
+@mailinglist.route('/mailinglist/archive/', defaults={'page': 1})
+@mailinglist.route('/mailinglist/archive/page/<int:page>/')
+def archive(page):
     all_threads = Thread.get_list()
     offset = (page - 1) * THREADS_PER_PAGE
     threads = all_threads[offset:offset + THREADS_PER_PAGE]
@@ -93,23 +89,9 @@ def mailinglist_archive(page):
                            page=page, threads=threads)
 
 
-@app.route('/mailinglist/archive/<int:year>/<int:month>/<int:day>/<slug>/')
-def mailinglist_show_thread(year, month, day, slug):
+@mailinglist.route('/mailinglist/archive/<int:year>/<int:month>/<int:day>/<slug>/')
+def show_thread(year, month, day, slug):
     thread = Thread.get(year, month, day, slug)
     if thread is None:
         abort(404)
     return render_template('mailinglist/show_thread.html', thread=thread)
-
-
-@app.route('/snippets/')
-def snippets():
-    return render_template('snippets/index.html')
-
-
-@app.errorhandler(404)
-def not_found(error):
-    return render_template('404.html'), 404
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
