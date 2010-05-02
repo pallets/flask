@@ -1,6 +1,9 @@
 from flask import Flask, render_template
 
+import websiteconfig as config
+
 app = Flask(__name__)
+app.debug = config.DEBUG
 
 @app.errorhandler(404)
 def not_found(error):

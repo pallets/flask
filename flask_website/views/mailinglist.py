@@ -4,10 +4,9 @@ from hashlib import md5
 from werkzeug import parse_date
 from jinja2.utils import urlize
 from flask import Module, render_template, json, url_for, abort, Markup
+from flask_website import config
 
-mailinglist = Module(__name__)
-THREADS_PER_PAGE = 15
-MAILINGLIST_PATH = os.path.join(os.path.dirname(__file__), '..', '..', '_mailinglist')
+mailinglist = Module(__name__, url_prefix='/mailinglist')
 
 
 class Mail(object):
@@ -54,14 +53,14 @@ class Thread(object):
     def get(year, month, day, slug):
         try:
             with open('%s/threads/%s-%02d-%02d/%s' %
-                      (MAILINGLIST_PATH, year, month, day, slug)) as f:
+                      (config.MAILINGLIST_PATH, year, month, day, slug)) as f:
                 return Thread(json.load(f))
         except IOError:
             pass
 
     @staticmethod
     def get_list():
-        with open('%s/threads/threadlist' % MAILINGLIST_PATH) as f:
+        with open('%s/threads/threadlist' % config.MAILINGLIST_PATH) as f:
             return [Thread(x) for x in json.load(f)]
 
     @property
@@ -71,25 +70,25 @@ class Thread(object):
                        slug=self.slug)
 
 
-@mailinglist.route('/mailinglist/')
+@mailinglist.route('/')
 def index():
     return render_template('mailinglist/index.html')
 
 
-@mailinglist.route('/mailinglist/archive/', defaults={'page': 1})
-@mailinglist.route('/mailinglist/archive/page/<int:page>/')
+@mailinglist.route('/archive/', defaults={'page': 1})
+@mailinglist.route('/archive/page/<int:page>/')
 def archive(page):
     all_threads = Thread.get_list()
-    offset = (page - 1) * THREADS_PER_PAGE
-    threads = all_threads[offset:offset + THREADS_PER_PAGE]
+    offset = (page - 1) * config.THREADS_PER_PAGE
+    threads = all_threads[offset:offset + config.THREADS_PER_PAGE]
     if page != 1 and not threads:
         abort(404)
-    return render_template('mailinglist/archive.html',
-                           page_count=len(threads) // THREADS_PER_PAGE + 1,
+    return render_template('mailinglist/archive.html', page_count=
+                               len(threads) // config.THREADS_PER_PAGE + 1,
                            page=page, threads=threads)
 
 
-@mailinglist.route('/mailinglist/archive/<int:year>/<int:month>/<int:day>/<slug>/')
+@mailinglist.route('/archive/<int:year>/<int:month>/<int:day>/<slug>/')
 def show_thread(year, month, day, slug):
     thread = Thread.get(year, month, day, slug)
     if thread is None:
