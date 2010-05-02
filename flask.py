@@ -145,6 +145,10 @@ class _RequestContext(object):
 
 def url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
+    Variable arguments that are unknown to the target endpoint are appended
+    to the generated URL as query arguments.
+
+    For more information, head over to the :ref:`Quickstart <url-building>`.
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
