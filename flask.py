@@ -152,8 +152,11 @@ def url_for(endpoint, **values):
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
+    :param _external: if set to `True`, an absolute URL is generated.
     """
-    return _request_ctx_stack.top.url_adapter.build(endpoint, values)
+    external = values.pop('_external', False)
+    return _request_ctx_stack.top.url_adapter.build(endpoint, values,
+                                                    force_external=external)
 
 
 def get_template_attribute(template_name, attribute):

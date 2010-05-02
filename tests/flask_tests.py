@@ -227,6 +227,8 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             pass
         with app.test_request_context():
             assert flask.url_for('hello', name='test x') == '/hello/test%20x'
+            assert flask.url_for('hello', name='test x', _external=True) \
+                == 'http://localhost/hello/test%20x'
 
     def test_custom_converters(self):
         from werkzeug.routing import BaseConverter
