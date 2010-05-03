@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/login.png); }
+  </style>
+{% endblock %}
+{% block title %}First Login{% endblock %}
+{% block body %}
+  <h2>This is your First Login</h2>
+  <form action="{{ url_for('general.first_login') }}" method=post>
+    <p>
+      This is your first login on this website.  You are about to sign
+      in with the following OpenID: <a href="{{ openid }}">{{ openid }}</a>
+    <p>
+      Before you can use this site we need a name for you.  This is what
+      will be displayed next to all of your public contributions to this
+      site.  Choose wisely because you cannot change this value later:
+    <dl>
+      <dt>Name:
+      <dd><input type=text name=name size=30>
+    </dl>
+    <p>
+      <input type=submit value=Continue>
+      <input type=submit name=cancel value=Cancel>
+  </form>
+{% endblock %}

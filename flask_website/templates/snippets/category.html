@@ -1,0 +1,19 @@
+{% extends "snippets/layout.html" %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block body %}
+  <h2>{{ category.name }}</h2>
+  {% if category.count > 3 %}
+  <p>
+    Here you can find all {{ category.count }} snippets of this
+    category.  You can also
+  {% else %}
+    This category is pretty empty so far.  Why not
+  {% endif %}
+    <a href="{{ url_for('snippets.new',
+      category=category.slug) }}">add a new one</a>.
+  <ul>
+  {% for snippet in snippets %}
+    <li><a href="{{ snippet.url }}">{{ snippet.title }}</a>
+  {% endfor %}
+  </ul>
+{% endblock %}

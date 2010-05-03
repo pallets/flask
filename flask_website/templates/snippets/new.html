@@ -1,0 +1,43 @@
+{% extends "snippets/layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/new-snippet.png); }
+  </style>
+{% endblock %}
+{% block title %}New Snippet{% endblock %}
+{% block body %}
+  <p>
+    Got something to share?  Here you can create a new snippet and
+    publish it here.  By adding the snippet here, you hereby grant
+    the user of the snippet all rights.
+  <p>
+    The syntax used for snippets is <a href="http://www.wikicreole.org/">Creole</a>.
+    To highlight Python code or Jinja templates, prefix your code blocks
+    with <code>#!python</code>, <code>#!html+jinja</code> or any other
+    <a href="http://pygments.org/docs/lexers">Pygments lexer name</a>.
+  <form action="" method=post>
+    <dl>
+      <dt>Title:
+      <dd><input type=text name=title value="{{ request.form.title }}" size=40>
+      <dt>Category:
+      <dd>
+        <select name=category>
+        {% for category in categories %}
+          <option{% if category.id == active_category %} selected{% endif
+            %} value={{ category.id }}>{{ category.name }}</option>
+        {% endfor %}
+        </select>
+    </dl>
+    <p><textarea name=body cols=40 rows=20>{{ request.form.body }}</textarea>
+    <p>
+      <input type=submit value="Add Snippet">
+      <input type=submit name=preview value="Preview">
+  </form>
+  {% if preview %}
+  <div id=preview>
+    <h2>Preview</h2>
+    {{ preview }}
+  </div>
+  {% endif %}
+{% endblock %}

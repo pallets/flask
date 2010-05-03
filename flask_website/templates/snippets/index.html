@@ -4,14 +4,33 @@
   <p>
     Welcome to the Flask snippet archive.  This is the place where anyone
     can drop helpful pieces of code for others to use.
+  {% if g.user %}
+  <p>
+    You're signed in as “<span title="{{ g.user.openid }}">{{ g.user.name
+    }}</span>”.  You can <a href="{{ url_for('general.logout')
+    }}">sign out</a> here after you're done if you want.
+  {% else %}
   <p>
     In order to add snippets to this page or to add comments, all you need
     is an <a href=http://en.wikipedia.org/wiki/OpenID>OpenID</a> account.
-  <form action=/snippets/search/ method=get>
-    <p>
-      Search snippets:
-      <input type=text name=q size=30>
-      <input type=submit value=Search>
-  </form>
+    You can <a href="{{ url_for('general.login') }}">sign in</a> here.
+  {% endif %}
+  <p>
+    Want to share something?  Then add a
+    <a href="{{ url_for('snippets.new') }}">new snippet</a>.
   <h2>Snippets by Category</h2>
+  <ul>
+  {% for category in categories %}
+    <li><a href="{{ category.url }}">{{ category.name }}</a> ({{ category.count }})
+  {% endfor %}
+  </ul>
+  {% if recent %}
+  <h2>Recently Added</h2>
+  <ul>
+  {% for snippet in recent %}
+    <li><a href="{{ snippet.url }}">{{ snippet.title }}</a> in
+      <a href="{{ snippet.category.url }}">{{ snippet.category.name }}</a>
+  {% endfor %}
+  </ul>
+  {% endif %}
 {% endblock %}

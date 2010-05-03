@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/login.png); }
+  </style>
+{% endblock %}
+{% block title %}Login{% endblock %}
+{% block body %}
+  <form action="{{ url_for('general.login') }}" method=post>
+    <p>
+      For some of the features on this site (such as creating snippets
+      or adding comments) you have to be signed in.  You don't need to
+      create an account on this website, just sign in with an existing
+      <a href=http://openid.net/>OpenID</a> account.
+    <p>
+      OpenID URL:
+      <input type=text name=openid class=openid size=30>
+      <input type=hidden name=next value="{{ request.values.next or request.referrer }}">
+      <input type=submit value=Login>
+  </form>
+{% endblock %}

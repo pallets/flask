@@ -1,0 +1,44 @@
+{% extends "snippets/layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/new-snippet.png); }
+  </style>
+{% endblock %}
+{% block title %}Edit Snippet “{{ snippet.title }}”{% endblock %}
+{% block body %}
+  <script type=text/javascript>
+    $(function() {
+      $('input[name="delete"]').click(function() {
+        if (!confirm("Do you really want to delete this Snippet?\n\n" +
+                     "THIS CANNOT BE UNDONE!"))
+          return false;
+      });
+    });
+  </script>
+  <form action="" method=post>
+    <dl>
+      <dt>Title:
+      <dd><input type=text name=title value="{{ form.title }}" size=40>
+      <dt>Category:
+      <dd>
+        <select name=category>
+        {% for category in categories %}
+          <option{% if category.id == form.category %} selected{% endif
+            %} value={{ category.id }}>{{ category.name }}</option>
+        {% endfor %}
+        </select>
+    </dl>
+    <p><textarea name=body cols=40 rows=20>{{ form.body }}</textarea>
+    <p>
+      <input type=submit value="Edit Snippet">
+      <input type=submit name=delete value="Delete">
+      <input type=submit name=preview value="Preview">
+  </form>
+  {% if preview %}
+  <div id=preview>
+    <h2>Preview</h2>
+    {{ preview }}
+  </div>
+  {% endif %}
+{% endblock %}

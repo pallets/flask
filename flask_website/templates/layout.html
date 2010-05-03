@@ -15,6 +15,15 @@
     <a href=/docs/>documentation</a> //
     <a href=/mailinglist/>mailinglist</a> //
     <a href=/snippets/>snippets</a>
+  {% for message in get_flashed_messages() %}
+    <p class=message>{{ message }}
+  {% endfor %}
   {% block body %}{% endblock %}
-  <p class=footer>&copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a>
+  <p class=footer>
+    &copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a> //
+    {% if g.user %}
+    <a href=/logout/ title="logged in as {{ g.user.name }} [{{ g.user.openid }}]">logout</a>
+    {% else %}
+    <a href=/login/>login</a>
+    {% endif %}
 </div>

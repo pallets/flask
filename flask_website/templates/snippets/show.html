@@ -1,0 +1,38 @@
+{% extends "snippets/layout.html" %}
+{% block title %}{{ snippet.title }}{% endblock %}
+{% block body %}
+  <h2>{{ snippet.title }}</h2>
+  <p class=snippet-author>By {{ snippet.author.name }}
+    filed in <a href="{{ snippet.category.url }}">{{ snippet.category.name }}</a>
+    {% if snippet.author == g.user %}
+      (<a href="{{ url_for('snippets.edit', id=snippet.id) }}">edit</a>)
+    {% endif %}
+  {{ snippet.rendered_body }}
+  {% if snippet.comments or g.user %}
+  <div id=comment-box>
+  {% if snippet.comments %}
+    <h2>Comments</h2>
+    <ul class=comments>
+      {% for comment in snippet.comments %}
+      <li>
+        <p class=title>
+          {{ comment.title or "Comment" }}
+          by {{ comment.author.name }}
+          on {{ comment.pub_date.strftime('%Y-%m-%d @ %H:%M') }}
+        <div class=body>{{ comment.rendered_text }}</div></li>
+      {% endfor %}
+    </ul>
+  {% endif %} 
+  {% if g.user %}
+  <div id=add-comment>
+    <h2>Add Comment</h2>
+    <form action=#add-comment method=post>
+      <p>Title: <input type=text name=title value="{{ request.form.title }}" size=30>
+      <p><textarea name=text cols=40 rows=8>{{ request.form.text }}</textarea>
+      <p><input type=submit value="Add Comment">
+    </form>
+  </div>
+  {% endif %}
+  </div>
+  {% endif %}
+{% endblock %}
