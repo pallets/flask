@@ -12,7 +12,6 @@
 from __future__ import with_statement
 import os
 import sys
-import types
 from datetime import datetime, timedelta
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
