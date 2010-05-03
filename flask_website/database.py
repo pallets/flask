@@ -62,12 +62,13 @@ class Snippet(Model):
     __tablename__ = 'snippets'
     id = Column('snippet_id', Integer, primary_key=True)
     author_id = Column(Integer, ForeignKey('users.user_id'))
-    author = relation(User, backref=backref('snippets', lazy='dynamic'))
     category_id = Column(Integer, ForeignKey('categories.category_id'))
-    category = relation(Category, backref=backref('snippets', lazy='dynamic'))
     title = Column(String(200))
     body = Column(String)
     pub_date = Column(DateTime)
+
+    author = relation(User, backref=backref('snippets', lazy='dynamic'))
+    category = relation(Category, backref=backref('snippets', lazy='dynamic'))
 
     def __init__(self, author, title, body, category):
         self.author = author
@@ -90,12 +91,13 @@ class Comment(Model):
     __tablename__ = 'comments'
     id = Column('comment_id', Integer, primary_key=True)
     snippet_id = Column(Integer, ForeignKey('snippets.snippet_id'))
-    snippet = relation(Snippet, backref=backref('comments', lazy=True))
     author_id = Column(Integer, ForeignKey('users.user_id'))
-    author = relation(User, backref=backref('comments', lazy='dynamic'))
     title = Column(String(200))
     text = Column(String)
     pub_date = Column(DateTime)
+
+    snippet = relation(Snippet, backref=backref('comments', lazy=True))
+    author = relation(User, backref=backref('comments', lazy='dynamic'))
 
     def __init__(self, snippet, author, title, text):
         self.snippet = snippet
