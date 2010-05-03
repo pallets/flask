@@ -23,12 +23,12 @@ def new():
         if rv is not None:
             category_id = rv.id
     if request.method == 'POST':
+        category_id = request.form.get('category', type=int)
         if 'preview' in request.form:
             preview = format_creole(request.form['body'])
         else:
             title = request.form['title']
             body = request.form['body']
-            category_id = request.form.get('category', type=int)
             if not body:
                 flash(u'Error: you have to enter a snippet')
             else:
