@@ -752,10 +752,7 @@ class Flask(object):
         :param rv: the return value from the view function
         """
         if rv is None:
-            from warnings import warn
-            warn(Warning('View function did not return a response'),
-                 stacklevel=2)
-            return u''
+            raise ValueError('View function did not return a response')
         if isinstance(rv, self.response_class):
             return rv
         if isinstance(rv, basestring):
