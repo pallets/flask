@@ -1,8 +1,5 @@
-from __future__ import with_statement
-
 from time import time
 from hashlib import sha1
-from contextlib import closing
 
 from openid.association import Association
 from openid.store.interface import OpenIDStore
@@ -10,8 +7,10 @@ from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from openid.consumer import discover
 from openid.store import nonce
 
-from sqlalchemy.orm import scoped_session
-from sqlalchemy.exceptions import SQLError
+# python-openid is a really stupid library in that regard, we have
+# to disable logging by monkey patching
+from openid import oidutil
+oidutil.log = lambda *a, **kw: None
 
 from flask import request, redirect, abort, url_for, flash, session
 from flask_website.database import User, db_session, OpenIDAssociation, \

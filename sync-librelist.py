@@ -23,13 +23,8 @@ from subprocess import Popen
 
 from flask import json
 from werkzeug import Headers, parse_date
-
-
-INCOMING_MAIL_FOLDER = '_mailinglist/incoming'
-THREAD_FOLDER = '_mailinglist/threads'
-LIST_NAME = 'flask'
-RSYNC_PATH = 'librelist.com::json/%s'
-SUBJECT_PREFIX = '[flask]'
+from websiteconfig import INCOMING_MAIL_FOLDER, THREAD_FOLDER, \
+     LIST_NAME, RSYNC_PATH, SUBJECT_PREFIX
 
 
 _punctuation_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+')
