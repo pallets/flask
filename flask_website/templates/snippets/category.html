@@ -12,7 +12,7 @@
     <a href="{{ url_for('snippets.new',
       category=category.slug) }}">add a new one</a>.
   {% if snippets %}
-  <h3>Snippets in this Category</h3>
+  <h3>Snippets in this Category:</h3>
   <ul>
   {% for snippet in snippets %}
     <li><a href="{{ snippet.url }}">{{ snippet.title }}</a>
