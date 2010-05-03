@@ -15,6 +15,10 @@ def load_currrent_user():
     g.user = User.query.filter_by(openid=session['openid']).first() \
         if 'openid' in session else None
 
+@app.after_request
+def remove_db_session():
+    db_session.remove()
+
 from flask_website.views.general import general
 from flask_website.views.mailinglist import mailinglist
 from flask_website.views.snippets import snippets
@@ -22,4 +26,4 @@ app.register_module(general)
 app.register_module(mailinglist)
 app.register_module(snippets)
 
-from flask_website.database import User
+from flask_website.database import User, db_session
