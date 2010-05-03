@@ -16,7 +16,6 @@ import sys
 import flask
 import unittest
 import tempfile
-import warnings
 from datetime import datetime
 from werkzeug import parse_date
 
@@ -61,7 +60,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert sorted(rv.allow) == ['GET', 'HEAD']
         rv = c.head('/')
         assert rv.status_code == 200
-        assert not rv.data # head truncates
+        assert not rv.data  # head truncates
         assert c.post('/more').data == 'POST'
         assert c.get('/more').data == 'GET'
         rv = c.delete('/more')
@@ -85,7 +84,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert sorted(rv.allow) == ['GET', 'HEAD']
         rv = c.head('/')
         assert rv.status_code == 200
-        assert not rv.data # head truncates
+        assert not rv.data  # head truncates
         assert c.post('/more').data == 'POST'
         assert c.get('/more').data == 'GET'
         rv = c.delete('/more')
@@ -191,7 +190,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             flask.abort(404)
         @app.route('/error')
         def error():
-            1/0
+            1 // 0
         c = app.test_client()
         rv = c.get('/')
         assert rv.status_code == 404
@@ -236,7 +235,8 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             def to_python(self, value):
                 return value.split(',')
             def to_url(self, value):
-                return ','.join(super(ListConverter, self).to_url(x) for x in value)
+                base_to_url = super(ListConverter, self).to_url
+                return ','.join(base_to_url(x) for x in value)
         app = flask.Flask(__name__)
         app.url_map.converters['list'] = ListConverter
         @app.route('/<list:args>')
@@ -297,10 +297,11 @@ class JSONTestCase(unittest.TestCase):
 
     def test_template_escaping(self):
         app = flask.Flask(__name__)
+        render = flask.render_template_string
         with app.test_request_context():
-            rv = flask.render_template_string('{{ "</script>"|tojson|safe }}')
+            rv = render('{{ "</script>"|tojson|safe }}')
             assert rv == '"<\\/script>"'
-            rv = flask.render_template_string('{{ "<\0/script>"|tojson|safe }}')
+            rv = render('{{ "<\0/script>"|tojson|safe }}')
             assert rv == '"<\\u0000\\/script>"'
 
 

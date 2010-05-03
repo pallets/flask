@@ -87,14 +87,16 @@ class _RequestGlobals(object):
 
 
 class Session(SecureCookie):
-    """Expands the session for support for switching between permanent
+    """Expands the session with support for switching between permanent
     and non-permanent sessions.
     """
 
     def _get_permanent(self):
         return self.get('_permanent', False)
+
     def _set_permanent(self, value):
         self['_permanent'] = bool(value)
+
     permanent = property(_get_permanent, _set_permanent)
     del _get_permanent, _set_permanent
 
@@ -391,7 +393,7 @@ class Flask(object):
         #: decorator.
         self.after_request_funcs = []
 
-        #: a list of functions that are called without arguments
+        #: a list of functions that are called without argument
         #: to populate the template context.  Each returns a dictionary
         #: that the template context is updated with.
         #: To register a function here, use the :meth:`context_processor`
