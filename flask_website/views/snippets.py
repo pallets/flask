@@ -52,9 +52,7 @@ def show(id):
     if request.method == 'POST':
         title = request.form['title']
         text = request.form['text']
-        if not title:
-            flash(u'Error: the title is required')
-        elif not text:
+        if not text:
             flash(u'Error: the text is required')
         else:
             db_session.add(Comment(snippet, g.user, title, text))
