@@ -16,8 +16,9 @@ def load_currrent_user():
         if 'openid' in session else None
 
 @app.after_request
-def remove_db_session():
+def remove_db_session(response):
     db_session.remove()
+    return response
 
 from flask_website.views.general import general
 from flask_website.views.mailinglist import mailinglist
