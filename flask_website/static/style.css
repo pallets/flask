@@ -26,12 +26,12 @@ blockquote { margin: 0; font-style: italic; color: #444; }
              margin: 10px -30px; }
 
 /* forms */
-input, textarea      { border: 1px solid black; padding: 2px; background: white;
-                       font-family: 'Georgia', serif; font-size: 17px; color: #004B6B; }
-textarea             { width: 99%; }
-input[type="submit"] { background: #DEEBF3; border-color: #004B6B; }
-input.openid         { background: url(openid.png) no-repeat 4px center;
-                       padding-left: 26px; }
+input, textarea, select { border: 1px solid black; padding: 2px; background: white;
+                          font-family: 'Georgia', serif; font-size: 17px; color: #004B6B; }
+textarea                { width: 99%; }
+input[type="submit"]    { background: #DEEBF3; border-color: #004B6B; }
+input.openid            { background: url(openid.png) no-repeat 4px center;
+                          padding-left: 26px; }
 
 /* snippets */
 .snippet-author     { margin: 0 0 20px 0; font-size: 0.9em; }
