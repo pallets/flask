@@ -25,7 +25,7 @@ Here the example `database.py` module for your application::
     from sqlalchemy.orm import scoped_session, sessionmaker
     from sqlalchemy.ext.declarative import declarative_base
 
-    engine = create_engine('sqlite:////tmp/test.db')
+    engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine)) 
@@ -104,7 +104,7 @@ Here is an example `database.py` module for your application::
     from sqlalchemy import create_engine, MetaData
     from sqlalchemy.orm import scoped_session, sessionmaker
 
-    engine = create_engine('sqlite:////tmp/test.db')
+    engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     metadata = MetaData()
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
@@ -156,7 +156,7 @@ you basically only need the engine::
 
     from sqlalchemy import create_engine, MetaData
 
-    engine = create_engine('sqlite:////tmp/test.db')
+    engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     metadata = MetaData(bind=engine)
 
 Then you can either declare the tables in your code like in the examples
