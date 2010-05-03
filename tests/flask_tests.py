@@ -255,17 +255,17 @@ class BasicFunctionalityTestCase(unittest.TestCase):
                 == '/static/index.html'
 
     def test_none_response(self):
-        warnings.filterwarnings('error', 'View function did not return')
         app = flask.Flask(__name__)
         @app.route('/')
         def test():
             return None
         try:
             app.test_client().get('/')
-        except Warning:
+        except ValueError, e:
+            assert str(e) == 'View function did not return a response'
             pass
         else:
-            assert "Expected warning"
+            assert "Expected ValueError"
 
 
 class JSONTestCase(unittest.TestCase):
