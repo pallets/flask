@@ -441,6 +441,15 @@ class ModuleTestCase(unittest.TestCase):
         assert catched == ['before-app', 'before-admin',
                            'after-admin', 'after-app']
 
+    def test_late_binding(self):
+        app = flask.Flask(__name__)
+        admin = flask.Module(__name__, 'admin')
+        @admin.route('/')
+        def index():
+            return '42'
+        app.register_module(admin, url_prefix='/admin')
+        assert app.test_client().get('/admin/').data == '42'
+
 
 def suite():
     from minitwit_tests import MiniTwitTestCase

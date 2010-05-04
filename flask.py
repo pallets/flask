@@ -448,7 +448,7 @@ class Module(_PackageBoundObject):
         """
         def register_rule(state):
             the_rule = rule
-            if self.url_prefix:
+            if state.url_prefix:
                 the_rule = state.url_prefix + rule
             state.app.add_url_rule(the_rule, '%s.%s' % (self.name, endpoint),
                                    view_func, **options)
