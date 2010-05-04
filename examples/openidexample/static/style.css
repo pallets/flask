@@ -1,0 +1,39 @@
+body {
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    margin: 30px;
+    padding: 0;
+}
+
+a {
+    color: #335E79;
+}
+
+p.message {
+    color: #335E79;
+    padding: 10px;
+    background: #CADEEB;
+}
+
+input {
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    border: 1px solid black;
+    color: #335E79;
+    padding: 2px;
+}
+
+input[type="submit"] {
+    background: #CADEEB;
+    color: #335E79;
+    border-color: #335E79;
+}
+
+input[name="openid"] {
+    background: url(openid.png) 4px no-repeat;
+    padding-left: 24px;
+}
+
+h1, h2 {
+    font-weight: normal;
+}
