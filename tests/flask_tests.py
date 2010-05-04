@@ -441,6 +441,29 @@ class ModuleTestCase(unittest.TestCase):
         assert catched == ['before-app', 'before-admin',
                            'after-admin', 'after-app']
 
+    def test_context_processors(self):
+        app = flask.Flask(__name__)
+        admin = flask.Module(__name__, 'admin', url_prefix='/admin')
+        @app.context_processor
+        def inject_all_regualr():
+            return {'a': 1}
+        @admin.context_processor
+        def inject_admin():
+            return {'b': 2}
+        @admin.app_context_processor
+        def inject_all_module():
+            return {'c': 3}
+        @app.route('/')
+        def index():
+            return flask.render_template_string('{{ a }}{{ b }}{{ c }}')
+        @admin.route('/')
+        def index():
+            return flask.render_template_string('{{ a }}{{ b }}{{ c }}')
+        app.register_module(admin)
+        c = app.test_client()
+        assert c.get('/').data == '13'
+        assert c.get('/admin/').data == '123'
+
     def test_late_binding(self):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin')

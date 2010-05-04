@@ -465,7 +465,7 @@ class Module(_PackageBoundObject):
 
     def before_app_request(self, f):
         """Like :meth:`Flask.before_request`.  Such a function is executed
-        before each request.
+        before each request, even if outside of a module.
         """
         self._record(lambda s: s.app.before_request_funcs
             .setdefault(None, []).append(f))
@@ -482,9 +482,25 @@ class Module(_PackageBoundObject):
 
     def after_app_request(self, f):
         """Like :meth:`Flask.after_request` but for a module.  Such a function
-        is executed after each request.
+        is executed after each request, even if outside of the module.
         """
         self._record(lambda s: s.app.after_request_funcs
+            .setdefault(None, []).append(f))
+        return f
+
+    def context_processor(self, f):
+        """Like :meth:`Flask.context_processor` but for a modul.  This
+        function is only executed for requests handled by a module.
+        """
+        self._record(lambda s: s.app.template_context_processors
+            .setdefault(self.name, []).append(f))
+        return f
+
+    def app_context_processor(self, f):
+        """Like :meth:`Flask.context_processor` but for a module.  Such a
+        function is executed each request, even if outside of the module.
+        """
+        self._record(lambda s: s.app.template_context_processors
             .setdefault(None, []).append(f))
         return f
 
