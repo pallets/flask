@@ -15,6 +15,8 @@ Version 0.2
   view function.
 - server listens on 127.0.0.1 by default now to fix issues with chrome.
 - added external URL support.
+- module support and internal request handling refactoring
+  to better support pluggable applications.
 
 Version 0.1
 -----------
