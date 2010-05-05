@@ -1,5 +1,6 @@
 from __future__ import with_statement
 import os
+from math import ceil
 from hashlib import md5
 from werkzeug import parse_date
 from jinja2.utils import urlize
@@ -83,8 +84,9 @@ def archive(page):
     threads = all_threads[offset:offset + config.THREADS_PER_PAGE]
     if page != 1 and not threads:
         abort(404)
-    return render_template('mailinglist/archive.html', page_count=
-                               len(threads) // config.THREADS_PER_PAGE + 1,
+    return render_template('mailinglist/archive.html',
+                           page_count=int(ceil(threads /
+                               float(config.THREADS_PER_PAGE))),
                            page=page, threads=threads)
 
 
