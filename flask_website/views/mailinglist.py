@@ -85,7 +85,7 @@ def archive(page):
     if page != 1 and not threads:
         abort(404)
     return render_template('mailinglist/archive.html',
-                           page_count=int(ceil(threads /
+                           page_count=int(ceil(len(all_threads) /
                                float(config.THREADS_PER_PAGE))),
                            page=page, threads=threads)
 
