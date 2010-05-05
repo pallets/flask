@@ -46,7 +46,7 @@ class WebsiteOpenIDStore(OpenIDStore):
         return result_assoc
 
     def removeAssociation(self, server_url, handle):
-        return OpenIDAssociation.filter(
+        return OpenIDAssociation.query.filter(
             (OpenIDAssociation.server_url == server_url) &
             (OpenIDAssociation.handle == handle)
         ).delete()
@@ -67,12 +67,12 @@ class WebsiteOpenIDStore(OpenIDStore):
         return True
 
     def cleanupNonces(self):
-        return OpenIDUserNonce.filter(
+        return OpenIDUserNonce.query.filter(
             OpenIDUserNonce.timestamp <= int(time() - nonce.SKEW)
         ).delete()
 
     def cleanupAssociations(self):
-        return OpenIDAssociation.filter(
+        return OpenIDAssociation.query.filter(
             OpenIDAssociation.lifetime < int(time())
         ).delete()
 
