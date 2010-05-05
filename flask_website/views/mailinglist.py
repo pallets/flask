@@ -4,6 +4,7 @@ from hashlib import md5
 from werkzeug import parse_date
 from jinja2.utils import urlize
 from flask import Module, render_template, json, url_for, abort, Markup
+from flask_website.utils import split_lines_wrapping
 from flask_website import config
 
 mailinglist = Module(__name__, url_prefix='/mailinglist')
@@ -19,11 +20,10 @@ class Mail(object):
         self.children = [Mail(x) for x in d['children']]
         self.text = d['text']
 
-    @property
     def rendered_text(self):
         result = []
         in_sig = False
-        for line in self.text.splitlines():
+        for line in split_lines_wrapping(self.text):
             if line == u'-- ':
               in_sig = True
             if in_sig:
