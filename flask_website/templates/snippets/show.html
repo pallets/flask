@@ -1,5 +1,9 @@
 {% extends "snippets/layout.html" %}
 {% block title %}{{ snippet.title }}{% endblock %}
+{% block head %}
+  {{ super() }}
+  <link href="{{ url_for('comments_feed', id=snippet.id) }}" rel="alternate" title="Snippet Comments" type="application/atom+xml">
+{% endblock %}
 {% block body %}
   <h2>{{ snippet.title }}</h2>
   <p class=snippet-author>By {{ snippet.author.name }}

@@ -76,12 +76,6 @@ class WebsiteOpenIDStore(OpenIDStore):
             OpenIDAssociation.lifetime < int(time())
         ).delete()
 
-    def getAuthKey(self):
-        return sha1(config.SECRET_KEY).hexdigest()[:self.AUTH_KEY_LEN]
-
-    def isDump(self):
-        return False
-
 
 def redirect_back():
     return redirect(request.values.get('next') or url_for('general.index'))

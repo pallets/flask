@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+from urlparse import urljoin
 from flask import Module, render_template, request, flash, abort, redirect, \
      g, url_for
+from werkzeug.contrib.atom import AtomFeed
 from flask_website.utils import requires_login, format_creole
 from flask_website.database import Category, Snippet, Comment, db_session
 
@@ -112,3 +115,32 @@ def category(slug):
     snippets = category.snippets.order_by(Snippet.title).all()
     return render_template('snippets/category.html', category=category,
                            snippets=snippets)
+
+
+@snippets.route('/recent.atom')
+def recent_feed():
+    feed = AtomFeed(u'Recent Flask Snippets',
+                    subtitle=u'Recent additions to the Flask snippet archive',
+                    feed_url=request.url, url=request.url_root)
+    snippets = Snippet.query.order_by(Snippet.pub_date.desc()).limit(15)
+    for snippet in snippets:
+        feed.add(snippet.title, unicode(snippet.rendered_body),
+                 content_type='html', author=snippet.author.name,
+                 url=urljoin(request.url_root, snippet.url),
+                 updated=snippet.pub_date)
+    return feed.get_response()
+
+
+@snippets.route('/snippets/<int:id>/comments.atom')
+def comments_feed(id):
+    snippet = Snippet.query.get(id)
+    if snippet is None:
+        abort(404)
+    feed = AtomFeed(u'Comments for Snippet “%s”' % snippet.title,
+                    feed_url=request.url, url=request.url_root)
+    for comment in snippet.comments:
+        feed.add(comment.title or u'Untitled Comment',
+                 unicode(snippet.rendered_text),
+                 content_type='html', author=comment.author.name,
+                 url=request.url, updated=comment.pub_date)
+    return feed.get_response()
