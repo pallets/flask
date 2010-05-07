@@ -16,7 +16,7 @@ import sys, os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.append(os.path.abspath('.'))
+sys.path.append(os.path.abspath('_themes'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -79,9 +79,6 @@ exclude_patterns = ['_build']
 # output. They are ignored by default.
 #show_authors = False
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'flaskext.FlaskyStyle'
-
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
@@ -90,7 +87,7 @@ pygments_style = 'flaskext.FlaskyStyle'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'flasky'
+html_theme = 'flask'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
