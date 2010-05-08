@@ -28,9 +28,9 @@ class Mail(object):
             if line == u'-- ':
               in_sig = True
             if in_sig:
-                line = Markup(u'<span class=sig>%s</span>' % line)
+                line = Markup(u'<span class=sig>%s</span>') % line
             elif line.startswith('>'):
-                line = Markup(u'<span class=quote>%s</span>' % line)
+                line = Markup(u'<span class=quote>%s</span>') % line
             result.append(urlize(line))
         return Markup(u'\n'.join(result))
 
