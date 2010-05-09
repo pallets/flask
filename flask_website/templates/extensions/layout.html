@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/extensions.png); }
+  </style>
+{% endblock %}
+{% block body_title %}
+  <h1><span>Flask Extensions</span></h1>
+{% endblock %}

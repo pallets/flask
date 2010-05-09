@@ -16,6 +16,7 @@ pre        { padding: 7px 30px; margin: 15px -30px; line-height: 1.3; }
 p          { line-height: 1.4; }
 ul         { margin: 15px 0 15px 0; padding: 0; list-style: none; line-height: 1.4; }
 ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-left: -19px; }
+ol         { line-height: 1.4; margin: 15px 0 15px 30px; padding: 0; }
 blockquote { margin: 0; font-style: italic; color: #444; }
 .footer    { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
 .nav       { text-align: center; }
@@ -69,6 +70,12 @@ input.openid            { background: url(openid.png) no-repeat 4px center;
                       line-height: 1.15; }
 .mail .quote        { color: #004B6B; }
 .mail .sig          { color: #888; }
+
+/* extensions */
+.extension div.description p { margin: 10px 0; }
+.extension dl                { margin: 0; font-size: 0.9em; }
+.extension dl dt             { width: 130px; float: left; height: 22px; }
+.extension dl dd             { height: 22px; }
 
 /* pygments style, same as flaskystyle */
 .hll { background-color: #ffffcc }

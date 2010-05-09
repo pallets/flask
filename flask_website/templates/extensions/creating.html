@@ -1,0 +1,38 @@
+{% extends "extensions/layout.html" %}
+{% block title %}Creating Extensions{% endblock %}
+{% block body %}
+  <h2>Creating Extensions</h2>
+  <p>
+    Extensions to Flask are regular Python packages.  But there are some
+    rules you should/must follow so that we can enlist your extension on
+    the Flask extension registry:
+  <ol>
+    <li>
+      Your extension must be placed in a <code>flaskext.</code>
+      namespace package.  This makes it easier for others to locate
+      your extension and does not clutter the PyPI index with generic
+      toplevel packages.
+    <li>
+      Your extension should have the word “Flask” in the name.  This
+      makes it easier to locate all the packages that go well with
+      Flask.  This is also how the moderators of the extension registry
+      spot your extension.
+    <li>
+      The extension should be documented with Sphinx and it's recommended
+      to use intersphinx to interlink the documentation with Flask itself
+      and other extensions it might depend on.  It's also recommended to use
+      the <a href="http://github.com/mitsuhiko/flask-sphinx-themes">Flask
+      Sphinx Themes</a> or a modified version of one of them.
+    <li>
+      Extensions should have proper dependencies in the <em>setup.py</em>
+      file specified so that installation with pip/easy_install works.
+    <li>
+      Ideally your extension has at least one example in the repository
+      or tarball so that it's easier to understand how it works.
+  </ol>
+  <p>
+    We scan the PyPI index in regular intervals for new Flask packages
+    so your extension should sooner or later end up here.  If this is
+    not quick enough for you, send <a
+    href="mailto:armin.ronacher@active-4.com">me a mail</a>.
+{% endblock %}

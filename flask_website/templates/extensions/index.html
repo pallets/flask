@@ -1,0 +1,36 @@
+{% extends "extensions/layout.html" %}
+{% block title %}Extensions Registry{% endblock %}
+{% block body %}
+  <p>
+    Welcome to the Flask extensions registry.  Here you can find a list
+    of packages that extend Flask.  This list is moderated and updated
+    on a regular basis.  If you want your package to show up here,
+    follow the <a href="{{ url_for('creating') }}">guide on creating
+    extensions</a>.
+  {% for extension in extensions %}
+  <div class=extension>
+    <h2>{{ extension.name }}</h2>
+    <div class=description>
+      {{ extension.description }}
+    </div>
+    <dl>
+      <dt>Author:
+      <dd>{{ extension.author }}
+      <dt>PyPI Page:
+      <dd><a href="{{ extension.pypi }}">{{ extension.name }}</a>
+    {% if extension.website %}
+      <dt>Website:
+      <dd>{{ extension.website|urlize }}
+    {% endif %}
+    {% if extension.docs %}
+      <dt>Documentation:
+      <dd><a href="{{ extension.docs }}">Read docs @ {{ extension.docserver }}</a>
+    {% endif %}
+    {% if extension.github %}
+      <dt>On Github:
+      <dd><a href="http://github.com/{{ extension.github }}">{{ extension.github }}</a>
+    {% endif %}
+    </dl>
+  </div>
+  {% endfor %}
+{% endblock %}
