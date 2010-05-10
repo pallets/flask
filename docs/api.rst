@@ -213,6 +213,8 @@ Useful Functions and Classes
 
 .. autofunction:: redirect
 
+.. autofunction:: send_file
+
 .. autofunction:: escape
 
 .. autoclass:: Markup

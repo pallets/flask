@@ -15,6 +15,7 @@ Version 0.2
   view function.
 - server listens on 127.0.0.1 by default now to fix issues with chrome.
 - added external URL support.
+- added support for :func:`~flask.send_file`
 
 Version 0.1
 -----------

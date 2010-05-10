@@ -12,12 +12,13 @@
 from __future__ import with_statement
 import os
 import sys
+import mimetypes
 from datetime import datetime, timedelta
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
      LocalStack, LocalProxy, create_environ, SharedDataMiddleware, \
-     ImmutableDict, cached_property
+     ImmutableDict, cached_property, wrap_file, Headers
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException
 from werkzeug.contrib.securecookie import SecureCookie
@@ -235,6 +236,71 @@ def jsonify(*args, **kwargs):
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
 
+def send_file(filename_or_fp, mimetype=None, as_attachment=False,
+              attachment_filename=None):
+    """Sends the contents of a file to the client.  This will use the
+    most efficient method available and configured.  By default it will
+    try to use the WSGI server's file_wrapper support.  Alternatively
+    you can set the application's :attr:`~Flask.use_x_sendfile` attribute
+    to ``True`` to directly emit an `X-Sendfile` header.  This however
+    requires support of the underlying webserver for `X-Sendfile`.
+
+    By default it will try to guess the mimetype for you, but you can
+    also explicitly provide one.  For extra security you probably want
+    to sent certain files as attachment (HTML for instance).
+
+    .. versionadded:: 0.2
+
+    :param filename_or_fp: the filename of the file to send.  This is
+                           relative to the :attr:`~Flask.root_path` if a
+                           relative path is specified.
+                           Alternatively a file object might be provided
+                           in which case `X-Sendfile` might not work and
+                           fall back to the traditional method.
+    :param mimetype: the mimetype of the file if provided, otherwise
+                     auto detection happens.
+    :param as_attachment: set to `True` if you want to send this file with
+                          a ``Content-Disposition: attachment`` header.
+    :param attachment_filename: the filename for the attachment if it
+                                differs from the file's filename.
+    """
+    if isinstance(filename_or_fp, basestring):
+        filename = filename_or_fp
+        file = None
+    else:
+        file = filename_or_fp
+        filename = getattr(file, 'name', None)
+    if filename is not None:
+        filename = os.path.join(current_app.root_path, filename)
+    if mimetype is None and (filename or attachment_filename):
+        mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+    if mimetype is None:
+        mimetype = 'application/octet-stream'
+
+    headers = Headers()
+    if as_attachment:
+        if attachment_filename is None:
+            if filename is None:
+                raise TypeError('filename unavailable, required for '
+                                'sending as attachment')
+            attachment_filename = os.path.basename(filename)
+        headers.add('Content-Disposition', 'attachment',
+                    filename=attachment_filename)
+
+    if current_app.use_x_sendfile and filename:
+        if file is not None:
+            file.close()
+        headers['X-Sendfile'] = filename
+        data = None
+    else:
+        if file is None:
+            file = open(filename, 'rb')
+        data = wrap_file(request.environ, file)
+
+    return Response(data, mimetype=mimetype, headers=headers,
+                    direct_passthrough=True)
+
+
 def render_template(template_name, **context):
     """Renders a template from the template folder with the given
     context.
@@ -343,6 +409,13 @@ class Flask(object):
     #: date of a permanent session.  The default is 31 days which makes a
     #: permanent session survive for roughly one month.
     permanent_session_lifetime = timedelta(days=31)
+
+    #: Enable this if you want to use the X-Sendfile feature.  Keep in
+    #: mind that the server has to support this.  This only affects files
+    #: sent with the :func:`send_file` method.
+    #:
+    #: .. versionadded:: 0.2
+    use_x_sendfile = False
 
     #: options that are passed directly to the Jinja2 environment
     jinja_options = ImmutableDict(
