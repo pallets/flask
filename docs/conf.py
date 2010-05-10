@@ -234,3 +234,5 @@ intersphinx_mapping = {
     'http://www.sqlalchemy.org/docs/': None,
     'http://wtforms.simplecodes.com/docs/0.5/': None
 }
+
+pygments_style = 'flask_theme_support.FlaskyStyle'
