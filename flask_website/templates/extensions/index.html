@@ -28,7 +28,11 @@
     {% endif %}
     {% if extension.github %}
       <dt>On Github:
-      <dd><a href="http://github.com/{{ extension.github }}">{{ extension.github }}</a>
+      <dd><a href="http://github.com/{{ extension.github }}/">{{ extension.github }}</a>
+    {% endif %}
+    {% if extension.bitbucket %}
+      <dt>On Bitbucket:
+      <dd><a href="http://bitbucket.org/{{ extension.bitbucket }}/">{{ extension.bitbucket }}</a>
     {% endif %}
     </dl>
   </div>
