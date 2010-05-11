@@ -249,6 +249,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     also explicitly provide one.  For extra security you probably want
     to sent certain files as attachment (HTML for instance).
 
+    Please never pass filenames to this function from user sources without
+    checking them first.  Something like this is usually sufficient to
+    avoid security problems::
+
+        if '..' in filename or filename.startswith('/'):
+            abort(404)
+
     .. versionadded:: 0.2
 
     :param filename_or_fp: the filename of the file to send.  This is
