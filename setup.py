@@ -43,7 +43,7 @@ from setuptools import setup
 
 setup(
     name='Flask',
-    version='0.2',
+    version='0.5',
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
