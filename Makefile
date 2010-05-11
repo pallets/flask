@@ -5,6 +5,9 @@ all: clean-pyc test
 test:
 	python tests/flask_tests.py
 
+release:
+	python setup.py release sdist upload
+
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +

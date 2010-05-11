@@ -6,18 +6,22 @@ Here you can see the full list of changes between each Flask release.
 Version 0.2
 -----------
 
-[unreleased; current development version]
+Released on May 12th, codename Jägermeister
 
 - various bugfixes
 - integrated JSON support
 - added :func:`~flask.get_template_attribute` helper function.
 - :meth:`~flask.Flask.add_url_rule` can now also register a
   view function.
+- refactored internal request dispatching.
 - server listens on 127.0.0.1 by default now to fix issues with chrome.
 - added external URL support.
 - added support for :func:`~flask.send_file`
 - module support and internal request handling refactoring
   to better support pluggable applications.
+- sessions can be set to be permanent now on a per-session basis.
+- better error reporting on missing secret keys.
+- added support for Google Appengine.
 
 Version 0.1
 -----------
