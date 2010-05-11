@@ -17,7 +17,8 @@ import flask
 import unittest
 import tempfile
 from datetime import datetime
-from werkzeug import parse_date
+from werkzeug import parse_date, parse_options_header
+from cStringIO import StringIO
 
 
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
@@ -474,6 +475,87 @@ class ModuleTestCase(unittest.TestCase):
         assert app.test_client().get('/admin/').data == '42'
 
 
+class SendfileTestCase(unittest.TestCase):
+
+    def test_send_file_regular(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.send_file('static/index.html')
+            assert rv.direct_passthrough
+            assert rv.mimetype == 'text/html'
+            with app.open_resource('static/index.html') as f:
+                assert rv.data == f.read()
+
+    def test_send_file_xsendfile(self):
+        app = flask.Flask(__name__)
+        app.use_x_sendfile = True
+        with app.test_request_context():
+            rv = flask.send_file('static/index.html')
+            assert rv.direct_passthrough
+            assert 'x-sendfile' in rv.headers
+            assert rv.headers['x-sendfile'] == \
+                os.path.join(app.root_path, 'static/index.html')
+            assert rv.mimetype == 'text/html'
+
+    def test_send_file_object(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'))
+            rv = flask.send_file(f)
+            with app.open_resource('static/index.html') as f:
+                assert rv.data == f.read()
+            assert rv.mimetype == 'text/html'
+
+        app.use_x_sendfile = True
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'))
+            rv = flask.send_file(f)
+            assert rv.mimetype == 'text/html'
+            assert 'x-sendfile' in rv.headers
+            assert rv.headers['x-sendfile'] == \
+                os.path.join(app.root_path, 'static/index.html')
+
+        app.use_x_sendfile = False
+        with app.test_request_context():
+            f = StringIO('Test')
+            rv = flask.send_file(f)
+            assert rv.data == 'Test'
+            assert rv.mimetype == 'application/octet-stream'
+            f = StringIO('Test')
+            rv = flask.send_file(f, mimetype='text/plain')
+            assert rv.data == 'Test'
+            assert rv.mimetype == 'text/plain'
+
+        app.use_x_sendfile = True
+        with app.test_request_context():
+            f = StringIO('Test')
+            rv = flask.send_file(f)
+            assert 'x-sendfile' not in rv.headers
+
+    def test_attachment(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'))
+            rv = flask.send_file(f, as_attachment=True)
+            value, options = parse_options_header(rv.headers['Content-Disposition'])
+            assert value == 'attachment'
+
+        with app.test_request_context():
+            assert options['filename'] == 'index.html'
+            rv = flask.send_file('static/index.html', as_attachment=True)
+            value, options = parse_options_header(rv.headers['Content-Disposition'])
+            assert value == 'attachment'
+            assert options['filename'] == 'index.html'
+
+        with app.test_request_context():
+            rv = flask.send_file(StringIO('Test'), as_attachment=True,
+                                 attachment_filename='index.txt')
+            assert rv.mimetype == 'text/plain'
+            value, options = parse_options_header(rv.headers['Content-Disposition'])
+            assert value == 'attachment'
+            assert options['filename'] == 'index.txt'
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
@@ -481,11 +563,12 @@ def suite():
     suite.addTest(unittest.makeSuite(ContextTestCase))
     suite.addTest(unittest.makeSuite(BasicFunctionalityTestCase))
     suite.addTest(unittest.makeSuite(TemplatingTestCase))
+    suite.addTest(unittest.makeSuite(SendfileTestCase))
+    suite.addTest(unittest.makeSuite(ModuleTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     suite.addTest(unittest.makeSuite(MiniTwitTestCase))
     suite.addTest(unittest.makeSuite(FlaskrTestCase))
-    suite.addTest(unittest.makeSuite(ModuleTestCase))
     return suite
 
 
