@@ -68,15 +68,15 @@ up in situations where we think "well, this is just far fetched, how could
 that possibly be exploited" and then an intelligent guy comes along and
 figures a way out to exploit that application.  And don't think, your
 application is not important enough for hackers to take notice.  Depending
-ont he kind of attack, chances are there are automated botnets out there
-trying to figure out how to fill your database with viagra adverisments.
+on the kind of attack, chances are there are automated botnets out there
+trying to figure out how to fill your database with viagra advertisements.
 
 So always keep that in mind when doing web development.
 
 Target Audience
 ---------------
 
-Is Flask for you?  Is your application small-ish (less than 4000 lines of
+Is Flask for you?  If your application small-ish (less than 4000 lines of
 Python code) and does not depend on too complex database structures, Flask
 is the Framework for you.  It was designed from the ground up to be easy
 to use, based on established principles, good intentions and on top of two

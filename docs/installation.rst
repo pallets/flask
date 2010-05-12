@@ -122,7 +122,7 @@ Get the git checkout in a new virtualenv and run in develop mode::
     ...
     Finished processing dependencies for Flask
 
-This will pull in the depdenencies and activate the git head as current
+This will pull in the dependencies and activate the git head as current
 version.  Then you just have to ``git pull origin`` to get the latest
 version.
 

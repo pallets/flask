@@ -51,7 +51,7 @@ possible without hacks if the object were created ahead of time for you
 based on a class that is not exposed to you.
 
 But there is another very important reason why Flask depends on an
-explicit instanciation of that class: the package name.  Whenever you
+explicit instantiation of that class: the package name.  Whenever you
 create a Flask instance you usually pass it `__name__` as package name.
 Flask depends on that information to properly load resources relative
 to your module.  With Python's outstanding support for reflection it can
@@ -125,7 +125,7 @@ advantage.
 Flask is a framework that takes advantage of the work already done by
 Werkzeug to properly interface WSGI (which can be a complex task at
 times).  Thanks to recent developments in the Python package
-infrastructure, packages with depencencies are no longer an issue and
+infrastructure, packages with dependencies are no longer an issue and
 there are very few reasons against having libraries that depend on others.
 
 
@@ -140,7 +140,7 @@ isn't that a bad idea?
 Yes it is usually not such a bright idea to use thread locals.  They cause
 troubles for servers that are not based on the concept of threads and make
 large applications harder to maintain.  However Flask is just not designed
-for large applications or asyncronous servers.  Flask wants to make it
+for large applications or asynchronous servers.  Flask wants to make it
 quick and easy to write a traditional web application.
 
 Also see the :ref:`becomingbig` section of the documentation for some

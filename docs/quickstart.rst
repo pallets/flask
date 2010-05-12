@@ -83,7 +83,7 @@ you enable the debug support the server will reload itself on code changes
 and also provide you with a helpful debugger if things go wrong.
 
 There are two ways to enable debugging.  Either set that flag on the
-applciation object::
+application object::
 
     app.debug = True
     app.run()
@@ -139,7 +139,7 @@ likely he will like the page and come back next time.
 
 To add variable parts to a URL you can mark these special sections as
 ``<variable_name>``.  Such a part is then passed as keyword argument to
-your function.  Optionally a converter can be specifed by specifying a
+your function.  Optionally a converter can be specified by specifying a
 rule with ``<converter:variable_name>``.  Here some nice examples::
 
     @app.route('/user/<username>')
@@ -186,8 +186,8 @@ parameter.  Here some examples:
 >>> with app.test_request_context():
 ...  print url_for('index')
 ...  print url_for('login')
-...  print url_for('profile', username='John Doe')
 ...  print url_for('login', next='/')
+...  print url_for('profile', username='John Doe')
 ... 
 /
 /login
@@ -319,7 +319,7 @@ Here's a simple example of how to render a template::
 
 Flask will look for templates in the `templates` folder.  So if your
 application is a module, that folder is next to that module, if it's a
-pacakge it's actually inside your package:
+package it's actually inside your package:
 
 **Case 1**: a module::
     
@@ -484,7 +484,7 @@ We recommend accessing URL parameters with `get` or by catching the
 `KeyError` because users might change the URL and presenting them a 400
 bad request page in that case is a bit user unfriendly.
 
-For a full list of methods and attribtues on that object, head over to the
+For a full list of methods and attributes on that object, head over to the
 :class:`~flask.request` documentation.
 
 
@@ -493,7 +493,7 @@ File Uploads
 
 Obviously you can handle uploaded files with Flask just as easy.  Just
 make sure not to forget to set the ``enctype="multipart/form-data"``
-attribtue on your HTML form, otherwise the browser will not transmit your
+attribute on your HTML form, otherwise the browser will not transmit your
 files at all.
 
 Uploaded files are stored in memory or at a temporary location on the
@@ -576,7 +576,7 @@ you want to customize the error page, you can use the
 
 Note the ``404`` after the :func:`~flask.render_template` call.  This
 tells Flask that the status code of that page should be 404 which means
-not found.  By default 200 is assumed which translats to: all went well.
+not found.  By default 200 is assumed which translates to: all went well.
 
 .. _sessions:
 
@@ -586,7 +586,7 @@ Sessions
 Besides the request object there is also a second object called
 :class:`~flask.session` that allows you to store information specific to a
 user from one request to the next.  This is implemented on top of cookies
-for you and signes the cookies cryptographically.  What this means is that
+for you and signs the cookies cryptographically.  What this means is that
 the user could look at the contents of your cookie but not modify it,
 unless he knows the secret key used for signing.
 

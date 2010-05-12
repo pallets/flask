@@ -25,7 +25,7 @@ In that case, it makes a lot of sense to use dotted names for the URL
 endpoints.
 
 Here are some suggestions for how Flask can be modified to better 
-accomodate large-scale applications:
+accommodate large-scale applications:
 
 -   implement dotted names for URL endpoints
 -   get rid of the decorator function registering which causes a lot
@@ -33,7 +33,7 @@ accomodate large-scale applications:
     also requires that the whole application is imported when the system
     initializes or certain URLs will not be available right away.   A
     better solution would be to have one module with all URLs in there and
-    specifing the target functions explicitly or by name and importing
+    specifying the target functions explicitly or by name and importing
     them when needed.
 -   switch to explicit request object passing.  This requires more typing
     (because you now have something to pass around) but it makes it a
