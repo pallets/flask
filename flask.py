@@ -1113,7 +1113,7 @@ class Flask(_PackageBoundObject):
             with app.request_context(environ):
                 do_something_with(request)
 
-        :params environ: a WSGI environment
+        :param environ: a WSGI environment
         """
         return _RequestContext(self, environ)
 
