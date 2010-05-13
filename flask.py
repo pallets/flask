@@ -562,7 +562,7 @@ class Module(_PackageBoundObject):
         return f
 
     def context_processor(self, f):
-        """Like :meth:`Flask.context_processor` but for a modul.  This
+        """Like :meth:`Flask.context_processor` but for a module.  This
         function is only executed for requests handled by a module.
         """
         self._record(lambda s: s.app.template_context_processors
@@ -601,7 +601,7 @@ class Flask(_PackageBoundObject):
         app = Flask(__name__)
     """
 
-    #: the class that is used for request objects.  See :class:`~flask.request`
+    #: the class that is used for request objects.  See :class:`~flask.Request`
     #: for more information.
     request_class = Request
 
