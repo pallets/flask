@@ -16,7 +16,7 @@
     <p>
       OpenID URL:
       <input type=text name=openid class=openid size=30>
-      <input type=hidden name=next value="{{ request.values.next or request.referrer or url_for('general.index') }}">
+      <input type=hidden name=next value="{{ next }}">
       <input type=submit value=Login>
   </form>
 {% endblock %}

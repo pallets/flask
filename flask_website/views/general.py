@@ -1,6 +1,6 @@
 from flask import Module, render_template, session, redirect, url_for, \
      request, flash, g, Response
-from flask_website import openid_auth
+from flask_website import oid
 from flask_website.database import db_session, User
 
 general = Module(__name__)
@@ -20,17 +20,30 @@ def logout():
 
 
 @general.route('/login/', methods=['GET', 'POST'])
+@oid.loginhandler
 def login():
     if g.user is not None:
         return redirect(url_for('general.index'))
-    rv = openid_auth.check_return_from_provider()
-    if rv is not None:
-        return rv
     if request.method == 'POST':
         openid = request.values.get('openid')
         if openid:
-            return openid_auth.login(openid)
-    return render_template('general/login.html')
+            return oid.try_login(openid, ask_for=['fullname', 'nickname'])
+    error = oid.fetch_error()
+    if error:
+        flash(u'Error: ' + error)
+    return render_template('general/login.html', next=oid.get_next_url())
+
+
+@oid.after_login
+def create_or_login(resp):
+    session['openid'] = resp.identity_url
+    user = User.query.filter_by(openid=resp.identity_url).first()
+    if user is not None:
+        flash(u'Successfully signed in')
+        g.user = user
+        return redirect(oid.get_next_url())
+    return redirect(url_for('first_login', next=oid.get_next_url(),
+                            name=resp.fullname or resp.nickname))
 
 
 @general.route('/first-login/', methods=['GET', 'POST'])
@@ -45,6 +58,7 @@ def first_login():
         db_session.add(User(request.form['name'], session['openid']))
         db_session.commit()
         flash(u'Successfully created profile and logged in')
-        return openid_auth.redirect_back()
+        return redirect(oid.get_next_url())
     return render_template('general/first_login.html',
+                           next=oid.get_next_url(),
                            openid=session['openid'])

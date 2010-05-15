@@ -46,6 +46,32 @@ database = [
         ''',
         bitbucket='leafstorm/flask-xml-rpc',
         docs='http://packages.python.org/Flask-XML-RPC/'
+    ),
+    Extension('flask-csrf', 'Steve Losh',
+        description='''
+            <p>A small Flask extension for adding
+            <a href=http://en.wikipedia.org/wiki/CSRF>CSRF</a> protection.
+        ''',
+        docs='http://sjl.bitbucket.org/flask-csrf/',
+        bitbucket='sjl/flask-csrf'
+    ),
+    Extension('flask-lesscss', 'Steve Losh',
+        description='''
+            <p>
+              A small Flask extension that makes it easy to use
+              <a href=http://lesscss.org/>LessCSS</a> with your
+              Flask application.
+        ''',
+        docs='http://sjl.bitbucket.org/flask-lesscss/',
+        bitbucket='sjl/flask-lesscss'
+    ),
+    Extension('flask-urls', 'Steve Losh',
+        description='''
+            <p>
+              A collection of URL-related functions for Flask applications.
+        ''',
+        docs='http://sjl.bitbucket.org/flask-urls/',
+        bitbucket='sjl/flask-urls'
     )
 ]
 database.sort(key=lambda x: x.name.lower())

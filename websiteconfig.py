@@ -6,6 +6,7 @@ DEBUG = False
 
 SECRET_KEY = 'testkey'
 DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'flask-website.db')
+ADMINS = frozenset(['http://lucumr.pocoo.org/'])
 
 THREADS_PER_PAGE = 15
 MAILINGLIST_PATH = os.path.join(_basedir, '_mailinglist')

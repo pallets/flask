@@ -1,0 +1,20 @@
+{% extends "snippets/layout.html" %}
+{% block title %}Snippets Archive{% endblock %}
+{% block body %}
+  <h2>Delete Category “{{ category.name }}”</h2>
+  <p>
+    Do you want to delete this category?  And if yes, what should
+    happen with the snippets in the category?
+  <form action="" method=post>
+    <p>
+      <select name=move_to>
+        <option value="">Delete Snippets</option>
+      {%- for category in other_categories %}
+        <option value={{ category.id }}>Move to “{{ category.name }}”</option>
+      {%- endfor %}
+      </select>
+    <p>
+      <input type=submit value=Delete>
+      <input type=submit name=cancel value=Cancel>
+  </form>
+{% endblock %}

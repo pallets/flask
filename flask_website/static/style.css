@@ -25,6 +25,14 @@ blockquote { margin: 0; font-style: italic; color: #444; }
              margin: 5px 0 0 0; font-size: 0.9em; }
 .message   { background: #DEEBF3; color: #004B6B; padding: 5px 30px;
              margin: 10px -30px; }
+.actions   { margin-top: 0; }
+table      { border: 1px solid black; border-collapse: collapse;
+             margin: 15px 0; }
+td, th     { border: 1px solid black; padding: 4px 10px;
+             text-align: left; }
+th         { background: #eee; font-weight: normal; }
+
+td input   { border: none; padding: 0; }
 
 /* forms */
 input, textarea, select { border: 1px solid black; padding: 2px; background: white;

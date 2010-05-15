@@ -18,9 +18,10 @@
       site.  Choose wisely because you cannot change this value later:
     <dl>
       <dt>Name:
-      <dd><input type=text name=name size=30>
+      <dd><input type=text name=name value="{{ request.values.name }}" size=30>
     </dl>
     <p>
+      <input type=hidden name=next value="{{ next }}">
       <input type=submit value=Continue>
       <input type=submit name=cancel value=Cancel>
   </form>

@@ -8,7 +8,7 @@
   <h2>{{ snippet.title }}</h2>
   <p class=snippet-author>By {{ snippet.author.name }}
     filed in <a href="{{ snippet.category.url }}">{{ snippet.category.name }}</a>
-    {% if snippet.author == g.user %}
+    {% if snippet.author == g.user or g.user.is_admin %}
       (<a href="{{ url_for('snippets.edit', id=snippet.id) }}">edit</a>)
     {% endif %}
   {{ snippet.rendered_body }}

@@ -7,7 +7,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from pygments.util import ClassNotFound
-from flask import g, url_for, flash, request, redirect, Markup
+from flask import g, url_for, flash, abort, request, redirect, Markup
 from flask_website.flaskystyle import FlaskyStyle # same as docs
 
 from flask_website.database import User
@@ -85,3 +85,12 @@ def requires_login(f):
             return redirect(url_for('general.login', next=request.path))
         return f(*args, **kwargs)
     return decorated_function
+
+
+def requires_admin(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not g.user.is_admin:
+            abort(401)
+        return f(*args, **kwargs)
+    return requires_login(decorated_function)

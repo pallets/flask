@@ -17,13 +17,17 @@
   {% endif %}
   <p>
     Want to share something?  Then add a
-    <a href="{{ url_for('snippets.new') }}">new snippet</a>.
+    <a href="{{ url_for('new') }}">new snippet</a>.
   <h2>Snippets by Category</h2>
   <ul>
   {% for category in categories %}
     <li><a href="{{ category.url }}">{{ category.name }}</a> ({{ category.count }})
   {% endfor %}
   </ul>
+  {% if g.user.is_admin %}
+  <p>
+    <a href="{{ url_for('manage_categories') }}">manage categories</a>
+  {% endif %}
   {% if recent %}
   <h2>Recently Added</h2>
   <ul>

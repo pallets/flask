@@ -32,6 +32,10 @@ class User(Model):
         self.name = name
         self.openid = openid
 
+    @property
+    def is_admin(self):
+        return self.openid in config.ADMINS
+
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
 

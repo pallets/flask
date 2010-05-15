@@ -3,7 +3,7 @@ from urlparse import urljoin
 from flask import Module, render_template, request, flash, abort, redirect, \
      g, url_for
 from werkzeug.contrib.atom import AtomFeed
-from flask_website.utils import requires_login, format_creole
+from flask_website.utils import requires_login, requires_admin, format_creole
 from flask_website.database import Category, Snippet, Comment, db_session
 
 snippets = Module(__name__, url_prefix='/snippets')
@@ -71,7 +71,7 @@ def edit(id):
     snippet = Snippet.query.get(id)
     if snippet is None:
         abort(404)
-    if snippet.author != g.user:
+    if g.user is None or (not g.user.is_admin and snippet.author != g.user):
         abort(401)
     preview = None
     form = dict(title=snippet.title, body=snippet.body,
@@ -115,6 +115,64 @@ def category(slug):
     snippets = category.snippets.order_by(Snippet.title).all()
     return render_template('snippets/category.html', category=category,
                            snippets=snippets)
+
+
+@snippets.route('/manage-categories/', methods=['GET', 'POST'])
+@requires_admin
+def manage_categories():
+    categories = Category.query.order_by(Category.name).all()
+    if request.method == 'POST':
+        for category in categories:
+            category.name = request.form['name.%d' % category.id]
+            category.slug = request.form['slug.%d' % category.id]
+        db_session.commit()
+        flash(u'Categories updated')
+        return redirect(url_for('manage_categories'))
+    return render_template('snippets/manage_categories.html',
+                           categories=categories)
+
+
+@snippets.route('/new-category/', methods=['POST'])
+@requires_admin
+def new_category():
+    category = Category(name=request.form['name'])
+    db_session.add(category)
+    db_session.commit()
+    flash(u'Category %s created.' % category.name)
+    return redirect(url_for('manage_categories'))
+
+
+@snippets.route('/delete-category/<int:id>/', methods=['GET', 'POST'])
+@requires_admin
+def delete_category(id):
+    category = Category.query.get(id)
+    if category is None:
+        abort(404)
+    if request.method == 'POST':
+        if 'cancel' in request.form:
+            flash(u'Deletion was aborted')
+            return redirect(url_for('manage_categories'))
+        move_to_id = request.form.get('move_to', type=int)
+        if move_to_id:
+            move_to = Category.query.get(move_to_id)
+            if move_to is None:
+                flash(u'Category was removed in the meantime')
+            else:
+                for snippet in category.snippets.all():
+                    snippet.category = move_to
+                db_session.delete(category)
+                flash(u'Category %s deleted and entries moved to %s.' %
+                      (category.name, move_to.name))
+        else:
+            category.snippets.delete()
+            db_session.delete(category)
+            flash(u'Category %s deleted' % category.name)
+        db_session.commit()
+        return redirect(url_for('manage_categories'))
+    return render_template('snippets/delete_category.html',
+                           category=category,
+                           other_categories=Category.query
+                              .filter(Category.id != category.id).all())
 
 
 @snippets.route('/recent.atom')

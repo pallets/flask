@@ -1,10 +1,14 @@
 from flask import Flask, session, g, render_template
+from flaskext.openid import OpenID
 
 import websiteconfig as config
 
 app = Flask(__name__)
 app.debug = config.DEBUG
 app.secret_key = config.SECRET_KEY
+
+from flask_website.openid_auth import DatabaseOpenIDStore
+oid = OpenID(store_factory=DatabaseOpenIDStore)
 
 @app.errorhandler(404)
 def not_found(error):
