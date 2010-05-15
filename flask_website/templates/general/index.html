@@ -5,6 +5,7 @@
     h1 { margin: 0 0 30px 0; background: url(/static/logo.png) no-repeat center; height: 165px; }
     h1 span, p.tagline { display: none; }
   </style>
+  <link href="{{ tweets.feed_url }}" rel="alternate" title="Flask on Twitter" type="application/atom+xml">
 {% endblock %}
 {% block body_title %}
   {{ super() }}
@@ -66,6 +67,22 @@ def hello():
     <a href=http://github.com/mitsuhiko/flask>Flask's github</a> page and
     create a new ticket or fork.  If you just want to chat with fellow
     developers, go to <code>#pocoo</code> on irc.freenode.net.
+
+  {% if tweets %}
+  <h2>Recent Tweets</h2>
+  <div class=twitter>
+    <p>
+      What people say about Flask on <a href=http://twitter.com/>Twitter</a>:
+    <ul>
+    {%- for tweet in tweets %}
+      <li>
+        <a href="http://twitter.com/{{ tweet.user }}">{{ tweet.user }}</a>:
+          {{ tweet.text|urlize }}
+        <span class=meta>&mdash; {{ tweet.pub_date|timedeltaformat }} ago via {{ tweet.via }}</span>
+    {%- endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
 <a href="http://github.com/mitsuhiko/flask"><img style="position: fixed; top: 0; right: 0; border: 0;"
   src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>

@@ -1,14 +1,20 @@
 from flask import Module, render_template, session, redirect, url_for, \
      request, flash, g, Response
-from flask_website import oid
+from flask_website import oid, twitter
 from flask_website.database import db_session, User
 
 general = Module(__name__)
+tweets = twitter.SearchQuery(required=['flask'],
+                             optional=['code', 'web', 'python', 'py',
+                                       'pocoo', 'micro', 'mitsuhiko',
+                                       'framework', 'django', 'jinja',
+                                       'werkzeug', 'pylons'],
+                             lang='en')
 
 
 @general.route('/')
 def index():
-    return render_template('general/index.html')
+    return render_template('general/index.html', tweets=tweets)
 
 
 @general.route('/logout/')

@@ -1,5 +1,6 @@
 import re
 import creoleparser
+from datetime import datetime, timedelta
 from genshi import builder
 from functools import wraps
 from creoleparser.elements import PreBlock
@@ -15,6 +16,17 @@ from flask_website.database import User
 pygments_formatter = HtmlFormatter(style=FlaskyStyle)
 
 _ws_split_re = re.compile(r'(\s+)')
+
+
+TIMEDELTA_UNITS = (
+    ('year',   3600 * 24 * 365),
+    ('month',  3600 * 24 * 30),
+    ('week',   3600 * 24 * 7),
+    ('day',    3600 * 24),
+    ('hour',   3600),
+    ('minute', 60),
+    ('second', 1)
+)
 
 
 class CodeBlock(PreBlock):
@@ -94,3 +106,29 @@ def requires_admin(f):
             abort(401)
         return f(*args, **kwargs)
     return requires_login(decorated_function)
+
+
+def format_datetime(dt):
+    return dt.strftime('%Y-%m-%d @ %H:%M')
+
+
+def format_timedelta(delta, granularity='second', threshold=.85):
+    if isinstance(delta, datetime):
+        delta = datetime.utcnow() - delta
+    if isinstance(delta, timedelta):
+        seconds = int((delta.days * 86400) + delta.seconds)
+    else:
+        seconds = delta
+
+    for unit, secs_per_unit in TIMEDELTA_UNITS:
+        value = abs(seconds) / secs_per_unit
+        if value >= threshold or unit == granularity:
+            if unit == granularity and value > 0:
+                value = max(1, value)
+            value = str(int(round(value)))
+            value += u' ' + unit
+            if value != 1:
+                value += u's'
+            return value
+
+    return u''

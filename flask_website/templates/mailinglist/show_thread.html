@@ -25,7 +25,7 @@
         <dt>From:
         <dd class=from>{{ mail.author_name or mail.author_email }}
         <dt>Date:
-        <dd>{{ mail.date.strftime('%Y-%m-%d @ %H:%M') }}
+        <dd>{{ mail.date|datetimeformat }}
       </dl>
       <pre>{{ mail.rendered_text() }}</pre>
       {% if mail.children %}

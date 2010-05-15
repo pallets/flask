@@ -34,3 +34,7 @@ app.register_module(snippets)
 app.register_module(extensions)
 
 from flask_website.database import User, db_session
+from flask_website import utils
+
+app.jinja_env.filters['datetimeformat'] = utils.format_datetime
+app.jinja_env.filters['timedeltaformat'] = utils.format_timedelta
