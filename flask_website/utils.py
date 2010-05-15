@@ -125,9 +125,9 @@ def format_timedelta(delta, granularity='second', threshold=.85):
         if value >= threshold or unit == granularity:
             if unit == granularity and value > 0:
                 value = max(1, value)
-            value = str(int(round(value)))
+            value = unicode(int(round(value)))
             value += u' ' + unit
-            if value != 1:
+            if value != u'1':
                 value += u's'
             return value
 
