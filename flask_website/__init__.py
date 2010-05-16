@@ -24,7 +24,13 @@ def remove_db_session(response):
     db_session.remove()
     return response
 
-app.add_url_rule('/docs/', endpoint='documentation.index', build_only=True)
+app.add_url_rule('/docs/', endpoint='docs.index', build_only=True)
+app.add_url_rule('/docs/<path:page>/', endpoint='docs.show',
+                 build_only=True)
+app.add_url_rule('/docs/flask-docs.pdf', endpoint='docs.pdf',
+                 build_only=True)
+app.add_url_rule('/docs/flask-docs.zip', endpoint='docs.zip',
+                 build_only=True)
 
 from flask_website.views.general import general
 from flask_website.views.mailinglist import mailinglist
