@@ -17,6 +17,7 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    :maxdepth: 2
 
    packages
+   distribute
    sqlite3
    sqlalchemy
    fileuploads

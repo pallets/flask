@@ -19,6 +19,8 @@ lighttpd, on Google's App Engine or whatever you have in mind).
 So how do you get all that on your computer in no time?  The most kick-ass
 method is virtualenv, so let's look at that first.
 
+.. _virtualenv:
+
 virtualenv
 ----------
 

@@ -230,7 +230,7 @@ def flash(message, category='message'):
                      are recommended: ``'message'`` for any kind of message,
                      ``'error'`` for errors, ``'info'`` for information
                      messages and ``'warning'`` for warnings.  However any
-                     kind of string and be used as category.
+                     kind of string can be used as category.
     """
     session.setdefault('_flashes', []).append((category, message))
 

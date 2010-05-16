@@ -11,6 +11,9 @@ possible to record a message at the end of a request and access it next
 request and only next request.  This is usually combined with a layout
 template that does this.
 
+Simple Flashing
+---------------
+
 So here a full example::
 
     from flask import flash, redirect, url_for, render_template
@@ -79,3 +82,38 @@ And of course the login template:
        <p><input type=submit value=Login>
      </form>
    {% endblock %}
+
+Flashing With Categories
+------------------------
+
+.. versionadded:: 0.5
+
+It is also possible to provide categories when flashing a message.  The
+default category if nothing is provided is ``'message'``.  Alternative
+categories can be used to give the user better feedback.  For example
+error messages could be displayed with a red background.
+
+To flash a message with a different category, just use the second argument
+to the :func:`~flask.flash` function::
+
+    flash(u'Invalid password provided', 'error')
+
+Inside the template you then have to tell the
+:func:`~flask.get_flashed_messages` function to also return the
+categories.  The loop looks slighty different in that situation then:
+
+.. sourcecode:: html+jinja
+
+   {% with messages = get_flashed_messages(with_categories=true) %}
+     {% if messages %}
+       <ul class=flashes>
+       {% for category, message in messages %}
+         <li class="{{ category }}">{{ message }}</li>
+       {% endfor %}
+       </ul>
+     {% endif %}
+   {% endwith %}
+
+This is just one example of how to render these flashed messages.  One
+might also use the category to add a prefix such as
+``<strong>Error:</strong>`` to the message.
