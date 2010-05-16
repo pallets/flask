@@ -157,6 +157,35 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             assert flask.session.modified
             assert list(flask.get_flashed_messages()) == ['Zap', 'Zip']
 
+    def test_extended_flashing(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'testkey'
+
+        @app.route('/')
+        def index():
+            flask.flash(u'Hello World')
+            flask.flash(u'Hello World', 'error')
+            flask.flash(flask.Markup(u'<em>Testing</em>'), 'warning')
+            return ''
+
+        @app.route('/test')
+        def test():
+            messages = flask.get_flashed_messages(with_categories=True)
+            assert len(messages) == 3
+            assert messages[0] == ('message', u'Hello World')
+            assert messages[1] == ('error', u'Hello World')
+            assert messages[2] == ('warning', flask.Markup(u'<em>Testing</em>'))
+            return ''
+            messages = flask.get_flashed_messages()
+            assert len(messages) == 3
+            assert messages[0] == u'Hello World'
+            assert messages[1] == u'Hello World'
+            assert messages[2] == flask.Markup(u'<em>Testing</em>')
+
+        c = app.test_client()
+        c.get('/')
+        c.get('/test')
+
     def test_request_processing(self):
         app = flask.Flask(__name__)
         evts = []

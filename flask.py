@@ -217,24 +217,49 @@ def get_template_attribute(template_name, attribute):
                    attribute)
 
 
-def flash(message):
+def flash(message, category='message'):
     """Flashes a message to the next request.  In order to remove the
     flashed message from the session and to display it to the user,
     the template has to call :func:`get_flashed_messages`.
 
+    .. versionchanged: 0.5
+       `category` parameter added.
+
     :param message: the message to be flashed.
+    :param category: the category for the message.  The following values
+                     are recommended: ``'message'`` for any kind of message,
+                     ``'error'`` for errors, ``'info'`` for information
+                     messages and ``'warning'`` for warnings.  However any
+                     kind of string and be used as category.
     """
-    session.setdefault('_flashes', []).append(message)
+    session.setdefault('_flashes', []).append((category, message))
 
 
-def get_flashed_messages():
+def get_flashed_messages(with_categories=False):
     """Pulls all flashed messages from the session and returns them.
     Further calls in the same request to the function will return
-    the same messages.
+    the same messages.  By default just the messages are returned,
+    but when `with_categories` is set to `True`, the return value will
+    be a list of tuples in the form ``(category, message)`` instead.
+
+    Example usage:
+
+    .. sourcecode:: html+jinja
+
+        {% for category, msg in get_flashed_messages(with_categories=true) %}
+          <p class=flash-{{ category }}>{{ msg }}
+        {% endfor %}
+
+    .. versionchanged:: 0.5
+       `with_categories` parameter added.
+
+    :param with_categories: set to `True` to also receive categories.
     """
     flashes = _request_ctx_stack.top.flashes
     if flashes is None:
         _request_ctx_stack.top.flashes = flashes = session.pop('_flashes', [])
+    if not with_categories:
+        return [x[1] for x in flashes]
     return flashes
 
 
