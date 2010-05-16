@@ -2,7 +2,7 @@
 {% block head %}
   {{ super() }}
   <style type=text/css>
-    h1 { background-image: url(/static/login.png); }
+    h1 { background-image: url({{ url_for('.static', filename='login.png') }}); }
   </style>
 {% endblock %}
 {% block title %}First Login{% endblock %}

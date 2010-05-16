@@ -32,7 +32,7 @@ def logout():
 def login():
     if g.user is not None:
         return redirect(url_for('general.index'))
-    if reassign and 'cancel' in request.form:
+    if 'cancel' in request.form:
         flash(u'Cancelled. The OpenID was not changed.')
         return redirect(oid.get_next_url())
     openid = request.values.get('openid')

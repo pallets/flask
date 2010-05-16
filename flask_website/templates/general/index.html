@@ -2,7 +2,7 @@
 {% block head %}
   {{ super() }}
   <style type=text/css>
-    h1 { margin: 0 0 30px 0; background: url(/static/logo.png) no-repeat center; height: 165px; }
+    h1 { margin: 0 0 30px 0; background: url({{ url_for('.static', filename='login.png') }}) no-repeat center; height: 165px; }
     h1 span, p.tagline { display: none; }
   </style>
   <link href="{{ tweets.feed_url }}" rel="alternate" title="Flask on Twitter" type="application/atom+xml">
