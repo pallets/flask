@@ -48,6 +48,8 @@ class CodeBlock(PreBlock):
 
 
 custom_dialect = creoleparser.create_dialect(creoleparser.creole10_base)
+# hacky way to get rid of image support
+custom_dialect.img = custom_dialect.no_wiki
 custom_dialect.pre = CodeBlock()
 
 
