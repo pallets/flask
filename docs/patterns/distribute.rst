@@ -21,7 +21,7 @@ make larger applications easier to distribute:
   sooner or later will replace `easy_install` which does more than just
   installing packages for you.
 
-Flask itself, and all the libraries you can find on the cheeseshop will
+Flask itself, and all the libraries you can find on the cheeseshop
 are distributed with either distribute, the older setuptools or distutils.
 
 In this case we assume your application is called
