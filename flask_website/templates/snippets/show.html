@@ -9,7 +9,7 @@
   <p class=snippet-author>By {{ snippet.author.name }}
     filed in <a href="{{ snippet.category.url }}">{{ snippet.category.name }}</a>
     {% if snippet.author == g.user or g.user.is_admin %}
-      (<a href="{{ url_for('snippets.edit', id=snippet.id) }}">edit</a>)
+      (<a href="{{ url_for('edit', id=snippet.id) }}">edit</a>)
     {% endif %}
   {{ snippet.rendered_body }}
   {% if snippet.comments or g.user %}
@@ -23,14 +23,17 @@
           {{ comment.title or "Comment" }}
           by {{ comment.author.name }}
           on {{ comment.pub_date.strftime('%Y-%m-%d @ %H:%M') }}
+          {% if g.user.is_admin %}
+          (<a href="{{ url_for('edit_comment', id=comment.id) }}">edit</a>)
+          {% endif %}
         <div class=body>{{ comment.rendered_text }}</div></li>
       {% endfor %}
     </ul>
-  {% endif %} 
+  {% endif %}
   {% if g.user %}
   <div id=add-comment>
     <h2>Add Comment</h2>
-    <form action=#add-comment method=post>
+    <form action="" method=post>
       <p>Title: <input type=text name=title value="{{ request.form.title }}" size=30>
       <p><textarea name=text cols=40 rows=8>{{ request.form.text }}</textarea>
       <p><input type=submit value="Add Comment">

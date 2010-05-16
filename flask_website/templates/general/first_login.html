@@ -11,7 +11,8 @@
   <form action="{{ url_for('general.first_login') }}" method=post>
     <p>
       This is your first login on this website.  You are about to sign
-      in with the following OpenID: <a href="{{ openid }}">{{ openid }}</a>
+      in with the following OpenID: <a href="{{ openid }}">{{
+        openid|displayopenid }}</a>
     <p>
       Before you can use this site we need a name for you.  This is what
       will be displayed next to all of your public contributions to this

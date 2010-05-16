@@ -2,7 +2,7 @@
 {% block head %}
 <title>{% block title %}Welcome{% endblock %} | Flask (A Python Microframework)</title>
 <meta charset=utf-8>
-<link rel=stylesheet type=text/css href="/static/style.css">
+<link rel=stylesheet type=text/css href="{{ url_for('.static', filename='style.css') }}">
 <script type=text/javascript
   src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 {% endblock %}
@@ -11,11 +11,11 @@
     <h1><span>{{ self.title() }}</span></h1>
   {% endblock %}
   <p class=nav>
-    <a href=/>overview</a> //
-    <a href=/docs/>documentation</a> //
-    <a href=/mailinglist/>mailinglist</a> //
-    <a href=/snippets/>snippets</a> //
-    <a href=/extensions/>extensions</a>
+    <a href="{{ url_for('general.index') }}">overview</a> //
+    <a href="{{ url_for('documentation.index') }}">documentation</a> //
+    <a href="{{ url_for('mailinglist.index') }}">mailinglist</a> //
+    <a href="{{ url_for('snippets.index') }}">snippets</a> //
+    <a href="{{ url_for('extensions.index') }}">extensions</a>
   {% for message in get_flashed_messages() %}
     <p class=message>{{ message }}
   {% endfor %}
@@ -23,8 +23,11 @@
   <p class=footer>
     &copy; Copyright 2010 by <a href=http://lucumr.pocoo.org/>Armin Ronacher</a> //
     {% if g.user %}
-    <a href=/logout/ title="logged in as {{ g.user.name }} [{{ g.user.openid }}]">logout</a>
+    <a href="{{ url_for('general.profile') }}">profile</a> /
+    <a href="{{ url_for('general.logout') }}" title="signed in as {{
+      g.user.name }} [{{ g.user.openid }}]{% if g.user.is_admin
+      %} - Administrator{% endif %}">sign out</a>
     {% else %}
-    <a href=/login/>login</a>
+    <a href="{{ url_for('general.login') }}">sign in</a>
     {% endif %}
 </div>

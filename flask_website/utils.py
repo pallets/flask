@@ -133,3 +133,12 @@ def format_timedelta(delta, granularity='second', threshold=.85):
                 rv += u's'
             return rv
     return u''
+
+
+def display_openid(openid):
+    if not openid:
+        return ''
+    rv = openid
+    if rv.startswith(('http://', 'https://')):
+        rv = rv.split('/', 2)[-1]
+    return rv.rstrip('/')

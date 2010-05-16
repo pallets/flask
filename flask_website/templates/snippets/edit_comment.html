@@ -1,0 +1,22 @@
+{% extends "snippets/layout.html" %}
+{% block title %}Edit Comment {{ comment.title }}{% endblock %}
+{% block body %}
+  <h2>Edit Comment</h2>
+  <script type=text/javascript>
+    $(function() {
+      $('input[name="delete"]').click(function() {
+        if (!confirm("Do you really want to delete this comment?\n\n" +
+                     "THIS CANNOT BE UNDONE!"))
+          return false;
+      });
+    });
+  </script>
+  <form action="" method=post>
+    <p>Title: <input type=text name=title value="{{ form.title }}" size=30>
+    <p><textarea name=text cols=40 rows=8>{{ form.text }}</textarea>
+    <p>
+      <input type=submit value="Update Comment">
+      <input type=submit name=delete value="Delete">
+      <input type=submit name=cancel value="Cancel">
+  </form>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/login.png); }
+  </style>
+{% endblock %}
+{% block title %}Change OpenID{% endblock %}
+{% block body %}
+  <h2>Change OpenID</h2>
+  <form action="" method=post>
+    <p>
+      You can the OpenID used to log into this website.  Right
+      now your OpenID identity is
+      <a href="{{ g.user.openid }}">{{ g.user.openid|displayopenid }}</a>
+    <p>
+      OpenID URL:
+      <input type=text name=openid class=openid size=26>
+      <input type=hidden name=next value="{{ next }}">
+      <input type=submit value=Change>
+      <input type=submit name=cancel value=Cancel>
+    <p>
+      Alternatively you can directly link your profile with one
+      of the common id providers:
+    <ul>
+      <li><a href=?provider=aol>AOL</a>
+      <li><a href=?provider=google>Google</a>
+      <li><a href=?provider=yahoo>Yahoo</a>
+    </ul>
+  </form>
+{% endblock %}

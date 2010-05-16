@@ -8,7 +8,9 @@
   <p>
     You're signed in as “<span title="{{ g.user.openid }}">{{ g.user.name
     }}</span>”.  You can <a href="{{ url_for('general.logout')
-    }}">sign out</a> here after you're done if you want.
+    }}">sign out</a> here after you're done if you want.  If you want to
+    change your OpenID login or display name, head over to the
+    <a href="{{ url_for('general.profile') }}">profile</a>.
   {% else %}
   <p>
     In order to add snippets to this page or to add comments, all you need
@@ -24,10 +26,6 @@
     <li><a href="{{ category.url }}">{{ category.name }}</a> ({{ category.count }})
   {% endfor %}
   </ul>
-  {% if g.user.is_admin %}
-  <p>
-    <a href="{{ url_for('manage_categories') }}">manage categories</a>
-  {% endif %}
   {% if recent %}
   <h2>Recently Added</h2>
   <ul>
@@ -35,6 +33,12 @@
     <li><a href="{{ snippet.url }}">{{ snippet.title }}</a> in
       <a href="{{ snippet.category.url }}">{{ snippet.category.name }}</a>
   {% endfor %}
+  </ul>
+  {% endif %}
+  {% if g.user.is_admin %}
+  <h2>Admin Tools</h2>
+  <ul>
+    <li><a href="{{ url_for('manage_categories') }}">Manage categories</a>
   </ul>
   {% endif %}
 {% endblock %}

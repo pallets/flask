@@ -32,7 +32,7 @@ def new():
         else:
             title = request.form['title']
             body = request.form['body']
-            if not body:
+            if body:
                 flash(u'Error: you have to enter a snippet')
             else:
                 category = Category.query.get(category_id)
@@ -55,14 +55,41 @@ def show(id):
     if request.method == 'POST':
         title = request.form['title']
         text = request.form['text']
-        if not text:
-            flash(u'Error: the text is required')
-        else:
+        if text:
             db_session.add(Comment(snippet, g.user, title, text))
             db_session.commit()
             flash(u'Your comment was added')
             return redirect(snippet.url)
     return render_template('snippets/show.html', snippet=snippet)
+
+
+@snippets.route('/comments/<int:id>/', methods=['GET', 'POST'])
+@requires_admin
+def edit_comment(id):
+    comment = Comment.query.get(id)
+    if comment is None:
+        abort(404)
+    form = dict(title=comment.title, text=comment.text)
+    if request.method == 'POST':
+        if 'delete' in request.form:
+            db_session.delete(comment)
+            db_session.commit()
+            flash(u'Comment was deleted.')
+            return redirect(comment.snippet.url)
+        elif 'cancel' in request.form:
+            return redirect(comment.snippet.url)
+        form['title'] = request.form['title']
+        form['text'] = request.form['text']
+        if not form['text']:
+            flash(u'Error: comment text is required.')
+        else:
+            comment.title = form['title']
+            comment.text = form['text']
+            db_session.commit()
+            flash(u'Comment was updated.')
+            return redirect(comment.snippet.url)
+    return render_template('snippets/edit_comment.html', form=form,
+                           comment=comment)
 
 
 @snippets.route('/edit/<int:id>/', methods=['GET', 'POST'])

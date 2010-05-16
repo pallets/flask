@@ -44,9 +44,13 @@ td input     { border: none; padding: 0; }
 input, textarea, select { border: 1px solid black; padding: 2px; background: white;
                           font-family: 'Georgia', serif; font-size: 17px; color: #004B6B; }
 textarea                { width: 99%; }
-input[type="submit"]    { background: #DEEBF3; border-color: #004B6B; }
+input[type="submit"]    { background: #DEEBF3; border-color: #004B6B;
+                          cursor: pointer; }
+input[name="delete"]:hover { background: #A50000; color: white;
+                             border-color: #860000; }
 input.openid            { background: url(openid.png) no-repeat 4px center;
                           padding-left: 26px; }
+.formlist dt            { color: #004B6B; margin: 8px 0; }
 
 /* snippets */
 .snippet-author     { margin: 0 0 20px 0; font-size: 0.9em; }

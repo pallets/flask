@@ -7,7 +7,7 @@
 {% endblock %}
 {% block title %}Login{% endblock %}
 {% block body %}
-  <form action="{{ url_for('general.login') }}" method=post>
+  <form action="" method=post>
     <p>
       For some of the features on this site (such as creating snippets
       or adding comments) you have to be signed in.  You don't need to
@@ -18,5 +18,13 @@
       <input type=text name=openid class=openid size=30>
       <input type=hidden name=next value="{{ next }}">
       <input type=submit value=Login>
+    <p>
+      Alternatively you can directly sign in by clicking on one of
+      the providers here in case you don't know the identity URL:
+    <ul>
+      <li><a href=?provider=aol>AOL</a>
+      <li><a href=?provider=google>Google</a>
+      <li><a href=?provider=yahoo>Yahoo</a>
+    </ul>
   </form>
 {% endblock %}

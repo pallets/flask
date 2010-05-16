@@ -24,6 +24,8 @@ def remove_db_session(response):
     db_session.remove()
     return response
 
+app.add_url_rule('/docs/', endpoint='documentation.index', build_only=True)
+
 from flask_website.views.general import general
 from flask_website.views.mailinglist import mailinglist
 from flask_website.views.snippets import snippets
@@ -38,3 +40,4 @@ from flask_website import utils
 
 app.jinja_env.filters['datetimeformat'] = utils.format_datetime
 app.jinja_env.filters['timedeltaformat'] = utils.format_timedelta
+app.jinja_env.filters['displayopenid'] = utils.display_openid

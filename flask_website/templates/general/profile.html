@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url(/static/login.png); }
+  </style>
+{% endblock %}
+{% block title %}Profile{% endblock %}
+{% block body %}
+  <form action="" method=post>
+    <p>
+      Here you can change the profile information used for this
+      website.  Please keep in mind that you can only have one
+      OpenID identity linked to this account, if you change it
+      the old one will no longer be able to sign in.
+    <dl class=formlist>
+      <dt>Name:
+      <dd><input type=text name=name value="{{ name }}" size=30>
+      <dt>OpenID:
+      <dd>
+        <span class=disabled>{{ g.user.openid|displayopenid }}</span>
+        (<a href="{{ url_for('change_openid') }}">change</a>)
+    </dl>
+    <p>
+      <input type=submit value="Update profile">
+  </form>
+{% endblock %}
