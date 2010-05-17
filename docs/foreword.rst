@@ -76,11 +76,13 @@ So always keep that in mind when doing web development.
 Target Audience
 ---------------
 
-Is Flask for you?  If your application small-ish (less than 4000 lines of
-Python code) and does not depend on too complex database structures, Flask
-is the Framework for you.  It was designed from the ground up to be easy
-to use, based on established principles, good intentions and on top of two
-established libraries in widespread usage.
+Is Flask for you?  If your application small-ish and does not depend on
+too complex database structures, Flask is the Framework for you.  It was
+designed from the ground up to be easy to use, based on established
+principles, good intentions and on top of two established libraries in
+widespread usage.  Recent versions of Flask scale nicely within reasonable
+bounds and if you grow larger, you won't have any troubles adjusting Flask
+for your new application size.
 
 Flask serves two purposes: it's an example of how to create a minimal and
 opinionated framework on top of Werkzeug to show how this can be done, and
