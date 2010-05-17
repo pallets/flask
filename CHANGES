@@ -9,6 +9,10 @@ Version 0.5
 Release date to be announced
 
 - added support for categories for flashed messages.
+- the application now configures a :class:`logging.Handler` and will
+  log request handling exceptions to that logger when not in debug
+  mode.  This makes it possible to receive mails on server errors
+  for example.
 
 Version 0.2
 -----------

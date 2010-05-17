@@ -21,7 +21,7 @@ from werkzeug import Request as RequestBase, Response as ResponseBase, \
      LocalStack, LocalProxy, create_environ, SharedDataMiddleware, \
      ImmutableDict, cached_property, wrap_file, Headers
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, InternalServerError
 from werkzeug.contrib.securecookie import SecureCookie
 
 # try to load the best simplejson implementation available.  If JSON
@@ -659,6 +659,18 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.2
     use_x_sendfile = False
 
+    #: the logging format used for the debug logger.  This is only used when
+    #: the application is in debug mode, otherwise the attached logging
+    #: handler does the formatting.
+    #:
+    #: .. versionadded:: 0.5
+    debug_log_format = (
+        '-' * 80 + '\n' +
+        '%(levelname)s in %(module)s, %(filename)s:%(lineno)d]:\n' +
+        '%(message)s\n' +
+        '-' * 80
+    )
+
     #: options that are passed directly to the Jinja2 environment
     jinja_options = ImmutableDict(
         autoescape=True,
@@ -752,6 +764,24 @@ class Flask(_PackageBoundObject):
             get_flashed_messages=get_flashed_messages
         )
         self.jinja_env.filters['tojson'] = _tojson_filter
+
+    @cached_property
+    def logger(self):
+        """A :class:`logging.Logger` object for this application.  The
+        default configuration is to log to stderr if the application is
+        in debug mode.
+        """
+        from logging import getLogger, StreamHandler, Formatter, DEBUG
+        class DebugHandler(StreamHandler):
+            def emit(x, record):
+                if self.debug:
+                    StreamHandler.emit(x, record)
+        handler = DebugHandler()
+        handler.setLevel(DEBUG)
+        handler.setFormatter(Formatter(self.debug_log_format))
+        logger = getLogger(self.import_name)
+        logger.addHandler(handler)
+        return logger
 
     def create_jinja_loader(self):
         """Creates the Jinja loader.  By default just a package loader for
@@ -1010,6 +1040,38 @@ class Flask(_PackageBoundObject):
         self.template_context_processors[None].append(f)
         return f
 
+    def handle_http_exception(self, e):
+        """Handles an HTTP exception.  By default this will invoke the
+        registered error handlers and fall back to returning the
+        exception as response.
+
+        .. versionadded: 0.5
+        """
+        handler = self.error_handlers.get(e.code)
+        if handler is None:
+            return e
+        return handler(e)
+
+    def handle_exception(self, e):
+        """Default exception handling that kicks in when an exception
+        occours that is not catched.  In debug mode the exception will
+        be re-raised immediately, otherwise it is logged an the handler
+        for an 500 internal server error is used.  If no such handler
+        exists, a default 500 internal server error message is displayed.
+
+        .. versionadded: 0.5
+        """
+        handler = self.error_handlers.get(500)
+        if self.debug:
+            raise
+        self.logger.exception('Exception on %s [%s]' % (
+            request.path,
+            request.method
+        ))
+        if handler is None:
+            return InternalServerError()
+        return handler(e)
+
     def dispatch_request(self):
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
@@ -1022,15 +1084,9 @@ class Flask(_PackageBoundObject):
                 raise req.routing_exception
             return self.view_functions[req.endpoint](**req.view_args)
         except HTTPException, e:
-            handler = self.error_handlers.get(e.code)
-            if handler is None:
-                return e
-            return handler(e)
+            return self.handle_http_exception(e)
         except Exception, e:
-            handler = self.error_handlers.get(500)
-            if self.debug or handler is None:
-                raise
-            return handler(e)
+            return self.handle_exception(e)
 
     def make_response(self, rv):
         """Converts the return value from a view function to a real

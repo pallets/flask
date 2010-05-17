@@ -16,6 +16,7 @@ import sys
 import flask
 import unittest
 import tempfile
+from contextlib import contextmanager
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
 from cStringIO import StringIO
@@ -24,6 +25,16 @@ from cStringIO import StringIO
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
 sys.path.append(os.path.join(example_path, 'flaskr'))
 sys.path.append(os.path.join(example_path, 'minitwit'))
+
+
+@contextmanager
+def catch_stderr():
+    old_stderr = sys.stderr
+    sys.stderr = rv = StringIO()
+    try:
+        yield rv
+    finally:
+        sys.stderr = old_stderr
 
 
 class ContextTestCase(unittest.TestCase):
@@ -585,6 +596,56 @@ class SendfileTestCase(unittest.TestCase):
             assert options['filename'] == 'index.txt'
 
 
+class LoggingTestCase(unittest.TestCase):
+
+    def test_debug_log(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.route('/')
+        def index():
+            app.logger.warning('the standard library is dead')
+            return ''
+
+        @app.route('/exc')
+        def exc():
+            1/0
+        c = app.test_client()
+
+        with catch_stderr() as err:
+            rv = c.get('/')
+            out = err.getvalue()
+            assert 'WARNING in flask_tests, flask_tests.py' in out
+            assert 'the standard library is dead' in out
+
+        with catch_stderr() as err:
+            try:
+                c.get('/exc')
+            except ZeroDivisionError:
+                pass
+            else:
+                assert False, 'debug log ate the exception'
+
+    def test_exception_logging(self):
+        from logging import StreamHandler
+        out = StringIO()
+        app = flask.Flask(__name__)
+        app.logger.addHandler(StreamHandler(out))
+
+        @app.route('/')
+        def index():
+            1/0
+
+        rv = app.test_client().get('/')
+        assert rv.status_code == 500
+        assert 'Internal Server Error' in rv.data
+
+        err = out.getvalue()
+        assert 'Exception on / [GET]' in err
+        assert 'Traceback (most recent call last):' in err
+        assert '1/0' in err
+        assert 'ZeroDivisionError:' in err
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
@@ -592,8 +653,9 @@ def suite():
     suite.addTest(unittest.makeSuite(ContextTestCase))
     suite.addTest(unittest.makeSuite(BasicFunctionalityTestCase))
     suite.addTest(unittest.makeSuite(TemplatingTestCase))
-    suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(ModuleTestCase))
+    suite.addTest(unittest.makeSuite(SendfileTestCase))
+    suite.addTest(unittest.makeSuite(LoggingTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     suite.addTest(unittest.makeSuite(MiniTwitTestCase))
