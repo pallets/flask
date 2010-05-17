@@ -1,3 +1,5 @@
+.. _application-errors:
+
 Handling Application Errors
 ===========================
 

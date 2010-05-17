@@ -27,3 +27,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    templateinheritance
    flashing
    jquery
+   errorpages
