@@ -666,7 +666,7 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.5
     debug_log_format = (
         '-' * 80 + '\n' +
-        '%(levelname)s in %(module)s, %(filename)s:%(lineno)d]:\n' +
+        '%(levelname)s in %(module)s, %(pathname)s:%(lineno)d]:\n' +
         '%(message)s\n' +
         '-' * 80
     )
@@ -769,7 +769,12 @@ class Flask(_PackageBoundObject):
     def logger(self):
         """A :class:`logging.Logger` object for this application.  The
         default configuration is to log to stderr if the application is
-        in debug mode.
+        in debug mode.  This logger can be used to (surprise) log messages.
+        Here some examples::
+
+            app.logger.debug('A value for debugging')
+            app.logger.warning('A warning ocurred (%d apples)', 42)
+            app.logger.error('An error occoured')
         """
         from logging import getLogger, StreamHandler, Formatter, DEBUG
         class DebugHandler(StreamHandler):
@@ -1085,8 +1090,6 @@ class Flask(_PackageBoundObject):
             return self.view_functions[req.endpoint](**req.view_args)
         except HTTPException, e:
             return self.handle_http_exception(e)
-        except Exception, e:
-            return self.handle_exception(e)
 
     def make_response(self, rv):
         """Converts the return value from a view function to a real
@@ -1176,11 +1179,14 @@ class Flask(_PackageBoundObject):
                                exception context to start the response
         """
         with self.request_context(environ):
-            rv = self.preprocess_request()
-            if rv is None:
-                rv = self.dispatch_request()
-            response = self.make_response(rv)
-            response = self.process_response(response)
+            try:
+                rv = self.preprocess_request()
+                if rv is None:
+                    rv = self.dispatch_request()
+                response = self.make_response(rv)
+                response = self.process_response(response)
+            except Exception, e:
+                response = self.make_response(self.handle_exception(e))
             return response(environ, start_response)
 
     def request_context(self, environ):

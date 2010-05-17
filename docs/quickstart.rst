@@ -532,6 +532,8 @@ Werkzeug provides for you::
             f.save('/var/www/uploads/' + secure_filename(f.filename))
         ...
 
+For some better examples, checkout the :ref:`uploading-files` pattern.
+
 Cookies
 ```````
 
@@ -639,3 +641,29 @@ To flash a message use the :func:`~flask.flash` method, to get hold of the
 messages you can use :func:`~flask.get_flashed_messages` which is also
 available in the templates.  Check out the :ref:`message-flashing-pattern`
 for a full example.
+
+Logging
+-------
+
+.. versionadded:: 0.5
+
+Sometimes you might be in the situation where you deal with data that
+should be correct, but actually is not.  For example you have some client
+side code that sends an HTTP request to the server, and it's obviously
+malformed.  This might be caused by a user tempering with the data, or the
+client code failed.  Most the time, it's okay to reply with ``400 Bad
+Request`` in that situation, but other times it is not and the code has to
+continue working.
+
+Yet you want to log that something fishy happened.  This is where loggers
+come in handy.  As of Flask 0.5 a logger is preconfigured for you to use.
+
+Here are some example log calls::
+
+    app.logger.debug('A value for debugging')
+    app.logger.warning('A warning ocurred (%d apples)', 42)
+    app.logger.error('An error occoured')
+
+The attached :attr:`~flask.Flask.logger` is a standard logging
+:class:`~logging.Logger`, so head over to the official stdlib
+documentation for more information.

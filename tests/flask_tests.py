@@ -645,6 +645,28 @@ class LoggingTestCase(unittest.TestCase):
         assert '1/0' in err
         assert 'ZeroDivisionError:' in err
 
+    def test_processor_exceptions(self):
+        app = flask.Flask(__name__)
+        @app.before_request
+        def before_request():
+            if trigger == 'before':
+                1/0
+        @app.after_request
+        def after_request(response):
+            if trigger == 'after':
+                1/0
+            return response
+        @app.route('/')
+        def index():
+            return 'Foo'
+        @app.errorhandler(500)
+        def internal_server_error(e):
+            return 'Hello Server Error', 500
+        for trigger in 'before', 'after':
+            rv = app.test_client().get('/')
+            assert rv.status_code == 500
+            assert rv.data == 'Hello Server Error'
+
 
 def suite():
     from minitwit_tests import MiniTwitTestCase

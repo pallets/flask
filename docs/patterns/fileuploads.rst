@@ -1,3 +1,5 @@
+.. _uploading-files:
+
 Uploading Files
 ===============
 

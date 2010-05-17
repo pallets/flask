@@ -13,6 +13,7 @@ web development.
    quickstart
    tutorial/index
    testing
+   errorhandling
    patterns/index
    deploying/index
    becomingbig
