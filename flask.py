@@ -615,6 +615,21 @@ class Module(_PackageBoundObject):
         self._register_events.append(func)
 
 
+class ConfigAttribute(object):
+    """Makes an attribute forward to the config"""
+
+    def __init__(self, name):
+        self.__name__ = name
+
+    def __get__(self, obj, type=None):
+        if obj is None:
+            return self
+        return obj.config[self.__name__]
+
+    def __set__(self, obj, value):
+        obj.config[self.__name__] = value
+
+
 class Flask(_PackageBoundObject):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
@@ -648,25 +663,31 @@ class Flask(_PackageBoundObject):
     #: and the development server will no longer serve any static files.
     static_path = '/static'
 
+    #: the debug flag.  Set this to `True` to enable debugging of the
+    #: application.  In debug mode the debugger will kick in when an unhandled
+    #: exception ocurrs and the integrated server will automatically reload
+    #: the application if changes in the code are detected.
+    debug = ConfigAttribute('debug')
+
     #: if a secret key is set, cryptographic components can use this to
     #: sign cookies and other things.  Set this to a complex random value
     #: when you want to use the secure cookie for instance.
-    secret_key = None
+    secret_key = ConfigAttribute('secret_key')
 
     #: The secure cookie uses this for the name of the session cookie
-    session_cookie_name = 'session'
+    session_cookie_name = ConfigAttribute('session.cookie_name')
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
     #: date of a permanent session.  The default is 31 days which makes a
     #: permanent session survive for roughly one month.
-    permanent_session_lifetime = timedelta(days=31)
+    permanent_session_lifetime = ConfigAttribute('session.permanent_lifetime')
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
     #: sent with the :func:`send_file` method.
     #:
     #: .. versionadded:: 0.2
-    use_x_sendfile = False
+    use_x_sendfile = ConfigAttribute('use_x_sendfile')
 
     #: the logging format used for the debug logger.  This is only used when
     #: the application is in debug mode, otherwise the attached logging
@@ -686,15 +707,22 @@ class Flask(_PackageBoundObject):
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
 
-    def __init__(self, import_name):
+    #: default configuration parameters
+    default_config = ImmutableDict({
+        'debug':                                False,
+        'secret_key':                           None,
+        'session.cookie_name':                  'session',
+        'session.permanent_lifetime':           timedelta(days=31),
+        'use_x_sendfile':                       False
+    })
+
+    def __init__(self, import_name, config=None):
         _PackageBoundObject.__init__(self, import_name)
 
-        #: the debug flag.  Set this to `True` to enable debugging of
-        #: the application.  In debug mode the debugger will kick in
-        #: when an unhandled exception ocurrs and the integrated server
-        #: will automatically reload the application if changes in the
-        #: code are detected.
-        self.debug = False
+        #: the configuration dictionary
+        self.config = self.default_config.copy()
+        if config:
+            self.config.update(config)
 
         #: a dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
