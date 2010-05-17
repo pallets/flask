@@ -64,7 +64,7 @@ class SearchQuery(object):
             return False
         rv = json.load(urllib2.urlopen(self.get_url()))
         return [SearchResult(x) for x in rv['results'] if
-                _accept(x['text'])]
+                _accept(x['from_user'] + u': ' + x['text'])]
 
     @property
     def up_to_date(self):

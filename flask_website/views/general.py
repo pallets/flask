@@ -10,8 +10,8 @@ tweets = twitter.SearchQuery(required=['flask'],
                              optional=['code', 'web', 'python', 'py',
                                        'pocoo', 'micro', 'mitsuhiko',
                                        'framework', 'django', 'jinja',
-                                       'werkzeug', 'pylons'],
-                             lang='en')
+                                       'werkzeug', 'documentation',
+                                       'app'])
 
 
 @general.route('/')
