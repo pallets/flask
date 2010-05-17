@@ -614,7 +614,8 @@ class LoggingTestCase(unittest.TestCase):
         with catch_stderr() as err:
             rv = c.get('/')
             out = err.getvalue()
-            assert 'WARNING in flask_tests, flask_tests.py' in out
+            assert 'WARNING in flask_tests,' in out
+            assert 'flask_tests.py' in out
             assert 'the standard library is dead' in out
 
         with catch_stderr() as err:
