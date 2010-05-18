@@ -284,3 +284,8 @@ Template Rendering
 .. autofunction:: render_template_string
 
 .. autofunction:: get_template_attribute
+
+Configuration
+-------------
+
+.. autoclass:: Config

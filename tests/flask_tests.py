@@ -27,6 +27,11 @@ sys.path.append(os.path.join(example_path, 'flaskr'))
 sys.path.append(os.path.join(example_path, 'minitwit'))
 
 
+# config keys used for the ConfigTestCase
+TEST_KEY = 'foo'
+SECRET_KEY = 'devkey'
+
+
 @contextmanager
 def catch_stderr():
     old_stderr = sys.stderr
@@ -686,6 +691,24 @@ class LoggingTestCase(unittest.TestCase):
             assert rv.data == 'Hello Server Error'
 
 
+class ConfigTestCase(unittest.TestCase):
+
+    def common_module_test(self, app):
+        assert app.secret_key == 'devkey'
+        assert app.config['test_key'] == 'foo'
+        assert 'ConfigTestCase' not in app.config
+
+    def test_config_from_file(self):
+        app = flask.Flask(__name__)
+        app.config.from_pyfile('flask_tests.py')
+        self.common_module_test(app)
+
+    def test_config_from_module(self):
+        app = flask.Flask(__name__)
+        app.config.from_module(__name__)
+        self.common_module_test(app)
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
@@ -696,6 +719,7 @@ def suite():
     suite.addTest(unittest.makeSuite(ModuleTestCase))
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
+    suite.addTest(unittest.makeSuite(ConfigTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     suite.addTest(unittest.makeSuite(MiniTwitTestCase))
