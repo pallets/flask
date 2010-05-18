@@ -1,0 +1,12 @@
+{% macro tweet_box(tweets, limit=none) %}
+  <div class=twitter>
+    <ul>
+    {%- for tweet in tweets.get(limit) %}
+      <li>
+        <a href="http://twitter.com/{{ tweet.user }}">{{ tweet.user }}</a>:
+          {{ tweet.text|urlize }}
+        <span class=meta>&mdash; {{ tweet.pub_date|timedeltaformat }} ago via {{ tweet.via }}</span>
+    {%- endfor %}
+    </ul>
+  </div>
+{% endmacro %}

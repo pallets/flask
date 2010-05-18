@@ -1,11 +1,14 @@
 {% extends "layout.html" %}
+{% from "_twitter.html" import tweet_box %}
+{% set latest_version = '0.2' %}
+{% set download_url = 'http://pypi.python.org/packages/source/' ~
+                      'F/Flask/Flask-' ~ latest_version ~ '.tar.gz' %}
 {% block head %}
   {{ super() }}
   <style type=text/css>
     h1 { margin: 0 0 30px 0; background: url({{ url_for('.static', filename='logo.png') }}) no-repeat center; height: 165px; }
     h1 span, p.tagline { display: none; }
   </style>
-  <link href="{{ tweets.feed_url }}" rel="alternate" title="Flask on Twitter" type="application/atom+xml">
 {% endblock %}
 {% block body_title %}
   {{ super() }}
@@ -17,6 +20,9 @@
     And before you ask: It's <a href="{{ url_for('docs.show', page='license')
       }}">BSD licensed</a>!
   </blockquote>
+  <p class=latestver>
+    <strong>Latest Version:</strong>
+    <a href="{{ download_url }}" title="Download tarball">{{ latest_version }}</a>
   <h2>Flask is Fun</h2>
   <pre><span class=ig>from flask import Flask
 app = Flask(__name__)</span>
@@ -33,13 +39,13 @@ def hello():
 <span class=ig> * Running on http://localhost:5000/</span></pre>
   <h2>Interested?</h2>
   <ul>
+    <li><a href="{{ download_url }}">Download latest release</a> ({{ latest_version }})
     <li>
       <a href="{{ url_for('docs.index') }}">Read the documentation</a> or download as
       <a href="{{ url_for('docs.pdf') }}">PDF</a> and
       <a href="{{ url_for('docs.zip') }}">zipped HTML</a>
     <li><a href="{{ url_for('mailinglist.index') }}">Join the mailinglist</a>
     <li><a href=http://github.com/mitsuhiko/flask>Fork it on github</a>
-    <li><a href=http://pypi.python.org/pypi/Flask>Download it from PyPI</a>
   </ul>
   <h2>What’s in the Box?</h2>
   <ul>
@@ -54,6 +60,7 @@ def hello():
       }}#sessions">secure cookies</a> (client side sessions)
     <li>100% <a href=http://www.python.org/dev/peps/pep-0333/>WSGI 1.0</a> compliant
     <li>Unicode based
+    <li>extensively <a href="{{ url_for('docs.index') }}">documented</a>
   </ul>
   <h2>What do Flask Apps look like?</h2>
   <p>
@@ -71,22 +78,15 @@ def hello():
   <p>Found a bug? Have a good idea for improving Flask? Head over to
     <a href=http://github.com/mitsuhiko/flask>Flask's github</a> page and
     create a new ticket or fork.  If you just want to chat with fellow
-    developers, go to <code>#pocoo</code> on irc.freenode.net.
-
+    developers, visit <a href="{{ url_for('community.irc') }}">the IRC
+    channel</a> or join <a href="{{ url_for('mailinglist.index') }}"
+    >the mailinglist</a>.
   {% if tweets %}
   <h2>Recent Tweets</h2>
-  <div class=twitter>
-    <p>
-      What people say about Flask on <a href=http://twitter.com/>Twitter</a>:
-    <ul>
-    {%- for tweet in tweets %}
-      <li>
-        <a href="http://twitter.com/{{ tweet.user }}">{{ tweet.user }}</a>:
-          {{ tweet.text|urlize }}
-        <span class=meta>&mdash; {{ tweet.pub_date|timedeltaformat }} ago via {{ tweet.via }}</span>
-    {%- endfor %}
-    </ul>
-  </div>
+  <p>
+    What people say about Flask on <a href=http://twitter.com/>Twitter</a>:
+  {{ tweet_box(tweets, 3) }}
+  <p class=more><a href="{{ url_for('community.twitter') }}">more &raquo;<a>
   {% endif %}
 
 <a href="http://github.com/mitsuhiko/flask"><img style="position: fixed; top: 0; right: 0; border: 0;"

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url({{ url_for('.static', filename='community.png') }}); }
+  </style>
+{% endblock %}
+{% block body_title %}
+  <h1><span>Flask Community</span></h1>
+{% endblock %}

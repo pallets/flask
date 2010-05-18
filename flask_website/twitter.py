@@ -21,10 +21,9 @@ class SearchResult(object):
 class SearchQuery(object):
     fetch_timeout = 10
 
-    def __init__(self, required=None, optional=None, limit=5, timeout=60, lang=None):
+    def __init__(self, required=None, optional=None, timeout=60, lang=None):
         self.required = set(x.lower() for x in (required or ()))
         self.optional = set(x.lower() for x in (optional or ()))
-        self.limit = limit
         self.lang = lang
         self.timeout = timeout
         self._last_fetch = 0
@@ -49,6 +48,7 @@ class SearchQuery(object):
         return 'http://search.twitter.com/search.%s?%s' % (kind, url_encode({
             'q':            self.query,
             'result_type':  'mixed',
+            'rpp':          30,
             'lang':         self.lang
         }))
 
@@ -86,6 +86,19 @@ class SearchQuery(object):
         return len(self._cached or ())
 
     def __iter__(self):
+        return iter(self.get())
+
+    def get(self, limit=None):
         self._try_refresh()
-        for item in (self._cached or ())[:self.limit]:
-            yield item
+        seq = (self._cached or ())
+        if limit is not None:
+            seq = seq[:limit]
+        return seq
+
+
+flask_tweets = SearchQuery(
+    required=['flask'],
+    optional=['code', 'dev', 'python', 'py', 'pocoo', 'micro',
+              'mitsuhiko', 'framework', 'django', 'jinja', 'werkzeug',
+              'documentation', 'app']
+)

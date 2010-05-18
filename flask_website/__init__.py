@@ -33,10 +33,12 @@ app.add_url_rule('/docs/flask-docs.zip', endpoint='docs.zip',
                  build_only=True)
 
 from flask_website.views.general import general
+from flask_website.views.community import community
 from flask_website.views.mailinglist import mailinglist
 from flask_website.views.snippets import snippets
 from flask_website.views.extensions import extensions
 app.register_module(general)
+app.register_module(community)
 app.register_module(mailinglist)
 app.register_module(snippets)
 app.register_module(extensions)

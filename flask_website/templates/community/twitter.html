@@ -1,0 +1,23 @@
+{% extends "community/layout.html" %}
+{% from "_twitter.html" import tweet_box %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block body %}
+  <h2>Twitter</h2>
+  <p>
+    Currently there is no dedicated Twitter account for updates
+    regarding Flask, but here are some accounts that you might
+    want to follow:
+  <ul>
+    <li><a href="http://twitter.com/mitsuhiko">@mitsuhiko</a> &mdash;
+      development lead
+    <li><a href="http://twitter.com/PocooProject">@PocooProject</a> &mdash;
+      official Pocoo Project account
+  </ul>
+  <h3>Recent Tweets</h3>
+  <p>
+    Here some aggregated tweets from various people all over the planet
+    mentioning Flask:
+  {{ tweet_box(tweets, 15) }}
+{% endblock %}

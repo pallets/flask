@@ -6,8 +6,8 @@ h2, h3       { font-family: 'Garamond', 'Georgia', serif; font-weight: normal; }
 h1           { margin: 0 0 30px 0; background: url(/static/flask.png) no-repeat center;
                height: 165px; }
 h1 span      { display: none; }
-h2           { font-size: 28px; margin: 15px 0 5px 0; }
-h3           { font-size: 22px; margin: 15px 0 5px 0; }
+h2           { font-size: 30px; margin: 15px 0 5px 0; }
+h3           { font-size: 24px; margin: 15px 0 5px 0; }
 textarea, code,
 pre          { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
                monospace!important; font-size: 15px; background: #eee; }
@@ -19,6 +19,7 @@ ul li:before { content: "\00BB \0020"; color: #888; position: absolute; margin-l
 ol           { line-height: 1.4; margin: 15px 0 15px 30px; padding: 0; }
 blockquote   { margin: 0; font-style: italic; color: #444; }
 .footer      { font-size: 13px; color: #888; text-align: right; margin-top: 25px; }
+.more        { text-align: right; margin-top: 0; font-size: 0.9em; font-style: italic; }
 .nav         { text-align: center; }
 .nav a       { font-style: italic; }
 .backnav     { float: right; color: #444; font-style: italic;
@@ -40,6 +41,10 @@ th           { background: #eee; font-weight: normal; }
 
 td input     { border: none; padding: 0; }
 
+/* latest version button */
+.latestver          { margin: 20px 0 0 0; float: right; font-style: italic; }
+.latestver strong   { font-weight: normal; }
+
 /* forms */
 input, textarea, select { border: 1px solid black; padding: 2px; background: white;
                           font-family: 'Georgia', serif; font-size: 17px; color: #004B6B; }
@@ -51,6 +56,13 @@ input[name="delete"]:hover { background: #A50000; color: white;
 input.openid            { background: url(openid.png) no-repeat 4px center;
                           padding-left: 26px; }
 .formlist dt            { color: #004B6B; margin: 8px 0; }
+
+/* badges */
+.badge     { margin: 15px -30px; padding: 0 30px;
+             border: 1px solid #eee; }
+.badge p   { margin: 0; padding: 10px 0; line-height: 0; }
+.badge img { margin: 0; }
+.badge pre { margin: 0 -30px; padding: 5px 30px; }
 
 /* snippets */
 .snippet-author     { margin: 0 0 20px 0; font-size: 0.9em; }

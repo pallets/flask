@@ -1,0 +1,32 @@
+{% extends "community/layout.html" %}
+{% block title %}Badges{% endblock %}
+{% macro badge(filename, title) -%}
+<a href="{{ url_for('general.index', _external=true) }}"><img
+   src="{{ url_for('.static', filename='badges/' ~ filename, _external=true) }}"
+   border="0"
+   alt="{{ title }}"
+   title="{{ title }}"></a>
+{%- endmacro %}
+{% macro show_badge(filename, title) -%}
+  <div class=badge>
+    <p>{{ badge(filename, title) }}
+    <pre>{{ badge(filename, title)|forceescape }}</pre>
+  </div>
+{%- endmacro %}
+{% block body %}
+  <h2>Badges</h2>
+  <p>
+    If you want to share the word and want to add a “powered by
+    Flask” badge to your website you can display one of these
+    nifty badges.  We also have some badges if your website is not
+    yet powered by Flask :)
+  <h3>Large Badges</h3>
+  {{ show_badge('flask-powered.png', 'Flask powered') }}
+  {{ show_badge('i-wish.png', 'I wish this site were Flask powered') }}
+  {{ show_badge('unfortunately-not.png', 'Unfortunately not Flask powered') }}
+  <h3>Small Badges</h3>
+  {{ show_badge('flask-project-s.png', 'a Flask project') }}
+  {{ show_badge('made-with-flask-s.png', 'made with Flask') }}
+  {{ show_badge('powered-by-flask-s.png', 'powered by Flask') }}
+  <p><small>Idea for badges inspired by the Django Framework badges.</small></p>
+{% endblock %}
