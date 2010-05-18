@@ -210,6 +210,12 @@ thing, like it does for :class:`request` and :class:`session`.
 Useful Functions and Classes
 ----------------------------
 
+.. data:: current_app
+
+   Points to the application handling the request.  This is useful for
+   extensions that want to support multiple applications running side
+   by side.
+
 .. autofunction:: url_for
 
 .. function:: abort(code)

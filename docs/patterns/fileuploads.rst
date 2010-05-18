@@ -54,7 +54,7 @@ the file and redirects the user to the URL for the uploaded file::
         return '.' in filename and \
                filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-    @app.route('/')
+    @app.route('/', methods=['GET', 'POST'])
     def upload_file():
         if request.method == 'POST':
             file = request.files['file']

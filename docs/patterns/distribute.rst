@@ -25,8 +25,8 @@ Flask itself, and all the libraries you can find on the cheeseshop
 are distributed with either distribute, the older setuptools or distutils.
 
 In this case we assume your application is called
-`yourapplication.py` and you are not using a module, but a `package
-<larger-applications>`_.  Distributing resources with standard modules is
+`yourapplication.py` and you are not using a module, but a :ref:`package
+<larger-applications>`.  Distributing resources with standard modules is
 not supported by `distribute`_ so we will not bother with it.  If you have
 not yet converted your application into a package, head over to the
 :ref:`larger-applications` pattern to see how this can be done.
