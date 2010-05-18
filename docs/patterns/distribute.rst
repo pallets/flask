@@ -98,8 +98,8 @@ you.  What you should do, is to create a `MANIFEST.in` file next to your
 `setup.py` file.  This file lists all the files that should be added to
 your tarball::
 
-    recursive-include yourapplication/templates
-    recursive-include yourapplication/static
+    recursive-include yourapplication/templates *
+    recursive-include yourapplication/static *
 
 Don't forget that even if you enlist them in your `MANIFEST.in` file, they
 won't be installed for you unless you set the `include_package_data`
