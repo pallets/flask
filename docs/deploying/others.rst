@@ -46,3 +46,18 @@ event loop::
 .. _Gevent: http://www.gevent.org/
 .. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
 .. _libevent: http://monkey.org/~provos/libevent/
+
+
+Gunicorn
+--------
+
+`Gunicorn`_ 'Green Unicorn' is a WSGI HTTP Server for UNIX. It's a pre-fork
+worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
+and `greenlet`_. Running a Flask application on this server is quite simple::
+
+    gunicorn myproject:app
+
+.. _Gunicorn: http://gunicorn.org/
+.. _eventlet: http://eventlet.net/
+.. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
+
