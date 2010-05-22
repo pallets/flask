@@ -32,7 +32,7 @@ def new():
         else:
             title = request.form['title']
             body = request.form['body']
-            if body:
+            if not body:
                 flash(u'Error: you have to enter a snippet')
             else:
                 category = Category.query.get(category_id)
