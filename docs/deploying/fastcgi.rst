@@ -8,6 +8,14 @@ a FastCGI server first.
 The most popular one is `flup`_ which we will use for this guide.  Make
 sure to have it installed.
 
+.. admonition:: Watch Out
+
+   Please make sure in advance that your ``app.run()`` call you might
+   have in your application file, is inside an ``if __name__ ==
+   '__main__':`` or moved to a separate file.  Just make sure it's not
+   called because this will always start a local WSGI server which we do
+   not want if we deploy that application to FastCGI.
+
 Creating a `.fcgi` file
 -----------------------
 
@@ -35,7 +43,9 @@ It makes sense to have that in `/var/www/yourapplication` or something
 similar.
 
 Make sure to set the executable bit on that file so that the servers
-can execute it::
+can execute it:
+
+.. sourcecode:: text
 
     # chmod +x /var/www/yourapplication/yourapplication.fcgi
 

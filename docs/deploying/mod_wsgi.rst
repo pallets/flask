@@ -3,6 +3,14 @@ mod_wsgi (Apache)
 
 If you are using the `Apache`_ webserver you should consider using `mod_wsgi`_.
 
+.. admonition:: Watch Out
+
+   Please make sure in advance that your ``app.run()`` call you might
+   have in your application file, is inside an ``if __name__ ==
+   '__main__':`` or moved to a separate file.  Just make sure it's not
+   called because this will always start a local WSGI server which we do
+   not want if we deploy that application to mod_wsgi.
+
 .. _Apache: http://httpd.apache.org/
 
 Installing `mod_wsgi`
@@ -14,12 +22,16 @@ a package manager or compile it yourself.
 The mod_wsgi `installation instructions`_ cover source installations on UNIX 
 systems.
 
-If you are using ubuntu / debian you can apt-get it and activate it as follows::
+If you are using ubuntu / debian you can apt-get it and activate it as follows:
+
+.. sourcecode:: text
 
     # apt-get install libapache2-mod-wsgi
 
 On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by using
-pkg_add::
+pkg_add:
+
+.. sourcecode:: text
 
     # pkg_add -r mod_wsgi
 
@@ -78,3 +90,48 @@ For more information consult the `mod_wsgi wiki`_.
 .. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
 .. _virtual python: http://pypi.python.org/pypi/virtualenv
 .. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
+
+.. _*
+
+Toubleshooting
+--------------
+
+If your application does not run, follow this guide to troubleshoot:
+
+**Problem:** Application does not run, errorlog shows SystemExit ignored
+    You have a ``app.run()`` call in your application file that is not
+    guarded by an ``if __name__ == '__main__':`` condition.  Either remove
+    that :meth:`~flask.Flask.run` call from the file and move it into a
+    separate `run.py` file or put it into such an if block.
+
+**Problem:** application gives permission errors
+    Probably caused by your application running as the wrong user.  Make
+    sure the folders the application needs access to have the proper
+    privileges set and the application runs as the correct user (``user``
+    and ``group`` parameter to the `WSGIDaemonProcess` directive)
+
+**Problem:** application dies with an error on print
+    Keep in mind that mod_wsgi disallows doing anything with
+    :data:`sys.stdout` and :data:`sys.stderr`.  You can disable this
+    protection from the config by setting the `WSGIRestrictStdout` to
+    ``off``:
+
+    .. sourcecode:: apache
+
+        WSGIRestrictStdout Off
+
+    Alternatively you can also replace the standard out in the .wsgi file
+    with a different stream::
+
+        import sys
+        sys.stdout = sys.stderr
+
+**Problem:** accessing resources gives IO errors
+    Your application probably is a single .py file you symlinked into the
+    site-packages folder.  Please be aware that this does not work,
+    instead you either have to put the folder into the pythonpath the file
+    is stored in, or convert your application into a package.
+
+    The reason for this is that for non-installed Packages, the module
+    filename is used to locate the resources and for symlinks the wrong
+    filename is picked up.
