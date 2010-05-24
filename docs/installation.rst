@@ -41,7 +41,7 @@ an installation but a clever way to keep things separated.
 So let's see how that works!
 
 If you are on OS X or Linux chances are that one of the following two
-commands will for for you::
+commands will work for you::
 
     $ sudo easy_install virtualenv
 
