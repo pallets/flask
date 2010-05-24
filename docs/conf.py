@@ -190,6 +190,7 @@ latex_elements = {
     'pointsize':    '12pt',
     'preamble':     r'\usepackage{flaskstyle}'
 }
+latex_use_parts = True
 
 latex_additional_files = ['flaskstyle.sty', 'logo.pdf']
 

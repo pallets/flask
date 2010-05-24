@@ -163,6 +163,8 @@ Here is a list of useful formatting variables for the format string.  Note
 that this list is not complete, consult the official documentation of the
 :mod:`logging` package for a full list.
 
+.. tabularcolumns:: |p{3cm}|p{12cm}|
+
 +------------------+----------------------------------------------------+
 | Format           | Description                                        |
 +==================+====================================================+
