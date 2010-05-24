@@ -654,7 +654,7 @@ sessions work::
         session.pop('username', None)
 
     # set the secret key.  keep this really secret:
-    app.secret_key = 'the secret key'
+    app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 The here mentioned :func:`~flask.escape` does escaping for you if you are
 not using the template engine (like in this example).
