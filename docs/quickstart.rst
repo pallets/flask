@@ -160,6 +160,39 @@ The following converters exist:
 `path`      like the default but also accepts slashes
 =========== ===========================================
 
+.. admonition:: Unique URLs / Redirection Behaviour
+
+   Flask's URL rules are based on Werkzeug's routing module.  The idea
+   behind that module is to ensure nice looking and also unique URLs based
+   on behaviour Apache and earlier servers coined.
+
+   Take these two rules::
+
+        @app.route('/projects/')
+        def projects():
+            pass
+
+        @app.route('/about')
+        def about():
+            pass
+
+   They look rather similar, the difference is the trailing slash in the
+   URL *definition*.  In the first case, the canonical URL for the
+   `projects` endpoint has a trailing slash.  It's similar to a folder in
+   that sense.  Accessing it without a trailing slash will cause Flask to
+   redirect to the canonical URL with the trailing slash.
+
+   However in the second case the URL is defined without a slash so it
+   behaves similar to a file and accessing the URL with a trailing slash
+   will be a 404 error.
+
+   Why is this?  This allows relative URLs to continue working if users
+   access the page when they forget a trailing slash.  This behaviour is
+   also consistent with how Apache and other servers work.  Also, the URLs
+   will stay unique which helps search engines not indexing the same page
+   twice.
+
+
 .. _url-building:
 
 URL Building
