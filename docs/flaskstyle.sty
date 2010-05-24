@@ -70,6 +70,42 @@
 \ChNumVar{\raggedleft \bfseries\Large}
 \ChTitleVar{\raggedleft \rm\Huge}
 
+\renewcommand\thepart{\@Roman\c@part}
+\renewcommand\part{%
+   \if@noskipsec \leavevmode \fi
+   \cleardoublepage
+   \vspace*{8cm}%
+   \@afterindentfalse
+   \secdef\@part\@spart}
+
+\def\@part[#1]#2{%
+    \ifnum \c@secnumdepth >\m@ne
+      \refstepcounter{part}%
+      \addcontentsline{toc}{part}{\thepart\hspace{1em}#1}%
+    \else
+      \addcontentsline{toc}{part}{#1}%
+    \fi
+    {\parindent \z@ \center
+     \interlinepenalty \@M
+     \normalfont
+     \ifnum \c@secnumdepth >\m@ne
+       \rm\Large \partname~\thepart
+       \par\nobreak
+     \fi
+     \MakeUppercase{\rm\Huge #2}%
+     \markboth{}{}\par}%
+    \nobreak
+    \vskip 3ex
+    \@afterheading}
+\def\@spart#1{%
+    {\parindent \z@ \center
+     \interlinepenalty \@M
+     \normalfont
+     \huge \bfseries #1\par}%
+     \nobreak
+     \vskip 3ex
+     \@afterheading}
+
 % use inconsolata font
 \usepackage{inconsolata}
 
