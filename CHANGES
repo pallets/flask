@@ -13,6 +13,10 @@ Release date to be announced
   log request handling exceptions to that logger when not in debug
   mode.  This makes it possible to receive mails on server errors
   for example.
+- added support for context binding that does not require the use of
+  the with statement for playing in the console.
+- the request context is now available within the with statement making
+  it possible to further push the request context or pop it.
 
 Version 0.2
 -----------

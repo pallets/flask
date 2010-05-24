@@ -147,15 +147,24 @@ class _RequestContext(object):
         except HTTPException, e:
             self.request.routing_exception = e
 
-    def __enter__(self):
+    def push(self):
+        """Binds the request context."""
         _request_ctx_stack.push(self)
+
+    def pop(self):
+        """Pops the request context."""
+        _request_ctx_stack.pop()
+
+    def __enter__(self):
+        self.push()
+        return self
 
     def __exit__(self, exc_type, exc_value, tb):
         # do not pop the request stack if we are in debug mode and an
         # exception happened.  This will allow the debugger to still
         # access the request object in the interactive shell.
         if tb is None or not self.app.debug:
-            _request_ctx_stack.pop()
+            self.pop()
 
 
 def url_for(endpoint, **values):
@@ -1201,6 +1210,30 @@ class Flask(_PackageBoundObject):
 
             with app.request_context(environ):
                 do_something_with(request)
+
+        The object returned can also be used without the `with` statement
+        which is useful for working in the shell.  The example above is
+        doing exactly the same as this code::
+
+            ctx = app.request_context(environ)
+            ctx.push()
+            try:
+                do_something_with(request)
+            finally:
+                ctx.pop()
+
+        The big advantage of this approach is that you can use it without
+        the try/finally statement in a shell for interactive testing:
+
+        >>> ctx = app.test_request_context()
+        >>> ctx.bind()
+        >>> request.path
+        u'/'
+        >>> ctx.unbind()
+
+        .. versionchanged:: 0.5
+           Added support for non-with statement usage and `with` statement
+           is now passed the ctx object.
 
         :param environ: a WSGI environment
         """

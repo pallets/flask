@@ -53,6 +53,23 @@ class ContextTestCase(unittest.TestCase):
         with app.test_request_context('/meh'):
             assert meh() == 'http://localhost/meh'
 
+    def test_manual_context_binding(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return 'Hello %s!' % flask.request.args['name']
+
+        ctx = app.test_request_context('/?name=World')
+        ctx.push()
+        assert index() == 'Hello World!'
+        ctx.pop()
+        try:
+            index()
+        except AttributeError:
+            pass
+        else:
+            assert 0, 'expected runtime error'
+
 
 class BasicFunctionalityTestCase(unittest.TestCase):
 

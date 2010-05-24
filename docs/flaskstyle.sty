@@ -1,4 +1,3 @@
-\pagenumbering{arabic}
 \definecolor{TitleColor}{rgb}{0,0,0}
 \definecolor{InnerLinkColor}{rgb}{0,0,0}
 
@@ -72,9 +71,10 @@
 
 \renewcommand\thepart{\@Roman\c@part}
 \renewcommand\part{%
+   \pagestyle{empty}
    \if@noskipsec \leavevmode \fi
    \cleardoublepage
-   \vspace*{8cm}%
+   \vspace*{6cm}%
    \@afterindentfalse
    \secdef\@part\@spart}
 
@@ -85,7 +85,7 @@
     \else
       \addcontentsline{toc}{part}{#1}%
     \fi
-    {\parindent \z@ \center
+    {\parindent \z@ %\center
      \interlinepenalty \@M
      \normalfont
      \ifnum \c@secnumdepth >\m@ne
@@ -98,7 +98,7 @@
     \vskip 8ex
     \@afterheading}
 \def\@spart#1{%
-    {\parindent \z@ \center
+    {\parindent \z@ %\center
      \interlinepenalty \@M
      \normalfont
      \huge \bfseries #1\par}%
