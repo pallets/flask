@@ -1004,14 +1004,14 @@ class Flask(_PackageBoundObject):
         error code.  Example::
 
             @app.errorhandler(404)
-            def page_not_found():
+            def page_not_found(error):
                 return 'This page does not exist', 404
 
         You can also register a function as error handler without using
         the :meth:`errorhandler` decorator.  The following example is
         equivalent to the one above::
 
-            def page_not_found():
+            def page_not_found(error):
                 return 'This page does not exist', 404
             app.error_handlers[404] = page_not_found
 
