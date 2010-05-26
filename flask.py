@@ -784,6 +784,8 @@ class Flask(_PackageBoundObject):
             app.logger.debug('A value for debugging')
             app.logger.warning('A warning ocurred (%d apples)', 42)
             app.logger.error('An error occoured')
+
+        .. versionadded:: 0.5
         """
         from logging import getLogger, StreamHandler, Formatter, DEBUG
         class DebugHandler(StreamHandler):
