@@ -659,6 +659,19 @@ sessions work::
 The here mentioned :func:`~flask.escape` does escaping for you if you are
 not using the template engine (like in this example).
 
+.. admonition:: How to generate good Secret Keys
+
+   The problem with random is that it's hard to judge what random is.  And
+   a secret key should be as random as possible.  Your operating system
+   has ways to generate pretty random stuff based on a cryptographical
+   random generator which can be used to get such a key:
+
+   >>> import os
+   >>> os.urandom(24)
+   '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+
+   Just take that thing and copy/paste it into your code and you're done.
+
 Message Flashing
 ----------------
 
