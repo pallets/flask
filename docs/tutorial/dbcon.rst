@@ -1,3 +1,5 @@
+.. _tutorial-dbcon:
+
 Step 4: Request Database Connections
 ------------------------------------
 
@@ -31,3 +33,5 @@ request only and is available from within each function.  Never store such
 things on other objects because this would not work with threaded
 environments.  That special :data:`~flask.g` object does some magic behind
 the scenes to ensure it does the right thing.
+
+Continue to :ref:`tutorial-views`.

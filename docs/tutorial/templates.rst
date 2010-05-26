@@ -1,3 +1,5 @@
+.. _tutorial-templates:
+
 Step 6: The Templates
 =====================
 
@@ -105,3 +107,5 @@ the user to login:
         </dl>
       </form>
     {% endblock %}
+
+Continue with :ref:`tutorial-css`.

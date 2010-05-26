@@ -1,3 +1,5 @@
+.. _tutorial-css:
+
 Step 7: Adding Style
 ====================
 
@@ -25,3 +27,5 @@ folder we created before:
     .flash          { background: #CEE5F5; padding: 0.5em;
                       border: 1px solid #AACBE2; }
     .error          { background: #F0D6D6; padding: 0.5em; }
+
+Continue with :ref:`tutorial-testing`.

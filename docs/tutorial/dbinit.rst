@@ -1,3 +1,5 @@
+.. _tutorial-dbinit:
+
 Step 3: Creating The Database
 =============================
 
@@ -61,3 +63,5 @@ importing and calling that function::
    If you get an exception later that a table cannot be found check that
    you did call the `init_db` function and that your table names are
    correct (singular vs. plural for example).
+
+Continue with :ref:`tutorial-dbcon`

@@ -1,3 +1,5 @@
+.. _tutorial-setup:
+
 Step 2: Application Setup Code
 ==============================
 
@@ -62,3 +64,5 @@ focus on that a little later.  First we should get the database working.
    Want your server to be publically available?  Check out the
    :ref:`externally visible server <public-server>` section for more
    information.
+
+Continue with :ref:`tutorial-dbinit`.

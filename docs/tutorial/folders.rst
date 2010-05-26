@@ -1,3 +1,5 @@
+.. _tutorial-folders:
+
 Step 0: Creating The Folders
 ============================
 
@@ -15,5 +17,7 @@ the `static` folder are available to users of the application via `HTTP`.
 This is the place where css and javascript files go.  Inside the
 `templates` folder Flask will look for `Jinja2`_ templates.  Drop all the
 templates there.
+
+Continue with :ref:`tutorial-schema`.
 
 .. _Jinja2: http://jinja.pocoo.org/2/

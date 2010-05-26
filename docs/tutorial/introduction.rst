@@ -1,3 +1,5 @@
+.. _tutorial-introduction:
+
 Introducing Flaskr
 ==================
 
@@ -25,5 +27,7 @@ Here a screenshot from the final application:
    :align: center
    :class: screenshot
    :alt: screenshot of the final application
+
+Continue with :ref:`tutorial-folders`.
 
 .. _SQLAlchemy: http://www.sqlalchemy.org/

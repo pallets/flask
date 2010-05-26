@@ -28,3 +28,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    flashing
    jquery
    errorpages
+   lazyloading

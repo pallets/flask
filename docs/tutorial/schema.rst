@@ -1,3 +1,5 @@
+.. _tutorial-schema:
+
 Step 1: Database Schema
 =======================
 
@@ -19,3 +21,5 @@ This schema consists of a single table called `entries` and each row in
 this table has an `id`, a `title` and a `text`.  The `id` is an
 automatically incrementing integer and a primary key, the other two are
 strings that must not be null.
+
+Continue with :ref:`tutorial-setup`.

@@ -1,3 +1,5 @@
+.. _tutorial-views:
+
 Step 5: The View Functions
 ==========================
 
@@ -85,3 +87,5 @@ that case if the user was logged in.
         session.pop('logged_in', None)
         flash('You were logged out')
         return redirect(url_for('show_entries'))
+
+Continue with :ref:`tutorial-templates`.
