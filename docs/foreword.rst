@@ -84,11 +84,6 @@ widespread usage.  Recent versions of Flask scale nicely within reasonable
 bounds and if you grow larger, you won't have any troubles adjusting Flask
 for your new application size.
 
-Flask serves two purposes: it's an example of how to create a minimal and
-opinionated framework on top of Werkzeug to show how this can be done, and
-to provide people with a simple tool to prototype larger applications or
-to implement small and medium sized applications.
-
 If you suddenly discover that your application grows larger than
 originally intended, head over to the :ref:`becomingbig` section to see
 some possible solutions for larger applications.

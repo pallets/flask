@@ -24,13 +24,13 @@ PASSWORD = 'default'
 
 # create our little application :)
 app = Flask(__name__)
-app.secret_key = SECRET_KEY
-app.debug = DEBUG
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 
 def connect_db():
     """Returns a new connection to the database."""
-    return sqlite3.connect(DATABASE)
+    return sqlite3.connect(app.config['DATABASE'])
 
 
 def init_db():
@@ -76,9 +76,9 @@ def add_entry():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != USERNAME:
+        if request.form['username'] != app.config['USERNAME']:
             error = 'Invalid username'
-        elif request.form['password'] != PASSWORD:
+        elif request.form['password'] != app.config['PASSWORD']:
             error = 'Invalid password'
         else:
             session['logged_in'] = True

@@ -26,12 +26,27 @@ the values from there.
     PASSWORD = 'default'
 
 Next we can create our actual application and initialize it with the
-config::
+config from the same file::
 
     # create our little application :)
     app = Flask(__name__)
-    app.secret_key = SECRET_KEY
-    app.debug = DEBUG
+    app.config.from_object(__name__)
+
+:meth:`~flask.Config.from_object` will look at the given object (if it's a
+string it will import it) and then look for all uppercase variables
+defined there.  In our case, the configuration we just wrote a few lines
+of code above.  You can also move that into a separate file.
+
+It is also a good idea to be able to load a configuration from a
+configurable file.  This is what :meth:`~flask.Config.from_envvar` can
+do::
+
+    app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
+That way someone can set an environment variable called
+:envvar:`FLASKR_SETTINGS` to specify a config file to be loaded which will
+then override the default values.  The silent switch just tells Flask to
+not complain if no such environment key is set.
 
 The `secret_key` is needed to keep the client-side sessions secure.
 Choose that key wisely and as hard to guess and complex as possible.  The
@@ -46,7 +61,7 @@ Python shell or a script.  This will come in handy later
 ::
 
     def connect_db():
-        return sqlite3.connect(DATABASE)
+        return sqlite3.connect(app.config['DATABASE'])
 
 Finally we just add a line to the bottom of the file that fires up the
 server if we run that file as standalone application::

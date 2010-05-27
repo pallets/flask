@@ -94,7 +94,7 @@ this::
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db_fd, flaskr.DATABASE = tempfile.mkstemp()
+            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
             self.app = flaskr.app.test_client()
             flaskr.init_db()
 
@@ -151,13 +151,13 @@ Now we can easily test if logging in and out works and that it fails with
 invalid credentials.  Add this new test to the class::
 
    def test_login_logout(self):
-       rv = self.login(flaskr.USERNAME, flaskr.PASSWORD)
+       rv = self.login('admin', 'default')
        assert 'You were logged in' in rv.data
        rv = self.logout()
        assert 'You were logged out' in rv.data
-       rv = self.login(flaskr.USERNAME + 'x', flaskr.PASSWORD)
+       rv = self.login('adminx', 'default')
        assert 'Invalid username' in rv.data
-       rv = self.login(flaskr.USERNAME, flaskr.PASSWORD + 'x')
+       rv = self.login('admin', 'defaultx')
        assert 'Invalid password' in rv.data
 
 Test Adding Messages
@@ -167,7 +167,7 @@ Now we can also test that adding messages works.  Add a new test method
 like this::
 
     def test_messages(self):
-        self.login(flaskr.USERNAME, flaskr.PASSWORD)
+        self.login('admin', 'default')
         rv = self.app.post('/add', data=dict(
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
@@ -214,3 +214,7 @@ functions.  Here a full example that showcases this::
         assert flask.request.args['name'] == 'Peter'
 
 All the other objects that are context bound can be used the same.
+
+If you want to test your application with different configurations and
+there does not seem to be a good way to do that, consider switching to
+application factories (see :ref:`app-factories`).

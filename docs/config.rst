@@ -1,3 +1,5 @@
+.. _config:
+
 Configuration Handling
 ======================
 
@@ -46,6 +48,8 @@ Builtin Configuration Values
 ----------------------------
 
 The following configuration values are used internally by Flask:
+
+.. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
 
 =============================== =========================================
 ``DEBUG``                       enable/disable debug mode

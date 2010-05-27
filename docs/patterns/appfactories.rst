@@ -1,3 +1,5 @@
+.. _app-factories:
+
 Application Factories
 =====================
 

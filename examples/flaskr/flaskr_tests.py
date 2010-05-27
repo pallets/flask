@@ -18,14 +18,14 @@ class FlaskrTestCase(unittest.TestCase):
 
     def setUp(self):
         """Before each test, set up a blank database"""
-        self.db_fd, flaskr.DATABASE = tempfile.mkstemp()
+        self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
         self.app = flaskr.app.test_client()
         flaskr.init_db()
 
     def tearDown(self):
         """Get rid of the database again after each test."""
         os.close(self.db_fd)
-        os.unlink(flaskr.DATABASE)
+        os.unlink(flaskr.app.config['DATABASE'])
 
     def login(self, username, password):
         return self.app.post('/login', data=dict(
@@ -45,18 +45,22 @@ class FlaskrTestCase(unittest.TestCase):
 
     def test_login_logout(self):
         """Make sure login and logout works"""
-        rv = self.login(flaskr.USERNAME, flaskr.PASSWORD)
+        rv = self.login(flaskr.app.config['USERNAME'],
+                        flaskr.app.config['PASSWORD'])
         assert 'You were logged in' in rv.data
         rv = self.logout()
         assert 'You were logged out' in rv.data
-        rv = self.login(flaskr.USERNAME + 'x', flaskr.PASSWORD)
+        rv = self.login(flaskr.app.config['USERNAME'] + 'x',
+                        flaskr.app.config['PASSWORD'])
         assert 'Invalid username' in rv.data
-        rv = self.login(flaskr.USERNAME, flaskr.PASSWORD + 'x')
+        rv = self.login(flaskr.app.config['USERNAME'],
+                        flaskr.app.config['PASSWORD'] + 'x')
         assert 'Invalid password' in rv.data
 
     def test_messages(self):
         """Test that messages work"""
-        self.login(flaskr.USERNAME, flaskr.PASSWORD)
+        self.login(flaskr.app.config['USERNAME'],
+                   flaskr.app.config['PASSWORD'])
         rv = self.app.post('/add', data=dict(
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'

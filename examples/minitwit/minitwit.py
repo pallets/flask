@@ -27,11 +27,13 @@ SECRET_KEY = 'development key'
 
 # create our little application :)
 app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_envvar('MINITWIT_SETTINGS', silent=True)
 
 
 def connect_db():
     """Returns a new connection to the database."""
-    return sqlite3.connect(DATABASE)
+    return sqlite3.connect(app.config['DATABASE'])
 
 
 def init_db():
@@ -237,12 +239,9 @@ def logout():
     return redirect(url_for('public_timeline'))
 
 
-# add some filters to jinja and set the secret key and debug mode
-# from the configuration.
+# add some filters to jinja
 app.jinja_env.filters['datetimeformat'] = format_datetime
 app.jinja_env.filters['gravatar'] = gravatar_url
-app.secret_key = SECRET_KEY
-app.debug = DEBUG
 
 
 if __name__ == '__main__':

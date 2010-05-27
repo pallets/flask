@@ -63,9 +63,9 @@ notified about that and the user asked again::
     def login():
         error = None
         if request.method == 'POST':
-            if request.form['username'] != USERNAME:
+            if request.form['username'] != app.config['USERNAME']:
                 error = 'Invalid username'
-            elif request.form['password'] != PASSWORD:
+            elif request.form['password'] != app.config['PASSWORD']:
                 error = 'Invalid password'
             else:
                 session['logged_in'] = True

@@ -27,7 +27,6 @@ endpoints.
 Here are some suggestions for how Flask can be modified to better 
 accommodate large-scale applications:
 
--   implement dotted names for URL endpoints
 -   get rid of the decorator function registering which causes a lot
     of troubles for applications that have circular dependencies.  It
     also requires that the whole application is imported when the system
