@@ -22,6 +22,7 @@ Released on May 28th, codename Schnaps
   the with statement for playing in the console.
 - the request context is now available within the with statement making
   it possible to further push the request context or pop it.
+- added support for configurations.
 
 Version 0.2
 -----------
