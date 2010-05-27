@@ -8,7 +8,7 @@ that uses decorators has to be imported upfront or Flask will never
 actually find your function.
 
 This can be a problem if your application has to import quick.  It might
-have to do that on systems like Google's AppEngine or other systems.  So
+have to do that on systems like Google's App Engine or other systems.  So
 if you suddenly notice that your application outgrows this approach you
 can fall back to a centralized URL mapping.
 

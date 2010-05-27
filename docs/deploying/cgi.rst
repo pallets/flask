@@ -6,7 +6,7 @@ is supported by all major servers but usually has a less-than-optimal
 performance.
 
 This is also the way you can use a Flask application on Google's
-`AppEngine`_, there however the execution does happen in a CGI-like
+`App Engine`_, there however the execution does happen in a CGI-like
 environment.  The application's performance is unaffected because of that.
 
 .. admonition:: Watch Out
@@ -15,9 +15,9 @@ environment.  The application's performance is unaffected because of that.
    have in your application file, is inside an ``if __name__ ==
    '__main__':`` or moved to a separate file.  Just make sure it's not
    called because this will always start a local WSGI server which we do
-   not want if we deploy that application to CGI / appengine.
+   not want if we deploy that application to CGI / app engine.
 
-.. _AppEngine: http://code.google.com/appengine/
+.. _App Engine: http://code.google.com/appengine/
 
 Creating a `.cgi` file
 ----------------------
