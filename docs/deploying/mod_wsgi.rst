@@ -91,8 +91,6 @@ For more information consult the `mod_wsgi wiki`_.
 .. _virtual python: http://pypi.python.org/pypi/virtualenv
 .. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
 
-.. _*
-
 Toubleshooting
 --------------
 
