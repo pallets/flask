@@ -34,7 +34,7 @@ memcached server then::
     from werkzeug.contrib.cache import MemcachedCache
     cache = MemcachedCache(['127.0.0.1:11211'])
 
-If you are using appengine, you can connect to the appengine memcache
+If you are using App Engine, you can connect to the App Engine memcache
 server easily::
 
     from werkzeug.contrib.cache import GAEMemcachedCache
