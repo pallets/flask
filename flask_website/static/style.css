@@ -73,6 +73,9 @@ input.openid            { background: url(openid.png) no-repeat 4px center;
 .comments .body pre { padding: 7px 30px 7px 60px; margin: 10px -30px 10px -60px; }
 .comments .body p   { margin: 10px 0; }
 .comments li:before { display: none; }
+.comments ul li     { list-style: disc; }
+.comments ul,
+.comments ol        { margin: 15px 0 15px 20px; padding: 0; }
 #preview            { margin: 20px -30px; padding: 10px 30px; background: #fafafa; }
 
 /* mailinglist */
