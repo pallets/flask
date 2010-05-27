@@ -680,36 +680,36 @@ class Config(dict):
         d = type(sys)('config')
         d.__file__ = filename
         execfile(filename, d.__dict__)
-        self.from_module(d)
+        self.from_object(d)
 
-    def from_module(self, module):
-        """Updates the values from the given module.  A module can be of one
+    def from_object(self, obj):
+        """Updates the values from the given object.  An object can be of one
         of the following two types:
 
-        -   a string: in this case the module with that name will be imported
-        -   an actual module reference: that module is used directly
+        -   a string: in this case the object with that name will be imported
+        -   an actual object reference: that object is used directly
 
-        Just the uppercase variables in that module are stored in the config
+        Objects are usually either modules or classes.
+
+        Just the uppercase variables in that object are stored in the config
         after lowercasing.  Example usage::
 
-            app.config.from_module('yourapplication.default_config')
+            app.config.from_object('yourapplication.default_config')
             from yourapplication import default_config
-            app.config.from_module(default_config)
+            app.config.from_object(default_config)
 
         You should not use this function to load the actual configuration but
         rather configuration defaults.  The actual config should be loaded
-        with :meth;`from_pyfile` and ideally from a location not within the
+        with :meth:`from_pyfile` and ideally from a location not within the
         package because the package might be installed system wide.
 
-        :param module: an import name or module
+        :param obj: an import name or object
         """
-        if isinstance(module, basestring):
-            d = import_string(module).__dict__
-        else:
-            d = module.__dict__
-        for key, value in d.iteritems():
+        if isinstance(obj, basestring):
+            obj = import_string(obj)
+        for key in dir(obj):
             if key.isupper():
-                self[key.lower()] = value
+                self[key] = getattr(obj, key)
 
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
@@ -752,27 +752,27 @@ class Flask(_PackageBoundObject):
     #: application.  In debug mode the debugger will kick in when an unhandled
     #: exception ocurrs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
-    debug = ConfigAttribute('debug')
+    debug = ConfigAttribute('DEBUG')
 
     #: if a secret key is set, cryptographic components can use this to
     #: sign cookies and other things.  Set this to a complex random value
     #: when you want to use the secure cookie for instance.
-    secret_key = ConfigAttribute('secret_key')
+    secret_key = ConfigAttribute('SECRET_KEY')
 
     #: The secure cookie uses this for the name of the session cookie
-    session_cookie_name = ConfigAttribute('session_cookie_name')
+    session_cookie_name = ConfigAttribute('SESSION_COOKIE_NAME')
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
     #: date of a permanent session.  The default is 31 days which makes a
     #: permanent session survive for roughly one month.
-    permanent_session_lifetime = ConfigAttribute('permanent_session_lifetime')
+    permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME')
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
     #: sent with the :func:`send_file` method.
     #:
     #: .. versionadded:: 0.2
-    use_x_sendfile = ConfigAttribute('use_x_sendfile')
+    use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
     #: the logging format used for the debug logger.  This is only used when
     #: the application is in debug mode, otherwise the attached logging
@@ -794,11 +794,11 @@ class Flask(_PackageBoundObject):
 
     #: default configuration parameters
     default_config = ImmutableDict({
-        'debug':                                False,
-        'secret_key':                           None,
-        'session_cookie_name':                  'session',
-        'permanent_session_lifetime':           timedelta(days=31),
-        'use_x_sendfile':                       False
+        'DEBUG':                                False,
+        'SECRET_KEY':                           None,
+        'SESSION_COOKIE_NAME':                  'session',
+        'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
+        'USE_X_SENDFILE':                       False
     })
 
     def __init__(self, import_name):

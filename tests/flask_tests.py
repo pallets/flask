@@ -693,20 +693,29 @@ class LoggingTestCase(unittest.TestCase):
 
 class ConfigTestCase(unittest.TestCase):
 
-    def common_module_test(self, app):
+    def common_object_test(self, app):
         assert app.secret_key == 'devkey'
-        assert app.config['test_key'] == 'foo'
+        assert app.config['TEST_KEY'] == 'foo'
         assert 'ConfigTestCase' not in app.config
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
         app.config.from_pyfile('flask_tests.py')
-        self.common_module_test(app)
+        self.common_object_test(app)
 
     def test_config_from_module(self):
         app = flask.Flask(__name__)
-        app.config.from_module(__name__)
-        self.common_module_test(app)
+        app.config.from_object(__name__)
+        self.common_object_test(app)
+
+    def test_config_from_class(self):
+        class Base(object):
+            TEST_KEY = 'foo'
+        class Test(Base):
+            SECRET_KEY = 'devkey'
+        app = flask.Flask(__name__)
+        app.config.from_object(Test)
+        self.common_object_test(app)
 
 
 def suite():
