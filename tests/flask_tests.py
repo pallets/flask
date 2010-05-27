@@ -703,7 +703,7 @@ class ConfigTestCase(unittest.TestCase):
         app.config.from_pyfile('flask_tests.py')
         self.common_object_test(app)
 
-    def test_config_from_module(self):
+    def test_config_from_object(self):
         app = flask.Flask(__name__)
         app.config.from_object(__name__)
         self.common_object_test(app)
