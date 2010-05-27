@@ -12,6 +12,8 @@
       (<a href="{{ url_for('edit', id=snippet.id) }}">edit</a>)
     {% endif %}
   {{ snippet.rendered_body }}
+  <p><small>This snippet by {{ snippet.author.name }} can be used freely for
+    anything you like. Consider it public domain.</small>
   {% if snippet.comments or g.user %}
   <div id=comment-box>
   {% if snippet.comments %}
