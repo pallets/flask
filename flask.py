@@ -232,7 +232,7 @@ def flash(message, category='message'):
     flashed message from the session and to display it to the user,
     the template has to call :func:`get_flashed_messages`.
 
-    .. versionchanged: 0.5
+    .. versionchanged: 0.3
        `category` parameter added.
 
     :param message: the message to be flashed.
@@ -260,7 +260,7 @@ def get_flashed_messages(with_categories=False):
           <p class=flash-{{ category }}>{{ msg }}
         {% endfor %}
 
-    .. versionchanged:: 0.5
+    .. versionchanged:: 0.3
        `with_categories` parameter added.
 
     :param with_categories: set to `True` to also receive categories.
@@ -829,7 +829,7 @@ class Flask(_PackageBoundObject):
     #: the application is in debug mode, otherwise the attached logging
     #: handler does the formatting.
     #:
-    #: .. versionadded:: 0.5
+    #: .. versionadded:: 0.3
     debug_log_format = (
         '-' * 80 + '\n' +
         '%(levelname)s in %(module)s, %(pathname)s:%(lineno)d]:\n' +
@@ -949,7 +949,7 @@ class Flask(_PackageBoundObject):
             app.logger.warning('A warning ocurred (%d apples)', 42)
             app.logger.error('An error occoured')
 
-        .. versionadded:: 0.5
+        .. versionadded:: 0.3
         """
         from logging import getLogger, StreamHandler, Formatter, DEBUG
         class DebugHandler(StreamHandler):
@@ -1225,7 +1225,7 @@ class Flask(_PackageBoundObject):
         registered error handlers and fall back to returning the
         exception as response.
 
-        .. versionadded: 0.5
+        .. versionadded: 0.3
         """
         handler = self.error_handlers.get(e.code)
         if handler is None:
@@ -1239,7 +1239,7 @@ class Flask(_PackageBoundObject):
         for an 500 internal server error is used.  If no such handler
         exists, a default 500 internal server error message is displayed.
 
-        .. versionadded: 0.5
+        .. versionadded: 0.3
         """
         handler = self.error_handlers.get(500)
         if self.debug:
@@ -1397,7 +1397,7 @@ class Flask(_PackageBoundObject):
         u'/'
         >>> ctx.unbind()
 
-        .. versionchanged:: 0.5
+        .. versionchanged:: 0.3
            Added support for non-with statement usage and `with` statement
            is now passed the ctx object.
 

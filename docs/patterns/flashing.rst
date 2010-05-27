@@ -86,7 +86,7 @@ And of course the login template:
 Flashing With Categories
 ------------------------
 
-.. versionadded:: 0.5
+.. versionadded:: 0.3
 
 It is also possible to provide categories when flashing a message.  The
 default category if nothing is provided is ``'message'``.  Alternative

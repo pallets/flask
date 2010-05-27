@@ -14,10 +14,10 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
-Version 0.5
+Version 0.3
 -----------
 
-Flask 0.5 introduces configuration support and logging as well as
+Flask 0.3 introduces configuration support and logging as well as
 categories for flashing messages.  All these are features that are 100%
 backwards compatible but you might want to take advantage of them.
 

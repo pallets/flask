@@ -691,7 +691,7 @@ for a full example.
 Logging
 -------
 
-.. versionadded:: 0.5
+.. versionadded:: 0.3
 
 Sometimes you might be in the situation where you deal with data that
 should be correct, but actually is not.  For example you have some client
@@ -702,7 +702,7 @@ Request`` in that situation, but other times it is not and the code has to
 continue working.
 
 Yet you want to log that something fishy happened.  This is where loggers
-come in handy.  As of Flask 0.5 a logger is preconfigured for you to use.
+come in handy.  As of Flask 0.3 a logger is preconfigured for you to use.
 
 Here are some example log calls::
 

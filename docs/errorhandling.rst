@@ -3,7 +3,7 @@
 Handling Application Errors
 ===========================
 
-.. versionadded:: 0.5
+.. versionadded:: 0.3
 
 Applications fail, server fail.  Sooner or later you will see an exception
 in production.  Even if your code is 100% correct, you will still see

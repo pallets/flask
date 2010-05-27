@@ -3,7 +3,7 @@
 Configuration Handling
 ======================
 
-.. versionadded:: 0.5
+.. versionadded:: 0.3
 
 Applications need some kind of configuration.  There are different things
 you might want to change.  Like toggling debug mode, the secret key and a
