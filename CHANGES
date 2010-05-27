@@ -3,10 +3,15 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.4
+-----------
+
+Release date to be announced, codename to be selected.
+
 Version 0.3
 -----------
 
-Release date to be announced
+Released on May 28th, codename Schnaps
 
 - added support for categories for flashed messages.
 - the application now configures a :class:`logging.Handler` and will
