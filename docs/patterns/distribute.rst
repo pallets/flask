@@ -1,3 +1,5 @@
+.. _distribute-deployment:
+
 Deploying with Distribute
 =========================
 

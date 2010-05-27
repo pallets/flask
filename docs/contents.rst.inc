@@ -14,6 +14,7 @@ web development.
    tutorial/index
    testing
    errorhandling
+   config
    shell
    patterns/index
    deploying/index

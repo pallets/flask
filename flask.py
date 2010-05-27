@@ -641,21 +641,33 @@ class Config(dict):
         app.config.from_pyfile('yourconfig.cfg')
 
     Or alternatively you can define the configuration options in the
-    module that calls :meth:`from_module` or provide an import path to
+    module that calls :meth:`from_object` or provide an import path to
     a module that should be loaded.  It is also possible to tell it to
     use the same module and with that provide the configuration values
     just before the call::
 
         DEBUG = True
         SECRET_KEY = 'development key'
-        app.config.from_module(__name__)
+        app.config.from_object(__name__)
 
     In both cases (loading from any Python file or loading from modules),
-    only uppercase keys are added to the config.  The actual keys in the
-    config are however lowercased so they are converted for you.  This makes
-    it possible to use lowercase values in the config file for temporary
-    values that are not added to the config or to define the config keys in
-    the same file that implements the application.
+    only uppercase keys are added to the config.  This makes it possible to use
+    lowercase values in the config file for temporary values that are not added
+    to the config or to define the config keys in the same file that implements
+    the application.
+
+    Probably the most interesting way to load configurations is from an
+    environment variable pointing to a file::
+
+        app.config.from_envvar('YOURAPPLICATION_SETTINGS')
+
+    In this case before launching the application you have to set this
+    environment variable to the file you want to use.  On Linux and OS X
+    use the export statement::
+
+        export YOURAPPLICATION_SETTINGS='/path/to/config/file'
+
+    On windows use `set` instead.
 
     :param root_path: path to which files are read relative from.  When the
                       config object is created by the application, this is
@@ -667,10 +679,33 @@ class Config(dict):
         dict.__init__(self, defaults or {})
         self.root_path = root_path
 
+    def from_envvar(self, variable_name, silent=False):
+        """Loads a configuration from an environment variable pointing to
+        a configuration file.  This basically is just a shortcut with nicer
+        error messages for this line of code::
+
+            app.config.from_pyfile(os.environ['YOURAPPLICATION_SETTINGS'])
+
+        :param variable_name: name of the environment variable
+        :param silent: set to `True` if you want silent failing for missing
+                       files.
+        :return: bool. `True` if able to load config, `False` otherwise.
+        """
+        rv = os.environ.get(variable_name)
+        if not rv:
+            if silent:
+                return False
+            raise RuntimeError('The environment variable %r is not set '
+                               'and as such configuration could not be '
+                               'loaded.  Set this variable and make it '
+                               'point to a configuration file')
+        self.from_pyfile(rv)
+        return True
+
     def from_pyfile(self, filename):
         """Updates the values in the config from a Python file.  This function
         behaves as if the file was imported as module with the
-        :meth:`from_module` function.
+        :meth:`from_object` function.
 
         :param filename: the filename of the config.  This can either be an
                          absolute filename or a filename relative to the
@@ -752,19 +787,32 @@ class Flask(_PackageBoundObject):
     #: application.  In debug mode the debugger will kick in when an unhandled
     #: exception ocurrs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
+    #:
+    #: This attribute can also be configured from the config with the `DEBUG`
+    #: configuration key.  Defaults to `False`.
     debug = ConfigAttribute('DEBUG')
 
     #: if a secret key is set, cryptographic components can use this to
     #: sign cookies and other things.  Set this to a complex random value
     #: when you want to use the secure cookie for instance.
+    #:
+    #: This attribute can also be configured from the config with the
+    #: `SECRET_KEY` configuration key.  Defaults to `None`.
     secret_key = ConfigAttribute('SECRET_KEY')
 
     #: The secure cookie uses this for the name of the session cookie
+    #:
+    #: This attribute can also be configured from the config with the
+    #: `SESSION_COOKIE_NAME` configuration key.  Defaults to ``'session'``
     session_cookie_name = ConfigAttribute('SESSION_COOKIE_NAME')
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
     #: date of a permanent session.  The default is 31 days which makes a
     #: permanent session survive for roughly one month.
+    #:
+    #: This attribute can also be configured from the config with the
+    #: `PERMANENT_SESSION_LIFETIME` configuration key.  Defaults to
+    #: ``timedelta(days=31)``
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME')
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
@@ -772,6 +820,9 @@ class Flask(_PackageBoundObject):
     #: sent with the :func:`send_file` method.
     #:
     #: .. versionadded:: 0.2
+    #:
+    #: This attribute can also be configured from the config with the
+    #: `USE_X_SENDFILE` configuration key.  Defaults to `False`.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
     #: the logging format used for the debug logger.  This is only used when

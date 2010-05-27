@@ -289,3 +289,4 @@ Configuration
 -------------
 
 .. autoclass:: Config
+   :members:
