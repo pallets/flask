@@ -15,6 +15,9 @@ Bugfix release, released May 28th
 
 - fixed a error reporting bug with :meth:`flask.Config.from_envvar`
 - removed some unused code from flask
+- release does no longer include development leftover files (.git
+  folder for themes, built documentation in zip and pdf file and
+  some .pyc files)
 
 Version 0.3
 -----------
