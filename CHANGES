@@ -14,6 +14,7 @@ Version 0.3.1
 Bugfix release, released May 28th
 
 - fixed a error reporting bug with :meth:`flask.Config.from_envvar`
+- removed some unused code from flask
 
 Version 0.3
 -----------
