@@ -717,6 +717,26 @@ class ConfigTestCase(unittest.TestCase):
         app.config.from_object(Test)
         self.common_object_test(app)
 
+    def test_config_from_envvar(self):
+        import os
+        env = os.environ
+        try:
+            os.environ = {}
+            app = flask.Flask(__name__)
+            try:
+                app.config.from_envvar('FOO_SETTINGS')
+            except RuntimeError, e:
+                assert "'FOO_SETTINGS' is not set" in str(e)
+            else:
+                assert 0, 'expected exception'
+            not app.config.from_envvar('FOO_SETTINGS', silent=True)
+
+            os.environ = {'FOO_SETTINGS': 'flask_tests.py'}
+            assert app.config.from_envvar('FOO_SETTINGS')
+            self.common_object_test(app)
+        finally:
+            os.environ = env
+
 
 def suite():
     from minitwit_tests import MiniTwitTestCase

@@ -698,7 +698,8 @@ class Config(dict):
             raise RuntimeError('The environment variable %r is not set '
                                'and as such configuration could not be '
                                'loaded.  Set this variable and make it '
-                               'point to a configuration file')
+                               'point to a configuration file' %
+                               variable_name)
         self.from_pyfile(rv)
         return True
 

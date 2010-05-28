@@ -8,6 +8,13 @@ Version 0.4
 
 Release date to be announced, codename to be selected.
 
+Version 0.3.1
+-------------
+
+Bugfix release, released May 28th
+
+- fixed a error reporting bug with :meth:`flask.Config.from_envvar`
+
 Version 0.3
 -----------
 
