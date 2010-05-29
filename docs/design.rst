@@ -34,8 +34,8 @@ Would look like this instead::
         return 'Hello World!'
 
 There are three major reasons for this.  The most important one is that
-implicit application objects require that there may only be one class at
-the time.  There are ways to fake multiple application with a single
+implicit application objects require that there may only be one instance at
+the time.  There are ways to fake multiple applications with a single
 application object, like maintaining a stack of applications, but this
 causes some problems I won't outline here in detail.  Now the question is:
 when does a microframework need more than one application at the same
@@ -44,7 +44,7 @@ something it can be very helpful to create a minimal application to test
 specific behavior.  When the application object is deleted everything it
 allocated will be freed again.
 
-Another thing that becomes possible when you have an explicit object laying
+Another thing that becomes possible when you have an explicit object lying
 around in your code is that you can subclass the base class
 (:class:`~flask.Flask`) to alter specific behaviour.  This would not be
 possible without hacks if the object were created ahead of time for you
