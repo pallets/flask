@@ -69,7 +69,7 @@ Incoming Request Data
       the data is stored unmodified in this stream for consumption.  Most
       of the time it is a better idea to use :attr:`data` which will give
       you that data as a string.  The stream only returns the data once.
-      
+
    .. attribute:: data
 
       Contains the incoming request data as string in case it came with

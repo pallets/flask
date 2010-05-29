@@ -90,15 +90,15 @@ of variables and take the return value as string.
 But that's about where similarities end.  Jinja2 for example has an
 extensive filter system, a certain way to do template inheritance, support
 for reusable blocks (macros) that can be used from inside templates and
-also from Python code, uses unicode for all operations, supports
+also from Python code, uses Unicode for all operations, supports
 iterative template rendering, configurable syntax and more.  On the other
 hand an engine like Genshi is based on XML stream evaluation, template
 inheritance by taking the availability of XPath into account and more.
 Mako on the other hand treats templates similar to Python modules.
 
-When it comes to connecting a template engine with an application or 
+When it comes to connecting a template engine with an application or
 framework there is more than just rendering templates.  For instance,
-Flask uses Jinja2's extensive autoescaping support.  Also it provides 
+Flask uses Jinja2's extensive autoescaping support.  Also it provides
 ways to access macros from Jinja2 templates.
 
 A template abstraction layer that would not take the unique features of

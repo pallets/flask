@@ -19,10 +19,10 @@ Installing `mod_wsgi`
 If you don't have `mod_wsgi` installed yet you have to either install it using
 a package manager or compile it yourself.
 
-The mod_wsgi `installation instructions`_ cover source installations on UNIX 
+The mod_wsgi `installation instructions`_ cover source installations on UNIX
 systems.
 
-If you are using ubuntu / debian you can apt-get it and activate it as follows:
+If you are using Ubuntu/Debian you can apt-get it and activate it as follows:
 
 .. sourcecode:: text
 
@@ -96,7 +96,7 @@ Toubleshooting
 
 If your application does not run, follow this guide to troubleshoot:
 
-**Problem:** Application does not run, errorlog shows SystemExit ignored
+**Problem:** application does not run, errorlog shows SystemExit ignored
     You have a ``app.run()`` call in your application file that is not
     guarded by an ``if __name__ == '__main__':`` condition.  Either remove
     that :meth:`~flask.Flask.run` call from the file and move it into a
@@ -130,6 +130,6 @@ If your application does not run, follow this guide to troubleshoot:
     instead you either have to put the folder into the pythonpath the file
     is stored in, or convert your application into a package.
 
-    The reason for this is that for non-installed Packages, the module
+    The reason for this is that for non-installed packages, the module
     filename is used to locate the resources and for symlinks the wrong
     filename is picked up.
