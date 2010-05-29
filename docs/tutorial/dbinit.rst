@@ -31,7 +31,7 @@ first (`__future__` imports must be the very first import)::
 Next we can create a function called `init_db` that initializes the
 database.  For this we can use the `connect_db` function we defined
 earlier.  Just add that function below the `connect_db` function::
-    
+
     def init_db():
         with closing(connect_db()) as db:
             with app.open_resource('schema.sql') as f:

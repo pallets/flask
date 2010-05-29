@@ -1,7 +1,7 @@
 .. _tutorial-testing:
 
 Bonus: Testing the Application
-===============================
+==============================
 
 Now that you have finished the application and everything works as
 expected, it's probably not a good idea to add automated tests to simplify

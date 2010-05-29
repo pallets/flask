@@ -70,7 +70,7 @@ low-level file handle and a random file name, the latter we use as
 database name.  We just have to keep the `db_fd` around so that we can use
 the :func:`os.close` function to close the file.
 
-If we now run that testsuite, we should see the following output::
+If we now run that test suite, we should see the following output::
 
     $ python flaskr_tests.py
 
@@ -181,11 +181,11 @@ which is the intended behavior.
 
 Running that should now give us three passing tests::
 
-    $ python flaskr_tests.py 
+    $ python flaskr_tests.py
     ...
     ----------------------------------------------------------------------
     Ran 3 tests in 0.332s
-    
+
     OK
 
 For more complex tests with headers and status codes, check out the

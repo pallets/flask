@@ -14,7 +14,7 @@ folder we created before:
     h1, h2          { font-family: 'Georgia', serif; margin: 0; }
     h1              { border-bottom: 2px solid #eee; }
     h2              { font-size: 1.2em; }
-    
+
     .page           { margin: 2em auto; width: 35em; border: 5px solid #ccc;
                       padding: 0.8em; background: white; }
     .entries        { list-style: none; margin: 0; padding: 0; }

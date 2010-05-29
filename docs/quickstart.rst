@@ -209,19 +209,19 @@ parameter.  Here some examples:
 >>> app = Flask(__name__)
 >>> @app.route('/')
 ... def index(): pass
-... 
+...
 >>> @app.route('/login')
 ... def login(): pass
-... 
+...
 >>> @app.route('/user/<username>')
 ... def profile(username): pass
-... 
+...
 >>> with app.test_request_context():
 ...  print url_for('index')
 ...  print url_for('login')
 ...  print url_for('login', next='/')
 ...  print url_for('profile', username='John Doe')
-... 
+...
 /
 /login
 /login?next=/
@@ -238,7 +238,7 @@ templates?  There are three good reasons for this:
 1. reversing is often more descriptive than hardcoding the URLs.  Also and
    more importantly you can change URLs in one go without having to change
    the URLs all over the place.
-2. URL building will handle escaping of special characters and unicode
+2. URL building will handle escaping of special characters and Unicode
    data transparently for you, you don't have to deal with that.
 3. If your application is placed outside the URL root (so say in
    ``/myapplication`` instead of ``/``), :func:`~flask.url_for` will
@@ -355,7 +355,7 @@ application is a module, that folder is next to that module, if it's a
 package it's actually inside your package:
 
 **Case 1**: a module::
-    
+
     /application.py
     /templates
         /hello.html
@@ -663,7 +663,7 @@ not using the template engine (like in this example).
 
    The problem with random is that it's hard to judge what random is.  And
    a secret key should be as random as possible.  Your operating system
-   has ways to generate pretty random stuff based on a cryptographical
+   has ways to generate pretty random stuff based on a cryptographic
    random generator which can be used to get such a key:
 
    >>> import os
@@ -707,8 +707,8 @@ come in handy.  As of Flask 0.3 a logger is preconfigured for you to use.
 Here are some example log calls::
 
     app.logger.debug('A value for debugging')
-    app.logger.warning('A warning ocurred (%d apples)', 42)
-    app.logger.error('An error occoured')
+    app.logger.warning('A warning occurred (%d apples)', 42)
+    app.logger.error('An error occurred')
 
 The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official stdlib

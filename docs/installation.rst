@@ -29,7 +29,7 @@ you have shell access.  So first: what does virtualenv do?  If you are
 like me and you like Python, chances are you want to use it for another
 project as well.  Now the more projects you have, the more likely it is
 that you will be working with different versions of Python itself or at
-least an individual library.  Because let's face it: quite often libraries 
+least an individual library.  Because let's face it: quite often libraries
 break backwards compatibility and it's unlikely that your application will
 not have any dependencies, that just won't happen.  So virtualenv to the
 rescue!
