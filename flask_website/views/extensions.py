@@ -42,7 +42,7 @@ database = [
     ),
     Extension('Flask-Babel', 'Armin Ronacher',
         description='''
-            <p>Adds i18n/10n support to Flask, based on
+            <p>Adds i18n/l10n support to Flask, based on
             <a href=http://babel.edgewall.org/>babel</a> and
             <a href=http://pytz.sourceforge.net/>pytz</a>.
         ''',
