@@ -40,6 +40,15 @@ database = [
         github='mitsuhiko/flask-openid',
         docs='http://packages.python.org/Flask-OpenID/'
     ),
+    Extension('Flask-Babel', 'Armin Ronacher',
+        description='''
+            <p>Adds i18n/10n support to Flask, based on
+            <a href=http://babel.edgewall.org/>babel</a> and
+            <a href=http://pytz.sourceforge.net/>pytz</a>.
+        ''',
+        github='mitsuhiko/flask-babel',
+        docs='http://packages.python.org/Flask-Babel/'
+    ),
     Extension('Flask-XML-RPC', 'Matthew Frazier',
         description='''
             <p>Adds <a href="http://www.xmlrpc.com/">XML-RPC</a> support to Flask.
