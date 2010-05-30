@@ -56,7 +56,7 @@ database = [
         bitbucket='leafstorm/flask-xml-rpc',
         docs='http://packages.python.org/Flask-XML-RPC/'
     ),
-    Extension('Flask-Genshi', 'Dog Odenhall',
+    Extension('Flask-Genshi', 'Dag Odenhall',
         description='''
             <p>Adds support for the <a href="http://genshi.edgewall.org/">Genshi</a>
             templating language to Flask applications.
