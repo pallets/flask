@@ -260,7 +260,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.data == 'not found'
         rv = c.get('/error')
         assert rv.status_code == 500
-        assert 'internal server error' in rv.data
+        assert 'internal server error' == rv.data
 
     def test_response_creation(self):
         app = flask.Flask(__name__)
@@ -535,6 +535,30 @@ class ModuleTestCase(unittest.TestCase):
             return '42'
         app.register_module(admin, url_prefix='/admin')
         assert app.test_client().get('/admin/').data == '42'
+
+    def test_error_handling(self):
+        app = flask.Flask(__name__)
+        admin = flask.Module(__name__, 'admin')
+        @admin.app_errorhandler(404)
+        def not_found(e):
+            return 'not found', 404
+        @admin.app_errorhandler(500)
+        def internal_server_error(e):
+            return 'internal server error', 500
+        @admin.route('/')
+        def index():
+            flask.abort(404)
+        @admin.route('/error')
+        def error():
+            1 // 0
+        app.register_module(admin)
+        c = app.test_client()
+        rv = c.get('/')
+        assert rv.status_code == 404
+        assert rv.data == 'not found'
+        rv = c.get('/error')
+        assert rv.status_code == 500
+        assert 'internal server error' == rv.data
 
 
 class SendfileTestCase(unittest.TestCase):

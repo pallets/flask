@@ -612,6 +612,15 @@ class Module(_PackageBoundObject):
             .setdefault(None, []).append(f))
         return f
 
+    def app_errorhandler(self, code):
+        """Like :meth:`Flask.errorhandler` but for a module.  This
+        handler is used for all requests, even if outside of the module.
+        """
+        def decorator(f):
+            self._record(lambda s: s.app.errorhandler(code)(f))
+            return f
+        return decorator
+
     def _record(self, func):
         self._register_events.append(func)
 
