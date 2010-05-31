@@ -68,7 +68,7 @@ database = [
         description='''
             <p>Makes sending mails from Flask applications very easy and
             has also support for unittesting.
-        '''
+        ''',
         bitbucket='danjac/flask-mail',
         docs='http://packages.python.org/flask-mail/'
     ),
