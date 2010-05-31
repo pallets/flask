@@ -290,3 +290,13 @@ Configuration
 
 .. autoclass:: Config
    :members:
+
+Useful Internals
+----------------
+
+.. data:: _request_ctx_stack
+
+   The internal :class:`~werkzeug.LocalStack` that is used to implement
+   all the context local objects used in Flask.  This is a documented
+   instance and can be used by extensions and application code but the
+   use is discouraged in general.
