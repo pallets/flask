@@ -3,7 +3,7 @@
 all: clean-pyc test
 
 test:
-	python tests/flask_tests.py
+	python setup.py test
 
 release:
 	python setup.py release sdist upload
