@@ -8,6 +8,9 @@ Version 0.4
 
 Release date to be announced, codename to be selected.
 
+- added the ability to register application wide error handlers
+  from modules.
+
 Version 0.3.1
 -------------
 

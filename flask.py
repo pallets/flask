@@ -615,6 +615,8 @@ class Module(_PackageBoundObject):
     def app_errorhandler(self, code):
         """Like :meth:`Flask.errorhandler` but for a module.  This
         handler is used for all requests, even if outside of the module.
+
+        .. versionadded:: 0.4
         """
         def decorator(f):
             self._record(lambda s: s.app.errorhandler(code)(f))
