@@ -64,6 +64,14 @@ database = [
         bitbucket='dag/flask-genshi',
         docs='http://packages.python.org/Flask-Genshi/'
     ),
+    Extension('flask-mail', 'Dan Jacob',
+        description='''
+            <p>Makes sending mails from Flask applications very easy and
+            has also support for unittesting.
+        '''
+        bitbucket='danjac/flask-mail',
+        docs='http://packages.python.org/flask-mail/'
+    ),
     Extension('flask-csrf', 'Steve Losh',
         description='''
             <p>A small Flask extension for adding
