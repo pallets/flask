@@ -10,6 +10,9 @@ Release date to be announced, codename to be selected.
 
 - added the ability to register application wide error handlers
   from modules.
+- :meth:`~flask.Flask.after_request` handlers are now also invoked
+  if the request dies with an exception and an error handling page
+  kicks in.
 
 Version 0.3.1
 -------------
