@@ -1362,6 +1362,12 @@ class Flask(_PackageBoundObject):
         Then you still have the original application object around and
         can continue to call methods on it.
 
+        .. versionchanged:: 0.4
+           The :meth:`after_request` functions are now called even if an
+           error handler took over request processing.  This ensures that
+           even if an exception happens database have the chance to
+           properly close the connection.
+
         :param environ: a WSGI environment
         :param start_response: a callable accepting a status code,
                                a list of headers and an optional
@@ -1376,6 +1382,13 @@ class Flask(_PackageBoundObject):
                 response = self.process_response(response)
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
+                try:
+                    response = self.process_response(response)
+                except Exception, e:
+                    self.logger.exception('after_request handler failed '
+                                          'to postprocess error response. '
+                                          'Depending on uncertain state?')
+
             return response(environ, start_response)
 
     def request_context(self, environ):

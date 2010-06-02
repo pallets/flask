@@ -16,6 +16,7 @@ import sys
 import flask
 import unittest
 import tempfile
+from logging import StreamHandler
 from contextlib import contextmanager
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
@@ -239,6 +240,37 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         rv = app.test_client().get('/').data
         assert 'after' in evts
         assert rv == 'request|after'
+
+    def test_after_request_errors(self):
+        app = flask.Flask(__name__)
+        called = []
+        @app.after_request
+        def after_request(response):
+            called.append(True)
+            return response
+        @app.route('/')
+        def fails():
+            1/0
+        rv = app.test_client().get('/')
+        assert rv.status_code == 500
+        assert 'Internal Server Error' in rv.data
+        assert len(called) == 1
+
+    def test_after_request_handler_error(self):
+        error_out = StringIO()
+        app = flask.Flask(__name__)
+        app.logger.addHandler(StreamHandler(error_out))
+        @app.after_request
+        def after_request(response):
+            1/0
+            return response
+        @app.route('/')
+        def fails():
+            1/0
+        rv = app.test_client().get('/')
+        assert rv.status_code == 500
+        assert 'Internal Server Error' in rv.data
+        assert 'after_request handler failed' in error_out.getvalue()
 
     def test_error_handling(self):
         app = flask.Flask(__name__)
