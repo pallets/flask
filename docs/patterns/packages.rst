@@ -109,7 +109,7 @@ Working with Modules
 --------------------
 
 For larger applications with more than a dozen views it makes sense to
-split the views into module.  First let's look at the typical struture of
+split the views into modules.  First let's look at the typical struture of
 such an application::
 
     /yourapplication
