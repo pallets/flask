@@ -16,6 +16,7 @@ import mimetypes
 from datetime import datetime, timedelta
 
 from itertools import chain
+from threading import Lock
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
      LocalStack, LocalProxy, create_environ, SharedDataMiddleware, \
@@ -49,6 +50,9 @@ try:
     pkg_resources.resource_stream
 except (ImportError, AttributeError):
     pkg_resources = None
+
+# a lock used for logger initialization
+_logger_lock = Lock()
 
 
 class Request(RequestBase):
@@ -839,6 +843,12 @@ class Flask(_PackageBoundObject):
     #: `USE_X_SENDFILE` configuration key.  Defaults to `False`.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
+    #: the name of the logger to use.  By default the logger name is the
+    #: package name passed to the constructor.
+    #:
+    #: .. versionadded:: 0.4
+    logger_name = ConfigAttribute('LOGGER_NAME')
+
     #: the logging format used for the debug logger.  This is only used when
     #: the application is in debug mode, otherwise the attached logging
     #: handler does the formatting.
@@ -863,7 +873,8 @@ class Flask(_PackageBoundObject):
         'SECRET_KEY':                           None,
         'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
-        'USE_X_SENDFILE':                       False
+        'USE_X_SENDFILE':                       False,
+        'LOGGER_NAME':                          None
     })
 
     def __init__(self, import_name):
@@ -873,6 +884,10 @@ class Flask(_PackageBoundObject):
         #: exactly like a regular dictionary but supports additional methods
         #: to load a config from files.
         self.config = Config(self.root_path, self.default_config)
+
+        #: prepare the deferred setup of the logger
+        self._logger = None
+        self.logger_name = self.import_name
 
         #: a dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
@@ -952,7 +967,7 @@ class Flask(_PackageBoundObject):
         )
         self.jinja_env.filters['tojson'] = _tojson_filter
 
-    @cached_property
+    @property
     def logger(self):
         """A :class:`logging.Logger` object for this application.  The
         default configuration is to log to stderr if the application is
@@ -965,17 +980,23 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.3
         """
-        from logging import getLogger, StreamHandler, Formatter, DEBUG
-        class DebugHandler(StreamHandler):
-            def emit(x, record):
-                if self.debug:
-                    StreamHandler.emit(x, record)
-        handler = DebugHandler()
-        handler.setLevel(DEBUG)
-        handler.setFormatter(Formatter(self.debug_log_format))
-        logger = getLogger(self.import_name)
-        logger.addHandler(handler)
-        return logger
+        if self._logger and self._logger.name == self.logger_name:
+            return self._logger
+        with _logger_lock:
+            if self._logger and self._logger.name == self.logger_name:
+                return self._logger
+            from logging import getLogger, StreamHandler, Formatter, DEBUG
+            class DebugHandler(StreamHandler):
+                def emit(x, record):
+                    if self.debug:
+                        StreamHandler.emit(x, record)
+            handler = DebugHandler()
+            handler.setLevel(DEBUG)
+            handler.setFormatter(Formatter(self.debug_log_format))
+            logger = getLogger(self.logger_name)
+            logger.addHandler(handler)
+            self._logger = logger
+            return logger
 
     def create_jinja_loader(self):
         """Creates the Jinja loader.  By default just a package loader for
@@ -1412,16 +1433,12 @@ class Flask(_PackageBoundObject):
                 if rv is None:
                     rv = self.dispatch_request()
                 response = self.make_response(rv)
+            except Exception, e:
+                response = self.make_response(self.handle_exception(e))
+            try:
                 response = self.process_response(response)
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
-                try:
-                    response = self.process_response(response)
-                except Exception, e:
-                    self.logger.exception('after_request handler failed '
-                                          'to postprocess error response. '
-                                          'Depending on uncertain state?')
-
             return response(environ, start_response)
 
     def request_context(self, environ):

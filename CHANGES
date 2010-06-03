@@ -16,6 +16,8 @@ Release date to be announced, codename to be selected.
 - test client has not the ability to preserve the request context
   for a little longer.  This can also be used to trigger custom
   requests that do not pop the request stack for testing.
+- because the Python standard library caches loggers, the name of
+  the logger is configurable now to better support unittests.
 
 Version 0.3.1
 -------------

@@ -288,11 +288,11 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert len(called) == 1
 
     def test_after_request_handler_error(self):
-        error_out = StringIO()
+        called = []
         app = flask.Flask(__name__)
-        app.logger.addHandler(StreamHandler(error_out))
         @app.after_request
         def after_request(response):
+            called.append(True)
             1/0
             return response
         @app.route('/')
@@ -301,7 +301,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         rv = app.test_client().get('/')
         assert rv.status_code == 500
         assert 'Internal Server Error' in rv.data
-        assert 'after_request handler failed' in error_out.getvalue()
+        assert len(called) == 1
 
     def test_error_handling(self):
         app = flask.Flask(__name__)
@@ -707,6 +707,14 @@ class SendfileTestCase(unittest.TestCase):
 
 class LoggingTestCase(unittest.TestCase):
 
+    def test_logger_cache(self):
+        app = flask.Flask(__name__)
+        logger1 = app.logger
+        assert app.logger is logger1
+        assert logger1.name == __name__
+        app.logger_name = __name__ + '/test_logger_cache'
+        assert app.logger is not logger1
+
     def test_debug_log(self):
         app = flask.Flask(__name__)
         app.debug = True
@@ -736,9 +744,9 @@ class LoggingTestCase(unittest.TestCase):
                 assert False, 'debug log ate the exception'
 
     def test_exception_logging(self):
-        from logging import StreamHandler
         out = StringIO()
         app = flask.Flask(__name__)
+        app.logger_name = 'flask_tests/test_exception_logging'
         app.logger.addHandler(StreamHandler(out))
 
         @app.route('/')
