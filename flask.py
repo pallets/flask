@@ -163,8 +163,10 @@ class _RequestContext(object):
     def __exit__(self, exc_type, exc_value, tb):
         # do not pop the request stack if we are in debug mode and an
         # exception happened.  This will allow the debugger to still
-        # access the request object in the interactive shell.
-        if tb is None or not self.app.debug:
+        # access the request object in the interactive shell.  Furthermore
+        # the context can be force kept alive for the test client.
+        if not self.request.environ.get('flask._preserve_context') and \
+           (tb is None or not self.app.debug):
             self.pop()
 
 
@@ -1021,9 +1023,40 @@ class Flask(_PackageBoundObject):
     def test_client(self):
         """Creates a test client for this application.  For information
         about unit testing head over to :ref:`testing`.
+
+        The test client can be used in a `with` block to defer the closing down
+        of the context until the end of the `with` block.  This is useful if
+        you want to access the context locals for testing::
+
+            with app.test_client() as c:
+                rv = c.get('/?foo=42')
+                assert request.args['foo'] == '42'
+
+        .. versionchanged:: 0.4
+           added support for `with` block usage for the client.
         """
         from werkzeug import Client
-        return Client(self, self.response_class, use_cookies=True)
+        class FlaskClient(Client):
+            preserve_context = context_preserved = False
+            def open(self, *args, **kwargs):
+                if self.context_preserved:
+                    _request_ctx_stack.pop()
+                    self.context_preserved = False
+                kwargs.setdefault('environ_overrides', {}) \
+                    ['flask._preserve_context'] = self.preserve_context
+                old = _request_ctx_stack.top
+                try:
+                    return Client.open(self, *args, **kwargs)
+                finally:
+                    self.context_preserved = _request_ctx_stack.top is not old
+            def __enter__(self):
+                self.preserve_context = True
+                return self
+            def __exit__(self, exc_type, exc_value, tb):
+                self.preserve_context = False
+                if self.context_preserved:
+                    _request_ctx_stack.pop()
+        return FlaskClient(self, self.response_class, use_cookies=True)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all

@@ -300,3 +300,20 @@ Useful Internals
    all the context local objects used in Flask.  This is a documented
    instance and can be used by extensions and application code but the
    use is discouraged in general.
+
+   .. versionchanged:: 0.4
+
+   The request context is automatically popped at the end of the request
+   for you.  In debug mode the request context is kept around if
+   exceptions happen so that interactive debuggers have a chance to
+   introspect the data.  With 0.4 this can also be forced for requests
+   that did not fail and outside of `DEBUG` mode.  By setting
+   ``'flask._preserve_context'`` to `True` on the WSGI environment the
+   context will not pop itself at the end of the request.  This is used by
+   the :meth:`~flask.Flask.test_client` for example to implement the
+   deferred cleanup functionality.
+
+   You might find this helpful for unittests where you need the
+   information from the context local around for a little longer.  Make
+   sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
+   that situation, otherwise your unittests will leak memory.
