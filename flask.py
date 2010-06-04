@@ -1302,7 +1302,7 @@ class Flask(_PackageBoundObject):
         """Default exception handling that kicks in when an exception
         occours that is not catched.  In debug mode the exception will
         be re-raised immediately, otherwise it is logged and the handler
-        for an 500 internal server error is used.  If no such handler
+        for a 500 internal server error is used.  If no such handler
         exists, a default 500 internal server error message is displayed.
 
         .. versionadded: 0.3
