@@ -35,7 +35,7 @@ If the application runs in production mode (which it will do on your
 server) you won't see any log messages by default.  Why that?  Flask tries
 to be a zero-configuration framework and where should it drop the logs for
 you if there is no configuration.  Guessing is not a good idea because
-changes are, the place it guessed is not the place where the user has the
+chances are, the place it guessed is not the place where the user has the
 permission to create a logfile.  Also, for most small applications nobody
 will look at the logs anyways.
 
