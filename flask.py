@@ -448,11 +448,11 @@ else:
 class _PackageBoundObject(object):
 
     def __init__(self, import_name):
-        #: the name of the package or module.  Do not change this once
+        #: The name of the package or module.  Do not change this once
         #: it was set by the constructor.
         self.import_name = import_name
 
-        #: where is the app root located?
+        #: Where is the app root located?
         self.root_path = _get_package_path(self.import_name)
 
     def open_resource(self, resource):
@@ -788,20 +788,20 @@ class Flask(_PackageBoundObject):
         app = Flask(__name__)
     """
 
-    #: the class that is used for request objects.  See :class:`~flask.Request`
+    #: The class that is used for request objects.  See :class:`~flask.Request`
     #: for more information.
     request_class = Request
 
-    #: the class that is used for response objects.  See
+    #: The class that is used for response objects.  See
     #: :class:`~flask.Response` for more information.
     response_class = Response
 
-    #: path for the static files.  If you don't want to use static files
+    #: Path for the static files.  If you don't want to use static files
     #: you can set this value to `None` in which case no URL rule is added
     #: and the development server will no longer serve any static files.
     static_path = '/static'
 
-    #: the debug flag.  Set this to `True` to enable debugging of the
+    #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
     #: exception ocurrs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
@@ -810,7 +810,7 @@ class Flask(_PackageBoundObject):
     #: configuration key.  Defaults to `False`.
     debug = ConfigAttribute('DEBUG')
 
-    #: if a secret key is set, cryptographic components can use this to
+    #: If a secret key is set, cryptographic components can use this to
     #: sign cookies and other things.  Set this to a complex random value
     #: when you want to use the secure cookie for instance.
     #:
@@ -818,7 +818,7 @@ class Flask(_PackageBoundObject):
     #: `SECRET_KEY` configuration key.  Defaults to `None`.
     secret_key = ConfigAttribute('SECRET_KEY')
 
-    #: The secure cookie uses this for the name of the session cookie
+    #: The secure cookie uses this for the name of the session cookie.
     #:
     #: This attribute can also be configured from the config with the
     #: `SESSION_COOKIE_NAME` configuration key.  Defaults to ``'session'``
@@ -843,13 +843,13 @@ class Flask(_PackageBoundObject):
     #: `USE_X_SENDFILE` configuration key.  Defaults to `False`.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
-    #: the name of the logger to use.  By default the logger name is the
+    #: The name of the logger to use.  By default the logger name is the
     #: package name passed to the constructor.
     #:
     #: .. versionadded:: 0.4
     logger_name = ConfigAttribute('LOGGER_NAME')
 
-    #: the logging format used for the debug logger.  This is only used when
+    #: The logging format used for the debug logger.  This is only used when
     #: the application is in debug mode, otherwise the attached logging
     #: handler does the formatting.
     #:
@@ -861,13 +861,13 @@ class Flask(_PackageBoundObject):
         '-' * 80
     )
 
-    #: options that are passed directly to the Jinja2 environment
+    #: Options that are passed directly to the Jinja2 environment.
     jinja_options = ImmutableDict(
         autoescape=True,
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
 
-    #: default configuration parameters
+    #: Default configuration parameters.
     default_config = ImmutableDict({
         'DEBUG':                                False,
         'SECRET_KEY':                           None,
@@ -880,29 +880,29 @@ class Flask(_PackageBoundObject):
     def __init__(self, import_name):
         _PackageBoundObject.__init__(self, import_name)
 
-        #: the configuration dictionary as :class:`Config`.  This behaves
+        #: The configuration dictionary as :class:`Config`.  This behaves
         #: exactly like a regular dictionary but supports additional methods
         #: to load a config from files.
         self.config = Config(self.root_path, self.default_config)
 
-        #: prepare the deferred setup of the logger
+        #: Prepare the deferred setup of the logger.
         self._logger = None
         self.logger_name = self.import_name
 
-        #: a dictionary of all view functions registered.  The keys will
+        #: A dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
         #: the values are the function objects themselves.
         #: to register a view function, use the :meth:`route` decorator.
         self.view_functions = {}
 
-        #: a dictionary of all registered error handlers.  The key is
+        #: A dictionary of all registered error handlers.  The key is
         #: be the error code as integer, the value the function that
         #: should handle that error.
         #: To register a error handler, use the :meth:`errorhandler`
         #: decorator.
         self.error_handlers = {}
 
-        #: a dictionary with lists of functions that should be called at the
+        #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
         #: the module this function is active for, `None` for all requests.
         #: This can for example be used to open database connections or
@@ -910,7 +910,7 @@ class Flask(_PackageBoundObject):
         #: function here, use the :meth:`before_request` decorator.
         self.before_request_funcs = {}
 
-        #: a dictionary with lists of functions that should be called after
+        #: A dictionary with lists of functions that should be called after
         #: each request.  The key of the dictionary is the name of the module
         #: this function is active for, `None` for all requests.  This can for
         #: example be used to open database connections or getting hold of the
@@ -918,7 +918,7 @@ class Flask(_PackageBoundObject):
         #: :meth:`before_request` decorator.
         self.after_request_funcs = {}
 
-        #: a dictionary with list of functions that are called without argument
+        #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  They key of the dictionary is the
         #: name of the module this function is active for, `None` for all
         #: requests.  Each returns a dictionary that the template context is
@@ -928,7 +928,7 @@ class Flask(_PackageBoundObject):
             None: [_default_template_ctx_processor]
         }
 
-        #: the :class:`~werkzeug.routing.Map` for this instance.  You can use
+        #: The :class:`~werkzeug.routing.Map` for this instance.  You can use
         #: this to change the routing converters after the class was created
         #: but before any routes are connected.  Example::
         #:
@@ -956,7 +956,7 @@ class Flask(_PackageBoundObject):
                 self.static_path: target
             })
 
-        #: the Jinja2 environment.  It is created from the
+        #: The Jinja2 environment.  It is created from the
         #: :attr:`jinja_options` and the loader that is returned
         #: by the :meth:`create_jinja_loader` function.
         self.jinja_env = Environment(loader=self.create_jinja_loader(),
