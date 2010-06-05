@@ -1287,7 +1287,7 @@ class Flask(_PackageBoundObject):
         return f
 
     def handle_http_exception(self, e):
-        """Handles an HTTP exception.  By default this will invoke the
+        """Handles a HTTP exception.  By default this will invoke the
         registered error handlers and fall back to returning the
         exception as response.
 
