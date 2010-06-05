@@ -222,7 +222,7 @@ Either way you can use the database from the views like this::
 
     @app.route('/')
     def show_all():
-        cur = g.sqlite_db.cursor()
+        cur = g.sqlite3_db.cursor()
         cur.execute(...)
 
 But how would you open a database connection from outside a view function?
