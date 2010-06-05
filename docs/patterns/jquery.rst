@@ -150,7 +150,7 @@ explanation of the little bit of code above:
 
 1. ``$(function() { ... })`` specifies code that should run once the
    browser is done loading the basic parts of the page.
-2. ``#('selector')`` selects an element and lets you operate on it.
+2. ``$('selector')`` selects an element and lets you operate on it.
 3. ``element.bind('event', func)`` specifies a function that should run
    when the user clicked on the element.  If that function returns
    `false`, the default behaviour will not kick in (in this case, navigate
