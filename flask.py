@@ -463,7 +463,7 @@ class _PackageBoundObject(object):
             /schemal.sql
             /static
                 /style.css
-            /template
+            /templates
                 /layout.html
                 /index.html
 
