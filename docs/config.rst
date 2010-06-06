@@ -53,6 +53,7 @@ The following configuration values are used internally by Flask:
 
 =============================== =========================================
 ``DEBUG``                       enable/disable debug mode
+``TESTING``                     enable/disable testing mode
 ``SECRET_KEY``                  the secret key
 ``SESSION_COOKIE_NAME``         the name of the session cookie
 ``PERMANENT_SESSION_LIFETIME``  the lifetime of a permanent session as

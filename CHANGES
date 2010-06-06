@@ -18,6 +18,7 @@ Release date to be announced, codename to be selected.
   requests that do not pop the request stack for testing.
 - because the Python standard library caches loggers, the name of
   the logger is configurable now to better support unittests.
+- added `TESTING` switch that can activate unittesting helpers.
 
 Version 0.3.1
 -------------

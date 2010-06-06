@@ -810,6 +810,15 @@ class Flask(_PackageBoundObject):
     #: configuration key.  Defaults to `False`.
     debug = ConfigAttribute('DEBUG')
 
+    #: The testing flask.  Set this to `True` to enable the test mode of
+    #: Flask extensions (and in the future probably also Flask itself).
+    #: For example this might activate unittest helpers that have an
+    #: additional runtime cost which should not be enabled by default.
+    #:
+    #: This attribute can also be configured from the config with the
+    #: `TESTING` configuration key.  Defaults to `False`.
+    testing = ConfigAttribute('TESTING')
+
     #: If a secret key is set, cryptographic components can use this to
     #: sign cookies and other things.  Set this to a complex random value
     #: when you want to use the secure cookie for instance.
@@ -870,6 +879,7 @@ class Flask(_PackageBoundObject):
     #: Default configuration parameters.
     default_config = ImmutableDict({
         'DEBUG':                                False,
+        'TESTING':                              False,
         'SECRET_KEY':                           None,
         'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
