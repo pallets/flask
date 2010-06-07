@@ -63,7 +63,7 @@ the XHTML syntax over the syntax defined by the specification.
 In 2007, the specification was adopted as the basis of a new HTML
 specification under the umbrella of the W3C, known as HTML5.  Currently,
 it appears that XHTML is losing traction, as the XHTML 2 working group has
-een disbanded and HTML5 is being implemented by all major browser vendors.
+been disbanded and HTML5 is being implemented by all major browser vendors.
 
 HTML versus XHTML
 -----------------
@@ -204,4 +204,4 @@ reasons given above:
 -   It has the support of most browser vendors behind it.
 -   It is much easier to write, and more compact.
 
-For most applications, it is undoubtably better to use HTML5 than XHTML.
+For most applications, it is undoubtedly better to use HTML5 than XHTML.
