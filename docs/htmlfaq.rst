@@ -2,66 +2,75 @@ HTML/XHTML FAQ
 ==============
 
 The Flask documentation and example applications are using HTML5.  You
-will notice that in many situations when end tags are optional they are
-not used to keep the HTML cleaner and also faster to load.  Because there
-is a lot of confusion about HTML and XHTML out there this document tries
-to answer some of them.
+may notice that in many situations, when end tags are optional they are
+not used, so that the HTML is cleaner and faster to load.  Because there
+is much confusion about HTML and XHTML among developers, this document tries
+to answer some of the major questions.
 
 
-History on XHTML
+History of XHTML
 ----------------
 
-For a while it looked like HTML was about to be replaced by XHTML.
-However barely any websites on the internet are actually real XHTML (which
-means XHTML processed with XML rules).  There are a couple of reasons why
-this is the case.  It mostly has to do with Internet Explorer which does
-not accept the XHTML mimetype to switch the browser into XML mode.
-However this is really easy to bypass but barely anyone does that.  This
-probably has to do with the fact that XHTML is really painful.
+For a while, it appeared that HTML was about to be replaced by XHTML.
+However, barely any websites on the Internet are actual XHTML (which is
+HTML processed using XML rules).  There are a couple of major reasons
+why this is the case.  One of them is Internet Explorer's lack of proper
+XHTML support. The XHTML spec states that XHTML must be served with the MIME
+type `application/xhtml+xml`, but Internet Explorer refuses to read files
+with that MIME type.
+While it is relatively easy to configure Web servers to serve XHTML properly,
+few people do.  This is likely because properly using XHTML can be quite
+painful.
 
-Why is it painful?  XML has very strict errorhandling.  On a parsing error
-the browser is supposed to show the user an ugly error message.  Most of
+One of the most important causes of pain is XML's draconian (strict and
+ruthless) error handling.  When an XML parsing error is encountered,
+the browser is supposed to show the user an ugly error message, instead
+of attempting to recover from the error and display what it can.  Most of
 the (X)HTML generation on the web is based on non-XML template engines
 (such as Jinja, the one used in Flask) which do not protect you from
-accidentally creating invalid HTML.  There are XML based template engines
-but they usually come with a larger runtime overhead and are not as
-straightforward to use because they have to obey XML rules.
+accidentally creating invalid XHTML.  There are XML based template engines,
+such as Kid and the popular Genshi, but they often come with a larger
+runtime overhead and, are not as straightforward to use because they have
+to obey XML rules.
 
-Now the majority of users assumed they were using XHTML though.  The
-reasons for that is that they sticked an XHTML doctype on top of the
-document and self-closed all necessary tags (``<br>`` becomes ``<br/>`` or
-``<br></br>`` in XHTML).  However even if the document properly validates
-as XHTML there are still other things to keep in mind.
+The majority of users, however, assumed they were properly using XHTML.
+They wrote an XHTML doctype at the top of the document and self-closed all
+the necessary tags (``<br>`` becomes ``<br/>`` or ``<br></br>`` in XHTML).
+However, even if the document properly validates as XHTML, what really
+determines XHTML/HTML processing in browsers is the MIME type, which as
+said before is often not set properly. So the valid XHTML was being treated
+as invalid HTML.
 
-XHTML also changes the way you work with JavaScript because you now have
-to use the namespaced DOM interface with the XHTML namespace to query for
-HTML elements.
+XHTML also changed the way JavaScript is used. To properly work with XHTML,
+programmers have to use the namespaced DOM interface with the XHTML
+namespace to query for HTML elements.
 
 History of HTML5
 ----------------
 
-HTML5 was started in 2004 under the name Web Applications 1.0 by the
-WHATWG (Apple, Mozilla, Opera) and the idea was to write a new and
-improved specification of HTML based on actual browser behaviour instead
-of behaviour that exists on the paper but could not be implemented
-because of backwards compatibility with the already existing web.
+Development of the HTML5 specification was started in 2004 under the name
+"Web Applications 1.0" by the Web Hypertext Application Technology Working
+Group, or WHATWG (which was formed by the major browser vendors Apple,
+Mozilla, and Opera) with the goal of writing a new and improved HTML
+specification, based on existing browser behaviour instead of unrealistic
+and backwards-incompatible specifications.
 
-For example in theory HTML4 ``<title/Hello/`` means exactly the same as
-``<title>Hello</title>`` but because existing websites are using
-pseudo-XHTML which uses the Slash in different ways, this could not be
-implemented properly.
+For example, in HTML4 ``<title/Hello/`` theoretically parses exactly the
+same as ``<title>Hello</title>``.  However, since people were using
+XHTML-like tags along the lines of ``<link />``, browser vendors implemented
+the XHTML syntax over the syntax defined by the specification.
 
-In 2007 the specification was adopted as the basis of a new HTML
-specification under the umbrella of the W3C.  Currently it looks like
-XHTML is losing traction, the XHTML 2 working group was disbanded and
-HTML5 is being implemented by all major browser vendors.
+In 2007, the specification was adopted as the basis of a new HTML
+specification under the umbrella of the W3C, known as HTML5.  Currently,
+it appears that XHTML is losing traction, as the XHTML 2 working group has
+een disbanded and HTML5 is being implemented by all major browser vendors.
 
 HTML versus XHTML
 -----------------
 
 The following table gives you a quick overview of features available in
-HTML 4.01, XHTML 1.1 and HTML5 (we are not looking at XHTML 1.0 here which
-was superceeded by XHTML 1.1 or XHTML5 which is barely supported currently):
+HTML 4.01, XHTML 1.1 and HTML5. (XHTML 1.0 is not included, as it was
+superseded by XHTML 1.1 and the barely-used XHTML5.)
 
 .. tabularcolumns:: |p{9cm}|p{2cm}|p{2cm}|p{2cm}|
 
@@ -74,10 +83,10 @@ was superceeded by XHTML 1.1 or XHTML5 which is barely supported currently):
 +-----------------------------------------+----------+----------+----------+
 | ``<script/>`` supported                 | |N|      | |Y|      | |N|      |
 +-----------------------------------------+----------+----------+----------+
-| might be served as `text/html`          | |Y|      | |N| [3]_ | |Y|      |
+| should be served as `text/html`         | |Y|      | |N| [3]_ | |Y|      |
 +-----------------------------------------+----------+----------+----------+
-| might be served as                      | |N|      | |Y|      | |N|      |
-| `application/xml+html`                  |          |          |          |
+| should be served as                     | |N|      | |Y|      | |N|      |
+| `application/xhtml+xml`                 |          |          |          |
 +-----------------------------------------+----------+----------+----------+
 | strict error handling                   | |N|      | |Y|      | |N|      |
 +-----------------------------------------+----------+----------+----------+
@@ -89,12 +98,13 @@ was superceeded by XHTML 1.1 or XHTML5 which is barely supported currently):
 +-----------------------------------------+----------+----------+----------+
 | ``<audio>`` tag                         | |N|      | |N|      | |Y|      |
 +-----------------------------------------+----------+----------+----------+
-| New semantical tags like ``<article>``  | |N|      | |N|      | |Y|      |
+| New semantic tags like ``<article>``    | |N|      | |N|      | |Y|      |
 +-----------------------------------------+----------+----------+----------+
 
-.. [1] Obscure feature inherited from SGML not supported by browsers
-.. [2] For compatibility with XHTML generating server code for some
-       tags such as ``<br>``.  Should not be used.
+.. [1] This is an obscure feature inherited from SGML. It is usually not
+       supported by browsers, for reasons detailed above.
+.. [2] This is for compatibility with server code that generates XHTML for
+       tags such as ``<br>``.  It should not be used in new code.
 .. [3] XHTML 1.0 is the last XHTML standard that allows to be served
        as `text/html` for backwards compatibility reasons.
 
@@ -103,27 +113,30 @@ was superceeded by XHTML 1.1 or XHTML5 which is barely supported currently):
 .. |N| image:: _static/no.png
        :alt: No
 
-What does Strict Mean?
-----------------------
+What does "strict" mean?
+------------------------
 
-HTML5 has strictly defined parsing rules, but it also specifies how a
-browser should react to parsing errors.  Some things people stumble upon
-with HTML5 and older HTML standards is that browsers will accept some
-things that still create the expected output even though it looks wrong
-(eg: certain tags are missing or are not closed).
+HTML5 has strictly defined parsing rules, but it also specifies exactly
+how a browser should react to parsing errors - unlike XHTML, which simply
+states parsing should abort. Some people are confused by apparently
+invalid syntax that still generates the expected results (for example,
+missing end tags or unquoted attribute values).
 
-Some of that is caused by the error handling browsers use if they
-encounter a markup error, others are actually specified.  The following
-things are optional in HTML5 by standard and have to be supported by
-browsers (and are supported):
+Some of these work because of the lenient error handling most browsers use
+when they encounter a markup error, others are actually specified.  The
+following constructs are optional in HTML5 by standard, but have to be
+supported by browsers:
 
--   ``<html>``, ``<head>`` or ``<body>``
--   The closing tags for ``<p>``, ``<li>``, ``<dl>``, ``<dd>``, ``<tr>``,
-    ``<td>``, ``<th>``, ``<tbody>``, ``<thead>``, ``<tfoot>``.
--   quotes for attribtues if they contain no whitespace and some
-    special chars that require quoting.
+-   Wrapping the document in an ``<html>`` tag
+-   Wrapping header elements in ``<head>`` or the body elements in
+    ``<body>``
+-   Closing the ``<p>``, ``<li>``, ``<dl>``, ``<dd>``, ``<tr>``,
+    ``<td>``, ``<th>``, ``<tbody>``, ``<thead>``, or ``<tfoot>`` tags.
+-   Quoting attributes, so long as they contain no whitespace or
+    special characters (like ``<``, ``>``, ``'``, or ``"``).
+-   Requiring boolean attributes to have a value.
 
-This means the following piece of HTML5 is perfectly valid:
+This means the following page in HTML5 is perfectly valid:
 
 .. sourcecode:: html
 
@@ -152,13 +165,43 @@ This means the following piece of HTML5 is perfectly valid:
     </div>
 
 
+New technologies in HTML5
+-------------------------
+
+HTML5 adds many new features that make Web applications easier to write
+and to use.
+
+-   The ``<audio>`` and ``<video>`` tags provide a way to embed audio and
+    video without complicated add-ons like QuickTime and Flask.
+-   Semantic elements like ``<article>``, ``<header>``, ``<nav>``, and
+    ``<time>`` that make content easier to understand.
+-   The ``<canvas>`` tag, which supports a powerful drawing API, reducing
+    the need for server-generated images to present data graphically.
+-   New form control types like ``<input type="date">`` that allow user
+    agents to make entering and validating values easier.
+-   Advanced JavaScript APIs like Web Storage, Web Workers, Web Sockets,
+    geolocation, and offline applications.
+
+Many other features have been added, as well. A good guide to new features
+in HTML5 is Mark Pilgrim's soon-to-be-published book, `Dive Into HTML5`_.
+Not all of them are supported in browsers yet, however, so use caution.
+
+_Dive into HTML5: http://www.diveintohtml5.org/
+
 What should be used?
 --------------------
 
-Currently the answer is HTML5.  There are very few reasons to use XHTML
-with the latest development.  There are some companies successfully using
-actual XML and XSLT on the client side with fallbacks to server side HTML4
-generation for browsers not supporting XML and XSLT but but it's not very
-common.  Now that MathML and SVG landed in HTML5 and with the sad support
-for XHTML in Internet Explorer and many JavaScript libraries for most
-applications no reasons remain to use XHTML.
+Currently, the answer is HTML5.  There are very few reasons to use XHTML
+considering the latest developments in Web browsers.  To summarize the
+reasons given above:
+
+-   Internet Explorer (which, sadly, currently leads in market share)
+    has poor support for XHTML.
+-   Many JavaScript libraries also do not support XHTML, due to the more
+    complicated namespacing API it requires.
+-   HTML5 adds several new features, including semantic tags and the
+    long-awaited ``<audio>`` and ``<video>`` tags.
+-   It has the support of most browser vendors behind it.
+-   It is much easier to write, and more compact.
+
+For most applications, it is undoubtably better to use HTML5 than XHTML.
