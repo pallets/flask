@@ -172,7 +172,7 @@ HTML5 adds many new features that make Web applications easier to write
 and to use.
 
 -   The ``<audio>`` and ``<video>`` tags provide a way to embed audio and
-    video without complicated add-ons like QuickTime and Flask.
+    video without complicated add-ons like QuickTime or Flash.
 -   Semantic elements like ``<article>``, ``<header>``, ``<nav>``, and
     ``<time>`` that make content easier to understand.
 -   The ``<canvas>`` tag, which supports a powerful drawing API, reducing
