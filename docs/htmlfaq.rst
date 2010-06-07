@@ -63,6 +63,8 @@ The following table gives you a quick overview of features available in
 HTML 4.01, XHTML 1.1 and HTML5 (we are not looking at XHTML 1.0 here which
 was superceeded by XHTML 1.1 or XHTML5 which is barely supported currently):
 
+.. tabularcolumns:: |p{9cm}|p{2cm}|p{2cm}|p{2cm}|
+
 +-----------------------------------------+----------+----------+----------+
 |                                         | HTML4.01 | XHTML1.1 | HTML5    |
 +=========================================+==========+==========+==========+
