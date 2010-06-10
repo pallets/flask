@@ -233,8 +233,8 @@ happen.  With Flask 0.4 this is possible by using the
     app = flask.Flask(__name__)
 
     with app.test_client() as c:
-        rv = c.get('/?foo=42')
-        assert request.args['foo'] == '42'
+        rv = c.get('/?tequila=42')
+        assert request.args['tequila'] == '42'
 
 If you would just be using the :meth:`~flask.Flask.test_client` without
 the `with` block, the `assert` would fail with an error because `request`

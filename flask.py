@@ -213,7 +213,7 @@ def url_for(endpoint, **values):
 def get_template_attribute(template_name, attribute):
     """Loads a macro (or variable) a template exports.  This can be used to
     invoke a macro from within Python code.  If you for example have a
-    template named `_foo.html` with the following contents:
+    template named `_cider.html` with the following contents:
 
     .. sourcecode:: html+jinja
 
@@ -221,7 +221,7 @@ def get_template_attribute(template_name, attribute):
 
     You can access this from Python code like this::
 
-        hello = get_template_attribute('_foo.html', 'hello')
+        hello = get_template_attribute('_cider.html', 'hello')
         return hello('World')
 
     .. versionadded:: 0.2
@@ -1062,8 +1062,8 @@ class Flask(_PackageBoundObject):
         you want to access the context locals for testing::
 
             with app.test_client() as c:
-                rv = c.get('/?foo=42')
-                assert request.args['foo'] == '42'
+                rv = c.get('/?vodka=42')
+                assert request.args['vodka'] == '42'
 
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
