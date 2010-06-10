@@ -160,7 +160,7 @@ initialization functions:
 classes:
     Classes work mostly like initialization functions but can later be
     used to further change the behaviour.  For an example look at how the
-    `OAuth extension`_ works: ther is an `OAuth` object that provides
+    `OAuth extension`_ works: there is an `OAuth` object that provides
     some helper functions like `OAuth.remote_app` to create a reference to
     a remote application that uses OAuth.
 

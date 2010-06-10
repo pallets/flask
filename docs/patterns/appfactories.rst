@@ -4,7 +4,7 @@ Application Factories
 =====================
 
 If you are already using packages and modules for your application
-(:ref:`packages`) there are couple of really nice ways to further improve
+(:ref:`packages`) there are a couple of really nice ways to further improve
 the experience.  A common pattern is creating the application object when
 the module is imported.  But if you move the creation of this object,
 into a function, you can then create multiple instances of this and later.
