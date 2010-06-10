@@ -67,8 +67,8 @@ recursive structures that could cause problems and the only thing that
 could possibly break are very large responses that can cause some kind of
 denial of service at the receivers side.
 
-However there is a catch.  Due to how browsers the CSRF issue comes up
-with JSON unfortunately.  Fortunately there is also a weird part of the
+However there is a catch.  Due to how browsers work the CSRF issue comes
+up with JSON unfortunately.  Fortunately there is also a weird part of the
 JavaScript specification that can be used to solve that problem easily and
 Flask is kinda doing that for you by preventing you from doing dangerous
 stuff.  Unfortunately that protection is only there for
