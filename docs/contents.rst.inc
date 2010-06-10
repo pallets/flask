@@ -41,6 +41,7 @@ Design notes, legal information and changelog are here for the interested.
 
    design
    htmlfaq
+   security
    extensiondev
    license
    upgrading

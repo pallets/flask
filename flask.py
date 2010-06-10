@@ -300,7 +300,9 @@ def jsonify(*args, **kwargs):
             "id": 42
         }
 
-    This requires Python 2.6 or an installed version of simplejson.
+    This requires Python 2.6 or an installed version of simplejson.  For
+    security reasons only objects are supported toplevel.  For more
+    information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2
     """
