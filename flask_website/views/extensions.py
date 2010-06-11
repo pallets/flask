@@ -49,6 +49,13 @@ database = [
         github='mitsuhiko/flask-babel',
         docs='http://packages.python.org/Flask-Babel/'
     ),
+    Extension('Flask-SQLAlchemy', 'Armin Ronacher',
+        description='''
+            <p>Adds SQLAlchemy support to Flask.  Quick and easy.
+        ''',
+        github='mitsuhiko/flask-sqlalchemy',
+        docs='http://packages.python.org/Flask-SQLAlchemy/'
+    ),
     Extension('Flask-XML-RPC', 'Matthew Frazier',
         description='''
             <p>Adds <a href="http://www.xmlrpc.com/">XML-RPC</a> support to Flask.
