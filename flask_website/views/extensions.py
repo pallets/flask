@@ -63,6 +63,13 @@ database = [
         bitbucket='leafstorm/flask-xml-rpc',
         docs='http://packages.python.org/Flask-XML-RPC/'
     ),
+    Extension('Flask-CouchDB', 'Matthew Frazier',
+        description='''
+            <p>Adds <a href="http://couchdb.apache.org/">CouchDB</a> support to Flask.
+        ''',
+        bitbucket='leafstorm/flask-couchdb',
+        docs='http://packages.python.org/Flask-CouchDB/'
+    ),
     Extension('Flask-Genshi', 'Dag Odenhall',
         description='''
             <p>Adds support for the <a href="http://genshi.edgewall.org/">Genshi</a>
