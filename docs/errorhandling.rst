@@ -151,7 +151,7 @@ File logging
 
     from logging import Formatter
     file_handler.setFormatter(Formatter(
-        '%(astime)s %(levelname)s: %(message)s '
+        '%(asctime)s %(levelname)s: %(message)s '
         '[in %(pathname)s:%(lineno)d]'
     ))
 
