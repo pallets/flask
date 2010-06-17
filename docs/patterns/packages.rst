@@ -186,7 +186,7 @@ different module (say `frontend`).  This would look like this::
     def index():
         return "I'm the frontend index"
 
-Now let's say we only want to redirect to a different module in the same
+Now let's say we only want to redirect to a different function in the same
 module.  Then we can either use the full qualified endpoint name like we
 did in the example above, or we just use the function name::
 
