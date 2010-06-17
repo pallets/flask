@@ -51,7 +51,7 @@ unicode.  What does working with unicode in Python 2.x mean?
     (like ``u'Hänsel und Gretel'``)
 -   if you are using non-unicode characters in your Python files you have
     to tell Python which encoding your file uses.  Again, I recommend
-    UTF-8 for this purpose.  To tell the interpreter yuor encoding you can
+    UTF-8 for this purpose.  To tell the interpreter your encoding you can
     put the ``# -*- coding: utf-8 -*-`` into the first or second line of
     your Python source file.
 
