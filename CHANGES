@@ -19,6 +19,7 @@ Release date to be announced, codename to be selected.
 - because the Python standard library caches loggers, the name of
   the logger is configurable now to better support unittests.
 - added `TESTING` switch that can activate unittesting helpers.
+- the logger switches to `DEBUG` mode now if debug is enabled.
 
 Version 0.3.1
 -------------
