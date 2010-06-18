@@ -61,11 +61,11 @@ the form validation framework which does not exist in Flask.
 JSON Security
 -------------
 
-JSON itself is a high-level serilization format, so there is barely
+JSON itself is a high-level serialization format, so there is barely
 anything that could cause security problems, right?  You can't declare
 recursive structures that could cause problems and the only thing that
 could possibly break are very large responses that can cause some kind of
-denial of service at the receivers side.
+denial of service at the receiver's side.
 
 However there is a catch.  Due to how browsers work the CSRF issue comes
 up with JSON unfortunately.  Fortunately there is also a weird part of the
