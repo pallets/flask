@@ -10,14 +10,17 @@ app.secret_key = config.SECRET_KEY
 from flask_website.openid_auth import DatabaseOpenIDStore
 oid = OpenID(store_factory=DatabaseOpenIDStore)
 
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
 
+
 @app.before_request
-def load_currrent_user():
+def load_current_user():
     g.user = User.query.filter_by(openid=session['openid']).first() \
         if 'openid' in session else None
+
 
 @app.after_request
 def remove_db_session(response):

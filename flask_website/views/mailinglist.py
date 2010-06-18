@@ -26,7 +26,7 @@ class Mail(object):
         in_sig = False
         for line in split_lines_wrapping(self.text):
             if line == u'-- ':
-              in_sig = True
+                in_sig = True
             if in_sig:
                 line = Markup(u'<span class=sig>%s</span>') % line
             elif line.startswith('>'):
@@ -84,10 +84,9 @@ def archive(page):
     threads = all_threads[offset:offset + config.THREADS_PER_PAGE]
     if page != 1 and not threads:
         abort(404)
+    page_count = int(ceil(len(all_threads) // float(config.THREADS_PER_PAGE)))
     return render_template('mailinglist/archive.html',
-                           page_count=int(ceil(len(all_threads) /
-                               float(config.THREADS_PER_PAGE))),
-                           page=page, threads=threads)
+                           page_count=page_count, page=page, threads=threads)
 
 
 @mailinglist.route('/archive/<int:year>/<int:month>/<int:day>/<slug>/')
