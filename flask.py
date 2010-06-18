@@ -867,7 +867,7 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.3
     debug_log_format = (
         '-' * 80 + '\n' +
-        '%(levelname)s in %(module)s, %(pathname)s:%(lineno)d]:\n' +
+        '%(levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n' +
         '%(message)s\n' +
         '-' * 80
     )
@@ -997,15 +997,19 @@ class Flask(_PackageBoundObject):
         with _logger_lock:
             if self._logger and self._logger.name == self.logger_name:
                 return self._logger
-            from logging import getLogger, StreamHandler, Formatter, DEBUG
+            from logging import getLogger, StreamHandler, Formatter, \
+                                Logger,  DEBUG
+            class DebugLogger(Logger):
+                def getEffectiveLevel(x):
+                    return DEBUG if self.debug else Logger.getEffectiveLevel(x)
             class DebugHandler(StreamHandler):
                 def emit(x, record):
-                    if self.debug:
-                        StreamHandler.emit(x, record)
+                    StreamHandler.emit(x, record) if self.debug else None
             handler = DebugHandler()
             handler.setLevel(DEBUG)
             handler.setFormatter(Formatter(self.debug_log_format))
             logger = getLogger(self.logger_name)
+            logger.__class__ = DebugLogger
             logger.addHandler(handler)
             self._logger = logger
             return logger

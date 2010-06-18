@@ -718,9 +718,11 @@ class LoggingTestCase(unittest.TestCase):
     def test_debug_log(self):
         app = flask.Flask(__name__)
         app.debug = True
+
         @app.route('/')
         def index():
             app.logger.warning('the standard library is dead')
+            app.logger.debug('this is a debug statement')
             return ''
 
         @app.route('/exc')
@@ -731,9 +733,10 @@ class LoggingTestCase(unittest.TestCase):
         with catch_stderr() as err:
             rv = c.get('/')
             out = err.getvalue()
-            assert 'WARNING in flask_tests,' in out
+            assert 'WARNING in flask_tests [' in out
             assert 'flask_tests.py' in out
             assert 'the standard library is dead' in out
+            assert 'this is a debug statement' in out
 
         with catch_stderr() as err:
             try:
