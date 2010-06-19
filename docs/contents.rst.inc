@@ -44,6 +44,6 @@ Design notes, legal information and changelog are here for the interested.
    security
    unicode
    extensiondev
-   license
    upgrading
    changelog
+   license

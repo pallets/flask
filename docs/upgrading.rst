@@ -14,6 +14,19 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
+If you want to use the `easy_install` command to upgrade your Flask
+installation, make sure to pass it the ``-U`` parameter::
+
+    $ easy_install -U Flask
+
+Version 0.4
+-----------
+
+For application developers there are no changes that require changes in
+your code.  In case you are developing on a Flask extension however, and
+that extension has a unittest-mode you might want to link the activation
+of that mode to the new ``TESTING`` flag.
+
 Version 0.3
 -----------
 
