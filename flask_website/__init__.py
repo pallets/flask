@@ -8,7 +8,7 @@ app.debug = config.DEBUG
 app.secret_key = config.SECRET_KEY
 
 from flask_website.openid_auth import DatabaseOpenIDStore
-oid = OpenID(store_factory=DatabaseOpenIDStore)
+oid = OpenID(app, store_factory=DatabaseOpenIDStore)
 
 
 @app.errorhandler(404)
