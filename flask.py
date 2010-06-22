@@ -15,6 +15,9 @@ import sys
 import mimetypes
 from datetime import datetime, timedelta
 
+# this is a workaround for appengine.  Do not remove this import
+import werkzeug
+
 from itertools import chain
 from threading import Lock
 from jinja2 import Environment, PackageLoader, FileSystemLoader
