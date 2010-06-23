@@ -27,10 +27,12 @@ class Mail(object):
         for line in split_lines_wrapping(self.text):
             if line == u'-- ':
                 in_sig = True
+            # the extra space at the end is a simple workaround for
+            # urlize not to consume the </span> as part of the URL
             if in_sig:
-                line = Markup(u'<span class=sig>%s</span>') % line
+                line = Markup(u'<span class=sig>%s </span>') % line
             elif line.startswith('>'):
-                line = Markup(u'<span class=quote>%s</span>') % line
+                line = Markup(u'<span class=quote>%s </span>') % line
             result.append(urlize(line))
         return Markup(u'\n'.join(result))
 
