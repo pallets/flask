@@ -4,7 +4,7 @@ Welcome to Flask
 ================
 
 .. image:: _static/logo-full.png
-   :alt: The Flask Logo with Subtitle
+   :alt: Flask: web development, one drop at a time
    :class: floatingflask
 
 Welcome to Flask's documentation.  This documentation is divided in
