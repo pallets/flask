@@ -3,44 +3,41 @@
 Installation
 ============
 
-Flask is a microframework and yet it depends on external libraries.  There
-are various ways how you can install that library and this explains each
-way and why there are multiple ways.
-
-Flask depends on two external libraries: `Werkzeug
+Flask depends on two external libraries, `Werkzeug
 <http://werkzeug.pocoo.org/>`_ and `Jinja2 <http://jinja.pocoo.org/2/>`_.
-The first one is responsible for interfacing WSGI the latter for rendering
-templates.  Now you are maybe asking, what is WSGI?  WSGI is a standard
-in Python that is basically responsible for ensuring that your application
-is behaving in a specific way so that you can run it on different
-environments (for example on a local development server, on an Apache2, on
-lighttpd, on Google's App Engine or whatever you have in mind).
+Werkzeug is a toolkit for WSGI, the standard Python interface between web
+applications and a variety of servers for both development and deployment.
+Jinja2 renders templates.
 
-So how do you get all that on your computer in no time?  The most kick-ass
-method is virtualenv, so let's look at that first.
+So how do you get all that on your computer quickly?  There are many ways
+which this section will explain, but the most kick-ass method is
+virtualenv, so let's look at that first.
 
 .. _virtualenv:
 
 virtualenv
 ----------
 
-Virtualenv is what you want to use during development and in production if
-you have shell access.  So first: what does virtualenv do?  If you are
-like me and you like Python, chances are you want to use it for another
-project as well.  Now the more projects you have, the more likely it is
-that you will be working with different versions of Python itself or at
-least an individual library.  Because let's face it: quite often libraries
-break backwards compatibility and it's unlikely that your application will
-not have any dependencies, that just won't happen.  So virtualenv to the
-rescue!
+Virtualenv is probably what you want to use during development, and in
+production too if you have shell access there.
 
-It basically makes it possible to have multiple side-by-side
-"installations" of Python, each for your own project.  It's not actually
-an installation but a clever way to keep things separated.
+What problem does virtualenv solve?  If you like Python as I do,
+chances are you want to use it for other projects besides Flask-based
+web applications.  But the more projects you have, the more likely it is
+that you will be working with different versions of Python itself, or at
+least different versions of Python libraries.  Let's face it; quite often
+libraries break backwards compatibility, and it's unlikely that any serious
+application will have zero dependencies.  So what do you do if two or more
+of your projects have conflicting dependencies?
 
-So let's see how that works!
+Virtualenv to the rescue!  It basically enables multiple side-by-side
+installations of Python, one for each project.  It doesn't actually
+install separate copies of Python, but it does provide a clever way
+to keep different project environments isolated.
 
-If you are on OS X or Linux chances are that one of the following two
+So let's see how virtualenv works!
+
+If you are on Mac OS X or Linux, chances are that one of the following two
 commands will work for you::
 
     $ sudo easy_install virtualenv
@@ -49,18 +46,19 @@ or even better::
 
     $ sudo pip install virtualenv
 
-Chances are you have virtualenv installed on your system then.  Maybe it's
-even in your package manager (on ubuntu try ``sudo apt-get install
-python-virtualenv``).
+One of these will probably install virtualenv on your system.  Maybe it's
+even in your package manager.  If you use Ubuntu, try::
 
-If you are on Windows and missing the `easy_install` command you have to
+    $ sudo apt-get install python-virtualenv
+
+If you are on Windows and don't have the `easy_install` command, you must
 install it first.  Check the :ref:`windows-easy-install` section for more
 information about how to do that.  Once you have it installed, run the
-same commands as above, but without the `sudo` part.
+same commands as above, but without the `sudo` prefix.
 
-So now that you have virtualenv running just fire up a shell and create
-your own environment.  I usually create a folder and a `env` folder
-within::
+Once you have virtualenv installed, just fire up a shell and create
+your own environment.  I usually create a project folder and an `env`
+folder within::
 
     $ mkdir myproject
     $ cd myproject
@@ -68,14 +66,14 @@ within::
     New python executable in env/bin/python
     Installing setuptools............done.
 
-Now you only have to activate it, whenever you work with it.  On OS X and
-Linux do the following::
+Now, whenever you want to work on a project, you only have to activate
+the corresponding environment.  On OS X and Linux, do the following::
 
     $ . env/bin/activate
 
-(Note the whitespace between the dot and the script name.  This means
-execute this file in context of the shell.  If the dot does not work for
-whatever reason in your shell, try substituting it with ``source``)
+(Note the space between the dot and the script name.  The dot means that
+this script should run in the context of the current shell.  If this command
+does not work in your shell, try replacing the dot with ``source``)
 
 If you are a Windows user, the following command is for you::
 
@@ -95,23 +93,22 @@ A few seconds later you are good to go.
 System Wide Installation
 ------------------------
 
-This is possible as well, but I would not recommend it.  Just run
+This is possible as well, but I do not recommend it.  Just run
 `easy_install` with root rights::
 
-    sudo easy_install Flask
+    $ sudo easy_install Flask
 
-(Run it in an Admin shell on Windows systems and without the `sudo`).
+(Run it in an Admin shell on Windows systems and without `sudo`).
 
 
 Living on the Edge
 ------------------
 
-You want to work with the latest version of Flask, there are two ways: you
-can either let `easy_install` pull in the development version or tell it
-to operate on a git checkout.  Either way it's recommended to do that in a
-virtualenv.
+If you want to work with the latest version of Flask, there are two ways: you
+can either let `easy_install` pull in the development version, or tell it
+to operate on a git checkout.  Either way, virtualenv is recommended.
 
-Get the git checkout in a new virtualenv and run in develop mode::
+Get the git checkout in a new virtualenv and run in development mode::
 
     $ git clone http://github.com/mitsuhiko/flask.git
     Initialized empty Git repository in ~/dev/flask/.git/
@@ -124,9 +121,9 @@ Get the git checkout in a new virtualenv and run in develop mode::
     ...
     Finished processing dependencies for Flask
 
-This will pull in the dependencies and activate the git head as current
-version.  Then you just have to ``git pull origin`` to get the latest
-version.
+This will pull in the dependencies and activate the git head as the current
+version inside the virtualenv.  Then you just have to ``git pull origin``
+to get the latest version.
 
 To just get the development version without git, do this instead::
 
@@ -145,31 +142,29 @@ To just get the development version without git, do this instead::
 `easy_install` on Windows
 -------------------------
 
-On Windows installation of `easy_install` is a little bit tricker because
-on Windows slightly different rules apply, but it's not a biggy.  The
-easiest way to accomplish that is downloading the `ez_setup.py`_ file and
-running it.  (Double clicking should do the trick)
+On Windows, installation of `easy_install` is a little bit tricker because
+slightly different rules apply on Windows than on Unix-like systems, but
+it's not difficult.  The easiest way to do it is to download the
+`ez_setup.py`_ file and run it.  The easiest way to run the file is to
+open your downloads folder and double-click on the file.
 
-Once you have done that it's important to add the `easy_install` command
-and other Python scripts to the path.  To do that you have to add the
-Python installation's Script folder to the `PATH` variable.
-
-To do that, right-click on your "Computer" desktop icon and click
-"Properties".  On Windows Vista and Windows 7 then click on "Advanced System
-settings", on Windows XP click on the "Advanced" tab instead.  Then click
+Next, add the `easy_install` command and other Python scripts to the
+command search path, by adding your Python installation's Scripts folder
+to the `PATH` environment variable.  To do that, right-click on the
+"Computer" icon on the Desktop or in the Start menu, and choose
+"Properties".  Then, on Windows Vista and Windows 7 click on "Advanced System
+settings"; on Windows XP, click on the "Advanced" tab instead.  Then click
 on the "Environment variables" button and double click on the "Path"
-variable in the "System variables" section.
-
-There append the path of your Python interpreter's Script folder to the
-end of the last (make sure you delimit it from existing values with a
-semicolon).  Assuming you are using Python 2.6 on the default path, add
-the following value::
+variable in the "System variables" section.  There append the path of your
+Python interpreter's Scripts folder; make sure you delimit it from
+existing values with a semicolon.  Assuming you are using Python 2.6 on
+the default path, add the following value::
 
     ;C:\Python26\Scripts
 
-Then you are done.  To check that it worked, open the cmd and execute
-"easy_install".  If you have UAC enabled it should prompt you for admin
-privileges.
+Then you are done.  To check that it worked, open the Command Prompt and
+execute ``easy_install``.  If you have User Account Control enabled on
+Windows Vista or Windows 7, it should prompt you for admin privileges.
 
 
 .. _ez_setup.py: http://peak.telecommunity.com/dist/ez_setup.py
