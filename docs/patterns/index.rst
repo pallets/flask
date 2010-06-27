@@ -30,3 +30,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    jquery
    errorpages
    lazyloading
+   mongokit

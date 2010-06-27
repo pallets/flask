@@ -68,7 +68,7 @@ Here is an example model (put this into `models.py`, e.g.)::
             self.email = email
 
         def __repr__(self):
-            return '<User %r>' % (self.name, self.email)
+            return '<User %r>' % (self.name)
 
 You can insert entries into the database like this:
 
