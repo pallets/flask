@@ -20,11 +20,22 @@ Declarative
 The default behaviour of MongoKit is the declarative one that is based on
 common ideas from Django or the SQLAlchemy declarative extension.
 
-Here an example `database.py` module for your application::
+Here an example `app.py` module for your application::
 
+    from flask import Flask
     from mongokit import Connection, Document
 
-    connection = Connection()
+    # configuration
+    MONGODB_HOST = 'localhost'
+    MONGODB_PORT = 27017
+
+    # create the little application object
+    app = Flask(__name__)
+    app.config.from_object(__name__)
+
+    # connect to the database
+    connection = Connection(app.config['MONGODB_HOST'],
+                            app.config['MONGODB_PORT'])
 
 
 To define your models, just subclass the `Document` class that is imported
@@ -36,10 +47,8 @@ MongoDB is schemaless.  This means you can modify the data structure from one
 insert query to the next without any problem.  MongoKit is just schemaless
 too, but implements some validation to ensure data integrity.
 
-Here is an example document (put this into `models.py`, e.g.)::
+Here is an example document (put this also into `app.py`, e.g.)::
 
-    from yourapplication.database import Document, connection
-    
     def max_length(length):
         def validate(value):
             if len(value) <= length:
@@ -98,7 +107,9 @@ PyMongo Compatibility Layer
 ---------------------------
 
 If you just want to use PyMongo, you can do that with MongoKit as well.  You
-may use this process if you need the best performance to get::
+may use this process if you need the best performance to get.  Note that this
+example does not show how to couple it with Flask, see the above MongoKit code
+for examples::
 
     from MongoKit import Connection
 
