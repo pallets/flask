@@ -67,7 +67,21 @@ class Request(RequestBase):
     :attr:`~flask.Flask.request_class` to your subclass.
     """
 
-    endpoint = view_args = routing_exception = None
+    #: the endpoint that matched the request.  This in combination with
+    #: :attr:`view_args` can be used to reconstruct the same or a
+    #: modified URL.  If an exception happened when matching, this will
+    #: be `None`.
+    endpoint = None
+
+    #: a dict of view arguments that matched the request.  If an exception
+    #: happened when matching, this will be `None`.
+    view_args = None
+
+    #: if matching the URL failed, this is the exception that will be
+    #: raised / was raised as part of the request handling.  This is
+    #: usually a :exc:`~werkzeug.exceptions.NotFound` exception or
+    #: something similar.
+    routing_exception = None
 
     @property
     def module(self):
