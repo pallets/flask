@@ -11,11 +11,11 @@ Show Entries
 
 This view shows all the entries stored in the database.  It listens on the
 root of the application and will select title and text from the database.
-The one with the highest id (the newest entry) on top.  The rows returned
-from the cursor are tuples with the columns ordered like specified in the
-select statement.  This is good enough for small applications like here,
-but you might want to convert them into a dict.  If you are interested how
-to do that, check out the :ref:`easy-querying` example.
+The one with the highest id (the newest entry) will be on top.  The rows
+returned from the cursor are tuples with the columns ordered like specified
+in the select statement.  This is good enough for small applications like
+here, but you might want to convert them into a dict.  If you are
+interested in how to do that, check out the :ref:`easy-querying` example.
 
 The view function will pass the entries as dicts to the
 `show_entries.html` template and return the rendered one::
@@ -53,11 +53,11 @@ Login and Logout
 
 These functions are used to sign the user in and out.  Login checks the
 username and password against the ones from the configuration and sets the
-`logged_in` key in the session.  If the user logged in successfully that
-key is set to `True` and the user is redirected back to the `show_entries`
-page.  In that case also a message is flashed that informs the user he or
-she was logged in successfully.  If an error occoured the template is
-notified about that and the user asked again::
+`logged_in` key in the session.  If the user logged in successfully, that
+key is set to `True`, and the user is redirected back to the `show_entries`
+page.  In addition, a message is flashed that informs the user that he or
+she was logged in successfully.  If an error occurred, the template is
+notified about that, and the user is asked again::
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -73,12 +73,12 @@ notified about that and the user asked again::
                 return redirect(url_for('show_entries'))
         return render_template('login.html', error=error)
 
-The logout function on the other hand removes that key from the session
+The logout function, on the other hand, removes that key from the session
 again.  We use a neat trick here: if you use the :meth:`~dict.pop` method
-of the dict and pass a second parameter to it (the default) the method
+of the dict and pass a second parameter to it (the default), the method
 will delete the key from the dictionary if present or do nothing when that
-key was not in there.  This is helpful because we don't have to check in
-that case if the user was logged in.
+key is not in there.  This is helpful because now we don't have to check
+if the user was logged in.
 
 ::
 
