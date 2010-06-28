@@ -5,7 +5,7 @@ Handling Application Errors
 
 .. versionadded:: 0.3
 
-Applications fail, server fail.  Sooner or later you will see an exception
+Applications fail, servers fail.  Sooner or later you will see an exception
 in production.  Even if your code is 100% correct, you will still see
 exceptions from time to time.  Why?  Because everything else involved will
 fail.  Here some situations where perfectly fine code can lead to server
@@ -20,7 +20,7 @@ errors:
 -   a programming error in a library you are using
 -   network connection of the server to another system failed.
 
-And that's just a small sample of issues you could be facing.  So how to
+And that's just a small sample of issues you could be facing.  So how do we
 deal with that sort of problem?  By default if your application runs in
 production mode, Flask will display a very simple page for you and log the
 exception to the :attr:`~flask.Flask.logger`.
@@ -32,10 +32,10 @@ Error Mails
 -----------
 
 If the application runs in production mode (which it will do on your
-server) you won't see any log messages by default.  Why that?  Flask tries
-to be a zero-configuration framework and where should it drop the logs for
-you if there is no configuration.  Guessing is not a good idea because
-chances are, the place it guessed is not the place where the user has the
+server) you won't see any log messages by default.  Why is that?  Flask
+tries to be a zero-configuration framework.  Where should it drop the logs
+for you if there is no configuration?  Guessing is not a good idea because
+chances are, the place it guessed is not the place where the user has
 permission to create a logfile.  Also, for most small applications nobody
 will look at the logs anyways.
 
@@ -45,9 +45,9 @@ when a user reported it for you.  What you want instead is a mail the
 second the exception happened.  Then you get an alert and you can do
 something about it.
 
-Flask is using the Python builtin logging system and that one can actually
-send you mails for errors which is probably what you want.  Here is how
-you can configure the Flask logger to send you mails for exceptions::
+Flask uses the Python builtin logging system, and it can actually send
+you mails for errors which is probably what you want.  Here is how you can
+configure the Flask logger to send you mails for exceptions::
 
     ADMINS = ['yourname@example.com']
     if not app.debug:
@@ -63,8 +63,9 @@ So what just happened?  We created a new
 :class:`~logging.handlers.SMTPHandler` that will send mails with the mail
 server listening on ``127.0.0.1`` to all the `ADMINS` from the address
 *server-error@example.com* with the subject "YourApplication Failed".  If
-your mail server requires credentials these can also provided, for that
-check out the documentation for the :class:`~logging.handlers.SMTPHandler`.
+your mail server requires credentials, these can also be provided.  For
+that check out the documentation for the
+:class:`~logging.handlers.SMTPHandler`.
 
 We also tell the handler to only send errors and more critical messages.
 Because we certainly don't want to get a mail for warnings or other
@@ -115,12 +116,12 @@ Controlling the Log Format
 --------------------------
 
 By default a handler will only write the message string into a file or
-send you that message as mail.  But a log record stores more information
+send you that message as mail.  A log record stores more information,
 and it makes a lot of sense to configure your logger to also contain that
 information so that you have a better idea of why that error happened, and
 more importantly, where it did.
 
-A formatter can be instanciated with a format string.  Note that
+A formatter can be instantiated with a format string.  Note that
 tracebacks are appended to the log entry automatically.  You don't have to
 do that in the log formatter format string.
 
@@ -206,7 +207,7 @@ formatter.  The formatter has three interesting methods:
     called for `asctime` formatting.  If you want a different time format
     you can override this method.
 :meth:`~logging.Formatter.formatException`
-    called for exception formatting.  It is passed a :attr:`~sys.exc_info`
+    called for exception formatting.  It is passed an :attr:`~sys.exc_info`
     tuple and has to return a string.  The default is usually fine, you
     don't have to override it.
 
@@ -217,8 +218,8 @@ Other Libraries
 ---------------
 
 So far we only configured the logger your application created itself.
-Other libraries might log themselves as well.  For example, SQLAlchemy use
-logging heavily in the core.  While there is a method to configure all
+Other libraries might log themselves as well.  For example, SQLAlchemy uses
+logging heavily in its core.  While there is a method to configure all
 loggers at once in the :mod:`logging` package, I would not recommend using
 it.  There might be a situation in which you want to have multiple
 separate applications running side by side in the same Python interpreter
