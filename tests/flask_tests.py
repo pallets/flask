@@ -836,6 +836,26 @@ class ConfigTestCase(unittest.TestCase):
             os.environ = env
 
 
+class SubdomainTestCase(unittest.TestCase):
+
+    def test_basic_support(self):
+        app = flask.Flask(__name__)
+        app.config['SERVER_NAME'] = 'localhost'
+        @app.route('/')
+        def normal_index():
+            return 'normal index'
+        @app.route('/', subdomain='test')
+        def test_index():
+            return 'test index'
+
+        c = app.test_client()
+        rv = c.get('/', 'http://localhost/')
+        assert rv.data == 'normal index'
+
+        rv = c.get('/', 'http://test.localhost/')
+        assert rv.data == 'test index'
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
@@ -847,6 +867,7 @@ def suite():
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(ConfigTestCase))
+    suite.addTest(unittest.makeSuite(SubdomainTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     suite.addTest(unittest.makeSuite(MiniTwitTestCase))

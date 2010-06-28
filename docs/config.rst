@@ -59,7 +59,16 @@ The following configuration values are used internally by Flask:
 ``PERMANENT_SESSION_LIFETIME``  the lifetime of a permanent session as
                                 :class:`datetime.timedelta` object.
 ``USE_X_SENDFILE``              enable/disable x-sendfile
+``LOGGER_NAME``                 the name of the logger
+``SERVER_NAME``                 the name of the server.  Required for
+                                subdomain support (eg: ``'localhost'``)
 =============================== =========================================
+
+.. versionadded:: 0.4
+   ``LOGGER_NAME``
+
+.. versionadded:: 0.5
+   ``SERVER_NAME``
 
 Configuring from Files
 ----------------------

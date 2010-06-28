@@ -141,7 +141,8 @@ class _RequestContext(object):
 
     def __init__(self, app, environ):
         self.app = app
-        self.url_adapter = app.url_map.bind_to_environ(environ)
+        self.url_adapter = app.url_map.bind_to_environ(environ,
+            server_name=app.config['SERVER_NAME'])
         self.request = app.request_class(environ)
         self.session = app.open_session(self.request)
         if self.session is None:
@@ -889,7 +890,8 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
-        'LOGGER_NAME':                          None
+        'LOGGER_NAME':                          None,
+        'SERVER_NAME':                          None
     })
 
     def __init__(self, import_name):
