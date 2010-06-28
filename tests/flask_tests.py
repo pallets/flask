@@ -855,6 +855,17 @@ class SubdomainTestCase(unittest.TestCase):
         rv = c.get('/', 'http://test.localhost/')
         assert rv.data == 'test index'
 
+    def test_subdomain_matching(self):
+        app = flask.Flask(__name__)
+        app.config['SERVER_NAME'] = 'localhost'
+        @app.route('/', subdomain='<user>')
+        def index(user):
+            return 'index for %s' % user
+
+        c = app.test_client()
+        rv = c.get('/', 'http://mitsuhiko.localhost/')
+        assert rv.data == 'index for mitsuhiko'
+
 
 def suite():
     from minitwit_tests import MiniTwitTestCase
