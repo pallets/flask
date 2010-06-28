@@ -3,12 +3,12 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can implement opening of database connections at the beginning
-of the request and closing at the end with the
+In Flask you can implement the opening of database connections at the
+beginning of the request and closing at the end with the
 :meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`
 decorators in combination with the special :class:`~flask.g` object.
 
-So here a simple example of how you can use SQLite 3 with Flask::
+So here is a simple example of how you can use SQLite 3 with Flask::
 
     import sqlite3
     from flask import g
@@ -33,7 +33,7 @@ Easy Querying
 -------------
 
 Now in each request handling function you can access `g.db` to get the
-current open database connection.  To simplify working with SQLite a
+current open database connection.  To simplify working with SQLite, a
 helper function can be useful::
 
     def query_db(query, args=(), one=False):
