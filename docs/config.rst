@@ -6,12 +6,12 @@ Configuration Handling
 .. versionadded:: 0.3
 
 Applications need some kind of configuration.  There are different things
-you might want to change.  Like toggling debug mode, the secret key and a
+you might want to change like toggling debug mode, the secret key, and a
 lot of very similar things.
 
 The way Flask is designed usually requires the configuration to be
-available when the application starts up.  You can either hardcode the
-configuration in the code which for many small applications is not
+available when the application starts up.  You can hardcode the
+configuration in the code, which for many small applications is not
 actually that bad, but there are better ways.
 
 Independent of how you load your config, there is a config object
@@ -64,8 +64,8 @@ The following configuration values are used internally by Flask:
 Configuring from Files
 ----------------------
 
-Configuration becomes more useful if you can configure from a file.  And
-ideally that file would be outside of the actual application package that
+Configuration becomes more useful if you can configure from a file, and
+ideally that file would be outside of the actual application package so that
 you can install the package with distribute (:ref:`distribute-deployment`)
 and still modify that file afterwards.
 
@@ -75,7 +75,7 @@ So a common pattern is this::
     app.config.from_object('yourapplication.default_settings')
     app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
-What this does is first loading the configuration from the
+This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
 with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
 environment variable points to.  This environment variable can be set on
@@ -95,7 +95,7 @@ The configuration files themselves are actual Python files.  Only values
 in uppercase are actually stored in the config object later on.  So make
 sure to use uppercase letters for your config keys.
 
-Here an example configuration file::
+Here is an example configuration file::
 
     DEBUG = False
     SECRET_KEY = '?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
