@@ -302,7 +302,7 @@ Useful Internals
    use is discouraged in general.
 
    The following attributes are always present on each layer of the
-   stack::
+   stack:
 
    `app`
       the active Flask application.
