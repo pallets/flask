@@ -86,6 +86,15 @@ database = [
         bitbucket='danjac/flask-mail',
         docs='http://packages.python.org/flask-mail/'
     ),
+    Extension('Flask-WTF', 'Dan Jacob',
+        description='''
+            <p>Flask-WTF offers simple integration with WTForms. This
+            integration includes optional CSRF handling for greater security.
+
+        ''',
+        bitbucket='danjac/flask-wtf',
+        docs='http://packages.python.org/Flask-WTF/'
+    ),
     Extension('flask-csrf', 'Steve Losh',
         description='''
             <p>A small Flask extension for adding
