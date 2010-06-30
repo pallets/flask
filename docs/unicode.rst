@@ -54,6 +54,8 @@ unicode.  What does working with unicode in Python 2.x mean?
     UTF-8 for this purpose.  To tell the interpreter your encoding you can
     put the ``# -*- coding: utf-8 -*-`` into the first or second line of
     your Python source file.
+-   Jinja is configured to decode the template files from UTF08.  So make
+    sure to tell your editor to save the file as UTF-8 there as well.
 
 Encoding and Decoding Yourself
 ------------------------------
@@ -79,3 +81,27 @@ To go from unicode into a specific charset such as UTF-8 you can use the
     def write_file(filename, contents, charset='utf-8'):
         with open(filename, 'w') as f:
             f.write(contents.encode(charset))
+
+Configuring Editors
+-------------------
+
+Most editors save as UTF-8 by default nowadays but in case your editor is
+not configured to do this you have to change it.  Here some common ways to
+set your editor to store as UTF-8:
+
+-   Vim: put ``set enc=utf-8`` to your ``.vimrc`` file.
+
+-   Emacs: either use an encoding cookie or put this into your ``.emacs``
+    file::
+
+        (prefer-coding-system 'utf-8)
+        (setq default-buffer-file-coding-system 'utf-8)
+
+-   Notepad++:
+
+    1. Go to *Settings -> Preferences ...*
+    2. Select the "New Document/Default Directory" tab
+    3. Select "UTF-8 without BOM" as encoding
+
+    It is also recommended to use the Unix newline format, you can select
+    it in the same panel but this not a requirement.
