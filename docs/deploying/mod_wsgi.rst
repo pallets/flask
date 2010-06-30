@@ -133,3 +133,19 @@ If your application does not run, follow this guide to troubleshoot:
     The reason for this is that for non-installed packages, the module
     filename is used to locate the resources and for symlinks the wrong
     filename is picked up.
+
+Working with Virtual Environments
+---------------------------------
+
+Virtual environments have the advantage that they never install the
+required dependencies system wide so you have a better control over what
+is used where.  If you want to use a virtual environment with mod_wsgi you
+have to modify your `.wsgi` file slightly.
+
+Add the following lines to the top of your `.wsgi` file::
+
+    activate_this = '/path/to/env/bin/activate_this.py'
+    execfile(activate_this, dict(__file__=activate_this))
+
+This sets up the load paths according to the settings of the virtual
+environment.  Keep in mind that the path has to be absolute.
