@@ -628,7 +628,9 @@ unless he knows the secret key used for signing.
 In order to use sessions you have to set a secret key.  Here is how
 sessions work::
 
-    from flask import session, redirect, url_for, escape
+    from flask import Flask, session, redirect, url_for, escape, request
+
+    app = Flask(__name__)
 
     @app.route('/')
     def index():
@@ -652,6 +654,7 @@ sessions work::
     def logout():
         # remove the username from the session if its there
         session.pop('username', None)
+        return redirect(url_for('index'))
 
     # set the secret key.  keep this really secret:
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
