@@ -806,6 +806,34 @@ class Flask(_PackageBoundObject):
 
         from flask import Flask
         app = Flask(__name__)
+
+    .. admonition:: About the First Parameter
+
+        The idea of the first parameter is to give Flask an idea what
+        belongs to your application.  This name is used to find resources
+        on the file system, can be used by extensions to improve debugging
+        information and a lot more.
+
+        So it's important what you provide there.  If you are using a single
+        module, `__name__` is always the correct value.  If you however are
+        using a package, it's usually recommended to hardcode the name of
+        your package there.
+
+        For example if your application is defined in `yourapplication/app.py`
+        you should create it with one of the two versions below::
+
+            app = Flask('yourapplication')
+            app = Flask(__name__.split('.')[0])
+
+        Why is that?  The application will work even with `__name__`, thanks
+        to how resources are looked up.  However it will make debugging more
+        painful.  Certain extensions can make assumptions based on the
+        import name of your application.  For example the Flask-SQLAlchemy
+        extension will look for the code in your application that triggered
+        an SQL query in debug mode.  If the import name is not properly set
+        up, that debugging information is lost.  (For example it would only
+        pick up SQL queries in `yourapplicaiton.app` and not
+        `yourapplication.views.frontend`)
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
