@@ -1,3 +1,6 @@
+from werkzeug.contrib.securecookie import SecureCookie
+
+
 class Session(SecureCookie):
     """Expands the session with support for switching between permanent
     and non-permanent sessions.

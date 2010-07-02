@@ -1,3 +1,4 @@
+from flask.helpers import _PackageBoundObject
 
 
 class _ModuleSetupState(object):

@@ -1,3 +1,8 @@
+from werkzeug.exceptions import HTTPException
+
+from flask.wrappers import _RequestGlobals
+from flask.globals import _request_ctx_stack
+from flask.session import _NullSession
 
 
 class _RequestContext(object):

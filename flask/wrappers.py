@@ -1,3 +1,9 @@
+from werkzeug import Request as RequestBase, Response as ResponseBase, \
+    cached_property
+
+from helpers import json
+
+
 class Request(RequestBase):
     """The request object used by default in flask.  Remembers the
     matched endpoint and view arguments.
@@ -35,6 +41,7 @@ class Request(RequestBase):
         parsed JSON data.
         """
         if __debug__:
+            from flask.helpers import _assert_have_json
             _assert_have_json()
         if self.mimetype == 'application/json':
             return json.loads(self.data)

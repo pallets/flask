@@ -1,3 +1,7 @@
+import os
+import sys
+import mimetypes
+
 # try to load the best simplejson implementation available.  If JSON
 # is not installed, we add a failing class.
 json_available = True
@@ -8,6 +12,12 @@ except ImportError:
         import json
     except ImportError:
         json_available = False
+        
+from werkzeug import Headers, wrap_file
+
+from flask.globals import session, _request_ctx_stack, current_app, request
+from flask.wrappers import Response
+
         
 def _assert_have_json():
     """Helper function that fails if JSON is unavailable."""
@@ -57,6 +67,17 @@ def jsonify(*args, **kwargs):
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
     
+def get_pkg_resources():
+    """Use pkg_resource if that works, otherwise fall back to cwd.  The
+    current working directory is generally not reliable with the notable
+    exception of google appengine.
+    """
+    try:
+        import pkg_resources
+        pkg_resources.resource_stream
+    except (ImportError, AttributeError):
+        return
+    return pkg_resources
 
 
 def url_for(endpoint, **values):
@@ -164,7 +185,6 @@ def get_flashed_messages(with_categories=False):
     return flashes
 
 
-
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None):
     """Sends the contents of a file to the client.  This will use the
@@ -262,14 +282,12 @@ def render_template_string(source, **context):
     return current_app.jinja_env.from_string(source).render(context)
 
 
-
 def _get_package_path(name):
     """Returns the path to a package or cwd if that cannot be found."""
     try:
         return os.path.abspath(os.path.dirname(sys.modules[name].__file__))
     except (KeyError, AttributeError):
         return os.getcwd()
-
 
 
 class _PackageBoundObject(object):
@@ -304,7 +322,7 @@ class _PackageBoundObject(object):
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
         """
+        pkg_resources = get_pkg_resources()
         if pkg_resources is None:
             return open(os.path.join(self.root_path, resource), 'rb')
         return pkg_resources.resource_stream(self.import_name, resource)
-

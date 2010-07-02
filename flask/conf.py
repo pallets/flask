@@ -1,3 +1,7 @@
+import os
+import sys
+
+from werkzeug import import_string
 
 
 class ConfigAttribute(object):

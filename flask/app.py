@@ -1,3 +1,23 @@
+from threading import Lock
+from datetime import timedelta, datetime
+from itertools import chain
+
+from jinja2 import Environment, PackageLoader, FileSystemLoader
+from werkzeug import ImmutableDict, SharedDataMiddleware, create_environ
+from werkzeug.routing import Map, Rule
+from werkzeug.exceptions import HTTPException, InternalServerError
+
+from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
+    _tojson_filter, get_pkg_resources
+from flask.wrappers import Request, Response
+from flask.conf import ConfigAttribute, Config
+from flask.ctx import _default_template_ctx_processor, _RequestContext
+from flask.globals import _request_ctx_stack, request
+from flask.session import Session, _NullSession
+from flask.module import _ModuleSetupState
+
+# a lock used for logger initialization
+_logger_lock = Lock()
 
 
 class Flask(_PackageBoundObject):
@@ -219,7 +239,7 @@ class Flask(_PackageBoundObject):
         if self.static_path is not None:
             self.add_url_rule(self.static_path + '/<filename>',
                               build_only=True, endpoint='static')
-            if pkg_resources is not None:
+            if get_pkg_resources() is not None:
                 target = (self.import_name, 'static')
             else:
                 target = os.path.join(self.root_path, 'static')
@@ -279,7 +299,7 @@ class Flask(_PackageBoundObject):
         `templates` folder.  To add other loaders it's possible to
         override this method.
         """
-        if pkg_resources is None:
+        if get_pkg_resources() is None:
             return FileSystemLoader(os.path.join(self.root_path, 'templates'))
         return PackageLoader(self.import_name)
 
