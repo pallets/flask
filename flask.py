@@ -1090,6 +1090,16 @@ class Flask(_PackageBoundObject):
         :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
 
+        .. admonition:: Keep in Mind
+
+           Flask will supress any server error with a generic error page
+           unless it is in debug mode.  As such to enable just the
+           interactive debugger without the code reloading, you ahve to
+           invoke :meth:`run` with ``debug=True`` and ``use_reloader=False``.
+           Setting ``use_debugger`` to `True` without being in debug mode
+           won't catch any exceptions because there won't be any to
+           catch.
+
         :param host: the hostname to listen on.  set this to ``'0.0.0.0'``
                      to have the server available externally as well.
         :param port: the port of the webserver
