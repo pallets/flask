@@ -90,10 +90,16 @@ database = [
         description='''
             <p>Flask-WTF offers simple integration with WTForms. This
             integration includes optional CSRF handling for greater security.
-
         ''',
         bitbucket='danjac/flask-wtf',
         docs='http://packages.python.org/Flask-WTF/'
+    ),
+    Extension('Flask-Testing', 'Dan Jacob',
+        description='''
+            <p>The Flask-Testing extension provides unit testing utilities for Flask.
+        ''',
+        bitbucket='danjac/flask-testing',
+        docs='http://packages.python.org/Flask-Testing/'
     ),
     Extension('flask-csrf', 'Steve Losh',
         description='''
