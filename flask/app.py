@@ -363,9 +363,9 @@ class Flask(_PackageBoundObject):
 
         .. admonition:: Keep in Mind
 
-           Flask will supress any server error with a generic error page
+           Flask will suppress any server error with a generic error page
            unless it is in debug mode.  As such to enable just the
-           interactive debugger without the code reloading, you ahve to
+           interactive debugger without the code reloading, you have to
            invoke :meth:`run` with ``debug=True`` and ``use_reloader=False``.
            Setting ``use_debugger`` to `True` without being in debug mode
            won't catch any exceptions because there won't be any to

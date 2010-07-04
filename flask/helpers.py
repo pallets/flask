@@ -214,8 +214,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionadded:: 0.2
 
     .. versionadded:: 0.5
-       The `add_etags`, `cache_timeout` and `conditional` parameters were added.
-       The default behaviour is now to attach etags.
+       The `add_etags`, `cache_timeout` and `conditional` parameters were
+       added.  The default behaviour is now to attach etags.
 
     :param filename_or_fp: the filename of the file to send.  This is
                            relative to the :attr:`~Flask.root_path` if a
