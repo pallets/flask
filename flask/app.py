@@ -83,6 +83,15 @@ class Flask(_PackageBoundObject):
         up, that debugging information is lost.  (For example it would only
         pick up SQL queries in `yourapplicaiton.app` and not
         `yourapplication.views.frontend`)
+
+    .. versionadded:: 0.5
+       The `static_path` parameter was added.
+
+    :param import_name: the name of the application package
+    :param static_path: can be used to specify a different path for the
+                        static files on the web.  Defaults to ``/static``.
+                        This does not affect the folder the files are served
+                        *from*.
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`

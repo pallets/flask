@@ -88,6 +88,21 @@ class Module(_PackageBoundObject):
 
     For a gentle introduction into modules, checkout the
     :ref:`working-with-modules` section.
+
+    .. versionadded:: 0.5
+       The `static_path` parameter was added.
+
+    :param import_name: the name of the Python package or module
+                        implementing this :class:`Module`.
+    :param name: the internal short name for the module.  Unless specified
+                 the rightmost part of the import name
+    :param url_prefix: an optional string that is used to prefix all the
+                       URL rules of this module.  This can also be specified
+                       when registering the module with the application.
+    :param static_path: can be used to specify a different path for the
+                        static files on the web.  Defaults to ``/static``.
+                        This does not affect the folder the files are served
+                        *from*.
     """
 
     def __init__(self, import_name, name=None, url_prefix=None,
