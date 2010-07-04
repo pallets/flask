@@ -1,0 +1,62 @@
+from werkzeug.exceptions import HTTPException
+
+from flask.wrappers import _RequestGlobals
+from flask.globals import _request_ctx_stack
+from flask.session import _NullSession
+
+
+class _RequestContext(object):
+    """The request context contains all request relevant information.  It is
+    created at the beginning of the request and pushed to the
+    `_request_ctx_stack` and removed at the end of it.  It will create the
+    URL adapter and request object for the WSGI environment provided.
+    """
+
+    def __init__(self, app, environ):
+        self.app = app
+        self.url_adapter = app.url_map.bind_to_environ(environ,
+            server_name=app.config['SERVER_NAME'])
+        self.request = app.request_class(environ)
+        self.session = app.open_session(self.request)
+        if self.session is None:
+            self.session = _NullSession()
+        self.g = _RequestGlobals()
+        self.flashes = None
+
+        try:
+            self.request.endpoint, self.request.view_args = \
+                self.url_adapter.match()
+        except HTTPException, e:
+            self.request.routing_exception = e
+
+    def push(self):
+        """Binds the request context."""
+        _request_ctx_stack.push(self)
+
+    def pop(self):
+        """Pops the request context."""
+        _request_ctx_stack.pop()
+
+    def __enter__(self):
+        self.push()
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        # do not pop the request stack if we are in debug mode and an
+        # exception happened.  This will allow the debugger to still
+        # access the request object in the interactive shell.  Furthermore
+        # the context can be force kept alive for the test client.
+        if not self.request.environ.get('flask._preserve_context') and \
+           (tb is None or not self.app.debug):
+            self.pop()
+            
+def _default_template_ctx_processor():
+    """Default template context processor.  Injects `request`,
+    `session` and `g`.
+    """
+    reqctx = _request_ctx_stack.top
+    return dict(
+        request=reqctx.request,
+        session=reqctx.session,
+        g=reqctx.g
+    )
