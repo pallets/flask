@@ -21,6 +21,7 @@ Codename to be decided, release date to be announced.
   do conditional responses builtin.
 - (temporarily) dropped support for zipped applications.  This was a
   rarely used feature and led to some confusing behaviour.
+- added support for per-package template and static-file directories.
 
 Version 0.4
 -----------
