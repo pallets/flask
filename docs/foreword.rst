@@ -17,24 +17,20 @@ may be necessary in larger or more complex applications.
 For example, Flask uses thread-local objects internally so that you don't
 have to pass objects around from function to function within a request in
 order to stay threadsafe.  While this is a really easy approach and saves
-you a lot of time, it also does not scale well to large applications.
-It's especially painful for more complex unittests, and when you suddenly
-have to deal with code being executed outside of the context of a request,
-such as in cron jobs.
+you a lot of time, it might also cause some troubles for very large
+applications because changes on these thread-local objects can happen
+anywhere in the same thread.
 
-Flask provides some tools to deal with the downsides of this approach, but
-the core problem remains.  Flask is also based on convention over
-configuration, which means that many things are preconfigured and will
-work well for smaller applications but not so well for larger ones.  For
-example, by convention, templates and static files are in subdirectories
-within the Python source tree of the application.
+Flask provides some tools to deal with the downsides of this approach but
+it might be an issue for larger applications.  Flask is also based on
+convention over configuration, which means that many things are
+preconfigured and will work well for smaller applications but not so well
+for larger ones.  For example, by convention, templates and static files
+are in subdirectories within the Python source tree of the application.
 
-But don't worry if your application suddenly grows larger
-and you're afraid Flask might not grow with it.  Even with
-larger frameworks, you'll eventually discover that you need
-something the framework just cannot do for you without modification.
-If you are ever in that situation, check out the :ref:`becomingbig`
-chapter.
+However Flask is not much code and built in a very solid foundation and
+with that very easy to adapt for large applications.  If you are
+interested in that, check out the :ref:`becomingbig` chapter.
 
 A Framework and an Example
 --------------------------
