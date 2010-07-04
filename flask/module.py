@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from flask.helpers import _PackageBoundObject
+from .helpers import _PackageBoundObject
 
 
 def _register_module(module, static_path):
