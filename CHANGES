@@ -15,6 +15,8 @@ Codename to be decided, release date to be announced.
   is only active for ``.html``, ``.htm``, ``.xml`` and ``.xhtml``.
   Inside templates this behaviour can be changed with the
   ``autoescape`` tag.
+- refactored Flask internally.  It now consists of more than a
+  single file.
 
 Version 0.4
 -----------

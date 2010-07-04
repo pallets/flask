@@ -15,7 +15,7 @@
 from werkzeug import abort, redirect
 from jinja2 import Markup, escape
 
-from flask.app import Flask
+from flask.app import Flask, Request, Response
 from flask.config import Config
 from flask.helpers import url_for, jsonify, json_available, flash, send_file, \
     get_flashed_messages, render_template, render_template, render_template_string, \
