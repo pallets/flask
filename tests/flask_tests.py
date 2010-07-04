@@ -630,6 +630,21 @@ class ModuleTestCase(unittest.TestCase):
         assert rv.status_code == 500
         assert 'internal server error' == rv.data
 
+    def test_templates_and_static(self):
+        from moduleapp import app
+        c = app.test_client()
+
+        rv = c.get('/')
+        assert rv.data == 'Hello from the Frontend'
+        rv = c.get('/admin/')
+        assert rv.data == 'Hello from the Admin'
+        rv = c.get('/admin/static/test.txt')
+        assert rv.data.strip() == 'Admin File'
+
+        with app.test_request_context():
+            assert flask.url_for('admin.static', filename='test.txt') \
+                == '/admin/static/test.txt'
+
 
 class SendfileTestCase(unittest.TestCase):
 

@@ -12,7 +12,7 @@
 from flask.helpers import _PackageBoundObject
 
 
-def _register_module(module):
+def _register_module(module, static_path):
     """Internal helper function that returns a function for recording
     that registers the `send_static_file` function for the module on
     the application of necessary.  It also registers the module on
@@ -99,7 +99,7 @@ class Module(_PackageBoundObject):
         _PackageBoundObject.__init__(self, import_name)
         self.name = name
         self.url_prefix = url_prefix
-        self._register_events = [_register_module(self)]
+        self._register_events = [_register_module(self, static_path)]
 
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a module.  The endpoint for the
