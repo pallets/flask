@@ -13,6 +13,18 @@ from jinja2 import BaseLoader, FileSystemLoader, TemplateNotFound
 from flask.globals import _request_ctx_stack
 
 
+def _default_template_ctx_processor():
+    """Default template context processor.  Injects `request`,
+    `session` and `g`.
+    """
+    reqctx = _request_ctx_stack.top
+    return dict(
+        request=reqctx.request,
+        session=reqctx.session,
+        g=reqctx.g
+    )
+
+
 class _DispatchingJinjaLoader(BaseLoader):
     """A loader that looks for templates in the application and all
     the module folders.

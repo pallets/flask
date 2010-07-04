@@ -63,14 +63,3 @@ class _RequestContext(object):
         if not self.request.environ.get('flask._preserve_context') and \
            (tb is None or not self.app.debug):
             self.pop()
-            
-def _default_template_ctx_processor():
-    """Default template context processor.  Injects `request`,
-    `session` and `g`.
-    """
-    reqctx = _request_ctx_stack.top
-    return dict(
-        request=reqctx.request,
-        session=reqctx.session,
-        g=reqctx.g
-    )

@@ -24,11 +24,12 @@ from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     _tojson_filter
 from flask.wrappers import Request, Response
 from flask.config import ConfigAttribute, Config
-from flask.ctx import _default_template_ctx_processor, _RequestContext
+from flask.ctx import _RequestContext
 from flask.globals import _request_ctx_stack, request
 from flask.session import Session, _NullSession
 from flask.module import _ModuleSetupState
-from flask.templating import _DispatchingJinjaLoader
+from flask.templating import _DispatchingJinjaLoader, \
+     _default_template_ctx_processor
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -831,4 +832,3 @@ class Flask(_PackageBoundObject):
     def __call__(self, environ, start_response):
         """Shortcut for :attr:`wsgi_app`."""
         return self.wsgi_app(environ, start_response)
-
