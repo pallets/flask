@@ -1318,7 +1318,7 @@ class Flask(_PackageBoundObject):
         :param methods: a list of methods this rule should be limited
                         to (``GET``, ``POST`` etc.).  By default a rule
                         just listens for ``GET`` (and implicitly ``HEAD``).
-        :param subdomain: specifies the rule for the subdoain in case
+        :param subdomain: specifies the rule for the subdomain in case
                           subdomain matching is in use.
         :param strict_slashes: can be used to disable the strict slashes
                                setting for this rule.  See above.
