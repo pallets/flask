@@ -268,8 +268,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             file = open(filename, 'rb')
         data = wrap_file(request.environ, file)
 
-    rv = Response(data, mimetype=mimetype, headers=headers,
-                  direct_passthrough=True)
+    rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
+                                    direct_passthrough=True)
 
     rv.cache_control.public = True
     if cache_timeout:
@@ -365,7 +365,3 @@ class _PackageBoundObject(object):
                          subfolders use forward slashes as separator.
         """
         return open(os.path.join(self.root_path, resource), 'rb')
-
-
-# circular dependencies between wrappers and helpers
-from .wrappers import Response
