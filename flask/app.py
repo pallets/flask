@@ -14,7 +14,7 @@ from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
 
-from jinja2 import Environment, PackageLoader, FileSystemLoader
+from jinja2 import Environment, BaseLoader, FileSystemLoader, TemplateNotFound
 from werkzeug import ImmutableDict, create_environ
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
@@ -32,13 +32,38 @@ from flask.module import _ModuleSetupState
 _logger_lock = Lock()
 
 
-def _select_autoescape(filename):
-    """Returns `True` if autoescaping should be active for the given
-    template name.
+class _DispatchingJinjaLoader(BaseLoader):
+    """A loader that looks for templates in the application and all
+    the module folders.
     """
-    if filename is None:
-        return False
-    return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
+
+    def __init__(self, app):
+        self.app = app
+
+    def get_source(self, environment, template):
+        name = template
+        loader = None
+        try:
+            module, name = template.split('/', 1)
+            loader = self.app.modules[module].jinja_loader
+        except (ValueError, KeyError):
+            pass
+        if loader is None:
+            loader = self.app.jinja_loader
+        try:
+            return loader.get_source(environment, name)
+        except TemplateNotFound:
+            # re-raise the exception with the correct fileame here.
+            # (the one that includes the prefix)
+            raise TemplateNotFound(template)
+
+    def list_templates(self):
+        result = self.app.jinja_loader.list_templates()
+        for name, module in self.app.modules.iteritems():
+            if module.jinja_loader is not None:
+                for template in module.jinja_loader.list_templates():
+                    result.append('%s/%s' % (name, template))
+        return result
 
 
 class Flask(_PackageBoundObject):
@@ -176,7 +201,6 @@ class Flask(_PackageBoundObject):
 
     #: Options that are passed directly to the Jinja2 environment.
     jinja_options = ImmutableDict(
-        autoescape=_select_autoescape,
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
 
@@ -245,6 +269,11 @@ class Flask(_PackageBoundObject):
             None: [_default_template_ctx_processor]
         }
 
+        #: all the loaded modules in a dictionary by name.
+        #:
+        #: .. versionadded:: 0.5
+        self.modules = {}
+
         #: The :class:`~werkzeug.routing.Map` for this instance.  You can use
         #: this to change the routing converters after the class was created
         #: but before any routes are connected.  Example::
@@ -269,8 +298,7 @@ class Flask(_PackageBoundObject):
                               view_func=self.send_static_file)
 
         #: The Jinja2 environment.  It is created from the
-        #: :attr:`jinja_options` and the loader that is returned
-        #: by the :meth:`create_jinja_loader` function.
+        #: :attr:`jinja_options`.
         self.jinja_env = self.create_jinja_environment()
         self.init_jinja_globals()
 
@@ -315,16 +343,10 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.5
         """
-        return Environment(loader=self.create_jinja_loader(),
-                           **self.jinja_options)
-
-    def create_jinja_loader(self):
-        """Creates the Jinja loader.  By default just a package loader for
-        the configured package is returned that looks up templates in the
-        `templates` folder.  To add other loaders it's possible to
-        override this method.
-        """
-        return FileSystemLoader(os.path.join(self.root_path, 'templates'))
+        options = dict(self.jinja_options)
+        if 'autoescape' not in options:
+            options['autoescape'] = self.select_jinja_autoescape
+        return Environment(loader=_DispatchingJinjaLoader(self), **options)
 
     def init_jinja_globals(self):
         """Called directly after the environment was created to inject
@@ -338,6 +360,16 @@ class Flask(_PackageBoundObject):
             get_flashed_messages=get_flashed_messages
         )
         self.jinja_env.filters['tojson'] = _tojson_filter
+
+    def select_jinja_autoescape(self, filename):
+        """Returns `True` if autoescaping should be active for the given
+        template name.
+
+        .. versionadded:: 0.5
+        """
+        if filename is None:
+            return False
+        return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
 
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.

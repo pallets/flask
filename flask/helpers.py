@@ -27,7 +27,9 @@ except ImportError:
     except ImportError:
         json_available = False
 
-from werkzeug import Headers, wrap_file, is_resource_modified
+from werkzeug import Headers, wrap_file, is_resource_modified, cached_property
+
+from jinja2 import FileSystemLoader
 
 from flask.globals import session, _request_ctx_stack, current_app, request
 from flask.wrappers import Response
@@ -339,6 +341,16 @@ class _PackageBoundObject(object):
         .. versionadded:: 0.5
         """
         return os.path.isdir(os.path.join(self.root_path, 'static'))
+
+    @cached_property
+    def jinja_loader(self):
+        """The Jinja loader for this package bound object.
+
+        .. versionadded:: 0.5
+        """
+        template_folder = os.path.join(self.root_path, 'templates')
+        if os.path.isdir(template_folder):
+            return FileSystemLoader(template_folder)
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
