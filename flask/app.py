@@ -21,7 +21,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
 
 from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    _tojson_filter, get_pkg_resources, send_file
+    _tojson_filter, send_file
 from flask.wrappers import Request, Response
 from flask.config import ConfigAttribute, Config
 from flask.ctx import _default_template_ctx_processor, _RequestContext
@@ -319,9 +319,7 @@ class Flask(_PackageBoundObject):
         `templates` folder.  To add other loaders it's possible to
         override this method.
         """
-        if get_pkg_resources() is None:
-            return FileSystemLoader(os.path.join(self.root_path, 'templates'))
-        return PackageLoader(self.import_name)
+        return FileSystemLoader(os.path.join(self.root_path, 'templates'))
 
     def init_jinja_globals(self):
         """Called directly after the environment was created to inject

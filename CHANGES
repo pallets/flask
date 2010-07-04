@@ -19,6 +19,8 @@ Codename to be decided, release date to be announced.
   single file.
 - :func:`flask.send_file` now emits etags and has the ability to
   do conditional responses builtin.
+- (temporarily) dropped support for zipped applications.  This was a
+  rarely used feature and led to some confusing behaviour.
 
 Version 0.4
 -----------

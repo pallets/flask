@@ -82,19 +82,6 @@ def jsonify(*args, **kwargs):
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
 
-def get_pkg_resources():
-    """Use pkg_resource if that works, otherwise fall back to cwd.  The
-    current working directory is generally not reliable with the notable
-    exception of google appengine.
-    """
-    try:
-        import pkg_resources
-        pkg_resources.resource_stream
-    except (ImportError, AttributeError):
-        return
-    return pkg_resources
-
-
 def url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
     The endpoint is relative to the active module if modules are in use.
@@ -365,7 +352,4 @@ class _PackageBoundObject(object):
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
         """
-        pkg_resources = get_pkg_resources()
-        if pkg_resources is None:
-            return open(os.path.join(self.root_path, resource), 'rb')
-        return pkg_resources.resource_stream(self.import_name, resource)
+        return open(os.path.join(self.root_path, resource), 'rb')
