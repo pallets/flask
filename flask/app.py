@@ -14,7 +14,8 @@ from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
 
-from jinja2 import Environment, BaseLoader, FileSystemLoader, TemplateNotFound
+from jinja2 import Environment
+
 from werkzeug import ImmutableDict, create_environ
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
@@ -27,43 +28,10 @@ from flask.ctx import _default_template_ctx_processor, _RequestContext
 from flask.globals import _request_ctx_stack, request
 from flask.session import Session, _NullSession
 from flask.module import _ModuleSetupState
+from flask.templating import _DispatchingJinjaLoader
 
 # a lock used for logger initialization
 _logger_lock = Lock()
-
-
-class _DispatchingJinjaLoader(BaseLoader):
-    """A loader that looks for templates in the application and all
-    the module folders.
-    """
-
-    def __init__(self, app):
-        self.app = app
-
-    def get_source(self, environment, template):
-        name = template
-        loader = None
-        try:
-            module, name = template.split('/', 1)
-            loader = self.app.modules[module].jinja_loader
-        except (ValueError, KeyError):
-            pass
-        if loader is None:
-            loader = self.app.jinja_loader
-        try:
-            return loader.get_source(environment, name)
-        except TemplateNotFound:
-            # re-raise the exception with the correct fileame here.
-            # (the one that includes the prefix)
-            raise TemplateNotFound(template)
-
-    def list_templates(self):
-        result = self.app.jinja_loader.list_templates()
-        for name, module in self.app.modules.iteritems():
-            if module.jinja_loader is not None:
-                for template in module.jinja_loader.list_templates():
-                    result.append('%s/%s' % (name, template))
-        return result
 
 
 class Flask(_PackageBoundObject):

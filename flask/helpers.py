@@ -290,31 +290,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     return rv
 
 
-def render_template(template_name, **context):
-    """Renders a template from the template folder with the given
-    context.
-
-    :param template_name: the name of the template to be rendered
-    :param context: the variables that should be available in the
-                    context of the template.
-    """
-    current_app.update_template_context(context)
-    return current_app.jinja_env.get_template(template_name).render(context)
-
-
-def render_template_string(source, **context):
-    """Renders a template from the given template source string
-    with the given context.
-
-    :param template_name: the sourcecode of the template to be
-                          rendered
-    :param context: the variables that should be available in the
-                    context of the template.
-    """
-    current_app.update_template_context(context)
-    return current_app.jinja_env.from_string(source).render(context)
-
-
 def _get_package_path(name):
     """Returns the path to a package or cwd if that cannot be found."""
     try:
