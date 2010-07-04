@@ -11,6 +11,7 @@
 
 import os
 import sys
+import posixpath
 import mimetypes
 from time import time
 from zlib import adler32
@@ -329,6 +330,29 @@ class _PackageBoundObject(object):
 
         #: Where is the app root located?
         self.root_path = _get_package_path(self.import_name)
+
+    @property
+    def has_static_folder(self):
+        """This is `True` if the package bound object's container has a
+        folder named ``'static'``.
+
+        .. versionadded:: 0.5
+        """
+        return os.path.isdir(os.path.join(self.root_path, 'static'))
+
+    def send_static_file(self, filename):
+        """Function used internally to send static files from the static
+        folder to the browser.
+
+        .. versionadded:: 0.5
+        """
+        filename = posixpath.normpath(filename)
+        if filename.startswith('../'):
+            raise NotFound()
+        filename = os.path.join(self.root_path, 'static', filename)
+        if not os.path.isfile(filename):
+            raise NotFound()
+        return send_file(filename, conditional=True)
 
     def open_resource(self, resource):
         """Opens a resource from the application's resource folder.  To see

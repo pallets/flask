@@ -10,7 +10,6 @@
 """
 
 import os
-import posixpath
 from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
@@ -21,7 +20,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
 
 from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    _tojson_filter, send_file
+    _tojson_filter
 from flask.wrappers import Request, Response
 from flask.config import ConfigAttribute, Config
 from flask.ctx import _default_template_ctx_processor, _RequestContext
@@ -101,6 +100,9 @@ class Flask(_PackageBoundObject):
     #: Path for the static files.  If you don't want to use static files
     #: you can set this value to `None` in which case no URL rule is added
     #: and the development server will no longer serve any static files.
+    #:
+    #: This is the default used for application and modules unless a
+    #: different value is passed to the constructor.
     static_path = '/static'
 
     #: The debug flag.  Set this to `True` to enable debugging of the
@@ -190,8 +192,10 @@ class Flask(_PackageBoundObject):
         'SERVER_NAME':                          None
     })
 
-    def __init__(self, import_name):
+    def __init__(self, import_name, static_path=None):
         _PackageBoundObject.__init__(self, import_name)
+        if static_path is not None:
+            self.static_path = static_path
 
         #: The configuration dictionary as :class:`Config`.  This behaves
         #: exactly like a regular dictionary but supports additional methods
@@ -258,7 +262,8 @@ class Flask(_PackageBoundObject):
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
-        if self.static_path is not None:
+        # if there is a static folder, register it for the application.
+        if self.has_static_folder:
             self.add_url_rule(self.static_path + '/<filename>',
                               endpoint='static',
                               view_func=self.send_static_file)
@@ -376,20 +381,6 @@ class Flask(_PackageBoundObject):
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
         return run_simple(host, port, self, **options)
-
-    def send_static_file(self, filename):
-        """Function used internally to send static files from the static
-        folder to the browser.
-
-        .. versionadded:: 0.5
-        """
-        filename = posixpath.normpath(filename)
-        if filename.startswith('../'):
-            raise NotFound()
-        filename = os.path.join(self.root_path, 'static', filename)
-        if not os.path.isfile(filename):
-            raise NotFound()
-        return send_file(filename, conditional=True)
 
     def test_client(self):
         """Creates a test client for this application.  For information

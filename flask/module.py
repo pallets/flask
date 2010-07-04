@@ -12,6 +12,27 @@
 from flask.helpers import _PackageBoundObject
 
 
+def _register_module_static(module):
+    """Internal helper function that returns a function for recording
+    that registers the `send_static_file` function for the module on
+    the application of necessary.
+    """
+    def _register_static(state):
+        # do not register the rule if the static folder of the
+        # module is the same as the one from the application.
+        if state.app.root_path == module.root_path:
+            return
+        path = static_path
+        if path is None:
+            path = state.app.static_path
+        if state.url_prefix:
+            path = state.url_prefix + path
+        state.app.add_url_rule(path + '/<filename>',
+                               '%s.static' % module.name,
+                               view_func=module.send_static_file)
+    return _register_static
+
+
 class _ModuleSetupState(object):
 
     def __init__(self, app, url_prefix=None):
@@ -67,7 +88,8 @@ class Module(_PackageBoundObject):
     :ref:`working-with-modules` section.
     """
 
-    def __init__(self, import_name, name=None, url_prefix=None):
+    def __init__(self, import_name, name=None, url_prefix=None,
+                 static_path=None):
         if name is None:
             assert '.' in import_name, 'name required if package name ' \
                 'does not point to a submodule'
@@ -76,6 +98,10 @@ class Module(_PackageBoundObject):
         self.name = name
         self.url_prefix = url_prefix
         self._register_events = []
+
+        # if there is a static folder, register it for this module
+        if self.has_static_folder:
+            self._record(_register_module_static(self))
 
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a module.  The endpoint for the
