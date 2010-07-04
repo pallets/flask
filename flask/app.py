@@ -328,7 +328,7 @@ class Flask(_PackageBoundObject):
         return PackageLoader(self.import_name)
 
     def init_jinja_globals(self):
-        """Callde directly after the environment was created to inject
+        """Called directly after the environment was created to inject
         some defaults (like `url_for`, `get_flashed_messages` and the
         `tojson` filter.
 

@@ -17,6 +17,8 @@ Codename to be decided, release date to be announced.
   ``autoescape`` tag.
 - refactored Flask internally.  It now consists of more than a
   single file.
+- :func:`flask.send_file` now emits etags and has the ability to
+  do conditional responses builtin.
 
 Version 0.4
 -----------

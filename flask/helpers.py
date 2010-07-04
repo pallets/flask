@@ -12,6 +12,8 @@
 import os
 import sys
 import mimetypes
+from time import time
+from zlib import adler32
 
 # try to load the best simplejson implementation available.  If JSON
 # is not installed, we add a failing class.
@@ -24,7 +26,7 @@ except ImportError:
     except ImportError:
         json_available = False
 
-from werkzeug import Headers, wrap_file
+from werkzeug import Headers, wrap_file, is_resource_modified
 
 from flask.globals import session, _request_ctx_stack, current_app, request
 from flask.wrappers import Response
@@ -199,7 +201,8 @@ def get_flashed_messages(with_categories=False):
 
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
-              attachment_filename=None):
+              attachment_filename=None, add_etags=True,
+              cache_timeout=60 * 60 * 12, conditional=False):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -220,6 +223,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. versionadded:: 0.2
 
+    .. versionadded:: 0.5
+       The `add_etags`, `cache_timeout` and `conditional` parameters were added.
+       The default behaviour is now to attach etags.
+
     :param filename_or_fp: the filename of the file to send.  This is
                            relative to the :attr:`~Flask.root_path` if a
                            relative path is specified.
@@ -232,6 +239,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           a ``Content-Disposition: attachment`` header.
     :param attachment_filename: the filename for the attachment if it
                                 differs from the file's filename.
+    :param add_etags: set to `False` to disable attaching of etags.
+    :param conditional: set to `True` to enable conditional responses.
+    :param cache_timeout: the timeout in seconds for the headers.
     """
     if isinstance(filename_or_fp, basestring):
         filename = filename_or_fp
@@ -266,8 +276,27 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             file = open(filename, 'rb')
         data = wrap_file(request.environ, file)
 
-    return Response(data, mimetype=mimetype, headers=headers,
-                    direct_passthrough=True)
+    rv = Response(data, mimetype=mimetype, headers=headers,
+                  direct_passthrough=True)
+
+    rv.cache_control.public = True
+    if cache_timeout:
+        rv.cache_control.max_age = cache_timeout
+        rv.expires = int(time() + cache_timeout)
+
+    if add_etags and filename is not None:
+        rv.set_etag('flask-%s-%s-%s' % (
+            os.path.getmtime(filename),
+            os.path.getsize(filename),
+            adler32(filename) & 0xffffffff
+        ))
+        if conditional:
+            rv = rv.make_conditional(request)
+            # make sure we don't send x-sendfile for servers that
+            # ignore the 304 status code for x-sendfile.
+            if rv.status_code == 304:
+                rv.headers.pop('x-sendfile', None)
+    return rv
 
 
 def render_template(template_name, **context):
