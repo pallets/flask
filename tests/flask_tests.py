@@ -21,7 +21,6 @@ from contextlib import contextmanager
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
 from cStringIO import StringIO
-from flask.helpers import json
 
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
 sys.path.append(os.path.join(example_path, 'flaskr'))
@@ -409,7 +408,7 @@ class JSONTestCase(unittest.TestCase):
         for url in '/kw', '/dict':
             rv = c.get(url)
             assert rv.mimetype == 'application/json'
-            assert json.loads(rv.data) == d
+            assert flask.json.loads(rv.data) == d
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
@@ -417,7 +416,7 @@ class JSONTestCase(unittest.TestCase):
         def add():
             return unicode(flask.request.json['a'] + flask.request.json['b'])
         c = app.test_client()
-        rv = c.post('/add', data=json.dumps({'a': 1, 'b': 2}),
+        rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')
         assert rv.data == '3'
 

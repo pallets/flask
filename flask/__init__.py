@@ -18,6 +18,6 @@ from jinja2 import Markup, escape
 from flask.app import Flask
 from flask.helpers import url_for, jsonify, json_available, flash, send_file, \
     get_flashed_messages, render_template, render_template, render_template_string, \
-    get_template_attribute
+    get_template_attribute, json
 from flask.globals import current_app, g, request, session, _request_ctx_stack
 from flask.module import Module
