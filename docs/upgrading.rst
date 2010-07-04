@@ -19,6 +19,30 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+Version 0.5
+-----------
+
+Flask 0.5 is the first release that comes as a Python package instead of a
+single module.  There were a couple of internal refactoring so if you
+depend on undocumented internal details you probably have to adapt the
+imports.
+
+The following changes may be relevant to your application:
+
+-   autoescaping no longer happens for all templates.  Instead it is
+    configured to only happen on files ending with ``.html``, ``.htm``,
+    ``.xml`` and ``.xhtml``.  If you have templates with different
+    extensions you should override the
+    :meth:`~flask.Flask.select_jinja_autoescape` method.
+-   Flask no longer supports zipped applications in this release.  This
+    functionality might come back in future releases if there is demand
+    for this feature.  Removing support for this makes the Flask internal
+    code easier to understand and fixes a couple of small issues that make
+    debugging harder than necessary.
+-   The `create_jinja_loader` function is gone.  If you want to customize
+    the Jinja loader now, use the
+    :meth:`~flask.Flask.create_jinja_environment` method instead.
+
 Version 0.4
 -----------
 
