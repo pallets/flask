@@ -414,6 +414,13 @@ Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
 >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
 u'Marked up \xbb HTML'
 
+.. versionchanged:: 0.5
+
+   Autoescaping is no longer enabled for all templates.  The following
+   extensions for templates trigger autoescaping: ``.html``, ``.htm``,
+   ``.xml``, ``.xhtml``.  Templates loaded from string will have
+   autoescaping disabled.
+
 .. [#] Unsure what that :class:`~flask.g` object is? It's something you
    can store information on yourself, check the documentation of that
    object (:class:`~flask.g`) and the :ref:`sqlite3` for more

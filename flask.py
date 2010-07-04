@@ -788,6 +788,15 @@ class Config(dict):
         return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
 
 
+def _select_autoescape(filename):
+    """Returns `True` if autoescaping should be active for the given
+    template name.
+    """
+    if filename is None:
+        return False
+    return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
+
+
 class Flask(_PackageBoundObject):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
@@ -920,7 +929,7 @@ class Flask(_PackageBoundObject):
 
     #: Options that are passed directly to the Jinja2 environment.
     jinja_options = ImmutableDict(
-        autoescape=True,
+        autoescape=_select_autoescape,
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
 
@@ -1018,13 +1027,8 @@ class Flask(_PackageBoundObject):
         #: The Jinja2 environment.  It is created from the
         #: :attr:`jinja_options` and the loader that is returned
         #: by the :meth:`create_jinja_loader` function.
-        self.jinja_env = Environment(loader=self.create_jinja_loader(),
-                                     **self.jinja_options)
-        self.jinja_env.globals.update(
-            url_for=url_for,
-            get_flashed_messages=get_flashed_messages
-        )
-        self.jinja_env.filters['tojson'] = _tojson_filter
+        self.jinja_env = self.create_jinja_environment()
+        self.init_jinja_globals()
 
     @property
     def logger(self):
@@ -1061,6 +1065,15 @@ class Flask(_PackageBoundObject):
             self._logger = logger
             return logger
 
+    def create_jinja_environment(self):
+        """Creates the Jinja2 environment based on :attr:`jinja_options`
+        and :meth:`create_jinja_loader`.
+
+        .. versionadded:: 0.5
+        """
+        return Environment(loader=self.create_jinja_loader(),
+                           **self.jinja_options)
+
     def create_jinja_loader(self):
         """Creates the Jinja loader.  By default just a package loader for
         the configured package is returned that looks up templates in the
@@ -1070,6 +1083,19 @@ class Flask(_PackageBoundObject):
         if pkg_resources is None:
             return FileSystemLoader(os.path.join(self.root_path, 'templates'))
         return PackageLoader(self.import_name)
+
+    def init_jinja_globals(self):
+        """Callde directly after the environment was created to inject
+        some defaults (like `url_for`, `get_flashed_messages` and the
+        `tojson` filter.
+
+        .. versionadded:: 0.5
+        """
+        self.jinja_env.globals.update(
+            url_for=url_for,
+            get_flashed_messages=get_flashed_messages
+        )
+        self.jinja_env.filters['tojson'] = _tojson_filter
 
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.

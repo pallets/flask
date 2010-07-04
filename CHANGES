@@ -11,6 +11,10 @@ Codename to be decided, release date to be announced.
 - fixed a bug with subdomains that was caused by the inability to
   specify the server name.  The server name can now be set with
   the `SERVER_NAME` config key.
+- autoescaping is no longer active for all templates.  Instead it
+  is only active for ``.html``, ``.htm``, ``.xml`` and ``.xhtml``.
+  Inside templates this behaviour can be changed with the
+  ``autoescape`` tag.
 
 Version 0.4
 -----------

@@ -461,6 +461,14 @@ class TemplatingTestCase(unittest.TestCase):
             '<p>Hello World!'
         ]
 
+    def test_no_escaping(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            assert flask.render_template_string('{{ foo }}',
+                foo='<test>') == '<test>'
+            assert flask.render_template('mail.txt', foo='<test>') \
+                == '<test> Mail'
+
     def test_macros(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
