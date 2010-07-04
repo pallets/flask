@@ -1,8 +1,22 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.ctx
+    ~~~~~~~~~
+
+    Implements the objects required to keep the context.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from werkzeug.exceptions import HTTPException
 
-from flask.wrappers import _RequestGlobals
 from flask.globals import _request_ctx_stack
 from flask.session import _NullSession
+
+
+class _RequestGlobals(object):
+    pass
 
 
 class _RequestContext(object):

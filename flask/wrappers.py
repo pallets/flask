@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.wrappers
+    ~~~~~~~~~~~~~~
+
+    Implements the WSGI wrappers (request and response).
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
     cached_property
 
@@ -57,8 +68,3 @@ class Response(ResponseBase):
     set :attr:`~flask.Flask.response_class` to your subclass.
     """
     default_mimetype = 'text/html'
-
-
-class _RequestGlobals(object):
-    pass
-

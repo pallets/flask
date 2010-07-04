@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.globals
+    ~~~~~~~~~~~~~
+
+    Defines all the global objects that are proxies to the current
+    active context.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from werkzeug import LocalStack, LocalProxy
 
 # context locals

@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.config
+    ~~~~~~~~~~~~
+
+    Implements the configuration related objects.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 import os
 import sys
 

@@ -58,7 +58,7 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    py_modules=['flask'],
+    packages=['flask'],
     zip_safe=False,
     platforms='any',
     install_requires=[

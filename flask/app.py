@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.app
+    ~~~~~~~~~
+
+    This module implements the central WSGI application object.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
@@ -10,7 +21,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError
 from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     _tojson_filter, get_pkg_resources
 from flask.wrappers import Request, Response
-from flask.conf import ConfigAttribute, Config
+from flask.config import ConfigAttribute, Config
 from flask.ctx import _default_template_ctx_processor, _RequestContext
 from flask.globals import _request_ctx_stack, request
 from flask.session import Session, _NullSession

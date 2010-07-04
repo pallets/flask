@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.helpers
+    ~~~~~~~~~~~~~
+
+    Implements various helpers.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 import os
 import sys
 import mimetypes
@@ -12,13 +23,13 @@ except ImportError:
         import json
     except ImportError:
         json_available = False
-        
+
 from werkzeug import Headers, wrap_file
 
 from flask.globals import session, _request_ctx_stack, current_app, request
 from flask.wrappers import Response
 
-        
+
 def _assert_have_json():
     """Helper function that fails if JSON is unavailable."""
     if not json_available:
@@ -34,6 +45,7 @@ if not json_available or '\\/' not in json.dumps('/'):
         return json.dumps(*args, **kwargs).replace('/', '\\/')
 else:
     _tojson_filter = json.dumps
+
 
 def jsonify(*args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
@@ -66,7 +78,8 @@ def jsonify(*args, **kwargs):
         _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
-    
+
+
 def get_pkg_resources():
     """Use pkg_resource if that works, otherwise fall back to cwd.  The
     current working directory is generally not reliable with the notable

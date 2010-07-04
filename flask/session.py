@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.session
+    ~~~~~~~~~~~~~
+
+    Implements cookie based sessions based on Werkzeug's secure cookie
+    system.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from werkzeug.contrib.securecookie import SecureCookie
 
 

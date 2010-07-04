@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.module
+    ~~~~~~~~~~~~
+
+    Implements a class that represents module blueprints.
+
+    :copyright: (c) 2010 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from flask.helpers import _PackageBoundObject
 
 
