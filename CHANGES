@@ -22,6 +22,8 @@ Codename to be decided, release date to be announced.
 - (temporarily) dropped support for zipped applications.  This was a
   rarely used feature and led to some confusing behaviour.
 - added support for per-package template and static-file directories.
+- removed support for `create_jinja_loader` which is no longer used
+  in 0.5 due to the improved module support.
 
 Version 0.4
 -----------
