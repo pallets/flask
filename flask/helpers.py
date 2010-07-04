@@ -250,7 +250,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         file = filename_or_fp
         filename = getattr(file, 'name', None)
     if filename is not None:
-        filename = os.path.join(current_app.root_path, filename)
+        if not os.path.isabs(filename):
+            filename = os.path.join(current_app.root_path, filename)
     if mimetype is None and (filename or attachment_filename):
         mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
     if mimetype is None:

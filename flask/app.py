@@ -9,17 +9,19 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import os
+import posixpath
 from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
-from werkzeug import ImmutableDict, SharedDataMiddleware, create_environ
+from werkzeug import ImmutableDict, create_environ
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException, InternalServerError
+from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
 
 from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    _tojson_filter, get_pkg_resources
+    _tojson_filter, get_pkg_resources, send_file
 from flask.wrappers import Request, Response
 from flask.config import ConfigAttribute, Config
 from flask.ctx import _default_template_ctx_processor, _RequestContext
@@ -258,14 +260,8 @@ class Flask(_PackageBoundObject):
 
         if self.static_path is not None:
             self.add_url_rule(self.static_path + '/<filename>',
-                              build_only=True, endpoint='static')
-            if get_pkg_resources() is not None:
-                target = (self.import_name, 'static')
-            else:
-                target = os.path.join(self.root_path, 'static')
-            self.wsgi_app = SharedDataMiddleware(self.wsgi_app, {
-                self.static_path: target
-            })
+                              endpoint='static',
+                              view_func=self.send_static_file)
 
         #: The Jinja2 environment.  It is created from the
         #: :attr:`jinja_options` and the loader that is returned
@@ -382,6 +378,20 @@ class Flask(_PackageBoundObject):
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
         return run_simple(host, port, self, **options)
+
+    def send_static_file(self, filename):
+        """Function used internally to send static files from the static
+        folder to the browser.
+
+        .. versionadded:: 0.5
+        """
+        filename = posixpath.normpath(filename)
+        if filename.startswith('../'):
+            raise NotFound()
+        filename = os.path.join(self.root_path, 'static', filename)
+        if not os.path.isfile(filename):
+            raise NotFound()
+        return send_file(filename, conditional=True)
 
     def test_client(self):
         """Creates a test client for this application.  For information
