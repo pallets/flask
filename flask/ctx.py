@@ -11,8 +11,8 @@
 
 from werkzeug.exceptions import HTTPException
 
-from flask.globals import _request_ctx_stack
-from flask.session import _NullSession
+from .globals import _request_ctx_stack
+from .session import _NullSession
 
 
 class _RequestGlobals(object):

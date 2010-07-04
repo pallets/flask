@@ -31,8 +31,8 @@ from werkzeug import Headers, wrap_file, is_resource_modified, cached_property
 
 from jinja2 import FileSystemLoader
 
-from flask.globals import session, _request_ctx_stack, current_app, request
-from flask.wrappers import Response
+from .globals import session, _request_ctx_stack, current_app, request
+from .wrappers import Response
 
 
 def _assert_have_json():

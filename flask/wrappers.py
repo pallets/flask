@@ -12,7 +12,7 @@
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
     cached_property
 
-from helpers import json
+from .helpers import json
 
 
 class Request(RequestBase):

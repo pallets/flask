@@ -22,15 +22,15 @@ from werkzeug import ImmutableDict, create_environ
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
 
-from flask.helpers import _PackageBoundObject, url_for, get_flashed_messages, \
+from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     _tojson_filter
-from flask.wrappers import Request, Response
-from flask.config import ConfigAttribute, Config
-from flask.ctx import _RequestContext
-from flask.globals import _request_ctx_stack, request
-from flask.session import Session, _NullSession
-from flask.module import _ModuleSetupState
-from flask.templating import _DispatchingJinjaLoader, \
+from .wrappers import Request, Response
+from .config import ConfigAttribute, Config
+from .ctx import _RequestContext
+from .globals import _request_ctx_stack, request
+from .session import Session, _NullSession
+from .module import _ModuleSetupState
+from .templating import _DispatchingJinjaLoader, \
      _default_template_ctx_processor
 
 # a lock used for logger initialization

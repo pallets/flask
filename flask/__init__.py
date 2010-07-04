@@ -15,14 +15,14 @@
 from werkzeug import abort, redirect
 from jinja2 import Markup, escape
 
-from flask.app import Flask, Request, Response
-from flask.config import Config
-from flask.helpers import url_for, jsonify, json_available, flash, \
+from .app import Flask, Request, Response
+from .config import Config
+from .helpers import url_for, jsonify, json_available, flash, \
     send_file, get_flashed_messages, get_template_attribute
-from flask.globals import current_app, g, request, session, _request_ctx_stack
-from flask.module import Module
-from flask.templating import render_template, render_template_string
+from .globals import current_app, g, request, session, _request_ctx_stack
+from .module import Module
+from .templating import render_template, render_template_string
 
 # only import json if it's available
 if json_available:
-    from flask.helpers import json
+    from .helpers import json

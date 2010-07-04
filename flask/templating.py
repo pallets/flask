@@ -10,7 +10,7 @@
 """
 from jinja2 import BaseLoader, FileSystemLoader, TemplateNotFound
 
-from flask.globals import _request_ctx_stack
+from .globals import _request_ctx_stack
 
 
 def _default_template_ctx_processor():
