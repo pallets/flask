@@ -29,6 +29,7 @@ except ImportError:
         json_available = False
 
 from werkzeug import Headers, wrap_file, is_resource_modified, cached_property
+from werkzeug.exceptions import NotFound
 
 from jinja2 import FileSystemLoader
 
@@ -334,7 +335,7 @@ class _PackageBoundObject(object):
         .. versionadded:: 0.5
         """
         filename = posixpath.normpath(filename)
-        if filename.startswith('../'):
+        if filename.startswith(('/', '../')):
             raise NotFound()
         filename = os.path.join(self.root_path, 'static', filename)
         if not os.path.isfile(filename):

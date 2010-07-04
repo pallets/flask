@@ -20,6 +20,7 @@ from logging import StreamHandler
 from contextlib import contextmanager
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
+from werkzeug.exceptions import NotFound
 from cStringIO import StringIO
 
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
@@ -644,6 +645,25 @@ class ModuleTestCase(unittest.TestCase):
         with app.test_request_context():
             assert flask.url_for('admin.static', filename='test.txt') \
                 == '/admin/static/test.txt'
+
+    def test_safe_access(self):
+        from moduleapp import app
+
+        with app.test_request_context():
+            f = app.view_functions['admin.static']
+
+            try:
+                rv = f('/etc/passwd')
+            except NotFound:
+                pass
+            else:
+                assert 0, 'expected exception'
+            try:
+                rv = f('../__init__.py')
+            except NotFound:
+                pass
+            else:
+                assert 0, 'expected exception'
 
 
 class SendfileTestCase(unittest.TestCase):
