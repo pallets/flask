@@ -10,9 +10,10 @@ What does "micro" mean?
 
 To me, the "micro" in microframework refers not only to the simplicity and
 small size of the framework, but also to the typically limited complexity
-and size of applications that are written with the framework.  To be
-approachable and concise, a microframework sacrifices a few features that
-may be necessary in larger or more complex applications.
+and size of applications that are written with the framework.  Also the
+fact that you can have an entire application in a single Python file.  To
+be approachable and concise, a microframework sacrifices a few features
+that may be necessary in larger or more complex applications.
 
 For example, Flask uses thread-local objects internally so that you don't
 have to pass objects around from function to function within a request in
@@ -72,13 +73,13 @@ So always keep security in mind when doing web development.
 Target Audience
 ---------------
 
-Is Flask for you?  If your application is small-ish and does not depend on
-very complex database structures, Flask is the Framework for you.  It was
-designed from the ground up to be easy to use, and built on the firm
-foundation of established principles, good intentions, and mature, widely
-used libraries.  Recent versions of Flask scale nicely within reasonable
-bounds, and if you grow larger, you won't have any trouble adjusting Flask
-for your new application size.
+Is Flask for you?  If your application is small or medium sized and does
+not depend on very complex database structures, Flask is the Framework for
+you.  It was designed from the ground up to be easy to use, and built on
+the firm foundation of established principles, good intentions, and
+mature, widely used libraries.  Recent versions of Flask scale nicely
+within reasonable bounds, and if you grow larger, you won't have any
+trouble adjusting Flask for your new application size.
 
 If you suddenly discover that your application grows larger than
 originally intended, head over to the :ref:`becomingbig` section to see
