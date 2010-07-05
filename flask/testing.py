@@ -9,6 +9,7 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+
 from werkzeug import Client
 from flask import _request_ctx_stack
 
