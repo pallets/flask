@@ -14,6 +14,11 @@ from flask import _request_ctx_stack
 
 
 class FlaskClient(Client):
+    """Works like a regular Werkzeug test client but has some
+    knowledge about how Flask works to defer the cleanup of the
+    request context stack to the end of a with body when used
+    in a with statement.
+    """
 
     preserve_context = context_preserved = False
 
