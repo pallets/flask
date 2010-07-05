@@ -24,6 +24,7 @@ Codename to be decided, release date to be announced.
 - added support for per-package template and static-file directories.
 - removed support for `create_jinja_loader` which is no longer used
   in 0.5 due to the improved module support.
+- added a helper function to expose files from any directory.
 
 Version 0.4
 -----------

@@ -303,6 +303,15 @@ def send_from_directory(directory, filename, **options):
             return send_from_directory(app.config['UPLOAD_FOLDER'],
                                        filename, as_attachment=True)
 
+    .. admonition:: Sending files and Performance
+
+       It is strongly recommended to activate either `X-Sendfile` support in
+       your webserver or (if no authentication happens) to tell the webserver
+       to serve files for the given path on its own without calling into the
+       web application for improved performance.
+
+    .. versionadded:: 0.5
+
     :param directory: the directory where all the files are stored.
     :param filename: the filename relative to that directory to
                      download.
