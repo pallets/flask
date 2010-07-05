@@ -641,6 +641,8 @@ class ModuleTestCase(unittest.TestCase):
         assert rv.data == 'Hello from the Admin'
         rv = c.get('/admin/static/test.txt')
         assert rv.data.strip() == 'Admin File'
+        rv = c.get('/admin/static/css/test.css')
+        assert rv.data.strip() == '/* nested file */'
 
         with app.test_request_context():
             assert flask.url_for('admin.static', filename='test.txt') \

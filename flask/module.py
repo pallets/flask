@@ -29,7 +29,7 @@ def _register_module(module, static_path):
             path = state.app.static_path
         if state.url_prefix:
             path = state.url_prefix + path
-        state.app.add_url_rule(path + '/<filename>',
+        state.app.add_url_rule(path + '/<path:filename>',
                                '%s.static' % module.name,
                                view_func=module.send_static_file)
     return _register

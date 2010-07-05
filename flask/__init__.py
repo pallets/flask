@@ -18,7 +18,8 @@ from jinja2 import Markup, escape
 from .app import Flask, Request, Response
 from .config import Config
 from .helpers import url_for, jsonify, json_available, flash, \
-    send_file, get_flashed_messages, get_template_attribute
+    send_file, send_from_directory, get_flashed_messages, \
+    get_template_attribute
 from .globals import current_app, g, request, session, _request_ctx_stack
 from .module import Module
 from .templating import render_template, render_template_string

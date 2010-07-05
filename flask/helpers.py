@@ -291,6 +291,33 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     return rv
 
 
+def send_from_directory(directory, filename, **options):
+    """Send a file from a given directory with :func:`send_file`.  This
+    is a secure way to quickly expose static files from an upload folder
+    or something similar.
+
+    Example usage::
+
+        @app.route('/uploads/<path:filename>')
+        def download_file(filename):
+            return send_from_directory(app.config['UPLOAD_FOLDER'],
+                                       filename, as_attachment=True)
+
+    :param directory: the directory where all the files are stored.
+    :param filename: the filename relative to that directory to
+                     download.
+    :param options: optional keyword arguments that are directly
+                    forwarded to :func:`send_file`.
+    """
+    filename = posixpath.normpath(filename)
+    if filename.startswith(('/', '../')):
+        raise NotFound()
+    filename = os.path.join(directory, filename)
+    if not os.path.isfile(filename):
+        raise NotFound()
+    return send_file(filename, conditional=True, **options)
+
+
 def _get_package_path(name):
     """Returns the path to a package or cwd if that cannot be found."""
     try:
@@ -334,13 +361,8 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.5
         """
-        filename = posixpath.normpath(filename)
-        if filename.startswith(('/', '../')):
-            raise NotFound()
-        filename = os.path.join(self.root_path, 'static', filename)
-        if not os.path.isfile(filename):
-            raise NotFound()
-        return send_file(filename, conditional=True)
+        return send_from_directory(os.path.join(self.root_path, 'static'),
+                                   filename)
 
     def open_resource(self, resource):
         """Opens a resource from the application's resource folder.  To see

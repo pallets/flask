@@ -273,7 +273,7 @@ class Flask(_PackageBoundObject):
 
         # if there is a static folder, register it for the application.
         if self.has_static_folder:
-            self.add_url_rule(self.static_path + '/<filename>',
+            self.add_url_rule(self.static_path + '/<path:filename>',
                               endpoint='static',
                               view_func=self.send_static_file)
 
