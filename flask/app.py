@@ -18,7 +18,7 @@ from itertools import chain
 
 from jinja2 import Environment
 
-from werkzeug import ImmutableDict, create_environ
+from werkzeug import ImmutableDict
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
 
@@ -409,27 +409,7 @@ class Flask(_PackageBoundObject):
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
         """
-        from werkzeug import Client
-        class FlaskClient(Client):
-            preserve_context = context_preserved = False
-            def open(self, *args, **kwargs):
-                if self.context_preserved:
-                    _request_ctx_stack.pop()
-                    self.context_preserved = False
-                kwargs.setdefault('environ_overrides', {}) \
-                    ['flask._preserve_context'] = self.preserve_context
-                old = _request_ctx_stack.top
-                try:
-                    return Client.open(self, *args, **kwargs)
-                finally:
-                    self.context_preserved = _request_ctx_stack.top is not old
-            def __enter__(self):
-                self.preserve_context = True
-                return self
-            def __exit__(self, exc_type, exc_value, tb):
-                self.preserve_context = False
-                if self.context_preserved:
-                    _request_ctx_stack.pop()
+        from flask.testing import FlaskClient
         return FlaskClient(self, self.response_class, use_cookies=True)
 
     def open_session(self, request):
@@ -838,6 +818,7 @@ class Flask(_PackageBoundObject):
         :func:`werkzeug.create_environ` for more information, this
         function accepts the same arguments).
         """
+        from werkzeug import create_environ
         return self.request_context(create_environ(*args, **kwargs))
 
     def __call__(self, environ, start_response):

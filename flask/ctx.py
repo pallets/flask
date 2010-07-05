@@ -60,6 +60,7 @@ class _RequestContext(object):
         # exception happened.  This will allow the debugger to still
         # access the request object in the interactive shell.  Furthermore
         # the context can be force kept alive for the test client.
+        # See flask.testing for how this works.
         if not self.request.environ.get('flask._preserve_context') and \
            (tb is None or not self.app.debug):
             self.pop()
