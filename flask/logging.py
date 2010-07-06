@@ -11,7 +11,7 @@
 
 from __future__ import absolute_import
 
-from logging import getLogger, StreamHandler, Formatter, Logger,  DEBUG
+from logging import getLogger, StreamHandler, Formatter, Logger, DEBUG
 
 
 def create_logger(app):

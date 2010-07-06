@@ -241,5 +241,5 @@ static folder of the whole application as ``'static'``.
 If you want to refer to the templates you just have to prefix it with the
 name of the module.  So for the admin it would be
 ``render_template('admin/list_items.html')`` and so on.  It is not
-possible to refer to templates without the prefixed modlue name.  This is
+possible to refer to templates without the prefixed module name.  This is
 explicit unlike URL rules.

@@ -15,7 +15,7 @@ from .helpers import _PackageBoundObject
 def _register_module(module, static_path):
     """Internal helper function that returns a function for recording
     that registers the `send_static_file` function for the module on
-    the application of necessary.  It also registers the module on
+    the application if necessary.  It also registers the module on
     the application.
     """
     def _register(state):

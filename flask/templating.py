@@ -48,7 +48,7 @@ class _DispatchingJinjaLoader(BaseLoader):
                 return loader.get_source(environment, name)
             except TemplateNotFound:
                 pass
-        # raise the exception with the correct fileame here.
+        # raise the exception with the correct filename here.
         # (the one that includes the prefix)
         raise TemplateNotFound(template)
 

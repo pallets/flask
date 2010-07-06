@@ -31,7 +31,7 @@ from .globals import _request_ctx_stack, request
 from .session import Session, _NullSession
 from .module import _ModuleSetupState
 from .templating import _DispatchingJinjaLoader, \
-     _default_template_ctx_processor
+    _default_template_ctx_processor
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -426,8 +426,7 @@ class Flask(_PackageBoundObject):
         if self.config['SERVER_NAME'] is not None:
             domain = '.' + self.config['SERVER_NAME']
         session.save_cookie(response, self.session_cookie_name,
-                            expires=expires, httponly=True,
-                            domain=domain)
+                            expires=expires, httponly=True, domain=domain)
 
     def register_module(self, module, **options):
         """Registers a module with this application.  The keyword argument
