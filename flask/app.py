@@ -420,11 +420,14 @@ class Flask(_PackageBoundObject):
                         object)
         :param response: an instance of :attr:`response_class`
         """
-        expires = None
+        expires = domain = None
         if session.permanent:
             expires = datetime.utcnow() + self.permanent_session_lifetime
+        if self.config['SERVER_NAME'] is not None:
+            domain = '.' + self.config['SERVER_NAME']
         session.save_cookie(response, self.session_cookie_name,
-                            expires=expires, httponly=True)
+                            expires=expires, httponly=True,
+                            domain=domain)
 
     def register_module(self, module, **options):
         """Registers a module with this application.  The keyword argument

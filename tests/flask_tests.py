@@ -172,6 +172,20 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert c.post('/set', data={'value': '42'}).data == 'value set'
         assert c.get('/get').data == '42'
 
+    def test_session_using_server_name(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SECRET_KEY='foo',
+            SERVER_NAME='example.com'
+        )
+        @app.route('/')
+        def index():
+            flask.session['testing'] = 42
+            return 'Hello World'
+        rv = app.test_client().get('/', 'http://example.com/')
+        assert 'domain=.example.com' in rv.headers['set-cookie'].lower()
+        assert 'httponly' in rv.headers['set-cookie'].lower()
+
     def test_missing_session(self):
         app = flask.Flask(__name__)
         def expect_exception(f, *args, **kwargs):
