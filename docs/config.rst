@@ -132,3 +132,70 @@ experience:
 2.  Do not write code that needs the configuration at import time.  If you
     limit yourself to request-only accesses to the configuration you can
     reconfigure the object later on as needed.
+
+
+Development / Production
+------------------------
+
+Most applications need more than one configuration.  There will at least
+be a separate configuration for a production server and one used during
+development.  The easiest way to handle this is to use a default
+configuration that is always loaded and part of version control, and a
+separate configuration that overrides the values as necessary as mentioned
+in the example above::
+
+    app = Flask(__name__)
+    app.config.from_object('yourapplication.default_settings')
+    app.config.from_envvar('YOURAPPLICATION_SETTINGS')
+
+Then you just have to add a separate `config.py` file and export
+``YOURAPPLICATION_SETTINGS=/path/to/config.py`` and you are done.  However
+there are alternative ways as well.  For example you could use imports or
+subclassing.
+
+What is very popular in the Django world is to make the import explicit in
+the config file by adding an ``from yourapplication.default_settings
+import *`` to the top of the file and then overriding the changes by hand.
+You could also inspect an environment variable like
+``YOURAPPLICATION_MODE`` and set that to `production`, `development` etc
+and import different hardcoded files based on that.
+
+An interesting pattern is also to use classes and inheritance for
+configuration::
+
+    class Config(object):
+        DEBUG = False
+        TESTING = False
+        DATABASE_URI = 'sqlite://:memory:'
+
+    class ProductionConfig(Config):
+        DATABASE_URI = 'mysql://user@localhost/foo'
+    
+    class DevelopmentConfig(Config):
+        DEBUG = True
+
+    class TestinConfig(Config):
+        TESTING = True
+
+To enable such a config you just have to call into
+:meth:`~flask.Config.from_object`::
+
+    app.config.from_object('configmodule.ProductionConfig')
+
+There are many different ways and it's up to you how you want to manage
+your configuration files.  However here a list of good recommendations::
+
+-   keep a default configuration in version control.  Either populate the
+    config with this default configuration or import it in your own
+    configuration files before overriding values.
+-   use an environment variable to switch between the configurations.
+    This can be done from outside the Python interpreter and makes
+    development and deployment much easier because you can quickly and
+    easily switch between different configs without having to touch the
+    code at all.  If you are working often on different projects you can
+    even create your own script for sourcing that activates a virtualenv
+    and exports the development configuration for you.
+-   Use a tool like `fabric`_ in production to push code and
+    configurations sepearately to the production server(s).
+
+.. _fabric: http://fabfile.org/
