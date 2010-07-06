@@ -183,7 +183,7 @@ To enable such a config you just have to call into
     app.config.from_object('configmodule.ProductionConfig')
 
 There are many different ways and it's up to you how you want to manage
-your configuration files.  However here a list of good recommendations::
+your configuration files.  However here a list of good recommendations:
 
 -   keep a default configuration in version control.  Either populate the
     config with this default configuration or import it in your own
@@ -196,6 +196,7 @@ your configuration files.  However here a list of good recommendations::
     even create your own script for sourcing that activates a virtualenv
     and exports the development configuration for you.
 -   Use a tool like `fabric`_ in production to push code and
-    configurations sepearately to the production server(s).
+    configurations sepearately to the production server(s).  For some
+    details about how to do that, head over to the :ref:`deploy` pattern.
 
 .. _fabric: http://fabfile.org/

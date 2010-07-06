@@ -19,6 +19,7 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    packages
    appfactories
    distribute
+   fabric
    sqlite3
    sqlalchemy
    fileuploads

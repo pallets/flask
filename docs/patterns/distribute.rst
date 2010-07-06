@@ -33,6 +33,10 @@ not supported by `distribute`_ so we will not bother with it.  If you have
 not yet converted your application into a package, head over to the
 :ref:`larger-applications` pattern to see how this can be done.
 
+A working deployment with distribute is the first step into more complex
+and more automated deployment scenarios.  If you want to fully automate
+the process, also read the :ref:`fabric-deployment` chapter.
+
 Basic Setup Script
 ------------------
 

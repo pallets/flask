@@ -1,3 +1,5 @@
+.. _mod_wsgi-deployment:
+
 mod_wsgi (Apache)
 =================
 
@@ -133,6 +135,19 @@ If your application does not run, follow this guide to troubleshoot:
     The reason for this is that for non-installed packages, the module
     filename is used to locate the resources and for symlinks the wrong
     filename is picked up.
+
+Support for Automatic Reloading
+-------------------------------
+
+To help deployment tools you can activate support for automatic reloading.
+Whenever something changes the `.wsgi` file, `mod_wsgi` will reload all
+the daemon processes for us.
+
+For that, just add the following directive to your `Directory` section:
+
+.. sourcecode:: apache
+
+   WSGIScriptReloading On
 
 Working with Virtual Environments
 ---------------------------------
