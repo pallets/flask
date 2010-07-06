@@ -21,6 +21,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
 from werkzeug.exceptions import NotFound
+from jinja2 import TemplateNotFound
 from cStringIO import StringIO
 
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
@@ -661,6 +662,17 @@ class ModuleTestCase(unittest.TestCase):
         with app.test_request_context():
             assert flask.url_for('admin.static', filename='test.txt') \
                 == '/admin/static/test.txt'
+
+        with app.test_request_context():
+            try:
+                flask.render_template('missing.html')
+            except TemplateNotFound, e:
+                assert e.name == 'missing.html'
+            else:
+                assert 0, 'expected exception'
+
+        with flask.Flask(__name__).test_request_context():
+            assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
     def test_safe_access(self):
         from moduleapp import app
