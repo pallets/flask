@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.5
 -----------
 
-Codename to be decided, release date to be announced.
+Released on July 6th 2010, codename Calvados.
 
 - fixed a bug with subdomains that was caused by the inability to
   specify the server name.  The server name can now be set with
