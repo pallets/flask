@@ -3,10 +3,18 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.5.1
+-------------
+
+Bugfix Release, released on July 6th 2010
+
+- fixes an issue with template loading for modules
+
+
 Version 0.5
 -----------
 
-Released on July 6th 2010, codename Calvados.
+Released on July 6th 2010, codename Calvados
 
 - fixed a bug with subdomains that was caused by the inability to
   specify the server name.  The server name can now be set with
@@ -48,7 +56,7 @@ Released on June 18th 2010, codename Rakia
 Version 0.3.1
 -------------
 
-Bugfix release, released May 28th 2010
+Bugfix release, released on May 28th 2010
 
 - fixed a error reporting bug with :meth:`flask.Config.from_envvar`
 - removed some unused code from flask
