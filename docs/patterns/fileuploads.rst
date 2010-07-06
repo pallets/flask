@@ -28,8 +28,6 @@ bootstrapping code for our application::
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
     app = Flask(__name__)
-    app.add_url_rule('/uploads/<filename>', 'uploaded_file',
-                     build_only=True)
 
 So first we need a couple of imports.  Most should be straightforward, the
 :func:`werkzeug.secure_filename` is explained a little bit later.  The
@@ -100,14 +98,23 @@ before storing it directly on the filesystem.
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now if we run that application, you will notice that uploading works, but
-you won't actually see that uploaded file.  Well, you would have to
-configure the server to serve that file for you.  This is not handy for
-development situations or when you are just too lazy to properly set up
-the server.  Would be nice to have the files still be available in that
-situation, and that is really easy to do, just hook in a middleware::
+Now one last thing is missing: the serving of the uploaded files.  As of
+Flask 0.5 we can use a function that does that for us::
+
+    from flask import send_from_directory
+
+    @app.route('/uploads/<filename>')
+    def uploaded_file(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'],
+                                   filename)
+
+Alternatively you can register `uploaded_file` as `build_only` rule and
+use the :class:`~werkzeug.SharedDataMiddleware`.  This also works with
+older versions of Flask::
 
     from werkzeug import SharedDataMiddleware
+    app.add_url_rule('/uploads/<filename>', 'uploaded_file',
+                     build_only=True)
     app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
         '/uploads':  UPLOAD_FOLDER
     })
