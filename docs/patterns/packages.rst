@@ -197,3 +197,49 @@ did in the example above, or we just use the function name::
     @frontend.route('/')
     def index():
         return "I'm the index"
+
+.. _modules-and-resources:
+
+Modules and Resources
+---------------------
+
+.. versionadded:: 0.5
+
+If a module is located inside an actual Python package it may contain
+static files and templates.  Imagine you have an application like this::
+
+
+    /yourapplication
+        __init__.py
+        /apps
+            /frontend
+                __init__.py
+                views.py
+                /static
+                    style.css
+                /templates
+                    index.html
+                    about.html
+                    ...
+            /admin
+                __init__.py
+                views.py
+                /static
+                    style.css
+                /templates
+                    list_items.html
+                    show_item.html
+                    ...
+
+The static folders automatically become exposed as URLs.  For example if
+the `admin` module is exported with an URL prefix of ``/admin`` you can
+access the style css from its static folder by going to
+``/admin/static/style.css``.  The URL endpoint for the static files of the
+admin would be ``'admin.static'``, similar to how you refer to the regular
+static folder of the whole application as ``'static'``.
+
+If you want to refer to the templates you just have to prefix it with the
+name of the module.  So for the admin it would be
+``render_template('admin/list_items.html')`` and so on.  It is not
+possible to refer to templates without the prefixed modlue name.  This is
+explicit unlike URL rules.

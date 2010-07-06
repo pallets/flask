@@ -90,7 +90,9 @@ class Module(_PackageBoundObject):
     :ref:`working-with-modules` section.
 
     .. versionadded:: 0.5
-       The `static_path` parameter was added.
+       The `static_path` parameter was added and it's now possible for
+       modules to refer to their own templates and static files.  See
+       :ref:`modules-and-resources` for more information.
 
     :param import_name: the name of the Python package or module
                         implementing this :class:`Module`.
