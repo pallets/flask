@@ -26,7 +26,12 @@ except ImportError:
     try:
         import json
     except ImportError:
-        json_available = False
+        try:
+            # Google Appengine offers simplejson via django
+            from django.utils import simplejson as json
+        except ImportError:
+            json_available = False
+
 
 from werkzeug import Headers, wrap_file, is_resource_modified, cached_property
 from werkzeug.exceptions import NotFound
