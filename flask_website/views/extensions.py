@@ -101,6 +101,14 @@ database = [
         bitbucket='danjac/flask-testing',
         docs='http://packages.python.org/Flask-Testing/'
     ),
+    Extension('Flask-Script', 'Dan Jacob',
+        description='''
+            <p>The Flask-Script extension provides support for writing external
+            scripts in Flask. It uses argparse to parse command line arguments.
+        ''',
+        bitbucket='danjac/flask-script',
+        docs='http://packages.python.org/Flask-Script/'
+    ),
     Extension('flask-csrf', 'Steve Losh',
         description='''
             <p>A small Flask extension for adding
