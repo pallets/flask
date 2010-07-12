@@ -111,6 +111,15 @@ class ContextTestCase(unittest.TestCase):
 
 class BasicFunctionalityTestCase(unittest.TestCase):
 
+    def test_options_work(self):
+        app = flask.Flask(__name__)
+        @app.route('/', methods=['GET', 'POST'])
+        def index():
+            return 'Hello World'
+        rv = app.test_client().open('/', method='OPTIONS')
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
+        assert rv.data == ''
+
     def test_request_dispatching(self):
         app = flask.Flask(__name__)
         @app.route('/')
@@ -124,7 +133,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert c.get('/').data == 'GET'
         rv = c.post('/')
         assert rv.status_code == 405
-        assert sorted(rv.allow) == ['GET', 'HEAD']
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS']
         rv = c.head('/')
         assert rv.status_code == 200
         assert not rv.data  # head truncates
@@ -132,7 +141,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert c.get('/more').data == 'GET'
         rv = c.delete('/more')
         assert rv.status_code == 405
-        assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
 
     def test_url_mapping(self):
         app = flask.Flask(__name__)
@@ -148,7 +157,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert c.get('/').data == 'GET'
         rv = c.post('/')
         assert rv.status_code == 405
-        assert sorted(rv.allow) == ['GET', 'HEAD']
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS']
         rv = c.head('/')
         assert rv.status_code == 200
         assert not rv.data  # head truncates
@@ -156,7 +165,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert c.get('/more').data == 'GET'
         rv = c.delete('/more')
         assert rv.status_code == 405
-        assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
 
     def test_session(self):
         app = flask.Flask(__name__)

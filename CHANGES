@@ -10,6 +10,9 @@ Release date to be announced, codename to be decided.
 
 - after request functions are now called in reverse order of
   registration.
+- OPTIONS is now automatically implemented by Flask unless the
+  application explictly adds 'OPTIONS' as method to the URL rule.
+  In this case no automatic OPTIONS handling kicks in.
 
 Version 0.5.1
 -------------

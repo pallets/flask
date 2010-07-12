@@ -269,7 +269,8 @@ If `GET` is present, `HEAD` will be added automatically for you.  You
 don't have to deal with that.  It will also make sure that `HEAD` requests
 are handled like the `HTTP RFC`_ (the document describing the HTTP
 protocol) demands, so you can completely ignore that part of the HTTP
-specification.
+specification.  Likewise as of Flask 0.6, `OPTIONS` is implemented for you
+as well automatically.
 
 You have no idea what an HTTP method is?  Worry not, here quick
 introduction in HTTP methods and why they matter:
@@ -309,6 +310,11 @@ very common:
 
 `DELETE`
     Remove the information that the given location.
+
+`OPTIONS`
+    Provides a quick way for a requesting client to figure out which
+    methods are supported by this URL.  Starting with Flask 0.6, this
+    is implemented for you automatically.
 
 Now the interesting part is that in HTML4 and XHTML1, the only methods a
 form might submit to the server are `GET` and `POST`.  But with JavaScript

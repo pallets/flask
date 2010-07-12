@@ -38,8 +38,9 @@ class _RequestContext(object):
         self.flashes = None
 
         try:
-            self.request.endpoint, self.request.view_args = \
-                self.url_adapter.match()
+            url_rule, self.request.view_args = \
+                self.url_adapter.match(return_rule=True)
+            self.request.url_rule = url_rule
         except HTTPException, e:
             self.request.routing_exception = e
 
