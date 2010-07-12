@@ -318,6 +318,30 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert 'Internal Server Error' in rv.data
         assert len(called) == 1
 
+    def test_before_after_request_order(self):
+        called = []
+        app = flask.Flask(__name__)
+        @app.before_request
+        def before1():
+            called.append(1)
+        @app.before_request
+        def before2():
+            called.append(2)
+        @app.after_request
+        def after1(response):
+            called.append(4)
+            return response
+        @app.after_request
+        def after1(response):
+            called.append(3)
+            return response
+        @app.route('/')
+        def index():
+            return '42'
+        rv = app.test_client().get('/')
+        assert rv.data == '42'
+        assert called == [1, 2, 3, 4]
+
     def test_error_handling(self):
         app = flask.Flask(__name__)
         @app.errorhandler(404)

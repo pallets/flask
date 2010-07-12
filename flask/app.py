@@ -707,6 +707,10 @@ class Flask(_PackageBoundObject):
         before it's sent to the WSGI server.  By default this will
         call all the :meth:`after_request` decorated functions.
 
+        .. versionchanged:: 0.5
+           As of Flask 0.5 the functions registered for after request
+           execution are called in reverse order of registration.
+
         :param response: a :attr:`response_class` object.
         :return: a new response object or the same, has to be an
                  instance of :attr:`response_class`.
@@ -717,9 +721,9 @@ class Flask(_PackageBoundObject):
             self.save_session(ctx.session, response)
         funcs = ()
         if mod and mod in self.after_request_funcs:
-            funcs = chain(funcs, self.after_request_funcs[mod])
+            funcs = reversed(self.after_request_funcs[mod])
         if None in self.after_request_funcs:
-            funcs = chain(funcs, self.after_request_funcs[None])
+            funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
             response = handler(response)
         return response

@@ -19,6 +19,17 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+Version 0.6
+-----------
+
+Flask 0.6 comes with a backwards incompatible change which affects the
+order of after-request handlers.  Previously they were called in the order
+of the registration, now they are called in reverse order.  This change
+was made so that Flask behaves more like people expected it to work and
+how other systems handle request pre- and postprocessing.  If you
+dependend on the order of execution of post-request functions, be sure to
+change the order.
+
 Version 0.5
 -----------
 

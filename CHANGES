@@ -8,6 +8,9 @@ Version 0.6
 
 Release date to be announced, codename to be decided.
 
+- after request functions are now called in reverse order of
+  registration.
+
 Version 0.5.1
 -------------
 
