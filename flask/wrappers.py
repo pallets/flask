@@ -54,8 +54,8 @@ class Request(RequestBase):
     @property
     def module(self):
         """The name of the current module"""
-        if self.endpoint and '.' in self.endpoint:
-            return self.endpoint.rsplit('.', 1)[0]
+        if self.url_rule and '.' in self.url_rule.endpoint:
+            return self.url_rule.endpoint.rsplit('.', 1)[0]
 
     @cached_property
     def json(self):
