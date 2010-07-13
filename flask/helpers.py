@@ -366,9 +366,7 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.5
         """
-        template_folder = os.path.join(self.root_path, 'templates')
-        if os.path.isdir(template_folder):
-            return FileSystemLoader(template_folder)
+        return FileSystemLoader(os.path.join(self.root_path, 'templates'))
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static

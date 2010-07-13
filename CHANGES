@@ -13,6 +13,10 @@ Release date to be announced, codename to be decided.
 - OPTIONS is now automatically implemented by Flask unless the
   application explictly adds 'OPTIONS' as method to the URL rule.
   In this case no automatic OPTIONS handling kicks in.
+- static rules are now even in place if there is no static folder
+  for the module.  This was implemented to aid GAE which will
+  remove the static folder if it's part of a mapping in the .yml
+  file.
 
 Version 0.5.1
 -------------

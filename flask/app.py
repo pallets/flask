@@ -271,11 +271,14 @@ class Flask(_PackageBoundObject):
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
-        # if there is a static folder, register it for the application.
-        if self.has_static_folder:
-            self.add_url_rule(self.static_path + '/<path:filename>',
-                              endpoint='static',
-                              view_func=self.send_static_file)
+        # register the static folder for the application.  Do that even
+        # if the folder does not exist.  First of all it might be created
+        # while the server is running (usually happens during development)
+        # but also because google appengine stores static files somewhere
+        # else when mapped with the .yml file.
+        self.add_url_rule(self.static_path + '/<path:filename>',
+                          endpoint='static',
+                          view_func=self.send_static_file)
 
         #: The Jinja2 environment.  It is created from the
         #: :attr:`jinja_options`.
