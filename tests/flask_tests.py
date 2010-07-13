@@ -492,6 +492,30 @@ class TemplatingTestCase(unittest.TestCase):
         rv = app.test_client().get('/')
         assert rv.data == '<p>23|42'
 
+    def test_original_win(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return flask.render_template_string('{{ config }}', config=42)
+        rv = app.test_client().get('/')
+        assert rv.data == '42'
+
+    def test_standard_context(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'development key'
+        @app.route('/')
+        def index():
+            flask.g.foo = 23
+            flask.session['test'] = 'aha'
+            return flask.render_template_string('''
+                {{ request.args.foo }}
+                {{ g.foo }}
+                {{ config.DEBUG }}
+                {{ session.test }}
+            ''')
+        rv = app.test_client().get('/?foo=42')
+        assert rv.data.split() == ['42', '23', 'False', 'aha']
+
     def test_escaping(self):
         text = '<p>Hello World!'
         app = flask.Flask(__name__)

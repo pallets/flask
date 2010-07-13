@@ -19,6 +19,7 @@ def _default_template_ctx_processor():
     """
     reqctx = _request_ctx_stack.top
     return dict(
+        config=reqctx.app.config,
         request=reqctx.request,
         session=reqctx.session,
         g=reqctx.g

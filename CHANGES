@@ -17,6 +17,10 @@ Release date to be announced, codename to be decided.
   for the module.  This was implemented to aid GAE which will
   remove the static folder if it's part of a mapping in the .yml
   file.
+- the :attr:`~flask.Flask.config` is now available in the templates
+  as `config`.
+- context processors will no longer override values passed directly
+  to the render function.
 
 Version 0.5.1
 -------------

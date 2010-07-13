@@ -30,6 +30,14 @@ how other systems handle request pre- and postprocessing.  If you
 dependend on the order of execution of post-request functions, be sure to
 change the order.
 
+Another change that breaks backwards compatibility is that context
+processors will no longer override values passed directly to the template
+rendering function.  If for example `request` is as variable passed
+directly to the template, the default context processor will not override
+it with the current request object.  This makes it easier to extend
+context processors later to inject additional variables without breaking
+existing template not expecting them.
+
 Version 0.5
 -----------
 
