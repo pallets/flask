@@ -19,7 +19,7 @@ import tempfile
 from logging import StreamHandler
 from contextlib import contextmanager
 from datetime import datetime
-from werkzeug import parse_date, parse_options_header
+from werkzeug import parse_date, parse_options_header, http_date
 from werkzeug.exceptions import NotFound
 from jinja2 import TemplateNotFound
 from cStringIO import StringIO

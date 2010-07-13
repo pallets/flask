@@ -240,6 +240,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     :param conditional: set to `True` to enable conditional responses.
     :param cache_timeout: the timeout in seconds for the headers.
     """
+    mtime = None
     if isinstance(filename_or_fp, basestring):
         filename = filename_or_fp
         file = None
@@ -272,10 +273,20 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     else:
         if file is None:
             file = open(filename, 'rb')
+            mtime = os.path.getmtime(filename)
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
+
+    # if we know the file modification date, we can store it as the
+    # current time to better support conditional requests.  Werkzeug
+    # as of 0.6.1 will override this value however in the conditional
+    # response with the current time.  This will be fixed in Werkzeug
+    # with a new release, however many WSGI servers will still emit
+    # a separate date header.
+    if mtime is not None:
+        rv.date = int(mtime)
 
     rv.cache_control.public = True
     if cache_timeout:
