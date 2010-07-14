@@ -62,6 +62,10 @@ The following configuration values are used internally by Flask:
 ``LOGGER_NAME``                 the name of the logger
 ``SERVER_NAME``                 the name of the server.  Required for
                                 subdomain support (eg: ``'localhost'``)
+``MAX_CONTENT_LENGTH``          If set to a value in bytes, Flask will
+                                reject incoming requests with a
+                                content length greater than this by
+                                returning a 413 status code.
 =============================== =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -88,6 +92,8 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 0.5
    ``SERVER_NAME``
+
+.. versionadded:: ``MAX_CONTENT_LENGTH``
 
 Configuring from Files
 ----------------------

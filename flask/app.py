@@ -193,7 +193,8 @@ class Flask(_PackageBoundObject):
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
         'LOGGER_NAME':                          None,
-        'SERVER_NAME':                          None
+        'SERVER_NAME':                          None,
+        'MAX_CONTENT_LENGTH':                   None
     })
 
     def __init__(self, import_name, static_path=None):

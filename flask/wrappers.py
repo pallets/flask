@@ -13,6 +13,7 @@ from werkzeug import Request as RequestBase, Response as ResponseBase, \
     cached_property
 
 from .helpers import json, _assert_have_json
+from .globals import _request_ctx_stack
 
 
 class Request(RequestBase):
@@ -40,6 +41,13 @@ class Request(RequestBase):
     #: usually a :exc:`~werkzeug.exceptions.NotFound` exception or
     #: something similar.
     routing_exception = None
+
+    @property
+    def max_content_length(self):
+        """Read-only view of the `MAX_CONTENT_LENGTH` config key."""
+        ctx = _request_ctx_stack.top
+        if ctx is not None:
+            return ctx.app.config['MAX_CONTENT_LENGTH']
 
     @property
     def endpoint(self):

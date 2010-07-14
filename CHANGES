@@ -21,6 +21,8 @@ Release date to be announced, codename to be decided.
   as `config`.
 - context processors will no longer override values passed directly
   to the render function.
+- added the ability to limit the incoming request data with the
+  new ``MAX_CONTENT_LENGTH`` configuration value.
 
 Version 0.5.1
 -------------
