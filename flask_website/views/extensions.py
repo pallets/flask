@@ -70,6 +70,16 @@ database = [
         bitbucket='leafstorm/flask-couchdb',
         docs='http://packages.python.org/Flask-CouchDB/'
     ),
+    Extension('Flask-Uploads', 'Matthew Frazier',
+        description='''
+            <p>Flask-Uploads allows your application to flexibly and
+            efficiently handle file uploading and serving the uploaded files.
+            You can create different sets of uploads - one for document
+            attachments, one for photos, etc.
+        ''',
+        bitbucket='leafstorm/flask-uploads',
+        docs='http://packages.python.org/Flask-Uploads/'
+    ),
     Extension('Flask-Genshi', 'Dag Odenhall',
         description='''
             <p>Adds support for the <a href="http://genshi.edgewall.org/">Genshi</a>
