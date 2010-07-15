@@ -43,7 +43,7 @@ projects = {
         Project('rdrei.net', 'http://new.rdrei.net/', '''
             <p>Personal website of Pascal Hartig.
         '''),
-        Project('Ryde-Hunters HFFPS', 'http://rydehhffps.org.au/', '''
+        Project(u'Ryde–Hunters HFFPS', 'http://rydehhffps.org.au/', u'''
             <p>The website of the Ryde–Hunters Hill Flora and Fauna Society.
         ''')
     ],
