@@ -109,7 +109,8 @@ class Tree(object):
         rv = u'%s/%s' % (date,
             '-'.join(x for x in _punctuation_re.split(
                 unicodedata.normalize('NFKC', unicode(mail['subject']))
-                    .encode('ascii', 'ignore')) if x).lower())
+                    .encode('ascii', 'ignore')) if x).lower()
+            or 'untitled')
         while self.slug_used(rv):
             rv = increment_string(rv)
         return rv
