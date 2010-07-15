@@ -125,7 +125,7 @@ class Tree(object):
 
     def add_thread_for(self, mail):
         self.threads.append({
-            'title':        mail['subject'],
+            'title':        mail['subject'] or '[No Subject]',
             'slug':         self.generate_slug(mail),
             'date':         mail['date'],
             'author':       mail['author'],
