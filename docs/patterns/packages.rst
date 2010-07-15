@@ -258,3 +258,8 @@ explicit unlike URL rules.
 
        # this refers to the current module's static folder
        url_for('static', filename='static.css')
+
+   This is the case for all endpoints, not just static folders, but for
+   static folders it's more common that you will stumble upon this because
+   most applications will have a static folder in the application and not
+   a specific module.
