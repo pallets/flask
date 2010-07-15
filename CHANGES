@@ -27,6 +27,14 @@ Release date to be announced, codename to be decided.
   is now optional to be consistent with the function of the
   same name on the application object.
 
+Version 0.5.2
+-------------
+
+Bugfix Release, released on July 15th 2010
+
+- fixed another issue with loading templates from directories when
+  modules were used.
+
 Version 0.5.1
 -------------
 
