@@ -2,12 +2,13 @@ body         { font-family: 'Georgia', serif; font-size: 17px; color: #000; }
 a            { color: #004B6B; }
 a:hover      { color: #6D4100; }
 .box         { width: 540px; margin: 40px auto; }
-h2, h3       { font-family: 'Garamond', 'Georgia', serif; font-weight: normal; }
+h2, h3, h4   { font-family: 'Garamond', 'Georgia', serif; font-weight: normal; }
 h1           { margin: 0 0 30px 0; background: url(/static/flask.png) no-repeat center;
                height: 165px; }
 h1 span      { display: none; }
 h2           { font-size: 30px; margin: 15px 0 5px 0; }
 h3           { font-size: 24px; margin: 15px 0 5px 0; }
+h4           { font-size: 19px; margin: 15px 0 5px 0; }
 textarea, code,
 pre          { font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono',
                monospace!important; font-size: 15px; background: #eee; }
@@ -109,6 +110,19 @@ input.openid            { background: url(openid.png) no-repeat 4px center;
 .extension dl                { margin: 0; font-size: 0.9em; }
 .extension dl dt             { width: 130px; float: left; height: 22px; }
 .extension dl dd             { height: 22px; }
+
+/* projects */
+.project                   { border: 1px solid #eee; margin: 10px -10px;
+                             padding: 10px; }
+.project h4                { font-size: 22px; margin: -10px -10px 10px -10px;
+                             padding: 0; border-bottom: 1px solid #ddd; }
+.project h4 a              { color: #444; text-decoration: none; display: block;
+                             background: #fafafa; padding: 5px 10px; }
+.project h4 a:hover        { color: black; background: white; }
+.project div.description p { margin: 7px 0; font-size: 0.9em; color: #666; }
+.project dl                { margin: 0; font-size: 0.9em; }
+.project dl dt             { width: 110px; float: left; height: 22px; }
+.project dl dd             { height: 22px; }
 
 /* pygments style, same as flaskystyle */
 .hll { background-color: #ffffcc }
