@@ -43,6 +43,9 @@ projects = {
         Project('rdrei.net', 'http://new.rdrei.net/', '''
             <p>Personal website of Pascal Hartig.
         '''),
+        Project('Ryde-Hunters HFFPS', 'http://rydehhffps.org.au/', '''
+            <p>The website of the Ryde–Hunters Hill Flora and Fauna Society.
+        ''')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
