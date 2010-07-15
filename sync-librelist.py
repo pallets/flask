@@ -125,7 +125,7 @@ class Tree(object):
 
     def add_thread_for(self, mail):
         self.threads.append({
-            'title':        mail['subject'] or '[No Subject]',
+            'title':        mail['subject'],
             'slug':         self.generate_slug(mail),
             'date':         mail['date'],
             'author':       mail['author'],
@@ -260,7 +260,7 @@ def parse_mail(f, fsid):
         'references':   references,
         'author':       split_email(headers['from']),
         'date':         headers['Date'],
-        'subject':      strip_subject_prefix(headers['subject']),
+        'subject':      strip_subject_prefix(headers['subject'] or 'No Subject'),
         'text':         body,
         'children':     []
     }
