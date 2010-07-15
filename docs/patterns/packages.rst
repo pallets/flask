@@ -243,3 +243,18 @@ name of the module.  So for the admin it would be
 ``render_template('admin/list_items.html')`` and so on.  It is not
 possible to refer to templates without the prefixed module name.  This is
 explicit unlike URL rules.
+
+.. admonition:: References to Static Folders
+
+   Please keep in mind that if you are using unqualified endpoints by
+   default Flask will always assume the module's static folder, even if
+   there is no such folder.
+
+   If you want to refer to the application's static folder, use a leading
+   dot::
+
+       # this refers to the application's static folder
+       url_for('.static', filename='static.css')
+
+       # this refers to the current module's static folder
+       url_for('static', filename='static.css')
