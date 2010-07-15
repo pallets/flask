@@ -45,6 +45,11 @@ projects = {
         '''),
         Project(u'Ryde–Hunters HFFPS', 'http://rydehhffps.org.au/', u'''
             <p>The website of the Ryde–Hunters Hill Flora and Fauna Society.
+        '''),
+        Project('Red Bank Creative', 'http://www.redbankcreative.org/', '''
+            <p>
+              Local community meetup site for Red Bank, NJ powered
+              by Flask and running on GAE.
         ''')
     ],
     'apps': [
