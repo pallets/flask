@@ -612,6 +612,18 @@ class ModuleTestCase(unittest.TestCase):
         assert c.get('/admin/login').data == 'admin login'
         assert c.get('/admin/logout').data == 'admin logout'
 
+    def test_default_endpoint_name(self):
+        app = flask.Flask(__name__)
+        mod = flask.Module(__name__, 'frontend')
+        def index():
+            return 'Awesome'
+        mod.add_url_rule('/', view_func=index)
+        app.register_module(mod)
+        rv = app.test_client().get('/')
+        assert rv.data == 'Awesome'
+        with app.test_request_context():
+            assert flask.url_for('frontend.index') == '/'
+
     def test_request_processing(self):
         catched = []
         app = flask.Flask(__name__)

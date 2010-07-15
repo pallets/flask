@@ -59,6 +59,15 @@ else:
     _tojson_filter = json.dumps
 
 
+def _endpoint_from_view_func(view_func):
+    """Internal helper that returns the default endpoint for a given
+    function.  This always is the function name.
+    """
+    assert view_func is not None, 'expected view func if endpoint ' \
+                                  'is not provided.'
+    return view_func.__name__
+
+
 def jsonify(*args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
     the given arguments with an `application/json` mimetype.  The arguments

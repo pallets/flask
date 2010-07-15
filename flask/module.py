@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from .helpers import _PackageBoundObject
+from .helpers import _PackageBoundObject, _endpoint_from_view_func
 
 
 def _register_module(module, static_path):
@@ -127,15 +127,24 @@ class Module(_PackageBoundObject):
             return f
         return decorator
 
-    def add_url_rule(self, rule, endpoint, view_func=None, **options):
+    def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Like :meth:`Flask.add_url_rule` but for a module.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the module.
+
+        .. versionchanged:: 0.6
+           The `endpoint` argument is now optional and will default to the
+           function name to consistent with the function of the same name
+           on the application object.
         """
         def register_rule(state):
             the_rule = rule
             if state.url_prefix:
                 the_rule = state.url_prefix + rule
-            state.app.add_url_rule(the_rule, '%s.%s' % (self.name, endpoint),
+            the_endpoint = endpoint
+            if the_endpoint is None:
+                the_endpoint = _endpoint_from_view_func(view_func)
+            state.app.add_url_rule(the_rule, '%s.%s' % (self.name,
+                                                        the_endpoint),
                                    view_func, **options)
         self._record(register_rule)
 

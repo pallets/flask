@@ -23,7 +23,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    _tojson_filter
+    _tojson_filter, _endpoint_from_view_func
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import _RequestContext
@@ -496,9 +496,7 @@ class Flask(_PackageBoundObject):
                         added and handled by the standard request handling.
         """
         if endpoint is None:
-            assert view_func is not None, 'expected view func if endpoint ' \
-                                          'is not provided.'
-            endpoint = view_func.__name__
+            endpoint = _endpoint_from_view_func(view_func)
         options['endpoint'] = endpoint
         methods = options.pop('methods', ('GET',))
         provide_automatic_options = False
