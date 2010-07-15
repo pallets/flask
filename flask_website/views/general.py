@@ -6,15 +6,15 @@ from flask_website.twitter import flask_tweets
 from flask_website.utils import requires_login
 from flask_website.database import db_session, User
 
-general = Module(__name__)
+mod = Module(__name__)
 
 
-@general.route('/')
+@mod.route('/')
 def index():
     return render_template('general/index.html', tweets=flask_tweets)
 
 
-@general.route('/logout/')
+@mod.route('/logout/')
 def logout():
     if 'openid' in session:
         flash(u'Logged out')
@@ -22,7 +22,7 @@ def logout():
     return redirect(request.referrer or url_for('general.index'))
 
 
-@general.route('/login/', methods=['GET', 'POST'])
+@mod.route('/login/', methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
     if g.user is not None:
@@ -41,7 +41,7 @@ def login():
     return render_template('general/login.html', next=oid.get_next_url())
 
 
-@general.route('/first-login/', methods=['GET', 'POST'])
+@mod.route('/first-login/', methods=['GET', 'POST'])
 def first_login():
     if g.user is not None or 'openid' not in session:
         return redirect(url_for('login'))
@@ -59,7 +59,7 @@ def first_login():
                            openid=session['openid'])
 
 
-@general.route('/profile/', methods=['GET', 'POST'])
+@mod.route('/profile/', methods=['GET', 'POST'])
 @requires_login
 def profile():
     name = g.user.name
@@ -75,7 +75,7 @@ def profile():
     return render_template('general/profile.html', name=name)
 
 
-@general.route('/profile/change-openid/', methods=['GET', 'POST'])
+@mod.route('/profile/change-openid/', methods=['GET', 'POST'])
 @requires_login
 @oid.loginhandler
 def change_openid():

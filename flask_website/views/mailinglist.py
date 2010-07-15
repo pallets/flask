@@ -8,7 +8,7 @@ from flask import Module, render_template, json, url_for, abort, Markup
 from flask_website.utils import split_lines_wrapping
 from flask_website import config
 
-mailinglist = Module(__name__, url_prefix='/mailinglist')
+mod = Module(__name__, url_prefix='/mailinglist')
 
 
 class Mail(object):
@@ -73,13 +73,13 @@ class Thread(object):
                        slug=self.slug)
 
 
-@mailinglist.route('/')
+@mod.route('/')
 def index():
     return render_template('mailinglist/index.html')
 
 
-@mailinglist.route('/archive/', defaults={'page': 1})
-@mailinglist.route('/archive/page/<int:page>/')
+@mod.route('/archive/', defaults={'page': 1})
+@mod.route('/archive/page/<int:page>/')
 def archive(page):
     all_threads = Thread.get_list()
     offset = (page - 1) * config.THREADS_PER_PAGE
@@ -91,7 +91,7 @@ def archive(page):
                            page_count=page_count, page=page, threads=threads)
 
 
-@mailinglist.route('/archive/<int:year>/<int:month>/<int:day>/<slug>/')
+@mod.route('/archive/<int:year>/<int:month>/<int:day>/<slug>/')
 def show_thread(year, month, day, slug):
     thread = Thread.get(year, month, day, slug)
     if thread is None:

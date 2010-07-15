@@ -35,16 +35,16 @@ app.add_url_rule('/docs/flask-docs.pdf', endpoint='docs.pdf',
 app.add_url_rule('/docs/flask-docs.zip', endpoint='docs.zip',
                  build_only=True)
 
-from flask_website.views.general import general
-from flask_website.views.community import community
-from flask_website.views.mailinglist import mailinglist
-from flask_website.views.snippets import snippets
-from flask_website.views.extensions import extensions
-app.register_module(general)
-app.register_module(community)
-app.register_module(mailinglist)
-app.register_module(snippets)
-app.register_module(extensions)
+from flask_website.views import general
+from flask_website.views import community
+from flask_website.views import mailinglist
+from flask_website.views import snippets
+from flask_website.views import extensions
+app.register_module(general.mod)
+app.register_module(community.mod)
+app.register_module(mailinglist.mod)
+app.register_module(snippets.mod)
+app.register_module(extensions.mod)
 
 from flask_website.database import User, db_session
 from flask_website import utils

@@ -6,17 +6,17 @@ from werkzeug.contrib.atom import AtomFeed
 from flask_website.utils import requires_login, requires_admin, format_creole
 from flask_website.database import Category, Snippet, Comment, db_session
 
-snippets = Module(__name__, url_prefix='/snippets')
+mod = Module(__name__, url_prefix='/snippets')
 
 
-@snippets.route('/')
+@mod.route('/')
 def index():
     return render_template('snippets/index.html',
         categories=Category.query.order_by(Category.name).all(),
         recent=Snippet.query.order_by(Snippet.pub_date.desc()).limit(5).all())
 
 
-@snippets.route('/new/', methods=['GET', 'POST'])
+@mod.route('/new/', methods=['GET', 'POST'])
 @requires_login
 def new():
     category_id = None
@@ -47,7 +47,7 @@ def new():
         active_category=category_id, preview=preview)
 
 
-@snippets.route('/<int:id>/', methods=['GET', 'POST'])
+@mod.route('/<int:id>/', methods=['GET', 'POST'])
 def show(id):
     snippet = Snippet.query.get(id)
     if snippet is None:
@@ -63,7 +63,7 @@ def show(id):
     return render_template('snippets/show.html', snippet=snippet)
 
 
-@snippets.route('/comments/<int:id>/', methods=['GET', 'POST'])
+@mod.route('/comments/<int:id>/', methods=['GET', 'POST'])
 @requires_admin
 def edit_comment(id):
     comment = Comment.query.get(id)
@@ -92,7 +92,7 @@ def edit_comment(id):
                            comment=comment)
 
 
-@snippets.route('/edit/<int:id>/', methods=['GET', 'POST'])
+@mod.route('/edit/<int:id>/', methods=['GET', 'POST'])
 @requires_login
 def edit(id):
     snippet = Snippet.query.get(id)
@@ -134,7 +134,7 @@ def edit(id):
         categories=Category.query.order_by(Category.name).all())
 
 
-@snippets.route('/category/<slug>/')
+@mod.route('/category/<slug>/')
 def category(slug):
     category = Category.query.filter_by(slug=slug).first()
     if category is None:
@@ -144,7 +144,7 @@ def category(slug):
                            snippets=snippets)
 
 
-@snippets.route('/manage-categories/', methods=['GET', 'POST'])
+@mod.route('/manage-categories/', methods=['GET', 'POST'])
 @requires_admin
 def manage_categories():
     categories = Category.query.order_by(Category.name).all()
@@ -159,7 +159,7 @@ def manage_categories():
                            categories=categories)
 
 
-@snippets.route('/new-category/', methods=['POST'])
+@mod.route('/new-category/', methods=['POST'])
 @requires_admin
 def new_category():
     category = Category(name=request.form['name'])
@@ -169,7 +169,7 @@ def new_category():
     return redirect(url_for('manage_categories'))
 
 
-@snippets.route('/delete-category/<int:id>/', methods=['GET', 'POST'])
+@mod.route('/delete-category/<int:id>/', methods=['GET', 'POST'])
 @requires_admin
 def delete_category(id):
     category = Category.query.get(id)
@@ -202,7 +202,7 @@ def delete_category(id):
                               .filter(Category.id != category.id).all())
 
 
-@snippets.route('/recent.atom')
+@mod.route('/recent.atom')
 def recent_feed():
     feed = AtomFeed(u'Recent Flask Snippets',
                     subtitle=u'Recent additions to the Flask snippet archive',
@@ -216,7 +216,7 @@ def recent_feed():
     return feed.get_response()
 
 
-@snippets.route('/snippets/<int:id>/comments.atom')
+@mod.route('/snippets/<int:id>/comments.atom')
 def comments_feed(id):
     snippet = Snippet.query.get(id)
     if snippet is None:
