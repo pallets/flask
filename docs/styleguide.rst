@@ -71,7 +71,7 @@ Expressions and Statements
 --------------------------
 
 General whitespace rules:
-  - Whitespace is absend for unary operators that are not works
+  - No whitespace for unary operators that are not words
     (eg: ``-``, ``~`` etc.) as well on the inner side of parentheses.
   - Whitespace is placed between binary operators.
 
