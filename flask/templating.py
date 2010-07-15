@@ -35,23 +35,20 @@ class _DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
+        loader = None
         try:
             module, name = template.split('/', 1)
             loader = self.app.modules[module].jinja_loader
-            if loader is None:
-                raise ValueError()
         except (ValueError, KeyError):
-            loader = self.app.jinja_loader
-            if loader is not None:
-                return loader.get_source(environment, template)
-        else:
+            pass
+        # if there was a module and it has a loader, try this first
+        if loader is not None:
             try:
                 return loader.get_source(environment, name)
             except TemplateNotFound:
                 pass
-        # raise the exception with the correct filename here.
-        # (the one that includes the prefix)
-        raise TemplateNotFound(template)
+        # fall back to application loader if module failed
+        return self.app.jinja_loader.get_source(environment, template)
 
     def list_templates(self):
         result = self.app.jinja_loader.list_templates()
