@@ -125,26 +125,28 @@ If you now run the application everything should work as expected.
 Improving Uploads
 -----------------
 
+.. versionadded:: 0.6
+
 So how exactly does Flask handle uploads?  Well it will store them in the
 webserver's memory if the files are reasonable small otherwise in a
 temporary location (as returned by :func:`tempfile.gettempdir`).  But how
 do you specify the maximum file size after which an upload is aborted?  By
 default Flask will happily accept file uploads to an unlimited amount of
-memory, but you can limit that by subclassing the request and overriding
-the Werkzeug provided :attr:`~werkzeug.BaseRequest.max_form_memory_size`
-attribute::
+memory, but you can limit that by setting the `MAX_CONTENT_LENGTH`
+config key::
 
     from flask import Flask, Request
 
-    class LimitedRequest(Request):
-        max_form_memory_size = 16 * 1024 * 1024
-
     app = Flask(__name__)
-    app.request_class = LimitedRequest
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 The code above will limited the maximum allowed payload to 16 megabytes.
 If a larger file is transmitted, Flask will raise an
 :exc:`~werkzeug.exceptions.RequestEntityTooLarge` exception.
+
+This feature was added in Flask 0.6 but can be achieved in older versions
+as well by subclassing the request object.  For more information on that
+consult the Werkzeug documentation on file handling.
 
 
 Upload Progress Bars
@@ -165,3 +167,14 @@ following libraries for some nice examples how to do that:
 -   `Plupload <http://www.plupload.com/>`_ - HTML5, Java, Flash
 -   `SWFUpload <http://www.swfupload.org/>`_ - Flash
 -   `JumpLoader <http://jumploader.com/>`_ - Java
+
+
+An Easier Solution
+------------------
+
+Because the common pattern for file uploads exists almost unchanged in all
+applications dealing with uploads, there is a Flask extension called
+`Flask-Uploads`_ that implements a full fledged upload mechanism with
+white and blacklisting of extensions and more.
+
+.. _Flask-Uploads: http://packages.python.org/Flask-Uploads/
