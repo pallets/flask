@@ -132,7 +132,7 @@ webserver's memory if the files are reasonable small otherwise in a
 temporary location (as returned by :func:`tempfile.gettempdir`).  But how
 do you specify the maximum file size after which an upload is aborted?  By
 default Flask will happily accept file uploads to an unlimited amount of
-memory, but you can limit that by setting the `MAX_CONTENT_LENGTH`
+memory, but you can limit that by setting the ``MAX_CONTENT_LENGTH``
 config key::
 
     from flask import Flask, Request

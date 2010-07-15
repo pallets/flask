@@ -93,7 +93,8 @@ The following configuration values are used internally by Flask:
 .. versionadded:: 0.5
    ``SERVER_NAME``
 
-.. versionadded:: ``MAX_CONTENT_LENGTH``
+.. versionadded:: 0.6
+   ``MAX_CONTENT_LENGTH``
 
 Configuring from Files
 ----------------------
