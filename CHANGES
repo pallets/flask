@@ -23,6 +23,9 @@ Release date to be announced, codename to be decided.
   to the render function.
 - added the ability to limit the incoming request data with the
   new ``MAX_CONTENT_LENGTH`` configuration value.
+- the endpoint for the :meth:`flask.Module.add_url_rule` method
+  is now optional to be consistent with the function of the
+  same name on the application object.
 
 Version 0.5.1
 -------------
