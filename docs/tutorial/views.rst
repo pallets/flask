@@ -48,6 +48,13 @@ redirect back to the `show_entries` page::
 Note that we check that the user is logged in here (the `logged_in` key is
 present in the session and `True`).
 
+.. admonition:: Security Note
+
+   Be sure to use question marks when building SQL statements, as done in the
+   example above.  Otherwise, your app will be vulnerable to SQL injection when
+   you use string formatting to build SQL statements.
+   See :ref:`sqlite3` for more.
+
 Login and Logout
 ----------------
 
