@@ -71,9 +71,9 @@ We also tell the handler to only send errors and more critical messages.
 Because we certainly don't want to get a mail for warnings or other
 useless logs that might happen during request handling.
 
-Before you run that in production, please also look at :ref:`log-format`
-to put more information into that error mail.  That will save you from a
-lot of frustration.
+Before you run that in production, please also look at :ref:`logformat` to
+put more information into that error mail.  That will save you from a lot
+of frustration.
 
 
 Logging to a File
@@ -110,7 +110,7 @@ above, just make sure to use a lower setting (I would recommend
         file_handler.setLevel(logging.WARNING)
         app.logger.addHandler(file_handler)
 
-.. _log-format:
+.. _logformat:
 
 Controlling the Log Format
 --------------------------
