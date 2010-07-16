@@ -80,6 +80,14 @@ extensions = [
         bitbucket='leafstorm/flask-uploads',
         docs='http://packages.python.org/Flask-Uploads/'
     ),
+    Extension('Flask-Themes', 'Matthew Frazier',
+        description='''
+            <p>Flask-Themes makes it easy for your application to support
+            a wide range of appearances.
+        ''',
+        bitbucket='leafstorm/flask-themes',
+        docs='http://packages.python.org/Flask-Themes/'
+    ),
     Extension('Flask-Genshi', 'Dag Odenhall',
         description='''
             <p>Adds support for the <a href="http://genshi.edgewall.org/">Genshi</a>
