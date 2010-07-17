@@ -766,47 +766,6 @@ class Flask(_PackageBoundObject):
             response = handler(response)
         return response
 
-    def wsgi_app(self, environ, start_response):
-        """The actual WSGI application.  This is not implemented in
-        `__call__` so that middlewares can be applied without losing a
-        reference to the class.  So instead of doing this::
-
-            app = MyMiddleware(app)
-
-        It's a better idea to do this instead::
-
-            app.wsgi_app = MyMiddleware(app.wsgi_app)
-
-        Then you still have the original application object around and
-        can continue to call methods on it.
-
-        .. versionchanged:: 0.4
-           The :meth:`after_request` functions are now called even if an
-           error handler took over request processing.  This ensures that
-           even if an exception happens database have the chance to
-           properly close the connection.
-
-        :param environ: a WSGI environment
-        :param start_response: a callable accepting a status code,
-                               a list of headers and an optional
-                               exception context to start the response
-        """
-        with self.request_context(environ):
-            try:
-                request_started.send(self)
-                rv = self.preprocess_request()
-                if rv is None:
-                    rv = self.dispatch_request()
-                response = self.make_response(rv)
-            except Exception, e:
-                response = self.make_response(self.handle_exception(e))
-            try:
-                response = self.process_response(response)
-            except Exception, e:
-                response = self.make_response(self.handle_exception(e))
-            request_finished.send(self, response=response)
-            return response(environ, start_response)
-
     def request_context(self, environ):
         """Creates a request context from the given environment and binds
         it to the current context.  This must be used in combination with
@@ -853,6 +812,47 @@ class Flask(_PackageBoundObject):
         """
         from werkzeug import create_environ
         return self.request_context(create_environ(*args, **kwargs))
+
+    def wsgi_app(self, environ, start_response):
+        """The actual WSGI application.  This is not implemented in
+        `__call__` so that middlewares can be applied without losing a
+        reference to the class.  So instead of doing this::
+
+            app = MyMiddleware(app)
+
+        It's a better idea to do this instead::
+
+            app.wsgi_app = MyMiddleware(app.wsgi_app)
+
+        Then you still have the original application object around and
+        can continue to call methods on it.
+
+        .. versionchanged:: 0.4
+           The :meth:`after_request` functions are now called even if an
+           error handler took over request processing.  This ensures that
+           even if an exception happens database have the chance to
+           properly close the connection.
+
+        :param environ: a WSGI environment
+        :param start_response: a callable accepting a status code,
+                               a list of headers and an optional
+                               exception context to start the response
+        """
+        with self.request_context(environ):
+            try:
+                request_started.send(self)
+                rv = self.preprocess_request()
+                if rv is None:
+                    rv = self.dispatch_request()
+                response = self.make_response(rv)
+            except Exception, e:
+                response = self.make_response(self.handle_exception(e))
+            try:
+                response = self.process_response(response)
+            except Exception, e:
+                response = self.make_response(self.handle_exception(e))
+            request_finished.send(self, response=response)
+            return response(environ, start_response)
 
     def __call__(self, environ, start_response):
         """Shortcut for :attr:`wsgi_app`."""
