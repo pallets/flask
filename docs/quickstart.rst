@@ -739,7 +739,7 @@ Hooking in WSGI Middlewares
 ---------------------------
 
 If you want to add a WSGI middleware to your application you can wrap the
-internal WSGI application.  For example if you want to one of the
+internal WSGI application.  For example if you want to use one of the
 middlewares from the Werkzeug package to work around bugs in lighttpd, you
 can do it like this::
 
