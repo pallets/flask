@@ -12,6 +12,7 @@ instructions for web development with Flask.
    installation
    quickstart
    tutorial/index
+   templating
    testing
    errorhandling
    config
