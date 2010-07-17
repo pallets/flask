@@ -63,7 +63,7 @@ to the template::
             recorded.append((template, context))
         template_rendered.connect(record)
         try:
-            yield templates
+            yield recorded
         finally:
             template_rendered.disconnect(record)
 
