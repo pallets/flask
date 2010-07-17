@@ -371,6 +371,11 @@ class Flask(_PackageBoundObject):
         :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
 
+        If you want to run the application in debug mode, but disable the
+        code execution on the interactive debugger, you can pass
+        ``use_evalex=False`` as parameter.  This will keep the debugger's
+        traceback screen active, but disable code execution.
+
         .. admonition:: Keep in Mind
 
            Flask will suppress any server error with a generic error page
