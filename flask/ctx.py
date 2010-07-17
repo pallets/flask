@@ -28,9 +28,8 @@ class _RequestContext(object):
 
     def __init__(self, app, environ):
         self.app = app
-        self.url_adapter = app.url_map.bind_to_environ(environ,
-            server_name=app.config['SERVER_NAME'])
         self.request = app.request_class(environ)
+        self.url_adapter = app.create_url_adapter(self.request)
         self.session = app.open_session(self.request)
         if self.session is None:
             self.session = _NullSession()

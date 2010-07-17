@@ -724,6 +724,16 @@ class Flask(_PackageBoundObject):
             return self.response_class(*rv)
         return self.response_class.force_type(rv, request.environ)
 
+    def create_url_adapter(self, request):
+        """Creates a URL adapter for the given request.  The URL adapter
+        is created at a point where the request context is not yet set up
+        so the request is passed explicitly.
+
+        .. versionadded:: 0.6
+        """
+        return self.url_map.bind_to_environ(request.environ,
+            server_name=self.config['SERVER_NAME'])
+
     def preprocess_request(self):
         """Called before the actual request dispatching and will
         call every as :meth:`before_request` decorated function.

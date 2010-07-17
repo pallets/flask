@@ -734,3 +734,14 @@ Here are some example log calls::
 The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official stdlib
 documentation for more information.
+
+Hooking in WSGI Middlewares
+---------------------------
+
+If you want to add a WSGI middleware to your application you can wrap the
+internal WSGI application.  For example if you want to one of the
+middlewares from the Werkzeug package to work around bugs in lighttpd, you
+can do it like this::
+
+    from werkzeug.contrib.fixers import LighttpdCGIRootFix
+    app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
