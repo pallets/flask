@@ -28,6 +28,11 @@ Release date to be announced, codename to be decided.
   same name on the application object.
 - added a :func:`flask.make_response` function that simplifies
   creating response object instances in views.
+- added signalling support based on blinker.  This feature is currently
+  optional and supposed to be used by extensions and applications.  If
+  you want to use it, make sure to have `blinker`_ installed.
+
+.. _blinker: http://pypi.python.org/pypi/blinker
 
 Version 0.5.2
 -------------

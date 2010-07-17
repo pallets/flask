@@ -11,6 +11,7 @@
 from jinja2 import BaseLoader, FileSystemLoader, TemplateNotFound
 
 from .globals import _request_ctx_stack
+from .signals import template_rendered
 
 
 def _default_template_ctx_processor():
@@ -59,6 +60,13 @@ class _DispatchingJinjaLoader(BaseLoader):
         return result
 
 
+def _render(template, context, app):
+    """Renders the template and fires the signal"""
+    rv = template.render(context)
+    template_rendered.send(app, template=template, context=context)
+    return rv
+
+
 def render_template(template_name, **context):
     """Renders a template from the template folder with the given
     context.
@@ -69,7 +77,8 @@ def render_template(template_name, **context):
     """
     ctx = _request_ctx_stack.top
     ctx.app.update_template_context(context)
-    return ctx.app.jinja_env.get_template(template_name).render(context)
+    return _render(ctx.app.jinja_env.get_template(template_name),
+                   context, ctx.app)
 
 
 def render_template_string(source, **context):
@@ -83,4 +92,5 @@ def render_template_string(source, **context):
     """
     ctx = _request_ctx_stack.top
     ctx.app.update_template_context(context)
-    return ctx.app.jinja_env.from_string(source).render(context)
+    return _render(ctx.app.jinja_env.from_string(source),
+                   context, ctx.app)

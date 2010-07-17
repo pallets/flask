@@ -32,6 +32,7 @@ from .session import Session, _NullSession
 from .module import _ModuleSetupState
 from .templating import _DispatchingJinjaLoader, \
     _default_template_ctx_processor
+from .signals import request_started, request_finished, got_request_exception
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -657,6 +658,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded: 0.3
         """
+        got_request_exception.send(self, exception=e)
         handler = self.error_handlers.get(500)
         if self.debug:
             raise
@@ -791,6 +793,7 @@ class Flask(_PackageBoundObject):
         """
         with self.request_context(environ):
             try:
+                request_started.send(self)
                 rv = self.preprocess_request()
                 if rv is None:
                     rv = self.dispatch_request()
@@ -801,6 +804,7 @@ class Flask(_PackageBoundObject):
                 response = self.process_response(response)
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
+            request_finished.send(self, response=response)
             return response(environ, start_response)
 
     def request_context(self, environ):

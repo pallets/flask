@@ -24,6 +24,10 @@ from .globals import current_app, g, request, session, _request_ctx_stack
 from .module import Module
 from .templating import render_template, render_template_string
 
+# the signals
+from .signals import signals_available, template_rendered, request_started, \
+     request_finished, got_request_exception
+
 # only import json if it's available
 if json_available:
     from .helpers import json

@@ -351,3 +351,54 @@ Useful Internals
    information from the context local around for a little longer.  Make
    sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
    that situation, otherwise your unittests will leak memory.
+
+Signals
+-------
+
+.. versionadded:: 0.6
+
+.. data:: signals_available
+
+   `True` if the signalling system is available.  This is the case
+   when `blinker`_ is installed.
+
+.. data:: template_rendered
+
+   This signal is sent when a template was successfully rendered.  The
+   signal is invoked with the instance of the template as `template`
+   and the context as dictionary (named `context`).
+
+.. data:: request_started
+
+   This signal is sent before any request processing started but when the
+   request context was set up.  Because the request context is already
+   bound, the subscriber can access the request with the standard global
+   proxies such as :class:`~flask.request`.
+
+.. data:: request_finished
+
+   This signal is sent right before the response is sent to the client.
+   It is passed the response to be sent named `response`.
+
+.. data:: got_request_exception
+
+   This signal is sent when an exception happens during request processing.
+   It is sent *before* the standard exception handling kicks in and even
+   in debug mode, where no exception handling happens.  The exception
+   itself is passed to the subscriber as `exception`.
+
+.. class:: flask.signals.Namespace
+
+   An alias for :class:`blinker.base.Namespace` if blinker is available,
+   otherwise a dummy class that creates fake signals.  This class is
+   available for Flask extensions that want to provide the same fallback
+   system as Flask itself.
+
+   .. method:: signal(name, doc=None)
+
+      Creates a new signal for this namespace if blinker is available,
+      otherwise returns a fake signal that has a send method that will
+      do nothing but will fail with a :exc:`RuntimeError` for all other
+      operations, including connecting.
+
+.. _blinker: http://pypi.python.org/pypi/blinker
