@@ -259,7 +259,7 @@ except ImportError, e:
     print 'Warning: Flask themes unavailable.  Building with default theme'
     print 'If you want the Flask themes, run this command and build again:'
     print
-    print '  git submodule init'
+    print '  git submodule update --init'
     print '-' * 74
 
     pygments_style = 'tango'
