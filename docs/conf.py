@@ -264,3 +264,4 @@ except ImportError, e:
 
     pygments_style = 'tango'
     html_theme = 'default'
+    html_theme_options = {}
