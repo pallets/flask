@@ -124,7 +124,7 @@ def make_response(*args):
     view function.  This for example creates a response with a 404 error
     code::
 
-        response = make_response(render_template('not_found.html', 404))
+        response = make_response(render_template('not_found.html'), 404)
 
     Internally this function does the following things:
 
