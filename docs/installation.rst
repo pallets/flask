@@ -13,6 +13,11 @@ So how do you get all that on your computer quickly?  There are many ways
 which this section will explain, but the most kick-ass method is
 virtualenv, so let's look at that first.
 
+Either way, you will need Python 2.5 or higher to get started, so be sure
+to have an up to date Python 2.x installation.  At the time of writing,
+the WSGI specification is not yet finalized for Python 3, so Flask cannot
+support the 3.x series of Python.
+
 .. _virtualenv:
 
 virtualenv
