@@ -13,7 +13,6 @@ signals_available = False
 try:
     from blinker import Namespace
     signals_available = True
-    _signals = Namespace()
 except ImportError:
     class Namespace(object):
         def signal(self, name, doc=None):
