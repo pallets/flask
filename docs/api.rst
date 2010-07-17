@@ -228,6 +228,8 @@ Useful Functions and Classes
 
 .. autofunction:: redirect
 
+.. autofunction:: make_response
+
 .. autofunction:: send_file
 
 .. autofunction:: send_from_directory

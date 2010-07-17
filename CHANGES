@@ -26,6 +26,8 @@ Release date to be announced, codename to be decided.
 - the endpoint for the :meth:`flask.Module.add_url_rule` method
   is now optional to be consistent with the function of the
   same name on the application object.
+- added a :func:`flask.make_response` function that simplifies
+  creating response object instances in views.
 
 Version 0.5.2
 -------------

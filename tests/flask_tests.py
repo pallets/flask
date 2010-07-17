@@ -393,6 +393,24 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 400
         assert rv.mimetype == 'text/plain'
 
+    def test_make_response(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.make_response()
+            assert rv.status_code == 200
+            assert rv.data == ''
+            assert rv.mimetype == 'text/html'
+
+            rv = flask.make_response('Awesome')
+            assert rv.status_code == 200
+            assert rv.data == 'Awesome'
+            assert rv.mimetype == 'text/html'
+
+            rv = flask.make_response('W00t', 404)
+            assert rv.status_code == 404
+            assert rv.data == 'W00t'
+            assert rv.mimetype == 'text/html'
+
     def test_url_generation(self):
         app = flask.Flask(__name__)
         @app.route('/hello/<name>', methods=['POST'])
