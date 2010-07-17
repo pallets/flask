@@ -15,6 +15,7 @@ instructions for web development with Flask.
    testing
    errorhandling
    config
+   signals
    shell
    patterns/index
    deploying/index

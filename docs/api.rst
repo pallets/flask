@@ -355,6 +355,8 @@ Useful Internals
 Signals
 -------
 
+.. when modifying this list, also update the one in signals.rst
+
 .. versionadded:: 0.6
 
 .. data:: signals_available
