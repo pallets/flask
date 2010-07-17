@@ -311,7 +311,7 @@ class Flask(_PackageBoundObject):
 
     def create_jinja_environment(self):
         """Creates the Jinja2 environment based on :attr:`jinja_options`
-        and :meth:`create_jinja_loader`.
+        and :meth:`select_jinja_autoescape`.
 
         .. versionadded:: 0.5
         """

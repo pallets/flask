@@ -31,6 +31,9 @@ Release date to be announced, codename to be decided.
 - added signalling support based on blinker.  This feature is currently
   optional and supposed to be used by extensions and applications.  If
   you want to use it, make sure to have `blinker`_ installed.
+- refactored the way url adapters are created.  This process is now
+  fully customizable with the :meth:`~flask.Flask.create_url_adapter`
+  method.
 
 .. _blinker: http://pypi.python.org/pypi/blinker
 
