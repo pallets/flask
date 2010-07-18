@@ -264,9 +264,17 @@ development.  If you want to learn more, it's a very good idea to check
 out existing extensions on the `Flask Extension Registry`_.  If you feel
 lost there is still the `mailinglist`_ and the `IRC channel`_ to get some
 ideas for nice looking APIs.  Especially if you do something nobody before
-you did, it might be a very good idea to get some more input.
+you did, it might be a very good idea to get some more input.  This not
+only to get an idea about what people might want to have from an
+extension, but also to avoid having multiple developers working on pretty
+much the same side by side.
 
-Remember: good API design is hard :(
+Remember: good API design is hard, so introduce your project on the
+mailinglist, and let other developers give you a helping hand with
+designing the API.
+
+The best Flask extensions are extensions that share common idioms for the
+API.  And this can only work if collaboration happens early.
 
 
 .. _Flask Extension Wizard:
