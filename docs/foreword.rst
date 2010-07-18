@@ -103,4 +103,4 @@ Werkzeug and Flask will be ported to Python 3 as soon as a solution for
 WSGI is found, and we will provide helpful tips how to upgrade existing
 applications to Python 3.  Until then, we strongly recommend using Python
 2.6 and 2.7 with activated Python 3 warnings during development, as well
-  as the unicode literals `__future__` feature.
+as the unicode literals `__future__` feature.
