@@ -17,6 +17,7 @@ except ImportError:
     class Namespace(object):
         def signal(self, name, doc=None):
             return _FakeSignal(name, doc)
+
     class _FakeSignal(object):
         """If blinker is unavailable, create a fake class with the same
         interface that allows sending of signals but will fail with an
