@@ -40,7 +40,7 @@ Another method is using Google's `AJAX Libraries API
 
 In this case you don't have to put jQuery into your static folder, it will
 instead be loaded from Google directly.  This has the advantage that your
-website will probably load faster for users if they were to at least one
+website will probably load faster for users if they went to at least one
 other website before using the same jQuery version from Google because it
 will already be in the browser cache.  Downside is that if you don't have
 network connectivity during development jQuery will not load.

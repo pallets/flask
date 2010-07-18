@@ -7,7 +7,7 @@ Using a document database rather than a full DBMS gets more common these days.
 This pattern shows how to use MongoKit, a document mapper library, to
 integrate with MongoDB.
 
-This pattern requires an running MongoDB server and the MongoKit library
+This pattern requires a running MongoDB server and the MongoKit library
 installed.
 
 There are two very common ways to use MongoKit.  I will outline each of them
