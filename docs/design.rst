@@ -1,3 +1,5 @@
+.. _design:
+
 Design Decisions in Flask
 =========================
 
@@ -108,6 +110,10 @@ ways to access macros from Jinja2 templates.
 A template abstraction layer that would not take the unique features of
 the template engines away is a science on its own and a too large
 undertaking for a microframework like Flask.
+
+Furthermore extensions can then easily depend on one template language
+being present.  You can easily use your own templating language, but an
+extension could still depend on Jinja itself.
 
 
 Micro with Dependencies

@@ -44,6 +44,9 @@ However Flask is not much code and built in a very solid foundation and
 with that very easy to adapt for large applications.  If you are
 interested in that, check out the :ref:`becomingbig` chapter.
 
+If you are curious about the Flask design principles, head over to the
+section about :ref:`design`.
+
 A Framework and an Example
 --------------------------
 
