@@ -130,7 +130,7 @@ supported by browsers:
 -   Wrapping the document in an ``<html>`` tag
 -   Wrapping header elements in ``<head>`` or the body elements in
     ``<body>``
--   Closing the ``<p>``, ``<li>``, ``<dl>``, ``<dd>``, ``<tr>``,
+-   Closing the ``<p>``, ``<li>``, ``<dt>``, ``<dd>``, ``<tr>``,
     ``<td>``, ``<th>``, ``<tbody>``, ``<thead>``, or ``<tfoot>`` tags.
 -   Quoting attributes, so long as they contain no whitespace or
     special characters (like ``<``, ``>``, ``'``, or ``"``).
