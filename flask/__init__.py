@@ -23,6 +23,7 @@ from .helpers import url_for, jsonify, json_available, flash, \
 from .globals import current_app, g, request, session, _request_ctx_stack
 from .module import Module
 from .templating import render_template, render_template_string
+from .session import Session
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
