@@ -23,11 +23,22 @@ applications because changes on these thread-local objects can happen
 anywhere in the same thread.
 
 Flask provides some tools to deal with the downsides of this approach but
-it might be an issue for larger applications.  Flask is also based on
-convention over configuration, which means that many things are
-preconfigured and will work well for smaller applications but not so well
-for larger ones.  For example, by convention, templates and static files
-are in subdirectories within the Python source tree of the application.
+it might be an issue for larger applications because in theory
+modifications on these objects might happen anywhere in the same thread.
+
+Flask is also based on convention over configuration, which means that
+many things are preconfigured.  For example, by convention, templates and
+static files are in subdirectories within the Python source tree of the
+application.
+
+The main reason however why Flask is called a "microframework" is the idea
+to keep the core simple but extensible.  There is database abstraction
+layer, no form validation or anything else where different libraries
+already exist that can handle that.  However Flask knows the concept of
+extensions that can add this functionality into your application as if it
+was implemented in Flask itself.  There are currently extensions for
+object relational mappers, form validation, upload handling, various open
+authentication technologies and more.
 
 However Flask is not much code and built in a very solid foundation and
 with that very easy to adapt for large applications.  If you are
@@ -69,20 +80,3 @@ probing for ways to fill your database with spam, links to malicious
 software, and the like.
 
 So always keep security in mind when doing web development.
-
-Target Audience
----------------
-
-Is Flask for you?  If your application is small or medium sized and does
-not depend on very complex database structures, Flask is the Framework for
-you.  It was designed from the ground up to be easy to use, and built on
-the firm foundation of established principles, good intentions, and
-mature, widely used libraries.  Recent versions of Flask scale nicely
-within reasonable bounds, and if you grow larger, you won't have any
-trouble adjusting Flask for your new application size.
-
-If you suddenly discover that your application grows larger than
-originally intended, head over to the :ref:`becomingbig` section to see
-some possible solutions for larger applications.
-
-Satisfied?  Then let's proceed with :ref:`installation`.

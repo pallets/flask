@@ -18,12 +18,13 @@ expand on that.
 Flask is designed to be extended and modified in a couple of different
 ways:
 
+-   Flask extensions.  For a lot of reusable functionality you can create
+    extensions.  For extensions a number of hooks exist throughout Flask
+    with signals and callback functions.
+
 -   Subclassing.  The majority of functionality can be changed by creating
     a new subclass of the :class:`~flask.Flask` class and overriding
-    some methods.
-
--   Flask extensions.  For a lot of reusable functionality you can create
-    extensions.
+    methods provided for this exact purpose.
 
 -   Forking.  If nothing else works out you can just take the Flask
     codebase at a given point and copy/paste it into your application
@@ -49,8 +50,10 @@ reflected in the license of Flask.  You don't have to contribute any
 changes back if you decide to modify the framework.
 
 The downside of forking is of course that Flask extensions will most
-likely break because the new framework has a different import name and
-because of that forking should be the last resort.
+likely break because the new framework has a different import name.
+Furthermore integrating upstream changes can be a complex process,
+depending on the number of changes.  Because of that, forking should be
+the very last resort.
 
 Scaling like a Pro
 ------------------
@@ -68,9 +71,18 @@ support a second server.
 
 There is only one limiting factor regarding scaling in Flask which are
 the context local proxies.  They depend on context which in Flask is
-defined as being either a thread or a greenlet.  Separate processes are
-fine as well.  If your server uses some kind of concurrency that is not
-based on threads or greenlets, Flask will no longer be able to support
-these global proxies.  However the majority of servers are using either
-threads, greenlets or separate processes to achieve concurrency which are
-all methods well supported by the underlying Werkzeug library.
+defined as being either a thread, process or greenlet.  If your server
+uses some kind of concurrency that is not based on threads or greenlets,
+Flask will no longer be able to support these global proxies.  However the
+majority of servers are using either threads, greenlets or separate
+processes to achieve concurrency which are all methods well supported by
+the underlying Werkzeug library.
+
+Dialogue with the Community
+---------------------------
+
+The Flask developers are very interested to keep everybody happy, so as
+soon as you find an obstacle in your way, caused by Flask, don't hesitate
+to contact the developers on the mailinglist or IRC channel.  The best way
+for the Flask and Flask-extension developers to improve it for larger
+applications is getting feedback from users.
