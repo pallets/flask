@@ -38,6 +38,8 @@ Incoming Request Data
    sure that you always get the correct data for the active thread if you
    are in a multithreaded environment.
 
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
    The request object is an instance of a :class:`~werkzeug.Request`
    subclass and provides all of the attributes Werkzeug defines.  This
    just shows a quick overview of the most important ones.
@@ -164,6 +166,8 @@ To access the current session you can use the :class:`session` object:
    The session object works pretty much like an ordinary dict, with the
    difference that it keeps track on modifications.
 
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
    The following attributes are interesting:
 
    .. attribute:: new
@@ -206,6 +210,8 @@ thing, like it does for :class:`request` and :class:`session`.
    Just store on this whatever you want.  For example a database
    connection or the user that is currently logged in.
 
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
 
 Useful Functions and Classes
 ----------------------------
@@ -215,6 +221,8 @@ Useful Functions and Classes
    Points to the application handling the request.  This is useful for
    extensions that want to support multiple applications running side
    by side.
+
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: url_for
 
@@ -389,6 +397,8 @@ Signals
    in debug mode, where no exception handling happens.  The exception
    itself is passed to the subscriber as `exception`.
 
+.. currentmodule:: None
+
 .. class:: flask.signals.Namespace
 
    An alias for :class:`blinker.base.Namespace` if blinker is available,
@@ -404,3 +414,28 @@ Signals
       operations, including connecting.
 
 .. _blinker: http://pypi.python.org/pypi/blinker
+
+.. _notes-on-proxies:
+
+Notes On Proxies
+----------------
+
+Some of the objects provided by Flask are proxies to other objects.  The
+reason behind this is, that these proxies are shared between threads and
+they have to dispatch to the actual object bound to a thread behind the
+scenes as necessary.
+
+Most of the time you don't have to care about that, but there are some
+exceptions where it is good to know that this object is an actual proxy:
+
+-   The proxy objects do not fake their inherited types, so if you want to
+    perform actual instance checks, you have to do that on the instance
+    that
+-   if the object reference is important (so for example for sending
+    :ref:`signals`)
+
+If you need to get access to the underlying object that is proxied, you
+can use the :meth:`~werkzeug.LocalProxy._get_current_object` method::
+
+    app = current_app._get_current_object()
+    my_signal.send(app)
