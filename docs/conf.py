@@ -246,6 +246,7 @@ intersphinx_mapping = {
     'http://werkzeug.pocoo.org/documentation/dev/': None,
     'http://www.sqlalchemy.org/docs/': None,
     'http://wtforms.simplecodes.com/docs/0.5/': None,
+    # TODO: push to 1.1
     'http://discorporate.us/projects/Blinker/docs/1.0/': None
 }
 
