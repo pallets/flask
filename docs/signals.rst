@@ -79,9 +79,9 @@ variable.  Whenever a template is rendered, the template object as well as
 context are appended to it.
 
 Additionally there is a convenient helper method
-(:meth:`~blinker.base.Signal.temporarily_connected_to`).  that allows you
-to temporarily subscribe a function to a signal with is a context manager
-on its own which simplifies the example above::
+(:meth:`~blinker.base.Signal.connected_to`).  that allows you to
+temporarily subscribe a function to a signal with is a context manager on
+its own which simplifies the example above::
 
     from flask import template_rendered
 
@@ -89,7 +89,12 @@ on its own which simplifies the example above::
         recorded = []
         def record(template, context):
             recorded.append((template, context))
-        return template_rendered.temporarily_connected_to(record, app)
+        return template_rendered.connected_to(record, app)
+
+.. admonition:: Blinker API Changes
+
+   The :meth:`~blinker.base.Signal.connected_to` method arrived in Blinker
+   with version 1.1.
 
 Creating Signals
 ----------------
@@ -140,6 +145,18 @@ function, you can pass ``current_app._get_current_object()`` as sender.
    ``current_app._get_current_object()`` instead.  The reason for this is
    that :data:`~flask.current_app` is a proxy and not the real application
    object.
+
+Decorator Based Signal Subscriptions
+------------------------------------
+
+With Blinker 1.1 you can also easily subscribe to signals by using the new
+:meth:`~blinker.base.NamedSignal.connect_via` decorator::
+
+    from flask import template_rendered
+
+    @template_rendered.connect_via(app)
+    def when_template_rendered(template, context):
+        print 'Template %s is rendered with %s' % (template.name, context)
 
 Core Signals
 ------------
