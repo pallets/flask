@@ -1052,12 +1052,15 @@ class TestSignals(unittest.TestCase):
         def record(sender, template, context):
             recorded.append((template, context))
 
-        with flask.template_rendered.temporarily_connected_to(record, app):
+        flask.template_rendered.connect(record, app)
+        try:
             rv = app.test_client().get('/')
             assert len(recorded) == 1
             template, context = recorded[0]
             assert template.name == 'simple_template.html'
             assert context['whiskey'] == 42
+        finally:
+            flask.template_rendered.disconnect(record, app)
 
     def test_request_signals(self):
         app = flask.Flask(__name__)
@@ -1110,10 +1113,13 @@ class TestSignals(unittest.TestCase):
         def record(sender, exception):
             recorded.append(exception)
 
-        with flask.got_request_exception.temporarily_connected_to(record):
+        flask.got_request_exception.connect(record, app)
+        try:
             assert app.test_client().get('/').status_code == 500
             assert len(recorded) == 1
             assert isinstance(recorded[0], ZeroDivisionError)
+        finally:
+            flask.got_request_exception.disconnect(record, app)
 
 
 def suite():
