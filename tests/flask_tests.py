@@ -496,6 +496,21 @@ class JSONTestCase(unittest.TestCase):
             rv = render('{{ "<\0/script>"|tojson|safe }}')
             assert rv == '"<\\u0000\\/script>"'
 
+    def test_modified_url_encoding(self):
+        class ModifiedRequest(flask.Request):
+            url_charset = 'euc-kr'
+        app = flask.Flask(__name__)
+        app.request_class = ModifiedRequest
+        app.url_map.charset = 'euc-kr'
+
+        @app.route('/')
+        def index():
+            return flask.request.args['foo']
+
+        rv = app.test_client().get(u'/?foo=정상처리'.encode('euc-kr'))
+        assert rv.status_code == 200
+        assert rv.data == u'정상처리'.encode('utf-8')
+
 
 class TemplatingTestCase(unittest.TestCase):
 
