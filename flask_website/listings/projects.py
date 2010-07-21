@@ -81,7 +81,7 @@ projects = {
               available.
         ''', source='http://bitbucket.org/leafstorm/ryshcate/'),
         Project(u'Übersuggest Keyword Suggestion Tool',
-                'http://suggest.thinkpragmatic.net/', '''
+                'http://suggest.thinkpragmatic.net/', u'''
             <p>Übersuggest is a free tool that exploit the Google
             suggest JSON API to get keyword ideas for your search marketing
             campaign (PPC or SEO).
