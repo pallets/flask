@@ -79,7 +79,13 @@ projects = {
             <p>
               Ryshcate is a Flask powered pastebin with sourcecode
               available.
-        ''', source='http://bitbucket.org/leafstorm/ryshcate/')
+        ''', source='http://bitbucket.org/leafstorm/ryshcate/'),
+        Project(u'Übersuggest Keyword Suggestion Tool',
+                'http://suggest.thinkpragmatic.net/', '''
+            <p>Übersuggest is a free tool that exploit the Google
+            suggest JSON API to get keyword ideas for your search marketing
+            campaign (PPC or SEO).
+        ''', source='http://bitbucket.org/esaurito/ubersuggest')
     ]
 }
 
