@@ -309,8 +309,8 @@ extension to be approved you have to follow these guidelines:
 6.  Approved extensions must define all their dependencies in the
     `setup.py` file unless a dependency cannot by met because it is not
     available on PyPI.
-7.  The extension must have documentation that furthermore uses one of
-    the two Flask themes for Sphinx documentation.
+7.  The extension must have documentation that uses one of the two Flask
+    themes for Sphinx documentation.
 8.  The setup.py description (and thus the PyPI description) has to
     link to the documentation, website (if there is one) and there
     must be a link to automatically install the development version
