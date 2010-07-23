@@ -1038,6 +1038,27 @@ class SubdomainTestCase(unittest.TestCase):
         rv = c.get('/', 'http://mitsuhiko.localhost/')
         assert rv.data == 'index for mitsuhiko'
 
+    def test_module_subdomain_support(self):
+        app = flask.Flask(__name__)
+        mod = flask.Module(__name__, 'test', subdomain='testing')
+        app.config['SERVER_NAME'] = 'localhost'
+
+        @mod.route('/test')
+        def test():
+            return 'Test'
+
+        @mod.route('/outside', subdomain='xtesting')
+        def bar():
+            return 'Outside'
+
+        app.register_module(mod)
+
+        c = app.test_client()
+        rv = c.get('/test', 'http://testing.localhost/')
+        assert rv.data == 'Test'
+        rv = c.get('/outside', 'http://xtesting.localhost/')
+        assert rv.data == 'Outside'
+
 
 class TestSignals(unittest.TestCase):
 

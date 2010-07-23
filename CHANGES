@@ -34,6 +34,9 @@ Release date to be announced, codename to be decided.
 - refactored the way url adapters are created.  This process is now
   fully customizable with the :meth:`~flask.Flask.create_url_adapter`
   method.
+- modules can now register for a subdomain instead of just an URL
+  prefix.  This makes it possible to bind a whole module to a
+  configurable subdomain.
 
 .. _blinker: http://pypi.python.org/pypi/blinker
 

@@ -454,6 +454,7 @@ class Flask(_PackageBoundObject):
         provided.
         """
         options.setdefault('url_prefix', module.url_prefix)
+        options.setdefault('subdomain', module.subdomain)
         state = _ModuleSetupState(self, **options)
         for func in module._register_events:
             func(state)
