@@ -91,6 +91,11 @@ def split_lines_wrapping(text, width=74, threshold=82):
     return result
 
 
+def request_wants_json():
+    return request.accept_mimetypes \
+        .best_match(['application/json', 'text/html']) == 'application/json'
+
+
 def requires_login(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):

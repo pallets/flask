@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from urlparse import urljoin
 from flask import Module, render_template, request, flash, abort, redirect, \
-     g, url_for
+     g, url_for, jsonify
 from werkzeug.contrib.atom import AtomFeed
-from flask_website.utils import requires_login, requires_admin, format_creole
+from flask_website.utils import requires_login, requires_admin, \
+     format_creole, request_wants_json
 from flask_website.database import Category, Snippet, Comment, db_session
 
 mod = Module(__name__, url_prefix='/snippets')
@@ -52,6 +53,8 @@ def show(id):
     snippet = Snippet.query.get(id)
     if snippet is None:
         abort(404)
+    if request_wants_json():
+        return jsonify(snippet=snippet.to_json())
     if request.method == 'POST':
         title = request.form['title']
         text = request.form['text']
@@ -140,6 +143,9 @@ def category(slug):
     if category is None:
         abort(404)
     snippets = category.snippets.order_by(Snippet.title).all()
+    if request_wants_json():
+        return jsonify(category=category.to_json(),
+                       snippets=[s.id for s in snippets])
     return render_template('snippets/category.html', category=category,
                            snippets=snippets)
 

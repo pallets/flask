@@ -3,7 +3,7 @@ import urllib2
 import time
 import threading
 from flask import json, Markup
-from werkzeug import url_encode, parse_date
+from werkzeug import url_encode, parse_date, http_date
 
 
 class SearchResult(object):
@@ -16,6 +16,12 @@ class SearchResult(object):
         self.profile_image = result['profile_image_url']
         self.type = result['metadata']['result_type']
         self.retweets = result['metadata'].get('recent_retweets') or 0
+
+    def to_json(self):
+        rv = vars(self).copy()
+        rv['pub_date'] = http_date(rv['pub_date'])
+        rv['via'] = unicode(rv['via'])
+        return rv
 
 
 class SearchQuery(object):

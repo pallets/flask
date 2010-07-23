@@ -15,6 +15,11 @@ class Extension(object):
         self.docs = docs
         self.website = website
 
+    def to_json(self):
+        rv = vars(self).copy()
+        rv['description'] = unicode(rv['description'])
+        return rv
+
     @property
     def pypi(self):
         return 'http://pypi.python.org/pypi/%s' % url_quote(self.name)

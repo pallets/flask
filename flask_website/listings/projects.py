@@ -20,6 +20,11 @@ class Project(object):
         if self.source is not None:
             return urlparse(self.source)[1]
 
+    def to_json(self):
+        rv = vars(self).copy()
+        rv['description'] = unicode(rv['description'])
+        return rv
+
 
 projects = {
     'websites': [

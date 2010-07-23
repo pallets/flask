@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, \
 from sqlalchemy.orm import scoped_session, sessionmaker, backref, relation
 from sqlalchemy.ext.declarative import declarative_base
 
-from werkzeug import cached_property
+from werkzeug import cached_property, http_date
 
 from flask import url_for
 from flask_website import config
@@ -32,6 +32,9 @@ class User(Model):
         self.name = name
         self.openid = openid
 
+    def to_json(self):
+        return dict(name=self.name, is_admin=self.is_admin)
+
     @property
     def is_admin(self):
         return self.openid in config.ADMINS
@@ -52,6 +55,9 @@ class Category(Model):
     def __init__(self, name):
         self.name = name
         self.slug = '-'.join(name.split()).lower()
+
+    def to_json(self):
+        return dict(name=self.name, slug=self.slug, count=self.count)
 
     @cached_property
     def count(self):
@@ -81,6 +87,14 @@ class Snippet(Model):
         self.category = category
         self.pub_date = datetime.utcnow()
 
+    def to_json(self):
+        return dict(id=self.id, title=self.title,
+                    body=unicode(self.rendered_body),
+                    pub_date=http_date(self.pub_date),
+                    comments=[c.to_json() for c in self.comments],
+                    author=self.author.to_json(),
+                    category=self.category.slug)
+
     @property
     def url(self):
         return url_for('snippets.show', id=self.id)
@@ -109,6 +123,12 @@ class Comment(Model):
         self.title = title
         self.text = text
         self.pub_date = datetime.utcnow()
+
+    def to_json(self):
+        return dict(author=self.author.to_json(),
+                    title=self.title,
+                    pub_date=http_date(self.pub_date),
+                    text=unicode(self.rendered_text))
 
     @property
     def rendered_text(self):

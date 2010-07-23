@@ -2,10 +2,11 @@ from __future__ import with_statement
 import os
 from math import ceil
 from hashlib import md5
-from werkzeug import parse_date
+from werkzeug import parse_date, http_date
 from jinja2.utils import urlize
-from flask import Module, render_template, json, url_for, abort, Markup
-from flask_website.utils import split_lines_wrapping
+from flask import Module, render_template, json, url_for, abort, Markup, \
+     jsonify
+from flask_website.utils import split_lines_wrapping, request_wants_json
 from flask_website import config
 
 mod = Module(__name__, url_prefix='/mailinglist')
@@ -35,6 +36,12 @@ class Mail(object):
                 line = Markup(u'<span class=quote>%s </span>') % line
             result.append(urlize(line))
         return Markup(u'\n'.join(result))
+
+    def to_json(self):
+        rv = vars(self).copy()
+        rv['date'] = http_date(rv['date'])
+        rv['children'] = [c.to_json() for c in rv['children']]
+        return rv
 
     @property
     def id(self):
@@ -72,6 +79,13 @@ class Thread(object):
                        month=self.date.month, day=self.date.day,
                        slug=self.slug)
 
+    def to_json(self):
+        rv = vars(self).copy()
+        rv['date'] = http_date(rv['date'])
+        if 'root' in rv:
+            rv['root'] = rv['root'].to_json()
+        return rv
+
 
 @mod.route('/')
 def index():
@@ -87,6 +101,10 @@ def archive(page):
     if page != 1 and not threads:
         abort(404)
     page_count = int(ceil(len(all_threads) // float(config.THREADS_PER_PAGE)))
+    if request_wants_json():
+        return jsonify(offset=offset,
+                       total=len(all_threads),
+                       threads=[x.to_json() for x in threads])
     return render_template('mailinglist/archive.html',
                            page_count=page_count, page=page, threads=threads)
 
@@ -96,4 +114,6 @@ def show_thread(year, month, day, slug):
     thread = Thread.get(year, month, day, slug)
     if thread is None:
         abort(404)
+    if request_wants_json():
+        return jsonify(thread=thread.to_json())
     return render_template('mailinglist/show_thread.html', thread=thread)
