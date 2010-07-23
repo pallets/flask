@@ -6,7 +6,8 @@ from flask import Markup
 class Extension(object):
 
     def __init__(self, name, author, description,
-                 github=None, bitbucket=None, docs=None, website=None):
+                 github=None, bitbucket=None, docs=None, website=None,
+                 approved=False):
         self.name = name
         self.author = author
         self.description = Markup(description)
@@ -14,6 +15,7 @@ class Extension(object):
         self.bitbucket = bitbucket
         self.docs = docs
         self.website = website
+        self.approved = approved
 
     def to_json(self):
         rv = vars(self).copy()
@@ -52,7 +54,8 @@ extensions = [
             <a href=http://pytz.sourceforge.net/>pytz</a>.
         ''',
         github='mitsuhiko/flask-babel',
-        docs='http://packages.python.org/Flask-Babel/'
+        docs='http://packages.python.org/Flask-Babel/',
+        approved=True
     ),
     Extension('Flask-SQLAlchemy', 'Armin Ronacher',
         description='''
