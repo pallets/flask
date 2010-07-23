@@ -22,7 +22,7 @@
   </blockquote>
   <p class=latestver>
     <strong>Latest Version:</strong>
-    <a href="{{ download_url }}" title="Download tarball">{{ latest_version }}</a>
+    <a href="{{ latest_release.download_url }}" title="Download tarball">{{ latest_release.version }}</a>
   <h2>Flask is Fun</h2>
   <pre><span class=ig>from flask import Flask
 app = Flask(__name__)</span>
@@ -39,7 +39,7 @@ def hello():
 <span class=ig> * Running on http://localhost:5000/</span></pre>
   <h2>Interested?</h2>
   <ul>
-    <li><a href="{{ download_url }}">Download latest release</a> ({{ latest_version }})
+    <li><a href="{{ latest_release.download_url }}">Download latest release</a> ({{ latest_release.version }})
     <li>
       <a href="{{ url_for('docs.index') }}">Read the documentation</a> or download as
       <a href="{{ url_for('docs.pdf') }}">PDF</a> and

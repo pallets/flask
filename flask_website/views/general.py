@@ -1,17 +1,21 @@
 from flask import Module, render_template, session, redirect, url_for, \
-     request, flash, g, Response
+     request, flash, g, Response, jsonify
 from flaskext.openid import COMMON_PROVIDERS
 from flask_website import oid
 from flask_website.twitter import flask_tweets
-from flask_website.utils import requires_login
+from flask_website.utils import requires_login, request_wants_json
 from flask_website.database import db_session, User
+from flask_website.listings.releases import releases
 
 mod = Module(__name__)
 
 
 @mod.route('/')
 def index():
-    return render_template('general/index.html', tweets=flask_tweets)
+    if request_wants_json():
+        return jsonify(releases=[r.to_json() for r in releases])
+    return render_template('general/index.html', tweets=flask_tweets,
+                           latest_release=releases[-1])
 
 
 @mod.route('/logout/')
