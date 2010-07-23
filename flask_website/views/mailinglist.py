@@ -39,6 +39,7 @@ class Mail(object):
 
     def to_json(self):
         rv = vars(self).copy()
+        rv.pop('author_email', None)
         rv['date'] = http_date(rv['date'])
         rv['children'] = [c.to_json() for c in rv['children']]
         return rv
