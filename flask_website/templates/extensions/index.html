@@ -5,8 +5,8 @@
     Welcome to the Flask extensions registry.  Here you can find a list
     of packages that extend Flask.  This list is moderated and updated
     on a regular basis.  If you want your package to show up here,
-    follow the <a href="{{ url_for('creating') }}">guide on creating
-    extensions</a>.
+    follow the <a href="{{ url_for('docs.show', page='extensiondev')
+    }}">guide on creating extensions</a>.
   {% for extension in extensions %}
   <div class=extension>
     <h2>{{ extension.name }}</h2>

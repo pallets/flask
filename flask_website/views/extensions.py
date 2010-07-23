@@ -14,4 +14,4 @@ def index():
 
 @mod.route('/creating/')
 def creating():
-    return render_template('extensions/creating.html')
+    return redirect(url_for('docs.show', page='extensiondev'), 301)
