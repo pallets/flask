@@ -295,7 +295,7 @@ extension to be approved you have to follow these guidelines:
     dependencies for tests alone can be specified in the `setup.py`
     file.  The testsuite also has to be part of the distribution.
 3.  APIs of approved extensions will be checked for the following
-    behavioristics:
+    characteristics:
 
     -   an approved extension has to support multiple applications
         running in the same Python process.
