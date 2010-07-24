@@ -92,8 +92,13 @@ def split_lines_wrapping(text, width=74, threshold=82):
 
 
 def request_wants_json():
-    return request.accept_mimetypes \
-        .best_match(['application/json', 'text/html']) == 'application/json'
+    # we only accept json if the quality of json is greater than the
+    # quality of text/html because text/html is preferred to support
+    # browsers that accept on */*
+    best = request.accept_mimetypes \
+        .best_match(['application/json', 'text/html'])
+    return best == 'application/json' and \
+       request.accept_mimetypes[best] > request.accept_mimetypes['text/html']
 
 
 def requires_login(f):
