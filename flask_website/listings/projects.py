@@ -55,6 +55,11 @@ projects = {
             <p>
               Local community meetup site for Red Bank, NJ powered
               by Flask and running on GAE.
+        '''),
+        Project('Meetup Meeter', 'http://meetupmeeter.com/', u'''
+            <p>
+              Meetup Meeter is a tool for you to know who you have and have not
+              met at a particular meetup event.
         ''')
     ],
     'apps': [
