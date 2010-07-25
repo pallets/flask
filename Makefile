@@ -1,9 +1,12 @@
-.PHONY: clean-pyc test upload-docs docs
+.PHONY: clean-pyc ext-test test upload-docs docs
 
 all: clean-pyc test
 
 test:
 	python setup.py test
+
+ext-test:
+	python tests/flaskext_test.py --browse
 
 release:
 	python setup.py release sdist upload
