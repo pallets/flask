@@ -30,3 +30,15 @@ Flask-SQLAlchemy
 Notes: Developed by the Flask development head
 
 How to improve: add a better long description to the next release
+
+
+Flask-Creole
+------------
+
+:First Approval: 2010-07-25
+:Last Review: 2010-07-25
+:Approved Version: 0.4.4
+:Approved License: BSD
+
+Notes: Flask-Markdown and this should share API, consider that when
+approving Flask-Markdown
