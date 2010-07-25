@@ -97,6 +97,13 @@ extensions = [
         bitbucket='leafstorm/flask-themes',
         docs='http://packages.python.org/Flask-Themes/'
     ),
+    Extension('Flask-CouchDBKit', 'Kridsada Thanabulpong',
+        description='''
+            <p>Adds <a href="http://www.couchdbkit.org/">CouchDBKit</a> support to Flask.
+        ''',
+        github='sirn/flask-couchdbkit',
+        docs='http://packages.python.org/Flask-CouchDBKit/'
+    ),
     Extension('Flask-Genshi', 'Dag Odenhall',
         description='''
             <p>Adds support for the <a href="http://genshi.edgewall.org/">Genshi</a>
@@ -153,14 +160,6 @@ extensions = [
         ''',
         docs='http://sjl.bitbucket.org/flask-lesscss/',
         bitbucket='sjl/flask-lesscss'
-    ),
-    Extension('flask-urls', 'Steve Losh',
-        description='''
-            <p>
-              A collection of URL-related functions for Flask applications.
-        ''',
-        docs='http://sjl.bitbucket.org/flask-urls/',
-        bitbucket='sjl/flask-urls'
     )
 ]
 
