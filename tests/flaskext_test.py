@@ -36,6 +36,10 @@ flaskdir = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                         '..'))
 
 
+# virtualenv hack *cough*
+os.environ['PYTHONDONTWRITEBYTECODE'] = ''
+
+
 RESULT_TEMPATE = u'''\
 <!doctype html>
 <title>Flask-Extension Test Results</title>
