@@ -62,7 +62,8 @@ extensions = [
             <p>Adds SQLAlchemy support to Flask.  Quick and easy.
         ''',
         github='mitsuhiko/flask-sqlalchemy',
-        docs='http://packages.python.org/Flask-SQLAlchemy/'
+        docs='http://packages.python.org/Flask-SQLAlchemy/',
+        approved=True
     ),
     Extension('Flask-XML-RPC', 'Matthew Frazier',
         description='''
