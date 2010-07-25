@@ -160,6 +160,14 @@ extensions = [
         ''',
         docs='http://sjl.bitbucket.org/flask-lesscss/',
         bitbucket='sjl/flask-lesscss'
+    ),
+    Extension('Flask-Creole', 'Ali Afshar',
+        description='''
+            <p>Creole parser filters for Flask.
+        ''',
+        docs='http://packages.python.org/Flask-Creole',
+        bitbucket='aafshar/flask-creole-main',
+        approved=True
     )
 ]
 
