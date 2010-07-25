@@ -9,8 +9,8 @@ contain extensions that are approved.
 Flask-CouchDB
 -------------
 
-Last-Review: 2010-07-25
-Reviewed version: 0.2
+:Last-Review: 2010-07-25
+:Reviewed version: 0.2
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -20,8 +20,8 @@ to either "make test" or "python setup.py test".
 Flask-CouchDBKit
 ----------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -31,8 +31,8 @@ to either "make test" or "python setup.py test".
 Flask-Creole
 ------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -43,8 +43,8 @@ file is empty.
 flask-csrf
 ----------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2
 
 Will not be approved because this is functionality that should be handled
 in the form handling systems which is for Flask-WTF already the case.
@@ -58,8 +58,8 @@ Considered for unlisting.
 Flask-Genshi
 ------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.3
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.3
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -71,8 +71,8 @@ requirement for approved extensions.
 flask-lesscss
 -------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.9.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.9.1
 
 Broken package description, nonconforming package name, does not follow
 standard API rules (init_lesscss instead of lesscss).
@@ -85,8 +85,8 @@ as a testsuite.
 flask-mail
 ----------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.3.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.3.1
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -101,8 +101,8 @@ but I don't see any big design problems there.
 Flask-OAuth
 -----------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.9
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.9
 
 Short long description, missing tests.
 
@@ -110,8 +110,8 @@ Short long description, missing tests.
 Flask-OpenID
 ------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 1.0.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 1.0.1
 
 Short long description, missing tests.
 
@@ -119,8 +119,8 @@ Short long description, missing tests.
 Flask-Script
 ------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -133,8 +133,8 @@ description" in the package index though.
 Flask-Testing
 -------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -144,8 +144,8 @@ to either "make test" or "python setup.py test".
 Flask-Themes
 ------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.1
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -155,8 +155,8 @@ to either "make test" or "python setup.py test".
 Flask-Uploads
 -------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.1
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -166,8 +166,8 @@ to either "make test" or "python setup.py test".
 Flask-WTF
 ---------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2.1
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
@@ -177,7 +177,7 @@ to either "make test" or "python setup.py test".
 Flask-XML-RPC
 -------------
 
-Last-Review: 2010-07-25
-Reviewed Version: 0.2.1
+:Last-Review: 2010-07-25
+:Reviewed Version: 0.2.1
 
 Missing tests, API wise it would be fine for approval.
