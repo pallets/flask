@@ -11,8 +11,8 @@ Flask-Babel
 
 :First Approval: 2010-07-23
 :Last Review: 2010-07-23
-:Approved version: 0.6
-:Approved license: BSD
+:Approved Version: 0.6
+:Approved License: BSD
 
 Notes: Developed by the Flask development head
 
@@ -24,8 +24,8 @@ Flask-SQLAlchemy
 
 :First Approval: 2010-07-25
 :Last Review: 2010-07-25
-:Approved version: 0.9
-:Approved license: BSD
+:Approved Version: 0.9
+:Approved License: BSD
 
 Notes: Developed by the Flask development head
 

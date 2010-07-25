@@ -10,7 +10,7 @@ Flask-Actions
 -------------
 
 :Last Review: 2010-07-25
-:Reviewed version: 0.2
+:Reviewed Version: 0.2
 
 Rejected because of missing description in PyPI, formatting issues with
 the documentation (missing headlines, scrollbars etc.) and a general clash
@@ -26,7 +26,7 @@ Flask-Jinja2Extender
 --------------------
 
 :Last Review: 2010-07-25
-:Reviewed version: 0.1
+:Reviewed Version: 0.1
 
 Usecase not obvious, hacky implementation, does not solve a problem that
 could not be solved with Flask itself.  I suppose it is to aid other
@@ -37,7 +37,7 @@ Flask-Markdown
 --------------
 
 :Last Review: 2010-07-25
-:Reviewed version: 0.2
+:Reviewed Version: 0.2
 
 Would be great for enlisting but it should follow the API of Flask-Creole.
 Besides that, the docstrings are not valid rst (run through rst2html to
@@ -48,7 +48,7 @@ flask-urls
 ----------
 
 :Last Review: 2010-07-25
-:Reviewed version: 0.9.2
+:Reviewed Version: 0.9.2
 
 Broken PyPI index and non-conforming extension name.  Due to the small
 featureset this was also delisted from the list.  It was there previously
