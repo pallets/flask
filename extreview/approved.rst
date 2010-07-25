@@ -24,7 +24,7 @@ Flask-SQLAlchemy
 
 :First Approval: 2010-07-25
 :Last Review: 2010-07-25
-:Approved Version: 0.9
+:Approved Version: 0.9.1
 :Approved License: BSD
 
 Notes: Developed by the Flask development head
