@@ -216,12 +216,21 @@ def test_extension(name, interpreters, flask_dep):
     # figure out the test command and write a wrapper script.  We
     # can't write that directly into the tox ini because tox does
     # not invoke the command from the shell so we have no chance
-    # to pipe the output into a logfile
+    # to pipe the output into a logfile.  The /dev/null hack is
+    # to trick py.test (if used) into not guessing widths from the
+    # invoking terminal.
     test_command = get_test_command(checkout_path)
     log('Test command: %s', test_command)
     f = open(checkout_path + '/flaskext-runtest.sh', 'w')
-    f.write(test_command + ' &> "$1"\n')
+    f.write(test_command + ' &> "$1" < /dev/null\n')
     f.close()
+
+    # if there is a tox.ini, remove it, it will cause troubles
+    # for us.  Remove it if present, we are running tox ourselves
+    # afterall.
+    toxini = os.path.join(checkout_path, 'tox.ini')
+    if os.path.isfile(toxini):
+        os.remove(toxini)
 
     create_tox_ini(checkout_path, interpreters, flask_dep)
     rv = subprocess.call(['tox'], cwd=checkout_path)
