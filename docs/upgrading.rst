@@ -14,6 +14,62 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
+If you want to use the `easy_install` command to upgrade your Flask
+installation, make sure to pass it the ``-U`` parameter::
+
+    $ easy_install -U Flask
+
+Version 0.6
+-----------
+
+Flask 0.6 comes with a backwards incompatible change which affects the
+order of after-request handlers.  Previously they were called in the order
+of the registration, now they are called in reverse order.  This change
+was made so that Flask behaves more like people expected it to work and
+how other systems handle request pre- and postprocessing.  If you
+dependend on the order of execution of post-request functions, be sure to
+change the order.
+
+Another change that breaks backwards compatibility is that context
+processors will no longer override values passed directly to the template
+rendering function.  If for example `request` is as variable passed
+directly to the template, the default context processor will not override
+it with the current request object.  This makes it easier to extend
+context processors later to inject additional variables without breaking
+existing template not expecting them.
+
+Version 0.5
+-----------
+
+Flask 0.5 is the first release that comes as a Python package instead of a
+single module.  There were a couple of internal refactoring so if you
+depend on undocumented internal details you probably have to adapt the
+imports.
+
+The following changes may be relevant to your application:
+
+-   autoescaping no longer happens for all templates.  Instead it is
+    configured to only happen on files ending with ``.html``, ``.htm``,
+    ``.xml`` and ``.xhtml``.  If you have templates with different
+    extensions you should override the
+    :meth:`~flask.Flask.select_jinja_autoescape` method.
+-   Flask no longer supports zipped applications in this release.  This
+    functionality might come back in future releases if there is demand
+    for this feature.  Removing support for this makes the Flask internal
+    code easier to understand and fixes a couple of small issues that make
+    debugging harder than necessary.
+-   The `create_jinja_loader` function is gone.  If you want to customize
+    the Jinja loader now, use the
+    :meth:`~flask.Flask.create_jinja_environment` method instead.
+
+Version 0.4
+-----------
+
+For application developers there are no changes that require changes in
+your code.  In case you are developing on a Flask extension however, and
+that extension has a unittest-mode you might want to link the activation
+of that mode to the new ``TESTING`` flag.
+
 Version 0.3
 -----------
 

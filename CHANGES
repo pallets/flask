@@ -3,15 +3,105 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.6
+-----------
+
+Release date to be announced, codename to be decided.
+
+- after request functions are now called in reverse order of
+  registration.
+- OPTIONS is now automatically implemented by Flask unless the
+  application explictly adds 'OPTIONS' as method to the URL rule.
+  In this case no automatic OPTIONS handling kicks in.
+- static rules are now even in place if there is no static folder
+  for the module.  This was implemented to aid GAE which will
+  remove the static folder if it's part of a mapping in the .yml
+  file.
+- the :attr:`~flask.Flask.config` is now available in the templates
+  as `config`.
+- context processors will no longer override values passed directly
+  to the render function.
+- added the ability to limit the incoming request data with the
+  new ``MAX_CONTENT_LENGTH`` configuration value.
+- the endpoint for the :meth:`flask.Module.add_url_rule` method
+  is now optional to be consistent with the function of the
+  same name on the application object.
+- added a :func:`flask.make_response` function that simplifies
+  creating response object instances in views.
+- added signalling support based on blinker.  This feature is currently
+  optional and supposed to be used by extensions and applications.  If
+  you want to use it, make sure to have `blinker`_ installed.
+- refactored the way url adapters are created.  This process is now
+  fully customizable with the :meth:`~flask.Flask.create_url_adapter`
+  method.
+- modules can now register for a subdomain instead of just an URL
+  prefix.  This makes it possible to bind a whole module to a
+  configurable subdomain.
+
+.. _blinker: http://pypi.python.org/pypi/blinker
+
+Version 0.5.2
+-------------
+
+Bugfix Release, released on July 15th 2010
+
+- fixed another issue with loading templates from directories when
+  modules were used.
+
+Version 0.5.1
+-------------
+
+Bugfix Release, released on July 6th 2010
+
+- fixes an issue with template loading from directories when modules
+  where used.
+
+Version 0.5
+-----------
+
+Released on July 6th 2010, codename Calvados
+
+- fixed a bug with subdomains that was caused by the inability to
+  specify the server name.  The server name can now be set with
+  the `SERVER_NAME` config key.  This key is now also used to set
+  the session cookie cross-subdomain wide.
+- autoescaping is no longer active for all templates.  Instead it
+  is only active for ``.html``, ``.htm``, ``.xml`` and ``.xhtml``.
+  Inside templates this behaviour can be changed with the
+  ``autoescape`` tag.
+- refactored Flask internally.  It now consists of more than a
+  single file.
+- :func:`flask.send_file` now emits etags and has the ability to
+  do conditional responses builtin.
+- (temporarily) dropped support for zipped applications.  This was a
+  rarely used feature and led to some confusing behaviour.
+- added support for per-package template and static-file directories.
+- removed support for `create_jinja_loader` which is no longer used
+  in 0.5 due to the improved module support.
+- added a helper function to expose files from any directory.
+
 Version 0.4
 -----------
 
-Release date to be announced, codename to be selected.
+Released on June 18th 2010, codename Rakia
+
+- added the ability to register application wide error handlers
+  from modules.
+- :meth:`~flask.Flask.after_request` handlers are now also invoked
+  if the request dies with an exception and an error handling page
+  kicks in.
+- test client has not the ability to preserve the request context
+  for a little longer.  This can also be used to trigger custom
+  requests that do not pop the request stack for testing.
+- because the Python standard library caches loggers, the name of
+  the logger is configurable now to better support unittests.
+- added `TESTING` switch that can activate unittesting helpers.
+- the logger switches to `DEBUG` mode now if debug is enabled.
 
 Version 0.3.1
 -------------
 
-Bugfix release, released May 28th
+Bugfix release, released on May 28th 2010
 
 - fixed a error reporting bug with :meth:`flask.Config.from_envvar`
 - removed some unused code from flask
@@ -22,7 +112,7 @@ Bugfix release, released May 28th
 Version 0.3
 -----------
 
-Released on May 28th, codename Schnaps
+Released on May 28th 2010, codename Schnaps
 
 - added support for categories for flashed messages.
 - the application now configures a :class:`logging.Handler` and will
@@ -38,7 +128,7 @@ Released on May 28th, codename Schnaps
 Version 0.2
 -----------
 
-Released on May 12th, codename Jägermeister
+Released on May 12th 2010, codename Jägermeister
 
 - various bugfixes
 - integrated JSON support

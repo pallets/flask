@@ -1,9 +1,9 @@
-.PHONY: clean-pyc test upload-docs
+.PHONY: clean-pyc test upload-docs docs
 
 all: clean-pyc test
 
 test:
-	python tests/flask_tests.py
+	python setup.py test
 
 release:
 	python setup.py release sdist upload
@@ -20,3 +20,6 @@ upload-docs:
 	scp -r docs/_build/dirhtml/* pocoo.org:/var/www/flask.pocoo.org/docs/
 	scp -r docs/_build/latex/Flask.pdf pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.pdf
 	scp -r docs/_build/flask-docs.zip pocoo.org:/var/www/flask.pocoo.org/docs/
+
+docs:
+	$(MAKE) -C docs html

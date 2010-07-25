@@ -52,7 +52,7 @@ The `secret_key` is needed to keep the client-side sessions secure.
 Choose that key wisely and as hard to guess and complex as possible.  The
 debug flag enables or disables the interactive debugger.  Never leave
 debug mode activated in a production system because it will allow users to
-executed code on the server!
+execute code on the server!
 
 We also add a method to easily connect to the database specified.  That
 can be used to open a connection on request and also from the interactive
@@ -64,7 +64,7 @@ Python shell or a script.  This will come in handy later
         return sqlite3.connect(app.config['DATABASE'])
 
 Finally we just add a line to the bottom of the file that fires up the
-server if we run that file as standalone application::
+server if we want to run that file as a standalone application::
 
     if __name__ == '__main__':
         app.run()

@@ -40,7 +40,7 @@ Another method is using Google's `AJAX Libraries API
 
 In this case you don't have to put jQuery into your static folder, it will
 instead be loaded from Google directly.  This has the advantage that your
-website will probably load faster for users if they were to at least one
+website will probably load faster for users if they went to at least one
 other website before using the same jQuery version from Google because it
 will already be in the browser cache.  Downside is that if you don't have
 network connectivity during development jQuery will not load.
@@ -76,7 +76,7 @@ inside a `script` block here where different rules apply.
    In HTML the `script` tag is declared `CDATA` which means that entities
    will not be parsed.  Everything until ``</script>`` is handled as script.
    This also means that there must never be any ``</`` between the script
-   tags.  ``|tojson`` is kindly enough to do the right thing here and
+   tags.  ``|tojson`` is kind enough to do the right thing here and
    escape slashes for you (``{{ "</script>"|tojson|safe }}`` is rendered as
    ``"<\/script>"``).
 
@@ -150,7 +150,7 @@ explanation of the little bit of code above:
 
 1. ``$(function() { ... })`` specifies code that should run once the
    browser is done loading the basic parts of the page.
-2. ``#('selector')`` selects an element and lets you operate on it.
+2. ``$('selector')`` selects an element and lets you operate on it.
 3. ``element.bind('event', func)`` specifies a function that should run
    when the user clicked on the element.  If that function returns
    `false`, the default behaviour will not kick in (in this case, navigate

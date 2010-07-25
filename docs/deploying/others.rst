@@ -61,3 +61,38 @@ and `greenlet`_. Running a Flask application on this server is quite simple::
 .. _eventlet: http://eventlet.net/
 .. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
 
+
+Proxy Setups
+------------
+
+If you deploy your application behind an HTTP proxy you will need to
+rewrite a few headers in order for the application to work.  The two
+problematic values in the WSGI environment usually are `REMOTE_ADDR` and
+`HTTP_HOST`.  Werkzeug ships a fixer that will solve some common setups,
+but you might want to write your own WSGI middlware for specific setups.
+
+The most common setup invokes the host being set from `X-Forwarded-Host`
+and the remote address from `X-Forwared-For`::
+
+    from werkzeug.contrib.fixers import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+
+Please keep in mind that it is a security issue to use such a middleware
+in a non-proxy setup because it will blindly trust the incoming
+headers which might be forged by malicious clients.
+
+If you want to rewrite the headers from another header, you might want to
+use a fixer like this::
+
+    class CustomProxyFix(object):
+
+        def __init__(self, app):
+            self.app = app
+
+        def __call__(self, environ, start_response):
+            host = environ.get('HTTP_X_FHOST', '')
+            if host:
+                environ['HTTP_HOST'] = host
+            return self.app(environ, start_response)
+
+    app.wsgi_app = CustomProxyFix(app.wsgi_app)

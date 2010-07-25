@@ -43,12 +43,20 @@ master_doc = 'index'
 project = u'Flask'
 copyright = u'2010, Armin Ronacher'
 
-import pkg_resources
-
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-release = __import__('pkg_resources').get_distribution('Flask').version
+import pkg_resources
+try:
+    release = pkg_resources.get_distribution('Flask').version
+except pkg_resources.DistributionNotFound:
+    print 'To build the documentation, The distribution information of Flask'
+    print 'Has to be available.  Either install the package into your'
+    print 'development environment or run "setup.py develop" to setup the'
+    print 'metadata.  A virtualenv is recommended!'
+    sys.exit(1)
+del pkg_resources
+
 if 'dev' in release:
     release = release.split('dev')[0] + 'dev'
 version = '.'.join(release.split('.')[:2])
@@ -237,7 +245,23 @@ intersphinx_mapping = {
     'http://docs.python.org/dev': None,
     'http://werkzeug.pocoo.org/documentation/dev/': None,
     'http://www.sqlalchemy.org/docs/': None,
-    'http://wtforms.simplecodes.com/docs/0.5/': None
+    'http://wtforms.simplecodes.com/docs/0.5/': None,
+    'http://discorporate.us/projects/Blinker/docs/1.1/': None
 }
 
 pygments_style = 'flask_theme_support.FlaskyStyle'
+
+# fall back if theme is not there
+try:
+    __import__('flask_theme_support')
+except ImportError, e:
+    print '-' * 74
+    print 'Warning: Flask themes unavailable.  Building with default theme'
+    print 'If you want the Flask themes, run this command and build again:'
+    print
+    print '  git submodule update --init'
+    print '-' * 74
+
+    pygments_style = 'tango'
+    html_theme = 'default'
+    html_theme_options = {}

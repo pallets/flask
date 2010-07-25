@@ -41,9 +41,16 @@ Links
 from setuptools import setup
 
 
+def run_tests():
+    import os, sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'tests'))
+    from flask_tests import suite
+    return suite()
+
+
 setup(
     name='Flask',
-    version='0.4',
+    version='0.6',
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
@@ -51,7 +58,7 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    py_modules=['flask'],
+    packages=['flask'],
     zip_safe=False,
     platforms='any',
     install_requires=[
@@ -67,5 +74,6 @@ setup(
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
+    ],
+    test_suite='__main__.run_tests'
 )

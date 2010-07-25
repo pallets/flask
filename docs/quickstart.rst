@@ -38,7 +38,12 @@ see your hello world greeting.
 So what did that code do?
 
 1. first we imported the :class:`~flask.Flask` class.  An instance of this
-   class will be our WSGI application.
+   class will be our WSGI application.  The first argument is the name of
+   the application's module.  If you are using a single module (like here)
+   you should use `__name__` because depending on if it's started as
+   application or imported as module the name will be different
+   (``'__main__'`` versus the actual import name).  For more information
+   on that, have a look at the :class:`~flask.Flask` documentation.
 2. next we create an instance of it.  We pass it the name of the module /
    package.  This is needed so that Flask knows where it should look for
    templates, static files and so on.
@@ -264,7 +269,8 @@ If `GET` is present, `HEAD` will be added automatically for you.  You
 don't have to deal with that.  It will also make sure that `HEAD` requests
 are handled like the `HTTP RFC`_ (the document describing the HTTP
 protocol) demands, so you can completely ignore that part of the HTTP
-specification.
+specification.  Likewise as of Flask 0.6, `OPTIONS` is implemented for you
+as well automatically.
 
 You have no idea what an HTTP method is?  Worry not, here quick
 introduction in HTTP methods and why they matter:
@@ -304,6 +310,11 @@ very common:
 
 `DELETE`
     Remove the information that the given location.
+
+`OPTIONS`
+    Provides a quick way for a requesting client to figure out which
+    methods are supported by this URL.  Starting with Flask 0.6, this
+    is implemented for you automatically.
 
 Now the interesting part is that in HTML4 and XHTML1, the only methods a
 form might submit to the server are `GET` and `POST`.  But with JavaScript
@@ -368,7 +379,8 @@ package it's actually inside your package:
             /hello.html
 
 For templates you can use the full power of Jinja2 templates.  Head over
-to the `Jinja2 Template Documentation
+to the :ref:`templating` section of the documentation or the official
+`Jinja2 Template Documentation
 <http://jinja.pocoo.org/2/documentation/templates>`_ for more information.
 
 Here an example template:
@@ -408,6 +420,13 @@ Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
 Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
 >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
 u'Marked up \xbb HTML'
+
+.. versionchanged:: 0.5
+
+   Autoescaping is no longer enabled for all templates.  The following
+   extensions for templates trigger autoescaping: ``.html``, ``.htm``,
+   ``.xml``, ``.xhtml``.  Templates loaded from string will have
+   autoescaping disabled.
 
 .. [#] Unsure what that :class:`~flask.g` object is? It's something you
    can store information on yourself, check the documentation of that
@@ -561,7 +580,7 @@ Werkzeug provides for you::
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         if request.method == 'POST':
-            f= request.files['the_file']
+            f = request.files['the_file']
             f.save('/var/www/uploads/' + secure_filename(f.filename))
         ...
 
@@ -628,7 +647,9 @@ unless he knows the secret key used for signing.
 In order to use sessions you have to set a secret key.  Here is how
 sessions work::
 
-    from flask import session, redirect, url_for, escape
+    from flask import Flask, session, redirect, url_for, escape, request
+
+    app = Flask(__name__)
 
     @app.route('/')
     def index():
@@ -652,6 +673,7 @@ sessions work::
     def logout():
         # remove the username from the session if its there
         session.pop('username', None)
+        return redirect(url_for('index'))
 
     # set the secret key.  keep this really secret:
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -713,3 +735,14 @@ Here are some example log calls::
 The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official stdlib
 documentation for more information.
+
+Hooking in WSGI Middlewares
+---------------------------
+
+If you want to add a WSGI middleware to your application you can wrap the
+internal WSGI application.  For example if you want to use one of the
+middlewares from the Werkzeug package to work around bugs in lighttpd, you
+can do it like this::
+
+    from werkzeug.contrib.fixers import LighttpdCGIRootFix
+    app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)

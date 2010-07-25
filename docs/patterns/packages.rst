@@ -59,7 +59,7 @@ following quick checklist:
    Not the object itself, but the module it is in.  Do the importing at
    the *bottom* of the file.
 
-Here an example `__init__.py`::
+Here's an example `__init__.py`::
 
     from flask import Flask
     app = Flask(__name__)
@@ -109,7 +109,7 @@ Working with Modules
 --------------------
 
 For larger applications with more than a dozen views it makes sense to
-split the views into module.  First let's look at the typical struture of
+split the views into modules.  First let's look at the typical structure of
 such an application::
 
     /yourapplication
@@ -133,10 +133,10 @@ sure to place an empty `__init__.py` file in there.  Let's start with the
 
 First we have to create a :class:`~flask.Module` object with the name of
 the package.  This works very similar to the :class:`~flask.Flask` object
-you have already worked with, it just does not support all of the method,
+you have already worked with, it just does not support all of the methods,
 but most of them are the same.
 
-Long story short, here a nice and concise example::
+Long story short, here's a nice and concise example::
 
     from flask import Module
 
@@ -151,7 +151,7 @@ Long story short, here a nice and concise example::
         pass
 
     @admin.route('/logout')
-    def login():
+    def logout():
         pass
 
 Do the same with the `frontend.py` and then make sure to register the
@@ -186,7 +186,7 @@ different module (say `frontend`).  This would look like this::
     def index():
         return "I'm the frontend index"
 
-Now let's say we only want to redirect to a different module in the same
+Now let's say we only want to redirect to a different function in the same
 module.  Then we can either use the full qualified endpoint name like we
 did in the example above, or we just use the function name::
 
@@ -197,3 +197,69 @@ did in the example above, or we just use the function name::
     @frontend.route('/')
     def index():
         return "I'm the index"
+
+.. _modules-and-resources:
+
+Modules and Resources
+---------------------
+
+.. versionadded:: 0.5
+
+If a module is located inside an actual Python package it may contain
+static files and templates.  Imagine you have an application like this::
+
+
+    /yourapplication
+        __init__.py
+        /apps
+            /frontend
+                __init__.py
+                views.py
+                /static
+                    style.css
+                /templates
+                    index.html
+                    about.html
+                    ...
+            /admin
+                __init__.py
+                views.py
+                /static
+                    style.css
+                /templates
+                    list_items.html
+                    show_item.html
+                    ...
+
+The static folders automatically become exposed as URLs.  For example if
+the `admin` module is exported with an URL prefix of ``/admin`` you can
+access the style css from its static folder by going to
+``/admin/static/style.css``.  The URL endpoint for the static files of the
+admin would be ``'admin.static'``, similar to how you refer to the regular
+static folder of the whole application as ``'static'``.
+
+If you want to refer to the templates you just have to prefix it with the
+name of the module.  So for the admin it would be
+``render_template('admin/list_items.html')`` and so on.  It is not
+possible to refer to templates without the prefixed module name.  This is
+explicit unlike URL rules.
+
+.. admonition:: References to Static Folders
+
+   Please keep in mind that if you are using unqualified endpoints by
+   default Flask will always assume the module's static folder, even if
+   there is no such folder.
+
+   If you want to refer to the application's static folder, use a leading
+   dot::
+
+       # this refers to the application's static folder
+       url_for('.static', filename='static.css')
+
+       # this refers to the current module's static folder
+       url_for('static', filename='static.css')
+
+   This is the case for all endpoints, not just static folders, but for
+   static folders it's more common that you will stumble upon this because
+   most applications will have a static folder in the application and not
+   a specific module.

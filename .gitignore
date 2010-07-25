@@ -2,6 +2,8 @@
 *.pyc
 *.pyo
 env
+env*
 dist
+*.egg
 *.egg-info
 _mailinglist
