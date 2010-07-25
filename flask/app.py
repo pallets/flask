@@ -11,7 +11,6 @@
 
 from __future__ import with_statement
 
-import os
 from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
@@ -20,7 +19,7 @@ from jinja2 import Environment
 
 from werkzeug import ImmutableDict
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException, InternalServerError, NotFound
+from werkzeug.exceptions import HTTPException, InternalServerError
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     _tojson_filter, _endpoint_from_view_func

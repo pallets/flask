@@ -314,6 +314,8 @@ extension to be approved you have to follow these guidelines:
     link to the documentation, website (if there is one) and there
     must be a link to automatically install the development version
     (``PackageName==dev``).
+9.  The ``zip_safe`` flag in the setup scrip must be set to ``False``,
+    even if the extension would be safe for zipping.
 
 
 .. _Flask Extension Wizard:
