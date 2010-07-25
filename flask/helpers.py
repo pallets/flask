@@ -15,7 +15,6 @@ import posixpath
 import mimetypes
 from time import time
 from zlib import adler32
-from functools import wraps
 
 # try to load the best simplejson implementation available.  If JSON
 # is not installed, we add a failing class.
