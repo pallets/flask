@@ -110,7 +110,8 @@ extensions = [
             templating language to Flask applications.
         ''',
         bitbucket='dag/flask-genshi',
-        docs='http://packages.python.org/Flask-Genshi/'
+        docs='http://packages.python.org/Flask-Genshi/',
+        approved=True
     ),
     Extension('flask-mail', 'Dan Jacob',
         description='''
