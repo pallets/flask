@@ -316,6 +316,8 @@ extension to be approved you have to follow these guidelines:
     (``PackageName==dev``).
 9.  The ``zip_safe`` flag in the setup scrip must be set to ``False``,
     even if the extension would be safe for zipping.
+10. An extension currently has to support Python 2.5, 2.6 as well as
+    Python 2.7
 
 
 .. _Flask Extension Wizard:
