@@ -91,20 +91,6 @@ Flask-OpenID
 Short long description, missing tests.
 
 
-Flask-Script
-------------
-
-:Last-Review: 2010-07-25
-:Reviewed Version: 0.2
-
-Would be fine for approval, but the test suite is not part of the sdist
-package (missing entry in MANIFEST.in) and the test suite does not respond
-to either "make test" or "python setup.py test".
-
-The upcoming 0.3 release looks promising, could need a longer "long
-description" in the package index though.
-
-
 Flask-Testing
 -------------
 

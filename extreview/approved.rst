@@ -47,8 +47,22 @@ approving Flask-Markdown
 Flask-Genshi
 ------------
 
-:Last-Review: 2010-07-26
-:Reviewed Version: 0.3.1
+:First Approval: 2010-07-26
+:Last Review: 2010-07-26
+:Approved Version: 0.3.1
+:Approved License: BSD
 
 Notes: This is the first template engine extension.  When others come
 around it would be a good idea to decide on a common interface.
+
+
+Flask-Script
+------------
+
+:First Approval: 2010-07-26
+:Last Review: 2010-07-26
+:Approved Version: 0.3
+:Approved License: BSD
+
+Notes: Flask-Actions has some overlap.  Consider that when approving
+Flask-Actions or similar packages.
