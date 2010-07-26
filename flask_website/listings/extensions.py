@@ -77,7 +77,8 @@ extensions = [
             <p>Adds <a href="http://couchdb.apache.org/">CouchDB</a> support to Flask.
         ''',
         bitbucket='leafstorm/flask-couchdb',
-        docs='http://packages.python.org/Flask-CouchDB/'
+        docs='http://packages.python.org/Flask-CouchDB/',
+        approved=True
     ),
     Extension('Flask-Uploads', 'Matthew Frazier',
         description='''
