@@ -5,6 +5,9 @@ all: clean-pyc test
 test:
 	python setup.py test
 
+tox-test:
+	PYTHONDONTWRITEBYTECODE= tox
+
 ext-test:
 	python tests/flaskext_test.py --browse
 
