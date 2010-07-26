@@ -27,13 +27,16 @@ from setuptools.archive_util import unpack_archive
 
 flask_svc_url = 'http://flask.pocoo.org/extensions/'
 
+
+# OS X has awful paths when using mkstemp or gettempdir().  I don't
+# care about security or clashes here, so pick something that is
+# actually rememberable.
 if sys.platform == 'darwin':
     _tempdir = '/private/tmp'
 else:
     _tempdir = tempfile.gettempdir()
 tdir = _tempdir + '/flaskext-test'
-flaskdir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                        '..'))
+flaskdir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 
 # virtualenv hack *cough*
