@@ -95,7 +95,12 @@ projects = {
             <p>Übersuggest is a free tool that exploit the Google
             suggest JSON API to get keyword ideas for your search marketing
             campaign (PPC or SEO).
-        ''', source='http://bitbucket.org/esaurito/ubersuggest')
+        ''', source='http://bitbucket.org/esaurito/ubersuggest'),
+        Project(u'@font-face { … }', 'http://fontface.kr/', u'''
+            <p>
+              @font-face is a web font hosting service for Hangul
+              fonts.
+        ''')
     ]
 }
 
