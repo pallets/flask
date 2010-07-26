@@ -142,7 +142,8 @@ extensions = [
             scripts in Flask. It uses argparse to parse command line arguments.
         ''',
         bitbucket='danjac/flask-script',
-        docs='http://packages.python.org/Flask-Script/'
+        docs='http://packages.python.org/Flask-Script/',
+        approved=True
     ),
     Extension('flask-csrf', 'Steve Losh',
         description='''
