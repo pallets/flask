@@ -42,3 +42,13 @@ Flask-Creole
 
 Notes: Flask-Markdown and this should share API, consider that when
 approving Flask-Markdown
+
+
+Flask-Genshi
+------------
+
+:Last-Review: 2010-07-26
+:Reviewed Version: 0.3.1
+
+Notes: This is the first template engine extension.  When others come
+around it would be a good idea to decide on a common interface.
