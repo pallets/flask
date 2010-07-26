@@ -43,19 +43,6 @@ Name is not following Flask extension naming rules.
 Considered for unlisting.
 
 
-Flask-Genshi
-------------
-
-:Last-Review: 2010-07-25
-:Reviewed Version: 0.3
-
-Would be fine for approval, but the test suite is not part of the sdist
-package (missing entry in MANIFEST.in) and the test suite does not respond
-to either "make test" or "python setup.py test".  Furthermore the long
-description is empty.  The zip_safe flag is not set to False which is a
-requirement for approved extensions.
-
-
 flask-lesscss
 -------------
 
