@@ -200,7 +200,9 @@ tox_template = """[tox]
 envlist=%(env)s
 
 [testenv]
-deps=%(deps)s
+deps=
+  %(deps)s
+  py
 commands=bash flaskext-runtest.sh {envlogdir}/test.log
 downloadcache=%(cache)s
 """
