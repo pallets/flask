@@ -57,22 +57,6 @@ Considered for unlisting, improved version should release as
 as a testsuite.
 
 
-flask-mail
-----------
-
-:Last-Review: 2010-07-25
-:Reviewed Version: 0.3.1
-
-Would be fine for approval, but the test suite is not part of the sdist
-package (missing entry in MANIFEST.in) and the test suite does not respond
-to either "make test" or "python setup.py test".  Furthermore the long
-description in the package index is a little bit too short.
-
-Package name should be changed to Flask-Mail with the approval to be
-consistent, this might also be the change to improve the API if necessary,
-but I don't see any big design problems there.
-
-
 Flask-OAuth
 -----------
 

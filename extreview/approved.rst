@@ -66,3 +66,15 @@ Flask-Script
 
 Notes: Flask-Actions has some overlap.  Consider that when approving
 Flask-Actions or similar packages.
+
+
+Flask-CouchDB
+-------------
+
+:First Approval: 2010-07-26
+:Last Review: 2010-07-26
+:Approved Version: 0.2.1
+:Approved License: MIT
+
+There is also Flask-CouchDBKit.  Both are fine because they are doing
+different things, but the latter is not yet approved.
