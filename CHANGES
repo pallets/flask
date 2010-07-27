@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.6
 -----------
 
-Release date to be announced, codename to be decided.
+Released on July 27th 2010, codename Whisky
 
 - after request functions are now called in reverse order of
   registration.
