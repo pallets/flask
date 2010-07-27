@@ -8,6 +8,10 @@ Version 0.7
 
 Release date to be announced, codename to be selected
 
+- Added :meth:`~flask.Flask.make_default_options_response`
+  which can be used by subclasses to alter the default
+  behaviour for `OPTIONS` responses.
+
 Version 0.6.1
 -------------
 

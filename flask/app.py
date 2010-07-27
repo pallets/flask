@@ -690,13 +690,19 @@ class Flask(_PackageBoundObject):
             # if we provide automatic options for this URL and the
             # request came with the OPTIONS method, reply automatically 
             if rule.provide_automatic_options and req.method == 'OPTIONS':
-                return self._make_default_options_response()
+                return self.make_default_options_response()
             # otherwise dispatch to the handler for that endpoint
             return self.view_functions[rule.endpoint](**req.view_args)
         except HTTPException, e:
             return self.handle_http_exception(e)
 
-    def _make_default_options_response(self):
+    def make_default_options_response(self):
+        """This method is called to create the default `OPTIONS` response.
+        This can be changed through subclassing to change the default
+        behaviour of `OPTIONS` responses.
+
+        .. versionadded:: 0.7
+        """
         # This would be nicer in Werkzeug 0.7, which however currently
         # is not released.  Werkzeug 0.7 provides a method called
         # allowed_methods() that returns all methods that are valid for
