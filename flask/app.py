@@ -19,7 +19,8 @@ from jinja2 import Environment
 
 from werkzeug import ImmutableDict
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException, InternalServerError
+from werkzeug.exceptions import HTTPException, InternalServerError, \
+     MethodNotAllowed
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     _tojson_filter, _endpoint_from_view_func
@@ -689,13 +690,27 @@ class Flask(_PackageBoundObject):
             # if we provide automatic options for this URL and the
             # request came with the OPTIONS method, reply automatically 
             if rule.provide_automatic_options and req.method == 'OPTIONS':
-                rv = self.response_class()
-                rv.allow.update(rule.methods)
-                return rv
+                return self._make_default_options_response()
             # otherwise dispatch to the handler for that endpoint
             return self.view_functions[rule.endpoint](**req.view_args)
         except HTTPException, e:
             return self.handle_http_exception(e)
+
+    def _make_default_options_response(self):
+        # This would be nicer in Werkzeug 0.7, which however currently
+        # is not released.  Werkzeug 0.7 provides a method called
+        # allowed_methods() that returns all methods that are valid for
+        # a given path.
+        methods = []
+        try:
+            _request_ctx_stack.top.url_adapter.match(method='--')
+        except MethodNotAllowed, e:
+            methods = e.valid_methods
+        except HTTPException, e:
+            pass
+        rv = self.response_class()
+        rv.allow.update(methods)
+        return rv
 
     def make_response(self, rv):
         """Converts the return value from a view function to a real
