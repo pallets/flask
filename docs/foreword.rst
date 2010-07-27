@@ -40,8 +40,8 @@ was implemented in Flask itself.  There are currently extensions for
 object relational mappers, form validation, upload handling, various open
 authentication technologies and more.
 
-However Flask is not much code and built in a very solid foundation and
-with that very easy to adapt for large applications.  If you are
+However Flask is not much code and it is built on a very solid foundation
+and with that it is very easy to adapt for large applications.  If you are
 interested in that, check out the :ref:`becomingbig` chapter.
 
 If you are curious about the Flask design principles, head over to the
