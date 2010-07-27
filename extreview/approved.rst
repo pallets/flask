@@ -78,3 +78,25 @@ Flask-CouchDB
 
 There is also Flask-CouchDBKit.  Both are fine because they are doing
 different things, but the latter is not yet approved.
+
+
+Flask-Testing
+-------------
+
+:First Approval: 2010-07-27
+:Last Review: 2010-07-27
+:Approved Version: 0.2.3
+:Approved License: BSD
+
+All fine.
+
+
+Flask-WTF
+---------
+
+:First Approval: 2010-07-27
+:Last Review: 2010-07-27
+:Approved Version: 0.2.3
+:Approved License: BSD
+
+All fine.

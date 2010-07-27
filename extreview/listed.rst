@@ -6,17 +6,6 @@ extension is on the list of extensions on the website.  It does not
 contain extensions that are approved.
 
 
-Flask-CouchDB
--------------
-
-:Last-Review: 2010-07-25
-:Reviewed version: 0.2
-
-Would be fine for approval, but the test suite is not part of the sdist
-package (missing entry in MANIFEST.in) and the test suite does not respond
-to either "make test" or "python setup.py test".
-
-
 Flask-CouchDBKit
 ----------------
 
@@ -75,17 +64,6 @@ Flask-OpenID
 Short long description, missing tests.
 
 
-Flask-Testing
--------------
-
-:Last-Review: 2010-07-25
-:Reviewed Version: 0.2
-
-Would be fine for approval, but the test suite is not part of the sdist
-package (missing entry in MANIFEST.in) and the test suite does not respond
-to either "make test" or "python setup.py test".
-
-
 Flask-Themes
 ------------
 
@@ -102,17 +80,6 @@ Flask-Uploads
 
 :Last-Review: 2010-07-25
 :Reviewed Version: 0.1
-
-Would be fine for approval, but the test suite is not part of the sdist
-package (missing entry in MANIFEST.in) and the test suite does not respond
-to either "make test" or "python setup.py test".
-
-
-Flask-WTF
----------
-
-:Last-Review: 2010-07-25
-:Reviewed Version: 0.2.1
 
 Would be fine for approval, but the test suite is not part of the sdist
 package (missing entry in MANIFEST.in) and the test suite does not respond
