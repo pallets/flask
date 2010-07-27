@@ -128,14 +128,16 @@ extensions = [
             integration includes optional CSRF handling for greater security.
         ''',
         bitbucket='danjac/flask-wtf',
-        docs='http://packages.python.org/Flask-WTF/'
+        docs='http://packages.python.org/Flask-WTF/',
+        approved=True
     ),
     Extension('Flask-Testing', 'Dan Jacob',
         description='''
             <p>The Flask-Testing extension provides unit testing utilities for Flask.
         ''',
         bitbucket='danjac/flask-testing',
-        docs='http://packages.python.org/Flask-Testing/'
+        docs='http://packages.python.org/Flask-Testing/',
+        approved=True
     ),
     Extension('Flask-Script', 'Dan Jacob',
         description='''
