@@ -88,7 +88,8 @@ extensions = [
             attachments, one for photos, etc.
         ''',
         bitbucket='leafstorm/flask-uploads',
-        docs='http://packages.python.org/Flask-Uploads/'
+        docs='http://packages.python.org/Flask-Uploads/',
+        approved=True
     ),
     Extension('Flask-Themes', 'Matthew Frazier',
         description='''
@@ -96,7 +97,8 @@ extensions = [
             a wide range of appearances.
         ''',
         bitbucket='leafstorm/flask-themes',
-        docs='http://packages.python.org/Flask-Themes/'
+        docs='http://packages.python.org/Flask-Themes/',
+        approved=True
     ),
     Extension('Flask-CouchDBKit', 'Kridsada Thanabulpong',
         description='''
