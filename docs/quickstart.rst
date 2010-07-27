@@ -3,7 +3,7 @@
 Quickstart
 ==========
 
-Eager to get started?  This page gives a good introduction in how to gets
+Eager to get started?  This page gives a good introduction in how to get
 started with Flask.  This assumes you already have Flask installed.  If
 you do not, head over to the :ref:`installation` section.
 
@@ -37,14 +37,14 @@ see your hello world greeting.
 
 So what did that code do?
 
-1. first we imported the :class:`~flask.Flask` class.  An instance of this
+1. First we imported the :class:`~flask.Flask` class.  An instance of this
    class will be our WSGI application.  The first argument is the name of
    the application's module.  If you are using a single module (like here)
    you should use `__name__` because depending on if it's started as
    application or imported as module the name will be different
    (``'__main__'`` versus the actual import name).  For more information
    on that, have a look at the :class:`~flask.Flask` documentation.
-2. next we create an instance of it.  We pass it the name of the module /
+2. Next we create an instance of it.  We pass it the name of the module /
    package.  This is needed so that Flask knows where it should look for
    templates, static files and so on.
 3. Then we use the :meth:`~flask.Flask.route` decorator to tell Flask
@@ -81,7 +81,7 @@ To stop the server, hit control-C.
 Debug Mode
 ----------
 
-Now that :meth:`~flask.Flask.run` method is nice to start a local
+The :meth:`~flask.Flask.run` method is nice to start a local
 development server, but you would have to restart it manually after each
 change you do to code.  That is not very nice and Flask can do better.  If
 you enable the debug support the server will reload itself on code changes
@@ -101,11 +101,10 @@ Both will have exactly the same effect.
 
 .. admonition:: Attention
 
-   The interactive debugger however does not work in forking environments
-   which makes it nearly impossible to use on production servers but the
-   debugger still allows the execution of arbitrary code which makes it a
-   major security risk and **must never be used on production machines**
-   because of that.
+   Even though the interactive debugger does not work in forking environments
+   (which makes it nearly impossible to use on production servers), it still
+   allows the execution of arbitrary code. That makes it a major security
+   risk and therefore it **must never be used on production machines**.
 
 Screenshot of the debugger in action:
 
@@ -118,11 +117,14 @@ Screenshot of the debugger in action:
 Routing
 -------
 
-As you have seen above, the :meth:`~flask.Flask.route` decorator is used
-to bind a function to a URL.  But there is more to it!  You can make
-certain parts of the URL dynamic and attach multiple rules to a function.
+Modern web applications have beautiful URLs.  This helps people remember
+the URLs which is especially handy for applications that are used from
+mobile devices with slower network connections.  If the user can directly
+go to the desired page without having to hit the index page it is more
+likely he will like the page and come back next time.
 
-Here some examples::
+As you have seen above, the :meth:`~flask.Flask.route` decorator is used
+to bind a function to a URL.  Here are some basic examples::
 
     @app.route('/')
     def index():
@@ -132,20 +134,16 @@ Here some examples::
     def hello():
         return 'Hello World'
 
+But there is more to it!  You can make certain parts of the URL dynamic
+and attach multiple rules to a function.
 
 Variable Rules
 ``````````````
 
-Modern web applications have beautiful URLs.  This helps people remember
-the URLs which is especially handy for applications that are used from
-mobile devices with slower network connections.  If the user can directly
-go to the desired page without having to hit the index page it is more
-likely he will like the page and come back next time.
-
 To add variable parts to a URL you can mark these special sections as
 ``<variable_name>``.  Such a part is then passed as keyword argument to
 your function.  Optionally a converter can be specified by specifying a
-rule with ``<converter:variable_name>``.  Here some nice examples::
+rule with ``<converter:variable_name>``.  Here are some nice examples::
 
     @app.route('/user/<username>')
     def show_user_profile(username):
@@ -203,12 +201,12 @@ The following converters exist:
 URL Building
 ````````````
 
-If it can match URLs, can it also generate them?  Of course you can.  To
+If it can match URLs, can it also generate them?  Of course it can.  To
 build a URL to a specific function you can use the :func:`~flask.url_for`
 function.  It accepts the name of the function as first argument and a
 number of keyword arguments, each corresponding to the variable part of
 the URL rule.  Unknown variable parts are appended to the URL as query
-parameter.  Here some examples:
+parameter.  Here are some examples:
 
 >>> from flask import Flask, url_for
 >>> app = Flask(__name__)
@@ -256,7 +254,7 @@ HTTP Methods
 HTTP (the protocol web applications are speaking) knows different methods
 to access URLs.  By default a route only answers to `GET` requests, but
 that can be changed by providing the `methods` argument to the
-:meth:`~flask.Flask.route` decorator.  Here some examples::
+:meth:`~flask.Flask.route` decorator.  Here are some examples::
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -272,25 +270,24 @@ protocol) demands, so you can completely ignore that part of the HTTP
 specification.  Likewise as of Flask 0.6, `OPTIONS` is implemented for you
 as well automatically.
 
-You have no idea what an HTTP method is?  Worry not, here quick
-introduction in HTTP methods and why they matter:
+You have no idea what an HTTP method is?  Worry not, here is a quick
+introduction to HTTP methods and why they matter:
 
 The HTTP method (also often called "the verb") tells the server what the
 clients wants to *do* with the requested page.  The following methods are
 very common:
 
 `GET`
-    The Browser tells the server: just *get* me the information stored on
-    that page and send them to me.  This is probably the most common
-    method.
+    The browser tells the server to just *get* the information stored on
+    that page and send it.  This is probably the most common method.
 
 `HEAD`
-    The Browser tells the server: get me the information, but I am only
+    The browser tells the server to get the information, but it is only
     interested in the *headers*, not the content of the page.  An
     application is supposed to handle that as if a `GET` request was
-    received but not deliver the actual contents.  In Flask you don't have
-    to deal with that at all, the underlying Werkzeug library handles that
-    for you.
+    received but to not deliver the actual content.  In Flask you don't
+    have to deal with that at all, the underlying Werkzeug library handles
+    that for you.
 
 `POST`
     The browser tells the server that it wants to *post* some new
@@ -301,27 +298,27 @@ very common:
 `PUT`
     Similar to `POST` but the server might trigger the store procedure
     multiple times by overwriting the old values more than once.  Now you
-    might be asking why this is any useful, but there are some good
-    reasons to do that.  Consider the connection is lost during
-    transmission, in that situation a system between the browser and the
-    server might sent the request safely a second time without breaking
+    might be asking why is this useful, but there are some good reasons
+    to do it this way.  Consider that the connection gets lost during
+    transmission: in this situation a system between the browser and the
+    server might receive the request safely a second time without breaking
     things.  With `POST` that would not be possible because it must only
     be triggered once.
 
 `DELETE`
-    Remove the information that the given location.
+    Remove the information at the given location.
 
 `OPTIONS`
-    Provides a quick way for a requesting client to figure out which
-    methods are supported by this URL.  Starting with Flask 0.6, this
-    is implemented for you automatically.
+    Provides a quick way for a client to figure out which methods are
+    supported by this URL.  Starting with Flask 0.6, this is implemented
+    for you automatically.
 
 Now the interesting part is that in HTML4 and XHTML1, the only methods a
-form might submit to the server are `GET` and `POST`.  But with JavaScript
-and future HTML standards you can use other methods as well.  Furthermore
-HTTP became quite popular lately and there are more things than browsers
-that are speaking HTTP.  (Your revision control system for instance might
-speak HTTP)
+form can submit to the server are `GET` and `POST`.  But with JavaScript
+and future HTML standards you can use the other methods as well.  Furthermore
+HTTP has become quite popular lately and browsers are no longer the only
+clients that are using HTTP. For instance, many revision control system
+use it.
 
 .. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
 
@@ -383,7 +380,7 @@ to the :ref:`templating` section of the documentation or the official
 `Jinja2 Template Documentation
 <http://jinja.pocoo.org/2/documentation/templates>`_ for more information.
 
-Here an example template:
+Here is an example template:
 
 .. sourcecode:: html+jinja
 
@@ -411,7 +408,7 @@ markup to HTML) you can mark it as safe by using the
 :class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
 
-Here a basic introduction in how the :class:`~jinja2.Markup` class works:
+Here is a basic introduction to how the :class:`~jinja2.Markup` class works:
 
 >>> from flask import Markup
 >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
@@ -425,12 +422,12 @@ u'Marked up \xbb HTML'
 
    Autoescaping is no longer enabled for all templates.  The following
    extensions for templates trigger autoescaping: ``.html``, ``.htm``,
-   ``.xml``, ``.xhtml``.  Templates loaded from string will have
+   ``.xml``, ``.xhtml``.  Templates loaded from a string will have
    autoescaping disabled.
 
-.. [#] Unsure what that :class:`~flask.g` object is? It's something you
-   can store information on yourself, check the documentation of that
-   object (:class:`~flask.g`) and the :ref:`sqlite3` for more
+.. [#] Unsure what that :class:`~flask.g` object is? It's something in which
+   you can store information for your own needs, check the documentation of
+   that object (:class:`~flask.g`) and the :ref:`sqlite3` for more
    information.
 
 
@@ -454,10 +451,9 @@ Context Locals
    If you want to understand how that works and how you can implement
    tests with context locals, read this section, otherwise just skip it.
 
-Certain objects in Flask are global objects, but not just a standard
-global object, but actually a proxy to an object that is local to a
-specific context.  What a mouthful.  But that is actually quite easy to
-understand.
+Certain objects in Flask are global objects, but not of the usual kind.
+These objects are actually proxies to objects that are local to a specific
+context.  What a mouthful.  But that is actually quite easy to understand.
 
 Imagine the context being the handling thread.  A request comes in and the
 webserver decides to spawn a new thread (or something else, the
@@ -469,13 +465,13 @@ It does that in an intelligent way that one application can invoke another
 application without breaking.
 
 So what does this mean to you?  Basically you can completely ignore that
-this is the case unless you are unittesting or something different.  You
+this is the case unless you are doing something like unittesting.  You
 will notice that code that depends on a request object will suddenly break
 because there is no request object.  The solution is creating a request
 object yourself and binding it to the context.  The easiest solution for
 unittesting is by using the :meth:`~flask.Flask.test_request_context`
 context manager.  In combination with the `with` statement it will bind a
-test request so that you can interact with it.  Here an example::
+test request so that you can interact with it.  Here is an example::
 
     from flask import request
 
@@ -497,8 +493,8 @@ The Request Object
 ``````````````````
 
 The request object is documented in the API section and we will not cover
-it here in detail (see :class:`~flask.request`), but just mention some of
-the most common operations.  First of all you have to import it from the
+it here in detail (see :class:`~flask.request`). Here is a broad overview of
+some of the most common operations.  First of all you have to import it from
 the `flask` module::
 
     from flask import request
@@ -506,7 +502,7 @@ the `flask` module::
 The current request method is available by using the
 :attr:`~flask.request.method` attribute.  To access form data (data
 transmitted in a `POST` or `PUT` request) you can use the
-:attr:`~flask.request.form` attribute.  Here a full example of the two
+:attr:`~flask.request.form` attribute.  Here is a full example of the two
 attributes mentioned above::
 
     @app.route('/login', methods=['POST', 'GET'])
@@ -534,19 +530,18 @@ To access parameters submitted in the URL (``?key=value``) you can use the
 
 We recommend accessing URL parameters with `get` or by catching the
 `KeyError` because users might change the URL and presenting them a 400
-bad request page in that case is a bit user unfriendly.
+bad request page in that case is not user friendly.
 
-For a full list of methods and attributes on that object, head over to the
-:class:`~flask.request` documentation.
+For a full list of methods and attributes of the request object, head over
+to the :class:`~flask.request` documentation.
 
 
 File Uploads
 ````````````
 
-Obviously you can handle uploaded files with Flask just as easy.  Just
-make sure not to forget to set the ``enctype="multipart/form-data"``
-attribute on your HTML form, otherwise the browser will not transmit your
-files at all.
+You can handle uploaded files with Flask easily.  Just make sure not to
+forget to set the ``enctype="multipart/form-data"`` attribute on your HTML
+form, otherwise the browser will not transmit your files at all.
 
 Uploaded files are stored in memory or at a temporary location on the
 filesystem.  You can access those files by looking at the
@@ -554,8 +549,8 @@ filesystem.  You can access those files by looking at the
 uploaded file is stored in that dictionary.  It behaves just like a
 standard Python :class:`file` object, but it also has a
 :meth:`~werkzeug.FileStorage.save` method that allows you to store that
-file on the filesystem of the server.  Here a simple example how that
-works::
+file on the filesystem of the server.  Here is a simple example showing how
+that works::
 
     from flask import request
 
@@ -600,8 +595,8 @@ Redirects and Errors
 --------------------
 
 To redirect a user to somewhere else you can use the
-:func:`~flask.redirect` function, to abort a request early with an error
-code the :func:`~flask.abort` function.  Here an example how this works::
+:func:`~flask.redirect` function. To abort a request early with an error
+code use the :func:`~flask.abort` function.  Here an example how this works::
 
     from flask import abort, redirect, url_for
 
@@ -681,7 +676,7 @@ sessions work::
 The here mentioned :func:`~flask.escape` does escaping for you if you are
 not using the template engine (like in this example).
 
-.. admonition:: How to generate good Secret Keys
+.. admonition:: How to generate good secret keys
 
    The problem with random is that it's hard to judge what random is.  And
    a secret key should be as random as possible.  Your operating system
@@ -715,16 +710,17 @@ Logging
 
 .. versionadded:: 0.3
 
-Sometimes you might be in the situation where you deal with data that
-should be correct, but actually is not.  For example you have some client
-side code that sends an HTTP request to the server, and it's obviously
+Sometimes you might be in a situation where you deal with data that
+should be correct, but actually is not.  For example you may have some client
+side code that sends an HTTP request to the server but it's obviously
 malformed.  This might be caused by a user tempering with the data, or the
-client code failed.  Most the time, it's okay to reply with ``400 Bad
-Request`` in that situation, but other times it is not and the code has to
-continue working.
+client code failing.  Most of the time, it's okay to reply with ``400 Bad
+Request`` in that situation, but sometimes that won't do and the code has
+to continue working.
 
-Yet you want to log that something fishy happened.  This is where loggers
-come in handy.  As of Flask 0.3 a logger is preconfigured for you to use.
+You may still want to log that something fishy happened.  This is where
+loggers come in handy.  As of Flask 0.3 a logger is preconfigured for you
+to use.
 
 Here are some example log calls::
 
@@ -733,8 +729,9 @@ Here are some example log calls::
     app.logger.error('An error occurred')
 
 The attached :attr:`~flask.Flask.logger` is a standard logging
-:class:`~logging.Logger`, so head over to the official stdlib
-documentation for more information.
+:class:`~logging.Logger`, so head over to the official `logging
+documentation <http://docs.python.org/library/logging.html>`_ for more
+information.
 
 Hooking in WSGI Middlewares
 ---------------------------
