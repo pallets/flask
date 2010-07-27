@@ -100,3 +100,25 @@ Flask-WTF
 :Approved License: BSD
 
 All fine.
+
+
+Flask-Themes
+------------
+
+:First Approval: 2010-07-27
+:Last Review: 2010-07-27
+:Approved Version: 0.1.2
+:Approved License: MIT
+
+All fine.
+
+
+Flask-Uploads
+-------------
+
+:First Approval: 2010-07-27
+:Last Review: 2010-07-27
+:Approved Version: 0.1.2
+:Approved License: MIT
+
+All fine.
