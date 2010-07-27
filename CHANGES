@@ -8,6 +8,9 @@ Version 0.6.1
 
 Bugfix release, release date to be announced.
 
+- Fixed an issue where the default `OPTIONS` response was
+  not exposing all valid methods in the `Allow` header.
+
 Version 0.6
 -----------
 
