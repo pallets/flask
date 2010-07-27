@@ -110,6 +110,9 @@ input.openid            { background: url(openid.png) no-repeat 4px center;
 .extension dl                { margin: 0; font-size: 0.9em; }
 .extension dl dt             { width: 130px; float: left; height: 22px; }
 .extension dl dd             { height: 22px; }
+.extension h2.approved       { background: url(approved.png) 6px 8px no-repeat;
+                               margin-left: -30px; padding-left: 30px; }
+.extension p.approved        { color: #888; font-size: 14px; }
 
 /* projects */
 .project                   { border: 1px solid #eee; margin: 10px -10px;

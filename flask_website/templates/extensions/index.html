@@ -9,9 +9,12 @@
     }}">guide on creating extensions</a>.
   {% for extension in extensions %}
   <div class=extension>
-    <h2>{{ extension.name }}</h2>
+    <h2{% if extension.approved %} class=approved{% endif %}>{{ extension.name }}</h2>
     <div class=description>
       {{ extension.description }}
+      {%- if extension.approved %}
+      <p class=approved>This is an approved extension.
+      {%- endif %}
     </div>
     <dl>
       <dt>Author:
