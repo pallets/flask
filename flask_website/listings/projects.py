@@ -60,7 +60,12 @@ projects = {
             <p>
               Meetup Meeter is a tool for you to know who you have and have not
               met at a particular meetup event.
-        ''')
+        '''),
+        Project('newsmeme', 'http://thenewsmeme.com/', u'''
+            <p>
+              A hackernews/reddit clone written with Flask and
+              various Flask extensions.
+        ''', source='http://bitbucket.org/danjac/newsmeme')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
