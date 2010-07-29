@@ -116,13 +116,14 @@ extensions = [
         docs='http://packages.python.org/Flask-Genshi/',
         approved=True
     ),
-    Extension('flask-mail', 'Dan Jacob',
+    Extension('Flask-Mail', 'Dan Jacob',
         description='''
             <p>Makes sending mails from Flask applications very easy and
             has also support for unittesting.
         ''',
         bitbucket='danjac/flask-mail',
-        docs='http://packages.python.org/flask-mail/'
+        docs='http://packages.python.org/flask-mail/',
+        approved=True
     ),
     Extension('Flask-WTF', 'Dan Jacob',
         description='''
