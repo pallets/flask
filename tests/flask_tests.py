@@ -1018,6 +1018,18 @@ class ConfigTestCase(unittest.TestCase):
         finally:
             os.environ = env
 
+    def test_config_missing(self):
+        app = flask.Flask(__name__)
+        try:
+            app.config.from_pyfile('missing.cfg')
+        except IOError, e:
+            msg = str(e)
+            assert msg.startswith('[Errno 2] Unable to load configuration '
+                                  'file (No such file or directory):')
+            assert msg.endswith("missing.cfg'")
+        else:
+            assert 0, 'expected config'
+
 
 class SubdomainTestCase(unittest.TestCase):
 

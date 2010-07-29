@@ -116,7 +116,11 @@ class Config(dict):
         filename = os.path.join(self.root_path, filename)
         d = type(sys)('config')
         d.__file__ = filename
-        execfile(filename, d.__dict__)
+        try:
+            execfile(filename, d.__dict__)
+        except IOError, e:
+            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
+            raise
         self.from_object(d)
 
     def from_object(self, obj):
