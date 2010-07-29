@@ -33,7 +33,7 @@ except ImportError:
             json_available = False
 
 
-from werkzeug import Headers, wrap_file, is_resource_modified, cached_property
+from werkzeug import Headers, wrap_file, cached_property
 from werkzeug.exceptions import NotFound
 
 from jinja2 import FileSystemLoader
