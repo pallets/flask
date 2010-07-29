@@ -122,3 +122,14 @@ Flask-Uploads
 :Approved License: MIT
 
 All fine.
+
+
+Flask-Mail
+----------
+
+:First Approval: 2010-07-29
+:Last Review: 2010-07-29
+:Approved Version: 0.3.4
+:Approved License: BSD
+
+All fine.
