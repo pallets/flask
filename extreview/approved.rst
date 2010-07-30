@@ -133,3 +133,14 @@ Flask-Mail
 :Approved License: BSD
 
 All fine.
+
+
+Flask-XML-RPC
+-------------
+
+:First Approval: 2010-07-30
+:Last Review: 2010-07-30
+:Approved Version: 0.1.2
+:Approved License: MIT
+
+All fine.

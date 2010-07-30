@@ -62,12 +62,3 @@ Flask-OpenID
 :Reviewed Version: 1.0.1
 
 Short long description, missing tests.
-
-
-Flask-XML-RPC
--------------
-
-:Last-Review: 2010-07-25
-:Reviewed Version: 0.2.1
-
-Missing tests, API wise it would be fine for approval.
