@@ -70,7 +70,8 @@ extensions = [
             <p>Adds <a href="http://www.xmlrpc.com/">XML-RPC</a> support to Flask.
         ''',
         bitbucket='leafstorm/flask-xml-rpc',
-        docs='http://packages.python.org/Flask-XML-RPC/'
+        docs='http://packages.python.org/Flask-XML-RPC/',
+        approved=True
     ),
     Extension('Flask-CouchDB', 'Matthew Frazier',
         description='''
