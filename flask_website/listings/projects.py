@@ -105,7 +105,11 @@ projects = {
             <p>
               @font-face is a web font hosting service for Hangul
               fonts.
-        ''')
+        '''),
+        Project('Have they emailed me?', 'http://emailed-me.appspot.com/', '''
+            <p>
+              A mini-site for checking Google's GMail feed with Oauth.
+        ''', source='http://github.com/lincolnloop/emailed-me')
     ]
 }
 
