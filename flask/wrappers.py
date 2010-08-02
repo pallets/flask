@@ -17,7 +17,7 @@ from .globals import _request_ctx_stack
 
 
 class Request(RequestBase):
-    """The request object used by default in flask.  Remembers the
+    """The request object used by default in Flask.  Remembers the
     matched endpoint and view arguments.
 
     It is what ends up as :class:`~flask.request`.  If you want to replace
@@ -77,8 +77,8 @@ class Request(RequestBase):
 
 
 class Response(ResponseBase):
-    """The response object that is used by default in flask.  Works like the
-    response object from Werkzeug but is set to have a HTML mimetype by
+    """The response object that is used by default in Flask.  Works like the
+    response object from Werkzeug but is set to have an HTML mimetype by
     default.  Quite often you don't have to create this object yourself because
     :meth:`~flask.Flask.make_response` will take care of that for you.
 

@@ -215,7 +215,7 @@ class Flask(_PackageBoundObject):
         #: A dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
         #: the values are the function objects themselves.
-        #: to register a view function, use the :meth:`route` decorator.
+        #: To register a view function, use the :meth:`route` decorator.
         self.view_functions = {}
 
         #: A dictionary of all registered error handlers.  The key is
@@ -242,7 +242,7 @@ class Flask(_PackageBoundObject):
         self.after_request_funcs = {}
 
         #: A dictionary with list of functions that are called without argument
-        #: to populate the template context.  They key of the dictionary is the
+        #: to populate the template context.  The key of the dictionary is the
         #: name of the module this function is active for, `None` for all
         #: requests.  Each returns a dictionary that the template context is
         #: updated with.  To register a function here, use the

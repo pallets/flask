@@ -146,7 +146,7 @@ def url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
     The endpoint is relative to the active module if modules are in use.
 
-    Here some examples:
+    Here are some examples:
 
     ==================== ======================= =============================
     Active Module        Target Endpoint         Target Function
