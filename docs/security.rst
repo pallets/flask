@@ -72,7 +72,7 @@ do stupid things without them knowing.
 
 Say you have a specific URL that, when you sent `POST` requests to will
 delete a user's profile (say `http://example.com/user/delete`).  If an
-attacker now creates a page that sents a post request to that page with
+attacker now creates a page that sends a post request to that page with
 some JavaScript he just has to trick some users to that page and their
 profiles will end up being deleted.
 
@@ -163,6 +163,6 @@ page loaded the data from the JSON response is in the `captured` array.
 Because it is a syntax error in JavaScript to have an object literal
 (``{...}``) toplevel an attacker could not just do a request to an
 external URL with the script tag to load up the data.  So what Flask does
-is only allowing objects as toplevel elements when using
+is to only allow objects as toplevel elements when using
 :func:`~flask.jsonify`.  Make sure to do the same when using an ordinary
 JSON generate function.

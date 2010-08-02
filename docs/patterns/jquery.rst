@@ -53,8 +53,8 @@ is quite simple: it's on localhost port something and directly on the root
 of that server.  But what if you later decide to move your application to
 a different location?  For example to ``http://example.com/myapp``?  On
 the server side this never was a problem because we were using the handy
-:func:`~flask.url_for` function that did could answer that question for
-us, but if we are using jQuery we should better not hardcode the path to
+:func:`~flask.url_for` function that could answer that question for
+us, but if we are using jQuery we should not hardcode the path to
 the application but make that dynamic, so how can we do that?
 
 A simple method would be to add a script tag to our page that sets a
@@ -118,9 +118,9 @@ special error reporting in that case.
 The HTML
 --------
 
-You index.html template either has to extend a `layout.html` template with
+Your index.html template either has to extend a `layout.html` template with
 jQuery loaded and the `$SCRIPT_ROOT` variable set, or do that on the top.
-Here the HTML code needed for our little application (`index.html`).
+Here's the HTML code needed for our little application (`index.html`).
 Notice that we also drop the script directly into the HTML here.  It is
 usually a better idea to have that in a separate script file:
 

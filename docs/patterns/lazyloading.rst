@@ -74,7 +74,7 @@ function but internally imports the real function on first use::
             return self.view(*args, **kwargs)
 
 What's important here is is that `__module__` and `__name__` are properly
-set.  This is used by Flask internally to figure out how to do name the
+set.  This is used by Flask internally to figure out how to name the
 URL rules in case you don't provide a name for the rule yourself.
 
 Then you can define your central place to combine the views like this::

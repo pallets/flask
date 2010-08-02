@@ -5,7 +5,7 @@ Flask comes with a handy :func:`~flask.abort` function that aborts a
 request with an HTTP error code early.  It will also provide a plain black
 and white error page for you with a basic description, but nothing fancy.
 
-Depening on the error code it is less or more likely for the user to
+Depending on the error code it is less or more likely for the user to
 actually see such an error.
 
 Common Error Codes

@@ -2,7 +2,7 @@ Upgrading to Newer Releases
 ===========================
 
 Flask itself is changing like any software is changing over time.  Most of
-the changes are the nice kind, the kind where you don't have th change
+the changes are the nice kind, the kind where you don't have to change
 anything in your code to profit from a new release.
 
 However every once in a while there are changes that do require some

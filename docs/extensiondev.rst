@@ -67,7 +67,7 @@ First we create the following folder structure::
         setup.py
         LICENSE
 
-Here the contents of the most important files:
+Here's the contents of the most important files:
 
 flaskext/__init__.py
 ````````````````````
@@ -171,7 +171,7 @@ controller object that can be used to connect to the database.
 The Extension Code
 ------------------
 
-Here the contents of the `flaskext/sqlite3.py` for copy/paste::
+Here's the contents of the `flaskext/sqlite3.py` for copy/paste::
 
     from __future__ import absolute_import
     import sqlite3
@@ -196,7 +196,7 @@ Here the contents of the `flaskext/sqlite3.py` for copy/paste::
             g.sqlite3_db.close()
             return response
 
-So here what the lines of code do:
+So here's what the lines of code do:
 
 1.  the ``__future__`` import is necessary to activate absolute imports.
     This is needed because otherwise we could not call our module
@@ -237,7 +237,7 @@ If you don't need that, you can go with initialization functions.
 Initialization Functions
 ------------------------
 
-Here how the module would look like with initialization functions::
+Here's what the module would look like with initialization functions::
 
     from __future__ import absolute_import
     import sqlite3

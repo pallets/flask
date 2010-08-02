@@ -231,7 +231,7 @@ parameter.  Here are some examples:
 /user/John%20Doe
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method
-explained below.  It basically tells flask to think we are handling a
+explained below.  It basically tells Flask to think we are handling a
 request even though we are not, we are in an interactive Python shell.
 Have a look at the explanation below. :ref:`context-locals`).
 

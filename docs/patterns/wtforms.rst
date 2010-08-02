@@ -77,7 +77,7 @@ how easy this is.  WTForms does half the form generation for us already.
 To make it even nicer, we can write a macro that renders a field with
 label and a list of errors if there are any.
 
-Here an example `_formhelpers.html` template with such a macro:
+Here's an example `_formhelpers.html` template with such a macro:
 
 .. sourcecode:: html+jinja
 
@@ -93,7 +93,7 @@ Here an example `_formhelpers.html` template with such a macro:
     {% endmacro %}
 
 This macro accepts a couple of keyword arguments that are forwarded to
-WTForm's field function that renders the field for us.  They keyword
+WTForm's field function that renders the field for us.  The keyword
 arguments will be inserted as HTML attributes.  So for example you can
 call ``render_field(form.username, class='username')`` to add a class to
 the input element.  Note that WTForms returns standard Python unicode
