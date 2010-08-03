@@ -15,11 +15,10 @@ import re
 import sys
 import flask
 import unittest
-import tempfile
 from logging import StreamHandler
 from contextlib import contextmanager
 from datetime import datetime
-from werkzeug import parse_date, parse_options_header, http_date
+from werkzeug import parse_date, parse_options_header
 from werkzeug.exceptions import NotFound
 from jinja2 import TemplateNotFound
 from cStringIO import StringIO
@@ -352,7 +351,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             called.append(4)
             return response
         @app.after_request
-        def after1(response):
+        def after2(response):
             called.append(3)
             return response
         @app.route('/')
@@ -638,13 +637,13 @@ class ModuleTestCase(unittest.TestCase):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin', url_prefix='/admin')
         @admin.route('/')
-        def index():
+        def admin_index():
             return 'admin index'
         @admin.route('/login')
-        def login():
+        def admin_login():
             return 'admin login'
         @admin.route('/logout')
-        def logout():
+        def admin_logout():
             return 'admin logout'
         @app.route('/')
         def index():
@@ -680,7 +679,7 @@ class ModuleTestCase(unittest.TestCase):
             catched.append('after-admin')
             return response
         @admin.route('/')
-        def index():
+        def admin_index():
             return 'the admin'
         @app.before_request
         def before_request():
@@ -719,7 +718,7 @@ class ModuleTestCase(unittest.TestCase):
         def index():
             return flask.render_template_string('{{ a }}{{ b }}{{ c }}')
         @admin.route('/')
-        def index():
+        def admin_index():
             return flask.render_template_string('{{ a }}{{ b }}{{ c }}')
         app.register_module(admin)
         c = app.test_client()
@@ -794,13 +793,13 @@ class ModuleTestCase(unittest.TestCase):
             f = app.view_functions['admin.static']
 
             try:
-                rv = f('/etc/passwd')
+                f('/etc/passwd')
             except NotFound:
                 pass
             else:
                 assert 0, 'expected exception'
             try:
-                rv = f('../__init__.py')
+                f('../__init__.py')
             except NotFound:
                 pass
             else:
@@ -914,7 +913,7 @@ class LoggingTestCase(unittest.TestCase):
         c = app.test_client()
 
         with catch_stderr() as err:
-            rv = c.get('/')
+            c.get('/')
             out = err.getvalue()
             assert 'WARNING in flask_tests [' in out
             assert 'flask_tests.py' in out
@@ -1098,7 +1097,7 @@ class TestSignals(unittest.TestCase):
 
         flask.template_rendered.connect(record, app)
         try:
-            rv = app.test_client().get('/')
+            app.test_client().get('/')
             assert len(recorded) == 1
             template, context = recorded[0]
             assert template.name == 'simple_template.html'

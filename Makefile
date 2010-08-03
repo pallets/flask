@@ -1,9 +1,12 @@
-.PHONY: clean-pyc ext-test test upload-docs docs
+.PHONY: clean-pyc ext-test test upload-docs docs audit
 
 all: clean-pyc test
 
 test:
 	python setup.py test
+
+audit:
+	python setup.py audit
 
 tox-test:
 	PYTHONDONTWRITEBYTECODE= tox

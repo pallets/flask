@@ -18,7 +18,6 @@ import urllib2
 import tempfile
 import subprocess
 import argparse
-from cStringIO import StringIO
 
 from flask import json
 
