@@ -43,13 +43,13 @@ In order to test that, we add a second module (
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db_fd, flaskr.DATABASE = tempfile.mkstemp()
+            self.db_fd, self.app.config['DATABASE'] = tempfile.mkstemp()
             self.app = flaskr.app.test_client()
             flaskr.init_db()
 
         def tearDown(self):
             os.close(self.db_fd)
-            os.unlink(flaskr.DATABASE)
+            os.unlink(flaskr.app.config['DATABASE'])
 
     if __name__ == '__main__':
         unittest.main()
