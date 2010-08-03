@@ -65,7 +65,15 @@ projects = {
             <p>
               A hackernews/reddit clone written with Flask and
               various Flask extensions.
-        ''', source='http://bitbucket.org/danjac/newsmeme')
+        ''', source='http://bitbucket.org/danjac/newsmeme'),
+        Project('ymasuda.jp', 'http://ymasuda.jp/', u'''
+            <p>
+              Personal website of Yasushi Masuda.
+        '''),
+        Project('Python DoJoe', 'http://pythondojoe.appspot.com/', u'''
+            <p>
+              Website of Python DoJoe - a gathering of Python hackers
+        ''')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
