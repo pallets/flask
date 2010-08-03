@@ -73,7 +73,11 @@ projects = {
         Project('Python DoJoe', 'http://pythondojoe.appspot.com/', u'''
             <p>
               Website of Python DoJoe - a gathering of Python hackers
-        ''')
+        '''),
+        Project('Steven Harms\' Website', 'http://www.sharms.org/', u'''
+            <p>
+              Personal website of Steven Harms.
+        ''', source='http://github.com/sharms/HomePage')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
