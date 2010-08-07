@@ -49,7 +49,7 @@ An error handler is a function, just like a view function, but it is
 called when an error happens and is passed that error.  The error is most
 likely a :exc:`~werkzeug.exceptions.HTTPException`, but in one case it
 can be a different error: a handler for internal server errors will be
-passed other exception instances as well if they are uncought.
+passed other exception instances as well if they are uncaught.
 
 An error handler is registered with the :meth:`~flask.Flask.errorhandler`
 decorator and the error code of the exception.  Keep in mind that Flask
