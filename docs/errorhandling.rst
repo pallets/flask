@@ -89,7 +89,7 @@ There are a couple of handlers provided by the logging system out of the
 box but not all of them are useful for basic error logging.  The most
 interesting are probably the following:
 
--   :class:`~logging.handlers.FileHandler` - logs messages to a file on the
+-   :class:`~logging.FileHandler` - logs messages to a file on the
     filesystem.
 -   :class:`~logging.handlers.RotatingFileHandler` - logs messages to a file
     on the filesystem and will rotate after a certain number of messages.
@@ -105,7 +105,7 @@ above, just make sure to use a lower setting (I would recommend
 
     if not app.debug:
         import logging
-        from logging.handlers import TheHandlerYouWant
+        from themodule import TheHandler YouWant
         file_handler = TheHandlerYouWant(...)
         file_handler.setLevel(logging.WARNING)
         app.logger.addHandler(file_handler)
