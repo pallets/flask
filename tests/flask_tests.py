@@ -34,7 +34,26 @@ SECRET_KEY = 'devkey'
 
 
 @contextmanager
+def catch_warnings():
+    """Catch warnings in a with block in a list"""
+    import warnings
+    filters = warnings.filters
+    warnings.filters = filters[:]
+    old_showwarning = warnings.showwarning
+    log = []
+    def showwarning(message, category, filename, lineno, file=None, line=None):
+        log.append(locals())
+    try:
+        warnings.showwarning = showwarning
+        yield log
+    finally:
+        warnings.filters = filters
+        warnings.showwarning = old_showwarning
+
+
+@contextmanager
 def catch_stderr():
+    """Catch stderr in a StringIO"""
     old_stderr = sys.stderr
     sys.stderr = rv = StringIO()
     try:
@@ -834,46 +853,64 @@ class SendfileTestCase(unittest.TestCase):
 
     def test_send_file_object(self):
         app = flask.Flask(__name__)
-        with app.test_request_context():
-            f = open(os.path.join(app.root_path, 'static/index.html'))
-            rv = flask.send_file(f)
-            with app.open_resource('static/index.html') as f:
-                assert rv.data == f.read()
-            assert rv.mimetype == 'text/html'
+        with catch_warnings() as captured:
+            with app.test_request_context():
+                f = open(os.path.join(app.root_path, 'static/index.html'))
+                rv = flask.send_file(f)
+                with app.open_resource('static/index.html') as f:
+                    assert rv.data == f.read()
+                assert rv.mimetype == 'text/html'
+            # mimetypes + etag
+            assert len(captured) == 2
 
         app.use_x_sendfile = True
-        with app.test_request_context():
-            f = open(os.path.join(app.root_path, 'static/index.html'))
-            rv = flask.send_file(f)
-            assert rv.mimetype == 'text/html'
-            assert 'x-sendfile' in rv.headers
-            assert rv.headers['x-sendfile'] == \
-                os.path.join(app.root_path, 'static/index.html')
+        with catch_warnings() as captured:
+            with app.test_request_context():
+                f = open(os.path.join(app.root_path, 'static/index.html'))
+                rv = flask.send_file(f)
+                assert rv.mimetype == 'text/html'
+                assert 'x-sendfile' in rv.headers
+                assert rv.headers['x-sendfile'] == \
+                    os.path.join(app.root_path, 'static/index.html')
+            # mimetypes + etag
+            assert len(captured) == 2
 
         app.use_x_sendfile = False
         with app.test_request_context():
-            f = StringIO('Test')
-            rv = flask.send_file(f)
-            assert rv.data == 'Test'
-            assert rv.mimetype == 'application/octet-stream'
-            f = StringIO('Test')
-            rv = flask.send_file(f, mimetype='text/plain')
-            assert rv.data == 'Test'
-            assert rv.mimetype == 'text/plain'
+            with catch_warnings() as captured:
+                f = StringIO('Test')
+                rv = flask.send_file(f)
+                assert rv.data == 'Test'
+                assert rv.mimetype == 'application/octet-stream'
+            # etags
+            assert len(captured) == 1
+            with catch_warnings() as captured:
+                f = StringIO('Test')
+                rv = flask.send_file(f, mimetype='text/plain')
+                assert rv.data == 'Test'
+                assert rv.mimetype == 'text/plain'
+            # etags
+            assert len(captured) == 1
 
         app.use_x_sendfile = True
-        with app.test_request_context():
-            f = StringIO('Test')
-            rv = flask.send_file(f)
-            assert 'x-sendfile' not in rv.headers
+        with catch_warnings() as captured:
+            with app.test_request_context():
+                f = StringIO('Test')
+                rv = flask.send_file(f)
+                assert 'x-sendfile' not in rv.headers
+            # etags
+            assert len(captured) == 1
 
     def test_attachment(self):
         app = flask.Flask(__name__)
-        with app.test_request_context():
-            f = open(os.path.join(app.root_path, 'static/index.html'))
-            rv = flask.send_file(f, as_attachment=True)
-            value, options = parse_options_header(rv.headers['Content-Disposition'])
-            assert value == 'attachment'
+        with catch_warnings() as captured:
+            with app.test_request_context():
+                f = open(os.path.join(app.root_path, 'static/index.html'))
+                rv = flask.send_file(f, as_attachment=True)
+                value, options = parse_options_header(rv.headers['Content-Disposition'])
+                assert value == 'attachment'
+            # mimetypes + etag
+            assert len(captured) == 2
 
         with app.test_request_context():
             assert options['filename'] == 'index.html'
@@ -884,7 +921,8 @@ class SendfileTestCase(unittest.TestCase):
 
         with app.test_request_context():
             rv = flask.send_file(StringIO('Test'), as_attachment=True,
-                                 attachment_filename='index.txt')
+                                 attachment_filename='index.txt',
+                                 add_etags=False)
             assert rv.mimetype == 'text/plain'
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             assert value == 'attachment'

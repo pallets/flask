@@ -27,6 +27,23 @@ raise a :exc:`RuntimeError` instead of an :exc:`AttributeError` when they
 are unbound.  If you cought these exceptions with :exc:`AttributeError`
 before, you should catch them with :exc:`RuntimeError` now.
 
+Additionally the :func:`~flask.send_file` function is now issuing
+deprecation warnings if you depend on functionality that will be removed
+in Flask 1.0.  Previously it was possible to use etags and mimetypes
+when file objects were passed.  This was unreliable and caused issues
+for a few setups.  If you get a deprecation warning, make sure to
+update your application to work with either filenames there or disable
+etag attaching and attach them yourself.
+
+Old code::
+
+    return send_file(my_file_object)
+    return send_file(my_file_object)
+
+New code::
+
+    return send_file(my_file_object, add_etags=False)
+
 Version 0.6
 -----------
 

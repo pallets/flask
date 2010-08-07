@@ -259,7 +259,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     By default it will try to guess the mimetype for you, but you can
     also explicitly provide one.  For extra security you probably want
-    to sent certain files as attachment (HTML for instance).
+    to sent certain files as attachment (HTML for instance).  The mimetype
+    guessing requires a `filename` or an `attachment_filename` to be
+    provided.
 
     Please never pass filenames to this function from user sources without
     checking them first.  Something like this is usually sufficient to
@@ -273,6 +275,12 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionadded:: 0.5
        The `add_etags`, `cache_timeout` and `conditional` parameters were
        added.  The default behaviour is now to attach etags.
+
+    .. versionchanged:: 0.7
+       mimetype guessing and etag support for file objects was
+       deprecated because it was unreliable.  Pass a filename if you are
+       able to, otherwise attach an etag yourself.  This functionality
+       will be removed in Flask 1.0
 
     :param filename_or_fp: the filename of the file to send.  This is
                            relative to the :attr:`~Flask.root_path` if a
@@ -295,8 +303,25 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         filename = filename_or_fp
         file = None
     else:
+        from warnings import warn
         file = filename_or_fp
         filename = getattr(file, 'name', None)
+
+        # XXX: this behaviour is now deprecated because it was unreliable.
+        # removed in Flask 1.0
+        if not attachment_filename and not mimetype \
+           and isinstance(filename, basestring):
+            warn(DeprecationWarning('The filename support for file objects '
+                'passed to send_file is not deprecated.  Pass an '
+                'attach_filename if you want mimetypes to be guessed.'),
+                stacklevel=2)
+        if add_etags:
+            warn(DeprecationWarning('In future flask releases etags will no '
+                'longer be generated for file objects passed to the send_file '
+                'function because this behaviour was unreliable.  Pass '
+                'filenames instead if possible, otherwise attach an etag '
+                'yourself based on another value'), stacklevel=2)
+
     if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)

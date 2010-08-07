@@ -13,6 +13,10 @@ Release date to be announced, codename to be selected
   behaviour for `OPTIONS` responses.
 - Unbound locals now raise a proper :exc:`RuntimeError` instead
   of an :exc:`AttributeError`.
+- Mimetype guessing and etag support based on file objects is now
+  deprecated for :func:`flask.send_file` because it was unreliable.
+  Pass filenames instead or attach your own etags and provide a
+  proper mimetype by hand.
 
 Version 0.6.1
 -------------
