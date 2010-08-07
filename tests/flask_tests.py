@@ -72,7 +72,7 @@ class ContextTestCase(unittest.TestCase):
         ctx.pop()
         try:
             index()
-        except AttributeError:
+        except RuntimeError:
             pass
         else:
             assert 0, 'expected runtime error'
@@ -468,6 +468,10 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             pass
         else:
             assert "Expected ValueError"
+
+    def test_request_locals(self):
+        self.assertEqual(repr(flask.g), '<LocalProxy unbound>')
+        self.assertFalse(flask.g)
 
 
 class JSONTestCase(unittest.TestCase):

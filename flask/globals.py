@@ -10,11 +10,18 @@
     :license: BSD, see LICENSE for more details.
 """
 
+from functools import partial
 from werkzeug import LocalStack, LocalProxy
+
+def _lookup_object(name):
+    top = _request_ctx_stack.top
+    if top is None:
+        raise RuntimeError('working outside of request context')
+    return getattr(top, name)
 
 # context locals
 _request_ctx_stack = LocalStack()
-current_app = LocalProxy(lambda: _request_ctx_stack.top.app)
-request = LocalProxy(lambda: _request_ctx_stack.top.request)
-session = LocalProxy(lambda: _request_ctx_stack.top.session)
-g = LocalProxy(lambda: _request_ctx_stack.top.g)
+current_app = LocalProxy(partial(_lookup_object, 'app'))
+request = LocalProxy(partial(_lookup_object, 'request'))
+session = LocalProxy(partial(_lookup_object, 'session'))
+g = LocalProxy(partial(_lookup_object, 'g'))
