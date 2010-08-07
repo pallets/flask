@@ -24,7 +24,7 @@ Version 0.7
 
 Due to a bug in earlier implementations the request local proxies now
 raise a :exc:`RuntimeError` instead of an :exc:`AttributeError` when they
-are unbound.  If you cought these exceptions with :exc:`AttributeError`
+are unbound.  If you caught these exceptions with :exc:`AttributeError`
 before, you should catch them with :exc:`RuntimeError` now.
 
 Additionally the :func:`~flask.send_file` function is now issuing
