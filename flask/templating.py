@@ -8,6 +8,7 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import posixpath
 from jinja2 import BaseLoader, TemplateNotFound
 
 from .globals import _request_ctx_stack
@@ -36,6 +37,9 @@ class _DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
+        template = posixpath.normpath(template)
+        if template.startswith('../'):
+            raise TemplateNotFound(template)
         loader = None
         try:
             module, name = template.split('/', 1)

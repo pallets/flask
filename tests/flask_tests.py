@@ -767,6 +767,8 @@ class ModuleTestCase(unittest.TestCase):
         assert rv.data == 'Hello from the Frontend'
         rv = c.get('/admin/')
         assert rv.data == 'Hello from the Admin'
+        rv = c.get('/admin/index2')
+        assert rv.data == 'Hello from the Admin'
         rv = c.get('/admin/static/test.txt')
         assert rv.data.strip() == 'Admin File'
         rv = c.get('/admin/static/css/test.css')
