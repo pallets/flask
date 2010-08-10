@@ -230,7 +230,13 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             flask.session['test'] = 42
             flask.session.permanent = permanent
             return ''
-        rv = app.test_client().get('/')
+
+        @app.route('/test')
+        def test():
+            return unicode(flask.session.permanent)
+
+        client = app.test_client()
+        rv = client.get('/')
         assert 'set-cookie' in rv.headers
         match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
         expires = parse_date(match.group())
@@ -238,6 +244,9 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert expires.year == expected.year
         assert expires.month == expected.month
         assert expires.day == expected.day
+
+        rv = client.get('/test')
+        assert rv.data == 'True'
 
         permanent = False
         rv = app.test_client().get('/')
