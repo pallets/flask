@@ -14,7 +14,7 @@ template that does this.
 Simple Flashing
 ---------------
 
-So here a full example::
+So here is a full example::
 
     from flask import flash, redirect, url_for, render_template
 
