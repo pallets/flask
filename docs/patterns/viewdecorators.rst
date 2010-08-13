@@ -120,7 +120,9 @@ As you can see, if no template name is provided it will use the endpoint
 of the URL map with dots converted to slashes + ``'.html'``.  Otherwise
 the provided template name is used.  When the decorated function returns,
 the dictionary returned is passed to the template rendering function.  If
-`None` is returned, an empty dictionary is assumed.
+`None` is returned, an empty dictionary is assumed, if something else than
+a dictionary is returned we return it from the function unchanged.  That
+way you can still use the redirect function or return simple strings.
 
 Here the code for that decorator::
 
@@ -138,6 +140,8 @@ Here the code for that decorator::
                 ctx = f(*args, **kwargs)
                 if ctx is None:
                     ctx = {}
+                elif not isinstance(ctx, dict):
+                    return ctx
                 return render_template(template_name, **ctx)
             return decorated_function
         return decorator
