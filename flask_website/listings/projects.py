@@ -77,7 +77,11 @@ projects = {
         Project('Steven Harms\' Website', 'http://www.sharms.org/', u'''
             <p>
               Personal website of Steven Harms.
-        ''', source='http://github.com/sharms/HomePage')
+        ''', source='http://github.com/sharms/HomePage'),
+        Project('einfachJabber.de', 'http://einfachjabber.de', u'''
+            <p>
+              Website of a German jabber community.
+        ''')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
