@@ -55,7 +55,7 @@ to the template::
     @contextmanager
     def captured_templates(app):
         recorded = []
-        def record(template, context):
+        def record(sender, template, context):
             recorded.append((template, context))
         template_rendered.connect(record, app)
         try:
@@ -87,7 +87,7 @@ its own which simplifies the example above::
 
     def captured_templates(app):
         recorded = []
-        def record(template, context):
+        def record(sender, template, context):
             recorded.append((template, context))
         return template_rendered.connected_to(record, app)
 
@@ -155,7 +155,7 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
     from flask import template_rendered
 
     @template_rendered.connect_via(app)
-    def when_template_rendered(template, context):
+    def when_template_rendered(sender, template, context):
         print 'Template %s is rendered with %s' % (template.name, context)
 
 Core Signals
