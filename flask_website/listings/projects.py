@@ -81,6 +81,10 @@ projects = {
         Project('einfachJabber.de', 'http://einfachjabber.de', u'''
             <p>
               Website of a German jabber community.
+        '''),
+        Project('ThadeusB\'s Website', 'http://thadeusb.com/', u'''
+            <p>
+              Personal website of ThadeusB.
         ''')
     ],
     'apps': [
