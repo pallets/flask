@@ -43,7 +43,7 @@ In order to test that, we add a second module (
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db_fd, self.app.config['DATABASE'] = tempfile.mkstemp()
+            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
             self.app = flaskr.app.test_client()
             flaskr.init_db()
 
