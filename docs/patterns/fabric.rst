@@ -50,7 +50,7 @@ virtual environment::
         # figure out the release name and version
         dist = local('python setup.py --fullname').strip()
         # upload the source tarball to the temporary folder on the server
-        put('sdist/%s.tar.gz' % dist, '/tmp/yourapplication.tar.gz')
+        put('dist/%s.tar.gz' % dist, '/tmp/yourapplication.tar.gz')
         # create a place where we can unzip the tarball, then enter
         # that directory and unzip it
         run('mkdir yourapplication')
