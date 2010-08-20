@@ -28,6 +28,8 @@ Bugfix release, release date to be announced.
 - Jinja2 template loading syntax now allows "./" in front of
   a template load path.  Previously this caused issues with
   module setups.
+- Fixed an issue where the subdomain setting for modules was
+  ignored for the static folder.
 
 Version 0.6
 -----------
