@@ -1102,6 +1102,15 @@ class SubdomainTestCase(unittest.TestCase):
         rv = c.get('/', 'http://test.localhost/')
         assert rv.data == 'test index'
 
+    def test_module_static_path_subdomain(self):
+        app = flask.Flask(__name__)
+        app.config['SERVER_NAME'] = 'example.com'
+        from subdomaintestmodule import mod
+        app.register_module(mod)
+        c = app.test_client()
+        rv = c.get('/static/hello.txt', 'http://foo.example.com/')
+        assert rv.data.strip() == 'Hello Subdomain'
+
     def test_subdomain_matching(self):
         app = flask.Flask(__name__)
         app.config['SERVER_NAME'] = 'localhost'
