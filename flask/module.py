@@ -31,7 +31,8 @@ def _register_module(module, static_path):
             path = state.url_prefix + path
         state.app.add_url_rule(path + '/<path:filename>',
                                endpoint='%s.static' % module.name,
-                               view_func=module.send_static_file)
+                               view_func=module.send_static_file,
+                               subdomain=module.subdomain)
     return _register
 
 
