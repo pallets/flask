@@ -31,7 +31,7 @@ Continuing long statements:
                  .order_by(MyModel.name.desc()) \
                  .limit(10)
 
-  If you break in a statement with parentheses or brances, align to the
+  If you break in a statement with parentheses or braces, align to the
   braces::
 
     this_is_a_very_long(function_call, 'with many parameters',
@@ -105,8 +105,8 @@ Yoda statements are a nogo:
         pass
 
 Comparisons:
-  - against arbitary types: ``==`` and ``!=``
-  - against singletones with ``is`` and ``is not`` (eg: ``foo is not
+  - against arbitrary types: ``==`` and ``!=``
+  - against singletons with ``is`` and ``is not`` (eg: ``foo is not
     None``)
   - never compare something with `True` or `False` (for example never
     do ``foo == False``, do ``not foo`` instead)
@@ -125,7 +125,7 @@ Naming Conventions
 - Class names: ``CamelCase``, with acronyms kept uppercase (``HTTPWriter``
   and not ``HttpWriter``)
 - Variable names: ``lowercase_with_underscores``
-- Method and functin names: ``lowercase_with_underscores``
+- Method and function names: ``lowercase_with_underscores``
 - Constants: ``UPPERCASE_WITH_UNDERSCORES``
 - precompiled regular expressions: ``name_re``
 
@@ -151,9 +151,9 @@ Docstrings
 Docstring conventions:
   All docstrings are formatted with reStructuredText as understood by
   Sphinx.  Depending on the number of lines in the docstring, they are
-  layed out differently.  If it's just one line, the closing tripple
+  layed out differently.  If it's just one line, the closing triple
   quote is on the same line as the opening, otherwise the text is on
-  the same line as the opening quote and the tripple quote that closes
+  the same line as the opening quote and the triple quote that closes
   the string on its own line::
 
     def foo():

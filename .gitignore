@@ -7,3 +7,4 @@ dist
 *.egg
 *.egg-info
 _mailinglist
+.tox

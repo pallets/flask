@@ -27,13 +27,20 @@ from setuptools.archive_util import unpack_archive
 
 flask_svc_url = 'http://flask.pocoo.org/extensions/'
 
+
+# OS X has awful paths when using mkstemp or gettempdir().  I don't
+# care about security or clashes here, so pick something that is
+# actually rememberable.
 if sys.platform == 'darwin':
     _tempdir = '/private/tmp'
 else:
     _tempdir = tempfile.gettempdir()
 tdir = _tempdir + '/flaskext-test'
-flaskdir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                        '..'))
+flaskdir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+
+# virtualenv hack *cough*
+os.environ['PYTHONDONTWRITEBYTECODE'] = ''
 
 
 RESULT_TEMPATE = u'''\
@@ -74,6 +81,9 @@ RESULT_TEMPATE = u'''\
       <th>Author
       <th>License
       <th>Outcome
+      {%- for iptr, _ in results[0].logs|dictsort %}
+        <th>{{ iptr }}
+      {%- endfor %}
     </tr>
   </thead>
   <tbody>
@@ -85,6 +95,9 @@ RESULT_TEMPATE = u'''\
       <td>{{ result.author }}
       <td>{{ result.license }}
       <td>{{ outcome }}
+      {%- for iptr, _ in result.logs|dictsort %}
+        <td><a href="#{{ result.name }}-{{ iptr }}">see log</a>
+      {%- endfor %}
     </tr>
   {%- endfor %}
   </tbody>
@@ -93,7 +106,8 @@ RESULT_TEMPATE = u'''\
 <p>Detailed test logs for all tests on all platforms:
 {%- for result in results %}
   {%- for iptr, log in result.logs|dictsort %}
-    <h3>{{ result.name }} - {{ result.version }} [{{ iptr }}]</h3>
+    <h3 id="{{ result.name }}-{{ iptr }}">
+      {{ result.name }} - {{ result.version }} [{{ iptr }}]</h3>
     <pre>{{ log }}</pre>
   {%- endfor %}
 {%- endfor %}
@@ -186,14 +200,16 @@ tox_template = """[tox]
 envlist=%(env)s
 
 [testenv]
-deps=%(deps)s
+deps=
+  %(deps)s
+  py
 commands=bash flaskext-runtest.sh {envlogdir}/test.log
 downloadcache=%(cache)s
 """
 
 
 def create_tox_ini(checkout_path, interpreters, flask_dep):
-    tox_path = os.path.join(checkout_path, 'tox.ini')
+    tox_path = os.path.join(checkout_path, 'tox-flask-test.ini')
     if not os.path.exists(tox_path):
         with open(tox_path, 'w') as f:
             f.write(tox_template % {
@@ -201,6 +217,7 @@ def create_tox_ini(checkout_path, interpreters, flask_dep):
                 'cache':    tdir,
                 'deps':     flask_dep
             })
+    return tox_path
 
 
 def iter_extensions(only_approved=True):
@@ -228,23 +245,20 @@ def test_extension(name, interpreters, flask_dep):
     # if there is a tox.ini, remove it, it will cause troubles
     # for us.  Remove it if present, we are running tox ourselves
     # afterall.
-    toxini = os.path.join(checkout_path, 'tox.ini')
-    if os.path.isfile(toxini):
-        os.remove(toxini)
 
     create_tox_ini(checkout_path, interpreters, flask_dep)
-    rv = subprocess.call(['tox'], cwd=checkout_path)
+    rv = subprocess.call(['tox', '-c', 'tox-flask-test.ini'], cwd=checkout_path)
     return TestResult(name, checkout_path, rv, interpreters)
 
 
-def run_tests(interpreters, only_approved=True):
+def run_tests(extensions, interpreters):
     results = {}
     create_tdir()
     log('Packaging Flask')
     flask_dep = package_flask()
     log('Running extension tests')
     log('Temporary Environment: %s', tdir)
-    for name in iter_extensions(only_approved):
+    for name in extensions:
         log('Testing %s', name)
         result = test_extension(name, interpreters, flask_dep)
         if result.success:
@@ -272,10 +286,21 @@ def main():
                         help='run against all extensions, not just approved')
     parser.add_argument('--browse', dest='browse', action='store_true',
                         help='show browser with the result summary')
+    parser.add_argument('--env', dest='env', default='py25,py26,py27',
+                        help='the tox environments to run against')
+    parser.add_argument('--extension=', dest='extension', default=None,
+                        help='tests a single extension')
     args = parser.parse_args()
 
-    results = run_tests(['py26'], not args.all)
-    filename = render_results(results, not args.all)
+    if args.extension is not None:
+        only_approved = False
+        extensions = [args.extension]
+    else:
+        only_approved = not args.all
+        extensions = iter_extensions(only_approved)
+
+    results = run_tests(extensions, [x.strip() for x in args.env.split(',')])
+    filename = render_results(results, only_approved)
     if args.browse:
         import webbrowser
         webbrowser.open('file:///' + filename.lstrip('/'))
