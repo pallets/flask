@@ -89,6 +89,10 @@ projects = {
         Project('learnbuffet.com', 'http://www.learnbuffett.com/', u'''
             <p>
               Learn trading and make significant profits statistically.
+        '''),
+        Project('was it up?', 'http://wasitup.com/', u'''
+            <p>
+              A website monitoring service.
         ''')
     ],
     'apps': [
