@@ -93,6 +93,10 @@ projects = {
         Project('was it up?', 'http://wasitup.com/', u'''
             <p>
               A website monitoring service.
+        '''),
+        Project('Blueslug', 'http://blueslug.com/', u'''
+            <p>
+              A flask-powered anti-social delicious clone
         ''')
     ],
     'apps': [
