@@ -177,7 +177,15 @@ extensions = [
         docs='http://packages.python.org/Flask-Creole',
         bitbucket='aafshar/flask-creole-main',
         approved=True
-    )
+    ),
+    Extension('Flask-Cache', 'Thadeus Burgess',
+        description='''
+            <p>Adds cache support to your Flask application.
+        ''',
+        docs='http://packages.python.org/Flask-Cache',
+        github='thadeusb/flask-cache',
+    ),
+
 ]
 
 
