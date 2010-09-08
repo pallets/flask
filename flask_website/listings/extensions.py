@@ -185,7 +185,14 @@ extensions = [
         docs='http://packages.python.org/Flask-Cache',
         github='thadeusb/flask-cache',
     ),
-
+    Extension('Flask-Principal', 'Ali Afshar',
+        description='''
+            <p>Identity management for Flask.
+        ''',
+        docs='http://packages.python.org/Flask-Principal',
+        bitbucket='aafshar/flask-principal-main',
+        approved=False
+    ),
 ]
 
 
