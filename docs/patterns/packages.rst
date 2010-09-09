@@ -212,6 +212,7 @@ static files and templates.  Imagine you have an application like this::
     /yourapplication
         __init__.py
         /apps
+	    __init__.py
             /frontend
                 __init__.py
                 views.py
@@ -243,6 +244,21 @@ name of the module.  So for the admin it would be
 ``render_template('admin/list_items.html')`` and so on.  It is not
 possible to refer to templates without the prefixed module name.  This is
 explicit unlike URL rules.
+
+You also need to explicitly pass the ``url_prefix`` argument when
+registering your modules this way::
+
+    # in yourapplication/__init__.py
+    from flask import Flask
+    from yourapplication.apps.admin.views import admin
+    from yourapplication.apps.frontend.views import frontend
+
+
+    app = Flask(__name__)
+    app.register_module(admin, url_prefix='/admin')
+    app.register_module(frontend, url_prefix='/frontend')
+
+This is because Flask cannot infer the prefix from the package names.
 
 .. admonition:: References to Static Folders
 
