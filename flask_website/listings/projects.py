@@ -97,7 +97,11 @@ projects = {
         Project('Blueslug', 'http://blueslug.com/', u'''
             <p>
               A flask-powered anti-social delicious clone
-        ''')
+        '''),
+        Project('Eugen\'s Blog', 'http://blog.eugenkiss.com/', u'''
+            <p>
+              Personal Website of Eugen Kiss.
+        ''', source='http://github.com/eugenkiss/Simblin')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
