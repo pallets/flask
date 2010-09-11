@@ -238,7 +238,7 @@ class Flask(_PackageBoundObject):
         #: this function is active for, `None` for all requests.  This can for
         #: example be used to open database connections or getting hold of the
         #: currently logged in user.  To register a function here, use the
-        #: :meth:`before_request` decorator.
+        #: :meth:`after_request` decorator.
         self.after_request_funcs = {}
 
         #: A dictionary with list of functions that are called without argument
