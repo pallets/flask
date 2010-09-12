@@ -256,6 +256,22 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.5
         self.modules = {}
 
+        #: a place where extensions can store application specific state.  For
+        #: example this is where an extension could store database engines and
+        #: similar things.  For backwards compatibility extensions should register
+        #: themselves like this::
+        #:
+        #:      if not hasattr(app, 'extensions'):
+        #:          app.extensions = {}
+        #:      app.extensions['extensionname'] = SomeObject()
+        #:
+        #: The key must match the name of the `flaskext` module.  For example in
+        #: case of a "Flask-Foo" extension in `flaskext.foo`, the key would be
+        #: ``'foo'``.
+        #:
+        #: .. versionadded:: 0.7
+        self.extensions = {}
+
         #: The :class:`~werkzeug.routing.Map` for this instance.  You can use
         #: this to change the routing converters after the class was created
         #: but before any routes are connected.  Example::
