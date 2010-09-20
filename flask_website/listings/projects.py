@@ -101,6 +101,11 @@ projects = {
         Project('Blueslug', 'http://blueslug.com/', u'''
             <p>
               A flask-powered anti-social delicious clone
+        '''),
+        Project('Comiker', 'http://www.comiker.com/', u'''
+            <p>
+              A website where you can create webcomics and vote for the
+              best ones.
         ''')
     ],
     'apps': [
