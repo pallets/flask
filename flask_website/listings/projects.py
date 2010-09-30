@@ -106,6 +106,10 @@ projects = {
             <p>
               A website where you can create webcomics and vote for the
               best ones.
+        '''),
+        Project('weluse GmbH', 'http://weluse.de/', u'''
+            <p>
+              A German corporate website.
         ''')
     ],
     'apps': [
