@@ -154,7 +154,13 @@ projects = {
         Project('Have they emailed me?', 'http://emailed-me.appspot.com/', '''
             <p>
               A mini-site for checking Google's GMail feed with Oauth.
-        ''', source='http://github.com/lincolnloop/emailed-me')
+        ''', source='http://github.com/lincolnloop/emailed-me'),
+        Project('Remar.kZ', 'http://remar.kz/', '''
+            <p>
+               Sometimes you use someone else's computer and find something
+               neat and interesting.  Store it on Remar.kZ without having
+               to enter your credentials.
+        ''', source='http://bitbucket.org/little_arhat/remarkz')
     ]
 }
 
