@@ -62,33 +62,33 @@ Another big problem is CSRF.  This is a very complex topic and I won't
 outline it here in detail just mention what it is and how to theoretically
 prevent it.
 
-So if your authentication information is stored in cookies you have
-implicit state management.  By that I mean that the state of "being logged
-in" is controlled by a cookie and that cookie is sent with each request to
-a page.  Unfortunately that really means "each request" so also requests
-triggered by 3rd party sites.  If you don't keep that in mind some people
-might be able to trick your application's users with social engineering to
-do stupid things without them knowing.
+If your authentication information is stored in cookies, you have implicit
+state management.  The state of "being logged in" is controlled by a
+cookie, and that cookie is sent with each request to a page.
+Unfortunately that includes requests triggered by 3rd party sites.  If you
+don't keep that in mind, some people might be able to trick your
+application's users with social engineering to do stupid things without
+them knowing.
 
 Say you have a specific URL that, when you sent `POST` requests to will
 delete a user's profile (say `http://example.com/user/delete`).  If an
 attacker now creates a page that sends a post request to that page with
-some JavaScript he just has to trick some users to that page and their
-profiles will end up being deleted.
+some JavaScript he just has to trick some users to load that page and
+their profiles will end up being deleted.
 
-Imagine you would run Facebook with millions of concurrent users and
-someone would send out links to images of little kittens.  When a user
-would go to that page their profiles would get deleted while they are
+Imagine you were to run Facebook with millions of concurrent users and
+someone would send out links to images of little kittens.  When users
+would go to that page, their profiles would get deleted while they are
 looking at images of fluffy cats.
 
-So how can you prevent yourself from that?  Basically for each request
-that modifies content on the server you would have to either use a
-one-time token and store that in the cookie **and** also transmit it with
-the form data.   After recieving the data on the server again you would
-then have to compare the two tokens and ensure they are equal.
+How can you prevent that?  Basically for each request that modifies
+content on the server you would have to either use a one-time token and
+store that in the cookie **and** also transmit it with the form data.
+After receiving the data on the server again, you would then have to
+compare the two tokens and ensure they are equal.
 
-Why does not Flask do that for you?  The ideal place for this to happen is
-the form validation framework which does not exist in Flask.
+Why does Flask not do that for you?  The ideal place for this to happen is
+the form validation framework, which does not exist in Flask.
 
 .. _json-security:
 
@@ -111,8 +111,8 @@ generate JSON.
 
 So what is the issue and how to avoid it?  The problem are arrays at
 toplevel in JSON.  Imagine you send the following data out in a JSON
-request.  Say that's exporting the names and email adresses of all your
-friends for a part of the userinterface that is written in JavaScript.
+request.  Say that's exporting the names and email addresses of all your
+friends for a part of the user interface that is written in JavaScript.
 Not very uncommon:
 
 .. sourcecode:: javascript
