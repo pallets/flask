@@ -61,7 +61,7 @@ The following configuration values are used internally by Flask:
 ``USE_X_SENDFILE``              enable/disable x-sendfile
 ``LOGGER_NAME``                 the name of the logger
 ``SERVER_NAME``                 the name of the server.  Required for
-                                subdomain support (eg: ``'localhost'``)
+                                subdomain support (e.g.: ``'localhost'``)
 ``MAX_CONTENT_LENGTH``          If set to a value in bytes, Flask will
                                 reject incoming requests with a
                                 content length greater than this by
@@ -222,7 +222,7 @@ your configuration files.  However here a list of good recommendations:
     even create your own script for sourcing that activates a virtualenv
     and exports the development configuration for you.
 -   Use a tool like `fabric`_ in production to push code and
-    configurations sepearately to the production server(s).  For some
+    configurations separately to the production server(s).  For some
     details about how to do that, head over to the :ref:`deploy` pattern.
 
 .. _fabric: http://fabfile.org/

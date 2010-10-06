@@ -33,7 +33,7 @@ even if the application behaves correctly:
     instead of 404.  If you are not deleting documents permanently from
     the database but just mark them as deleted, do the user a favour and
     use the 410 code instead and display a message that what he was
-    looking for was deleted for all ethernity.
+    looking for was deleted for all eternity.
 
 *500 Internal Server Error*
     Usually happens on programming errors or if the server is overloaded.

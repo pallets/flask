@@ -100,5 +100,5 @@ name and a dot, and by wrapping `view_func` in a `LazyView` as needed::
     url('/user/<username>', 'views.user')
 
 One thing to keep in mind is that before and after request handlers have
-to be in a file that is imported upfront to work propery on the first
+to be in a file that is imported upfront to work properly on the first
 request.  The same goes for any kind of remaining decorator.

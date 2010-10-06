@@ -72,7 +72,7 @@ Expressions and Statements
 
 General whitespace rules:
   - No whitespace for unary operators that are not words
-    (eg: ``-``, ``~`` etc.) as well on the inner side of parentheses.
+    (e.g.: ``-``, ``~`` etc.) as well on the inner side of parentheses.
   - Whitespace is placed between binary operators.
 
   Good::
@@ -151,7 +151,7 @@ Docstrings
 Docstring conventions:
   All docstrings are formatted with reStructuredText as understood by
   Sphinx.  Depending on the number of lines in the docstring, they are
-  layed out differently.  If it's just one line, the closing triple
+  laid out differently.  If it's just one line, the closing triple
   quote is on the same line as the opening, otherwise the text is on
   the same line as the opening quote and the triple quote that closes
   the string on its own line::
@@ -162,7 +162,7 @@ Docstring conventions:
 
     def bar():
         """This is a longer docstring with so much information in there
-        that it spans three lines.  In this case the closing tripple quote
+        that it spans three lines.  In this case the closing triple quote
         is on its own line.
         """
 
