@@ -76,7 +76,7 @@ focus on that a little later.  First we should get the database working.
 
 .. admonition:: Externally Visible Server
 
-   Want your server to be publically available?  Check out the
+   Want your server to be publicly available?  Check out the
    :ref:`externally visible server <public-server>` section for more
    information.
 

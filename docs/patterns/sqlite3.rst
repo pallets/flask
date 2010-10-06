@@ -61,7 +61,7 @@ Or if you just want a single result::
 
 To pass variable parts to the SQL statement, use a question mark in the
 statement and pass in the arguments as a list.  Never directly add them to
-the SQL statement with string formattings because this makes it possible
+the SQL statement with string formatting because this makes it possible
 to attack the application using `SQL Injections
 <http://en.wikipedia.org/wiki/SQL_injection>`_.
 

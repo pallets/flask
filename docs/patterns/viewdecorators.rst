@@ -89,7 +89,7 @@ Here the code::
             return decorated_function
         return decorator
 
-Notice that this assumes an instanciated `cache` object is available, see
+Notice that this assumes an instantiated `cache` object is available, see
 :ref:`caching-pattern` for more information.
 
 

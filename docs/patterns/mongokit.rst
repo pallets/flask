@@ -78,7 +78,7 @@ validator for the maximum character length and uses a special MongoKit feature
 called `use_dot_notation`.  Per default MongoKit behaves like a python
 dictionary but with `use_dot_notation` set to `True` you can use your
 documents like you use models in nearly any other ORM by using dots to
-seperate between attributes.
+separate between attributes.
 
 You can insert entries into the database like this:
 

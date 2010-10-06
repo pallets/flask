@@ -69,10 +69,10 @@ If you deploy your application behind an HTTP proxy you will need to
 rewrite a few headers in order for the application to work.  The two
 problematic values in the WSGI environment usually are `REMOTE_ADDR` and
 `HTTP_HOST`.  Werkzeug ships a fixer that will solve some common setups,
-but you might want to write your own WSGI middlware for specific setups.
+but you might want to write your own WSGI middleware for specific setups.
 
 The most common setup invokes the host being set from `X-Forwarded-Host`
-and the remote address from `X-Forwared-For`::
+and the remote address from `X-Forward-For`::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)

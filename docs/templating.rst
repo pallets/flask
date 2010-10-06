@@ -144,7 +144,7 @@ autoescape %}`` block:
         <p>{{ will_not_be_escaped }}
     {% endautoescape %}
 
-Whenever you do this, please be very cautious about the varibles you are
+Whenever you do this, please be very cautious about the variables you are
 using in this block.
 
 Registering Filters
