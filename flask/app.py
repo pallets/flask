@@ -604,6 +604,18 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    def get(self, rule, **options):
+        def decorator(f):
+            self.add_url_rule(rule, None, f, methods=('GET',), **options)
+            return f
+        return decorator
+
+    def post(self, rule, **options):
+        def decorator(f):
+            self.add_url_rule(rule, None, f,methods=('POST',), **options)
+            return f
+        return decorator
+
     def errorhandler(self, code):
         """A decorator that is used to register a function give a given
         error code.  Example::
