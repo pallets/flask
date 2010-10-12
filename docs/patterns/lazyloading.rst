@@ -74,7 +74,7 @@ function but internally imports the real function on first use::
             return self.view(*args, **kwargs)
 
 What's important here is is that `__module__` and `__name__` are properly
-set.  This is used by Flask internally to figure out how to do name the
+set.  This is used by Flask internally to figure out how to name the
 URL rules in case you don't provide a name for the rule yourself.
 
 Then you can define your central place to combine the views like this::
@@ -100,5 +100,5 @@ name and a dot, and by wrapping `view_func` in a `LazyView` as needed::
     url('/user/<username>', 'views.user')
 
 One thing to keep in mind is that before and after request handlers have
-to be in a file that is imported upfront to work propery on the first
+to be in a file that is imported upfront to work properly on the first
 request.  The same goes for any kind of remaining decorator.

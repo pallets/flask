@@ -38,6 +38,8 @@ Incoming Request Data
    sure that you always get the correct data for the active thread if you
    are in a multithreaded environment.
 
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
    The request object is an instance of a :class:`~werkzeug.Request`
    subclass and provides all of the attributes Werkzeug defines.  This
    just shows a quick overview of the most important ones.
@@ -164,6 +166,8 @@ To access the current session you can use the :class:`session` object:
    The session object works pretty much like an ordinary dict, with the
    difference that it keeps track on modifications.
 
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
    The following attributes are interesting:
 
    .. attribute:: new
@@ -206,6 +210,8 @@ thing, like it does for :class:`request` and :class:`session`.
    Just store on this whatever you want.  For example a database
    connection or the user that is currently logged in.
 
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
 
 Useful Functions and Classes
 ----------------------------
@@ -215,6 +221,8 @@ Useful Functions and Classes
    Points to the application handling the request.  This is useful for
    extensions that want to support multiple applications running side
    by side.
+
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: url_for
 
@@ -228,7 +236,11 @@ Useful Functions and Classes
 
 .. autofunction:: redirect
 
+.. autofunction:: make_response
+
 .. autofunction:: send_file
+
+.. autofunction:: send_from_directory
 
 .. autofunction:: escape
 
@@ -301,6 +313,36 @@ Useful Internals
    instance and can be used by extensions and application code but the
    use is discouraged in general.
 
+   The following attributes are always present on each layer of the
+   stack:
+
+   `app`
+      the active Flask application.
+
+   `url_adapter`
+      the URL adapter that was used to match the request.
+
+   `request`
+      the current request object.
+
+   `session`
+      the active session object.
+
+   `g`
+      an object with all the attributes of the :data:`flask.g` object.
+
+   `flashes`
+      an internal cache for the flashed messages.
+
+   Example usage::
+
+      from flask import _request_ctx_stack
+
+      def get_session():
+          ctx = _request_ctx_stack.top
+          if ctx is not None:
+              return ctx.session
+
    .. versionchanged:: 0.4
 
    The request context is automatically popped at the end of the request
@@ -317,3 +359,83 @@ Useful Internals
    information from the context local around for a little longer.  Make
    sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
    that situation, otherwise your unittests will leak memory.
+
+Signals
+-------
+
+.. when modifying this list, also update the one in signals.rst
+
+.. versionadded:: 0.6
+
+.. data:: signals_available
+
+   `True` if the signalling system is available.  This is the case
+   when `blinker`_ is installed.
+
+.. data:: template_rendered
+
+   This signal is sent when a template was successfully rendered.  The
+   signal is invoked with the instance of the template as `template`
+   and the context as dictionary (named `context`).
+
+.. data:: request_started
+
+   This signal is sent before any request processing started but when the
+   request context was set up.  Because the request context is already
+   bound, the subscriber can access the request with the standard global
+   proxies such as :class:`~flask.request`.
+
+.. data:: request_finished
+
+   This signal is sent right before the response is sent to the client.
+   It is passed the response to be sent named `response`.
+
+.. data:: got_request_exception
+
+   This signal is sent when an exception happens during request processing.
+   It is sent *before* the standard exception handling kicks in and even
+   in debug mode, where no exception handling happens.  The exception
+   itself is passed to the subscriber as `exception`.
+
+.. currentmodule:: None
+
+.. class:: flask.signals.Namespace
+
+   An alias for :class:`blinker.base.Namespace` if blinker is available,
+   otherwise a dummy class that creates fake signals.  This class is
+   available for Flask extensions that want to provide the same fallback
+   system as Flask itself.
+
+   .. method:: signal(name, doc=None)
+
+      Creates a new signal for this namespace if blinker is available,
+      otherwise returns a fake signal that has a send method that will
+      do nothing but will fail with a :exc:`RuntimeError` for all other
+      operations, including connecting.
+
+.. _blinker: http://pypi.python.org/pypi/blinker
+
+.. _notes-on-proxies:
+
+Notes On Proxies
+----------------
+
+Some of the objects provided by Flask are proxies to other objects.  The
+reason behind this is that these proxies are shared between threads and
+they have to dispatch to the actual object bound to a thread behind the
+scenes as necessary.
+
+Most of the time you don't have to care about that, but there are some
+exceptions where it is good to know that this object is an actual proxy:
+
+-   The proxy objects do not fake their inherited types, so if you want to
+    perform actual instance checks, you have to do that on the instance
+    that is being proxied (see `_get_current_object` below).
+-   if the object reference is important (so for example for sending
+    :ref:`signals`)
+
+If you need to get access to the underlying object that is proxied, you
+can use the :meth:`~werkzeug.LocalProxy._get_current_object` method::
+
+    app = current_app._get_current_object()
+    my_signal.send(app)

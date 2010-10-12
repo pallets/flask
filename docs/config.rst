@@ -6,12 +6,12 @@ Configuration Handling
 .. versionadded:: 0.3
 
 Applications need some kind of configuration.  There are different things
-you might want to change.  Like toggling debug mode, the secret key and a
+you might want to change like toggling debug mode, the secret key, and a
 lot of very similar things.
 
 The way Flask is designed usually requires the configuration to be
-available when the application starts up.  You can either hardcode the
-configuration in the code which for many small applications is not
+available when the application starts up.  You can hardcode the
+configuration in the code, which for many small applications is not
 actually that bad, but there are better ways.
 
 Independent of how you load your config, there is a config object
@@ -59,13 +59,48 @@ The following configuration values are used internally by Flask:
 ``PERMANENT_SESSION_LIFETIME``  the lifetime of a permanent session as
                                 :class:`datetime.timedelta` object.
 ``USE_X_SENDFILE``              enable/disable x-sendfile
+``LOGGER_NAME``                 the name of the logger
+``SERVER_NAME``                 the name of the server.  Required for
+                                subdomain support (e.g.: ``'localhost'``)
+``MAX_CONTENT_LENGTH``          If set to a value in bytes, Flask will
+                                reject incoming requests with a
+                                content length greater than this by
+                                returning a 413 status code.
 =============================== =========================================
+
+.. admonition:: More on ``SERVER_NAME``
+
+   The ``SERVER_NAME`` key is used for the subdomain support.  Because
+   Flask cannot guess the subdomain part without the knowledge of the
+   actual server name, this is required if you want to work with
+   subdomains.  This is also used for the session cookie.
+
+   Please keep in mind that not only Flask has the problem of not knowing
+   what subdomains are, your web browser does as well.  Most modern web
+   browsers will not allow cross-subdomain cookies to be set on a
+   server name without dots in it.  So if your server name is
+   ``'localhost'`` you will not be able to set a cookie for
+   ``'localhost'`` and every subdomain of it.  Please chose a different
+   server name in that case, like ``'myapplication.local'`` and add
+   this name + the subdomains you want to use into your host config
+   or setup a local `bind`_.
+
+.. _bind: https://www.isc.org/software/bind
+
+.. versionadded:: 0.4
+   ``LOGGER_NAME``
+
+.. versionadded:: 0.5
+   ``SERVER_NAME``
+
+.. versionadded:: 0.6
+   ``MAX_CONTENT_LENGTH``
 
 Configuring from Files
 ----------------------
 
-Configuration becomes more useful if you can configure from a file.  And
-ideally that file would be outside of the actual application package that
+Configuration becomes more useful if you can configure from a file, and
+ideally that file would be outside of the actual application package so that
 you can install the package with distribute (:ref:`distribute-deployment`)
 and still modify that file afterwards.
 
@@ -75,7 +110,7 @@ So a common pattern is this::
     app.config.from_object('yourapplication.default_settings')
     app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
-What this does is first loading the configuration from the
+This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
 with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
 environment variable points to.  This environment variable can be set on
@@ -95,7 +130,7 @@ The configuration files themselves are actual Python files.  Only values
 in uppercase are actually stored in the config object later on.  So make
 sure to use uppercase letters for your config keys.
 
-Here an example configuration file::
+Here is an example configuration file::
 
     DEBUG = False
     SECRET_KEY = '?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
@@ -123,3 +158,71 @@ experience:
 2.  Do not write code that needs the configuration at import time.  If you
     limit yourself to request-only accesses to the configuration you can
     reconfigure the object later on as needed.
+
+
+Development / Production
+------------------------
+
+Most applications need more than one configuration.  There will at least
+be a separate configuration for a production server and one used during
+development.  The easiest way to handle this is to use a default
+configuration that is always loaded and part of version control, and a
+separate configuration that overrides the values as necessary as mentioned
+in the example above::
+
+    app = Flask(__name__)
+    app.config.from_object('yourapplication.default_settings')
+    app.config.from_envvar('YOURAPPLICATION_SETTINGS')
+
+Then you just have to add a separate `config.py` file and export
+``YOURAPPLICATION_SETTINGS=/path/to/config.py`` and you are done.  However
+there are alternative ways as well.  For example you could use imports or
+subclassing.
+
+What is very popular in the Django world is to make the import explicit in
+the config file by adding an ``from yourapplication.default_settings
+import *`` to the top of the file and then overriding the changes by hand.
+You could also inspect an environment variable like
+``YOURAPPLICATION_MODE`` and set that to `production`, `development` etc
+and import different hardcoded files based on that.
+
+An interesting pattern is also to use classes and inheritance for
+configuration::
+
+    class Config(object):
+        DEBUG = False
+        TESTING = False
+        DATABASE_URI = 'sqlite://:memory:'
+
+    class ProductionConfig(Config):
+        DATABASE_URI = 'mysql://user@localhost/foo'
+    
+    class DevelopmentConfig(Config):
+        DEBUG = True
+
+    class TestinConfig(Config):
+        TESTING = True
+
+To enable such a config you just have to call into
+:meth:`~flask.Config.from_object`::
+
+    app.config.from_object('configmodule.ProductionConfig')
+
+There are many different ways and it's up to you how you want to manage
+your configuration files.  However here a list of good recommendations:
+
+-   keep a default configuration in version control.  Either populate the
+    config with this default configuration or import it in your own
+    configuration files before overriding values.
+-   use an environment variable to switch between the configurations.
+    This can be done from outside the Python interpreter and makes
+    development and deployment much easier because you can quickly and
+    easily switch between different configs without having to touch the
+    code at all.  If you are working often on different projects you can
+    even create your own script for sourcing that activates a virtualenv
+    and exports the development configuration for you.
+-   Use a tool like `fabric`_ in production to push code and
+    configurations separately to the production server(s).  For some
+    details about how to do that, head over to the :ref:`deploy` pattern.
+
+.. _fabric: http://fabfile.org/

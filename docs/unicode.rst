@@ -8,7 +8,7 @@ should probably read `The Absolute Minimum Every Software Developer
 Absolutely, Positively Must Know About Unicode and Character Sets
 <http://www.joelonsoftware.com/articles/Unicode.html>`_.  This part of the
 documentation just tries to cover the very basics so that you have a
-pleasent experience with unicode related things.
+pleasant experience with unicode related things.
 
 Automatic Conversion
 --------------------
@@ -54,6 +54,8 @@ unicode.  What does working with unicode in Python 2.x mean?
     UTF-8 for this purpose.  To tell the interpreter your encoding you can
     put the ``# -*- coding: utf-8 -*-`` into the first or second line of
     your Python source file.
+-   Jinja is configured to decode the template files from UTF-8.  So make
+    sure to tell your editor to save the file as UTF-8 there as well.
 
 Encoding and Decoding Yourself
 ------------------------------
@@ -61,12 +63,12 @@ Encoding and Decoding Yourself
 If you are talking with a filesystem or something that is not really based
 on unicode you will have to ensure that you decode properly when working
 with unicode interface.  So for example if you want to load a file on the
-filesystem and embedd it into a Jinja2 template you will have to decode it
-form the encoding of that file.  Here the old problem that textfiles do
+filesystem and embed it into a Jinja2 template you will have to decode it
+from the encoding of that file.  Here the old problem that text files do
 not specify their encoding comes into play.  So do yourself a favour and
-limit yourself to UTF-8 for textfiles as well.
+limit yourself to UTF-8 for text files as well.
 
-Anyways.  To load such a file with unicode you can use the builtin
+Anyways.  To load such a file with unicode you can use the built-in
 :meth:`str.decode` method::
 
     def read_file(filename, charset='utf-8'):
@@ -79,3 +81,27 @@ To go from unicode into a specific charset such as UTF-8 you can use the
     def write_file(filename, contents, charset='utf-8'):
         with open(filename, 'w') as f:
             f.write(contents.encode(charset))
+
+Configuring Editors
+-------------------
+
+Most editors save as UTF-8 by default nowadays but in case your editor is
+not configured to do this you have to change it.  Here some common ways to
+set your editor to store as UTF-8:
+
+-   Vim: put ``set enc=utf-8`` to your ``.vimrc`` file.
+
+-   Emacs: either use an encoding cookie or put this into your ``.emacs``
+    file::
+
+        (prefer-coding-system 'utf-8)
+        (setq default-buffer-file-coding-system 'utf-8)
+
+-   Notepad++:
+
+    1. Go to *Settings -> Preferences ...*
+    2. Select the "New Document/Default Directory" tab
+    3. Select "UTF-8 without BOM" as encoding
+
+    It is also recommended to use the Unix newline format, you can select
+    it in the same panel but this is not a requirement.

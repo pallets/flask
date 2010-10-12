@@ -1,9 +1,18 @@
-.PHONY: clean-pyc test upload-docs
+.PHONY: clean-pyc ext-test test upload-docs docs audit
 
 all: clean-pyc test
 
 test:
 	python setup.py test
+
+audit:
+	python setup.py audit
+
+tox-test:
+	PYTHONDONTWRITEBYTECODE= tox
+
+ext-test:
+	python tests/flaskext_test.py --browse
 
 release:
 	python setup.py release sdist upload
@@ -20,3 +29,6 @@ upload-docs:
 	scp -r docs/_build/dirhtml/* pocoo.org:/var/www/flask.pocoo.org/docs/
 	scp -r docs/_build/latex/Flask.pdf pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.pdf
 	scp -r docs/_build/flask-docs.zip pocoo.org:/var/www/flask.pocoo.org/docs/
+
+docs:
+	$(MAKE) -C docs html

@@ -8,8 +8,22 @@ encouraged to use a package instead of a module for your flask application
 and drop the models into a separate module (:ref:`larger-applications`).
 While that is not necessary, it makes a lot of sense.
 
-There are three very common ways to use SQLAlchemy.  I will outline each
+There are four very common ways to use SQLAlchemy.  I will outline each
 of them here:
+
+Flask-SQLAlchemy Extension
+--------------------------
+
+Because SQLAlchemy is a common database abstraction layer and object
+relational mapper that requires a little bit of configuration effort,
+there is a Flask extension that handles that for you.  This is recommended
+if you want to get started quickly.
+
+You can download `Flask-SQLAlchemy`_ from `PyPI
+<http://pypi.python.org/pypi/Flask-SQLAlchemy>`_.
+
+.. _Flask-SQLAlchemy: http://packages.python.org/Flask-SQLAlchemy/
+
 
 Declarative
 -----------
@@ -68,7 +82,7 @@ Here is an example model (put this into `models.py`, e.g.)::
             self.email = email
 
         def __repr__(self):
-            return '<User %r>' % (self.name, self.email)
+            return '<User %r>' % (self.name)
 
 You can insert entries into the database like this:
 

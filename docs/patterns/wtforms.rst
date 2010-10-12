@@ -12,6 +12,15 @@ first.  I recommend breaking up the application into multiple modules
 (:ref:`larger-applications`) for that and adding a separate module for the
 forms.
 
+.. admonition:: Getting most of WTForms with an Extension
+
+   The `Flask-WTF`_ extension expands on this pattern and adds a few
+   handful little helpers that make working with forms and Flask more
+   fun.  You can get it from `PyPI
+   <http://pypi.python.org/pypi/Flask-WTF>`_.
+
+.. _Flask-WTF: http://packages.python.org/Flask-WTF/
+
 The Forms
 ---------
 
@@ -68,7 +77,7 @@ how easy this is.  WTForms does half the form generation for us already.
 To make it even nicer, we can write a macro that renders a field with
 label and a list of errors if there are any.
 
-Here an example `_formhelpers.html` template with such a macro:
+Here's an example `_formhelpers.html` template with such a macro:
 
 .. sourcecode:: html+jinja
 
@@ -84,7 +93,7 @@ Here an example `_formhelpers.html` template with such a macro:
     {% endmacro %}
 
 This macro accepts a couple of keyword arguments that are forwarded to
-WTForm's field function that renders the field for us.  They keyword
+WTForm's field function that renders the field for us.  The keyword
 arguments will be inserted as HTML attributes.  So for example you can
 call ``render_field(form.username, class='username')`` to add a class to
 the input element.  Note that WTForms returns standard Python unicode

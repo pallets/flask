@@ -40,7 +40,7 @@ Another method is using Google's `AJAX Libraries API
 
 In this case you don't have to put jQuery into your static folder, it will
 instead be loaded from Google directly.  This has the advantage that your
-website will probably load faster for users if they were to at least one
+website will probably load faster for users if they went to at least one
 other website before using the same jQuery version from Google because it
 will already be in the browser cache.  Downside is that if you don't have
 network connectivity during development jQuery will not load.
@@ -53,8 +53,8 @@ is quite simple: it's on localhost port something and directly on the root
 of that server.  But what if you later decide to move your application to
 a different location?  For example to ``http://example.com/myapp``?  On
 the server side this never was a problem because we were using the handy
-:func:`~flask.url_for` function that did could answer that question for
-us, but if we are using jQuery we should better not hardcode the path to
+:func:`~flask.url_for` function that could answer that question for
+us, but if we are using jQuery we should not hardcode the path to
 the application but make that dynamic, so how can we do that?
 
 A simple method would be to add a script tag to our page that sets a
@@ -118,9 +118,9 @@ special error reporting in that case.
 The HTML
 --------
 
-You index.html template either has to extend a `layout.html` template with
+Your index.html template either has to extend a `layout.html` template with
 jQuery loaded and the `$SCRIPT_ROOT` variable set, or do that on the top.
-Here the HTML code needed for our little application (`index.html`).
+Here's the HTML code needed for our little application (`index.html`).
 Notice that we also drop the script directly into the HTML here.  It is
 usually a better idea to have that in a separate script file:
 
