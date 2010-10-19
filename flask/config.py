@@ -11,6 +11,7 @@
 
 from __future__ import with_statement
 
+import imp
 import os
 import sys
 
@@ -114,7 +115,7 @@ class Config(dict):
                          root path.
         """
         filename = os.path.join(self.root_path, filename)
-        d = type(sys)('config')
+        d = imp.new_module('config')
         d.__file__ = filename
         try:
             execfile(filename, d.__dict__)
