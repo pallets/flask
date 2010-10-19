@@ -123,7 +123,7 @@ webserver user is `www-data`::
     $ cd /var/www/yourapplication
     $ python application.fcgi
     Traceback (most recent call last):
-      File "yourapplication.fcg", line 4, in <module>
+      File "yourapplication.fcgi", line 4, in <module>
     ImportError: No module named yourapplication
 
 In this case the error seems to be "yourapplication" not being on the python

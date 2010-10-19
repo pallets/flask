@@ -10,7 +10,7 @@ application there are ways to deal with that.
 Flask is powered by Werkzeug and Jinja2, two libraries that are in use at
 a number of large websites out there and all Flask does is bring those
 two together.  Being a microframework Flask does not do much more than
-combinding existing libraries - there is not a lot of code involved.
+combining existing libraries - there is not a lot of code involved.
 What that means for large applications is that it's very easy to take the
 code from Flask and put it into a new module within the applications and
 expand on that.

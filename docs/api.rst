@@ -421,7 +421,7 @@ Notes On Proxies
 ----------------
 
 Some of the objects provided by Flask are proxies to other objects.  The
-reason behind this is, that these proxies are shared between threads and
+reason behind this is that these proxies are shared between threads and
 they have to dispatch to the actual object bound to a thread behind the
 scenes as necessary.
 
@@ -430,7 +430,7 @@ exceptions where it is good to know that this object is an actual proxy:
 
 -   The proxy objects do not fake their inherited types, so if you want to
     perform actual instance checks, you have to do that on the instance
-    that
+    that is being proxied (see `_get_current_object` below).
 -   if the object reference is important (so for example for sending
     :ref:`signals`)
 

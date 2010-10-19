@@ -93,8 +93,8 @@ For more information consult the `mod_wsgi wiki`_.
 .. _virtual python: http://pypi.python.org/pypi/virtualenv
 .. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
 
-Toubleshooting
---------------
+Troubleshooting
+---------------
 
 If your application does not run, follow this guide to troubleshoot:
 

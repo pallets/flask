@@ -162,8 +162,13 @@ modules in the application (`__init__.py`) like this::
     from yourapplication.views.frontend import frontend
 
     app = Flask(__name__)
-    app.register_module(admin)
+    app.register_module(admin, url_prefix='/admin')
     app.register_module(frontend)
+
+We register the modules with the app so that it can add them to the
+URL map for our application.  Note the prefix argument to the admin
+module: by default when we register a module, that module's end-points
+will be registered on `/` unless we specify this argument.
 
 So what is different when working with modules?  It mainly affects URL
 generation.  Remember the :func:`~flask.url_for` function?  When not

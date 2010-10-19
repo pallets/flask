@@ -153,7 +153,7 @@ There are two recommended ways for an extension to initialize:
 
 initialization functions:
     If your extension is called `helloworld` you might have a function
-    called ``init_helloworld(app[, extra_args])`` that initalizes the
+    called ``init_helloworld(app[, extra_args])`` that initializes the
     extension for that application.  It could attach before / after
     handlers etc.
 
