@@ -17,6 +17,12 @@ Release date to be announced, codename to be selected
   deprecated for :func:`flask.send_file` because it was unreliable.
   Pass filenames instead or attach your own etags and provide a
   proper mimetype by hand.
+- Static file handling for modules now requires the name of the
+  static folder to be supplied explicitly.  The previous autodetection
+  was not reliable and caused issues on Google's App Engine.  Until
+  1.0 the old behaviour will continue to work but issue dependency
+  warnings.
+- fixed a problem for Flask to run on jython.
 
 Version 0.6.1
 -------------

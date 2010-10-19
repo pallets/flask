@@ -201,6 +201,7 @@ envlist=%(env)s
 [testenv]
 deps=
   %(deps)s
+  distribute
   py
 commands=bash flaskext-runtest.sh {envlogdir}/test.log
 downloadcache=%(cache)s
