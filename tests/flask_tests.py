@@ -501,6 +501,23 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         self.assertEqual(repr(flask.g), '<LocalProxy unbound>')
         self.assertFalse(flask.g)
 
+    def test_proper_test_request_context(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SERVER_NAME='localhost.localdomain:5000'
+        )
+        @app.route('/')
+        def index():
+            return None
+
+        with app.test_request_context('/'):
+            assert flask.url_for('index', _external=True) == 'http://localhost.localdomain:5000/'
+
+        def testit():
+            with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
+                pass
+        self.assertRaises(ValueError, testit)
+
 
 class JSONTestCase(unittest.TestCase):
 

@@ -863,6 +863,15 @@ class Flask(_PackageBoundObject):
         function accepts the same arguments).
         """
         from werkzeug import create_environ
+        environ_overrides = kwargs.setdefault('environ_overrides', {})
+        if self.config.get('SERVER_NAME'):
+            server_name = self.config.get('SERVER_NAME')
+            if ':' not in server_name:
+                server_name += ':80'
+            http_host, http_port = server_name.split(':')
+            environ_overrides.setdefault('SERVER_NAME', server_name)
+            environ_overrides.setdefault('HTTP_HOST', server_name)
+            environ_overrides.setdefault('SERVER_PORT', http_port)
         return self.request_context(create_environ(*args, **kwargs))
 
     def wsgi_app(self, environ, start_response):
