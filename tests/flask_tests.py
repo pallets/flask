@@ -510,13 +510,114 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         def index():
             return None
 
+        @app.route('/', subdomain='foo')
+        def sub():
+            return None
+
         with app.test_request_context('/'):
             assert flask.url_for('index', _external=True) == 'http://localhost.localdomain:5000/'
 
-        def testit():
+        with app.test_request_context('/'):
+            assert flask.url_for('sub', _external=True) == 'http://foo.localhost.localdomain:5000/'
+
+        try:
             with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
                 pass
-        self.assertRaises(ValueError, testit)
+        except Exception, e:
+            assert isinstance(e, ValueError)
+            assert str(e) == "the server name provided " + \
+                    "('localhost.localdomain:5000') does not match the " + \
+                    "server name from the WSGI environment ('localhost')", str(e)
+
+        try:
+            app.config.update(SERVER_NAME='localhost')
+            with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost'}):
+                pass
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
+
+        try:
+            app.config.update(SERVER_NAME='localhost:80')
+            with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
+                pass
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
+
+
+    def test_test_app_proper_environ(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SERVER_NAME='localhost.localdomain:5000'
+        )
+        @app.route('/')
+        def index():
+            return 'Foo'
+
+        @app.route('/', subdomain='foo')
+        def subdomain():
+            return 'Foo SubDomain'
+
+        try:
+            rv = app.test_client().get('/')
+            assert rv.data == 'Foo'
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
+
+        try:
+            rv = app.test_client().get('/', 'http://localhost.localdomain:5000')
+            assert rv.data == 'Foo'
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
+
+        try:
+            rv = app.test_client().get('/', 'https://localhost.localdomain:5000')
+            assert rv.data == 'Foo'
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
+
+        try:
+            app.config.update(SERVER_NAME='localhost.localdomain')
+            rv = app.test_client().get('/', 'https://localhost.localdomain')
+            assert rv.data == 'Foo'
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
+
+        try:
+            app.config.update(SERVER_NAME='localhost.localdomain:443')
+            rv = app.test_client().get('/', 'https://localhost.localdomain')
+            assert rv.data == 'Foo'
+        except ValueError, e:
+            assert str(e) == "the server name provided " + \
+                    "('localhost.localdomain:443') does not match the " + \
+                    "server name from the WSGI environment ('localhost.localdomain')", str(e)
+
+        try:
+            app.config.update(SERVER_NAME='localhost.localdomain')
+            app.test_client().get('/', 'http://foo.localhost')
+        except ValueError, e:
+            assert str(e) == "the server name provided " + \
+                    "('localhost.localdomain') does not match the " + \
+                    "server name from the WSGI environment ('foo.localhost')", str(e)
+
+        try:
+            rv = app.test_client().get('/', 'http://foo.localhost.localdomain')
+            assert rv.data == 'Foo SubDomain'
+        except ValueError, e:
+            raise ValueError(
+                "No ValueError exception should have been raised \"%s\"" % e
+            )
 
 
 class JSONTestCase(unittest.TestCase):
