@@ -704,7 +704,7 @@ class Flask(_PackageBoundObject):
                 raise req.routing_exception
             rule = req.url_rule
             # if we provide automatic options for this URL and the
-            # request came with the OPTIONS method, reply automatically 
+            # request came with the OPTIONS method, reply automatically
             if rule.provide_automatic_options and req.method == 'OPTIONS':
                 return self.make_default_options_response()
             # otherwise dispatch to the handler for that endpoint
@@ -867,8 +867,10 @@ class Flask(_PackageBoundObject):
         if self.config.get('SERVER_NAME'):
             server_name = self.config.get('SERVER_NAME')
             if ':' not in server_name:
-                server_name += ':80'
-            http_host, http_port = server_name.split(':')
+                http_host, http_port = server_name, '80'
+            else:
+                http_host, http_port = server_name.split(':', 1)
+
             environ_overrides.setdefault('SERVER_NAME', server_name)
             environ_overrides.setdefault('HTTP_HOST', server_name)
             environ_overrides.setdefault('SERVER_PORT', http_port)

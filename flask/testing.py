@@ -10,7 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from werkzeug import Client
+from werkzeug import Client, EnvironBuilder
 from flask import _request_ctx_stack
 
 
@@ -29,9 +29,31 @@ class FlaskClient(Client):
             self.context_preserved = False
         kwargs.setdefault('environ_overrides', {}) \
             ['flask._preserve_context'] = self.preserve_context
+
+        as_tuple = kwargs.pop('as_tuple', False)
+        buffered = kwargs.pop('buffered', False)
+        follow_redirects = kwargs.pop('follow_redirects', False)
+
+        builder = EnvironBuilder(*args, **kwargs)
+
+        if self.application.config.get('SERVER_NAME'):
+            server_name = self.application.config.get('SERVER_NAME')
+            if ':' not in server_name:
+                http_host, http_port = server_name, None
+            else:
+                http_host, http_port = server_name.split(':', 1)
+            if builder.base_url == 'http://localhost/':
+                # Default Generated Base URL
+                if http_port != None:
+                    builder.host = http_host + ':' + http_port
+                else:
+                    builder.host = http_host
         old = _request_ctx_stack.top
         try:
-            return Client.open(self, *args, **kwargs)
+            return Client.open(self, builder,
+                               as_tuple=as_tuple,
+                               buffered=buffered,
+                               follow_redirects=follow_redirects)
         finally:
             self.context_preserved = _request_ctx_stack.top is not old
 
