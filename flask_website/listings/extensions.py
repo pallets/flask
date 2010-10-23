@@ -113,7 +113,7 @@ extensions = [
             <p>Adds support for the <a href="http://genshi.edgewall.org/">Genshi</a>
             templating language to Flask applications.
         ''',
-        bitbucket='dag/flask-genshi',
+        github='dag/flask-genshi',
         docs='http://packages.python.org/Flask-Genshi/',
         approved=True
     ),
