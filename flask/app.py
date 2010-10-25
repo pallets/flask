@@ -276,7 +276,7 @@ class Flask(_PackageBoundObject):
         #: this to change the routing converters after the class was created
         #: but before any routes are connected.  Example::
         #:
-        #:    from werkzeug import BaseConverter
+        #:    from werkzeug.routing import BaseConverter
         #:
         #:    class ListConverter(BaseConverter):
         #:        def to_python(self, value):
