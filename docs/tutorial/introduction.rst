@@ -14,7 +14,7 @@ less web-2.0-ish name ;)  Basically we want it to do the following things:
 3. the page shows all entries so far in reverse order (newest on top) and
    the user can add new ones from there if logged in.
 
-We will be using SQlite3 directly for that application because it's good
+We will be using SQLite3 directly for that application because it's good
 enough for an application of that size.  For larger applications however
 it makes a lot of sense to use `SQLAlchemy`_ that handles database
 connections in a more intelligent way, allows you to target different
