@@ -32,7 +32,7 @@ static files are in subdirectories within the Python source tree of the
 application.
 
 The main reason however why Flask is called a "microframework" is the idea
-to keep the core simple but extensible.  There is database abstraction
+to keep the core simple but extensible.  There is no database abstraction
 layer, no form validation or anything else where different libraries
 already exist that can handle that.  However Flask knows the concept of
 extensions that can add this functionality into your application as if it
