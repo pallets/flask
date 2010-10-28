@@ -147,7 +147,7 @@ To just get the development version without git, do this instead::
 `easy_install` on Windows
 -------------------------
 
-On Windows, installation of `easy_install` is a little bit tricker because
+On Windows, installation of `easy_install` is a little bit trickier because
 slightly different rules apply on Windows than on Unix-like systems, but
 it's not difficult.  The easiest way to do it is to download the
 `ez_setup.py`_ file and run it.  The easiest way to run the file is to
