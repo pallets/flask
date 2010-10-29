@@ -173,7 +173,7 @@ like this::
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
         assert 'No entries here so far' not in rv.data
-        assert '&lt;Hello&gt;' in rv.data
+        assert '&lt;Hello&gt' in rv.data
         assert '<strong>HTML</strong> allowed here' in rv.data
 
 Here we check that HTML is allowed in the text but not in the title,

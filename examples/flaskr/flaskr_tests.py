@@ -66,7 +66,7 @@ class FlaskrTestCase(unittest.TestCase):
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
         assert 'No entries here so far' not in rv.data
-        assert '&lt;Hello&gt;Ì' in rv.data
+        assert '&lt;Hello&gt' in rv.data
         assert '<strong>HTML</strong> allowed here' in rv.data
 
 
