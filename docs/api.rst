@@ -187,12 +187,12 @@ To access the current session you can use the :class:`session` object:
           # so mark it as modified yourself
           session.modified = True
 
-    .. attribute:: permanent
+   .. attribute:: permanent
 
-       If set to `True` the session life for
-       :attr:`~flask.Flask.permanent_session_lifetime` seconds.  The
-       default is 31 days.  If set to `False` (which is the default) the
-       session will be deleted when the user closes the browser.
+      If set to `True` the session life for
+      :attr:`~flask.Flask.permanent_session_lifetime` seconds.  The
+      default is 31 days.  If set to `False` (which is the default) the
+      session will be deleted when the user closes the browser.
 
 
 Application Globals
