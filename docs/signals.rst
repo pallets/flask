@@ -179,8 +179,8 @@ The following signals exist in Flask:
                                 template.name or 'string template',
                                 context)
 
-        from flask import request_started
-        request_started.connect(log_template_renders, app)
+        from flask import template_rendered
+        template_rendered.connect(log_template_renders, app)
 
 .. data:: flask.request_started
    :noindex:
