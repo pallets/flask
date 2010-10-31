@@ -8,3 +8,4 @@ dist
 *.egg-info
 _mailinglist
 .tox
+*.swp
