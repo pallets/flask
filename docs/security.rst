@@ -11,7 +11,7 @@ Cross-Site Scripting (XSS)
 --------------------------
 
 Cross site scripting is the concept of injecting arbitrary HTML (and with
-it JavaScript) into the context of a website.  To rememdy this, developers
+it JavaScript) into the context of a website.  To remedy this, developers
 have to properly escape text so that it cannot include arbitrary HTML
 tags.  For more information on that have a look at the Wikipedia article
 on `Cross-Site Scripting
