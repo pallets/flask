@@ -287,7 +287,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            relative path is specified.
                            Alternatively a file object might be provided
                            in which case `X-Sendfile` might not work and
-                           fall back to the traditional method.
+                           fall back to the traditional method.  Make sure
+                           that the file pointer is positioned at the start
+                           of data to send before calling :func:`send_file`.
     :param mimetype: the mimetype of the file if provided, otherwise
                      auto detection happens.
     :param as_attachment: set to `True` if you want to send this file with

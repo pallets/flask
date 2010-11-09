@@ -56,7 +56,7 @@ execute code on the server!
 
 We also add a method to easily connect to the database specified.  That
 can be used to open a connection on request and also from the interactive
-Python shell or a script.  This will come in handy later
+Python shell or a script.  This will come in handy later.
 
 ::
 
