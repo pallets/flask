@@ -45,7 +45,7 @@ Released on July 27th 2010, codename Whisky
 - after request functions are now called in reverse order of
   registration.
 - OPTIONS is now automatically implemented by Flask unless the
-  application explictly adds 'OPTIONS' as method to the URL rule.
+  application explicitly adds 'OPTIONS' as method to the URL rule.
   In this case no automatic OPTIONS handling kicks in.
 - static rules are now even in place if there is no static folder
   for the module.  This was implemented to aid GAE which will
@@ -65,7 +65,7 @@ Released on July 27th 2010, codename Whisky
 - added signalling support based on blinker.  This feature is currently
   optional and supposed to be used by extensions and applications.  If
   you want to use it, make sure to have `blinker`_ installed.
-- refactored the way url adapters are created.  This process is now
+- refactored the way URL adapters are created.  This process is now
   fully customizable with the :meth:`~flask.Flask.create_url_adapter`
   method.
 - modules can now register for a subdomain instead of just an URL
