@@ -81,15 +81,22 @@ context are appended to it.
 Additionally there is a convenient helper method
 (:meth:`~blinker.base.Signal.connected_to`).  that allows you to
 temporarily subscribe a function to a signal with is a context manager on
-its own which simplifies the example above::
+its own.  Because the return value of the context manager cannot be
+specified that way one has to pass the list in as argument::
 
     from flask import template_rendered
 
-    def captured_templates(app):
-        recorded = []
+    def captured_templates(app, recorded):
         def record(sender, template, context):
             recorded.append((template, context))
         return template_rendered.connected_to(record, app)
+
+The example above would then look like this::
+
+    templates = []
+    with captured_templates(app, templates):
+        ...
+        template, context = templates[0]
 
 .. admonition:: Blinker API Changes
 
