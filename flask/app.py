@@ -673,16 +673,17 @@ class Flask(_PackageBoundObject):
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
-        occours that is not catched.  In debug mode the exception will
-        be re-raised immediately, otherwise it is logged and the handler
-        for a 500 internal server error is used.  If no such handler
-        exists, a default 500 internal server error message is displayed.
+        occours that is not catched.  In debug or testing mode the
+        exception will be re-raised immediately, otherwise it is logged
+        and the handler for a 500 internal server error is used.
+        If no such handler exists, a default 500 internal server error
+        message is displayed.
 
         .. versionadded: 0.3
         """
         got_request_exception.send(self, exception=e)
         handler = self.error_handlers.get(500)
-        if self.debug:
+        if self.debug or self.testing:
             raise
         self.logger.exception('Exception on %s [%s]' % (
             request.path,
