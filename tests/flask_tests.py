@@ -15,6 +15,7 @@ import re
 import sys
 import flask
 import unittest
+from threading import Thread
 from logging import StreamHandler
 from contextlib import contextmanager
 from datetime import datetime
@@ -547,7 +548,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
                 "No ValueError exception should have been raised \"%s\"" % e
             )
 
-
     def test_test_app_proper_environ(self):
         app = flask.Flask(__name__)
         app.config.update(
@@ -618,6 +618,33 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             raise ValueError(
                 "No ValueError exception should have been raised \"%s\"" % e
             )
+
+    def test_exception_propagation(self):
+        def apprunner(configkey):
+            app = flask.Flask(__name__)
+            @app.route('/')
+            def index():
+                1/0
+            c = app.test_client()
+            if config_key is not None:
+                app.config[config_key] = True
+                try:
+                    resp = c.get('/')
+                except Exception:
+                    pass
+                else:
+                    self.fail('expected exception')
+            else:
+                assert c.get('/').status_code == 500
+
+        # we have to run this test in an isolated thread because if the
+        # debug flag is set to true and an exception happens the context is
+        # not torn down.  This causes other tests that run after this fail
+        # when they expect no exception on the stack.
+        for config_key in 'TESTING', 'PROPAGATE_EXCEPTIONS', 'DEBUG', None:
+            t = Thread(target=apprunner, args=(config_key,))
+            t.start()
+            t.join()
 
 
 class JSONTestCase(unittest.TestCase):

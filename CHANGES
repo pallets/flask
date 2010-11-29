@@ -23,6 +23,10 @@ Release date to be announced, codename to be selected
   1.0 the old behaviour will continue to work but issue dependency
   warnings.
 - fixed a problem for Flask to run on jython.
+- added a `PROPAGATE_EXCEPTIONS` configuration variable that can be
+  used to flip the setting of exception propagation which previously
+  was linked to `DEBUG` alone and is now linked to either `DEBUG` or
+  `TESTING`.
 
 Version 0.6.1
 -------------

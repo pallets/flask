@@ -189,6 +189,7 @@ class Flask(_PackageBoundObject):
     default_config = ImmutableDict({
         'DEBUG':                                False,
         'TESTING':                              False,
+        'PROPAGATE_EXCEPTIONS':                 None,
         'SECRET_KEY':                           None,
         'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
@@ -302,6 +303,18 @@ class Flask(_PackageBoundObject):
         #: :attr:`jinja_options`.
         self.jinja_env = self.create_jinja_environment()
         self.init_jinja_globals()
+
+    @property
+    def propagate_exceptions(self):
+        """Returns the value of the `PROPAGATE_EXCEPTIONS` configuration
+        value in case it's set, otherwise a sensible default is returned.
+
+        .. versionadded:: 0.7
+        """
+        rv = self.config['PROPAGATE_EXCEPTIONS']
+        if rv is not None:
+            return rv
+        return self.testing or self.debug
 
     @property
     def logger(self):
@@ -682,7 +695,7 @@ class Flask(_PackageBoundObject):
         """
         got_request_exception.send(self, exception=e)
         handler = self.error_handlers.get(500)
-        if self.debug:
+        if self.propagate_exceptions:
             raise
         self.logger.exception('Exception on %s [%s]' % (
             request.path,
