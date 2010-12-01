@@ -29,6 +29,15 @@ sys.path.append(os.path.join(example_path, 'flaskr'))
 sys.path.append(os.path.join(example_path, 'minitwit'))
 
 
+def has_encoding(name):
+    try:
+        import codecs
+        codecs.lookup(name)
+        return True
+    except LookupError:
+        return False
+
+
 # config keys used for the ConfigTestCase
 TEST_KEY = 'foo'
 SECRET_KEY = 'devkey'
@@ -697,6 +706,9 @@ class JSONTestCase(unittest.TestCase):
         rv = app.test_client().get(u'/?foo=정상처리'.encode('euc-kr'))
         assert rv.status_code == 200
         assert rv.data == u'정상처리'.encode('utf-8')
+
+    if not has_encoding('euc-kr'):
+        test_modified_url_encoding = None
 
 
 class TemplatingTestCase(unittest.TestCase):
