@@ -199,6 +199,11 @@ class Flask(_PackageBoundObject):
         'MAX_CONTENT_LENGTH':                   None
     })
 
+    #: the test client that is used with when `test_client` is used.
+    #: 
+    #: .. versionadded:: 0.7
+    test_client_class = None
+
     def __init__(self, import_name, static_path=None):
         _PackageBoundObject.__init__(self, import_name)
         if static_path is not None:
@@ -429,7 +434,7 @@ class Flask(_PackageBoundObject):
         options.setdefault('use_debugger', self.debug)
         return run_simple(host, port, self, **options)
 
-    def test_client(self):
+    def test_client(self, use_cookies=True):
         """Creates a test client for this application.  For information
         about unit testing head over to :ref:`testing`.
 
@@ -443,9 +448,16 @@ class Flask(_PackageBoundObject):
 
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
+
+        .. versionadded:: 0.7
+           The `use_cookies` parameter was added as well as the ability
+           to override the client to be used by setting the
+           :attr:`test_client_class` attribute.
         """
-        from flask.testing import FlaskClient
-        return FlaskClient(self, self.response_class, use_cookies=True)
+        cls = self.test_client_class
+        if cls is None:
+            from flask.testing import FlaskClient as cls
+        return cls(self, self.response_class, use_cookies=use_cookies)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
