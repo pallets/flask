@@ -200,7 +200,7 @@ class Flask(_PackageBoundObject):
     })
 
     #: the test client that is used with when `test_client` is used.
-    #: 
+    #:
     #: .. versionadded:: 0.7
     test_client_class = None
 
