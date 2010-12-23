@@ -58,6 +58,13 @@ else:
     _tojson_filter = json.dumps
 
 
+# what separators does this operating system provide that are not a slash?
+# this is used by the send_from_directory function to ensure that nobody is
+# able to access files from outside the filesystem.
+_os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
+                    if sep not in (None, '/'))
+
+
 def _endpoint_from_view_func(view_func):
     """Internal helper that returns the default endpoint for a given
     function.  This always is the function name.
@@ -386,7 +393,10 @@ def send_from_directory(directory, filename, **options):
                     forwarded to :func:`send_file`.
     """
     filename = posixpath.normpath(filename)
-    if filename.startswith(('/', '../')):
+    for sep in _os_alt_seps:
+        if sep in filename:
+            raise NotFound()
+    if os.path.isabs(filename) or filename.startswith('../'):
         raise NotFound()
     filename = os.path.join(directory, filename)
     if not os.path.isfile(filename):
