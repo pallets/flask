@@ -817,6 +817,21 @@ class ModuleTestCase(unittest.TestCase):
             else:
                 assert 0, 'expected exception'
 
+            # testcase for a security issue that may exist on windows systems
+            import os
+            import ntpath
+            old_path = os.path
+            os.path = ntpath
+            try:
+                try:
+                    f('..\\__init__.py')
+                except NotFound:
+                    pass
+                else:
+                    assert 0, 'expected exception'
+            finally:
+                os.path = old_path
+
 
 class SendfileTestCase(unittest.TestCase):
 
