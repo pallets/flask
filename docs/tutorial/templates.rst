@@ -69,7 +69,7 @@ method:
         <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
           <dl>
             <dt>Title:</dt>
-            <dd><input type=text size=30 name=title></input>
+            <dd><input type=text size=30 name=title></input></dd>
             <dt>Text:</dt>
             <dd><textarea name=text rows=5 cols=40></textarea></dd>
             <dd><input type=submit value=Share></input></dd>
@@ -99,10 +99,10 @@ Finally, the login template displays a form allowing the user to login:
       <form action="{{ url_for('login') }}" method=post>
         <dl>
           <dt>Username:</dt>
-          <dd><input type=text name=username></input>
+          <dd><input type=text name=username></input></dd>
           <dt>Password:</dt>
-          <dd><input type=password name=password></input>
-          <dd><input type=submit value=Login></input>
+          <dd><input type=password name=password></input></dd>
+          <dd><input type=submit value=Login></input></dd>
         </dl>
       </form>
     {% endblock %}
