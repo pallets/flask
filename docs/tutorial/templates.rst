@@ -99,11 +99,11 @@ the user to login:
       {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
       <form action="{{ url_for('login') }}" method=post>
         <dl>
-          <dt>Username:
-          <dd><input type=text name=username>
-          <dt>Password:
-          <dd><input type=password name=password>
-          <dd><input type=submit value=Login>
+          <dt>Username:</dt>
+          <dd><input type=text name=username></input>
+          <dt>Password:</dt>
+          <dd><input type=password name=password></input>
+          <dd><input type=submit value=Login></input>
         </dl>
       </form>
     {% endblock %}
