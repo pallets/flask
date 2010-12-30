@@ -18,8 +18,8 @@ the just created `flaskr` folder:
     );
 
 This schema consists of a single table called `entries` and each row in
-this table has an `id`, a `title` and a `text`.  The `id` is an
-automatically incrementing integer and a primary key, the other two are
-strings that must not be null.
+this table has an `id`, a `title`, and a `text` field.  The `id` serves as
+the primary key and is an automatically incrementing integer. The other two
+fields are strings that must not be null.
 
 Continue with :ref:`tutorial-setup`.

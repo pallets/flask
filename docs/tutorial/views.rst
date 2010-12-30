@@ -12,10 +12,11 @@ Show Entries
 This view shows all the entries stored in the database.  It listens on the
 root of the application and will select title and text from the database.
 The one with the highest id (the newest entry) will be on top.  The rows
-returned from the cursor are tuples with the columns ordered like specified
-in the select statement.  This is good enough for small applications like
-here, but you might want to convert them into a dict.  If you are
-interested in how to do that, check out the :ref:`easy-querying` example.
+returned from the cursor are tuples with the columns ordered as specified
+in the select statement.  This is good enough for small applications such
+as flaskr. For larger applications, you might want to convert them into a
+dict.  If you are interested in how to do that, check out the
+ :ref:`easy-querying` example.
 
 The view function will pass the entries as dicts to the
 `show_entries.html` template and return the rendered one::
@@ -30,8 +31,8 @@ Add New Entry
 -------------
 
 This view lets the user add new entries if he's logged in.  This only
-responds to `POST` requests, the actual form is shown on the
-`show_entries` page.  If everything worked out well we will
+responds to `POST` requests. The actual form is shown on the
+`show_entries` page.  If everything worked out well, we will
 :func:`~flask.flash` an information message to the next request and
 redirect back to the `show_entries` page::
 
@@ -51,8 +52,8 @@ present in the session and `True`).
 .. admonition:: Security Note
 
    Be sure to use question marks when building SQL statements, as done in the
-   example above.  Otherwise, your app will be vulnerable to SQL injection when
-   you use string formatting to build SQL statements.
+   example above.  Otherwise, your app will be vulnerable to SQL injection
+   when you use string formatting to build SQL statements.
    See :ref:`sqlite3` for more.
 
 Login and Logout

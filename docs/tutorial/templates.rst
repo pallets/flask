@@ -3,7 +3,7 @@
 Step 6: The Templates
 =====================
 
-Now we should start working on the templates.  If we request the URLs now
+Now we should start working on the templates.  If we request the URLs now,
 we would only get an exception that Flask cannot find the templates.  The
 templates are using `Jinja2`_ syntax and have autoescaping enabled by
 default.  This means that unless you mark a value in the code with
@@ -21,7 +21,7 @@ Put the following templates into the `templates` folder:
 layout.html
 -----------
 
-This template contains the HTML skeleton, the header and a link to log in
+This template contains the HTML skeleton, the header, and a link to log in
 (or log out if the user was already logged in).  It also displays the
 flashed messages if there are any.  The ``{% block body %}`` block can be
 replaced by a block of the same name (``body``) in a child template.
@@ -58,7 +58,7 @@ show_entries.html
 This template extends the `layout.html` template from above to display the
 messages.  Note that the `for` loop iterates over the messages we passed
 in with the :func:`~flask.render_template` function.  We also tell the
-form to submit to your `add_entry` function and use `POST` as `HTTP`
+form to submit to the `add_entry` function and use `POST` as `HTTP`
 method:
 
 .. sourcecode:: html+jinja
@@ -88,8 +88,7 @@ method:
 login.html
 ----------
 
-Finally the login template which basically just displays a form to allow
-the user to login:
+Finally, the login template displays a form allowing the user to login:
 
 .. sourcecode:: html+jinja
 
