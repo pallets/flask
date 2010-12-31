@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.6.1
 -------------
 
-Bugfix release, release date to be announced.
+Bugfix release, released on December 31st 2010
 
 - Fixed an issue where the default `OPTIONS` response was
   not exposing all valid methods in the `Allow` header.
