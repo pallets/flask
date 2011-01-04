@@ -46,19 +46,21 @@ Incoming Request Data
 
    .. attribute:: form
 
-      A :class:`~werkzeug.MultiDict` with the parsed form data from `POST`
-      or `PUT` requests.  Please keep in mind that file uploads will not
-      end up here,  but instead in the :attr:`files` attribute.
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form
+      data from `POST` or `PUT` requests.  Please keep in mind that file
+      uploads will not end up here,  but instead in the :attr:`files`
+      attribute.
 
    .. attribute:: args
 
-      A :class:`~werkzeug.MultiDict` with the parsed contents of the query
-      string.  (The part in the URL after the question mark).
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed
+      contents of the query string.  (The part in the URL after the
+      question mark).
 
    .. attribute:: values
 
-      A :class:`~werkzeug.CombinedMultiDict` with the contents of both
-      :attr:`form` and :attr:`args`.
+      A :class:`~werkzeug.datastructures.CombinedMultiDict` with the
+      contents of both :attr:`form` and :attr:`args`.
 
    .. attribute:: cookies
 
@@ -79,12 +81,13 @@ Incoming Request Data
 
    .. attribute:: files
 
-      A :class:`~werkzeug.MultiDict` with files uploaded as part of a
-      `POST` or `PUT` request.  Each file is stored as
-      :class:`~werkzeug.FileStorage` object.  It basically behaves like a
-      standard file object you know from Python, with the difference that
-      it also has a :meth:`~werkzeug.FileStorage.save` function that can
-      store the file on the filesystem.
+      A :class:`~werkzeug.datastructures.MultiDict` with files
+      uploaded as part of a `POST` or `PUT` request.  Each file
+      is stored as :class:`~werkzeug.datastructures.FileStorage`
+      object.  It basically behaves like a standard file object
+      you know from Python, with the difference that it also has a
+      :meth:`~werkzeug.datastructures.FileStorage.save` function that
+      can store the file on the filesystem.
 
    .. attribute:: environ
 
@@ -308,10 +311,10 @@ Useful Internals
 
 .. data:: _request_ctx_stack
 
-   The internal :class:`~werkzeug.LocalStack` that is used to implement
-   all the context local objects used in Flask.  This is a documented
-   instance and can be used by extensions and application code but the
-   use is discouraged in general.
+   The internal :class:`~werkzeug.local.LocalStack` that is used to
+   implement all the context local objects used in Flask.  This is a
+   documented instance and can be used by extensions and application
+   code but the use is discouraged in general.
 
    The following attributes are always present on each layer of the
    stack:
@@ -356,9 +359,9 @@ Useful Internals
    deferred cleanup functionality.
 
    You might find this helpful for unittests where you need the
-   information from the context local around for a little longer.  Make
-   sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
-   that situation, otherwise your unittests will leak memory.
+   information from the context local around for a little longer.
+   Make sure to properly :meth:`~werkzeug.local.LocalStack.pop` the stack
+   yourself in that situation, otherwise your unittests will leak memory.
 
 Signals
 -------
@@ -434,8 +437,9 @@ exceptions where it is good to know that this object is an actual proxy:
 -   if the object reference is important (so for example for sending
     :ref:`signals`)
 
-If you need to get access to the underlying object that is proxied, you
-can use the :meth:`~werkzeug.LocalProxy._get_current_object` method::
+If you need to get access to the underlying object that is proxied,
+you can use the :meth:`~werkzeug.local.LocalProxy._get_current_object`
+method::
 
     app = current_app._get_current_object()
     my_signal.send(app)

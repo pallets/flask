@@ -10,8 +10,8 @@ uploads is actually quite simple.  It basically works like this:
    and an ``<input type=file>`` is placed in that form.
 2. The application accesses the file from the :attr:`~flask.request.files`
    dictionary on the request object.
-3. use the :meth:`~werkzeug.FileStorage.save` method of the file to save
-   the file permanently somewhere on the filesystem.
+3. use the :meth:`~werkzeug.datastructures.FileStorage.save` method of
+   the file to save the file permanently somewhere on the filesystem.
 
 A Gentle Introduction
 ---------------------
@@ -22,21 +22,21 @@ bootstrapping code for our application::
 
     import os
     from flask import Flask, request, redirect, url_for
-    from werkzeug import secure_filename
+    from werkzeug.utils import secure_filename
 
     UPLOAD_FOLDER = '/path/to/the/uploads'
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
     app = Flask(__name__)
 
-So first we need a couple of imports.  Most should be straightforward, the
-:func:`werkzeug.secure_filename` is explained a little bit later.  The
-`UPLOAD_FOLDER` is where we will store the uploaded files and the
-`ALLOWED_EXTENSIONS` is the set of allowed file extensions.  Then we add a
-URL rule by hand to the application.  Now usually we're not doing that, so
-why here?  The reasons is that we want the webserver (or our development
-server) to serve these files for us and so we only need a rule to generate
-the URL to these files.
+So first we need a couple of imports.  Most should be straightforward,
+the :func:`werkzeug.utils.secure_filename` is explained a little bit
+later.  The `UPLOAD_FOLDER` is where we will store the uploaded files
+and the `ALLOWED_EXTENSIONS` is the set of allowed file extensions.
+Then we add a URL rule by hand to the application.  Now usually we're
+not doing that, so why here?  The reasons is that we want the webserver
+(or our development server) to serve these files for us and so we only
+need a rule to generate the URL to these files.
 
 Why do we limit the extensions that are allowed?  You probably don't want
 your users to be able to upload everything there if the server is directly
@@ -71,12 +71,12 @@ the file and redirects the user to the URL for the uploaded file::
         </form>
         '''
 
-So what does that :func:`~werkzeug.secure_filename` function actually do?
-Now the problem is that there is that principle called "never trust user
-input".  This is also true for the filename of an uploaded file.  All
-submitted form data can be forged, and filenames can be dangerous.  For
-the moment just remember: always use that function to secure a filename
-before storing it directly on the filesystem.
+So what does that :func:`~werkzeug.utils.secure_filename` function
+actually do?  Now the problem is that there is that principle called
+"never trust user input".  This is also true for the filename of an
+uploaded file.  All submitted form data can be forged, and filenames can
+be dangerous.  For the moment just remember: always use that function
+to secure a filename before storing it directly on the filesystem.
 
 .. admonition:: Information for the Pros
 
@@ -109,10 +109,10 @@ Flask 0.5 we can use a function that does that for us::
                                    filename)
 
 Alternatively you can register `uploaded_file` as `build_only` rule and
-use the :class:`~werkzeug.SharedDataMiddleware`.  This also works with
-older versions of Flask::
+use the :class:`~werkzeug.wsgi.SharedDataMiddleware`.  This also works
+with older versions of Flask::
 
-    from werkzeug import SharedDataMiddleware
+    from werkzeug.wsgi import SharedDataMiddleware
     app.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
     app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
