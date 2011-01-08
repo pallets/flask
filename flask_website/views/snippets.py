@@ -231,7 +231,7 @@ def comments_feed(id):
                     feed_url=request.url, url=request.url_root)
     for comment in snippet.comments:
         feed.add(comment.title or u'Untitled Comment',
-                 unicode(snippet.rendered_text),
+                 unicode(comment.rendered_text),
                  content_type='html', author=comment.author.name,
                  url=request.url, updated=comment.pub_date)
     return feed.get_response()
