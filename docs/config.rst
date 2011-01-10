@@ -54,6 +54,11 @@ The following configuration values are used internally by Flask:
 =============================== =========================================
 ``DEBUG``                       enable/disable debug mode
 ``TESTING``                     enable/disable testing mode
+``PROPAGATE_EXCEPTIONS``        explicitly enable or disable the
+                                propagation of exceptions.  If not set or
+                                explicitly set to `None` this is
+                                implicitly true if either `TESTING` or
+                                `DEBUG` is true.
 ``SECRET_KEY``                  the secret key
 ``SESSION_COOKIE_NAME``         the name of the session cookie
 ``PERMANENT_SESSION_LIFETIME``  the lifetime of a permanent session as
@@ -95,6 +100,9 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 0.6
    ``MAX_CONTENT_LENGTH``
+
+.. versionadded:: 0.7
+   ``PROPAGATE_EXCEPTIONS``
 
 Configuring from Files
 ----------------------

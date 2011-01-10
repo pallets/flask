@@ -23,11 +23,15 @@ Release date to be announced, codename to be selected
   1.0 the old behaviour will continue to work but issue dependency
   warnings.
 - fixed a problem for Flask to run on jython.
+- added a `PROPAGATE_EXCEPTIONS` configuration variable that can be
+  used to flip the setting of exception propagation which previously
+  was linked to `DEBUG` alone and is now linked to either `DEBUG` or
+  `TESTING`.
 
 Version 0.6.1
 -------------
 
-Bugfix release, release date to be announced.
+Bugfix release, released on December 31st 2010
 
 - Fixed an issue where the default `OPTIONS` response was
   not exposing all valid methods in the `Allow` header.
@@ -36,6 +40,9 @@ Bugfix release, release date to be announced.
   module setups.
 - Fixed an issue where the subdomain setting for modules was
   ignored for the static folder.
+- Fixed a security problem that allowed clients to download arbitrary files
+  if the host server was a windows based operating system and the client
+  uses backslashes to escape the directory the files where exposed from.
 
 Version 0.6
 -----------
@@ -45,7 +52,7 @@ Released on July 27th 2010, codename Whisky
 - after request functions are now called in reverse order of
   registration.
 - OPTIONS is now automatically implemented by Flask unless the
-  application explictly adds 'OPTIONS' as method to the URL rule.
+  application explicitly adds 'OPTIONS' as method to the URL rule.
   In this case no automatic OPTIONS handling kicks in.
 - static rules are now even in place if there is no static folder
   for the module.  This was implemented to aid GAE which will
@@ -65,7 +72,7 @@ Released on July 27th 2010, codename Whisky
 - added signalling support based on blinker.  This feature is currently
   optional and supposed to be used by extensions and applications.  If
   you want to use it, make sure to have `blinker`_ installed.
-- refactored the way url adapters are created.  This process is now
+- refactored the way URL adapters are created.  This process is now
   fully customizable with the :meth:`~flask.Flask.create_url_adapter`
   method.
 - modules can now register for a subdomain instead of just an URL

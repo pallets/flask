@@ -15,6 +15,7 @@ import re
 import sys
 import flask
 import unittest
+from threading import Thread
 from logging import StreamHandler
 from contextlib import contextmanager
 from datetime import datetime
@@ -26,6 +27,15 @@ from cStringIO import StringIO
 example_path = os.path.join(os.path.dirname(__file__), '..', 'examples')
 sys.path.append(os.path.join(example_path, 'flaskr'))
 sys.path.append(os.path.join(example_path, 'minitwit'))
+
+
+def has_encoding(name):
+    try:
+        import codecs
+        codecs.lookup(name)
+        return True
+    except LookupError:
+        return False
 
 
 # config keys used for the ConfigTestCase
@@ -547,7 +557,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
                 "No ValueError exception should have been raised \"%s\"" % e
             )
 
-
     def test_test_app_proper_environ(self):
         app = flask.Flask(__name__)
         app.config.update(
@@ -619,6 +628,33 @@ class BasicFunctionalityTestCase(unittest.TestCase):
                 "No ValueError exception should have been raised \"%s\"" % e
             )
 
+    def test_exception_propagation(self):
+        def apprunner(configkey):
+            app = flask.Flask(__name__)
+            @app.route('/')
+            def index():
+                1/0
+            c = app.test_client()
+            if config_key is not None:
+                app.config[config_key] = True
+                try:
+                    resp = c.get('/')
+                except Exception:
+                    pass
+                else:
+                    self.fail('expected exception')
+            else:
+                assert c.get('/').status_code == 500
+
+        # we have to run this test in an isolated thread because if the
+        # debug flag is set to true and an exception happens the context is
+        # not torn down.  This causes other tests that run after this fail
+        # when they expect no exception on the stack.
+        for config_key in 'TESTING', 'PROPAGATE_EXCEPTIONS', 'DEBUG', None:
+            t = Thread(target=apprunner, args=(config_key,))
+            t.start()
+            t.join()
+
 
 class JSONTestCase(unittest.TestCase):
 
@@ -670,6 +706,9 @@ class JSONTestCase(unittest.TestCase):
         rv = app.test_client().get(u'/?foo=정상처리'.encode('euc-kr'))
         assert rv.status_code == 200
         assert rv.data == u'정상처리'.encode('utf-8')
+
+    if not has_encoding('euc-kr'):
+        test_modified_url_encoding = None
 
 
 class TemplatingTestCase(unittest.TestCase):
@@ -956,6 +995,21 @@ class ModuleTestCase(unittest.TestCase):
                 pass
             else:
                 assert 0, 'expected exception'
+
+            # testcase for a security issue that may exist on windows systems
+            import os
+            import ntpath
+            old_path = os.path
+            os.path = ntpath
+            try:
+                try:
+                    f('..\\__init__.py')
+                except NotFound:
+                    pass
+                else:
+                    assert 0, 'expected exception'
+            finally:
+                os.path = old_path
 
 
 class SendfileTestCase(unittest.TestCase):

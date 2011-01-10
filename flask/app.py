@@ -189,6 +189,7 @@ class Flask(_PackageBoundObject):
     default_config = ImmutableDict({
         'DEBUG':                                False,
         'TESTING':                              False,
+        'PROPAGATE_EXCEPTIONS':                 None,
         'SECRET_KEY':                           None,
         'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
@@ -197,6 +198,11 @@ class Flask(_PackageBoundObject):
         'SERVER_NAME':                          None,
         'MAX_CONTENT_LENGTH':                   None
     })
+
+    #: the test client that is used with when `test_client` is used.
+    #:
+    #: .. versionadded:: 0.7
+    test_client_class = None
 
     def __init__(self, import_name, static_path=None):
         _PackageBoundObject.__init__(self, import_name)
@@ -302,6 +308,18 @@ class Flask(_PackageBoundObject):
         #: :attr:`jinja_options`.
         self.jinja_env = self.create_jinja_environment()
         self.init_jinja_globals()
+
+    @property
+    def propagate_exceptions(self):
+        """Returns the value of the `PROPAGATE_EXCEPTIONS` configuration
+        value in case it's set, otherwise a sensible default is returned.
+
+        .. versionadded:: 0.7
+        """
+        rv = self.config['PROPAGATE_EXCEPTIONS']
+        if rv is not None:
+            return rv
+        return self.testing or self.debug
 
     @property
     def logger(self):
@@ -416,7 +434,7 @@ class Flask(_PackageBoundObject):
         options.setdefault('use_debugger', self.debug)
         return run_simple(host, port, self, **options)
 
-    def test_client(self):
+    def test_client(self, use_cookies=True):
         """Creates a test client for this application.  For information
         about unit testing head over to :ref:`testing`.
 
@@ -430,9 +448,16 @@ class Flask(_PackageBoundObject):
 
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
+
+        .. versionadded:: 0.7
+           The `use_cookies` parameter was added as well as the ability
+           to override the client to be used by setting the
+           :attr:`test_client_class` attribute.
         """
-        from flask.testing import FlaskClient
-        return FlaskClient(self, self.response_class, use_cookies=True)
+        cls = self.test_client_class
+        if cls is None:
+            from flask.testing import FlaskClient as cls
+        return cls(self, self.response_class, use_cookies=use_cookies)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
@@ -682,7 +707,7 @@ class Flask(_PackageBoundObject):
         """
         got_request_exception.send(self, exception=e)
         handler = self.error_handlers.get(500)
-        if self.debug:
+        if self.propagate_exceptions:
             raise
         self.logger.exception('Exception on %s [%s]' % (
             request.path,
