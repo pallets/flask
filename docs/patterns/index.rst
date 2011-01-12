@@ -32,3 +32,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    errorpages
    lazyloading
    mongokit
+   favicon
