@@ -266,7 +266,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     By default it will try to guess the mimetype for you, but you can
     also explicitly provide one.  For extra security you probably want
-    to sent certain files as attachment (HTML for instance).  The mimetype
+    to send certain files as attachment (HTML for instance).  The mimetype
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
 
