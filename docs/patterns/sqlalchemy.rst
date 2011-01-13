@@ -47,6 +47,10 @@ Here the example `database.py` module for your application::
     Base.query = db_session.query_property()
 
     def init_db():
+        # import all modules here that might define models so that
+        # they will be registered properly on the metadata.  Otherwise
+        # you will have to import them first before calling init_db()
+        import yourapplication.models
         Base.metadata.create_all(bind=engine)
 
 To define your models, just subclass the `Base` class that was created by
@@ -83,6 +87,11 @@ Here is an example model (put this into `models.py`, e.g.)::
 
         def __repr__(self):
             return '<User %r>' % (self.name)
+
+To create the database you can use the `init_db` function:
+
+>>> from yourapplication.database import init_db
+>>> init_db()
 
 You can insert entries into the database like this:
 
