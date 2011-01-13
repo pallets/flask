@@ -243,7 +243,7 @@ latex_additional_files = ['flaskstyle.sty', 'logo.pdf']
 
 intersphinx_mapping = {
     'http://docs.python.org/dev': None,
-    'http://werkzeug.pocoo.org/documentation/dev/': None,
+    'http://werkzeug.pocoo.org/docs/': None,
     'http://www.sqlalchemy.org/docs/': None,
     'http://wtforms.simplecodes.com/docs/0.5/': None,
     'http://discorporate.us/projects/Blinker/docs/1.1/': None

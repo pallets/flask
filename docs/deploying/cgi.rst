@@ -31,9 +31,6 @@ First you need to create the CGI application file.  Let's call it
 
     CGIHandler().run(app)
 
-If you're running Python 2.4 you will need the :mod:`wsgiref` package.  Python
-2.5 and higher ship this as part of the standard library.
-
 Server Setup
 ------------
 
