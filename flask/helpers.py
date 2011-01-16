@@ -480,7 +480,7 @@ class _PackageBoundObject(object):
         how this works, consider the following folder structure::
 
             /myapplication.py
-            /schemal.sql
+            /schema.sql
             /static
                 /style.css
             /templates
