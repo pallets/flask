@@ -27,6 +27,9 @@ Release date to be announced, codename to be selected
   used to flip the setting of exception propagation which previously
   was linked to `DEBUG` alone and is now linked to either `DEBUG` or
   `TESTING`.
+- Flask no longer internally depends on rules being added through the
+  `add_url_rule` function and can now also accept regular werkzeug
+  rules added to the url map.
 
 Version 0.6.1
 -------------

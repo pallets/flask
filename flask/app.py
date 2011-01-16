@@ -730,7 +730,8 @@ class Flask(_PackageBoundObject):
             rule = req.url_rule
             # if we provide automatic options for this URL and the
             # request came with the OPTIONS method, reply automatically
-            if rule.provide_automatic_options and req.method == 'OPTIONS':
+            if getattr(rule, 'provide_automatic_options', False) \
+               and req.method == 'OPTIONS':
                 return self.make_default_options_response()
             # otherwise dispatch to the handler for that endpoint
             return self.view_functions[rule.endpoint](**req.view_args)

@@ -206,6 +206,24 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 405
         assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
 
+    def test_werkzeug_routing(self):
+        from werkzeug.routing import Submount, Rule
+        app = flask.Flask(__name__)
+        app.url_map.add(Submount('/foo', [
+            Rule('/bar', endpoint='bar'),
+            Rule('/', endpoint='index')
+        ]))
+        def bar():
+            return 'bar'
+        def index():
+            return 'index'
+        app.view_functions['bar'] = bar
+        app.view_functions['index'] = index
+
+        c = app.test_client()
+        assert c.get('/foo/').data == 'index'
+        assert c.get('/foo/bar').data == 'bar'
+
     def test_session(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'
