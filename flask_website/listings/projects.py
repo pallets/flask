@@ -110,6 +110,10 @@ projects = {
         Project('weluse GmbH', 'http://weluse.de/', u'''
             <p>
               A German corporate website.
+        '''),
+        Project('Papyrus Research', 'http://www.papyrusresearch.com/', u'''
+            <p>
+              The website of Papyrus Research, a market research company.
         ''')
     ],
     'apps': [
