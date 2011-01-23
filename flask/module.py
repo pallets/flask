@@ -124,6 +124,7 @@ class Module(_PackageBoundObject):
         self.name = name
         self.url_prefix = url_prefix
         self.subdomain = subdomain
+        self.view_functions = {}
         self._register_events = [_register_module(self, static_path)]
 
     def route(self, rule, **options):
@@ -156,6 +157,13 @@ class Module(_PackageBoundObject):
                                                         the_endpoint),
                                    view_func, **options)
         self._record(register_rule)
+
+    def endpoint(self, endpoint):
+        """Like :meth:`Flask.endpoint` but for a module."""
+        def decorator(f):
+            self.view_functions[endpoint] = f
+            return f
+        return decorator
 
     def before_request(self, f):
         """Like :meth:`Flask.before_request` but for a module.  This function
