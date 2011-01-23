@@ -224,6 +224,26 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert c.get('/foo/').data == 'index'
         assert c.get('/foo/bar').data == 'bar'
 
+    def test_endpoint_decorator(self):
+        from werkzeug.routing import Submount, Rule
+        app = flask.Flask(__name__)
+        app.url_map.add(Submount('/foo', [
+            Rule('/bar', endpoint='bar'),
+            Rule('/', endpoint='index')
+        ]))
+
+        @app.endpoint('bar')
+        def bar():
+            return 'bar'
+
+        @app.endpoint('index')
+        def index():
+            return 'index'
+
+        c = app.test_client()
+        assert c.get('/foo/').data == 'index'
+        assert c.get('/foo/bar').data == 'bar'
+
     def test_session(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'
@@ -1028,6 +1048,31 @@ class ModuleTestCase(unittest.TestCase):
                     assert 0, 'expected exception'
             finally:
                 os.path = old_path
+
+    def test_endpoint_decorator(self):
+        from werkzeug.routing import Submount, Rule
+        from flask import Module
+
+        app = flask.Flask(__name__)
+        app.url_map.add(Submount('/foo', [
+            Rule('/bar', endpoint='bar'),
+            Rule('/', endpoint='index')
+        ]))
+        module = Module(__name__, __name__)
+
+        @module.endpoint('bar')
+        def bar():
+            return 'bar'
+
+        @module.endpoint('index')
+        def index():
+            return 'index'
+
+        app.register_module(module)
+
+        c = app.test_client()
+        assert c.get('/foo/').data == 'index'
+        assert c.get('/foo/bar').data == 'bar'
 
 
 class SendfileTestCase(unittest.TestCase):
