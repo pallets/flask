@@ -496,6 +496,7 @@ class Flask(_PackageBoundObject):
         """
         options.setdefault('url_prefix', module.url_prefix)
         options.setdefault('subdomain', module.subdomain)
+        self.view_functions.update(module.view_functions)
         state = _ModuleSetupState(self, **options)
         for func in module._register_events:
             func(state)
@@ -626,6 +627,22 @@ class Flask(_PackageBoundObject):
         """
         def decorator(f):
             self.add_url_rule(rule, None, f, **options)
+            return f
+        return decorator
+
+
+    def endpoint(self, endpoint):
+        """A decorator to register a function as an endpoint.
+        Example::
+
+            @app.endpoint('example.endpoint')
+            def example():
+                return "example"
+
+        :param endpoint: the name of the endpoint
+        """
+        def decorator(f):
+            self.view_functions[endpoint] = f
             return f
         return decorator
 
