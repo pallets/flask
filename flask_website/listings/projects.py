@@ -172,7 +172,11 @@ projects = {
         Project('Dominion', 'http://alexanderweb.de:8080/', u'''
             <p>
               Domination is a clone of a well-known card game.
-        ''', source='https://bitbucket.org/xoraxax/domination/')
+        ''', source='https://bitbucket.org/xoraxax/domination/'),
+        Project('jitviewer', 'https://bitbucket.org/pypy/jitviewer', '''
+            <p>
+              web-based tool to inspect the output of PyPy JIT log
+        ''')
     ]
 }
 
