@@ -1,5 +1,3 @@
-.. _favicon:
-
 Adding a favicon
 ================
 
