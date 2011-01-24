@@ -30,6 +30,9 @@ Release date to be announced, codename to be selected
 - Flask no longer internally depends on rules being added through the
   `add_url_rule` function and can now also accept regular werkzeug
   rules added to the url map.
+- Added an `endpoint` method to the flask application object which
+  allows one to register a callback to an arbitrary endpoint with
+  a decorator.
 
 Version 0.6.1
 -------------
