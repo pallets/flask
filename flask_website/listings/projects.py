@@ -114,6 +114,10 @@ projects = {
         Project('Papyrus Research', 'http://www.papyrusresearch.com/', u'''
             <p>
               The website of Papyrus Research, a market research company.
+        '''),
+        Project('Viewfinder', 'http://viewfinder.io/', u'''
+            <p>
+              A website that helps you find photos you'll like on Flickr.
         ''')
     ],
     'apps': [
