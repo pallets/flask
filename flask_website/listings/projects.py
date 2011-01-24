@@ -168,7 +168,11 @@ projects = {
                Sometimes you use someone else's computer and find something
                neat and interesting.  Store it on Remar.kZ without having
                to enter your credentials.
-        ''', source='http://bitbucket.org/little_arhat/remarkz')
+        ''', source='http://bitbucket.org/little_arhat/remarkz'),
+        Project('Dominion', 'http://alexanderweb.de:8080/', u'''
+            <p>
+              Domination is a clone of a well-known card game.
+        ''', source='https://bitbucket.org/xoraxax/domination/')
     ]
 }
 
