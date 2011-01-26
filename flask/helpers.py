@@ -31,6 +31,8 @@ except ImportError:
             from django.utils import simplejson as json
         except ImportError:
             json_available = False
+if json_available:
+    json_encoder = json.JSONEncoder
 
 
 from werkzeug import Headers, wrap_file, cached_property
@@ -104,7 +106,8 @@ def jsonify(*args, **kwargs):
     if __debug__:
         _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+        indent=None if request.is_xhr else 2, cls=json_encoder),
+        mimetype='application/json')
 
 
 def make_response(*args):

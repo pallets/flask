@@ -707,6 +707,40 @@ class JSONTestCase(unittest.TestCase):
         assert rv.status_code == 200
         assert rv.data == u'정상처리'.encode('utf-8')
 
+    def test_json_with_object(self):
+        class DataObject(object):
+            def __init__(self):
+                self.attr_a = 'a'
+                self.attr_b = 'b'
+        d = DataObject()
+
+        app = flask.Flask(__name__)
+        @app.route('/get')
+        def get():
+            return flask.jsonify(arg=d)
+
+        c = app.test_client()
+        rv = c.get('/get')
+        self.assertEquals(500, rv.status_code)
+
+        import flask.helpers as helpers
+        old_encoder = helpers.json_encoder
+        try:
+            class ExtendedJSONEncoder(helpers.json_encoder):
+                def default(self, o):
+                    if isinstance(o, DataObject):
+                        return {'attr_a': o.attr_a, 'attr_b': o.attr_b}
+                    else:
+                        return super(json_encoder, self).default(o)
+            helpers.json_encoder = ExtendedJSONEncoder
+
+            rv = c.get('/get')
+            self.assertEquals(200, rv.status_code)
+            self.assertEquals(flask.json.loads(rv.data),
+                    {'arg': {'attr_a': 'a', 'attr_b': 'b'}})
+        finally:
+            helpers.json_encoder = old_encoder
+
     if not has_encoding('euc-kr'):
         test_modified_url_encoding = None
 
