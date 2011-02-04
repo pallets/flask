@@ -25,12 +25,13 @@ First you need to create the FastCGI server file.  Let's call it
     #!/usr/bin/python
     from flup.server.fcgi import WSGIServer
     from yourapplication import app
+    
+    if __name__ == '__main__':
+        WSGIServer(app).run()
 
-    WSGIServer(app).run()
-
-This is enough for Apache to work, however lighttpd and nginx need a
-socket to communicate with the FastCGI server.  For that to work you
-need to pass the path to the socket to the
+This is enough for Apache to work, however nginx and older versions of
+lighttpd need a socket to be explicitly passed to communicate with the FastCGI
+server.  For that to work you need to pass the path to the socket to the
 :class:`~flup.server.fcgi.WSGIServer`::
 
     WSGIServer(application, bindAddress='/path/to/fcgi.sock').run()
@@ -54,21 +55,33 @@ Configuring lighttpd
 
 A basic FastCGI configuration for lighttpd looks like that::
 
-    fastcgi.server = ("/yourapplication" =>
-        "yourapplication" => (
+    fastcgi.server = ("/yourapplication.fcgi" =>
+        ((
             "socket" => "/tmp/yourapplication-fcgi.sock",
             "bin-path" => "/var/www/yourapplication/yourapplication.fcgi",
-            "check-local" => "disable"
-        )
+            "check-local" => "disable",
+            "max-procs" -> 1
+        ))
     )
 
-This configuration binds the application to `/yourapplication`.  If you
-want the application to work in the URL root you have to work around a
-lighttpd bug with the :class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix`
-middleware.
+    alias.url = (
+        "/static/" => "/path/to/your/static"
+    )
+
+    url.rewrite-once = (
+        "^(/static.*)$" => "$1",
+        "^(/.*)$" => "/yourapplication.fcgi$1"
+
+Remember to enable the FastCGI, alias and rewrite modules. This configuration
+binds the application to `/yourapplication`.  If you want the application to
+work in the URL root you have to work around a lighttpd bug with the
+:class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix` middleware.
 
 Make sure to apply it only if you are mounting the application the URL
-root.
+root. Also, see the Lighty docs for more information on `FastCGI and Python
+<http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModFastCGI>`_ (note that
+explicitly passing a socket to run() is no longer necessary).
+
 
 Configuring nginx
 -----------------
