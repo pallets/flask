@@ -364,13 +364,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                                     direct_passthrough=True)
 
     # if we know the file modification date, we can store it as the
-    # current time to better support conditional requests.  Werkzeug
-    # as of 0.6.1 will override this value however in the conditional
-    # response with the current time.  This will be fixed in Werkzeug
-    # with a new release, however many WSGI servers will still emit
-    # a separate date header.
+    # the time of the last modification.
     if mtime is not None:
-        rv.date = int(mtime)
+        rv.last_modified = int(mtime)
 
     rv.cache_control.public = True
     if cache_timeout:

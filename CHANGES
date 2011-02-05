@@ -33,6 +33,8 @@ Release date to be announced, codename to be selected
 - Added an `endpoint` method to the flask application object which
   allows one to register a callback to an arbitrary endpoint with
   a decorator.
+- Use Last-Modified for static file sending instead of Date which
+  was incorrectly introduced in 0.6.
 
 Version 0.6.1
 -------------
