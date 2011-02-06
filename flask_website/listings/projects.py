@@ -118,7 +118,21 @@ projects = {
         Project('Viewfinder', 'http://viewfinder.io/', u'''
             <p>
               A website that helps you find photos you'll like on Flickr.
-        ''')
+        '''),
+        Project('Daily Lyric', 'http://dailylyric.appspot.com/', u'''
+            <p>
+              Gives a random song lyric every day
+        '''),
+        Project('Nexuo Community', 'http://community.nuxeo.com/', u'''
+            <p>
+              Activity stream aggregator and umbrella home page for the Nuxeo
+              Open Source ECM project sites.
+        ''', source='https://github.com/sfermigier/nuxeo.org'),
+        Project('Planete GT LL', 'http://www.gt-logiciel-libre.org/', u'''
+            <p>
+              News aggregator for the open source workgroup of the Paris Region
+              innovation cluster, Systematic.
+        ''', source='https://github.com/sfermigier/Planet-GTLL')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
