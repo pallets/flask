@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from urlparse import urlparse
 from werkzeug import url_quote
 from flask import Markup
@@ -193,6 +194,109 @@ extensions = [
         bitbucket='aafshar/flask-principal-main',
         approved=False
     ),
+    Extension('Flask-Zen', 'Noah Kantrowitz',
+        description='''
+            <p>Flask-Zen allows you to use PyZen via Flask-Script commands.
+        ''',
+        docs='http://packages.python.org/Flask-Zen/',
+        github='coderanger/flask-zen',
+        approved=False
+    ),
+    Extension('Flask-Assets', u'Michael Elsdörfer',
+        description='''
+            <p>
+              Integrates the webassets library with Flask, adding support for
+              merging, minifying and compiling CSS and Javascript files.
+        ''',
+        docs='http://elsdoerfer.name/docs/flask-assets/',
+        github='miracle2k/flask-assets',
+        approved=False
+    ),
+    Extension('Flask-AutoIndex', 'Heungsub Lee',
+        description='''
+            <p>
+              An extension that generates an index page for your Flask
+              application automatically
+        ''',
+        docs='http://packages.python.org/Flask-AutoIndex/',
+        github='sublee/flask-autoindex',
+        approved=False
+    ),
+    Extension('Flask-Cache', 'Thadeus Burgess',
+        description='''
+            <p>
+              Adds cache support to your Flask application
+        ''',
+        docs='http://packages.python.org/Flask-Cache/',
+        github='thadeusb/flask-cache',
+        approved=False
+    ),
+    Extension('Flask-Celery', 'Ask Solem',
+        description='''
+            <p>
+              Celery integration for Flask
+        ''',
+        docs='http://ask.github.com/celery/',
+        github='ask/flask-celery',
+        approved=False
+    ),
+    Extension('Flask-FlatPages', 'Simon Sapin',
+        description='''
+            <p>
+              Provides flat static pages to a Flask application, based on text
+              files as opposed to a relationnal database.
+        ''',
+        docs='http://packages.python.org/Flask-FlatPages/',
+        github='SimonSapin/Flask-FlatPages',
+        approved=False
+    ),
+    Extension('Flask-FluidDB', 'Ali Afshar',
+        description='''
+            <p>
+              Fluiddb access for flask
+        ''',
+        docs='http://packages.python.org/Flask-FluidDB/',
+        bitbucket='aafshar/flask-fluiddb-main',
+        approved=False
+    ),
+    Extension('Flask-Gravatar', 'Zelenyak Aleksandr',
+        description='''
+            <p>
+              Small extension for Flask to make using Gravatar easy.
+        ''',
+        docs='http://packages.python.org/Flask-Gravatar/',
+        github='zzzsochi/Flask-Gravatar',
+        approved=False
+    ),
+    Extension('Flask-HTMLBuilder', 'Zahari Petkov',
+        description='''
+            <p>
+              Flask-HTMLBuilder is an extension that allows flexible and easy
+              Python-only generation of HTML snippets and full HTML documents
+              using a robust syntax.
+        ''',
+        docs='http://majorz.github.com/flask-htmlbuilder/',
+        github='majorz/flask-htmlbuilder',
+        approved=False
+    ),
+    Extension('Flask-MongoAlchemy', 'Francisco Souza',
+        description='''
+            <p>
+              Add Flask support for MongoDB using MongoAlchemy.
+        ''',
+        docs='http://packages.python.org/Flask-MongoAlchemy/',
+        github='cobrateam/flask-mongoalchemy',
+        approved=False
+    ),
+    Extension('Flask-DebugToolbar', 'Michael van Tellingen',
+        description='''
+            <p>
+              A port of the Django debug toolbar to Flask
+        ''',
+        docs='https://github.com/mvantellingen/flask-debugtoolbar',
+        github='mvantellingen/flask-debugtoolbar',
+        approved=False
+    )
 ]
 
 
