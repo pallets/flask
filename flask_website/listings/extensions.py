@@ -222,15 +222,6 @@ extensions = [
         github='sublee/flask-autoindex',
         approved=False
     ),
-    Extension('Flask-Cache', 'Thadeus Burgess',
-        description='''
-            <p>
-              Adds cache support to your Flask application
-        ''',
-        docs='http://packages.python.org/Flask-Cache/',
-        github='thadeusb/flask-cache',
-        approved=False
-    ),
     Extension('Flask-Celery', 'Ask Solem',
         description='''
             <p>
@@ -244,7 +235,7 @@ extensions = [
         description='''
             <p>
               Provides flat static pages to a Flask application, based on text
-              files as opposed to a relationnal database.
+              files as opposed to a relational database.
         ''',
         docs='http://packages.python.org/Flask-FlatPages/',
         github='SimonSapin/Flask-FlatPages',
@@ -253,7 +244,7 @@ extensions = [
     Extension('Flask-FluidDB', 'Ali Afshar',
         description='''
             <p>
-              Fluiddb access for flask
+              FluidDB access for Flask.
         ''',
         docs='http://packages.python.org/Flask-FluidDB/',
         bitbucket='aafshar/flask-fluiddb-main',
