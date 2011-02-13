@@ -132,7 +132,26 @@ projects = {
             <p>
               News aggregator for the open source workgroup of the Paris Region
               innovation cluster, Systematic.
-        ''', source='https://github.com/sfermigier/Planet-GTLL')
+        ''', source='https://github.com/sfermigier/Planet-GTLL'),
+        Project('Battlefield3 Development News Aggregator',
+                'http://bf3.immersedcode.org/', u'''
+            <p>
+              Development news aggregator for Battlefield3.  Tracks twitter
+              accounts and forum posts by DICE developers.
+        ''', source='https://github.com/mitsuhiko/bf3-aggregator'),
+        Project('Media Queries', 'http://mediaqueri.es/', u'''
+            <p>
+              A collection of responsive web designs.
+        '''),
+        Project('Life Short, Coding More', 'http://www.liul.net/', u'''
+            <p>
+              Personal blog.
+        '''),
+        Project('Flask Feedback', 'http://feedback.flask.pocoo.org/', u'''
+            <p>
+              Website by the Flask project that collects feedback from
+              users.
+        ''', source='https://github.com/mitsuhiko/flask-feedback')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
