@@ -151,7 +151,11 @@ projects = {
             <p>
               Website by the Flask project that collects feedback from
               users.
-        ''', source='https://github.com/mitsuhiko/flask-feedback')
+        ''', source='https://github.com/mitsuhiko/flask-feedback'),
+        Project('pizje.ns-keip', 'http://pizje.ns-keip.ru/', u'''
+            <p>
+              Russian game website.
+        ''')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
