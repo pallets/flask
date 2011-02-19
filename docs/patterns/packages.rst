@@ -79,6 +79,7 @@ You should then end up with something like that::
     /yourapplication
         /yourapplication
             /__init__.py
+            /runserver.py
             /views.py
             /static
                 /style.css
