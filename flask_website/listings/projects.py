@@ -155,6 +155,10 @@ projects = {
         Project('pizje.ns-keip', 'http://pizje.ns-keip.ru/', u'''
             <p>
               Russian game website.
+        '''),
+        Project('Python Edinburgh', 'http://www.pythonedinburgh.org/', u'''
+            <p>
+              Website of the user group for Pythonistas in Edinburgh.
         ''')
     ],
     'apps': [
