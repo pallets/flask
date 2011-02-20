@@ -43,6 +43,7 @@ def hello():
       <a href="{{ url_for('docs.zip') }}">zipped HTML</a>
     <li><a href="{{ url_for('mailinglist.index') }}">Join the mailinglist</a>
     <li><a href=http://github.com/mitsuhiko/flask>Fork it on github</a>
+    <li><a href=http://github.com/mitsuhiko/flask/issues>Add issues and feature requests</a>
   </ul>
   <h2>What’s in the Box?</h2>
   <ul>
@@ -79,7 +80,9 @@ def hello():
     channel</a> or join <a href="{{ url_for('mailinglist.index') }}"
     >the mailinglist</a>.  Also as a simple method to help us improve
     the framework, visit the <a href=http://feedback.flask.pocoo.org/
-    >feedback website</a>.
+    >feedback website</a>.  You can also directly add issues and feature
+    requests to the <a href="http://github.com/mitsuhiko/flask/issues">
+    issue tracker</a>.
   {% if tweets %}
   <h2>Recent Tweets</h2>
   <p>
