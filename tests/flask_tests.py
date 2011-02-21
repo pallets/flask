@@ -857,6 +857,19 @@ class TemplatingTestCase(unittest.TestCase):
         rv = app.test_client().get('/')
         assert rv.data == 'dcba'
 
+    def test_custom_template_loader(self):
+        class MyFlask(flask.Flask):
+            def create_jinja_loader(self):
+                from jinja2 import DictLoader
+                return DictLoader({'index.html': 'Hello Custom World!'})
+        app = MyFlask(__name__)
+        @app.route('/')
+        def index():
+            return flask.render_template('index.html')
+        c = app.test_client()
+        rv = c.get('/')
+        assert rv.data == 'Hello Custom World!'
+
 
 class ModuleTestCase(unittest.TestCase):
 

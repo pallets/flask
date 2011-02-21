@@ -35,6 +35,7 @@ Release date to be announced, codename to be selected
   a decorator.
 - Use Last-Modified for static file sending instead of Date which
   was incorrectly introduced in 0.6.
+- Added `create_jinja_loader` to override the loader creation process.
 
 Version 0.6.1
 -------------

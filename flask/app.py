@@ -352,7 +352,15 @@ class Flask(_PackageBoundObject):
         options = dict(self.jinja_options)
         if 'autoescape' not in options:
             options['autoescape'] = self.select_jinja_autoescape
-        return Environment(loader=_DispatchingJinjaLoader(self), **options)
+        return Environment(loader=self.create_jinja_loader(), **options)
+
+    def create_jinja_loader(self):
+        """Creates the loader for the Jinja2 environment.  Can be used to
+        override just the loader and keeping the rest unchanged.
+
+        .. versionadded:: 0.7
+        """
+        return _DispatchingJinjaLoader(self)
 
     def init_jinja_globals(self):
         """Called directly after the environment was created to inject
