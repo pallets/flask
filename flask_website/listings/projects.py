@@ -159,7 +159,12 @@ projects = {
         Project('Python Edinburgh', 'http://www.pythonedinburgh.org/', u'''
             <p>
               Website of the user group for Pythonistas in Edinburgh.
-        ''')
+        '''),
+        Project('Get Python 3', 'http://getpython3.net/', u'''
+            <p>
+              A website to collect feedback of Python third party
+              libraries about its compatibility with Python 3
+        ''', source='https://github.com/baijum/getpython3')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
