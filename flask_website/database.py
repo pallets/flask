@@ -26,7 +26,7 @@ class User(Model):
     __tablename__ = 'users'
     id = Column('user_id', Integer, primary_key=True)
     openid = Column('openid', String(200))
-    name = Column(String(200), unique=True)
+    name = Column(String(200))
 
     def __init__(self, name, openid):
         self.name = name
