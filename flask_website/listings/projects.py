@@ -164,7 +164,11 @@ projects = {
             <p>
               A website to collect feedback of Python third party
               libraries about its compatibility with Python 3
-        ''', source='https://github.com/baijum/getpython3')
+        ''', source='https://github.com/baijum/getpython3'),
+        Project('Expert.io', 'http://expert.io/', u'''
+            <p>
+              Marketplace for your Expertise.
+        ''')
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
