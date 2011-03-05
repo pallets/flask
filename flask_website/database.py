@@ -9,7 +9,8 @@ from werkzeug import cached_property, http_date
 from flask import url_for
 from flask_website import config
 
-engine = create_engine(config.DATABASE_URI, convert_unicode=True)
+engine = create_engine(config.DATABASE_URI, convert_unicode=True,
+                       use_native_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
