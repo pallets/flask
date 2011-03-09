@@ -56,8 +56,8 @@ following quick checklist:
    `__name__` variable will resolve to the correct package.
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
    decorator on top) have to be imported when in the `__init__.py` file.
-   Not the object itself, but the module it is in.  Do the importing at
-   the *bottom* of the file.
+   Not the object itself, but the module it is in. Import the view module
+   *after the application object is created*.
 
 Here's an example `__init__.py`::
 
@@ -158,10 +158,10 @@ Do the same with the `frontend.py` and then make sure to register the
 modules in the application (`__init__.py`) like this::
 
     from flask import Flask
+    app = Flask(__name__)
+
     from yourapplication.views.admin import admin
     from yourapplication.views.frontend import frontend
-
-    app = Flask(__name__)
     app.register_module(admin, url_prefix='/admin')
     app.register_module(frontend)
 
