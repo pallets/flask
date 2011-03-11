@@ -30,11 +30,9 @@ class _RequestContext(object):
         self.app = app
         self.request = app.request_class(environ)
         self.url_adapter = app.create_url_adapter(self.request)
-        self.session = app.open_session(self.request)
-        if self.session is None:
-            self.session = _NullSession()
         self.g = _RequestGlobals()
         self.flashes = None
+        self.session = None
 
         try:
             url_rule, self.request.view_args = \
@@ -46,6 +44,13 @@ class _RequestContext(object):
     def push(self):
         """Binds the request context."""
         _request_ctx_stack.push(self)
+
+        # Open the session at the moment that the request context is
+        # available. This allows a custom open_session method to use the
+        # request context (e.g. flask-sqlalchemy).
+        self.session = self.app.open_session(self.request)
+        if self.session is None:
+            self.session = _NullSession()
 
     def pop(self):
         """Pops the request context."""
