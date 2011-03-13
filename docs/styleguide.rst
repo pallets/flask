@@ -91,7 +91,7 @@ General whitespace rules:
     value = my_list[ index ]
     value = my_dict ['key']
 
-Yoda statements are a nogo:
+Yoda statements are a no-go:
   Never compare constant with variable, always variable with constant:
 
   Good::

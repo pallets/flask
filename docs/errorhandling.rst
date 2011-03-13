@@ -105,7 +105,7 @@ above, just make sure to use a lower setting (I would recommend
 
     if not app.debug:
         import logging
-        from themodule import TheHandler YouWant
+        from themodule import TheHandlerYouWant
         file_handler = TheHandlerYouWant(...)
         file_handler.setLevel(logging.WARNING)
         app.logger.addHandler(file_handler)
