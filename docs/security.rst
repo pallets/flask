@@ -110,7 +110,7 @@ stuff.  Unfortunately that protection is only there for
 generate JSON.
 
 So what is the issue and how to avoid it?  The problem are arrays at
-toplevel in JSON.  Imagine you send the following data out in a JSON
+top-level in JSON.  Imagine you send the following data out in a JSON
 request.  Say that's exporting the names and email addresses of all your
 friends for a part of the user interface that is written in JavaScript.
 Not very uncommon:
@@ -156,7 +156,7 @@ possible to patch constructors and register callbacks for setters.  An
 attacker can use this (like above) to get all the data you exported in
 your JSON file.  The browser will totally ignore the ``application/json``
 mimetype if ``text/javascript`` is defined as content type in the script
-tag and evaluate that as JavaScript.  Because toplevel array elements are
+tag and evaluate that as JavaScript.  Because top-level array elements are
 allowed (albeit useless) and we hooked in our own constructor, after that
 page loaded the data from the JSON response is in the `captured` array.
 

@@ -208,7 +208,7 @@ configuration::
     class DevelopmentConfig(Config):
         DEBUG = True
 
-    class TestinConfig(Config):
+    class TestingConfig(Config):
         TESTING = True
 
 To enable such a config you just have to call into
