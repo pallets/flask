@@ -40,24 +40,24 @@ Incoming Request Data
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
-   The request object is an instance of a :class:`~werkzeug.Request`
+   The request object is an instance of a :class:`~werkzeug.wrappers.Request`
    subclass and provides all of the attributes Werkzeug defines.  This
    just shows a quick overview of the most important ones.
 
    .. attribute:: form
 
-      A :class:`~werkzeug.MultiDict` with the parsed form data from `POST`
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from `POST`
       or `PUT` requests.  Please keep in mind that file uploads will not
       end up here,  but instead in the :attr:`files` attribute.
 
    .. attribute:: args
 
-      A :class:`~werkzeug.MultiDict` with the parsed contents of the query
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed contents of the query
       string.  (The part in the URL after the question mark).
 
    .. attribute:: values
 
-      A :class:`~werkzeug.CombinedMultiDict` with the contents of both
+      A :class:`~werkzeug.datastructures.CombinedMultiDict` with the contents of both
       :attr:`form` and :attr:`args`.
 
    .. attribute:: cookies
@@ -79,11 +79,11 @@ Incoming Request Data
 
    .. attribute:: files
 
-      A :class:`~werkzeug.MultiDict` with files uploaded as part of a
+      A :class:`~werkzeug.datastructures.MultiDict` with files uploaded as part of a
       `POST` or `PUT` request.  Each file is stored as
-      :class:`~werkzeug.FileStorage` object.  It basically behaves like a
+      :class:`~werkzeug.datastructures.FileStorage` object.  It basically behaves like a
       standard file object you know from Python, with the difference that
-      it also has a :meth:`~werkzeug.FileStorage.save` function that can
+      it also has a :meth:`~werkzeug.datastructures.FileStorage.save` function that can
       store the file on the filesystem.
 
    .. attribute:: environ
@@ -228,7 +228,7 @@ Useful Functions and Classes
 
 .. function:: abort(code)
 
-   Raises an :exc:`~werkzeug.exception.HTTPException` for the given
+   Raises an :exc:`~werkzeug.exceptions.HTTPException` for the given
    status code.  For example to abort request handling with a page not
    found exception, you would call ``abort(404)``.
 
@@ -308,7 +308,7 @@ Useful Internals
 
 .. data:: _request_ctx_stack
 
-   The internal :class:`~werkzeug.LocalStack` that is used to implement
+   The internal :class:`~werkzeug.local.LocalStack` that is used to implement
    all the context local objects used in Flask.  This is a documented
    instance and can be used by extensions and application code but the
    use is discouraged in general.
@@ -435,7 +435,7 @@ exceptions where it is good to know that this object is an actual proxy:
     :ref:`signals`)
 
 If you need to get access to the underlying object that is proxied, you
-can use the :meth:`~werkzeug.LocalProxy._get_current_object` method::
+can use the :meth:`~werkzeug.local.LocalProxy._get_current_object` method::
 
     app = current_app._get_current_object()
     my_signal.send(app)
