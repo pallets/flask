@@ -3,6 +3,43 @@
 Application Dispatching
 =======================
 
+Application dispatching is the process of combining multiple Flask
+applications on the WSGI level.  You can not only combine Flask
+applications into something larger but any WSGI application.  This would
+even allow you to run a Django and a Flask application in the same
+interpreter side by side if you want.  The usefulness of this depends on
+how the applications work internally.
+
+This is fundamentally different from the :ref:`module approach
+<larger-applications>` is that in this case you are running the same or
+different Flask applications that are entirely isolated from each other.
+They run different configurations and are dispatched on the WSGI level.
+
+Combining Applications
+----------------------
+
+If you have entirely separated applications and you want them to work next
+to each other in the same Python interpreter process you can take
+advantage of the :class:`werkzeug.wsgi.DispatcherMiddleware`.  The idea
+here is that each Flask application is a valid WSGI application and they
+are combined by the dispatcher middleware into a larger one that
+dispatched based on prefix.
+
+For example you could have your main application run on `/` and your
+backend interface on `/admin`::
+
+    from werkzeug.wsgi import DispatcherMiddleware
+    from frontend_app import application as frontend
+    from backend_app import application as backend
+
+    application = DispatcherMiddleware(frontend, {
+        '/backend':     backend
+    })
+
+
+Dispatch by Subdomain
+---------------------
+
 Sometimes you might want to use multiple instances of the same application
 with different configurations.  Assuming the application is created inside
 a function and you can call that function to instanciate it, that is
@@ -10,21 +47,17 @@ really easy to implement.  In order to develop your application to support
 creating new instances in functions have a look at the
 :ref:`app-factories` pattern.
 
-
-Dispatch by Subdomain
----------------------
-
 A very common example would be creating applications per subdomain.  For
 instance you configure your webserver to dispatch all requests for all
 subdomains to your application and you then use the subdomain information
-to create user-specific instances.
+to create user-specific instances.  Once you have your server set up to
+listen on all subdomains you can use a very simple WSGI application to do
+the dynamic application creation.
 
-Once you have your server set up to listen on all subdomains you can use a
-very simple WSGI application to do the dynamic application creation.
-
-The code for the dispatching looks roughly like this:
-
-.. sourcecode:: python
+The perfect level for abstraction in that regard is the WSGI layer.  You
+write your own WSGI application that looks at the request that comes and
+and delegates it to your Flask application.  If that application does not
+exist yet, it is dynamically created and remembered::
 
     from threading import Lock
 
@@ -43,21 +76,16 @@ The code for the dispatching looks roughly like this:
             with self.lock:
                 app = self.instances.get(subdomain)
                 if app is None:
-                    app = self.make_app(subdomain)
+                    app = self.create_app(subdomain)
                     self.instances[subdomain] = app
                 return app
-
-        def make_app(self, subdomain):
-            return self.create_app(subdomain)
 
         def __call__(self, environ, start_response):
             app = self.get_application(environ['HTTP_HOST'])
             return app(environ, start_response)
 
 
-If you want to use it, you can do something like this:
-
-.. sourcecode:: python
+This dispatcher can then be used like this::
 
     from myapplication import create_app, get_user_for_subdomain
     from werkzeug.exceptions import NotFound
@@ -76,3 +104,51 @@ If you want to use it, you can do something like this:
         return create_app(user)
 
     application = SubdomainDispatcher('example.com', make_app)
+
+
+Dispatch by Path
+----------------
+
+Dispatching by a path on the URL is very similar.  Instead of looking at
+the `Host` header to figure out the subdomain one simply looks at the
+request path up to the first slash::
+
+    from threading import Lock
+    from werkzeug.wsgi import pop_path_info, peek_path_info
+
+    class PathDispatcher(object):
+
+        def __init__(self, default_app, create_app):
+            self.default_app = default_app
+            self.create_app = create_app
+            self.lock = Lock()
+            self.instances = {}
+
+        def get_application(self, prefix):
+            with self.lock:
+                app = self.instances.get(prefix)
+                if app is None:
+                    app = self.create_app(prefix)
+                    if app is not None:
+                        self.instances[prefix] = app
+                return app
+
+        def __call__(self, environ, start_response):
+            app = self.get_application(peek_path_info(environ))
+            if app is not None:
+                pop_path_info(environ)
+            else:
+                app = self.default_app
+            return app(environ, start_response)
+
+The big difference between this and the subdomain one is that this one
+falls back to another application if the creator function returns `None`::
+
+    from myapplication import create_app, default_app, get_user_for_prefix
+
+    def make_app(prefix):
+        user = get_user_for_prefix(prefix)
+        if user is not None:
+            return create_app(user)
+
+    application = PathDispatcher('example.com', default_app, make_app)
