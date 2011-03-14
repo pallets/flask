@@ -11,6 +11,7 @@
 
 from __future__ import with_statement
 
+import sys
 from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
@@ -246,6 +247,18 @@ class Flask(_PackageBoundObject):
         #: currently logged in user.  To register a function here, use the
         #: :meth:`after_request` decorator.
         self.after_request_funcs = {}
+
+        #: A dictionary with lists of functions that are called after
+        #: each request, even if an exception has occurred. The key of the
+        #: dictionary is the name of the module this function is active for,
+        #: `None` for all requests. These functions are not allowed to modify
+        #: the request, and their return values are ignored. If an exception
+        #: occurred while processing the request, it gets passed to each
+        #: teardown_request function. To register a function here, use the
+        #: :meth:`teardown_request` decorator.
+        #:
+        #: .. versionadded:: 0.7
+        self.teardown_request_funcs = {}
 
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the
@@ -704,6 +717,11 @@ class Flask(_PackageBoundObject):
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
 
+    def teardown_request(self, f):
+        """Register a function to be run at the end of each request, regardless of whether there was an exception or not."""
+        self.teardown_request_funcs.setdefault(None, []).append(f)
+        return f
+
     def context_processor(self, f):
         """Registers a template context processor function."""
         self.template_context_processors[None].append(f)
@@ -869,6 +887,20 @@ class Flask(_PackageBoundObject):
             response = handler(response)
         return response
 
+    def do_teardown_request(self):
+        """Called after the actual request dispatching and will
+        call every as :meth:`teardown_request` decorated function.
+        """
+        funcs = reversed(self.teardown_request_funcs.get(None, ()))
+        mod = request.module
+        if mod and mod in self.teardown_request_funcs:
+            funcs = chain(funcs, reversed(self.teardown_request_funcs[mod]))
+        exc = sys.exc_info()[1]
+        for func in funcs:
+            rv = func(exc)
+            if rv is not None:
+                return rv
+
     def request_context(self, environ):
         """Creates a request context from the given environment and binds
         it to the current context.  This must be used in combination with
@@ -947,6 +979,11 @@ class Flask(_PackageBoundObject):
            even if an exception happens database have the chance to
            properly close the connection.
 
+        .. versionchanged:: 0.7
+           The :meth:`teardown_request` functions get called at the very end of
+           processing the request. If an exception was thrown, it gets passed to
+           each teardown_request function.
+
         :param environ: a WSGI environment
         :param start_response: a callable accepting a status code,
                                a list of headers and an optional
@@ -965,6 +1002,8 @@ class Flask(_PackageBoundObject):
                 response = self.process_response(response)
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
+            finally:
+                self.do_teardown_request()
             request_finished.send(self, response=response)
             return response(environ, start_response)
 

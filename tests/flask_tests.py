@@ -413,6 +413,72 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert 'Internal Server Error' in rv.data
         assert len(called) == 1
 
+    def test_teardown_request_handler(self):
+        called = []
+        app = flask.Flask(__name__)
+        @app.teardown_request
+        def teardown_request(exc):
+            called.append(True)
+            return "Ignored"
+        @app.route('/')
+        def root():
+            return "Response"
+        rv = app.test_client().get('/')
+        assert rv.status_code == 200
+        assert 'Response' in rv.data
+        assert len(called) == 1
+
+    def test_teardown_request_handler_debug_mode(self):
+        called = []
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.teardown_request
+        def teardown_request(exc):
+            called.append(True)
+            return "Ignored"
+        @app.route('/')
+        def root():
+            return "Response"
+        rv = app.test_client().get('/')
+        assert rv.status_code == 200
+        assert 'Response' in rv.data
+        assert len(called) == 1
+
+
+    def test_teardown_request_handler_error(self):
+        called = []
+        app = flask.Flask(__name__)
+        @app.teardown_request
+        def teardown_request1(exc):
+            assert type(exc) == ZeroDivisionError
+            called.append(True)
+            # This raises a new error and blows away sys.exc_info(), so we can
+            # test that all teardown_requests get passed the same original
+            # exception.
+            try:
+                raise TypeError
+            except:
+                pass
+        @app.teardown_request
+        def teardown_request2(exc):
+            assert type(exc) == ZeroDivisionError
+            called.append(True)
+            # This raises a new error and blows away sys.exc_info(), so we can
+            # test that all teardown_requests get passed the same original
+            # exception.
+            try:
+                raise TypeError
+            except:
+                pass
+        @app.route('/')
+        def fails():
+            1/0
+        rv = app.test_client().get('/')
+        assert rv.status_code == 500
+        assert 'Internal Server Error' in rv.data
+        assert len(called) == 2
+
+
     def test_before_after_request_order(self):
         called = []
         app = flask.Flask(__name__)
@@ -430,12 +496,18 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         def after2(response):
             called.append(3)
             return response
+        @app.teardown_request
+        def finish1(exc):
+            called.append(6)
+        @app.teardown_request
+        def finish2(exc):
+            called.append(5)
         @app.route('/')
         def index():
             return '42'
         rv = app.test_client().get('/')
         assert rv.data == '42'
-        assert called == [1, 2, 3, 4]
+        assert called == [1, 2, 3, 4, 5, 6]
 
     def test_error_handling(self):
         app = flask.Flask(__name__)
