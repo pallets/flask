@@ -39,6 +39,7 @@ Release date to be announced, codename to be selected
 - Implemented a silent flag for `config.from_pyfile`.
 - Added `teardown_request` decorator, for functions that should run at the end
   of a request regardless of whether an exception occurred.
+- Implemented :func:`flask.has_request_context`
 
 Version 0.6.1
 -------------

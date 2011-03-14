@@ -224,6 +224,8 @@ Useful Functions and Classes
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
+.. autofunction:: has_request_context
+
 .. autofunction:: url_for
 
 .. function:: abort(code)

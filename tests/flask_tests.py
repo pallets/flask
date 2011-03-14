@@ -89,6 +89,18 @@ class ContextTestCase(unittest.TestCase):
             assert meh() == 'http://localhost/meh'
         assert flask._request_ctx_stack.top is None
 
+    def test_context_test(self):
+        app = flask.Flask(__name__)
+        assert not flask.request
+        assert not flask.has_request_context()
+        ctx = app.test_request_context()
+        ctx.push()
+        try:
+            assert flask.request
+            assert flask.has_request_context()
+        finally:
+            ctx.pop()
+
     def test_manual_context_binding(self):
         app = flask.Flask(__name__)
         @app.route('/')

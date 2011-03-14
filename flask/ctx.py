@@ -19,6 +19,38 @@ class _RequestGlobals(object):
     pass
 
 
+def has_request_context():
+    """If you have code that wants to test if a request context is there or
+    not this function can be used.  For instance if you want to take advantage
+    of request information is it's available but fail silently if the request
+    object is unavailable.
+
+    ::
+
+        class User(db.Model):
+
+            def __init__(self, username, remote_addr=None):
+                self.username = username
+                if remote_addr is None and has_request_context():
+                    remote_addr = request.remote_addr
+                self.remote_addr = remote_addr
+
+    Alternatively you can also just test any of the context bound objects
+    (such as :class:`request` or :class:`g` for truthness)::
+
+        class User(db.Model):
+
+            def __init__(self, username, remote_addr=None):
+                self.username = username
+                if remote_addr is None and request:
+                    remote_addr = request.remote_addr
+                self.remote_addr = remote_addr
+
+    .. versionadded:: 0.7
+    """
+    return _request_ctx_stack.top is not None
+
+
 class _RequestContext(object):
     """The request context contains all request relevant information.  It is
     created at the beginning of the request and pushed to the
