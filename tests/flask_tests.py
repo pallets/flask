@@ -1310,7 +1310,7 @@ class ConfigTestCase(unittest.TestCase):
                 assert "'FOO_SETTINGS' is not set" in str(e)
             else:
                 assert 0, 'expected exception'
-            not app.config.from_envvar('FOO_SETTINGS', silent=True)
+            assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
 
             os.environ = {'FOO_SETTINGS': 'flask_tests.py'}
             assert app.config.from_envvar('FOO_SETTINGS')
@@ -1329,6 +1329,7 @@ class ConfigTestCase(unittest.TestCase):
             assert msg.endswith("missing.cfg'")
         else:
             assert 0, 'expected config'
+        assert not app.config.from_pyfile('missing.cfg', silent=True)
 
 
 class SubdomainTestCase(unittest.TestCase):

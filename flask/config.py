@@ -14,6 +14,7 @@ from __future__ import with_statement
 import imp
 import os
 import sys
+import errno
 
 from werkzeug import import_string
 
