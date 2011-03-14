@@ -175,26 +175,24 @@ Here's the contents of the `flaskext/sqlite3.py` for copy/paste::
 
     from __future__ import absolute_import
     import sqlite3
-    from flask import g
 
     class SQLite3(object):
-    
-        def __init__(self, app):
-            self.app = app
+
+        def __init__(self, app=None):
+            if self.app is not None:
+                self.app = app
+                self.init_app(app)
+            else:
+                self.app = None
+
+        def init_app(self):
             self.app.config.setdefault('SQLITE3_DATABASE', ':memory:')
+            self.db = sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
 
-            self.app.before_request(self.before_request)
-            self.app.after_request(self.after_request)
-
-        def connect(self):
-            return sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
-
-        def before_request(self):
-            g.sqlite3_db = self.connect()
-
-        def after_request(self, response):
-            g.sqlite3_db.close()
-            return response
+            @app.after_request
+            def close_db(response):
+                self.db.close()
+                return response
 
 So here's what the lines of code do:
 
