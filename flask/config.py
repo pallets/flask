@@ -116,6 +116,9 @@ class Config(dict):
                          root path.
         :param silent: set to `True` if you want silent to fail for missing
                        files.
+
+        .. versionadded:: 0.7
+           `silent` parameter.
         """
         filename = os.path.join(self.root_path, filename)
         d = imp.new_module('config')

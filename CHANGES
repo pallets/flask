@@ -36,6 +36,7 @@ Release date to be announced, codename to be selected
 - Use Last-Modified for static file sending instead of Date which
   was incorrectly introduced in 0.6.
 - Added `create_jinja_loader` to override the loader creation process.
+- Implemented a silent flag for `config.from_pyfile`.
 
 Version 0.6.1
 -------------
