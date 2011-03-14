@@ -10,7 +10,7 @@ uploads is actually quite simple.  It basically works like this:
    and an ``<input type=file>`` is placed in that form.
 2. The application accesses the file from the :attr:`~flask.request.files`
    dictionary on the request object.
-3. use the :meth:`~werkzeug.FileStorage.save` method of the file to save
+3. use the :meth:`~werkzeug.datastructures.FileStorage.save` method of the file to save
    the file permanently somewhere on the filesystem.
 
 A Gentle Introduction
@@ -71,7 +71,7 @@ the file and redirects the user to the URL for the uploaded file::
         </form>
         '''
 
-So what does that :func:`~werkzeug.secure_filename` function actually do?
+So what does that :func:`~werkzeug.utils.secure_filename` function actually do?
 Now the problem is that there is that principle called "never trust user
 input".  This is also true for the filename of an uploaded file.  All
 submitted form data can be forged, and filenames can be dangerous.  For
@@ -80,7 +80,7 @@ before storing it directly on the filesystem.
 
 .. admonition:: Information for the Pros
 
-   So you're interested in what that :func:`~werkzeug.secure_filename`
+   So you're interested in what that :func:`~werkzeug.utils.secure_filename`
    function does and what the problem is if you're not using it?  So just
    imagine someone would send the following information as `filename` to
    your application::
@@ -109,7 +109,7 @@ Flask 0.5 we can use a function that does that for us::
                                    filename)
 
 Alternatively you can register `uploaded_file` as `build_only` rule and
-use the :class:`~werkzeug.SharedDataMiddleware`.  This also works with
+use the :class:`~werkzeug.wsgi.SharedDataMiddleware`.  This also works with
 older versions of Flask::
 
     from werkzeug import SharedDataMiddleware
