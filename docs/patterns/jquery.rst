@@ -108,7 +108,7 @@ template.  This template will load jQuery as above and have a little form
 we can add two numbers and a link to trigger the function on the server
 side.
 
-Note that we are using the :meth:`~werkzeug.MultiDict.get` method here
+Note that we are using the :meth:`~werkzeug.datastructures.MultiDict.get` method here
 which will never fail.  If the key is missing a default value (here ``0``)
 is returned.  Furthermore it can convert values to a specific type (like
 in our case `int`).  This is especially handy for code that is
