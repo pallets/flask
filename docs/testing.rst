@@ -13,7 +13,7 @@ safely change things, and you will instantly know if your change broke
 something.
 
 Flask gives you a couple of ways to test applications.  It mainly does
-that by exposing the Werkzeug test :class:`~werkzeug.Client` class to your
+that by exposing the Werkzeug test :class:`~werkzeug.test.Client` class to your
 code and handling the context locals for you.  You can then use that with
 your favourite testing solution.  In this documentation we will use the
 :mod:`unittest` package that comes preinstalled with each Python
@@ -110,7 +110,7 @@ Test functions begin with the word `test`.  Every function named like that
 will be picked up automatically.  By using `self.app.get` we can send an
 HTTP `GET` request to the application with the given path.  The return
 value will be a :class:`~flask.Flask.response_class` object.  We can now
-use the :attr:`~werkzeug.BaseResponse.data` attribute to inspect the
+use the :attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect the
 return value (as string) from the application.  In this case, we ensure
 that ``'No entries here so far'`` is part of the output.
 
