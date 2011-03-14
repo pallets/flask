@@ -548,7 +548,7 @@ filesystem.  You can access those files by looking at the
 :attr:`~flask.request.files` attribute on the request object.  Each
 uploaded file is stored in that dictionary.  It behaves just like a
 standard Python :class:`file` object, but it also has a
-:meth:`~werkzeug.FileStorage.save` method that allows you to store that
+:meth:`~werkzeug.datastructures.FileStorage.save` method that allows you to store that
 file on the filesystem of the server.  Here is a simple example showing how
 that works::
 
@@ -563,10 +563,10 @@ that works::
 
 If you want to know how the file was named on the client before it was
 uploaded to your application, you can access the
-:attr:`~werkzeug.FileStorage.filename` attribute.  However please keep in
+:attr:`~werkzeug.datastructures.FileStorage.filename` attribute.  However please keep in
 mind that this value can be forged so never ever trust that value.  If you
 want to use the filename of the client to store the file on the server,
-pass it through the :func:`~werkzeug.secure_filename` function that
+pass it through the :func:`~werkzeug.utils.secure_filename` function that
 Werkzeug provides for you::
 
     from flask import request
