@@ -89,7 +89,7 @@ class Config(dict):
             app.config.from_pyfile(os.environ['YOURAPPLICATION_SETTINGS'])
 
         :param variable_name: name of the environment variable
-        :param silent: set to `True` if you want silent to fail for missing
+        :param silent: set to `True` if you want silent failure for missing
                        files.
         :return: bool. `True` if able to load config, `False` otherwise.
         """
@@ -113,7 +113,7 @@ class Config(dict):
         :param filename: the filename of the config.  This can either be an
                          absolute filename or a filename relative to the
                          root path.
-        :param silent: set to `True` if you want silent to fail for missing
+        :param silent: set to `True` if you want silent failure for missing
                        files.
 
         .. versionadded:: 0.7
