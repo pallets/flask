@@ -18,6 +18,7 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
 
    packages
    appfactories
+   appdispatch
    distribute
    fabric
    sqlite3
