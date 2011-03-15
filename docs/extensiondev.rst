@@ -137,7 +137,6 @@ Now this is where your extension code goes.  But how exactly should such
 an extension look like?  What are the best practices?  Continue reading
 for some insight.
 
-
 Initializing Extensions
 -----------------------
 
@@ -165,8 +164,8 @@ classes:
     a remote application that uses OAuth.
 
 What to use depends on what you have in mind.  For the SQLite 3 extension
-we will need to use the class based approach because we have to use a
-controller object that can be used to connect to the database.
+we will use the class based approach because it will provide users with a
+manager object that handles opening and closing database connections.
 
 The Extension Code
 ------------------
@@ -175,86 +174,123 @@ Here's the contents of the `flaskext/sqlite3.py` for copy/paste::
 
     from __future__ import absolute_import
     import sqlite3
-    from flask import g
+
+    from flask import _request_ctx_stack
 
     class SQLite3(object):
-    
+
         def __init__(self, app):
             self.app = app
             self.app.config.setdefault('SQLITE3_DATABASE', ':memory:')
-
-            self.app.before_request(self.before_request)
             self.app.after_request(self.after_request)
+            self.app.before_request(self.before_request)
 
         def connect(self):
             return sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
 
         def before_request(self):
-            g.sqlite3_db = self.connect()
+            ctx = _request_ctx_stack.top
+            ctx.sqlite3_db = self.connect()
 
         def after_request(self, response):
-            g.sqlite3_db.close()
+            ctx = _request_ctx_stack.top
+            ctx.sqlite3_db.close()
             return response
 
-So here's what the lines of code do:
+        def get_db(self):
+            ctx = _request_ctx_stack.top
+            if ctx is not None:
+                return ctx.sqlite3_db
 
-1.  the ``__future__`` import is necessary to activate absolute imports.
-    This is needed because otherwise we could not call our module
-    `sqlite3.py` and import the top-level `sqlite3` module which actually
-    implements the connection to SQLite.
-2.  We create a class for our extension that sets a default configuration
-    for the SQLite 3 database if it's not there (:meth:`dict.setdefault`)
-    and connects two functions as before and after request handlers.
-3.  Then it implements a `connect` function that returns a new database
-    connection and the two handlers.
+So here's what these lines of code do:
 
-So why did we decide on a class based approach here?  Because using that
+1.  The ``__future__`` import is necessary to activate absolute imports.
+    Otherwise we could not call our module `sqlite3.py` and import the
+    top-level `sqlite3` module which actually implements the connection to
+    SQLite.
+2.  We create a class for our extension that requires a supplied `app` object,
+    sets a configuration for the database if it's not there
+    (:meth:`dict.setdefault`), and attaches `before_request` and
+    `after_request` handlers.
+3.  Next, we define a `connect` function that opens a database connection.
+4.  Then we set up the request handlers we bound to the app above.  Note here
+    that we're attaching our database connection to the top request context via
+    `_request_ctx_stack.top`. Extensions should use the top context and not the
+    `g` object to store things like database connections.
+5.  Finally, we add a `get_db` function that simplifies access to the context's
+    database.
+
+So why did we decide on a class based approach here?  Because using our
 extension looks something like this::
 
-    from flask import Flask, g
+    from flask import Flask
     from flaskext.sqlite3 import SQLite3
 
     app = Flask(__name__)
     app.config.from_pyfile('the-config.cfg')
-    db = SQLite(app)
+    manager = SQLite3(app)
+    db = manager.get_db()
 
-Either way you can use the database from the views like this::
+You can then use the database from views like this::
 
     @app.route('/')
     def show_all():
-        cur = g.sqlite3_db.cursor()
+        cur = db.cursor()
         cur.execute(...)
 
-But how would you open a database connection from outside a view function?
-This is where the `db` object now comes into play:
+Opening a database connection from outside a view function is simple.
 
 >>> from yourapplication import db
->>> con = db.connect()
->>> cur = con.cursor()
+>>> cur = db.cursor()
+>>> cur.execute(...)
 
-If you don't need that, you can go with initialization functions.
+Adding an `init_app` Function
+-----------------------------
 
-Initialization Functions
-------------------------
+In practice, you'll almost always want to permit users to initialize your
+extension and provide an app object after the fact. This can help avoid
+circular import problems when a user is breaking their app into multiple files.
+Our extension could add an `init_app` function as follows::
 
-Here's what the module would look like with initialization functions::
+    class SQLite3(object):
 
-    from __future__ import absolute_import
-    import sqlite3
-    from flask import g
+        def __init__(self, app=None):
+            if app is not None:
+                self.app = app
+                self.init_app(self.app)
+            else:
+                self.app = None
 
-    def init_sqlite3(app):
-        app = app
-        app.config.setdefault('SQLITE3_DATABASE', ':memory:')
+        def init_app(self, app):
+            self.app = app
+            self.app.config.setdefault('SQLITE3_DATABASE', ':memory:')
+            self.app.after_request(self.after_request)
+            self.app.before_request(self.before_request)
 
-        @app.before_request
-        def before_request():
-            g.sqlite3_db = sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
+        def connect(self):
+            return sqlite3.connect(app.config['SQLITE3_DATABASE'])
 
-        @app.after_request
-        def after_request(response):
-            g.sqlite3_db.close()
+        def before_request(self):
+            ctx = _request_ctx_stack.top
+            ctx.sqlite3_db = self.connect()
+
+        def after_request(self, response):
+            ctx = _request_ctx_stack.top
+            ctx.sqlite3_db.close()
             return response
+
+        def get_db(self):
+            ctx = _request_ctx_stack.top
+            if ctx is not None:
+                return ctx.sqlite3_db
+
+The user could then initialize the extension in one file::
+
+    manager = SQLite3()
+
+and bind their app to the extension in another file::
+
+    manager.init_app(app)
 
 Learn from Others
 -----------------
@@ -275,7 +311,6 @@ designing the API.
 
 The best Flask extensions are extensions that share common idioms for the
 API.  And this can only work if collaboration happens early.
-
 
 Approved Extensions
 -------------------
