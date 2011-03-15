@@ -47,6 +47,10 @@ SECRET_KEY = 'devkey'
 def catch_warnings():
     """Catch warnings in a with block in a list"""
     import warnings
+
+    # make sure deprecation warnings are active in tests
+    warnings.simplefilter('default', category=DeprecationWarning)
+
     filters = warnings.filters
     warnings.filters = filters[:]
     old_showwarning = warnings.showwarning
