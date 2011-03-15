@@ -10,7 +10,7 @@ even allow you to run a Django and a Flask application in the same
 interpreter side by side if you want.  The usefulness of this depends on
 how the applications work internally.
 
-This is fundamentally different from the :ref:`module approach
+The fundamental difference from the :ref:`module approach
 <larger-applications>` is that in this case you are running the same or
 different Flask applications that are entirely isolated from each other.
 They run different configurations and are dispatched on the WSGI level.
