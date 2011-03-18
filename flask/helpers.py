@@ -34,7 +34,7 @@ except ImportError:
             json_available = False
 
 
-from werkzeug import Headers, wrap_file, cached_property
+from werkzeug import Headers, wrap_file
 from werkzeug.exceptions import NotFound
 
 from jinja2 import FileSystemLoader
@@ -485,7 +485,7 @@ class _PackageBoundObject(object):
         """
         return os.path.isdir(os.path.join(self.root_path, 'static'))
 
-    @cached_property
+    @locked_cached_property
     def jinja_loader(self):
         """The Jinja loader for this package bound object.
 
