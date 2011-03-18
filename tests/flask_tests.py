@@ -15,9 +15,11 @@ import re
 import sys
 import flask
 import unittest
+import warnings
 from threading import Thread
 from logging import StreamHandler
 from contextlib import contextmanager
+from functools import update_wrapper
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
 from werkzeug.exceptions import NotFound
@@ -43,11 +45,16 @@ TEST_KEY = 'foo'
 SECRET_KEY = 'devkey'
 
 
+# import moduleapp here because it uses deprecated features and we don't
+# want to see the warnings
+warnings.simplefilter('ignore', DeprecationWarning)
+from moduleapp import app as moduleapp
+warnings.simplefilter('default', DeprecationWarning)
+
+
 @contextmanager
 def catch_warnings():
     """Catch warnings in a with block in a list"""
-    import warnings
-
     # make sure deprecation warnings are active in tests
     warnings.simplefilter('default', category=DeprecationWarning)
 
@@ -74,6 +81,16 @@ def catch_stderr():
         yield rv
     finally:
         sys.stderr = old_stderr
+
+
+def emits_module_deprecation_warning(f):
+    def new_f(*args, **kwargs):
+        with catch_warnings() as log:
+            f(*args, **kwargs)
+            assert log, 'expected deprecation warning'
+            for entry in log:
+                assert 'Modules are deprecated' in str(entry['message'])
+    return update_wrapper(new_f, f)
 
 
 class ContextTestCase(unittest.TestCase):
@@ -961,6 +978,7 @@ class TemplatingTestCase(unittest.TestCase):
 
 class ModuleTestCase(unittest.TestCase):
 
+    @emits_module_deprecation_warning
     def test_basic_module(self):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin', url_prefix='/admin')
@@ -983,6 +1001,7 @@ class ModuleTestCase(unittest.TestCase):
         assert c.get('/admin/login').data == 'admin login'
         assert c.get('/admin/logout').data == 'admin logout'
 
+    @emits_module_deprecation_warning
     def test_default_endpoint_name(self):
         app = flask.Flask(__name__)
         mod = flask.Module(__name__, 'frontend')
@@ -995,6 +1014,7 @@ class ModuleTestCase(unittest.TestCase):
         with app.test_request_context():
             assert flask.url_for('frontend.index') == '/'
 
+    @emits_module_deprecation_warning
     def test_request_processing(self):
         catched = []
         app = flask.Flask(__name__)
@@ -1030,6 +1050,7 @@ class ModuleTestCase(unittest.TestCase):
         assert catched == ['before-app', 'before-admin',
                            'after-admin', 'after-app']
 
+    @emits_module_deprecation_warning
     def test_context_processors(self):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin', url_prefix='/admin')
@@ -1053,6 +1074,7 @@ class ModuleTestCase(unittest.TestCase):
         assert c.get('/').data == '13'
         assert c.get('/admin/').data == '123'
 
+    @emits_module_deprecation_warning
     def test_late_binding(self):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin')
@@ -1062,6 +1084,7 @@ class ModuleTestCase(unittest.TestCase):
         app.register_module(admin, url_prefix='/admin')
         assert app.test_client().get('/admin/').data == '42'
 
+    @emits_module_deprecation_warning
     def test_error_handling(self):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin')
@@ -1087,7 +1110,7 @@ class ModuleTestCase(unittest.TestCase):
         assert 'internal server error' == rv.data
 
     def test_templates_and_static(self):
-        from moduleapp import app
+        app = moduleapp
         c = app.test_client()
 
         rv = c.get('/')
@@ -1117,7 +1140,7 @@ class ModuleTestCase(unittest.TestCase):
             assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
     def test_safe_access(self):
-        from moduleapp import app
+        app = moduleapp
 
         with app.test_request_context():
             f = app.view_functions['admin.static']
@@ -1150,6 +1173,7 @@ class ModuleTestCase(unittest.TestCase):
             finally:
                 os.path = old_path
 
+    @emits_module_deprecation_warning
     def test_endpoint_decorator(self):
         from werkzeug.routing import Submount, Rule
         from flask import Module
@@ -1439,6 +1463,7 @@ class SubdomainTestCase(unittest.TestCase):
         rv = c.get('/', 'http://test.localhost/')
         assert rv.data == 'test index'
 
+    @emits_module_deprecation_warning
     def test_module_static_path_subdomain(self):
         app = flask.Flask(__name__)
         app.config['SERVER_NAME'] = 'example.com'
@@ -1459,6 +1484,7 @@ class SubdomainTestCase(unittest.TestCase):
         rv = c.get('/', 'http://mitsuhiko.localhost/')
         assert rv.data == 'index for mitsuhiko'
 
+    @emits_module_deprecation_warning
     def test_module_subdomain_support(self):
         app = flask.Flask(__name__)
         mod = flask.Module(__name__, 'test', subdomain='testing')

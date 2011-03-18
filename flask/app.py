@@ -169,6 +169,11 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.4
     logger_name = ConfigAttribute('LOGGER_NAME')
 
+    #: Enable the deprecated module support?  This is active by default
+    #: in 0.7 but will be changed to False in 0.8.  With Flask 1.0 modules
+    #: will be removed in favor of Blueprints
+    enable_modules = True
+
     #: The logging format used for the debug logger.  This is only used when
     #: the application is in debug mode, otherwise the attached logging
     #: handler does the formatting.
@@ -533,6 +538,18 @@ class Flask(_PackageBoundObject):
         :class:`Module` class and will override the values of the module if
         provided.
         """
+        if not self.enable_modules:
+            raise RuntimeError('Module support was disabled but code '
+                'attempted to register a module named %r' % module)
+        else:
+            from warnings import warn
+            warn(DeprecationWarning('Modules are deprecated.  Upgrade to '
+                'using blueprints.  Have a look into the documentation for '
+                'more information.  If this module was registered by a '
+                'Flask-Extension upgrade the extension or contact the author '
+                'of that extension instead.  (Registered %r)' % module),
+                stacklevel=2)
+
         options.setdefault('url_prefix', module.url_prefix)
         options.setdefault('subdomain', module.subdomain)
         self.view_functions.update(module.view_functions)
