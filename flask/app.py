@@ -718,7 +718,9 @@ class Flask(_PackageBoundObject):
         return f
 
     def teardown_request(self, f):
-        """Register a function to be run at the end of each request, regardless of whether there was an exception or not."""
+        """Register a function to be run at the end of each request,
+        regardless of whether there was an exception or not.
+        """
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
 
