@@ -24,7 +24,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    _tojson_filter, _endpoint_from_view_func
+    locked_cached_property, _tojson_filter, _endpoint_from_view_func
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import _RequestContext
@@ -317,11 +317,6 @@ class Flask(_PackageBoundObject):
                           endpoint='static',
                           view_func=self.send_static_file)
 
-        #: The Jinja2 environment.  It is created from the
-        #: :attr:`jinja_options`.
-        self.jinja_env = self.create_jinja_environment()
-        self.init_jinja_globals()
-
     @property
     def propagate_exceptions(self):
         """Returns the value of the `PROPAGATE_EXCEPTIONS` configuration
@@ -356,16 +351,43 @@ class Flask(_PackageBoundObject):
             self._logger = rv = create_logger(self)
             return rv
 
+    @locked_cached_property
+    def jinja_env(self):
+        """The Jinja2 environment used to load templates."""
+        rv = self.create_jinja_environment()
+
+        # Hack to support the init_jinja_globals method which is supported
+        # until 1.0 but has an API deficiency.
+        if getattr(self.init_jinja_globals, 'im_func', None) is not \
+           Flask.init_jinja_globals.im_func:
+            from warnings import warn
+            warn(DeprecationWarning('This flask class uses a customized '
+                'init_jinja_globals() method which is deprecated. '
+                'Move the code from that method into the '
+                'create_jinja_environment() method instead.'))
+            self.__dict__['jinja_env'] = rv
+            self.init_jinja_globals()
+
+        return rv
+
     def create_jinja_environment(self):
         """Creates the Jinja2 environment based on :attr:`jinja_options`
-        and :meth:`select_jinja_autoescape`.
+        and :meth:`select_jinja_autoescape`.  Since 0.7 this also adds
+        the Jinja2 globals and filters after initialization.  Override
+        this function to customize the behavior.
 
         .. versionadded:: 0.5
         """
         options = dict(self.jinja_options)
         if 'autoescape' not in options:
             options['autoescape'] = self.select_jinja_autoescape
-        return Environment(loader=self.create_jinja_loader(), **options)
+        rv = Environment(loader=self.create_jinja_loader(), **options)
+        rv.globals.update(
+            url_for=url_for,
+            get_flashed_messages=get_flashed_messages
+        )
+        rv.filters['tojson'] = _tojson_filter
+        return rv
 
     def create_jinja_loader(self):
         """Creates the loader for the Jinja2 environment.  Can be used to
@@ -376,17 +398,13 @@ class Flask(_PackageBoundObject):
         return _DispatchingJinjaLoader(self)
 
     def init_jinja_globals(self):
-        """Called directly after the environment was created to inject
-        some defaults (like `url_for`, `get_flashed_messages` and the
-        `tojson` filter.
+        """Deprecated.  Used to initialize the Jinja2 globals.
 
         .. versionadded:: 0.5
+        .. versionchanged:: 0.7
+           This method is deprecated with 0.7.  Override
+           :meth:`create_jinja_environment` instead.
         """
-        self.jinja_env.globals.update(
-            url_for=url_for,
-            get_flashed_messages=get_flashed_messages
-        )
-        self.jinja_env.filters['tojson'] = _tojson_filter
 
     def select_jinja_autoescape(self, filename):
         """Returns `True` if autoescaping should be active for the given

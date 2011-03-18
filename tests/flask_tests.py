@@ -1564,6 +1564,25 @@ class TestSignals(unittest.TestCase):
             flask.got_request_exception.disconnect(record, app)
 
 
+class DeprecationsTestCase(unittest.TestCase):
+
+    def test_init_jinja_globals(self):
+        class MyFlask(flask.Flask):
+            def init_jinja_globals(self):
+                self.jinja_env.globals['foo'] = '42'
+
+        with catch_warnings() as log:
+            app = MyFlask(__name__)
+            @app.route('/')
+            def foo():
+                return app.jinja_env.globals['foo']
+
+            c = app.test_client()
+            assert c.get('/').data == '42'
+            assert len(log) == 1
+            assert 'init_jinja_globals' in str(log[0]['message'])
+
+
 def suite():
     from minitwit_tests import MiniTwitTestCase
     from flaskr_tests import FlaskrTestCase
@@ -1576,6 +1595,7 @@ def suite():
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(ConfigTestCase))
     suite.addTest(unittest.makeSuite(SubdomainTestCase))
+    suite.addTest(unittest.makeSuite(DeprecationsTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     if flask.signals_available:

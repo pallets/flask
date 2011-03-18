@@ -15,6 +15,7 @@ import posixpath
 import mimetypes
 from time import time
 from zlib import adler32
+from threading import RLock
 
 # try to load the best simplejson implementation available.  If JSON
 # is not installed, we add a failing class.
@@ -56,6 +57,10 @@ if not json_available or '\\/' not in json.dumps('/'):
         return json.dumps(*args, **kwargs).replace('/', '\\/')
 else:
     _tojson_filter = json.dumps
+
+
+# sentinel
+_missing = object()
 
 
 # what separators does this operating system provide that are not a slash?
@@ -433,6 +438,32 @@ def _get_package_path(name):
         return os.path.abspath(os.path.dirname(sys.modules[name].__file__))
     except (KeyError, AttributeError):
         return os.getcwd()
+
+
+class locked_cached_property(object):
+    """A decorator that converts a function into a lazy property.  The
+    function wrapped is called the first time to retrieve the result
+    and then that calculated result is used the next time you access
+    the value.  Works like the one in Werkzeug but has a lock for
+    thread safety.
+    """
+
+    def __init__(self, func, name=None, doc=None):
+        self.__name__ = name or func.__name__
+        self.__module__ = func.__module__
+        self.__doc__ = doc or func.__doc__
+        self.func = func
+        self.lock = RLock()
+
+    def __get__(self, obj, type=None):
+        if obj is None:
+            return self
+        with self.lock:
+            value = obj.__dict__.get(self.__name__, _missing)
+            if value is _missing:
+                value = self.func(obj)
+                obj.__dict__[self.__name__] = value
+            return value
 
 
 class _PackageBoundObject(object):

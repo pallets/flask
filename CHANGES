@@ -40,6 +40,9 @@ Release date to be announced, codename to be selected
 - Added `teardown_request` decorator, for functions that should run at the end
   of a request regardless of whether an exception occurred.
 - Implemented :func:`flask.has_request_context`
+- Deprecated `init_jinja_globals`.  Override the
+  :meth:`~flask.Flask.create_jinja_environment` method instead to
+  achieve the same functionality.
 
 Version 0.6.1
 -------------
