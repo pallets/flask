@@ -16,8 +16,6 @@ from threading import Lock
 from datetime import timedelta, datetime
 from itertools import chain
 
-from jinja2 import Environment
-
 from werkzeug import ImmutableDict
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, \
@@ -31,7 +29,7 @@ from .ctx import _RequestContext
 from .globals import _request_ctx_stack, request
 from .session import Session, _NullSession
 from .module import _ModuleSetupState
-from .templating import _DispatchingJinjaLoader, \
+from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception
 
@@ -280,6 +278,13 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.5
         self.modules = {}
 
+        #: all the attached blueprints in a directory by name.  Blueprints
+        #: can be attached multiple times so this dictionary does not tell
+        #: you how often they got attached.
+        #:
+        #: .. versionadded:: 0.7
+        self.blueprints = {}
+
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
         #: similar things.  For backwards compatibility extensions should register
@@ -386,7 +391,7 @@ class Flask(_PackageBoundObject):
         options = dict(self.jinja_options)
         if 'autoescape' not in options:
             options['autoescape'] = self.select_jinja_autoescape
-        rv = Environment(loader=self.create_jinja_loader(), **options)
+        rv = Environment(self, **options)
         rv.globals.update(
             url_for=url_for,
             get_flashed_messages=get_flashed_messages
@@ -400,7 +405,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        return _DispatchingJinjaLoader(self)
+        return DispatchingJinjaLoader(self)
 
     def init_jinja_globals(self):
         """Deprecated.  Used to initialize the Jinja2 globals.
@@ -537,6 +542,10 @@ class Flask(_PackageBoundObject):
         of this function are the same as the ones for the constructor of the
         :class:`Module` class and will override the values of the module if
         provided.
+
+        .. versionchanged:: 0.7
+           The module system was deprecated in favor for the blueprint
+           system.
         """
         if not self.enable_modules:
             raise RuntimeError('Module support was disabled but code '
@@ -556,6 +565,19 @@ class Flask(_PackageBoundObject):
         state = _ModuleSetupState(self, **options)
         for func in module._register_events:
             func(state)
+
+    def register_blueprint(self, blueprint, **options):
+        """Registers a blueprint on the application.
+
+        .. versionadded:: 0.7
+        """
+        if blueprint.name in self.blueprints:
+            assert self.blueprints[blueprint.name] is blueprint, \
+                'A blueprint\'s name collision ocurred between %r and ' \
+                '%r.' % (blueprint, self.blueprints[blueprint.name])
+        else:
+            self.blueprints[blueprint.name] = blueprint
+        blueprint.register(self, **options)
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`

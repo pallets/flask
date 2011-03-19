@@ -1111,6 +1111,7 @@ class ModuleTestCase(unittest.TestCase):
 
     def test_templates_and_static(self):
         app = moduleapp
+        app.debug = True
         c = app.test_client()
 
         rv = c.get('/')
