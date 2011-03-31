@@ -24,7 +24,7 @@ db connection in the interactive debugger::
         return response
 
 If you want to guarantee that the connection is always closed in debug mode, you
-can close it in a function decorated with :meth:`~flask.Flask.teardown_request`:
+can close it in a function decorated with :meth:`~flask.Flask.teardown_request`::
 
     @app.before_request
     def before_request():
