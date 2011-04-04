@@ -244,6 +244,8 @@ Useful Functions and Classes
 
 .. autofunction:: send_from_directory
 
+.. autofunction:: safe_join
+
 .. autofunction:: escape
 
 .. autoclass:: Markup

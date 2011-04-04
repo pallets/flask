@@ -388,6 +388,32 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     return rv
 
 
+def safe_join(directory, filename):
+    """Safely join `directory` and `filename`.
+    
+    :param directory: the base directory.
+    :param filename: the untrusted filename relative to that directory.
+    :raises: :class:`~werkzeug.exceptions.NotFound` if the retsulting path
+             would fall out of `directory`.
+
+    Example usage::
+
+        @app.route('/wiki/<path:filename>')
+        def wiki_page(filename):
+            filename = safe_join(app.config['WIKI_FOLDER'], filename)
+            with open(filename, 'rb') as fd:
+                content = fd.read() # Read and process the file content...
+
+    """
+    filename = posixpath.normpath(filename)
+    for sep in _os_alt_seps:
+        if sep in filename:
+            raise NotFound()
+    if os.path.isabs(filename) or filename.startswith('../'):
+        raise NotFound()
+    return os.path.join(directory, filename)
+
+
 def send_from_directory(directory, filename, **options):
     """Send a file from a given directory with :func:`send_file`.  This
     is a secure way to quickly expose static files from an upload folder
@@ -415,13 +441,7 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
-    filename = posixpath.normpath(filename)
-    for sep in _os_alt_seps:
-        if sep in filename:
-            raise NotFound()
-    if os.path.isabs(filename) or filename.startswith('../'):
-        raise NotFound()
-    filename = os.path.join(directory, filename)
+    filename = safe_join(directory, filename)
     if not os.path.isfile(filename):
         raise NotFound()
     return send_file(filename, conditional=True, **options)
