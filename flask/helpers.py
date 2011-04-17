@@ -321,7 +321,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if not attachment_filename and not mimetype \
            and isinstance(filename, basestring):
             warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is not deprecated.  Pass an '
+                'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
                 stacklevel=2)
         if add_etags:
