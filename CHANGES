@@ -40,6 +40,7 @@ Release date to be announced, codename to be selected
 - Added `teardown_request` decorator, for functions that should run at the end
   of a request regardless of whether an exception occurred.
 - Implemented :func:`flask.has_request_context`
+- Added :func:`safe_join`
 
 Version 0.6.1
 -------------
