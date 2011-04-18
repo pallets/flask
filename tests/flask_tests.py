@@ -642,6 +642,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         app.config.update(
             SERVER_NAME='localhost.localdomain:5000'
         )
+
         @app.route('/')
         def index():
             return None

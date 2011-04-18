@@ -390,7 +390,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
 def safe_join(directory, filename):
     """Safely join `directory` and `filename`.
-    
+
     :param directory: the base directory.
     :param filename: the untrusted filename relative to that directory.
     :raises: :class:`~werkzeug.exceptions.NotFound` if the retsulting path
