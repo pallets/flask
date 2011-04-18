@@ -391,11 +391,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 def safe_join(directory, filename):
     """Safely join `directory` and `filename`.
 
-    :param directory: the base directory.
-    :param filename: the untrusted filename relative to that directory.
-    :raises: :class:`~werkzeug.exceptions.NotFound` if the retsulting path
-             would fall out of `directory`.
-
     Example usage::
 
         @app.route('/wiki/<path:filename>')
@@ -404,6 +399,10 @@ def safe_join(directory, filename):
             with open(filename, 'rb') as fd:
                 content = fd.read() # Read and process the file content...
 
+    :param directory: the base directory.
+    :param filename: the untrusted filename relative to that directory.
+    :raises: :class:`~werkzeug.exceptions.NotFound` if the retsulting path
+             would fall out of `directory`.
     """
     filename = posixpath.normpath(filename)
     for sep in _os_alt_seps:
