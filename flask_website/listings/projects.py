@@ -226,7 +226,16 @@ projects = {
         Project('jitviewer', 'https://bitbucket.org/pypy/jitviewer', '''
             <p>
               web-based tool to inspect the output of PyPy JIT log
-        ''')
+        '''),
+        Project('blohg', 'http://hg.rafaelmartins.eng.br/blohg/', '''
+            <p>
+              A mercurial based blog engine.  Can be seen in action on
+              <a href="http://rafaelmartins.eng.br/">rafaelmartins.eng.br</a>.
+        ''', source='http://hg.rafaelmartins.eng.br/blohg/'),
+        Project('pidsim-web', 'http://pidsim.rafaelmartins.eng.br/?source=en_US', '''
+            <p>
+              PID Controller simulator.
+        ''', source='http://hg.rafaelmartins.eng.br/pidsim-web/')
     ]
 }
 
