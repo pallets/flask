@@ -166,7 +166,8 @@ def url_for(endpoint, **values):
     ==================== ======================= =============================
 
     Variable arguments that are unknown to the target endpoint are appended
-    to the generated URL as query arguments.
+    to the generated URL as query arguments.  If the value of a query argument
+    is `None`, the whole pair is skipped.
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
