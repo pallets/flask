@@ -574,10 +574,11 @@ class Flask(_PackageBoundObject):
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, \
                 'A blueprint\'s name collision ocurred between %r and ' \
-                '%r.' % (blueprint, self.blueprints[blueprint.name])
+                '%r.  Both share the same name "%s"' % \
+                (blueprint, self.blueprints[blueprint.name], blueprint.name)
         else:
             self.blueprints[blueprint.name] = blueprint
-        blueprint.register(self, **options)
+        blueprint.register(self, options)
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
