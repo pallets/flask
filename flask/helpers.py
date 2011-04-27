@@ -166,7 +166,8 @@ def url_for(endpoint, **values):
     ==================== ======================= =============================
 
     Variable arguments that are unknown to the target endpoint are appended
-    to the generated URL as query arguments.
+    to the generated URL as query arguments.  If the value of a query argument
+    is `None`, the whole pair is skipped.
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
@@ -321,7 +322,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if not attachment_filename and not mimetype \
            and isinstance(filename, basestring):
             warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is not deprecated.  Pass an '
+                'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
                 stacklevel=2)
         if add_etags:
@@ -388,6 +389,31 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     return rv
 
 
+def safe_join(directory, filename):
+    """Safely join `directory` and `filename`.
+
+    Example usage::
+
+        @app.route('/wiki/<path:filename>')
+        def wiki_page(filename):
+            filename = safe_join(app.config['WIKI_FOLDER'], filename)
+            with open(filename, 'rb') as fd:
+                content = fd.read() # Read and process the file content...
+
+    :param directory: the base directory.
+    :param filename: the untrusted filename relative to that directory.
+    :raises: :class:`~werkzeug.exceptions.NotFound` if the retsulting path
+             would fall out of `directory`.
+    """
+    filename = posixpath.normpath(filename)
+    for sep in _os_alt_seps:
+        if sep in filename:
+            raise NotFound()
+    if os.path.isabs(filename) or filename.startswith('../'):
+        raise NotFound()
+    return os.path.join(directory, filename)
+
+
 def send_from_directory(directory, filename, **options):
     """Send a file from a given directory with :func:`send_file`.  This
     is a secure way to quickly expose static files from an upload folder
@@ -415,13 +441,7 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
-    filename = posixpath.normpath(filename)
-    for sep in _os_alt_seps:
-        if sep in filename:
-            raise NotFound()
-    if os.path.isabs(filename) or filename.startswith('../'):
-        raise NotFound()
-    filename = os.path.join(directory, filename)
+    filename = safe_join(directory, filename)
     if not os.path.isfile(filename):
         raise NotFound()
     return send_file(filename, conditional=True, **options)

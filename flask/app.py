@@ -713,12 +713,17 @@ class Flask(_PackageBoundObject):
         return f
 
     def after_request(self, f):
-        """Register a function to be run after each request."""
+        """Register a function to be run after each request. Your function
+        must take one parameter, a :attr:`response_class` object and return
+        a new response object or the same (see :meth:`process_response`).
+        """
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
 
     def teardown_request(self, f):
-        """Register a function to be run at the end of each request, regardless of whether there was an exception or not."""
+        """Register a function to be run at the end of each request,
+        regardless of whether there was an exception or not.
+        """
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
 
