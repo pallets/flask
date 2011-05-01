@@ -928,15 +928,6 @@ class Flask(_PackageBoundObject):
             finally:
                 ctx.pop()
 
-        The big advantage of this approach is that you can use it without
-        the try/finally statement in a shell for interactive testing:
-
-        >>> ctx = app.test_request_context()
-        >>> ctx.bind()
-        >>> request.path
-        u'/'
-        >>> ctx.unbind()
-
         .. versionchanged:: 0.3
            Added support for non-with statement usage and `with` statement
            is now passed the ctx object.
