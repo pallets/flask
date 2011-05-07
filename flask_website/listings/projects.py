@@ -168,6 +168,10 @@ projects = {
         Project('Expert.io', 'http://expert.io/', u'''
             <p>
               Marketplace for your Expertise.
+        '''),
+        Project('ahall.org', 'http://ahall.org/', u'''
+            <p>
+              Alfred Hall on software development
         ''')
     ],
     'apps': [
