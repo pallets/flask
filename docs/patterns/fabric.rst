@@ -32,7 +32,7 @@ hosts.  These hosts can be defined either in the fabfile or on the command
 line.  In this case we will add them to the fabfile.
 
 This is a basic first example that has the ability to upload the current
-sourcecode to the server and install it into a already existing
+sourcecode to the server and install it into a pre-existing
 virtual environment::
 
     from fabric.api import *
@@ -53,12 +53,12 @@ virtual environment::
         put('dist/%s.tar.gz' % dist, '/tmp/yourapplication.tar.gz')
         # create a place where we can unzip the tarball, then enter
         # that directory and unzip it
-        run('mkdir yourapplication')
+        run('mkdir /tmp/yourapplication')
         with cd('/tmp/yourapplication'):
             run('tar xzf /tmp/yourapplication.tar.gz')
-        # now setup the package with our virtual environment's
-        # python interpreter
-        run('/var/www/yourapplication/env/bin/python setup.py install')
+            # now setup the package with our virtual environment's
+            # python interpreter
+            run('/var/www/yourapplication/env/bin/python setup.py install')
         # now that all is set up, delete the folder again
         run('rm -rf /tmp/yourapplication /tmp/yourapplication.tar.gz')
         # and finally touch the .wsgi file so that mod_wsgi triggers
