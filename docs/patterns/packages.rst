@@ -57,7 +57,7 @@ following quick checklist:
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
    decorator on top) have to be imported when in the `__init__.py` file.
    Not the object itself, but the module it is in. Import the view module
-   *after the application object is created*.
+   **after the application object is created**.
 
 Here's an example `__init__.py`::
 
