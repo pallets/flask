@@ -113,6 +113,11 @@ Screenshot of the debugger in action:
    :class: screenshot
    :alt: screenshot of debugger in action
 
+.. admonition:: Working With Other Debuggers
+
+   Some third-party debuggers, e.g. PyDev and IntelliJ, are interrupted when
+   ``app`` reloads.  To use these debuggers, set ``app.debug = False``.
+
 
 Routing
 -------
