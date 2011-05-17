@@ -249,7 +249,8 @@ def get_flashed_messages(with_categories=False):
     """
     flashes = _request_ctx_stack.top.flashes
     if flashes is None:
-        _request_ctx_stack.top.flashes = flashes = session.pop('_flashes', [])
+        _request_ctx_stack.top.flashes = flashes = session.pop('_flashes') \
+            if '_flashes' in session else []
     if not with_categories:
         return [x[1] for x in flashes]
     return flashes
