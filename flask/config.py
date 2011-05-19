@@ -141,8 +141,8 @@ class Config(dict):
 
         Objects are usually either modules or classes.
 
-        Just the uppercase variables in that object are stored in the config
-        after lowercasing.  Example usage::
+        Just the uppercase variables in that object are stored in the config.
+        Example usage::
 
             app.config.from_object('yourapplication.default_config')
             from yourapplication import default_config

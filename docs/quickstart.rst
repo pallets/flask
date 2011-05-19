@@ -115,8 +115,8 @@ Screenshot of the debugger in action:
 
 .. admonition:: Working With Other Debuggers
 
-   Some third-party debuggers, e.g. PyDev and IntelliJ, are interrupted when
-   ``app`` reloads.  To use these debuggers, set ``app.debug = False``.
+   Debuggers interfere with each other.  If you are using another debugger
+   (e.g. PyDev or IntelliJ), you may need to set ``app.debug = False``.
 
 
 Routing
