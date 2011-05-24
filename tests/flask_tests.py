@@ -785,6 +785,18 @@ class BasicFunctionalityTestCase(unittest.TestCase):
 
 class JSONTestCase(unittest.TestCase):
 
+    def test_json_body_encoding(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.route('/')
+        def index():
+            return flask.request.json
+
+        c = app.test_client()
+        resp = c.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
+                     content_type='application/json; charset=iso-8859-15')
+        assert resp.data == u'Hällo Wörld'.encode('utf-8')
+
     def test_jsonify(self):
         d = dict(a=23, b=42, c=[1, 2, 3])
         app = flask.Flask(__name__)
