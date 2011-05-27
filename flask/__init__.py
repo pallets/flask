@@ -28,7 +28,7 @@ from .session import Session
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
-     request_finished, got_request_exception
+     request_finished, got_request_exception, request_tearing_down
 
 # only import json if it's available
 if json_available:

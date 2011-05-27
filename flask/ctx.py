@@ -51,11 +51,34 @@ def has_request_context():
     return _request_ctx_stack.top is not None
 
 
-class _RequestContext(object):
+class RequestContext(object):
     """The request context contains all request relevant information.  It is
     created at the beginning of the request and pushed to the
     `_request_ctx_stack` and removed at the end of it.  It will create the
     URL adapter and request object for the WSGI environment provided.
+
+    Do not attempt to use this class directly, instead use
+    :meth:`~flask.Flask.test_request_context` and
+    :meth:`~flask.Flask.request_context` to create this object.
+
+    When the request context is popped, it will evaluate all the
+    functions registered on the application for teardown execution
+    (:meth:`~flask.Flask.teardown_request`).
+
+    The request context is automatically popped at the end of the request
+    for you.  In debug mode the request context is kept around if
+    exceptions happen so that interactive debuggers have a chance to
+    introspect the data.  With 0.4 this can also be forced for requests
+    that did not fail and outside of `DEBUG` mode.  By setting
+    ``'flask._preserve_context'`` to `True` on the WSGI environment the
+    context will not pop itself at the end of the request.  This is used by
+    the :meth:`~flask.Flask.test_client` for example to implement the
+    deferred cleanup functionality.
+
+    You might find this helpful for unittests where you need the
+    information from the context local around for a little longer.  Make
+    sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
+    that situation, otherwise your unittests will leak memory.
     """
 
     def __init__(self, app, environ):
@@ -74,7 +97,7 @@ class _RequestContext(object):
             self.request.routing_exception = e
 
     def push(self):
-        """Binds the request context."""
+        """Binds the request context to the current context."""
         _request_ctx_stack.push(self)
 
         # Open the session at the moment that the request context is
@@ -85,7 +108,11 @@ class _RequestContext(object):
             self.session = _NullSession()
 
     def pop(self):
-        """Pops the request context."""
+        """Pops the request context and unbinds it by doing that.  This will
+        also trigger the execution of functions registered by the
+        :meth:`~flask.Flask.teardown_request` decorator.
+        """
+        self.app.do_teardown_request()
         _request_ctx_stack.pop()
 
     def __enter__(self):
@@ -99,5 +126,5 @@ class _RequestContext(object):
         # the context can be force kept alive for the test client.
         # See flask.testing for how this works.
         if not self.request.environ.get('flask._preserve_context') and \
-           (tb is None or not self.app.debug):
+           (tb is None or not self.app.preserve_context_on_exception):
             self.pop()

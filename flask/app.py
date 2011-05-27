@@ -27,13 +27,14 @@ from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     _tojson_filter, _endpoint_from_view_func
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
-from .ctx import _RequestContext
+from .ctx import RequestContext
 from .globals import _request_ctx_stack, request
 from .session import Session, _NullSession
 from .module import _ModuleSetupState
 from .templating import _DispatchingJinjaLoader, \
     _default_template_ctx_processor
-from .signals import request_started, request_finished, got_request_exception
+from .signals import request_started, request_finished, got_request_exception, \
+    request_tearing_down
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -126,6 +127,9 @@ class Flask(_PackageBoundObject):
     #: For example this might activate unittest helpers that have an
     #: additional runtime cost which should not be enabled by default.
     #:
+    #: If this is enabled and PROPAGATE_EXCEPTIONS is not changed from the
+    #: default it's implicitly enabled.
+    #:
     #: This attribute can also be configured from the config with the
     #: `TESTING` configuration key.  Defaults to `False`.
     testing = ConfigAttribute('TESTING')
@@ -191,6 +195,7 @@ class Flask(_PackageBoundObject):
         'DEBUG':                                False,
         'TESTING':                              False,
         'PROPAGATE_EXCEPTIONS':                 None,
+        'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
         'SECRET_KEY':                           None,
         'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
@@ -333,6 +338,19 @@ class Flask(_PackageBoundObject):
         if rv is not None:
             return rv
         return self.testing or self.debug
+
+    @property
+    def preserve_context_on_exception(self):
+        """Returns the value of the `PRESERVE_CONTEXT_ON_EXCEPTION`
+        configuration value in case it's set, otherwise a sensible default
+        is returned.
+
+        .. versionadded:: 0.7
+        """
+        rv = self.config['PRESERVE_CONTEXT_ON_EXCEPTION']
+        if rv is not None:
+            return rv
+        return self.debug
 
     @property
     def logger(self):
@@ -713,16 +731,38 @@ class Flask(_PackageBoundObject):
         return f
 
     def after_request(self, f):
-        """Register a function to be run after each request. Your function
+        """Register a function to be run after each request.  Your function
         must take one parameter, a :attr:`response_class` object and return
         a new response object or the same (see :meth:`process_response`).
+
+        As of Flask 0.7 this function might not be executed at the end of the
+        request in case an unhandled exception ocurred.
         """
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
 
     def teardown_request(self, f):
         """Register a function to be run at the end of each request,
-        regardless of whether there was an exception or not.
+        regardless of whether there was an exception or not.  These functions
+        are executed when the request context is popped, even if not an
+        actual request was performed.
+
+        Example::
+
+            ctx = app.test_request_context()
+            ctx.push()
+            ...
+            ctx.pop()
+
+        When ``ctx.pop()`` is executed in the above example, the teardown
+        functions are called just before the request context moves from the
+        stack of active contexts.  This becomes relevant if you are using
+        such constructs in tests.
+
+        Generally teardown functions must take every necesary step to avoid
+        that they will fail.  If they do execute code that might fail they
+        will have to surround the execution of these code by try/except
+        statements and log ocurring errors.
         """
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
@@ -770,21 +810,39 @@ class Flask(_PackageBoundObject):
         return value of the view or error handler.  This does not have to
         be a response object.  In order to convert the return value to a
         proper response object, call :func:`make_response`.
+
+        .. versionchanged:: 0.7
+           This no longer does the exception handling, this code was
+           moved to the new :meth:`full_dispatch_request`.
         """
         req = _request_ctx_stack.top.request
+        if req.routing_exception is not None:
+            raise req.routing_exception
+        rule = req.url_rule
+        # if we provide automatic options for this URL and the
+        # request came with the OPTIONS method, reply automatically
+        if getattr(rule, 'provide_automatic_options', False) \
+           and req.method == 'OPTIONS':
+            return self.make_default_options_response()
+        # otherwise dispatch to the handler for that endpoint
+        return self.view_functions[rule.endpoint](**req.view_args)
+
+    def full_dispatch_request(self):
+        """Dispatches the request and on top of that performs request
+        pre and postprocessing as well as HTTP exception catching and
+        error handling.
+        """
         try:
-            if req.routing_exception is not None:
-                raise req.routing_exception
-            rule = req.url_rule
-            # if we provide automatic options for this URL and the
-            # request came with the OPTIONS method, reply automatically
-            if getattr(rule, 'provide_automatic_options', False) \
-               and req.method == 'OPTIONS':
-                return self.make_default_options_response()
-            # otherwise dispatch to the handler for that endpoint
-            return self.view_functions[rule.endpoint](**req.view_args)
+            request_started.send(self)
+            rv = self.preprocess_request()
+            if rv is None:
+                rv = self.dispatch_request()
         except HTTPException, e:
-            return self.handle_http_exception(e)
+            rv = self.handle_http_exception(e)
+        response = self.make_response(rv)
+        response = self.process_response(response)
+        request_finished.send(self, response=response)
+        return response
 
     def make_default_options_response(self):
         """This method is called to create the default `OPTIONS` response.
@@ -894,7 +952,10 @@ class Flask(_PackageBoundObject):
 
     def do_teardown_request(self):
         """Called after the actual request dispatching and will
-        call every as :meth:`teardown_request` decorated function.
+        call every as :meth:`teardown_request` decorated function.  This is
+        not actually called by the :class:`Flask` object itself but is always
+        triggered when the request context is popped.  That way we have a
+        tighter control over certain resources under testing environments.
         """
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
         mod = request.module
@@ -905,12 +966,13 @@ class Flask(_PackageBoundObject):
             rv = func(exc)
             if rv is not None:
                 return rv
+        request_tearing_down.send(self)
 
     def request_context(self, environ):
-        """Creates a request context from the given environment and binds
-        it to the current context.  This must be used in combination with
-        the `with` statement because the request is only bound to the
-        current context for the duration of the `with` block.
+        """Creates a :class:`~flask.ctx.RequestContext` from the given
+        environment and binds it to the current context.  This must be used in
+        combination with the `with` statement because the request is only bound
+        to the current context for the duration of the `with` block.
 
         Example usage::
 
@@ -934,7 +996,7 @@ class Flask(_PackageBoundObject):
 
         :param environ: a WSGI environment
         """
-        return _RequestContext(self, environ)
+        return RequestContext(self, environ)
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
@@ -969,16 +1031,11 @@ class Flask(_PackageBoundObject):
         Then you still have the original application object around and
         can continue to call methods on it.
 
-        .. versionchanged:: 0.4
-           The :meth:`after_request` functions are now called even if an
-           error handler took over request processing.  This ensures that
-           even if an exception happens database have the chance to
-           properly close the connection.
-
         .. versionchanged:: 0.7
-           The :meth:`teardown_request` functions get called at the very end of
-           processing the request. If an exception was thrown, it gets passed to
-           each teardown_request function.
+           The behavior of the before and after request callbacks was changed
+           under error conditions and a new callback was added that will
+           always execute at the end of the request, independent on if an
+           error ocurred or not.  See :ref:`callbacks-and-errors`.
 
         :param environ: a WSGI environment
         :param start_response: a callable accepting a status code,
@@ -987,20 +1044,9 @@ class Flask(_PackageBoundObject):
         """
         with self.request_context(environ):
             try:
-                request_started.send(self)
-                rv = self.preprocess_request()
-                if rv is None:
-                    rv = self.dispatch_request()
-                response = self.make_response(rv)
+                response = self.full_dispatch_request()
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
-            try:
-                response = self.process_response(response)
-            except Exception, e:
-                response = self.make_response(self.handle_exception(e))
-            finally:
-                self.do_teardown_request()
-            request_finished.send(self, response=response)
             return response(environ, start_response)
 
     def __call__(self, environ, start_response):

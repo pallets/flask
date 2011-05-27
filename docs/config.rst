@@ -51,27 +51,36 @@ The following configuration values are used internally by Flask:
 
 .. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
 
-=============================== =========================================
-``DEBUG``                       enable/disable debug mode
-``TESTING``                     enable/disable testing mode
-``PROPAGATE_EXCEPTIONS``        explicitly enable or disable the
-                                propagation of exceptions.  If not set or
-                                explicitly set to `None` this is
-                                implicitly true if either `TESTING` or
-                                `DEBUG` is true.
-``SECRET_KEY``                  the secret key
-``SESSION_COOKIE_NAME``         the name of the session cookie
-``PERMANENT_SESSION_LIFETIME``  the lifetime of a permanent session as
-                                :class:`datetime.timedelta` object.
-``USE_X_SENDFILE``              enable/disable x-sendfile
-``LOGGER_NAME``                 the name of the logger
-``SERVER_NAME``                 the name of the server.  Required for
-                                subdomain support (e.g.: ``'localhost'``)
-``MAX_CONTENT_LENGTH``          If set to a value in bytes, Flask will
-                                reject incoming requests with a
-                                content length greater than this by
-                                returning a 413 status code.
-=============================== =========================================
+================================= =========================================
+``DEBUG``                         enable/disable debug mode
+``TESTING``                       enable/disable testing mode
+``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
+                                  propagation of exceptions.  If not set or
+                                  explicitly set to `None` this is
+                                  implicitly true if either `TESTING` or
+                                  `DEBUG` is true.
+``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
+                                  debug mode the request context is not
+                                  popped on exceptions to enable debuggers
+                                  to introspect the data.  This can be
+                                  disabled by this key.  You can also use
+                                  this setting to force-enable it for non
+                                  debug execution which might be useful to
+                                  debug production applications (but also
+                                  very risky).
+``SECRET_KEY``                    the secret key
+``SESSION_COOKIE_NAME``           the name of the session cookie
+``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
+                                  :class:`datetime.timedelta` object.
+``USE_X_SENDFILE``                enable/disable x-sendfile
+``LOGGER_NAME``                   the name of the logger
+``SERVER_NAME``                   the name of the server.  Required for
+                                  subdomain support (e.g.: ``'localhost'``)
+``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
+                                  reject incoming requests with a
+                                  content length greater than this by
+                                  returning a 413 status code.
+================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
 
@@ -102,7 +111,7 @@ The following configuration values are used internally by Flask:
    ``MAX_CONTENT_LENGTH``
 
 .. versionadded:: 0.7
-   ``PROPAGATE_EXCEPTIONS``
+   ``PROPAGATE_EXCEPTIONS``, ``PRESERVE_CONTEXT_ON_EXCEPTION``
 
 Configuring from Files
 ----------------------

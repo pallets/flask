@@ -784,8 +784,11 @@ class BasicFunctionalityTestCase(unittest.TestCase):
 
     def test_max_content_length(self):
         app = flask.Flask(__name__)
-        app.debug = True
         app.config['MAX_CONTENT_LENGTH'] = 64
+        @app.before_request
+        def always_first():
+            flask.request.form['myfile']
+            assert False
         @app.route('/accept', methods=['POST'])
         def accept_file():
             flask.request.form['myfile']
