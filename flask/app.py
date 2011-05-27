@@ -831,6 +831,8 @@ class Flask(_PackageBoundObject):
         """Dispatches the request and on top of that performs request
         pre and postprocessing as well as HTTP exception catching and
         error handling.
+
+        .. versionadded:: 0.7
         """
         try:
             request_started.send(self)
