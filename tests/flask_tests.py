@@ -782,6 +782,22 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             t.start()
             t.join()
 
+    def test_max_content_length(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        app.config['MAX_CONTENT_LENGTH'] = 64
+        @app.route('/accept', methods=['POST'])
+        def accept_file():
+            flask.request.form['myfile']
+            assert False
+        @app.errorhandler(413)
+        def catcher(error):
+            return '42'
+
+        c = app.test_client()
+        rv = c.post('/accept', data={'myfile': 'foo' * 100})
+        assert rv.data == '42'
+
 
 class JSONTestCase(unittest.TestCase):
 
