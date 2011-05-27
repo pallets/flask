@@ -398,37 +398,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert 'after' in evts
         assert rv == 'request|after'
 
-    def test_after_request_errors(self):
-        app = flask.Flask(__name__)
-        called = []
-        @app.after_request
-        def after_request(response):
-            called.append(True)
-            return response
-        @app.route('/')
-        def fails():
-            1/0
-        rv = app.test_client().get('/')
-        assert rv.status_code == 500
-        assert 'Internal Server Error' in rv.data
-        assert len(called) == 1
-
-    def test_after_request_handler_error(self):
-        called = []
-        app = flask.Flask(__name__)
-        @app.after_request
-        def after_request(response):
-            called.append(True)
-            1/0
-            return response
-        @app.route('/')
-        def fails():
-            1/0
-        rv = app.test_client().get('/')
-        assert rv.status_code == 500
-        assert 'Internal Server Error' in rv.data
-        assert len(called) == 1
-
     def test_teardown_request_handler(self):
         called = []
         app = flask.Flask(__name__)
@@ -459,7 +428,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 200
         assert 'Response' in rv.data
         assert len(called) == 1
-
 
     def test_teardown_request_handler_error(self):
         called = []
@@ -493,7 +461,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 500
         assert 'Internal Server Error' in rv.data
         assert len(called) == 2
-
 
     def test_before_after_request_order(self):
         called = []
@@ -546,6 +513,19 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         rv = c.get('/error')
         assert rv.status_code == 500
         assert 'internal server error' == rv.data
+
+    def test_teardown_on_pop(self):
+        buffer = []
+        app = flask.Flask(__name__)
+        @app.teardown_request
+        def end_of_request(exception):
+            buffer.append(exception)
+
+        ctx = app.test_request_context()
+        ctx.push()
+        assert buffer == []
+        ctx.pop()
+        assert buffer == [None]
 
     def test_response_creation(self):
         app = flask.Flask(__name__)
