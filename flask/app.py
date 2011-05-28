@@ -793,10 +793,21 @@ class Flask(_PackageBoundObject):
 
         .. versionadded: 0.3
         """
+        exc_type, exc_value, tb = sys.exc_info()
+
         got_request_exception.send(self, exception=e)
         handler = self.error_handlers.get(500)
+
         if self.propagate_exceptions:
-            raise
+            # if we want to repropagate the exception, we can attempt to
+            # raise it with the whole traceback in case we can do that
+            # (the function was actually called from the except part)
+            # otherwise, we just raise the error again
+            if exc_value is e:
+                raise exc_type, exc_value, tb
+            else:
+                raise e
+
         self.logger.exception('Exception on %s [%s]' % (
             request.path,
             request.method

@@ -240,6 +240,7 @@ your configuration files.  However here a list of good recommendations:
     and exports the development configuration for you.
 -   Use a tool like `fabric`_ in production to push code and
     configurations separately to the production server(s).  For some
-    details about how to do that, head over to the :ref:`deploy` pattern.
+    details about how to do that, head over to the
+    :ref:`fabric-deployment` pattern.
 
 .. _fabric: http://fabfile.org/

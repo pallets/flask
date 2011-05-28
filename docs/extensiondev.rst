@@ -290,6 +290,29 @@ and bind their app to the extension in another file::
 
     manager.init_app(app)
 
+End-Of-Request Behavior
+-----------------------
+
+Due to the change in Flask 0.7 regarding functions that are run at the end
+of the request your extension will have to be extra careful there if it
+wants to continue to support older versions of Flask.  The following
+pattern is a good way to support both::
+
+    def close_connection(response):
+        ctx = _request_ctx_stack.top
+        ctx.sqlite3_db.close()
+        return response
+
+    if hasattr(app, 'teardown_request'):
+        app.teardown_request(close_connection)
+    else:
+        app.after_request(close_connection)
+
+Strictly speaking the above code is wrong, because teardown functions are
+passed the exception and typically don't return anything.  However because
+the return value is discarded this will just work assuming that the code
+in between does not touch the passed parameter.
+
 Learn from Others
 -----------------
 
