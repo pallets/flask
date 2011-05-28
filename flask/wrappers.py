@@ -81,7 +81,13 @@ class Request(RequestBase):
         if __debug__:
             _assert_have_json()
         if self.mimetype == 'application/json':
-            return json.loads(self.data)
+            request_charset = self.mimetype_params.get('charset')
+            if request_charset is not None:
+                j = json.loads(self.data, encoding=request_charset )
+            else:
+                j = json.loads(self.data)
+
+            return j
 
 
 class Response(ResponseBase):

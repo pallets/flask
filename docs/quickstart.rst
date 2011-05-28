@@ -113,6 +113,11 @@ Screenshot of the debugger in action:
    :class: screenshot
    :alt: screenshot of debugger in action
 
+.. admonition:: Working With Other Debuggers
+
+   Debuggers interfere with each other.  If you are using another debugger
+   (e.g. PyDev or IntelliJ), you may need to set ``app.debug = False``.
+
 
 Routing
 -------

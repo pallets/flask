@@ -70,7 +70,14 @@ server if we want to run that file as a standalone application::
         app.run()
 
 With that out of the way you should be able to start up the application
-without problems.  When you head over to the server you will get an 404
+without problems.  Do this with the following command::
+
+   python flaskr.py
+
+You will see a message telling you that server has started along with
+the address at which you can access it.
+
+When you head over to the server in your browser you will get an 404
 page not found error because we don't have any views yet.  But we will
 focus on that a little later.  First we should get the database working.
 

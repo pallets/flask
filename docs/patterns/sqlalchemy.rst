@@ -65,10 +65,9 @@ automatically remove database sessions at the end of the request for you::
 
     from yourapplication.database import db_session
 
-    @app.after_request
-    def shutdown_session(response):
+    @app.teardown_request
+    def shutdown_session(exception=None):
         db_session.remove()
-        return response
 
 Here is an example model (put this into `models.py`, e.g.)::
 
@@ -140,10 +139,9 @@ each request.  Put this into your application module::
 
     from yourapplication.database import db_session
 
-    @app.after_request
-    def shutdown_session(response):
+    @app.teardown_request
+    def shutdown_session(exception=None):
         db_session.remove()
-        return response
 
 Here is an example table and model (put this into `models.py`)::
 

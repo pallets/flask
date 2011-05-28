@@ -244,6 +244,8 @@ Useful Functions and Classes
 
 .. autofunction:: send_from_directory
 
+.. autofunction:: safe_join
+
 .. autofunction:: escape
 
 .. autoclass:: Markup
@@ -308,6 +310,9 @@ Configuration
 Useful Internals
 ----------------
 
+.. autoclass:: flask.ctx.RequestContext
+   :members:
+
 .. data:: _request_ctx_stack
 
    The internal :class:`~werkzeug.local.LocalStack` that is used to implement
@@ -344,23 +349,6 @@ Useful Internals
           ctx = _request_ctx_stack.top
           if ctx is not None:
               return ctx.session
-
-   .. versionchanged:: 0.4
-
-   The request context is automatically popped at the end of the request
-   for you.  In debug mode the request context is kept around if
-   exceptions happen so that interactive debuggers have a chance to
-   introspect the data.  With 0.4 this can also be forced for requests
-   that did not fail and outside of `DEBUG` mode.  By setting
-   ``'flask._preserve_context'`` to `True` on the WSGI environment the
-   context will not pop itself at the end of the request.  This is used by
-   the :meth:`~flask.Flask.test_client` for example to implement the
-   deferred cleanup functionality.
-
-   You might find this helpful for unittests where you need the
-   information from the context local around for a little longer.  Make
-   sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
-   that situation, otherwise your unittests will leak memory.
 
 Signals
 -------
@@ -399,6 +387,12 @@ Signals
    in debug mode, where no exception handling happens.  The exception
    itself is passed to the subscriber as `exception`.
 
+.. data:: request_tearing_down
+
+   This signal is sent when the application is tearing down the request.
+   This is always called, even if an error happened.  No arguments are
+   provided.
+
 .. currentmodule:: None
 
 .. class:: flask.signals.Namespace
@@ -416,28 +410,3 @@ Signals
       operations, including connecting.
 
 .. _blinker: http://pypi.python.org/pypi/blinker
-
-.. _notes-on-proxies:
-
-Notes On Proxies
-----------------
-
-Some of the objects provided by Flask are proxies to other objects.  The
-reason behind this is that these proxies are shared between threads and
-they have to dispatch to the actual object bound to a thread behind the
-scenes as necessary.
-
-Most of the time you don't have to care about that, but there are some
-exceptions where it is good to know that this object is an actual proxy:
-
--   The proxy objects do not fake their inherited types, so if you want to
-    perform actual instance checks, you have to do that on the instance
-    that is being proxied (see `_get_current_object` below).
--   if the object reference is important (so for example for sending
-    :ref:`signals`)
-
-If you need to get access to the underlying object that is proxied, you
-can use the :meth:`~werkzeug.local.LocalProxy._get_current_object` method::
-
-    app = current_app._get_current_object()
-    my_signal.send(app)

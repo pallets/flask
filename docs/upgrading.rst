@@ -22,6 +22,11 @@ installation, make sure to pass it the ``-U`` parameter::
 Version 0.7
 -----------
 
+The following backwards incompatible changes exist from 0.6 to 0.7
+
+Bug in Request Locals
+`````````````````````
+
 Due to a bug in earlier implementations the request local proxies now
 raise a :exc:`RuntimeError` instead of an :exc:`AttributeError` when they
 are unbound.  If you caught these exceptions with :exc:`AttributeError`
@@ -43,6 +48,48 @@ Old code::
 New code::
 
     return send_file(my_file_object, add_etags=False)
+
+.. _upgrading-to-new-teardown-handling:
+
+Upgrading to new Teardown Handling
+``````````````````````````````````
+
+We streamlined the behavior of the callbacks for request handling.  For
+things that modify the response the :meth:`~flask.Flask.after_request`
+decorators continue to work as expected, but for things that absolutely
+must happen at the end of request we introduced the new
+:meth:`~flask.Flask.teardown_request` decorator.  Unfortunately that
+change also made after-request work differently under error conditions.
+It's not consistently skipped if exceptions happen whereas previously it
+might have been called twice to ensure it is executed at the end of the
+request.
+
+If you have database connection code that looks like this::
+
+    @app.after_request
+    def after_request(response):
+        g.db.close()
+        return response
+
+You are now encouraged to use this instead::
+
+    @app.teardown_request
+    def after_request(exception):
+        g.db.close()
+
+On the upside this change greatly improves the internal code flow and
+makes it easier to customize the dispatching and error handling.  This
+makes it now a lot easier to write unit tests as you can prevent closing
+down of database connections for a while.  You can take advantage of the
+fact that the teardown callbacks are called when the response context is
+removed from the stack so a test can query the database after request
+handling::
+
+    with app.test_client() as client:
+        resp = client.get('/')
+        # g.db is still bound if there is such a thing
+
+    # and here it's gone
 
 Version 0.6
 -----------

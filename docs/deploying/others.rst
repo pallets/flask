@@ -72,7 +72,7 @@ problematic values in the WSGI environment usually are `REMOTE_ADDR` and
 but you might want to write your own WSGI middleware for specific setups.
 
 The most common setup invokes the host being set from `X-Forwarded-Host`
-and the remote address from `X-Forward-For`::
+and the remote address from `X-Forwarded-For`::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)

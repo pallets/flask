@@ -47,11 +47,10 @@ def before_request():
     g.db = connect_db()
 
 
-@app.after_request
-def after_request(response):
+@app.teardown_request
+def teardown_request(exception):
     """Closes the database again at the end of the request."""
     g.db.close()
-    return response
 
 
 @app.route('/')

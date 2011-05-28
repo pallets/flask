@@ -1,3 +1,5 @@
+.. _shell:
+
 Working with the Shell
 ======================
 
@@ -21,61 +23,37 @@ that these functions are not only there for interactive shell usage, but
 also for unittesting and other situations that require a faked request
 context.
 
-Diving into Context Locals
+Generally it's recommended that you read the :ref:`request-context`
+chapter of the documentation first.
+
+Creating a Request Context
 --------------------------
 
-Say you have a utility function that returns the URL the user should be
-redirected to.  Imagine it would always redirect to the URL's ``next``
-parameter or the HTTP referrer or the index page::
+The easiest way to create a proper request context from the shell is by
+using the :attr:`~flask.Flask.test_request_context` method which creates
+us a :class:`~flask.ctx.RequestContext`:
 
-    from flask import request, url_for
+>>> ctx = app.test_request_context()
 
-    def redirect_url():
-        return request.args.get('next') or \
-               request.referrer or \
-               url_for('index')
-
-As you can see, it accesses the request object.  If you try to run this
-from a plain Python shell, this is the exception you will see:
-
->>> redirect_url()
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-AttributeError: 'NoneType' object has no attribute 'request'
-
-That makes a lot of sense because we currently do not have a request we
-could access.  So we have to make a request and bind it to the current
-context.  The :attr:`~flask.Flask.test_request_context` method can create
-us a request context:
-
->>> ctx = app.test_request_context('/?next=http://example.com/')
-
-This context can be used in two ways.  Either with the `with` statement
-(which unfortunately is not very handy for shell sessions).  The
-alternative way is to call the `push` and `pop` methods:
+Normally you would use the `with` statement to make this request object
+active, but in the shell it's easier to use the
+:meth:`~flask.ctx.RequestContext.push` and
+:meth:`~flask.ctx.RequestContext.pop` methods by hand:
 
 >>> ctx.push()
 
-From that point onwards you can work with the request object:
-
->>> redirect_url()
-u'http://example.com/'
-
-Until you call `pop`:
+From that point onwards you can work with the request object until you
+call `pop`:
 
 >>> ctx.pop()
->>> redirect_url()
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-AttributeError: 'NoneType' object has no attribute 'request'
-
 
 Firing Before/After Request
 ---------------------------
 
 By just creating a request context, you still don't have run the code that
-is normally run before a request.  This probably results in your database
-being unavailable, the current user not being stored on the
+is normally run before a request.  This might result in your database
+being unavailable if you are connecting to the database in a
+before-request callback or the current user not being stored on the
 :data:`~flask.g` object etc.
 
 This however can easily be done yourself.  Just call
@@ -95,6 +73,11 @@ a response object:
 >>> app.process_response(app.response_class())
 <Response 0 bytes [200 OK]>
 >>> ctx.pop()
+
+The functions registered as :meth:`~flask.Flask.teardown_request` are
+automatically called when the context is popped.  So this is the perfect
+place to automatically tear down resources that were needed by the request
+context (such as database connections).
 
 
 Further Improving the Shell Experience

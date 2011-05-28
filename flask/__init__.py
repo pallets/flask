@@ -19,7 +19,7 @@ from .app import Flask, Request, Response
 from .config import Config
 from .helpers import url_for, jsonify, json_available, flash, \
     send_file, send_from_directory, get_flashed_messages, \
-    get_template_attribute, make_response
+    get_template_attribute, make_response, safe_join
 from .globals import current_app, g, request, session, _request_ctx_stack
 from .ctx import has_request_context
 from .module import Module
@@ -28,7 +28,7 @@ from .session import Session
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
-     request_finished, got_request_exception
+     request_finished, got_request_exception, request_tearing_down
 
 # only import json if it's available
 if json_available:

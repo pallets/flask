@@ -182,7 +182,7 @@ Here's the contents of the `flaskext/sqlite3.py` for copy/paste::
         def __init__(self, app):
             self.app = app
             self.app.config.setdefault('SQLITE3_DATABASE', ':memory:')
-            self.app.after_request(self.after_request)
+            self.app.teardown_request(self.teardown_request)
             self.app.before_request(self.before_request)
 
         def connect(self):
@@ -192,10 +192,9 @@ Here's the contents of the `flaskext/sqlite3.py` for copy/paste::
             ctx = _request_ctx_stack.top
             ctx.sqlite3_db = self.connect()
 
-        def after_request(self, response):
+        def teardown_request(self, exception):
             ctx = _request_ctx_stack.top
             ctx.sqlite3_db.close()
-            return response
 
         def get_db(self):
             ctx = _request_ctx_stack.top
@@ -211,7 +210,7 @@ So here's what these lines of code do:
 2.  We create a class for our extension that requires a supplied `app` object,
     sets a configuration for the database if it's not there
     (:meth:`dict.setdefault`), and attaches `before_request` and
-    `after_request` handlers.
+    `teardown_request` handlers.
 3.  Next, we define a `connect` function that opens a database connection.
 4.  Then we set up the request handlers we bound to the app above.  Note here
     that we're attaching our database connection to the top request context via
@@ -264,7 +263,7 @@ Our extension could add an `init_app` function as follows::
         def init_app(self, app):
             self.app = app
             self.app.config.setdefault('SQLITE3_DATABASE', ':memory:')
-            self.app.after_request(self.after_request)
+            self.app.teardown_request(self.teardown_request)
             self.app.before_request(self.before_request)
 
         def connect(self):
@@ -274,10 +273,9 @@ Our extension could add an `init_app` function as follows::
             ctx = _request_ctx_stack.top
             ctx.sqlite3_db = self.connect()
 
-        def after_request(self, response):
+        def teardown_request(self, exception):
             ctx = _request_ctx_stack.top
             ctx.sqlite3_db.close()
-            return response
 
         def get_db(self):
             ctx = _request_ctx_stack.top
@@ -291,6 +289,29 @@ The user could then initialize the extension in one file::
 and bind their app to the extension in another file::
 
     manager.init_app(app)
+
+End-Of-Request Behavior
+-----------------------
+
+Due to the change in Flask 0.7 regarding functions that are run at the end
+of the request your extension will have to be extra careful there if it
+wants to continue to support older versions of Flask.  The following
+pattern is a good way to support both::
+
+    def close_connection(response):
+        ctx = _request_ctx_stack.top
+        ctx.sqlite3_db.close()
+        return response
+
+    if hasattr(app, 'teardown_request'):
+        app.teardown_request(close_connection)
+    else:
+        app.after_request(close_connection)
+
+Strictly speaking the above code is wrong, because teardown functions are
+passed the exception and typically don't return anything.  However because
+the return value is discarded this will just work assuming that the code
+in between does not touch the passed parameter.
 
 Learn from Others
 -----------------

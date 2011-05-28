@@ -415,37 +415,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert 'after' in evts
         assert rv == 'request|after'
 
-    def test_after_request_errors(self):
-        app = flask.Flask(__name__)
-        called = []
-        @app.after_request
-        def after_request(response):
-            called.append(True)
-            return response
-        @app.route('/')
-        def fails():
-            1/0
-        rv = app.test_client().get('/')
-        assert rv.status_code == 500
-        assert 'Internal Server Error' in rv.data
-        assert len(called) == 1
-
-    def test_after_request_handler_error(self):
-        called = []
-        app = flask.Flask(__name__)
-        @app.after_request
-        def after_request(response):
-            called.append(True)
-            1/0
-            return response
-        @app.route('/')
-        def fails():
-            1/0
-        rv = app.test_client().get('/')
-        assert rv.status_code == 500
-        assert 'Internal Server Error' in rv.data
-        assert len(called) == 1
-
     def test_teardown_request_handler(self):
         called = []
         app = flask.Flask(__name__)
@@ -476,7 +445,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 200
         assert 'Response' in rv.data
         assert len(called) == 1
-
 
     def test_teardown_request_handler_error(self):
         called = []
@@ -510,7 +478,6 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 500
         assert 'Internal Server Error' in rv.data
         assert len(called) == 2
-
 
     def test_before_after_request_order(self):
         called = []
@@ -563,6 +530,19 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         rv = c.get('/error')
         assert rv.status_code == 500
         assert 'internal server error' == rv.data
+
+    def test_teardown_on_pop(self):
+        buffer = []
+        app = flask.Flask(__name__)
+        @app.teardown_request
+        def end_of_request(exception):
+            buffer.append(exception)
+
+        ctx = app.test_request_context()
+        ctx.push()
+        assert buffer == []
+        ctx.pop()
+        assert buffer == [None]
 
     def test_response_creation(self):
         app = flask.Flask(__name__)
@@ -659,6 +639,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         app.config.update(
             SERVER_NAME='localhost.localdomain:5000'
         )
+
         @app.route('/')
         def index():
             return None
@@ -798,8 +779,39 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             t.start()
             t.join()
 
+    def test_max_content_length(self):
+        app = flask.Flask(__name__)
+        app.config['MAX_CONTENT_LENGTH'] = 64
+        @app.before_request
+        def always_first():
+            flask.request.form['myfile']
+            assert False
+        @app.route('/accept', methods=['POST'])
+        def accept_file():
+            flask.request.form['myfile']
+            assert False
+        @app.errorhandler(413)
+        def catcher(error):
+            return '42'
+
+        c = app.test_client()
+        rv = c.post('/accept', data={'myfile': 'foo' * 100})
+        assert rv.data == '42'
+
 
 class JSONTestCase(unittest.TestCase):
+
+    def test_json_body_encoding(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.route('/')
+        def index():
+            return flask.request.json
+
+        c = app.test_client()
+        resp = c.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
+                     content_type='application/json; charset=iso-8859-15')
+        assert resp.data == u'Hällo Wörld'.encode('utf-8')
 
     def test_jsonify(self):
         d = dict(a=23, b=42, c=[1, 2, 3])

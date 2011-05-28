@@ -11,7 +11,7 @@
 
 from __future__ import absolute_import
 
-from logging import getLogger, StreamHandler, Formatter, Logger, DEBUG
+from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG
 
 
 def create_logger(app):
@@ -21,6 +21,7 @@ def create_logger(app):
     function also removes all attached handlers in case there was a
     logger with the log name before.
     """
+    Logger = getLoggerClass()
 
     class DebugLogger(Logger):
         def getEffectiveLevel(x):

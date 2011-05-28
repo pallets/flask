@@ -236,4 +236,20 @@ The following signals exist in Flask:
         from flask import got_request_exception
         got_request_exception.connect(log_exception, app)
 
+.. data:: flask.request_tearing_down
+   :noindex:
+
+   This signal is sent when the request is tearing down.  This is always
+   called, even if an exception is caused.  Currently functions listening
+   to this signal are called after the regular teardown handlers, but this
+   is not something you can rely on.
+
+   Example subscriber::
+
+        def close_db_connection(sender):
+            session.close()
+
+        from flask import request_tearing_down
+        request_tearing_down.connect(close_db_connection, app)
+
 .. _blinker: http://pypi.python.org/pypi/blinker

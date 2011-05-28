@@ -38,11 +38,19 @@ Release date to be announced, codename to be selected
 - Added `create_jinja_loader` to override the loader creation process.
 - Implemented a silent flag for `config.from_pyfile`.
 - Added `teardown_request` decorator, for functions that should run at the end
-  of a request regardless of whether an exception occurred.
+  of a request regardless of whether an exception occurred.  Also the behavior
+  for `after_request` was changed.  It's now no longer executed when an exception
+  is raised.  See :ref:`upgrading-to-new-teardown-handling`
 - Implemented :func:`flask.has_request_context`
 - Deprecated `init_jinja_globals`.  Override the
   :meth:`~flask.Flask.create_jinja_environment` method instead to
   achieve the same functionality.
+- Added :func:`safe_join`
+- The automatic JSON request data unpacking now looks at the charset
+  mimetype parameter.
+- Don't modify the session on :func:`flask.get_flashed_messages` if there
+  are no messages in the session.
+- `before_request` handlers are now able to abort requests with errors.
 
 Version 0.6.1
 -------------
