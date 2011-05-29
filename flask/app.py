@@ -1013,6 +1013,20 @@ class Flask(_PackageBoundObject):
         return self.url_map.bind_to_environ(request.environ,
             server_name=self.config['SERVER_NAME'])
 
+    def inject_url_defaults(self, endpoint, values):
+        """Injects the URL defaults for the given endpoint directly into
+        the values dictionary passed.  This is used internally and
+        automatically called on URL building.
+
+        .. versionadded:: 0.7
+        """
+        funcs = self.url_default_functions.get(None, ())
+        if '.' in endpoint:
+            bp = endpoint.split('.', 1)[0]
+            funcs = chain(funcs, self.url_default_functions.get(bp, ()))
+        for func in funcs:
+            func(endpoint, values)
+
     def preprocess_request(self):
         """Called before the actual request dispatching and will
         call every as :meth:`before_request` decorated function.

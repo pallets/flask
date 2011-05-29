@@ -180,6 +180,7 @@ def url_for(endpoint, **values):
         elif endpoint.startswith('.'):
             endpoint = endpoint[1:]
     external = values.pop('_external', False)
+    ctx.app.inject_url_defaults(endpoint, values)
     return ctx.url_adapter.build(endpoint, values, force_external=external)
 
 
