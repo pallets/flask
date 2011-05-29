@@ -172,6 +172,14 @@ projects = {
         Project('ahall.org', 'http://ahall.org/', u'''
             <p>
               Alfred Hall on software development
+        '''),
+        Project('Steyr Touristik GmbH', 'http://www.steyr-touristik.at/', u'''
+            <p>
+              Website of the Austrian Steyr Touristik GmbH.
+        '''),
+        Project('JonathanStreet.com', 'http://jonathanstreet.com/', u'''
+            <p>
+              Peronsal website of Jonathan Street.
         ''')
     ],
     'apps': [
