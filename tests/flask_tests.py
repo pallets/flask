@@ -1192,6 +1192,7 @@ class ModuleTestCase(unittest.TestCase):
         from flask import Module
 
         app = flask.Flask(__name__)
+        app.testing = True
         app.url_map.add(Submount('/foo', [
             Rule('/bar', endpoint='bar'),
             Rule('/', endpoint='index')

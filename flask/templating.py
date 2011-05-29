@@ -14,6 +14,7 @@ from jinja2 import BaseLoader, Environment as BaseEnvironment, \
 
 from .globals import _request_ctx_stack
 from .signals import template_rendered
+from .module import blueprint_is_module
 
 
 def _default_template_ctx_processor():
@@ -74,7 +75,9 @@ class DispatchingJinjaLoader(BaseLoader):
         loader = None
         try:
             module, name = posixpath.normpath(template).split('/', 1)
-            loader = self.app.modules[module].jinja_loader
+            blueprint = self.app.blueprints[module]
+            if blueprint_is_module(blueprint):
+                loader = blueprint.jinja_loader
         except (ValueError, KeyError, TemplateNotFound):
             pass
         try:

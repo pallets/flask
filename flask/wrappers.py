@@ -42,6 +42,10 @@ class Request(RequestBase):
     #: something similar.
     routing_exception = None
 
+    # switched by the request context until 1.0 to opt in deprecated
+    # module functionality
+    _is_old_module = False
+
     @property
     def max_content_length(self):
         """Read-only view of the `MAX_CONTENT_LENGTH` config key."""
@@ -61,17 +65,22 @@ class Request(RequestBase):
 
     @property
     def module(self):
-        """The name of the current module"""
-        if self.url_rule and \
-           ':' not in self.url_rule.endpoint and \
-           '.' in self.url_rule.endpoint:
-            return self.url_rule.endpoint.rsplit('.', 1)[0]
+        """The name of the current module if the request was dispatched
+        to an actual module.  This is deprecated functionality, use blueprints
+        instead.
+        """
+        from warnings import warn
+        warn(DeprecationWarning('modules were deprecated in favor of '
+                                'blueprints.  Use request.blueprint '
+                                'instead.'), stacklevel=2)
+        if self._is_old_module:
+            return self.blueprint
 
     @property
     def blueprint(self):
         """The name of the current blueprint"""
-        if self.url_rule and ':' in self.url_rule.endpoint:
-            return self.url_rule.endpoint.split(':', 1)[0]
+        if self.url_rule and '.' in self.url_rule.endpoint:
+            return self.url_rule.endpoint.split('.', 1)[0]
 
     @cached_property
     def json(self):

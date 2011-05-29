@@ -28,7 +28,7 @@ from .config import ConfigAttribute, Config
 from .ctx import RequestContext
 from .globals import _request_ctx_stack, request
 from .session import Session, _NullSession
-from .module import _ModuleSetupState
+from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
@@ -102,14 +102,6 @@ class Flask(_PackageBoundObject):
     #: The class that is used for response objects.  See
     #: :class:`~flask.Response` for more information.
     response_class = Response
-
-    #: Path for the static files.  If you don't want to use static files
-    #: you can set this value to `None` in which case no URL rule is added
-    #: and the development server will no longer serve any static files.
-    #:
-    #: This is the default used for application and modules unless a
-    #: different value is passed to the constructor.
-    static_path = '/static'
 
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
@@ -213,10 +205,19 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.7
     test_client_class = None
 
-    def __init__(self, import_name, static_path=None):
+    def __init__(self, import_name, static_path=None, static_url_path=None,
+                 static_folder='static'):
         _PackageBoundObject.__init__(self, import_name)
         if static_path is not None:
-            self.static_path = static_path
+            from warnings import warn
+            warn(DeprecationWarning('static_path is now called '
+                                    'static_url_path'), stacklevel=2)
+            static_url_path = static_path
+
+        if static_url_path is not None:
+            self.static_url_path = static_url_path
+        if static_folder is not None:
+            self.static_folder = static_folder
 
         #: The configuration dictionary as :class:`Config`.  This behaves
         #: exactly like a regular dictionary but supports additional methods
@@ -242,14 +243,14 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
-        #: the module this function is active for, `None` for all requests.
+        #: the blueprint this function is active for, `None` for all requests.
         #: This can for example be used to open database connections or
         #: getting hold of the currently logged in user.  To register a
         #: function here, use the :meth:`before_request` decorator.
         self.before_request_funcs = {}
 
         #: A dictionary with lists of functions that should be called after
-        #: each request.  The key of the dictionary is the name of the module
+        #: each request.  The key of the dictionary is the name of the blueprint
         #: this function is active for, `None` for all requests.  This can for
         #: example be used to open database connections or getting hold of the
         #: currently logged in user.  To register a function here, use the
@@ -258,7 +259,7 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with lists of functions that are called after
         #: each request, even if an exception has occurred. The key of the
-        #: dictionary is the name of the module this function is active for,
+        #: dictionary is the name of the blueprint this function is active for,
         #: `None` for all requests. These functions are not allowed to modify
         #: the request, and their return values are ignored. If an exception
         #: occurred while processing the request, it gets passed to each
@@ -270,18 +271,13 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the
-        #: name of the module this function is active for, `None` for all
+        #: name of the blueprint this function is active for, `None` for all
         #: requests.  Each returns a dictionary that the template context is
         #: updated with.  To register a function here, use the
         #: :meth:`context_processor` decorator.
         self.template_context_processors = {
             None: [_default_template_ctx_processor]
         }
-
-        #: all the loaded modules in a dictionary by name.
-        #:
-        #: .. versionadded:: 0.5
-        self.modules = {}
 
         #: all the attached blueprints in a directory by name.  Blueprints
         #: can be attached multiple times so this dictionary does not tell
@@ -328,9 +324,10 @@ class Flask(_PackageBoundObject):
         # while the server is running (usually happens during development)
         # but also because google appengine stores static files somewhere
         # else when mapped with the .yml file.
-        self.add_url_rule(self.static_path + '/<path:filename>',
-                          endpoint='static',
-                          view_func=self.send_static_file)
+        if self.has_static_folder:
+            self.add_url_rule(self.static_url_path + '/<path:filename>',
+                              endpoint='static',
+                              view_func=self.send_static_file)
 
     @property
     def propagate_exceptions(self):
@@ -456,9 +453,9 @@ class Flask(_PackageBoundObject):
                         to add extra variables.
         """
         funcs = self.template_context_processors[None]
-        mod = _request_ctx_stack.top.request.module
-        if mod is not None and mod in self.template_context_processors:
-            funcs = chain(funcs, self.template_context_processors[mod])
+        bp = _request_ctx_stack.top.request.blueprint
+        if bp is not None and bp in self.template_context_processors:
+            funcs = chain(funcs, self.template_context_processors[bp])
         orig_ctx = context.copy()
         for func in funcs:
             context.update(func())
@@ -565,6 +562,8 @@ class Flask(_PackageBoundObject):
            The module system was deprecated in favor for the blueprint
            system.
         """
+        assert blueprint_is_module(module), 'register_module requires ' \
+            'actual module objects.  Please upgrade to blueprints though.'
         if not self.enable_modules:
             raise RuntimeError('Module support was disabled but code '
                 'attempted to register a module named %r' % module)
@@ -577,12 +576,7 @@ class Flask(_PackageBoundObject):
                 'of that extension instead.  (Registered %r)' % module),
                 stacklevel=2)
 
-        options.setdefault('url_prefix', module.url_prefix)
-        options.setdefault('subdomain', module.subdomain)
-        self.view_functions.update(module.view_functions)
-        state = _ModuleSetupState(self, **options)
-        for func in module._register_events:
-            func(state)
+        self.register_blueprint(module, **options)
 
     def register_blueprint(self, blueprint, **options):
         """Registers a blueprint on the application.
@@ -987,9 +981,9 @@ class Flask(_PackageBoundObject):
         request handling is stopped.
         """
         funcs = self.before_request_funcs.get(None, ())
-        mod = request.module
-        if mod and mod in self.before_request_funcs:
-            funcs = chain(funcs, self.before_request_funcs[mod])
+        bp = request.blueprint
+        if bp is not None and bp in self.before_request_funcs:
+            funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
             rv = func()
             if rv is not None:
@@ -1009,12 +1003,12 @@ class Flask(_PackageBoundObject):
                  instance of :attr:`response_class`.
         """
         ctx = _request_ctx_stack.top
-        mod = ctx.request.module
+        bp = ctx.request.blueprint
         if not isinstance(ctx.session, _NullSession):
             self.save_session(ctx.session, response)
         funcs = ()
-        if mod and mod in self.after_request_funcs:
-            funcs = reversed(self.after_request_funcs[mod])
+        if bp is not None and bp in self.after_request_funcs:
+            funcs = reversed(self.after_request_funcs[bp])
         if None in self.after_request_funcs:
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
@@ -1029,9 +1023,9 @@ class Flask(_PackageBoundObject):
         tighter control over certain resources under testing environments.
         """
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
-        mod = request.module
-        if mod and mod in self.teardown_request_funcs:
-            funcs = chain(funcs, reversed(self.teardown_request_funcs[mod]))
+        bp = request.blueprint
+        if bp is not None and bp in self.teardown_request_funcs:
+            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         exc = sys.exc_info()[1]
         for func in funcs:
             rv = func(exc)
@@ -1119,6 +1113,13 @@ class Flask(_PackageBoundObject):
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
             return response(environ, start_response)
+
+    @property
+    def modules(self):
+        from warnings import warn
+        warn(DeprecationWarning('Flask.modules is deprecated, use '
+                                'Flask.blueprints instead'), stacklevel=2)
+        return self.blueprints
 
     def __call__(self, environ, start_response):
         """Shortcut for :attr:`wsgi_app`."""

@@ -156,19 +156,6 @@ def make_response(*args):
 
 def url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
-    The endpoint is relative to the active module if modules are in use.
-
-    Here are some examples:
-
-    ==================== ======================= =============================
-    Active Module        Target Endpoint         Target Function
-    ==================== ======================= =============================
-    `None`               ``'index'``             `index` of the application
-    `None`               ``'.index'``            `index` of the application
-    ``'admin'``          ``'index'``             `index` of the `admin` module
-    any                  ``'.index'``            `index` of the application
-    any                  ``'admin.index'``       `index` of the `admin` module
-    ==================== ======================= =============================
 
     Variable arguments that are unknown to the target endpoint are appended
     to the generated URL as query arguments.  If the value of a query argument
@@ -181,12 +168,17 @@ def url_for(endpoint, **values):
     :param _external: if set to `True`, an absolute URL is generated.
     """
     ctx = _request_ctx_stack.top
-    if '.' not in endpoint:
-        mod = ctx.request.module
-        if mod is not None:
-            endpoint = mod + '.' + endpoint
-    elif endpoint.startswith('.'):
-        endpoint = endpoint[1:]
+    if not ctx.request._is_old_module:
+        if endpoint[:1] == '.':
+            endpoint = request.blueprint + endpoint
+    else:
+        # TODO: get rid of this deprecated functionality in 1.0
+        if '.' not in endpoint:
+            mod = ctx.request.blueprint
+            if mod is not None:
+                endpoint = mod + '.' + endpoint
+        elif endpoint.startswith('.'):
+            endpoint = endpoint[1:]
     external = values.pop('_external', False)
     return ctx.url_adapter.build(endpoint, values, force_external=external)
 
@@ -489,6 +481,8 @@ class locked_cached_property(object):
 
 class _PackageBoundObject(object):
 
+    template_folder = 'templates'
+
     def __init__(self, import_name):
         #: The name of the package or module.  Do not change this once
         #: it was set by the constructor.
@@ -497,6 +491,28 @@ class _PackageBoundObject(object):
         #: Where is the app root located?
         self.root_path = _get_package_path(self.import_name)
 
+        self._static_folder = None
+        self._static_url_path = None
+
+    def _get_static_folder(self):
+        if self._static_folder is not None:
+            return os.path.join(self.root_path, self._static_folder)
+    def _set_static_folder(self, value):
+        self._static_folder = value
+    static_folder = property(_get_static_folder, _set_static_folder)
+    del _get_static_folder, _set_static_folder
+
+    def _get_static_url_path(self):
+        if self._static_url_path is None:
+            if self.static_folder is None:
+                return None
+            return '/' + os.path.basename(self.static_folder)
+        return self._static_url_path
+    def _set_static_url_path(self, value):
+        self._static_url_path = value
+    static_url_path = property(_get_static_url_path, _set_static_url_path)
+    del _get_static_url_path, _set_static_url_path
+
     @property
     def has_static_folder(self):
         """This is `True` if the package bound object's container has a
@@ -504,7 +520,7 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.5
         """
-        return os.path.isdir(os.path.join(self.root_path, 'static'))
+        return self.static_folder is not None
 
     @locked_cached_property
     def jinja_loader(self):
@@ -512,7 +528,9 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.5
         """
-        return FileSystemLoader(os.path.join(self.root_path, 'templates'))
+        if self.template_folder is not None:
+            return FileSystemLoader(os.path.join(self.root_path,
+                                                 self.template_folder))
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
@@ -520,6 +538,8 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.5
         """
+        if not self.has_static_folder:
+            raise RuntimeError('No static folder for this object')
         return send_from_directory(os.path.join(self.root_path, 'static'),
                                    filename)
 

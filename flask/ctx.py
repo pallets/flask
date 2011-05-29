@@ -13,6 +13,7 @@ from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack
 from .session import _NullSession
+from .module import blueprint_is_module
 
 
 class _RequestGlobals(object):
@@ -95,6 +96,16 @@ class RequestContext(object):
             self.request.url_rule = url_rule
         except HTTPException, e:
             self.request.routing_exception = e
+
+        # Support for deprecated functionality.  This is doing away with
+        # Flask 1.0
+        blueprint = self.request.blueprint
+        if blueprint is not None:
+            # better safe than sorry, we don't want to break code that
+            # already worked
+            bp = app.blueprints.get(blueprint)
+            if bp is not None and blueprint_is_module(bp):
+                self.request._is_old_module = True
 
     def push(self):
         """Binds the request context to the current context."""
