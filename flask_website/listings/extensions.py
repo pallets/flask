@@ -231,6 +231,17 @@ extensions = [
         github='ask/flask-celery',
         approved=False
     ),
+    Extension('Frozen-Flask', 'Simon Sapin',
+        description='''
+            <p>
+              Freezes a Flask application into a set of static files.
+              The result can be hosted without any server-side software
+              other than a traditional web server.
+        ''',
+        docs='http://packages.python.org/Frozen-Flask/',
+        github='SimonSapin/Frozen-Flask',
+        approved=False
+    ),
     Extension('Flask-FlatPages', 'Simon Sapin',
         description='''
             <p>
