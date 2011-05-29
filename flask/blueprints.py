@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 import os
+from functools import update_wrapper
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
 
@@ -19,10 +20,11 @@ class BlueprintSetupState(object):
     application.
     """
 
-    def __init__(self, blueprint, app, options):
+    def __init__(self, blueprint, app, options, first_registration):
         self.app = app
         self.blueprint = blueprint
         self.options = options
+        self.first_registration = first_registration
 
         subdomain = self.options.get('subdomain')
         if subdomain is None:
@@ -64,17 +66,23 @@ class Blueprint(_PackageBoundObject):
     def _record(self, func):
         self.deferred_functions.append(func)
 
-    def make_setup_state(self, app, options):
-        return BlueprintSetupState(self, app, options)
+    def _record_once(self, func):
+        def wrapper(state):
+            if state.first_registration:
+                func(state)
+        return self._record(update_wrapper(wrapper, func))
 
-    def register(self, app, options):
+    def make_setup_state(self, app, options, first_registration=False):
+        return BlueprintSetupState(self, app, options, first_registration)
+
+    def register(self, app, options, first_registration=False):
         """Called by :meth:`Flask.register_blueprint` to register a blueprint
         on the application.  This can be overridden to customize the register
         behavior.  Keyword arguments from
         :func:`~flask.Flask.register_blueprint` are directly forwarded to this
         method in the `options` dictionary.
         """
-        state = self.make_setup_state(app, options)
+        state = self.make_setup_state(app, options, first_registration)
         if self.has_static_folder:
             state.add_url_rule(self.static_url_path + '/<path:filename>',
                                view_func=self.send_static_file,
@@ -96,9 +104,8 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.add_url_rule` but for a module.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the module.
         """
-        def register_rule(state):
-            state.add_url_rule(rule, endpoint, view_func, **options)
-        self._record(register_rule)
+        self._record(lambda s:
+            s.add_url_rule(rule, endpoint, view_func, **options))
 
     def endpoint(self, endpoint):
         """Like :meth:`Flask.endpoint` but for a module.  This does not
@@ -108,7 +115,7 @@ class Blueprint(_PackageBoundObject):
         def decorator(f):
             def register_endpoint(state):
                 state.app.view_functions[endpoint] = f
-            self._record(register_endpoint)
+            self._record_once(register_endpoint)
             return f
         return decorator
 
@@ -117,7 +124,7 @@ class Blueprint(_PackageBoundObject):
         is only executed before each request that is handled by a function of
         that module.
         """
-        self._record(lambda s: s.app.before_request_funcs
+        self._record_once(lambda s: s.app.before_request_funcs
             .setdefault(self.name, []).append(f))
         return f
 
@@ -125,7 +132,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.before_request`.  Such a function is executed
         before each request, even if outside of a module.
         """
-        self._record(lambda s: s.app.before_request_funcs
+        self._record_once(lambda s: s.app.before_request_funcs
             .setdefault(None, []).append(f))
         return f
 
@@ -134,7 +141,7 @@ class Blueprint(_PackageBoundObject):
         is only executed after each request that is handled by a function of
         that module.
         """
-        self._record(lambda s: s.app.after_request_funcs
+        self._record_once(lambda s: s.app.after_request_funcs
             .setdefault(self.name, []).append(f))
         return f
 
@@ -142,7 +149,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.after_request` but for a module.  Such a function
         is executed after each request, even if outside of the module.
         """
-        self._record(lambda s: s.app.after_request_funcs
+        self._record_once(lambda s: s.app.after_request_funcs
             .setdefault(None, []).append(f))
         return f
 
@@ -150,7 +157,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.context_processor` but for a module.  This
         function is only executed for requests handled by a module.
         """
-        self._record(lambda s: s.app.template_context_processors
+        self._record_once(lambda s: s.app.template_context_processors
             .setdefault(self.name, []).append(f))
         return f
 
@@ -158,7 +165,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.context_processor` but for a module.  Such a
         function is executed each request, even if outside of the module.
         """
-        self._record(lambda s: s.app.template_context_processors
+        self._record_once(lambda s: s.app.template_context_processors
             .setdefault(None, []).append(f))
         return f
 
@@ -167,6 +174,6 @@ class Blueprint(_PackageBoundObject):
         handler is used for all requests, even if outside of the module.
         """
         def decorator(f):
-            self._record(lambda s: s.app.errorhandler(code)(f))
+            self._record_once(lambda s: s.app.errorhandler(code)(f))
             return f
         return decorator
