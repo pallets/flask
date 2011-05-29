@@ -269,6 +269,28 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.7
         self.teardown_request_funcs = {}
 
+        #: A dictionary with lists of functions that can be used as URL
+        #: value processor functions.  Whenever a URL is built these functions
+        #: are called to modify the dictionary of values in place.  The key
+        #: `None` here is used for application wide
+        #: callbacks, otherwise the key is the name of the blueprint.
+        #: Each of these functions has the chance to modify the dictionary
+        #:
+        #: .. versionadded:: 0.7
+        self.url_value_preprocessors = {}
+
+        #: A dictionary with lists of functions that can be used as URL value
+        #: preprocessors.  The key `None` here is used for application wide
+        #: callbacks, otherwise the key is the name of the blueprint.
+        #: Each of these functions has the chance to modify the dictionary
+        #: of URL values before they are used as the keyword arguments of the
+        #: view function.  For each function registered this one should also
+        #: provide a :meth:`url_defaults` function that adds the parameters
+        #: automatically again that were removed that way.
+        #:
+        #: .. versionadded:: 0.7
+        self.url_default_functions = {}
+
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the
         #: name of the blueprint this function is active for, `None` for all
@@ -826,6 +848,22 @@ class Flask(_PackageBoundObject):
         self.template_context_processors[None].append(f)
         return f
 
+    def url_value_preprocessor(self, f):
+        """Registers a function as URL value preprocessor for all view
+        functions of the application.  It's called before the view functions
+        are called and can modify the url values provided.
+        """
+        self.url_value_preprocessors.setdefault(None, []).append(f)
+        return f
+
+    def url_defaults(self, f):
+        """Callback function for URL defaults for all view functions of the
+        application.  It's called with the endpoint and values and should
+        update the values passed in place.
+        """
+        self.url_default_functions.setdefault(None, []).append(f)
+        return f
+
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the
         registered error handlers and fall back to returning the
@@ -981,9 +1019,19 @@ class Flask(_PackageBoundObject):
         If any of these function returns a value it's handled as
         if it was the return value from the view and further
         request handling is stopped.
+
+        This also triggers the :meth:`url_value_processor` functions before
+        the actualy :meth:`before_request` functions are called.
         """
-        funcs = self.before_request_funcs.get(None, ())
         bp = request.blueprint
+
+        funcs = self.url_value_preprocessors.get(None, ())
+        if bp is not None and bp in self.url_value_preprocessors:
+            funcs = chain(funcs, self.url_value_preprocessors[bp])
+        for func in funcs:
+            func(request.endpoint, request.values)
+
+        funcs = self.before_request_funcs.get(None, ())
         if bp is not None and bp in self.before_request_funcs:
             funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:

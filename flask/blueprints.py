@@ -177,3 +177,35 @@ class Blueprint(_PackageBoundObject):
             self._record_once(lambda s: s.app.errorhandler(code)(f))
             return f
         return decorator
+
+    def url_value_preprocessor(self, f):
+        """Registers a function as URL value preprocessor for this
+        blueprint.  It's called before the view functions are called and
+        can modify the url values provided.
+        """
+        self._record_once(lambda s: s.app.url_value_preprocessors
+            .setdefault(self.name, []).append(f))
+        return f
+
+    def url_defaults(self, f):
+        """Callback function for URL defaults for this module.  It's called
+        with the endpoint and values and should update the values passed
+        in place.
+        """
+        self._record_once(lambda s: s.app.url_default_functions
+            .setdefault(self.name, []).append(f))
+        return f
+
+    def app_url_value_preprocessor(self, f):
+        """Same as :meth:`url_value_preprocessor` but application wide.
+        """
+        self._record_once(lambda s: s.app.url_value_preprocessor
+            .setdefault(self.name, []).append(f))
+        return f
+
+    def app_url_defaults(self, f):
+        """Same as :meth:`url_defaults` but application wide.
+        """
+        self._record_once(lambda s: s.app.url_default_functions
+            .setdefault(None, []).append(f))
+        return f
