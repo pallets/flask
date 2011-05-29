@@ -1043,7 +1043,7 @@ class Flask(_PackageBoundObject):
         if bp is not None and bp in self.url_value_preprocessors:
             funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
-            func(request.endpoint, request.values)
+            func(request.endpoint, request.view_args)
 
         funcs = self.before_request_funcs.get(None, ())
         if bp is not None and bp in self.before_request_funcs:
