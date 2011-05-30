@@ -65,8 +65,9 @@ The following configuration values are used internally by Flask:
                                 :class:`datetime.timedelta` object.
 ``USE_X_SENDFILE``              enable/disable x-sendfile
 ``LOGGER_NAME``                 the name of the logger
-``SERVER_NAME``                 the name of the server.  Required for
-                                subdomain support (e.g.: ``'localhost'``)
+``SERVER_NAME``                 the name and port number of the server.
+                                Required for subdomain support (e.g.:
+                                ``'localhost:5000'``)
 ``MAX_CONTENT_LENGTH``          If set to a value in bytes, Flask will
                                 reject incoming requests with a
                                 content length greater than this by
