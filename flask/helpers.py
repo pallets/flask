@@ -74,7 +74,7 @@ def _endpoint_from_view_func(view_func):
     return view_func.__name__
 
 
-def jsonify(*args, **kwargs):
+def jsonify(status, *args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
     the given arguments with an `application/json` mimetype.  The arguments
     to this function are the same as to the :class:`dict` constructor.
@@ -83,7 +83,7 @@ def jsonify(*args, **kwargs):
 
         @app.route('/_get_current_user')
         def get_current_user():
-            return jsonify(username=g.user.username,
+            return jsonify(200, username=g.user.username,
                            email=g.user.email,
                            id=g.user.id)
 
@@ -104,7 +104,8 @@ def jsonify(*args, **kwargs):
     if __debug__:
         _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+        indent=None if request.is_xhr else 2), mimetype='application/json',
+        status=status)
 
 
 def make_response(*args):
