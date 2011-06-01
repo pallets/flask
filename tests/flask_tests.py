@@ -815,18 +815,20 @@ class JSONTestCase(unittest.TestCase):
 
     def test_jsonify(self):
         d = dict(a=23, b=42, c=[1, 2, 3])
+        status=200
         app = flask.Flask(__name__)
         @app.route('/kw')
         def return_kwargs():
-            return flask.jsonify(**d)
+            return flask.jsonify(status, **d)
         @app.route('/dict')
         def return_dict():
-            return flask.jsonify(d)
+            return flask.jsonify(status, d)
         c = app.test_client()
         for url in '/kw', '/dict':
             rv = c.get(url)
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data) == d
+            assert rv.status_code == status
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
