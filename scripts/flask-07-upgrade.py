@@ -11,6 +11,11 @@
     This will also attempt to find `after_request` functions that don't modify
     the response and appear to be better suited for `teardown_request`.
 
+    This application is indeed an incredible hack, but because what it
+    attempts to accomplish is impossible to do statically it tries to support
+    the most common patterns at least.  The diff it generates should be
+    hand reviewed and not applied blindly without making backups.
+
     :copyright: (c) Copyright 2011 by Armin Ronacher.
     :license: see LICENSE for more details.
 """
