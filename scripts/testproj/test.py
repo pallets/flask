@@ -1,0 +1,30 @@
+from flask import Flask, Module
+
+
+mod = Module(__name__)
+mod2 = Module(__name__, 'testmod2')
+
+app = Flask(__name__)
+app.register_module(mod)
+app.register_module(mod2)
+
+
+@app.after_request
+def after_request(response):
+    g.db.close()
+    return response
+
+
+@mod.route('/')
+def index():
+    return render_template('test/index.html')
+
+
+@mod2.route('/')
+def index():
+    return render_template('testmod2/index.html')
+
+
+@mod2.route('/')
+def index():
+    return render_template('something-else/index.html')
