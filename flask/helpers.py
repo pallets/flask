@@ -168,15 +168,18 @@ def url_for(endpoint, **values):
     :param _external: if set to `True`, an absolute URL is generated.
     """
     ctx = _request_ctx_stack.top
+    blueprint_name = request.blueprint
     if not ctx.request._is_old_module:
         if endpoint[:1] == '.':
-            endpoint = request.blueprint + endpoint
+            if blueprint_name is not None:
+                endpoint = blueprint_name + endpoint
+            else:
+                endpoint = endpoint[1:]
     else:
         # TODO: get rid of this deprecated functionality in 1.0
         if '.' not in endpoint:
-            mod = ctx.request.blueprint
-            if mod is not None:
-                endpoint = mod + '.' + endpoint
+            if blueprint_name is not None:
+                endpoint = blueprint_name + '.' + endpoint
         elif endpoint.startswith('.'):
             endpoint = endpoint[1:]
     external = values.pop('_external', False)
