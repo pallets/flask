@@ -144,3 +144,14 @@ Flask-XML-RPC
 :Approved License: MIT
 
 All fine.
+
+
+Frozen-Flask
+------------
+
+:First Approval: 2011-06-05
+:Last Review: 2011-06-05
+:Approved Version: 0.4
+:Approved License: BSD
+
+All fine.  Posted recommendations for minor items/enhancements to mailing list.
