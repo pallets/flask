@@ -46,7 +46,7 @@ _mod_route_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
 _blueprint_related = [
     (re.compile(r'request\.module'), 'request.blueprint'),
     (re.compile(r'register_module'), 'register_blueprint'),
-    (re.compile(r'app\.modules'), 'app.blueprints')
+    (re.compile(r'(app|application)\.modules'), '\\1.blueprints')
 ]
 
 
