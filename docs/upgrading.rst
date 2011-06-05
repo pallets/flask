@@ -160,6 +160,43 @@ Alternatively you should just attach the function with a decorator::
 
 (Note that :meth:`register_error_handler` is new in Flask 0.7)
 
+Blueprint Support
+`````````````````
+
+Blueprints replace the previous concept of “Modules” in Flask.  They
+provide better semantics for various features and work better with large
+applications.  The update script provided should be able to upgrade your
+applications automatically, but there might be some cases where it fails
+to upgrade.  What changed?
+
+-   Blueprints need explicit names.  Modules had an automatic name
+    guesssing scheme where the shortname for the module was taken from the
+    last part of the import module.  The upgrade script tries to guess
+    that name but it might fail as this information could change at
+    runtime.
+-   Blueprints have an inverse behavior for :meth:`url_for`.  Previously
+    ``.foo`` told :meth:`url_for` that it should look for the endpoint
+    `foo` on the application.  Now it means “relative to current module”.
+    The script will inverse all calls to :meth:`url_for` automatically for
+    you.  It will do this in a very eager way so you might end up with
+    some unnecessary leading dots in your code if you're not using
+    modules.
+-   Blueprints do not automatically provide static folders.  They will
+    still export templates from a folder called `templates` next to their
+    location however.  If you want to continue serving static files you
+    need to tell the constructor explicitly the path to the static folder
+    (which can be relative to the blueprint's module path).
+-   Rendering templates was simplified.  Now the general syntax is
+    ``blueprint-shortname:template-name`` for rendering templates instead
+    of ``blueprint-shortname/template-name`` which was confusing and often
+    clashed with templates from the global template loader.
+
+If you continue to use the `Module` object which is deprecated, Flask will
+restore the previous behavior as good as possible.  However we strongly
+recommend upgrading to the new blueprints as they provide a lot of useful
+improvement such as the ability to attach a blueprint multiple times,
+blueprint specific error handlers and a lot more.
+
 
 Version 0.6
 -----------
