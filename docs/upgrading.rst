@@ -22,7 +22,39 @@ installation, make sure to pass it the ``-U`` parameter::
 Version 0.7
 -----------
 
-The following backwards incompatible changes exist from 0.6 to 0.7
+In Flask 0.7 we cleaned up the code base internally a lot and did some
+backwards incompatible changes that make it easier to implement larger
+applications with Flask.  Because we want to make upgrading as easy as
+possible we tried to counter the problems arising from these changes by
+providing a script that can ease the transition.
+
+The script scans your whole application and generates an unified diff with
+changes it assumes are safe to apply.  However as this is an automated
+tool it won't be able to find all use cases and it might miss some.  We
+internally spread a lot of deprecation warnings all over the place to make
+it easy to find pieces of code that it was unable to upgrade.
+
+We strongly recommend that you hand review the generated patchfile and
+only apply the chunks that look good.
+
+If you are using git as version control system for your project we
+recommend applying the patch with ``path -p1 < patchfile.diff`` and then
+using the interactive commit feature to only apply the chunks that look
+good.
+
+To apply the upgrade script do the following:
+
+1.  Download the script: `flask-07-upgrade.py
+    <http://github.com/mitsuhiko/flask/tree/raw/master/scripts/flask-07-upgrade.py>`_
+2.  Run it in the directory of your application::
+
+        python flask-07-upgrade.py > patchfile.diff
+
+3.  Review the generated patchfile.
+4.  Apply the patch::
+
+        patch -p1 < patchfile.diff
+
 
 Bug in Request Locals
 `````````````````````

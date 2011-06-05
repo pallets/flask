@@ -245,11 +245,14 @@ def upgrade_template_file(filename, contents):
 
 def walk_path(path):
     for dirpath, dirnames, filenames in os.walk(path):
+        dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         for filename in filenames:
             filename = os.path.join(dirpath, filename)
             if filename.endswith('.py'):
                 yield filename, 'python'
-            else:
+            # skip files that are diffs.  These might be false positives
+            # when run multiple times.
+            elif not filename.endswith(('.diff', '.patch', '.udiff')):
                 with open(filename) as f:
                     contents = f.read(TEMPLATE_LOOKAHEAD)
                 if '{% for' or '{% if' or '{{ url_for' in contents:
