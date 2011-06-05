@@ -9,6 +9,11 @@ app.register_module(mod)
 app.register_module(mod2)
 
 
+def handle_404(error):
+    return 'Testing', 404
+app.error_handlers[404] = handle_404
+
+
 @app.after_request
 def after_request(response):
     g.db.close()

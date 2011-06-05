@@ -35,21 +35,23 @@ except ImportError:
 
 TEMPLATE_LOOKAHEAD = 4096
 
-
-_from_import_re = re.compile(r'^\s*from flask import\s+')
+_app_re_part = r'((?:[a-zA-Z_][a-zA-Z0-9_]*app)|app|application)'
 _string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
                   r'|"([^"\\]*(?:\\.[^"\\]*)*)")'
+
+_from_import_re = re.compile(r'^\s*from flask import\s+')
 _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
 _render_template_re = re.compile(r'\b(render_template\()(%s)' % _string_re_part)
 _after_request_re = re.compile(r'((?:@\S+\.(?:app_)?))(after_request)(\b\s*$)(?m)')
 _module_constructor_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\s*=\s*Module'
                                     r'\(__name__\s*(?:,\s*(%s))?' %
                                     _string_re_part)
+_error_handler_re = re.compile(r'%s\.error_handlers\[\s*(\d+)\s*\]' % _app_re_part)
 _mod_route_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
 _blueprint_related = [
     (re.compile(r'request\.module'), 'request.blueprint'),
     (re.compile(r'register_module'), 'register_blueprint'),
-    (re.compile(r'(app|application)\.modules'), '\\1.blueprints')
+    (re.compile(r'%s\.modules' % _app_re_part), '\\1.blueprints')
 ]
 
 
@@ -235,6 +237,8 @@ def upgrade_python_file(filename, contents, teardown, template_bundles):
         new_contents = fix_teardown_funcs(new_contents)
     new_contents = rewrite_for_blueprints(new_contents, filename,
                                           template_bundles)
+    new_contents = _error_handler_re.sub('\\1.error_handler_spec[None][\\2]',
+                                         new_contents)
     make_diff(filename, contents, new_contents)
 
 
