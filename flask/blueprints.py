@@ -62,6 +62,7 @@ class Blueprint(_PackageBoundObject):
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.deferred_functions = []
+        self.view_functions = {}
 
     def _record(self, func):
         self.deferred_functions.append(func)
@@ -110,7 +111,9 @@ class Blueprint(_PackageBoundObject):
     def endpoint(self, endpoint):
         """Like :meth:`Flask.endpoint` but for a module.  This does not
         prefix the endpoint with the module name, this has to be done
-        explicitly by the user of this method.
+        explicitly by the user of this method.  If the endpoint is prefixed
+        with a `.` it will be registered to the current blueprint, otherwise
+        it's an application independent endpoint.
         """
         def decorator(f):
             def register_endpoint(state):
@@ -209,3 +212,22 @@ class Blueprint(_PackageBoundObject):
         self._record_once(lambda s: s.app.url_default_functions
             .setdefault(None, []).append(f))
         return f
+
+    def errorhandler(self, code_or_exception):
+        """Registers an error handler that becomes active for this blueprint
+        only.  Please be aware that routing does not happen local to a
+        blueprint so an error handler for 404 usually is not handled by
+        a blueprint unless it is caused inside a view function.  Another
+        special case is the 500 internal server error which is always looked
+        up from the application.
+
+        Otherwise works as the :meth:`~flask.Flask.errorhandler` decorator
+        of the :class:`~flask.Flask` object.
+
+        .. versionadded:: 0.7
+        """
+        def decorator(f):
+            self._record_once(lambda s: s.app._register_error_handler(
+                self.name, code_or_exception, f))
+            return f
+        return decorator

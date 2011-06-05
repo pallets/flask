@@ -51,6 +51,11 @@ Release date to be announced, codename to be selected
 - Don't modify the session on :func:`flask.get_flashed_messages` if there
   are no messages in the session.
 - `before_request` handlers are now able to abort requests with errors.
+- it is not possible to define user exception handlers.  That way you can
+  provide custom error messages from a central hub for certain errors that
+  might occur during request processing (for instance database connection
+  errors, timeouts from remote resources etc.).
+- Blueprints can provide blueprint specific error handlers.
 
 Version 0.6.1
 -------------

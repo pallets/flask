@@ -234,12 +234,21 @@ class Flask(_PackageBoundObject):
         #: To register a view function, use the :meth:`route` decorator.
         self.view_functions = {}
 
-        #: A dictionary of all registered error handlers.  The key is
-        #: be the error code as integer, the value the function that
-        #: should handle that error.
+        # support for the now deprecated `error_handlers` attribute.  The
+        # :attr:`error_handler_spec` shall be used now.
+        self._error_handlers = {}
+
+        #: A dictionary of all registered error handlers.  The key is `None`
+        #: for error handlers active on the application, otherwise the key is
+        #: the name of the blueprint.  Each key points to another dictionary
+        #: where they key is the status code of the http exception.  The
+        #: special key `None` points to a list of tuples where the first item
+        #: is the class for the instance check and the second the error handler
+        #: function.
+        #:
         #: To register a error handler, use the :meth:`errorhandler`
         #: decorator.
-        self.error_handlers = {}
+        self.error_handler_spec = {None: self._error_handlers}
 
         #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
@@ -350,6 +359,17 @@ class Flask(_PackageBoundObject):
             self.add_url_rule(self.static_url_path + '/<path:filename>',
                               endpoint='static',
                               view_func=self.send_static_file)
+
+    def _get_error_handlers(self):
+        from warnings import warn
+        warn(DeprecationWarning('error_handlers is deprecated, use the '
+            'new error_handler_spec attribute instead.'), stacklevel=1)
+        return self._error_handlers
+    def _set_error_handlers(self, value):
+        self._error_handlers = value
+        self.error_handler_spec[None] = value
+    error_handlers = property(_get_error_handlers, _set_error_handlers)
+    del _get_error_handlers, _set_error_handlers
 
     @property
     def propagate_exceptions(self):
@@ -761,7 +781,7 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
-    def errorhandler(self, code):
+    def errorhandler(self, code_or_exception):
         """A decorator that is used to register a function give a given
         error code.  Example::
 
@@ -769,20 +789,50 @@ class Flask(_PackageBoundObject):
             def page_not_found(error):
                 return 'This page does not exist', 404
 
+        You can also register handlers for arbitrary exceptions::
+
+            @app.errorhandler(DatabaseError)
+            def special_exception_handler(error):
+                return 'Database connection failed', 500
+
         You can also register a function as error handler without using
         the :meth:`errorhandler` decorator.  The following example is
         equivalent to the one above::
 
             def page_not_found(error):
                 return 'This page does not exist', 404
-            app.error_handlers[404] = page_not_found
+            app.error_handler_spec[None][404] = page_not_found
+
+        Setting error handlers via assignments to :attr:`error_handler_spec`
+        however is discouraged as it requires fidling with nested dictionaries
+        and the special case for arbitrary exception types.
+
+        The first `None` refers to the active blueprint.  If the error
+        handler should be application wide `None` shall be used.
+
+        .. versionadded:: 0.7
+           One can now additionally also register custom exception types
+           that do not necessarily have to be a subclass of the
+           :class:~`werkzeug.exceptions.HTTPException` class.
 
         :param code: the code as integer for the handler
         """
         def decorator(f):
-            self.error_handlers[code] = f
+            self._register_error_handler(None, code_or_exception, f)
             return f
         return decorator
+
+    def _register_error_handler(self, key, code_or_exception, f):
+        if isinstance(code_or_exception, HTTPException):
+            code_or_exception = code_or_exception.code
+        if isinstance(code_or_exception, (int, long)):
+            assert code_or_exception != 500 or key is None, \
+                'It is currently not possible to register a 500 internal ' \
+                'server error on a per-blueprint level.'
+            self.error_handler_spec.setdefault(key, {})[code_or_exception] = f
+        else:
+            self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
+                .append((code_or_exception, f))
 
     def template_filter(self, name=None):
         """A decorator that is used to register custom template filter.
@@ -871,10 +921,43 @@ class Flask(_PackageBoundObject):
 
         .. versionadded: 0.3
         """
-        handler = self.error_handlers.get(e.code)
+        handlers = self.error_handler_spec.get(request.blueprint)
+        if handlers and e.code in handlers:
+            handler = handlers[e.code]
+        else:
+            handler = self.error_handler_spec[None].get(e.code)
         if handler is None:
             return e
         return handler(e)
+
+    def handle_user_exception(self, e):
+        """This method is called whenever an exception occurs that should be
+        handled.  A special case are
+        :class:`~werkzeug.exception.HTTPException`\s which are forwarded by
+        this function to the :meth:`handle_http_exception` method.  This
+        function will either return a response value or reraise the
+        exception with the same traceback.
+
+        .. versionadded:: 0.7
+        """
+        # ensure not to trash sys.exc_info() at that point in case someone
+        # wants the traceback preserved in handle_http_exception.
+        if isinstance(e, HTTPException):
+            return self.handle_http_exception(e)
+
+        exc_type, exc_value, tb = sys.exc_info()
+        assert exc_value is e
+
+        blueprint_handlers = ()
+        handlers = self.error_handler_spec.get(request.blueprint)
+        if handlers is not None:
+            blueprint_handlers = handlers.get(None, ())
+        app_handlers = self.error_handler_spec[None].get(None, ())
+        for typecheck, handler in chain(blueprint_handlers, app_handlers):
+            if isinstance(e, typecheck):
+                return handler(e)
+
+        raise exc_type, exc_value, tb
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
@@ -888,7 +971,7 @@ class Flask(_PackageBoundObject):
         exc_type, exc_value, tb = sys.exc_info()
 
         got_request_exception.send(self, exception=e)
-        handler = self.error_handlers.get(500)
+        handler = self.error_handler_spec[None].get(500)
 
         if self.propagate_exceptions:
             # if we want to repropagate the exception, we can attempt to
@@ -942,8 +1025,8 @@ class Flask(_PackageBoundObject):
             rv = self.preprocess_request()
             if rv is None:
                 rv = self.dispatch_request()
-        except HTTPException, e:
-            rv = self.handle_http_exception(e)
+        except Exception, e:
+            rv = self.handle_user_exception(e)
         response = self.make_response(rv)
         response = self.process_response(response)
         request_finished.send(self, response=response)

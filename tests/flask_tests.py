@@ -531,6 +531,22 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 500
         assert 'internal server error' == rv.data
 
+    def test_user_error_handling(self):
+        class MyException(Exception):
+            pass
+
+        app = flask.Flask(__name__)
+        @app.errorhandler(MyException)
+        def handle_my_exception(e):
+            assert isinstance(e, MyException)
+            return '42'
+        @app.route('/')
+        def index():
+            raise MyException()
+
+        c = app.test_client()
+        assert c.get('/').data == '42'
+
     def test_teardown_on_pop(self):
         buffer = []
         app = flask.Flask(__name__)
@@ -1214,6 +1230,49 @@ class ModuleTestCase(unittest.TestCase):
         assert c.get('/foo/bar').data == 'bar'
 
 
+class BlueprintTestCase(unittest.TestCase):
+
+    def test_blueprint_specific_error_handling(self):
+        frontend = flask.Blueprint('frontend', __name__)
+        backend = flask.Blueprint('backend', __name__)
+        sideend = flask.Blueprint('sideend', __name__)
+
+        @frontend.errorhandler(403)
+        def frontend_forbidden(e):
+            return 'frontend says no', 403
+
+        @frontend.route('/frontend-no')
+        def frontend_no():
+            flask.abort(403)
+
+        @backend.errorhandler(403)
+        def backend_forbidden(e):
+            return 'backend says no', 403
+
+        @backend.route('/backend-no')
+        def backend_no():
+            flask.abort(403)
+
+        @sideend.route('/what-is-a-sideend')
+        def sideend_no():
+            flask.abort(403)
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(frontend)
+        app.register_blueprint(backend)
+        app.register_blueprint(sideend)
+
+        @app.errorhandler(403)
+        def app_forbidden(e):
+            return 'application itself says no', 403
+
+        c = app.test_client()
+
+        assert c.get('/frontend-no').data == 'frontend says no'
+        assert c.get('/backend-no').data == 'backend says no'
+        assert c.get('/what-is-a-sideend').data == 'application itself says no'
+
+
 class SendfileTestCase(unittest.TestCase):
 
     def test_send_file_regular(self):
@@ -1631,6 +1690,7 @@ def suite():
     suite.addTest(unittest.makeSuite(BasicFunctionalityTestCase))
     suite.addTest(unittest.makeSuite(TemplatingTestCase))
     suite.addTest(unittest.makeSuite(ModuleTestCase))
+    suite.addTest(unittest.makeSuite(BlueprintTestCase))
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(ConfigTestCase))
