@@ -33,6 +33,9 @@ except ImportError:
     ast = None
 
 
+TEMPLATE_LOOKAHEAD = 4096
+
+
 _from_import_re = re.compile(r'^\s*from flask import\s+')
 _string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
                   r'|"([^"\\]*(?:\\.[^"\\]*)*)")'
@@ -48,11 +51,6 @@ _blueprint_related = [
     (re.compile(r'register_module'), 'register_blueprint'),
     (re.compile(r'(app|application)\.modules'), '\\1.blueprints')
 ]
-
-
-def error(message):
-    print >> sys.stderr, 'error:', message
-    sys.exit(1)
 
 
 def make_diff(filename, old, new):
@@ -253,7 +251,7 @@ def walk_path(path):
                 yield filename, 'python'
             else:
                 with open(filename) as f:
-                    contents = f.read()
+                    contents = f.read(TEMPLATE_LOOKAHEAD)
                 if '{% for' or '{% if' or '{{ url_for' in contents:
                     yield filename, 'template'
 
@@ -286,11 +284,6 @@ def autodetect_template_bundles(paths):
 
 def main():
     """Entrypoint"""
-    if ast is None:
-        error('Python 2.6 or later is required to run the upgrade script.\n'
-              'The runtime requirements for Flask 0.7 however are still '
-              'Python 2.5.')
-
     parser = OptionParser()
     parser.add_option('-T', '--no-teardown-detection', dest='no_teardown',
                       action='store_true', help='Do not attempt to '
@@ -306,6 +299,11 @@ def main():
     options, args = parser.parse_args()
     if not args:
         args = ['.']
+
+    if ast is None:
+        parser.error('Python 2.6 or later is required to run the upgrade script.\n'
+                     'The runtime requirements for Flask 0.7 however are still '
+                     'Python 2.5.')
 
     if options.no_bundled_tmpl:
         template_bundles = False
