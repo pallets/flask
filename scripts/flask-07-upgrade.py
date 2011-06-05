@@ -287,7 +287,7 @@ def autodetect_template_bundles(paths):
 
 def main():
     """Entrypoint"""
-    parser = OptionParser()
+    parser = OptionParser(usage='%prog [options] [paths]')
     parser.add_option('-T', '--no-teardown-detection', dest='no_teardown',
                       action='store_true', help='Do not attempt to '
                       'detect teardown function rewrites.')
