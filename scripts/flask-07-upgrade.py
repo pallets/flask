@@ -29,7 +29,6 @@ except ImportError:
 
 
 _from_import_re = re.compile(r'^\s*from flask import\s+')
-_direct_module_usage_re = re.compile(r'flask\.Module')
 _string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
                   r'|"([^"\\]*(?:\\.[^"\\]*)*)")'
 _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
@@ -164,8 +163,8 @@ def rewrite_blueprint_imports(contents):
             new_file.extend(rewrite_from_imports(match.group(),
                                                  line[match.end():],
                                                  lineiter))
-            continue
-        new_file.append(_direct_module_usage_re.sub('flask.Blueprint', line))
+        else:
+            new_file.append(line)
     return ''.join(new_file)
 
 
