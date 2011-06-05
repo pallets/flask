@@ -28,10 +28,18 @@ except ImportError:
     ast = None
 
 
+_from_import_re = re.compile(r'^\s*from flask import\s+')
+_direct_module_usage_re = re.compile(r'flask\.Module')
 _string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
                   r'|"([^"\\]*(?:\\.[^"\\]*)*)")'
 _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
 _after_request_re = re.compile(r'((?:@\S+\.(?:app_)?))(after_request)(\b\s*$)(?m)')
+_module_constructor_re = re.compile(r'Module\(__name__\s*(?:,\s*(%s))?' %
+                                    _string_re_part)
+_blueprint_related = [
+    (re.compile(r'request\.module'), 'request.blueprint'),
+    (re.compile(r'register_module'), 'register_blueprint')
+]
 
 
 def error(message):
@@ -124,10 +132,66 @@ def fix_teardown_funcs(contents):
     return ''.join(content_lines)
 
 
+def get_module_autoname(filename):
+    directory, filename = os.path.split(filename)
+    if filename != '__init__.py':
+        return os.path.splitext(filename)[0]
+    return os.path.basename(directory)
+
+
+def rewrite_from_imports(prefix, fromlist, lineiter):
+    import_block = [prefix, fromlist]
+    if fromlist[0] == '(' and fromlist[-1] != ')':
+        for line in lineiter:
+            import_block.append(line)
+            if line.rstrip().endswith(')'):
+                break
+    elif fromlist[-1] == '\\':
+        for line in lineiter:
+            import_block.append(line)
+            if line.rstrip().endswith('\\'):
+                break
+
+    return ''.join(import_block).replace('Module', 'Blueprint')
+
+
+def rewrite_blueprint_imports(contents):
+    new_file = []
+    lineiter = iter(contents.splitlines(True))
+    for line in lineiter:
+        match = _from_import_re.search(line)
+        if match is not None:
+            new_file.extend(rewrite_from_imports(match.group(),
+                                                 line[match.end():],
+                                                 lineiter))
+            continue
+        new_file.append(_direct_module_usage_re.sub('flask.Blueprint', line))
+    return ''.join(new_file)
+
+
+def rewrite_for_blueprints(contents, filename):
+    found_constructor = []
+    def handle_match(match):
+        found_constructor[:] = [True]
+        name_param = match.group(1)
+        if name_param is None:
+            return 'Blueprint(%r, __name__' % get_module_autoname(filename)
+        return 'Blueprint(%s, __name__' % name_param
+    new_contents = _module_constructor_re.sub(handle_match, contents)
+
+    if found_constructor:
+        new_contents = rewrite_blueprint_imports(new_contents)
+
+    for pattern, replacement in _blueprint_related:
+        new_contents = pattern.sub(replacement, new_contents)
+    return new_contents
+
+
 def upgrade_python_file(filename, contents, teardown):
     new_contents = fix_url_for(contents)
     if teardown:
-        new_contents = fix_teardown_funcs(contents)
+        new_contents = fix_teardown_funcs(new_contents)
+    new_contents = rewrite_for_blueprints(new_contents, filename)
     make_diff(filename, contents, new_contents)
 
 
