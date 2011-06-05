@@ -91,6 +91,33 @@ handling::
 
     # and here it's gone
 
+Manual Error Handler Attaching
+``````````````````````````````
+
+While it is still possible to attach error handlers to
+:attr:`Flask.error_handlers` it's discouraged to do so and in fact
+deprecated.  In generaly we no longer recommend custom error handler
+attaching via assignments to the underlying dictionary due to the more
+complex internal handling to support arbitrary exception classes and
+blueprints.  See :meth:`Flask.errorhandler` for more information.
+
+The proper upgrade is to change this::
+
+    app.error_handlers[403] = handle_error
+
+Into this::
+
+    app.register_error_handler(403, handle_error)
+
+Alternatively you should just attach the function with a decorator::
+
+    @app.errorhandler(403)
+    def handle_error(e):
+        ...
+
+(Note that :meth:`register_error_handler` is new in Flask 0.7)
+
+
 Version 0.6
 -----------
 

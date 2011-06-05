@@ -822,6 +822,15 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    def register_error_handler(self, code_or_exception, f):
+        """Alternative error attach function to the :meth:`errorhandler`
+        decorator that is more straightforward to use for non decorator
+        usage.
+
+        .. versionadded:: 0.7
+        """
+        self._register_error_handler(None, code_or_exception, f)
+
     def _register_error_handler(self, key, code_or_exception, f):
         if isinstance(code_or_exception, HTTPException):
             code_or_exception = code_or_exception.code
