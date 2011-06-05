@@ -55,6 +55,10 @@ To apply the upgrade script do the following:
 
         patch -p1 < patchfile.diff
 
+Please note that deprecation warnings are disabled by default starting
+with Python 2.7.  In order to see the deprecation warnings that might be
+emitted you have to enabled them with the :mod:`warnings` module.
+
 
 Bug in Request Locals
 `````````````````````
