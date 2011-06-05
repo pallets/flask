@@ -32,9 +32,12 @@ _from_import_re = re.compile(r'^\s*from flask import\s+')
 _string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
                   r'|"([^"\\]*(?:\\.[^"\\]*)*)")'
 _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
+_render_template_re = re.compile(r'\b(render_template\()(%s)' % _string_re_part)
 _after_request_re = re.compile(r'((?:@\S+\.(?:app_)?))(after_request)(\b\s*$)(?m)')
-_module_constructor_re = re.compile(r'Module\(__name__\s*(?:,\s*(%s))?' %
+_module_constructor_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\s*=\s*Module'
+                                    r'\(__name__\s*(?:,\s*(%s))?' %
                                     _string_re_part)
+_mod_route_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
 _blueprint_related = [
     (re.compile(r'request\.module'), 'request.blueprint'),
     (re.compile(r'register_module'), 'register_blueprint')
@@ -168,29 +171,66 @@ def rewrite_blueprint_imports(contents):
     return ''.join(new_file)
 
 
-def rewrite_for_blueprints(contents, filename):
-    found_constructor = []
+def rewrite_render_template_calls(contents, module_declarations):
+    mapping = dict(module_declarations)
+    annotated_lines = []
+
+    def make_line_annotations():
+        if not annotated_lines:
+            last_index = 0
+            for line in contents.splitlines(True):
+                last_index += len(line)
+                annotated_lines.append((last_index, line))
+
+    def backtrack_module_name(call_start):
+        make_line_annotations()
+        for idx, (line_end, line) in enumerate(annotated_lines):
+            if line_end > call_start:
+                for _, line in reversed(annotated_lines[:idx]):
+                    match = _mod_route_re.search(line)
+                    if match is not None:
+                        shortname = match.group(1)
+                        return mapping.get(shortname)
+
     def handle_match(match):
-        found_constructor[:] = [True]
-        name_param = match.group(1)
+        template_name = ast.literal_eval(match.group(2))
+        modname = backtrack_module_name(match.start())
+        if modname is not None and template_name.startswith(modname + '/'):
+            template_name = modname + ':' + template_name[len(modname) + 1:]
+        return match.group(1) + repr(template_name)
+    return _render_template_re.sub(handle_match, contents)
+
+
+def rewrite_for_blueprints(contents, filename, template_bundles=False):
+    modules_declared = []
+    def handle_match(match):
+        target = match.group(1)
+        name_param = match.group(2)
         if name_param is None:
-            return 'Blueprint(%r, __name__' % get_module_autoname(filename)
-        return 'Blueprint(%s, __name__' % name_param
+            modname = get_module_autoname(filename)
+        else:
+            modname = ast.literal_eval(name_param)
+        modules_declared.append((target, modname))
+        return '%s = %s' % (target, 'Blueprint(%r, __name__' % modname)
     new_contents = _module_constructor_re.sub(handle_match, contents)
 
-    if found_constructor:
+    if modules_declared:
         new_contents = rewrite_blueprint_imports(new_contents)
+        if template_bundles:
+            new_contents = rewrite_render_template_calls(new_contents,
+                                                         modules_declared)
 
     for pattern, replacement in _blueprint_related:
         new_contents = pattern.sub(replacement, new_contents)
     return new_contents
 
 
-def upgrade_python_file(filename, contents, teardown):
+def upgrade_python_file(filename, contents, teardown, template_bundles):
     new_contents = fix_url_for(contents)
     if teardown:
         new_contents = fix_teardown_funcs(new_contents)
-    new_contents = rewrite_for_blueprints(new_contents, filename)
+    new_contents = rewrite_for_blueprints(new_contents, filename,
+                                          template_bundles)
     make_diff(filename, contents, new_contents)
 
 
@@ -199,16 +239,43 @@ def upgrade_template_file(filename, contents):
     make_diff(filename, contents, new_contents)
 
 
-def scan_path(path=None, teardown=True):
+def walk_path(path):
     for dirpath, dirnames, filenames in os.walk(path):
         for filename in filenames:
             filename = os.path.join(dirpath, filename)
-            with open(filename) as f:
-                contents = f.read()
             if filename.endswith('.py'):
-                upgrade_python_file(filename, contents, teardown)
-            elif '{% for' or '{% if' or '{{ url_for' in contents:
-                upgrade_template_file(filename, contents)
+                yield filename, 'python'
+            else:
+                with open(filename) as f:
+                    contents = f.read()
+                if '{% for' or '{% if' or '{{ url_for' in contents:
+                    yield filename, 'template'
+
+
+def scan_path(path=None, teardown=True, template_bundles=True):
+    for filename, type in walk_path(path):
+        with open(filename) as f:
+            contents = f.read()
+        if type == 'python':
+            upgrade_python_file(filename, contents, teardown,
+                                template_bundles)
+        elif type == 'template':
+            upgrade_template_file(filename, contents)
+
+
+def autodetect_template_bundles(paths):
+    folders_with_templates = set()
+    for path in paths:
+        for filename, type in walk_path(path):
+            if type == 'template':
+                fullpath = filename.replace(os.path.sep, '/')
+                index = fullpath.find('/templates/')
+                if index >= 0:
+                    folder = fullpath[:index]
+                else:
+                    folder = posixpath.dirname(fullpath)
+                folders_with_templates.add(folder)
+    return len(folders_with_templates) > 1
 
 
 def main():
@@ -222,12 +289,28 @@ def main():
     parser.add_option('-T', '--no-teardown-detection', dest='no_teardown',
                       action='store_true', help='Do not attempt to '
                       'detect teardown function rewrites.')
+    parser.add_option('-b', '--bundled-templates', dest='bundled_tmpl',
+                      action='store_true', help='Indicate to the system '
+                      'that templates are bundled with modules.  Default '
+                      'is auto detect.')
+    parser.add_option('-B', '--no-bundled-templates', dest='no_bundled_tmpl',
+                      action='store_true', help='Indicate to the system '
+                      'that templates are not bundled with modules.  '
+                      'Default is auto detect')
     options, args = parser.parse_args()
     if not args:
         args = ['.']
 
+    if options.no_bundled_tmpl:
+        template_bundles = False
+    elif options.bundled_tmpl:
+        template_bundles = True
+    else:
+        template_bundles = autodetect_template_bundles(args)
+
     for path in args:
-        scan_path(path, teardown=not options.no_teardown)
+        scan_path(path, teardown=not options.no_teardown,
+                  template_bundles=template_bundles)
 
 
 if __name__ == '__main__':
