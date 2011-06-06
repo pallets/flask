@@ -44,7 +44,7 @@ _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
 _render_template_re = re.compile(r'\b(render_template\()(%s)' % _string_re_part)
 _after_request_re = re.compile(r'((?:@\S+\.(?:app_)?))(after_request)(\b\s*$)(?m)')
 _module_constructor_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\s*=\s*Module'
-                                    r'\(__name__\s*(?:,\s*(%s))?' %
+                                    r'\(__name__\s*(?:,\s*(?:name\s*=\s*)?(%s))?' %
                                     _string_re_part)
 _error_handler_re = re.compile(r'%s\.error_handlers\[\s*(\d+)\s*\]' % _app_re_part)
 _mod_route_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
@@ -248,10 +248,13 @@ def upgrade_template_file(filename, contents):
 
 
 def walk_path(path):
+    this_file = os.path.realpath(__file__).rstrip('c')
     for dirpath, dirnames, filenames in os.walk(path):
         dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         for filename in filenames:
             filename = os.path.join(dirpath, filename)
+            if os.path.realpath(filename) == this_file:
+                continue
             if filename.endswith('.py'):
                 yield filename, 'python'
             # skip files that are diffs.  These might be false positives

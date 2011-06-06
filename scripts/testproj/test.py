@@ -3,6 +3,7 @@ from flask import Flask, Module
 
 mod = Module(__name__)
 mod2 = Module(__name__, 'testmod2')
+mod3 = Module(__name__, name='somemod', subdomain='meh')
 
 app = Flask(__name__)
 app.register_module(mod)
