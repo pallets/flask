@@ -18,6 +18,7 @@ instructions for web development with Flask.
    config
    signals
    reqcontext
+   blueprints
    shell
    patterns/index
    deploying/index

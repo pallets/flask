@@ -52,6 +52,9 @@ class Blueprint(_PackageBoundObject):
     .. versionadded:: 0.7
     """
 
+    warn_on_modifications = False
+    _got_registered_once = False
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, url_prefix=None,
                  subdomain=None):
@@ -64,14 +67,29 @@ class Blueprint(_PackageBoundObject):
         self.deferred_functions = []
         self.view_functions = {}
 
-    def _record(self, func):
+    def record(self, func):
+        """Registers a function that is called when the blueprint is
+        registered on the application.  This function is called with the
+        state as argument as returned by the :meth:`make_setup_state`
+        method.
+        """
+        if self._got_registered_once and self.warn_on_modifications:
+            from warnings import warn
+            warn(Warning('The blueprint was already registered once '
+                         'but is getting modified now.  These changes '
+                         'will not show up.'))
         self.deferred_functions.append(func)
 
-    def _record_once(self, func):
+    def record_once(self, func):
+        """Works like :meth:`record` but wraps the function in another
+        function that will ensure the function is only called once.  If the
+        blueprint is registered a second time on the application, the
+        function passed is not called.
+        """
         def wrapper(state):
             if state.first_registration:
                 func(state)
-        return self._record(update_wrapper(wrapper, func))
+        return self.record(update_wrapper(wrapper, func))
 
     def make_setup_state(self, app, options, first_registration=False):
         return BlueprintSetupState(self, app, options, first_registration)
@@ -83,6 +101,7 @@ class Blueprint(_PackageBoundObject):
         :func:`~flask.Flask.register_blueprint` are directly forwarded to this
         method in the `options` dictionary.
         """
+        self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
         if self.has_static_folder:
             state.add_url_rule(self.static_url_path + '/<path:filename>',
@@ -105,7 +124,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.add_url_rule` but for a module.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the module.
         """
-        self._record(lambda s:
+        self.record(lambda s:
             s.add_url_rule(rule, endpoint, view_func, **options))
 
     def endpoint(self, endpoint):
@@ -118,7 +137,7 @@ class Blueprint(_PackageBoundObject):
         def decorator(f):
             def register_endpoint(state):
                 state.app.view_functions[endpoint] = f
-            self._record_once(register_endpoint)
+            self.record_once(register_endpoint)
             return f
         return decorator
 
@@ -127,7 +146,7 @@ class Blueprint(_PackageBoundObject):
         is only executed before each request that is handled by a function of
         that module.
         """
-        self._record_once(lambda s: s.app.before_request_funcs
+        self.record_once(lambda s: s.app.before_request_funcs
             .setdefault(self.name, []).append(f))
         return f
 
@@ -135,7 +154,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.before_request`.  Such a function is executed
         before each request, even if outside of a module.
         """
-        self._record_once(lambda s: s.app.before_request_funcs
+        self.record_once(lambda s: s.app.before_request_funcs
             .setdefault(None, []).append(f))
         return f
 
@@ -144,7 +163,7 @@ class Blueprint(_PackageBoundObject):
         is only executed after each request that is handled by a function of
         that module.
         """
-        self._record_once(lambda s: s.app.after_request_funcs
+        self.record_once(lambda s: s.app.after_request_funcs
             .setdefault(self.name, []).append(f))
         return f
 
@@ -152,7 +171,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.after_request` but for a module.  Such a function
         is executed after each request, even if outside of the module.
         """
-        self._record_once(lambda s: s.app.after_request_funcs
+        self.record_once(lambda s: s.app.after_request_funcs
             .setdefault(None, []).append(f))
         return f
 
@@ -160,7 +179,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.context_processor` but for a module.  This
         function is only executed for requests handled by a module.
         """
-        self._record_once(lambda s: s.app.template_context_processors
+        self.record_once(lambda s: s.app.template_context_processors
             .setdefault(self.name, []).append(f))
         return f
 
@@ -168,7 +187,7 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.context_processor` but for a module.  Such a
         function is executed each request, even if outside of the module.
         """
-        self._record_once(lambda s: s.app.template_context_processors
+        self.record_once(lambda s: s.app.template_context_processors
             .setdefault(None, []).append(f))
         return f
 
@@ -177,7 +196,7 @@ class Blueprint(_PackageBoundObject):
         handler is used for all requests, even if outside of the module.
         """
         def decorator(f):
-            self._record_once(lambda s: s.app.errorhandler(code)(f))
+            self.record_once(lambda s: s.app.errorhandler(code)(f))
             return f
         return decorator
 
@@ -186,7 +205,7 @@ class Blueprint(_PackageBoundObject):
         blueprint.  It's called before the view functions are called and
         can modify the url values provided.
         """
-        self._record_once(lambda s: s.app.url_value_preprocessors
+        self.record_once(lambda s: s.app.url_value_preprocessors
             .setdefault(self.name, []).append(f))
         return f
 
@@ -195,21 +214,21 @@ class Blueprint(_PackageBoundObject):
         with the endpoint and values and should update the values passed
         in place.
         """
-        self._record_once(lambda s: s.app.url_default_functions
+        self.record_once(lambda s: s.app.url_default_functions
             .setdefault(self.name, []).append(f))
         return f
 
     def app_url_value_preprocessor(self, f):
         """Same as :meth:`url_value_preprocessor` but application wide.
         """
-        self._record_once(lambda s: s.app.url_value_preprocessor
+        self.record_once(lambda s: s.app.url_value_preprocessor
             .setdefault(self.name, []).append(f))
         return f
 
     def app_url_defaults(self, f):
         """Same as :meth:`url_defaults` but application wide.
         """
-        self._record_once(lambda s: s.app.url_default_functions
+        self.record_once(lambda s: s.app.url_default_functions
             .setdefault(None, []).append(f))
         return f
 
@@ -227,7 +246,7 @@ class Blueprint(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         def decorator(f):
-            self._record_once(lambda s: s.app._register_error_handler(
+            self.record_once(lambda s: s.app._register_error_handler(
                 self.name, code_or_exception, f))
             return f
         return decorator
