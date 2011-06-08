@@ -5,42 +5,51 @@ Modular Applications with Blueprints
 
 .. versionadded:: 0.7
 
-Flask knows a concept known as “blueprints” which can greatly simplify how
-large applications work.  A blueprint is an object works similar to an
-actual :class:`Flask` application object, but it is not actually an
-application.  Rather it is the blueprint of how to create an application.
-Think of it like that: you might want to have an application that has a
-wiki.  So what you can do is creating the blueprint for a wiki and then
-let the application assemble the wiki on the application object.
+Flask uses a concept of *blueprints* for making application components and
+supporting common patterns within an application or across applications.
+Blueprints can greatly simplify how large applications work and provide a
+central means for Flask extensions to register operations on applications.
+A :class:`Blueprint` object works similarly to a :class:`Flask`
+application object, but it is not actually an application.  Rather it is a
+*blueprint* of how to construct or extend an application.
 
 Why Blueprints?
 ---------------
 
-Why have blueprints and not multiple application objects?  The utopia of
-pluggable applications are different WSGI applications and merging them
-together somehow.  You can do that (see :ref:`app-dispatch`) but it's not
-the right tool for every case.  Having different applications means having
-different configs.  Applications are also separated on the WSGI layer
-which is a lot lower level than the level that Flask usually operates on
-where you have request and response objects.
+Blueprints in Flask are intended for these cases:
 
-Blueprints do not necessarily have to implement applications.  They could
-only provide filters for templates, static files, templates or similar
-things.  They share the same config as the application and can change the
-application as necessary when being registered.
+* Factor an application into a set of blueprints.  This is ideal for
+  larger applications; a project could instantiate an application object,
+  initialize several extensions, and register a collection of blueprints.
+* Register a blueprint on an application at a URL prefix and/or subdomain.
+  Paremeters in the URL prefix/subdomain become common view arguments
+  (with defaults) across all view functions in the blueprint.
+* Register a blueprint multiple times on an application with different URL
+  rules.
+* Provide template filters, static files, templates, and other utilities
+  through blueprints.  A blueprint does not have to implement applications
+  or view functions.
+* Register a blueprint on an application for any of these cases when
+  initializing a Flask extension.
 
-The downside is that you cannot unregister a blueprint once application
-without having to destroy the whole application object.
+A blueprint in Flask is not a pluggable app because it is not actually an
+application -- it's a set of operations which can be registered on an
+application, even multiple times.  Why not have multiple application
+objects?  You can do that (see :ref:`app-dispatch`), but your applications
+will have separate configs and will be managed at the WSGI layer.
+
+Blueprints instead provide separation at the Flask level, share
+application config, and can change an application object as necessary with
+being registered. The downside is that you cannot unregister a blueprint
+once application without having to destroy the whole application object.
 
 The Concept of Blueprints
 -------------------------
 
-The basic concept of blueprints is that they record operations that should
-be executed when the blueprint is registered on the application.  However
-additionally each time a request gets dispatched to a view that was
-declared to a blueprint Flask will remember that the request was
-dispatched to that blueprint.  That way it's easier to generate URLs from
-one endpoint to another in the same module.
+The basic concept of blueprints is that they record operations to execute
+when registered on an application.  Flask associates view functions with
+blueprints when dispatching requests and generating URLs from one endpoint
+to another.
 
 My First Blueprint
 ------------------
