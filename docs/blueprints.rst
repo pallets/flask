@@ -41,3 +41,22 @@ additionally each time a request gets dispatched to a view that was
 declared to a blueprint Flask will remember that the request was
 dispatched to that blueprint.  That way it's easier to generate URLs from
 one endpoint to another in the same module.
+
+My First Blueprint
+------------------
+
+This is what a very basic blueprint looks like.  In this case we want to
+implement a blueprint that does simple rendering of static templates::
+
+    from flask import Blueprint, render_template, abort
+    from jinja2 import TemplateNotFound
+
+    simple_page = Blueprint('simple_page', __name__)
+
+    @simple_page.route('/', defaults={'page': 'index'})
+    @simple_page.route('/<page>')
+    def show(page):
+        try:
+            return render_template('simple_pages/%s.html' % page)
+        except TemplateNotFound:
+            abort(404)
