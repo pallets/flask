@@ -155,3 +155,14 @@ Frozen-Flask
 :Approved License: BSD
 
 All fine.  Posted recommendations for minor items/enhancements to mailing list.
+
+
+Flask-Login
+-----------
+
+:First Approval: 2011-06-07
+:Last Review: 2011-06-07
+:Approved Version: 0.1
+:Approved License: MIT
+
+All fine.
