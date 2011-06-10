@@ -1,23 +1,20 @@
 CGI
 ===
 
-If all other deployment methods do not work, CGI will work for sure.  CGI
-is supported by all major servers but usually has a less-than-optimal
+If all other deployment methods do not work, CGI will work for sure.
+CGI is supported by all major servers but usually has a sub-optimal
 performance.
 
-This is also the way you can use a Flask application on Google's
-`App Engine`_, there however the execution does happen in a CGI-like
-environment.  The application's performance is unaffected because of that.
+This is also the way you can use a Flask application on Google's `App
+Engine`_, where execution happens in a CGI-like environment.
 
 .. admonition:: Watch Out
 
-   Please make sure in advance that your ``app.run()`` call you might
-   have in your application file, is inside an ``if __name__ ==
-   '__main__':`` or moved to a separate file.  Just make sure it's not
-   called because this will always start a local WSGI server which we do
-   not want if we deploy that application to CGI / app engine.
-
-.. _App Engine: http://code.google.com/appengine/
+   Please make sure in advance that any ``app.run()`` calls you might
+   have in your application file are inside an ``if __name__ ==
+   '__main__':`` block or moved to a separate file.  Just make sure it's
+   not called because this will always start a local WSGI server which
+   we do not want if we deploy that application to CGI / app engine.
 
 Creating a `.cgi` file
 ----------------------
@@ -45,3 +42,5 @@ In Apache for example you can put a like like this into the config:
     ScriptAlias /app /path/to/the/application.cgi
 
 For more information consult the documentation of your webserver.
+
+.. _App Engine: http://code.google.com/appengine/
