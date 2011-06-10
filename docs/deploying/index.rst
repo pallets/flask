@@ -16,4 +16,5 @@ is the actual WSGI application.
    mod_wsgi
    cgi
    fastcgi
+   uwsgi
    others
