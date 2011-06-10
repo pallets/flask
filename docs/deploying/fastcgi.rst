@@ -148,5 +148,5 @@ path.  Common problems are:
 -   different python interpreters being used.
 
 .. _lighttpd: http://www.lighttpd.net/
-.. _nginx: http://nginx.net/
+.. _nginx: http://nginx.org/
 .. _flup: http://trac.saddi.com/flup
