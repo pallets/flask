@@ -60,4 +60,4 @@ it the WSGI `SCRIPT_NAME` or set the uwsgi modifer to make use of it::
 
 .. _cherokee: http://www.cherokee-project.com/
 .. _nginx: http://nginx.org/
-.. _flup: http://trac.saddi.com/flup
+.. _uwsgi: http://projects.unbit.it/uwsgi/
