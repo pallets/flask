@@ -206,8 +206,9 @@ class Flask(_PackageBoundObject):
     test_client_class = None
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static'):
-        _PackageBoundObject.__init__(self, import_name)
+                 static_folder='static', template_folder='templates'):
+        _PackageBoundObject.__init__(self, import_name,
+                                     template_folder=template_folder)
         if static_path is not None:
             from warnings import warn
             warn(DeprecationWarning('static_path is now called '
@@ -456,7 +457,7 @@ class Flask(_PackageBoundObject):
         rv.filters['tojson'] = _tojson_filter
         return rv
 
-    def create_jinja_loader(self):
+    def create_global_jinja_loader(self):
         """Creates the loader for the Jinja2 environment.  Can be used to
         override just the loader and keeping the rest unchanged.
 

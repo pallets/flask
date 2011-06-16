@@ -11,7 +11,6 @@
 
 import os
 
-from .helpers import _PackageBoundObject, _endpoint_from_view_func
 from .blueprints import Blueprint
 
 
@@ -37,7 +36,7 @@ class Module(Blueprint):
                 'does not point to a submodule'
             name = import_name.rsplit('.', 1)[1]
         Blueprint.__init__(self, name, import_name, url_prefix=url_prefix,
-                           subdomain=subdomain)
+                           subdomain=subdomain, template_folder='templates')
 
         if os.path.isdir(os.path.join(self.root_path, 'static')):
             self._static_folder = 'static'

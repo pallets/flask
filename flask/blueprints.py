@@ -56,9 +56,9 @@ class Blueprint(_PackageBoundObject):
     _got_registered_once = False
 
     def __init__(self, name, import_name, static_folder=None,
-                 static_url_path=None, url_prefix=None,
-                 subdomain=None):
-        _PackageBoundObject.__init__(self, import_name)
+                 static_url_path=None, template_folder=None,
+                 url_prefix=None, subdomain=None):
+        _PackageBoundObject.__init__(self, import_name, template_folder)
         self.name = name
         self.url_prefix = url_prefix
         self.subdomain = subdomain

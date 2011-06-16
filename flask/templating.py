@@ -38,69 +38,64 @@ class Environment(BaseEnvironment):
 
     def __init__(self, app, **options):
         if 'loader' not in options:
-            options['loader'] = app.create_jinja_loader()
+            options['loader'] = app.create_global_jinja_loader()
         BaseEnvironment.__init__(self, **options)
         self.app = app
-
-    def join_path(self, template, parent):
-        if template and template[0] == ':':
-            template = parent.split(':', 1)[0] + template
-        return template
 
 
 class DispatchingJinjaLoader(BaseLoader):
     """A loader that looks for templates in the application and all
-    the module folders.
+    the blueprint folders.
     """
 
     def __init__(self, app):
         self.app = app
 
     def get_source(self, environment, template):
-        # newstyle template support.  blueprints are explicit and no further
-        # magic is involved.  If the template cannot be loaded by the
-        # blueprint loader it just gives up, no further steps involved.
-        if ':' in template:
-            blueprint_name, local_template = template.split(':', 1)
-            local_template = posixpath.normpath(local_template)
-            blueprint = self.app.blueprints.get(blueprint_name)
-            if blueprint is None:
-                raise TemplateNotFound(template)
-            loader = blueprint.jinja_loader
-            if loader is not None:
-                return loader.get_source(environment, local_template)
+        for loader, local_name in self._iter_loaders(template):
+            try:
+                return loader.get_source(environment, local_name)
+            except TemplateNotFound:
+                pass
 
-        # if modules are enabled we call into the old style template lookup
-        # and try that before we go with the real deal.
-        loader = None
+        raise TemplateNotFound(template)
+
+    def _iter_loaders(self, template):
+        loader = self.app.jinja_loader
+        if loader is not None:
+            yield loader, template
+
+        # old style module based loaders in case we are dealing with a
+        # blueprint that is an old style module
         try:
-            module, name = posixpath.normpath(template).split('/', 1)
+            module, local_name = posixpath.normpath(template).split('/', 1)
             blueprint = self.app.blueprints[module]
             if blueprint_is_module(blueprint):
                 loader = blueprint.jinja_loader
-        except (ValueError, KeyError, TemplateNotFound):
-            pass
-        try:
-            if loader is not None:
-                return loader.get_source(environment, name)
-        except TemplateNotFound:
+                if loader is not None:
+                    yield loader, local_name
+        except (ValueError, KeyError):
             pass
 
-        # at the very last, load templates from the environment
-        return self.app.jinja_loader.get_source(environment, template)
+        for blueprint in self.app.blueprints.itervalues():
+            loader = blueprint.jinja_loader
+            if loader is not None:
+                yield loader, template
 
     def list_templates(self):
-        result = set(self.app.jinja_loader.list_templates())
-
-        for name, module in self.app.modules.iteritems():
-            if module.jinja_loader is not None:
-                for template in module.jinja_loader.list_templates():
-                    result.add('%s/%s' % (name, template))
+        result = set()
+        loader = self.app.jinja_loader
+        if loader is not None:
+            result.update(loader.list_templates())
 
         for name, blueprint in self.app.blueprints.iteritems():
-            if blueprint.jinja_loader is not None:
-                for template in blueprint.jinja_loader.list_templates():
-                    result.add('%s:%s' % (name, template))
+            loader = blueprint.jinja_loader
+            if loader is not None:
+                for template in loader.list_templates():
+                    prefix = ''
+                    if not blueprint_is_module(blueprint):
+                        prefix = name + '/'
+                    result.add(prefix + template)
 
         return list(result)
 

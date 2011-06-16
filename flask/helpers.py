@@ -485,12 +485,14 @@ class locked_cached_property(object):
 
 class _PackageBoundObject(object):
 
-    template_folder = 'templates'
-
-    def __init__(self, import_name):
+    def __init__(self, import_name, template_folder=None):
         #: The name of the package or module.  Do not change this once
         #: it was set by the constructor.
         self.import_name = import_name
+
+        #: location of the templates.  `None` if templates should not be
+        #: exposed.
+        self.template_folder = template_folder
 
         #: Where is the app root located?
         self.root_path = _get_package_path(self.import_name)
@@ -544,8 +546,7 @@ class _PackageBoundObject(object):
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
-        return send_from_directory(os.path.join(self.root_path, 'static'),
-                                   filename)
+        return send_from_directory(self.static_folder, filename)
 
     def open_resource(self, resource):
         """Opens a resource from the application's resource folder.  To see
