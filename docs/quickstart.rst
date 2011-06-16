@@ -11,7 +11,7 @@ you do not, head over to the :ref:`installation` section.
 A Minimal Application
 ---------------------
 
-A minimal Flask application looks something like that::
+A minimal Flask application looks something like this::
 
     from flask import Flask
     app = Flask(__name__)
