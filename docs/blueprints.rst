@@ -147,4 +147,30 @@ the `template_folder` parameter to the :class:`Blueprint` constructor::
     admin = Blueprint('admin', __name__, template_folder='templates')
 
 As for static files, the path can be absolute or relative to the blueprint
-resource folder.
+resource folder.  The template folder is added to the searchpath of
+templates but with a lower priority than the actual application's template
+folder.  That way you can easily override templates that a blueprint
+provides in the actual application.
+
+So if you have a blueprint in the folder ``yourapplication/admin`` and you
+want to render the template ``'admin/index.html'`` and you have provided
+``templates`` as a `template_folder` you will have to create a file like
+this: ``yourapplication/admin/templates/admin/index.html``.
+
+Building URLs
+-------------
+
+If you want to link from one page to another you can use the
+:func:`url_for` function just like you normally would do just that you
+prefix the URL endpoint with the name of the blueprint and a dot (``.``)::
+
+    url_for('admin.index')
+
+Additionally if you are in a view function of a blueprint or a rendered
+template and you want to link to another endpoint of the same blueprint,
+you can use relative redirects by prefixing the endpoint with a dot only::
+
+    url_for('.index')
+
+This will link to ``admin.index`` for instance in case the current request
+was dispatched to any other admin blueprint endpoint.

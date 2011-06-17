@@ -459,7 +459,12 @@ class Flask(_PackageBoundObject):
 
     def create_global_jinja_loader(self):
         """Creates the loader for the Jinja2 environment.  Can be used to
-        override just the loader and keeping the rest unchanged.
+        override just the loader and keeping the rest unchanged.  It's
+        discouraged to override this function.  Instead one should override
+        the :meth:`create_jinja_loader` function instead.
+
+        The global loader dispatches between the loaders of the application
+        and the individual blueprints.
 
         .. versionadded:: 0.7
         """
