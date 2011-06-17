@@ -6,7 +6,7 @@ Application Factories
 If you are already using packages and blueprints for your application
 (:ref:`blueprints`) there are a couple of really nice ways to further improve
 the experience.  A common pattern is creating the application object when
-the module is imported.  But if you move the creation of this object,
+the blueprint is imported.  But if you move the creation of this object,
 into a function, you can then create multiple instances of this and later.
 
 So why would you want to do this?
@@ -32,18 +32,18 @@ The idea is to set up the application in a function.  Like this::
 
         from yourapplication.views.admin import admin
         from yourapplication.views.frontend import frontend
-        app.register_module(admin)
-        app.register_module(frontend)
+        app.register_blueprint(admin)
+        app.register_blueprint(frontend)
 
         return app
 
-The downside is that you cannot use the application object in the modules
+The downside is that you cannot use the application object in the blueprints
 at import time.  You can however use it from within a request.  How do you
 get access the application with the config?  Use
 :data:`~flask.current_app`::
 
-    from flask import current_app, Module, render_template
-    admin = Module(__name__, url_prefix='/admin')
+    from flask import current_app, Blueprint, render_template
+    admin = Blueprint('admin', __name__, url_prefix='/admin')
 
     @admin.route('/')
     def index():
@@ -69,7 +69,7 @@ it.  The following changes are straightforward and possible:
 
 1.  make it possible to pass in configuration values for unittests so that
     you don't have to create config files on the filesystem
-2.  call a function from a module when the application is setting up so
+2.  call a function from a blueprint when the application is setting up so
     that you have a place to modify attributes of the application (like
     hooking in before / after request handlers etc.)
 3.  Add in WSGI middlewares when the application is creating if necessary.

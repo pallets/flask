@@ -168,7 +168,7 @@ a little harder.  There is no one 100% solution for this problem in
 general, but there are a couple of things you can do to improve that
 experience:
 
-1.  create your application in a function and register modules on it.
+1.  create your application in a function and register blueprints on it.
     That way you can create multiple instances of your application with
     different configurations attached which makes unittesting a lot
     easier.  You can use this to pass in configuration as needed.
