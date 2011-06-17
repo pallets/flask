@@ -433,7 +433,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
     def test_teardown_request_handler_debug_mode(self):
         called = []
         app = flask.Flask(__name__)
-        app.debug = True
+        app.testing = True
         @app.teardown_request
         def teardown_request(exc):
             called.append(True)
@@ -819,7 +819,7 @@ class JSONTestCase(unittest.TestCase):
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
-        app.debug = True
+        app.testing = True
         @app.route('/')
         def index():
             return flask.request.json
@@ -1139,7 +1139,7 @@ class ModuleTestCase(unittest.TestCase):
 
     def test_templates_and_static(self):
         app = moduleapp
-        app.debug = True
+        app.testing = True
         c = app.test_client()
 
         rv = c.get('/')
@@ -1292,6 +1292,36 @@ class BlueprintTestCase(unittest.TestCase):
         self.assertEqual(c.get('/2/foo').data, u'19/42')
         self.assertEqual(c.get('/1/bar').data, u'23')
         self.assertEqual(c.get('/2/bar').data, u'19')
+
+    def test_templates_and_static(self):
+        from blueprintapp import app
+        c = app.test_client()
+
+        rv = c.get('/')
+        assert rv.data == 'Hello from the Frontend'
+        rv = c.get('/admin/')
+        assert rv.data == 'Hello from the Admin'
+        rv = c.get('/admin/index2')
+        assert rv.data == 'Hello from the Admin'
+        rv = c.get('/admin/static/test.txt')
+        assert rv.data.strip() == 'Admin File'
+        rv = c.get('/admin/static/css/test.css')
+        assert rv.data.strip() == '/* nested file */'
+
+        with app.test_request_context():
+            assert flask.url_for('admin.static', filename='test.txt') \
+                == '/admin/static/test.txt'
+
+        with app.test_request_context():
+            try:
+                flask.render_template('missing.html')
+            except TemplateNotFound, e:
+                assert e.name == 'missing.html'
+            else:
+                assert 0, 'expected exception'
+
+        with flask.Flask(__name__).test_request_context():
+            assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
 
 class SendfileTestCase(unittest.TestCase):
