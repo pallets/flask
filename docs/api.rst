@@ -18,10 +18,10 @@ Application Object
    :inherited-members:
 
 
-Module Objects
---------------
+Blueprint Objects
+-----------------
 
-.. autoclass:: Module
+.. autoclass:: Blueprint
    :members:
    :inherited-members:
 
@@ -349,6 +349,9 @@ Useful Internals
           ctx = _request_ctx_stack.top
           if ctx is not None:
               return ctx.session
+
+.. autoclass:: flask.blueprints.BlueprintSetupState
+   :members:
 
 Signals
 -------

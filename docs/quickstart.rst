@@ -381,8 +381,7 @@ package it's actually inside your package:
             /hello.html
 
 For templates you can use the full power of Jinja2 templates.  Head over
-to the :ref:`templating` section of the documentation or the official
-`Jinja2 Template Documentation
+to the the official `Jinja2 Template Documentation
 <http://jinja.pocoo.org/2/documentation/templates>`_ for more information.
 
 Here is an example template:
