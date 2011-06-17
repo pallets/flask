@@ -68,6 +68,9 @@ Additionally it will prefix the endpoint of the function with the
 name of the blueprint which was given to the :class:`Blueprint`
 constructor (in this case also ``simple_page``).
 
+Registering Blueprints
+----------------------
+
 So how do you register that blueprint?  Like this::
 
     from flask import Flask
@@ -87,6 +90,20 @@ The first one is obviously from the application ifself for the static
 files.  The other two are for the `show` function of the ``simple_page``
 blueprint.  As you can see, they are also prefixed with the name of the
 blueprint and separated by a dot (``.``).
+
+Blueprints however can also be mounted at different locations::
+
+    app.register_blueprint(simple_page, url_prefix='/pages')
+
+And sure enough, these are the generated rules::
+
+    [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+     <Rule '/pages/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
+     <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>]
+
+On top of that you can register blueprints multiple times though not every
+blueprint might respond properly to that.  In fact it depends on how the
+blueprint is implemented if it can be mounted more than once.
 
 Blueprint Resources
 -------------------
