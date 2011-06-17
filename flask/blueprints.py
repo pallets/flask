@@ -9,7 +9,6 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import os
 from functools import update_wrapper
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
@@ -36,14 +35,24 @@ class BlueprintSetupState(object):
             url_prefix = self.blueprint.url_prefix
         self.url_prefix = url_prefix
 
+        self.url_defaults = dict(self.blueprint.url_defaults)
+        self.url_defaults.update(self.options.get('url_defaults', ()))
+
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+        """A helper method to register a rule (and optionally a view function)
+        to the application.  The endpoint is automatically prefixed with the
+        blueprint's name.
+        """
         if self.url_prefix:
             rule = self.url_prefix + rule
         options.setdefault('subdomain', self.subdomain)
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
+        defaults = self.url_defaults
+        if 'defaults' in options:
+            defaults = dict(defaults, **options.pop('defaults'))
         self.app.add_url_rule(rule, '%s.%s' % (self.blueprint.name, endpoint),
-                              view_func, **options)
+                              view_func, defaults=defaults, **options)
 
 
 class Blueprint(_PackageBoundObject):
@@ -57,7 +66,7 @@ class Blueprint(_PackageBoundObject):
 
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
-                 url_prefix=None, subdomain=None):
+                 url_prefix=None, subdomain=None, url_defaults=None):
         _PackageBoundObject.__init__(self, import_name, template_folder)
         self.name = name
         self.url_prefix = url_prefix
@@ -66,6 +75,9 @@ class Blueprint(_PackageBoundObject):
         self.static_url_path = static_url_path
         self.deferred_functions = []
         self.view_functions = {}
+        if url_defaults is None:
+            url_defaults = {}
+        self.url_defaults = url_defaults
 
     def record(self, func):
         """Registers a function that is called when the blueprint is

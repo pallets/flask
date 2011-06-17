@@ -1272,6 +1272,27 @@ class BlueprintTestCase(unittest.TestCase):
         assert c.get('/backend-no').data == 'backend says no'
         assert c.get('/what-is-a-sideend').data == 'application itself says no'
 
+    def test_blueprint_url_definitions(self):
+        bp = flask.Blueprint('test', __name__)
+
+        @bp.route('/foo', defaults={'baz': 42})
+        def foo(bar, baz):
+            return '%s/%d' % (bar, baz)
+
+        @bp.route('/bar')
+        def bar(bar):
+            return unicode(bar)
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/1', url_defaults={'bar': 23})
+        app.register_blueprint(bp, url_prefix='/2', url_defaults={'bar': 19})
+
+        c = app.test_client()
+        self.assertEqual(c.get('/1/foo').data, u'23/42')
+        self.assertEqual(c.get('/2/foo').data, u'19/42')
+        self.assertEqual(c.get('/1/bar').data, u'23')
+        self.assertEqual(c.get('/2/bar').data, u'19')
+
 
 class SendfileTestCase(unittest.TestCase):
 
