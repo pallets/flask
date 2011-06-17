@@ -19,6 +19,7 @@ class FlaskrTestCase(unittest.TestCase):
     def setUp(self):
         """Before each test, set up a blank database"""
         self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+        flaskr.app.config['TESTING'] = True
         self.app = flaskr.app.test_client()
         flaskr.init_db()
 

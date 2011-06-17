@@ -41,6 +41,7 @@ In order to test the application, we add a second module
 
         def setUp(self):
             self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+            flaskr.app.config['TESTING'] = True
             self.app = flaskr.app.test_client()
             flaskr.init_db()
 
@@ -55,7 +56,10 @@ The code in the :meth:`~unittest.TestCase.setUp` method creates a new test
 client and initializes a new database.  This function is called before
 each individual test function is run.  To delete the database after the 
 test, we close the file and remove it from the filesystem in the
-:meth:`~unittest.TestCase.tearDown` method.  
+:meth:`~unittest.TestCase.tearDown` method.  Additionally during setup the
+``TESTING`` config flag is activated.  What it does is disabling the error
+catching during request handling so that you get better error reports when
+performing test requests against the application.
 
 This test client will give us a simple interface to the application.  We can 
 trigger test requests to the application, and the client will also keep track 
@@ -215,6 +219,23 @@ If you want to test your application with different configurations and
 there does not seem to be a good way to do that, consider switching to
 application factories (see :ref:`app-factories`).
 
+Note however that if you are using a test request context, the
+:meth:`~flask.Flask.before_request` functions are not automatically called
+same fore :meth:`~flask.Flask.after_request` functions.  However
+:meth:`~flask.Flask.teardown_request` functions are indeed executed when
+the test request context leaves the `with` block.  If you do want the
+:meth:`~flask.Flask.before_request` functions to be called as well, you
+need to call :meth:`~flask.Flask.preprocess_request` yourself::
+
+    app = flask.Flask(__name__)
+
+    with app.test_request_context('/?name=Peter'):
+        app.preprocess_request()
+        ...
+
+This can be necessary to open database connections or something similar
+depending on how your application was designed.
+
 
 Keeping the Context Around
 --------------------------
@@ -238,4 +259,3 @@ is no longer available (because you are trying to use it outside of the actual r
 However, keep in mind that any :meth:`~flask.Flask.after_request` functions
 are already called at this point so your database connection and
 everything involved is probably already closed down.
-
