@@ -124,8 +124,8 @@ class Blueprint(_PackageBoundObject):
             deferred(state)
 
     def route(self, rule, **options):
-        """Like :meth:`Flask.route` but for a module.  The endpoint for the
-        :func:`url_for` function is prefixed with the name of the module.
+        """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
+        :func:`url_for` function is prefixed with the name of the blueprint.
         """
         def decorator(f):
             self.add_url_rule(rule, f.__name__, f, **options)
@@ -133,15 +133,15 @@ class Blueprint(_PackageBoundObject):
         return decorator
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
-        """Like :meth:`Flask.add_url_rule` but for a module.  The endpoint for
-        the :func:`url_for` function is prefixed with the name of the module.
+        """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
+        the :func:`url_for` function is prefixed with the name of the blueprint.
         """
         self.record(lambda s:
             s.add_url_rule(rule, endpoint, view_func, **options))
 
     def endpoint(self, endpoint):
-        """Like :meth:`Flask.endpoint` but for a module.  This does not
-        prefix the endpoint with the module name, this has to be done
+        """Like :meth:`Flask.endpoint` but for a blueprint.  This does not
+        prefix the endpoint with the blueprint name, this has to be done
         explicitly by the user of this method.  If the endpoint is prefixed
         with a `.` it will be registered to the current blueprint, otherwise
         it's an application independent endpoint.
@@ -154,9 +154,9 @@ class Blueprint(_PackageBoundObject):
         return decorator
 
     def before_request(self, f):
-        """Like :meth:`Flask.before_request` but for a module.  This function
+        """Like :meth:`Flask.before_request` but for a blueprint.  This function
         is only executed before each request that is handled by a function of
-        that module.
+        that blueprint.
         """
         self.record_once(lambda s: s.app.before_request_funcs
             .setdefault(self.name, []).append(f))
@@ -164,48 +164,48 @@ class Blueprint(_PackageBoundObject):
 
     def before_app_request(self, f):
         """Like :meth:`Flask.before_request`.  Such a function is executed
-        before each request, even if outside of a module.
+        before each request, even if outside of a blueprint.
         """
         self.record_once(lambda s: s.app.before_request_funcs
             .setdefault(None, []).append(f))
         return f
 
     def after_request(self, f):
-        """Like :meth:`Flask.after_request` but for a module.  This function
+        """Like :meth:`Flask.after_request` but for a blueprint.  This function
         is only executed after each request that is handled by a function of
-        that module.
+        that blueprint.
         """
         self.record_once(lambda s: s.app.after_request_funcs
             .setdefault(self.name, []).append(f))
         return f
 
     def after_app_request(self, f):
-        """Like :meth:`Flask.after_request` but for a module.  Such a function
-        is executed after each request, even if outside of the module.
+        """Like :meth:`Flask.after_request` but for a blueprint.  Such a function
+        is executed after each request, even if outside of the blueprint.
         """
         self.record_once(lambda s: s.app.after_request_funcs
             .setdefault(None, []).append(f))
         return f
 
     def context_processor(self, f):
-        """Like :meth:`Flask.context_processor` but for a module.  This
-        function is only executed for requests handled by a module.
+        """Like :meth:`Flask.context_processor` but for a blueprint.  This
+        function is only executed for requests handled by a blueprint.
         """
         self.record_once(lambda s: s.app.template_context_processors
             .setdefault(self.name, []).append(f))
         return f
 
     def app_context_processor(self, f):
-        """Like :meth:`Flask.context_processor` but for a module.  Such a
-        function is executed each request, even if outside of the module.
+        """Like :meth:`Flask.context_processor` but for a blueprint.  Such a
+        function is executed each request, even if outside of the blueprint.
         """
         self.record_once(lambda s: s.app.template_context_processors
             .setdefault(None, []).append(f))
         return f
 
     def app_errorhandler(self, code):
-        """Like :meth:`Flask.errorhandler` but for a module.  This
-        handler is used for all requests, even if outside of the module.
+        """Like :meth:`Flask.errorhandler` but for a blueprint.  This
+        handler is used for all requests, even if outside of the blueprint.
         """
         def decorator(f):
             self.record_once(lambda s: s.app.errorhandler(code)(f))
@@ -222,7 +222,7 @@ class Blueprint(_PackageBoundObject):
         return f
 
     def url_defaults(self, f):
-        """Callback function for URL defaults for this module.  It's called
+        """Callback function for URL defaults for this blueprint.  It's called
         with the endpoint and values and should update the values passed
         in place.
         """

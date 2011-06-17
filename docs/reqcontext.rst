@@ -174,13 +174,14 @@ It's easy to see the behavior from the command line:
 
 >>> app = Flask(__name__)
 >>> @app.teardown_request
-... def after_request(exception=None):
-...     print 'after request'
-... 
+... def teardown_request(exception=None):
+...     print 'this runs after request'
+...
 >>> ctx = app.test_request_context()
 >>> ctx.push()
 >>> ctx.pop()
-after request
+this runs after request
+>>>
 
 .. _notes-on-proxies:
 
