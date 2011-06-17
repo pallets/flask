@@ -21,7 +21,6 @@
 """
 import re
 import os
-import sys
 import inspect
 import difflib
 import posixpath
@@ -177,37 +176,7 @@ def rewrite_blueprint_imports(contents):
     return ''.join(new_file)
 
 
-def rewrite_render_template_calls(contents, module_declarations):
-    mapping = dict(module_declarations)
-    annotated_lines = []
-
-    def make_line_annotations():
-        if not annotated_lines:
-            last_index = 0
-            for line in contents.splitlines(True):
-                last_index += len(line)
-                annotated_lines.append((last_index, line))
-
-    def backtrack_module_name(call_start):
-        make_line_annotations()
-        for idx, (line_end, line) in enumerate(annotated_lines):
-            if line_end > call_start:
-                for _, line in reversed(annotated_lines[:idx]):
-                    match = _mod_route_re.search(line)
-                    if match is not None:
-                        shortname = match.group(1)
-                        return mapping.get(shortname)
-
-    def handle_match(match):
-        template_name = ast.literal_eval(match.group(2))
-        modname = backtrack_module_name(match.start())
-        if modname is not None and template_name.startswith(modname + '/'):
-            template_name = modname + ':' + template_name[len(modname) + 1:]
-        return match.group(1) + repr(template_name)
-    return _render_template_re.sub(handle_match, contents)
-
-
-def rewrite_for_blueprints(contents, filename, template_bundles=False):
+def rewrite_for_blueprints(contents, filename):
     modules_declared = []
     def handle_match(match):
         target = match.group(1)
@@ -222,21 +191,17 @@ def rewrite_for_blueprints(contents, filename, template_bundles=False):
 
     if modules_declared:
         new_contents = rewrite_blueprint_imports(new_contents)
-        if template_bundles:
-            new_contents = rewrite_render_template_calls(new_contents,
-                                                         modules_declared)
 
     for pattern, replacement in _blueprint_related:
         new_contents = pattern.sub(replacement, new_contents)
     return new_contents
 
 
-def upgrade_python_file(filename, contents, teardown, template_bundles):
+def upgrade_python_file(filename, contents, teardown):
     new_contents = fix_url_for(contents)
     if teardown:
         new_contents = fix_teardown_funcs(new_contents)
-    new_contents = rewrite_for_blueprints(new_contents, filename,
-                                          template_bundles)
+    new_contents = rewrite_for_blueprints(new_contents, filename)
     new_contents = _error_handler_re.sub('\\1.error_handler_spec[None][\\2]',
                                          new_contents)
     make_diff(filename, contents, new_contents)
@@ -266,30 +231,14 @@ def walk_path(path):
                     yield filename, 'template'
 
 
-def scan_path(path=None, teardown=True, template_bundles=True):
+def scan_path(path=None, teardown=True):
     for filename, type in walk_path(path):
         with open(filename) as f:
             contents = f.read()
         if type == 'python':
-            upgrade_python_file(filename, contents, teardown,
-                                template_bundles)
+            upgrade_python_file(filename, contents, teardown)
         elif type == 'template':
             upgrade_template_file(filename, contents)
-
-
-def autodetect_template_bundles(paths):
-    folders_with_templates = set()
-    for path in paths:
-        for filename, type in walk_path(path):
-            if type == 'template':
-                fullpath = filename.replace(os.path.sep, '/')
-                index = fullpath.find('/templates/')
-                if index >= 0:
-                    folder = fullpath[:index]
-                else:
-                    folder = posixpath.dirname(fullpath)
-                folders_with_templates.add(folder)
-    return len(folders_with_templates) > 1
 
 
 def main():
@@ -302,10 +251,6 @@ def main():
                       action='store_true', help='Indicate to the system '
                       'that templates are bundled with modules.  Default '
                       'is auto detect.')
-    parser.add_option('-B', '--no-bundled-templates', dest='no_bundled_tmpl',
-                      action='store_true', help='Indicate to the system '
-                      'that templates are not bundled with modules.  '
-                      'Default is auto detect')
     options, args = parser.parse_args()
     if not args:
         args = ['.']
@@ -315,16 +260,8 @@ def main():
                      'The runtime requirements for Flask 0.7 however are still '
                      'Python 2.5.')
 
-    if options.no_bundled_tmpl:
-        template_bundles = False
-    elif options.bundled_tmpl:
-        template_bundles = True
-    else:
-        template_bundles = autodetect_template_bundles(args)
-
     for path in args:
-        scan_path(path, teardown=not options.no_teardown,
-                  template_bundles=template_bundles)
+        scan_path(path, teardown=not options.no_teardown)
 
 
 if __name__ == '__main__':
