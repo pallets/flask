@@ -39,7 +39,7 @@ The idea is to set up the application in a function.  Like this::
 
 The downside is that you cannot use the application object in the blueprints
 at import time.  You can however use it from within a request.  How do you
-get access the application with the config?  Use
+get access to the application with the config?  Use
 :data:`~flask.current_app`::
 
     from flask import current_app, Blueprint, render_template
