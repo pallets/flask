@@ -95,6 +95,13 @@ the form validation framework, which does not exist in Flask.
 JSON Security
 -------------
 
+.. admonition:: ECMAScript 5 Changes
+
+   Starting with ECMAScript 5 the behavior of literals changed.  Now they
+   are not constructed with the constructor of ``Array`` and others, but
+   with the builtin constructor of ``Array`` which closes this particular
+   attack vector.
+
 JSON itself is a high-level serialization format, so there is barely
 anything that could cause security problems, right?  You can't declare
 recursive structures that could cause problems and the only thing that
