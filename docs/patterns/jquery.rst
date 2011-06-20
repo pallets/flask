@@ -23,7 +23,7 @@ Loading jQuery
 In order to use jQuery, you have to download it first and place it in the
 static folder of your application and then ensure it's loaded.  Ideally
 you have a layout template that is used for all pages where you just have
-to add a script statement to your `head` to load jQuery:
+to add a script statement to the bottom of your `<body>` to load jQuery:
 
 .. sourcecode:: html
 
@@ -35,15 +35,15 @@ Another method is using Google's `AJAX Libraries API
 
 .. sourcecode:: html
 
-    <script type=text/javascript
-      src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+    <script>window.jQuery || document.write('<script src="{{
+      url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 
-In this case you don't have to put jQuery into your static folder, it will
-instead be loaded from Google directly.  This has the advantage that your
+In this case you have to put jQuery into your static folder as a fallback, but it will
+first try to load it directly from Google. This has the advantage that your
 website will probably load faster for users if they went to at least one
 other website before using the same jQuery version from Google because it
-will already be in the browser cache.  Downside is that if you don't have
-network connectivity during development jQuery will not load.
+will already be in the browser cache.
 
 Where is My Site?
 -----------------
