@@ -255,7 +255,11 @@ projects = {
         Project('pidsim-web', 'http://pidsim.rafaelmartins.eng.br/?source=en_US', '''
             <p>
               PID Controller simulator.
-        ''', source='http://hg.rafaelmartins.eng.br/pidsim-web/')
+        ''', source='http://hg.rafaelmartins.eng.br/pidsim-web/'),
+                Project('HTTPBin', 'http://httpbin.org/', u'''
+            <p>
+              An HTTP request & response service.
+        ''', source='https://github.com/kennethreitz/httpbin')
     ]
 }
 
