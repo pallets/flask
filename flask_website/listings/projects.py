@@ -180,6 +180,14 @@ projects = {
         Project('JonathanStreet.com', 'http://jonathanstreet.com/', u'''
             <p>
               Peronsal website of Jonathan Street.
+        '''),
+        Project('R-Lope\'s personal blog', 'http://rlopes-blog.appspot.com/', u'''
+            <p>
+              A personal blog.
+        ''', sourcecode='https://github.com/riquellopes/micro-blog'),
+        Project('DotShare', 'http://dotshare.it/', u'''
+            <p>
+              Socially driven website for sharing Linux/Unix dot files.
         ''')
     ],
     'apps': [
