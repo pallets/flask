@@ -8,7 +8,7 @@ class Extension(object):
 
     def __init__(self, name, author, description,
                  github=None, bitbucket=None, docs=None, website=None,
-                 approved=False):
+                 approved=False, notes=None):
         self.name = name
         self.author = author
         self.description = Markup(description)
@@ -17,9 +17,12 @@ class Extension(object):
         self.docs = docs
         self.website = website
         self.approved = approved
+        self.notes = notes
 
     def to_json(self):
         rv = vars(self).copy()
+        # Keep developer notes out of JSON response.
+        rv.pop('notes')
         rv['description'] = unicode(rv['description'])
         return rv
 
@@ -33,20 +36,28 @@ class Extension(object):
             return urlparse(self.docs)[1]
 
 
+# This list contains all extensions that were approved as well as those which
+# passed listing.
 extensions = [
     Extension('Flask-OAuth', 'Armin Ronacher',
         description='''
             <p>Adds <a href="http://oauth.net/">OAuth</a> support to Flask.
         ''',
         github='mitsuhiko/flask-oauth',
-        docs='http://packages.python.org/Flask-OAuth/'
+        docs='http://packages.python.org/Flask-OAuth/',
+        notes='''
+            Short long description, missing tests.
+        '''
     ),
     Extension('Flask-OpenID', 'Armin Ronacher',
         description='''
             <p>Adds <a href="http://openid.net/">OpenID</a> support to Flask.
         ''',
         github='mitsuhiko/flask-openid',
-        docs='http://packages.python.org/Flask-OpenID/'
+        docs='http://packages.python.org/Flask-OpenID/',
+        notes='''
+            Short long description, missing tests.
+        '''
     ),
     Extension('Flask-Babel', 'Armin Ronacher',
         description='''
@@ -56,7 +67,10 @@ extensions = [
         ''',
         github='mitsuhiko/flask-babel',
         docs='http://packages.python.org/Flask-Babel/',
-        approved=True
+        approved=True,
+        notes='''
+            How to improve: add a better long description to the next release.
+        '''
     ),
     Extension('Flask-SQLAlchemy', 'Armin Ronacher',
         description='''
@@ -64,7 +78,10 @@ extensions = [
         ''',
         github='mitsuhiko/flask-sqlalchemy',
         docs='http://packages.python.org/Flask-SQLAlchemy/',
-        approved=True
+        approved=True,
+        notes='''
+            How to improve: add a better long description to the next release.
+        '''
     ),
     Extension('Flask-XML-RPC', 'Matthew Frazier',
         description='''
@@ -80,7 +97,11 @@ extensions = [
         ''',
         bitbucket='leafstorm/flask-couchdb',
         docs='http://packages.python.org/Flask-CouchDB/',
-        approved=True
+        approved=True,
+        notes='''
+            There is also Flask-CouchDBKit.  Both are fine because they are
+            doing different things, but the latter is not yet approved.
+        '''
     ),
     Extension('Flask-Uploads', 'Matthew Frazier',
         description='''
@@ -116,7 +137,11 @@ extensions = [
         ''',
         github='dag/flask-genshi',
         docs='http://packages.python.org/Flask-Genshi/',
-        approved=True
+        approved=True,
+        notes='''
+            This is the first template engine extension.  When others come
+            around it would be a good idea to decide on a common interface.
+        '''
     ),
     Extension('Flask-Mail', 'Dan Jacob',
         description='''
@@ -151,7 +176,11 @@ extensions = [
         ''',
         bitbucket='danjac/flask-script',
         docs='http://packages.python.org/Flask-Script/',
-        approved=True
+        approved=True,
+        notes='''
+            Flask-Actions has some overlap.  Consider that when approving
+            Flask-Actions or similar packages.
+        '''
     ),
     Extension('flask-csrf', 'Steve Losh',
         description='''
@@ -159,7 +188,17 @@ extensions = [
             <a href=http://en.wikipedia.org/wiki/CSRF>CSRF</a> protection.
         ''',
         docs='http://sjl.bitbucket.org/flask-csrf/',
-        bitbucket='sjl/flask-csrf'
+        bitbucket='sjl/flask-csrf',
+        notes='''
+            Will not be approved because this is functionality that should be
+            handled in the form handling systems which is for Flask-WTF already
+            the case.  Also, this implementation only supports one open tab
+            with forms.
+
+            Name is not following Flask extension naming rules.
+
+            Considered for unlisting.
+        '''
     ),
     Extension('flask-lesscss', 'Steve Losh',
         description='''
@@ -169,7 +208,15 @@ extensions = [
               Flask application.
         ''',
         docs='http://sjl.bitbucket.org/flask-lesscss/',
-        bitbucket='sjl/flask-lesscss'
+        bitbucket='sjl/flask-lesscss',
+        notes='''
+            Broken package description, nonconforming package name, does not
+            follow standard API rules (init_lesscss instead of lesscss).
+
+            Considered for unlisting, improved version should release as
+            "Flask-LessCSS" with a conforming API and fixed packages indices,
+            as well as a testsuite.
+        '''
     ),
     Extension('Flask-Creole', 'Ali Afshar',
         description='''
@@ -177,7 +224,11 @@ extensions = [
         ''',
         docs='http://packages.python.org/Flask-Creole',
         bitbucket='aafshar/flask-creole-main',
-        approved=True
+        approved=True,
+        notes='''
+            Flask-Markdown and this should share API, consider that when
+            approving Flask-Markdown
+        '''
     ),
     Extension('Flask-Cache', 'Thadeus Burgess',
         description='''
@@ -240,7 +291,7 @@ extensions = [
         ''',
         docs='http://packages.python.org/Frozen-Flask/',
         github='SimonSapin/Frozen-Flask',
-        approved=False
+        approved=True
     ),
     Extension('Flask-FlatPages', 'Simon Sapin',
         description='''
@@ -298,8 +349,92 @@ extensions = [
         docs='https://github.com/mvantellingen/flask-debugtoolbar',
         github='mvantellingen/flask-debugtoolbar',
         approved=False
-    )
+    ),
+    Extension('Flask-Login', 'Matthew Frazier',
+        description='''
+            <p>
+              Flask-Login provides user session management for Flask. It
+              handles the common tasks of logging in, logging out, and
+              remembering your users' sessions over extended periods of time.
+        ''',
+        bitbucket='leafstorm/flask-login',
+        docs='http://packages.python.org/Flask-Login/',
+        approved=True
+    ),
+]
+
+
+# This is a list of extensions that is currently rejected from listing and with
+# that also not approved.  If an extension ends up here it should improved to
+# be listed.
+unlisted = [
+    Extension('Flask-Actions', '',
+        description='''
+            <p>
+              Flask-actions provide some management comands for flask based
+              project.
+        ''',
+        docs='http://packages.python.org/Flask-Actions/',
+        bitbucket='youngking/flask-actions',
+        approved=False,
+        notes='''
+            Rejected because of missing description in PyPI, formatting issues
+            with the documentation (missing headlines, scrollbars etc.) and a
+            general clash of functionality with the Flask-Script package.
+            Latter should not be a problem, but the documentation should
+            improve.  For listing, the extension developer should probably
+            discuss the extension on the mailinglist with others.
+
+            Futhermore it also has an egg registered with an invalid filename.
+        '''
+    ),
+    Extension('Flask-Jinja2Extender', '',
+        description='''
+            <p>
+        ''',
+        docs=None,
+        github='dcolish/flask-jinja2extender',
+        approved=False,
+        notes='''
+            Appears to be discontinued.
+
+            Usecase not obvious, hacky implementation, does not solve a problem
+            that could not be solved with Flask itself.  I suppose it is to aid
+            other extensions, but that should be discussed on the mailinglist.
+        '''
+    ),
+    Extension('Flask-Markdown', '',
+        description='''
+            <p>
+              This is a small module to a markdown processing filter into your
+              flask.
+        ''',
+        docs='http://packages.python.org/Flask-Markdown/',
+        github='dcolish/flask-markdown',
+        approved=False,
+        notes='''
+            Would be great for enlisting but it should follow the API of
+            Flask-Creole.  Besides that, the docstrings are not valid rst (run
+            through rst2html to see the issue) and it is missing tests.
+            Otherwise fine :)
+        '''
+    ),
+    Extension('flask-urls', '',
+        description='''
+            <p>
+              A collection of URL-related functions for Flask applications.
+        ''',
+        docs='http://sjl.bitbucket.org/flask-urls/',
+        bitbucket='sjl/flask-urls',
+        approved=False,
+        notes='''
+            Broken PyPI index and non-conforming extension name.  Due to the
+            small featureset this was also delisted from the list.  It was
+            there previously before the approval process was introduced.
+        '''
+    ),
 ]
 
 
 extensions.sort(key=lambda x: x.name.lower())
+unlisted.sort(key=lambda x: x.name.lower())
