@@ -8,12 +8,14 @@
   </style>
   <script type=text/javascript>
     $(function() {
-      $('h1').mousedown(function(event) {
-        if (event.which != 3)
+      $('h1').bind('mousedown contextmenu', function(event) {
+        if (event.button != 2)
           return;
         var box = $('div.logohint');
         if (!box.is(':visible'))
           box.animate({'height': 'show', 'opacity': 'show'}, 100);
+        event.preventDefault();
+        event.returnValue = false;
         return false;
       });
     });
