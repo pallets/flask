@@ -10,6 +10,9 @@
     :license: BSD, see LICENSE for more details.
 """
 
+__version__ = '0.6.1'
+
+
 # utilities we import from Werkzeug and Jinja2 that are unused
 # in the module but are exported as public interface.
 from werkzeug import abort, redirect
