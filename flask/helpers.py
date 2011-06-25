@@ -380,7 +380,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.set_etag('flask-%s-%s-%s' % (
             os.path.getmtime(filename),
             os.path.getsize(filename),
-            adler32(filename) & 0xffffffff
+            adler32(
+                filename.encode('utf8') if isinstance(filename, unicode)
+                else filename
+            ) & 0xffffffff
         ))
         if conditional:
             rv = rv.make_conditional(request)
