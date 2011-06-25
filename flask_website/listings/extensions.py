@@ -361,6 +361,21 @@ extensions = [
         docs='http://packages.python.org/Flask-Login/',
         approved=True
     ),
+    Extension('Flask-Exceptional', 'Jonathan Zempel',
+        description='''
+            <p>
+              Adds Exceptional support to Flask applications
+        ''',
+        docs='http://packages.python.org/Flask-Exceptional/',
+        github='jzempel/flask-exceptional',
+    ),
+    Extension('Flask-Bcrypt', 'Max Countryman',
+        description='''
+            <p>
+              Bcrypt support for hashing passwords
+        ''',
+        github='maxcountryman/flask-bcrypt',
+    ),
 ]
 
 
@@ -368,7 +383,7 @@ extensions = [
 # that also not approved.  If an extension ends up here it should improved to
 # be listed.
 unlisted = [
-    Extension('Flask-Actions', '',
+    Extension('Flask-Actions', 'Young King',
         description='''
             <p>
               Flask-actions provide some management comands for flask based
@@ -388,7 +403,7 @@ unlisted = [
             Futhermore it also has an egg registered with an invalid filename.
         '''
     ),
-    Extension('Flask-Jinja2Extender', '',
+    Extension('Flask-Jinja2Extender', 'Dan Colish',
         description='''
             <p>
         ''',
@@ -403,7 +418,7 @@ unlisted = [
             other extensions, but that should be discussed on the mailinglist.
         '''
     ),
-    Extension('Flask-Markdown', '',
+    Extension('Flask-Markdown', 'Dan Colish',
         description='''
             <p>
               This is a small module to a markdown processing filter into your
@@ -419,7 +434,7 @@ unlisted = [
             Otherwise fine :)
         '''
     ),
-    Extension('flask-urls', '',
+    Extension('flask-urls', 'Steve Losh',
         description='''
             <p>
               A collection of URL-related functions for Flask applications.
@@ -431,6 +446,21 @@ unlisted = [
             Broken PyPI index and non-conforming extension name.  Due to the
             small featureset this was also delisted from the list.  It was
             there previously before the approval process was introduced.
+        '''
+    ),
+    Extension('Flask-Coffee', 'Col Wilson',
+        description='''
+            <p>
+              Automatically compile CoffeeScript files while developing with
+              the Flask framework.
+        ''',
+        docs=None,
+        approved=False,
+        notes='''
+            On the mailing list, author claims it's flask-lesscss with a
+            different label.  No sphinx-based docs, just a blog post.  No
+            publicly accessible repository -- requires login on
+            bettercodes.org.
         '''
     ),
 ]
