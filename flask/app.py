@@ -200,6 +200,12 @@ class Flask(_PackageBoundObject):
         'MAX_CONTENT_LENGTH':                   None
     })
 
+    #: The rule object to use for URL rules created.  This is used by
+    #: :meth:`add_url_rule`.  Defaults to :class:`werkzeug.routing.Rule`.
+    #:
+    #: .. versionadded:: 0.7
+    url_rule_class = Rule
+
     #: the test client that is used with when `test_client` is used.
     #:
     #: .. versionadded:: 0.7
@@ -573,7 +579,7 @@ class Flask(_PackageBoundObject):
         if 'OPTIONS' not in methods:
             methods = tuple(methods) + ('OPTIONS',)
             provide_automatic_options = True
-        rule = Rule(rule, methods=methods, **options)
+        rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
         self.url_map.add(rule)
         if view_func is not None:
