@@ -10,7 +10,7 @@ from flask import url_for
 from flask_website import config
 
 engine = create_engine(config.DATABASE_URI, convert_unicode=True,
-                       use_native_unicode=False)
+                       **config.DATABASE_CONNECT_OPTIONS)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))

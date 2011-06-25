@@ -6,6 +6,7 @@ DEBUG = False
 
 SECRET_KEY = 'testkey'
 DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'flask-website.db')
+DATABASE_CONNECT_OPTIONS = {}
 ADMINS = frozenset(['http://lucumr.pocoo.org/'])
 
 THREADS_PER_PAGE = 15
