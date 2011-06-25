@@ -6,10 +6,31 @@
     h1 { margin: 0 0 30px 0; background: url({{ url_for('.static', filename='logo.png') }}) no-repeat center; height: 165px; }
     h1 span, p.tagline { display: none; }
   </style>
+  <script type=text/javascript>
+    $(function() {
+      $('h1').mousedown(function(event) {
+        if (event.which != 3)
+          return;
+        var box = $('div.logohint');
+        if (!box.is(':visible'))
+          box.animate({'height': 'show', 'opacity': 'show'}, 100);
+        return false;
+      });
+    });
+  </script>
 {% endblock %}
 {% block body_title %}
   {{ super() }}
   <p class=tagline>because sometimes a pocket knife is not enough
+  <div class=logohint style="display: none">
+    <p>
+      Are you interested in the logo?  We have it available in large versions so
+      please if you use it head over to the <a href="{{ url_for('community.logos') }}">logo
+      page</a> for the logo and the usage guidelines.
+    <p>
+      Quicklinks: <a href="{{ url_for('.static', filename='logo/flask.png') }}">PNG</a>
+      and <a href="{{ url_for('.static', filename='logo/flask.eps') }}">EPS</a>
+  </div>
 {% endblock %}
 {% block body %}
   <blockquote>

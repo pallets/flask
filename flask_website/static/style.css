@@ -65,6 +65,11 @@ input.openid            { background: url(openid.png) no-repeat 4px center;
 .badge img { margin: 0; }
 .badge pre { margin: 0 -30px; padding: 5px 30px; }
 
+/* logo hint */
+.logohint   { background: #f3f3f3; margin: 0 -30px 0 -30px; padding: 10px 30px;
+              font-size: 14px; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
+.logohint p { margin: 10px 0; }
+
 /* snippets */
 .snippet-author     { margin: 0 0 20px 0; font-size: 0.9em; }
 #comment-box        { background: #fafafa; margin: 45px -30px 15px -30px; padding: 10px 30px; }
