@@ -15,6 +15,22 @@ The fundamental difference from the :ref:`module approach
 different Flask applications that are entirely isolated from each other.
 They run different configurations and are dispatched on the WSGI level.
 
+
+Working with this Document
+--------------------------
+
+Each of the techniques and examples below results in an ``application`` object
+that can be run with any WSGI server.  For production, see :ref:`deployment`.
+For development, Werkzeug provides a builtin server for development available
+at :func:`werkzeug.serving.run_simple`::
+
+    from werkzeug.serving import run_simple
+    run_simple('localhost', 5000, application, use_reloader=True)
+
+Note that :func:`run_simple <werkzeug.serving.run_simple>` is not intended for
+use in production.  Use a :ref:`full-blown WSGI server <deployment>`.
+
+
 Combining Applications
 ----------------------
 
