@@ -42,6 +42,15 @@ def parse_changelog():
             return version, parse_date(datestr), codename
 
 
+def bump_version(version):
+    try:
+        parts = map(int, version.split('.'))
+    except ValueError:
+        fail('Current version is not numeric')
+    parts[-1] += 1
+    return '.'.join(map(str, parts))
+
+
 def parse_date(string):
     string = string.replace('th ', ' ').replace('nd ', ' ') \
                    .replace('rd ', ' ').replace('st ', ' ')
@@ -114,6 +123,7 @@ def main():
         fail('Could not parse changelog')
 
     version, release_date, codename = rv
+    dev_version = bump_version(version) + '-dev'
 
     info('Releasing %s (codename %s, release date %s)',
          version, codename, release_date.strftime('%d/%m/%Y'))
@@ -132,6 +142,8 @@ def main():
     make_git_commit('Bump version number to %s', version)
     make_git_tag(version)
     build_and_upload()
+    set_init_version(dev_version)
+    set_setup_version(dev_version)
 
 
 if __name__ == '__main__':
