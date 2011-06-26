@@ -86,7 +86,7 @@ def run_tests():
 
 setup(
     name='Flask',
-    version='0.7',
+    version='0.7-dev',
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
