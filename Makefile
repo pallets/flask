@@ -8,14 +8,14 @@ test:
 audit:
 	python setup.py audit
 
+release:
+	python scripts/make-release.py
+
 tox-test:
 	PYTHONDONTWRITEBYTECODE= tox
 
 ext-test:
 	python tests/flaskext_test.py --browse
-
-release:
-	python setup.py release sdist upload
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
