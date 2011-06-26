@@ -46,7 +46,7 @@ _module_constructor_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\s*=\s*Module'
                                     r'\(__name__\s*(?:,\s*(?:name\s*=\s*)?(%s))?' %
                                     _string_re_part)
 _error_handler_re = re.compile(r'%s\.error_handlers\[\s*(\d+)\s*\]' % _app_re_part)
-_mod_route_re = re.compile(r'([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
+_mod_route_re = re.compile(r'@([a-zA-Z0-9_][a-zA-Z0-9_]*)\.route')
 _blueprint_related = [
     (re.compile(r'request\.module'), 'request.blueprint'),
     (re.compile(r'register_module'), 'register_blueprint'),
@@ -60,18 +60,6 @@ def make_diff(filename, old, new):
                      posixpath.normpath(posixpath.join('b', filename)),
                      lineterm=''):
         print line
-
-
-def fix_url_for(contents):
-    def handle_match(match):
-        prefix = match.group(1)
-        endpoint = ast.literal_eval(match.group(2))
-        if endpoint.startswith('.'):
-            endpoint = endpoint[1:]
-        else:
-            endpoint = '.' + endpoint
-        return prefix + repr(endpoint)
-    return _url_for_re.sub(handle_match, contents)
 
 
 def looks_like_teardown_function(node):
@@ -92,6 +80,48 @@ def looks_like_teardown_function(node):
                     return
 
     return resp_name.id
+
+
+def fix_url_for(contents, module_declarations=None):
+    if module_declarations is None:
+        skip_module_test = True
+    else:
+        skip_module_test = False
+        mapping = dict(module_declarations)
+    annotated_lines = []
+
+    def make_line_annotations():
+        if not annotated_lines:
+            last_index = 0
+            for line in contents.splitlines(True):
+                last_index += len(line)
+                annotated_lines.append((last_index, line))
+
+    def backtrack_module_name(call_start):
+        make_line_annotations()
+        for idx, (line_end, line) in enumerate(annotated_lines):
+            if line_end > call_start:
+                for _, line in reversed(annotated_lines[:idx]):
+                    match = _mod_route_re.search(line)
+                    if match is not None:
+                        shortname = match.group(1)
+                        return mapping.get(shortname)
+
+    def handle_match(match):
+        if not skip_module_test:
+            modname = backtrack_module_name(match.start())
+            if modname is None:
+                return match.group(0)
+        prefix = match.group(1)
+        endpoint = ast.literal_eval(match.group(2))
+        if endpoint.startswith('.'):
+            endpoint = endpoint[1:]
+        elif '.' not in endpoint:
+            endpoint = '.' + endpoint
+        else:
+            return match.group(0)
+        return prefix + repr(endpoint)
+    return _url_for_re.sub(handle_match, contents)
 
 
 def fix_teardown_funcs(contents):
@@ -194,21 +224,22 @@ def rewrite_for_blueprints(contents, filename):
 
     for pattern, replacement in _blueprint_related:
         new_contents = pattern.sub(replacement, new_contents)
-    return new_contents
+    return new_contents, dict(modules_declared)
 
 
 def upgrade_python_file(filename, contents, teardown):
-    new_contents = fix_url_for(contents)
+    new_contents = contents
     if teardown:
         new_contents = fix_teardown_funcs(new_contents)
-    new_contents = rewrite_for_blueprints(new_contents, filename)
+    new_contents, modules = rewrite_for_blueprints(new_contents, filename)
+    new_contents = fix_url_for(new_contents, modules)
     new_contents = _error_handler_re.sub('\\1.error_handler_spec[None][\\2]',
                                          new_contents)
     make_diff(filename, contents, new_contents)
 
 
 def upgrade_template_file(filename, contents):
-    new_contents = fix_url_for(contents)
+    new_contents = fix_url_for(contents, None)
     make_diff(filename, contents, new_contents)
 
 

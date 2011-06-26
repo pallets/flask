@@ -1,4 +1,4 @@
-from flask import Flask, Module, render_template
+from flask import Flask, Module, render_template, url_for
 
 
 mod = Module(__name__)
@@ -12,8 +12,17 @@ def after_request(response):
     return response
 
 
+@app.route('/')
+def index_foo():
+    x1 = url_for('somemod.index')
+    x2 = url_for('.index')
+    return render_template('test/index.html')
+
+
 @mod.route('/')
 def index():
+    x1 = url_for('somemod.index')
+    x2 = url_for('.index')
     return render_template('test/index.html')
 
 
