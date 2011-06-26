@@ -3,9 +3,9 @@
 Quickstart
 ==========
 
-Eager to get started?  This page gives a good introduction in how to get
-started with Flask.  This assumes you already have Flask installed.  If
-you do not, head over to the :ref:`installation` section.
+Eager to get started?  This page gives a good introduction to Flask.  It
+assumes you already have Flask installed.  If you do not, head over to the
+:ref:`installation` section.
 
 
 A Minimal Application
@@ -23,39 +23,39 @@ A minimal Flask application looks something like this::
     if __name__ == '__main__':
         app.run()
 
-Just save it as `hello.py` or something similar and run it with your
-Python interpreter.  Make sure to not call your application `flask.py`
-because this would conflict with Flask itself.
+Just save it as `hello.py` (or something similar) and run it with your Python
+interpreter.  Make sure to not call your application `flask.py` because this
+would conflict with Flask itself.
 
 ::
 
     $ python hello.py
      * Running on http://127.0.0.1:5000/
 
-Head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, you should
-see your hello world greeting.
+Now head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, and you
+should see your hello world greeting.
 
 So what did that code do?
 
 1. First we imported the :class:`~flask.Flask` class.  An instance of this
    class will be our WSGI application.  The first argument is the name of
-   the application's module.  If you are using a single module (like here)
-   you should use `__name__` because depending on if it's started as
-   application or imported as module the name will be different
-   (``'__main__'`` versus the actual import name).  For more information
-   on that, have a look at the :class:`~flask.Flask` documentation.
-2. Next we create an instance of it.  We pass it the name of the module /
-   package.  This is needed so that Flask knows where it should look for
-   templates, static files and so on.
-3. Then we use the :meth:`~flask.Flask.route` decorator to tell Flask
-   what URL should trigger our function.
-4. The function then has a name which is also used to generate URLs to
-   that particular function, and returns the message we want to display in
-   the user's browser.
-5. Finally we use the :meth:`~flask.Flask.run` function to run the
-   local server with our application.  The ``if __name__ == '__main__':``
-   makes sure the server only runs if the script is executed directly from
-   the Python interpreter and not used as imported module.
+   the application's module.  If you are using a single module (as in this
+   example), you should use `__name__` because depending on if it's started as
+   application or imported as module the name will be different (``'__main__'``
+   versus the actual import name).  For more information, have a look at the
+   :class:`~flask.Flask` documentation.
+2. Next we create an instance of this class.  We pass it the name of the module
+   or package.  This is needed so that Flask knows where to look for templates,
+   static files, and so on.
+3. We then use the :meth:`~flask.Flask.route` decorator to tell Flask what URL
+   should trigger our function.
+4. The function is given a name which is also used to generate URLs for that
+   particular function, and returns the message we want to display in the
+   user's browser.
+5. Finally we use the :meth:`~flask.Flask.run` function to run the local server
+   with our application.  The ``if __name__ == '__main__':`` makes sure the
+   server only runs if the script is executed directly from the Python
+   interpreter and not used as imported module.
 
 To stop the server, hit control-C.
 
@@ -63,29 +63,29 @@ To stop the server, hit control-C.
 
 .. admonition:: Externally Visible Server
 
-   If you run the server you will notice that the server is only available
-   from your own computer, not from any other in the network.  This is the
+   If you run the server, you may notice that the server is only accessible
+   from your own computer, and nowhere else on the network.  This is the
    default because in debugging mode a user of the application can execute
    arbitrary Python code on your computer.  If you have `debug` disabled
-   or trust the users on your network, you can make the server publicly
-   available.
+   (or if you really trust the users on your network), you can make the server
+   publicly available.
 
    Just change the call of the :meth:`~flask.Flask.run` method to look
    like this::
 
        app.run(host='0.0.0.0')
 
-   This tells your operating system to listen on a public IP.
+   This tells your operating system to listen on all public IPs.
 
 
 Debug Mode
 ----------
 
-The :meth:`~flask.Flask.run` method is nice to start a local
-development server, but you would have to restart it manually after each
-change you do to code.  That is not very nice and Flask can do better.  If
-you enable the debug support the server will reload itself on code changes
-and also provide you with a helpful debugger if things go wrong.
+The :meth:`~flask.Flask.run` method is nice to start a local development
+server, but you would have to restart it manually after each change you do to
+code.  That is not very nice and Flask can do better.  If you enable the debug
+support the server will reload itself on code changes and also provide you with
+a helpful debugger if things go wrong.
 
 There are two ways to enable debugging.  Either set that flag on the
 application object::
@@ -93,18 +93,18 @@ application object::
     app.debug = True
     app.run()
 
-Or pass it to run::
+Or pass it as a parameter to run::
 
     app.run(debug=True)
 
-Both will have exactly the same effect.
+Both methods have the exact same effect.
 
 .. admonition:: Attention
 
    Even though the interactive debugger does not work in forking environments
    (which makes it nearly impossible to use on production servers), it still
-   allows the execution of arbitrary code. That makes it a major security
-   risk and therefore it **must never be used on production machines**.
+   allows the execution of arbitrary code. This makes it a major security risk
+   and therefore it **must never be used on production machines**.
 
 Screenshot of the debugger in action:
 
@@ -122,14 +122,14 @@ Screenshot of the debugger in action:
 Routing
 -------
 
-Modern web applications have beautiful URLs.  This helps people remember
-the URLs which is especially handy for applications that are used from
-mobile devices with slower network connections.  If the user can directly
-go to the desired page without having to hit the index page it is more
-likely he will like the page and come back next time.
+Modern web applications have beautiful URLs.  This helps people remember the
+URLs which is especially handy for applications that are used from mobile
+devices with slower network connections.  If the user can directly go to the
+desired page without having to hit the index page it is more likely he will
+like the page and come back next time.
 
-As you have seen above, the :meth:`~flask.Flask.route` decorator is used
-to bind a function to a URL.  Here are some basic examples::
+As you have seen above, the :meth:`~flask.Flask.route` decorator is used to
+bind a function to a URL.  Here are some basic examples::
 
     @app.route('/')
     def index():
@@ -139,16 +139,16 @@ to bind a function to a URL.  Here are some basic examples::
     def hello():
         return 'Hello World'
 
-But there is more to it!  You can make certain parts of the URL dynamic
-and attach multiple rules to a function.
+But there is more to it!  You can make certain parts of the URL dynamic and
+attach multiple rules to a function.
 
 Variable Rules
 ``````````````
 
 To add variable parts to a URL you can mark these special sections as
-``<variable_name>``.  Such a part is then passed as keyword argument to
-your function.  Optionally a converter can be specified by specifying a
-rule with ``<converter:variable_name>``.  Here are some nice examples::
+``<variable_name>``.  Such a part is then passed as keyword argument to your
+function.  Optionally a converter can be specified by specifying a rule with
+``<converter:variable_name>``.  Here are some nice examples::
 
     @app.route('/user/<username>')
     def show_user_profile(username):
@@ -170,9 +170,9 @@ The following converters exist:
 
 .. admonition:: Unique URLs / Redirection Behaviour
 
-   Flask's URL rules are based on Werkzeug's routing module.  The idea
-   behind that module is to ensure nice looking and also unique URLs based
-   on behaviour Apache and earlier servers coined.
+   Flask's URL rules are based on Werkzeug's routing module.  The idea behind
+   that module is to ensure beautiful and unique also unique URLs based on
+   precedents laid down by Apache and earlier HTTP servers.
 
    Take these two rules::
 
@@ -184,21 +184,20 @@ The following converters exist:
         def about():
             pass
 
-   They look rather similar, the difference is the trailing slash in the
-   URL *definition*.  In the first case, the canonical URL for the
-   `projects` endpoint has a trailing slash.  It's similar to a folder in
-   that sense.  Accessing it without a trailing slash will cause Flask to
-   redirect to the canonical URL with the trailing slash.
+   Though they look rather similar, they differ in their use of the trailing
+   slash in the URL *definition*.  In the first case, the canonical URL for the
+   `projects` endpoint has a trailing slash.  In that sense, it is similar to
+   a folder on a file system.  Accessing it without a trailing slash will cause
+   Flask to redirect to the canonical URL with the trailing slash.
 
-   However in the second case the URL is defined without a slash so it
-   behaves similar to a file and accessing the URL with a trailing slash
-   will be a 404 error.
+   In the second case, however, the URL is defined without a trailing slash,
+   rather like the pathname of a file on UNIX-like systems. Accessing the URL
+   with a trailing slash will produce a 404 "Not Found" error.
 
-   Why is this?  This allows relative URLs to continue working if users
-   access the page when they forget a trailing slash.  This behaviour is
-   also consistent with how Apache and other servers work.  Also, the URLs
-   will stay unique which helps search engines not indexing the same page
-   twice.
+   This behavior allows relative URLs to continue working if users access the
+   page when they forget a trailing slash, consistent with how with how Apache
+   and other servers work.  Also, the URLs will stay unique, which helps search
+   engines avoid indexing the same page twice.
 
 
 .. _url-building:
@@ -206,12 +205,12 @@ The following converters exist:
 URL Building
 ````````````
 
-If it can match URLs, can it also generate them?  Of course it can.  To
+If it can match URLs, can Flask also generate them?  Of course it can.  To
 build a URL to a specific function you can use the :func:`~flask.url_for`
-function.  It accepts the name of the function as first argument and a
-number of keyword arguments, each corresponding to the variable part of
-the URL rule.  Unknown variable parts are appended to the URL as query
-parameter.  Here are some examples:
+function.  It accepts the name of the function as first argument and a number
+of keyword arguments, each corresponding to the variable part of the URL rule.
+Unknown variable parts are appended to the URL as query parameters.  Here are
+some examples:
 
 >>> from flask import Flask, url_for
 >>> app = Flask(__name__)
@@ -235,30 +234,30 @@ parameter.  Here are some examples:
 /login?next=/
 /user/John%20Doe
 
-(This also uses the :meth:`~flask.Flask.test_request_context` method
-explained below.  It basically tells Flask to think we are handling a
-request even though we are not, we are in an interactive Python shell.
-Have a look at the explanation below. :ref:`context-locals`).
+(This also uses the :meth:`~flask.Flask.test_request_context` method, explained
+below.  It tells Flask to behave as though it is handling a request, even
+though were are interacting with it through a Python shell.  Have a look at the
+explanation below. :ref:`context-locals`).
 
-Why would you want to build URLs instead of hardcoding them in your
+Why would you want to build URLs instead of hard-coding them into your
 templates?  There are three good reasons for this:
 
-1. reversing is often more descriptive than hardcoding the URLs.  Also and
-   more importantly you can change URLs in one go without having to change
-   the URLs all over the place.
+1. Reversing is often more descriptive than hard-coding the URLs.  More
+   importantly, it allows you to change URLs in one go, without having to
+   remember to change URLs all over the place.
 2. URL building will handle escaping of special characters and Unicode
-   data transparently for you, you don't have to deal with that.
-3. If your application is placed outside the URL root (so say in
-   ``/myapplication`` instead of ``/``), :func:`~flask.url_for` will
-   handle that properly for you.
+   data transparently for you, so you don't have to deal with them.
+3. If your application is placed outside the URL root (say, in
+   ``/myapplication`` instead of ``/``), :func:`~flask.url_for` will handle
+   that properly for you.
 
 
 HTTP Methods
 ````````````
 
-HTTP (the protocol web applications are speaking) knows different methods
-to access URLs.  By default a route only answers to `GET` requests, but
-that can be changed by providing the `methods` argument to the
+HTTP (the protocol web applications are speaking) knows different methods for
+accessing URLs.  By default, a route only answers to `GET` requests, but that
+can be changed by providing the `methods` argument to the
 :meth:`~flask.Flask.route` decorator.  Here are some examples::
 
     @app.route('/login', methods=['GET', 'POST'])
