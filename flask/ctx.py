@@ -90,12 +90,7 @@ class RequestContext(object):
         self.flashes = None
         self.session = None
 
-        try:
-            url_rule, self.request.view_args = \
-                self.url_adapter.match(return_rule=True)
-            self.request.url_rule = url_rule
-        except HTTPException, e:
-            self.request.routing_exception = e
+        self.match_request()
 
         # Support for deprecated functionality.  This is doing away with
         # Flask 1.0
@@ -106,6 +101,17 @@ class RequestContext(object):
             bp = app.blueprints.get(blueprint)
             if bp is not None and blueprint_is_module(bp):
                 self.request._is_old_module = True
+
+    def match_request(self):
+        """Can be overridden by a subclass to hook into the matching
+        of the request.
+        """
+        try:
+            url_rule, self.request.view_args = \
+                self.url_adapter.match(return_rule=True)
+            self.request.url_rule = url_rule
+        except HTTPException, e:
+            self.request.routing_exception = e
 
     def push(self):
         """Binds the request context to the current context."""
