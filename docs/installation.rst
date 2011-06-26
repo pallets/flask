@@ -84,7 +84,7 @@ If you are a Windows user, the following command is for you::
     $ env\scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
-your shell has changed to show the virtualenv).
+your shell has changed to show the active environment).
 
 Now you can just enter the following command to get Flask activated in your
 virtualenv::
