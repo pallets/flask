@@ -156,12 +156,13 @@ Next, add the `easy_install` command and other Python scripts to the
 command search path, by adding your Python installation's Scripts folder
 to the `PATH` environment variable.  To do that, right-click on the
 "Computer" icon on the Desktop or in the Start menu, and choose "Properties".
-Then click on "Advanced System settings" (on Windows XP, click on the
-"Advanced" tab instead).  Then click on the "Environment variables" button and
-double-click on the "Path" variable in the "System variables" section.  There
-append the path of your Python interpreter's Scripts folder. Be sure to delimit
-it from existing values with a semicolon.  Assuming you are using Python 2.6 on
-the default path, add the following value::
+Then click on "Advanced System settings" (in Windows XP, click on the
+"Advanced" tab instead).  Then click on the "Environment variables" button.
+Finally, double-click on the "Path" variable in the "System variables" section,
+and add the path of your Python interpreter's Scripts folder. Be sure to
+delimit it from existing values with a semicolon.  Assuming you are using
+Python 2.6 on the default path, add the following value::
+
 
     ;C:\Python26\Scripts
 
