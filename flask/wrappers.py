@@ -80,7 +80,7 @@ class Request(RequestBase):
     def blueprint(self):
         """The name of the current blueprint"""
         if self.url_rule and '.' in self.url_rule.endpoint:
-            return self.url_rule.endpoint.split('.', 1)[0]
+            return self.url_rule.endpoint.rsplit('.', 1)[0]
 
     @cached_property
     def json(self):

@@ -1323,6 +1323,31 @@ class BlueprintTestCase(unittest.TestCase):
         with flask.Flask(__name__).test_request_context():
             assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
+    def test_dotted_names(self):
+        frontend = flask.Blueprint('myapp.frontend', __name__)
+        backend = flask.Blueprint('myapp.backend', __name__)
+
+        @frontend.route('/fe')
+        def frontend_index():
+            return flask.url_for('myapp.backend.backend_index')
+
+        @frontend.route('/fe2')
+        def frontend_page2():
+            return flask.url_for('.frontend_index')
+
+        @backend.route('/be')
+        def backend_index():
+            return flask.url_for('myapp.frontend.frontend_index')
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(frontend)
+        app.register_blueprint(backend)
+
+        c = app.test_client()
+        self.assertEqual(c.get('/fe').data.strip(), '/be')
+        self.assertEqual(c.get('/fe2').data.strip(), '/fe')
+        self.assertEqual(c.get('/be').data.strip(), '/fe')
+
 
 class SendfileTestCase(unittest.TestCase):
 
