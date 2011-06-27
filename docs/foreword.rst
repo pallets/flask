@@ -88,22 +88,17 @@ The Status of Python 3
 ----------------------
 
 Currently the Python community is in the process of improving libraries to
-support the new iteration of the Python programming language.
-Unfortunately there are a few problems with Python 3, namely the missing
-consent on what WSGI for Python 3 should look like.  These problems are
+support the new iteration of the Python programming language.  While the
+situation is greatly improving there are still some issues that make it
+hard for us to switch over to Python 3 just now.  These problems are
 partially caused by changes in the language that went unreviewed for too
-long, also partially the ambitions of everyone involved to drive the WSGI
-standard forward.
-
-Because of that we strongly recommend against using Python 3 for web
-development of any kind and wait until the WSGI situation is resolved.
-You will find a couple of frameworks and web libraries on PyPI that claim
-Python 3 support, but this support is based on the broken WSGI
-implementation provided by Python 3.0 and 3.1 which will most likely
-change in the near future.
+long, partially also because we have not quite worked out how the lower
+level API should change for the unicode differences in Python3.
 
 Werkzeug and Flask will be ported to Python 3 as soon as a solution for
-WSGI is found, and we will provide helpful tips how to upgrade existing
-applications to Python 3.  Until then, we strongly recommend using Python
-2.6 and 2.7 with activated Python 3 warnings during development, as well
-as the Unicode literals `__future__` feature.
+the changes is found, and we will provide helpful tips how to upgrade
+existing applications to Python 3.  Until then, we strongly recommend
+using Python 2.6 and 2.7 with activated Python 3 warnings during
+development.  If you plan on upgrading to Python 3 in the near future we
+strongly recommend that you read `How to write forwards compatible
+Python code <http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
