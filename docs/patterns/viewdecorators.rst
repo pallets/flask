@@ -8,7 +8,7 @@ functionality to one or more functions.  The :meth:`~flask.Flask.route`
 decorator is the one you probably used already.  But there are use cases
 for implementing your own decorator.  For instance, imagine you have a
 view that should only be used by people that are logged in to.  If a user
-goes to the site and is not logged in, he should be redirected to the
+goes to the site and is not logged in, he or she should be redirected to the
 login page.  This is a good example of a use case where a decorator is an
 excellent solution.
 
