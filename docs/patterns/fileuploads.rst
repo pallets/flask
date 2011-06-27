@@ -89,7 +89,7 @@ before storing it directly on the filesystem.
 
    Assuming the number of ``../`` is correct and you would join this with
    the `UPLOAD_FOLDER` the user might have the ability to modify a file on
-   the server's filesystem he should not modify.  This does require some
+   the server's filesystem he or she should not modify.  This does require some
    knowledge about how the application looks like, but trust me, hackers
    are patient :)
 
@@ -155,8 +155,8 @@ Upload Progress Bars
 A while ago many developers had the idea to read the incoming file in
 small chunks and store the upload progress in the database to be able to
 poll the progress with JavaScript from the client.  Long story short: the
-client asks the server every 5 seconds how much he has transmitted
-already.  Do you realize the irony?  The client is asking for something he
+client asks the server every 5 seconds how much it has transmitted
+already.  Do you realize the irony?  The client is asking for something it
 should already know.
 
 Now there are better solutions to that work faster and more reliable.  The
