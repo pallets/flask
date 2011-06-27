@@ -188,6 +188,10 @@ projects = {
         Project('DotShare', 'http://dotshare.it/', u'''
             <p>
               Socially driven website for sharing Linux/Unix dot files.
+        '''),
+        Project('robinverton.de', 'http://robinverton.de/', u'''
+            <p>
+              Personal website of Robin Verton.
         ''')
     ],
     'apps': [
