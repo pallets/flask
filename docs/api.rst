@@ -156,8 +156,8 @@ If you have the :attr:`Flask.secret_key` set you can use sessions in Flask
 applications.  A session basically makes it possible to remember
 information from one request to another.  The way Flask does this is by
 using a signed cookie.  So the user can look at the session contents, but
-not modify it unless he knows the secret key, so make sure to set that to
-something complex and unguessable.
+not modify it unless he or she knows the secret key, so make sure to set that
+to something complex and unguessable.
 
 To access the current session you can use the :class:`session` object:
 

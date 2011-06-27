@@ -126,7 +126,7 @@ Modern web applications have beautiful URLs.  This helps people remember
 the URLs which is especially handy for applications that are used from
 mobile devices with slower network connections.  If the user can directly
 go to the desired page without having to hit the index page it is more
-likely he will like the page and come back next time.
+likely he or she will like the page and come back next time.
 
 As you have seen above, the :meth:`~flask.Flask.route` decorator is used
 to bind a function to a URL.  Here are some basic examples::
@@ -614,7 +614,7 @@ code use the :func:`~flask.abort` function.  Here an example how this works::
         this_is_never_executed()
 
 This is a rather pointless example because a user will be redirected from
-the index to a page he cannot access (401 means access denied) but it
+the index to a page he or she cannot access (401 means access denied) but it
 shows how that works.
 
 By default a black and white error page is shown for each error code.  If
@@ -641,7 +641,7 @@ Besides the request object there is also a second object called
 user from one request to the next.  This is implemented on top of cookies
 for you and signs the cookies cryptographically.  What this means is that
 the user could look at the contents of your cookie but not modify it,
-unless he knows the secret key used for signing.
+unless he or she knows the secret key used for signing.
 
 In order to use sessions you have to set a secret key.  Here is how
 sessions work::
@@ -697,7 +697,7 @@ Message Flashing
 ----------------
 
 Good applications and user interfaces are all about feedback.  If the user
-does not get enough feedback he will probably end up hating the
+does not get enough feedback he or she will probably end up hating the
 application.  Flask provides a really simple way to give feedback to a
 user with the flashing system.  The flashing system basically makes it
 possible to record a message at the end of a request and access it next

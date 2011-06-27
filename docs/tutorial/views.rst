@@ -29,7 +29,7 @@ The view function will pass the entries as dicts to the
 Add New Entry
 -------------
 
-This view lets the user add new entries if he's logged in.  This only
+This view lets the user add new entries if he or she is logged in.  This only
 responds to `POST` requests, the actual form is shown on the
 `show_entries` page.  If everything worked out well we will
 :func:`~flask.flash` an information message to the next request and
