@@ -306,6 +306,20 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert 'domain=.example.com' in rv.headers['set-cookie'].lower()
         assert 'httponly' in rv.headers['set-cookie'].lower()
 
+    def test_session_using_server_name_and_port(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SECRET_KEY='foo',
+            SERVER_NAME='example.com:8080'
+        )
+        @app.route('/')
+        def index():
+            flask.session['testing'] = 42
+            return 'Hello World'
+        rv = app.test_client().get('/', 'http://example.com:8080/')
+        assert 'domain=.example.com' in rv.headers['set-cookie'].lower()
+        assert 'httponly' in rv.headers['set-cookie'].lower()
+
     def test_missing_session(self):
         app = flask.Flask(__name__)
         def expect_exception(f, *args, **kwargs):

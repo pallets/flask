@@ -602,7 +602,8 @@ class Flask(_PackageBoundObject):
         if session.permanent:
             expires = datetime.utcnow() + self.permanent_session_lifetime
         if self.config['SERVER_NAME'] is not None:
-            domain = '.' + self.config['SERVER_NAME']
+            # chop of the port which is usually not supported by browsers
+            domain = '.' + self.config['SERVER_NAME'].rsplit(':', 1)[0]
         session.save_cookie(response, self.session_cookie_name,
                             expires=expires, httponly=True, domain=domain)
 
