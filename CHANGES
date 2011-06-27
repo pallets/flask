@@ -40,7 +40,7 @@ Release date to be announced, codename to be selected
 - Added `teardown_request` decorator, for functions that should run at the end
   of a request regardless of whether an exception occurred.
 - Implemented :func:`flask.has_request_context`
-- Added :func:`safe_join`
+- Added :func:`flask.safe_join`
 - The automatic JSON request data unpacking now looks at the charset
   mimetype parameter.
 - Don't modify the session on :func:`flask.get_flashed_messages` if there
