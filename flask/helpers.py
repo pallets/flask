@@ -159,7 +159,13 @@ def url_for(endpoint, **values):
 
     Variable arguments that are unknown to the target endpoint are appended
     to the generated URL as query arguments.  If the value of a query argument
-    is `None`, the whole pair is skipped.
+    is `None`, the whole pair is skipped.  In case blueprints are active
+    you can shortcut references to the same blueprint by prefixing the
+    local endpoint with a dot (``.``).
+
+    This will reference the index function local to the current blueprint::
+
+        url_for('.index')
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
