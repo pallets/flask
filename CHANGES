@@ -56,6 +56,7 @@ Released on June 27th 2011, codename Grappa
   might occur during request processing (for instance database connection
   errors, timeouts from remote resources etc.).
 - Blueprints can provide blueprint specific error handlers.
+- Implemented generic pluggable views (class based views).
 
 Version 0.6.1
 -------------
