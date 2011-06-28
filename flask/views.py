@@ -35,6 +35,10 @@ class View(object):
     methods = None
 
     def dispatch_request(self):
+        """Subclasses have to override this method to implement the
+        actual view functionc ode.  This method is called with all
+        the arguments from the URL rule.
+        """
         raise NotImplementedError()
 
     @classmethod
@@ -48,8 +52,14 @@ class View(object):
         constructor of the class.
         """
         def view(*args, **kwargs):
-            self = cls(*class_args, **class_kwargs)
+            self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
+        # we attach the view class to the view function for two reasons:
+        # first of all it allows us to easily figure out what class based
+        # view this thing came from, secondly it's also used for instanciating
+        # the view class so you can actually replace it with something else
+        # for testing purposes and debugging.
+        view.view_class = cls
         view.__name__ = name
         view.__doc__ = cls.__doc__
         view.__module__ = cls.__module__
@@ -61,17 +71,17 @@ class MethodViewType(type):
 
     def __new__(cls, name, bases, d):
         rv = type.__new__(cls, name, bases, d)
-        if rv.methods is None:
-            methods = []
+        if 'methods' not in d:
+            methods = set(rv.methods or [])
             for key, value in d.iteritems():
                 if key in http_method_funcs:
-                    methods.append(key.upper())
+                    methods.add(key.upper())
             # if we have no method at all in there we don't want to
             # add a method list.  (This is for instance the case for
             # the baseclass or another subclass of a base method view
             # that does not introduce new methods).
             if methods:
-                rv.methods = methods
+                rv.methods = sorted(methods)
         return rv
 
 
