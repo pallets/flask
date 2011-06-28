@@ -216,6 +216,26 @@ class Blueprint(_PackageBoundObject):
             .setdefault(None, []).append(f))
         return f
 
+    def teardown_request(self, f):
+        """Like :meth:`Flask.teardown_request` but for a blueprint.  This
+        function is only executed when tearing down requests handled by a
+        function of that blueprint.  Teardown request functions are executed
+        when the request context is popped, even when no actual request was
+        performed.
+        """
+        self.record_once(lambda s: s.app.teardown_request_funcs
+            .setdefault(self.name, []).append(f))
+        return f
+
+    def teardown_app_request(self, f):
+        """Like :meth:`Flask.teardown_request` but for a blueprint.  Such a
+        function is executed when tearing down each request, even if outside of
+        the blueprint.
+        """
+        self.record_once(lambda s: s.app.teardown_request_funcs
+            .setdefault(None, []).append(f))
+        return f
+
     def context_processor(self, f):
         """Like :meth:`Flask.context_processor` but for a blueprint.  This
         function is only executed for requests handled by a blueprint.
