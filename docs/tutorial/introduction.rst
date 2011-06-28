@@ -8,7 +8,7 @@ less web-2.0-ish name ;)  Basically we want it to do the following things:
 
 1. let the user sign in and out with credentials specified in the
    configuration.  Only one user is supported.
-2. when the user is logged in he or she can add new entries to the page
+2. when the user is logged in they can add new entries to the page
    consisting of a text-only title and some HTML for the text.  This HTML
    is not sanitized because we trust the user here.
 3. the page shows all entries so far in reverse order (newest on top) and

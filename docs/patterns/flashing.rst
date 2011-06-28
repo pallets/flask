@@ -4,7 +4,7 @@ Message Flashing
 ================
 
 Good applications and user interfaces are all about feedback.  If the user
-does not get enough feedback he or she will probably end up hating the
+does not get enough feedback they will probably end up hating the
 application.  Flask provides a really simple way to give feedback to a
 user with the flashing system.  The flashing system basically makes it
 possible to record a message at the end of a request and access it next

@@ -24,7 +24,7 @@ even if the application behaves correctly:
 *403 Forbidden*
     If you have some kind of access control on your website, you will have
     to send a 403 code for disallowed resources.  So make sure the user
-    is not lost when he or she tries to access a forbidden resource.
+    is not lost when they try to access a forbidden resource.
 
 *410 Gone*
     Did you know that there the "404 Not Found" has a brother named "410
@@ -32,7 +32,7 @@ even if the application behaves correctly:
     resources that previously existed and got deleted answer with 410
     instead of 404.  If you are not deleting documents permanently from
     the database but just mark them as deleted, do the user a favour and
-    use the 410 code instead and display a message that what he or she was
+    use the 410 code instead and display a message that what they were
     looking for was deleted for all eternity.
 
 *500 Internal Server Error*
