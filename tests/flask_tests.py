@@ -14,6 +14,7 @@ import os
 import re
 import sys
 import flask
+import flask.views
 import unittest
 import warnings
 from threading import Thread
@@ -23,6 +24,7 @@ from functools import update_wrapper
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
 from werkzeug.exceptions import NotFound
+from werkzeug.http import parse_set_header
 from jinja2 import TemplateNotFound
 from cStringIO import StringIO
 
@@ -1753,6 +1755,40 @@ class TestSignals(unittest.TestCase):
             flask.got_request_exception.disconnect(record, app)
 
 
+class ViewTestCase(unittest.TestCase):
+
+    def common_test(self, app):
+        c = app.test_client()
+
+        self.assertEqual(c.get('/').data, 'GET')
+        self.assertEqual(c.post('/').data, 'POST')
+        self.assertEqual(c.put('/').status_code, 405)
+        meths = parse_set_header(c.open('/', method='OPTIONS').headers['Allow'])
+        self.assertEqual(sorted(meths), ['GET', 'HEAD', 'OPTIONS', 'POST'])
+
+    def test_basic_view(self):
+        app = flask.Flask(__name__)
+
+        class Index(flask.views.View):
+            methods = ['GET', 'POST']
+            def dispatch_request(self):
+                return flask.request.method
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+        self.common_test(app)
+
+    def test_method_based_view(self):
+        app = flask.Flask(__name__)
+
+        class Index(flask.views.MethodView):
+            def get(self):
+                return 'GET'
+            def post(self):
+                return 'POST'
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+        self.common_test(app)
+
 class DeprecationsTestCase(unittest.TestCase):
 
     def test_init_jinja_globals(self):
@@ -1785,6 +1821,7 @@ def suite():
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(ConfigTestCase))
     suite.addTest(unittest.makeSuite(SubdomainTestCase))
+    suite.addTest(unittest.makeSuite(ViewTestCase))
     suite.addTest(unittest.makeSuite(DeprecationsTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))

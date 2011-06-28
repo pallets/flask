@@ -642,7 +642,8 @@ class Flask(_PackageBoundObject):
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, \
                 'A blueprint\'s name collision ocurred between %r and ' \
-                '%r.  Both share the same name "%s"' % \
+                '%r.  Both share the same name "%s".  Blueprints that ' \
+                'are created on the fly need unique names.' % \
                 (blueprint, self.blueprints[blueprint.name], blueprint.name)
         else:
             self.blueprints[blueprint.name] = blueprint
@@ -695,7 +696,12 @@ class Flask(_PackageBoundObject):
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
         options['endpoint'] = endpoint
-        methods = options.pop('methods', ('GET',))
+        methods = options.pop('methods', None)
+        # if the methods are not given and the view_func object knows its
+        # methods we can use that instead.  If neither exists, we go with
+        # a tuple of only `GET` as default.
+        if methods is None:
+            methods = getattr(view_func, 'methods', None) or ('GET',)
         provide_automatic_options = False
         if 'OPTIONS' not in methods:
             methods = tuple(methods) + ('OPTIONS',)
@@ -777,7 +783,6 @@ class Flask(_PackageBoundObject):
             self.add_url_rule(rule, None, f, **options)
             return f
         return decorator
-
 
     def endpoint(self, endpoint):
         """A decorator to register a function as an endpoint.
