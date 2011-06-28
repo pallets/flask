@@ -45,7 +45,7 @@ good.
 To apply the upgrade script do the following:
 
 1.  Download the script: `flask-07-upgrade.py
-    <http://github.com/mitsuhiko/flask/tree/raw/master/scripts/flask-07-upgrade.py>`_
+    <https://raw.github.com/mitsuhiko/flask/master/scripts/flask-07-upgrade.py>`_
 2.  Run it in the directory of your application::
 
         python flask-07-upgrade.py > patchfile.diff
