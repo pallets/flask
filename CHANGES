@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.7
 -----------
 
-Released on June 27th 2011, codename Grappa
+Released on June 28th 2011, codename Grappa
 
 - Added :meth:`~flask.Flask.make_default_options_response`
   which can be used by subclasses to alter the default
