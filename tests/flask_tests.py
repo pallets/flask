@@ -1787,7 +1787,48 @@ class ViewTestCase(unittest.TestCase):
                 return 'POST'
 
         app.add_url_rule('/', view_func=Index.as_view('index'))
+
         self.common_test(app)
+
+    def test_view_patching(self):
+        app = flask.Flask(__name__)
+
+        class Index(flask.views.MethodView):
+            def get(self):
+                1/0
+            def post(self):
+                1/0
+
+        class Other(Index):
+            def get(self):
+                return 'GET'
+            def post(self):
+                return 'POST'
+
+        view = Index.as_view('index')
+        view.view_class = Other
+        app.add_url_rule('/', view_func=view)
+        self.common_test(app)
+
+    def test_view_inheritance(self):
+        app = flask.Flask(__name__)
+
+        class Index(flask.views.MethodView):
+            def get(self):
+                return 'GET'
+            def post(self):
+                return 'POST'
+
+        class BetterIndex(Index):
+            def delete(self):
+                return 'DELETE'
+
+        app.add_url_rule('/', view_func=BetterIndex.as_view('index'))
+        c = app.test_client()
+
+        meths = parse_set_header(c.open('/', method='OPTIONS').headers['Allow'])
+        self.assertEqual(sorted(meths), ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST'])
+
 
 class DeprecationsTestCase(unittest.TestCase):
 

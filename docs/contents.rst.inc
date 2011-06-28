@@ -17,6 +17,7 @@ instructions for web development with Flask.
    errorhandling
    config
    signals
+   views
    reqcontext
    blueprints
    shell
