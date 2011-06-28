@@ -86,7 +86,7 @@ For instance you can write a class like this::
 
 And then you can register it like this::
 
-    app.add_url_view('/about', RenderTemplateView.as_view(
+    app.add_url_rule('/about', view_func=RenderTemplateView.as_view(
         'about_page', template_name='about.html'))
 
 Method Hints
@@ -108,7 +108,7 @@ information::
                 ...
             ...
 
-    app.add_url_view('/myview', MyView.as_view('myview'))
+    app.add_url_rule('/myview', view_func=MyView.as_view('myview'))
 
 Method Based Dispatching
 ------------------------
@@ -130,7 +130,7 @@ easily do that.  Each HTTP method maps to a function with the same name
             user = User.from_form_data(request.form)
             ...
 
-    app.add_url_view('/users/', UserAPI.as_view('users'))
+    app.add_url_rule('/users/', view_func=UserAPI.as_view('users'))
 
 That way you also don't have to provide the
 :attr:`~flask.views.View.methods` attribute.  It's automatically set based
