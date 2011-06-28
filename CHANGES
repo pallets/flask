@@ -45,7 +45,7 @@ Released on June 27th 2011, codename Grappa
 - Deprecated `init_jinja_globals`.  Override the
   :meth:`~flask.Flask.create_jinja_environment` method instead to
   achieve the same functionality.
-- Added :func:`safe_join`
+- Added :func:`flask.safe_join`
 - The automatic JSON request data unpacking now looks at the charset
   mimetype parameter.
 - Don't modify the session on :func:`flask.get_flashed_messages` if there
