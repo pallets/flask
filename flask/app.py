@@ -706,6 +706,12 @@ class Flask(_PackageBoundObject):
         if 'OPTIONS' not in methods:
             methods = tuple(methods) + ('OPTIONS',)
             provide_automatic_options = True
+
+        # due to a werkzeug bug we need to make sure that the defaults are
+        # None if they are an empty dictionary.  This should not be necessary
+        # with Werkzeug 0.7
+        options['defaults'] = options.get('defaults') or None
+
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
         self.url_map.add(rule)
