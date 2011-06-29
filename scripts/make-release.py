@@ -33,7 +33,7 @@ def parse_changelog():
                 if change_info:
                     break
 
-            match = re.match(r'^released on (\w+\s+\d+\w+\s+\d+)'
+            match = re.match(r'released on (\w+\s+\d+\w+\s+\d+)'
                              r'(?:, codename (.*))?(?i)', change_info)
             if match is None:
                 continue
