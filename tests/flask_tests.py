@@ -1364,6 +1364,21 @@ class BlueprintTestCase(unittest.TestCase):
         self.assertEqual(c.get('/fe2').data.strip(), '/fe')
         self.assertEqual(c.get('/be').data.strip(), '/fe')
 
+    def test_empty_url_defaults(self):
+        bp = flask.Blueprint('bp', __name__)
+
+        @bp.route('/', defaults={'page': 1})
+        @bp.route('/page/<int:page>')
+        def something(page):
+            return str(page)
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp)
+
+        c = app.test_client()
+        self.assertEqual(c.get('/').data, '1')
+        self.assertEqual(c.get('/page/2').data, '2')
+
 
 class SendfileTestCase(unittest.TestCase):
 
