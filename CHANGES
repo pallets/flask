@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.7.1
 -------------
 
-Bugfix release, release date to be decided.
+Bugfix release, released on June 29th 2011
 
 - Added missing future import that broke 2.5 compatibility.
 - Fixed an infinite redirect issue with blueprints.
