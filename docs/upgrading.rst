@@ -193,10 +193,11 @@ to upgrade.  What changed?
     location however.  If you want to continue serving static files you
     need to tell the constructor explicitly the path to the static folder
     (which can be relative to the blueprint's module path).
--   Rendering templates was simplified.  Now the general syntax is
-    ``blueprint-shortname:template-name`` for rendering templates instead
-    of ``blueprint-shortname/template-name`` which was confusing and often
-    clashed with templates from the global template loader.
+-   Rendering templates was simplified.  Now the blueprints can provide
+    template folders which are added to a general template searchpath.
+    This means that you need to add another subfolder with the blueprint's
+    name into that folder if you want ``blueprintname/template.html`` as
+    the template name.
 
 If you continue to use the `Module` object which is deprecated, Flask will
 restore the previous behavior as good as possible.  However we strongly
