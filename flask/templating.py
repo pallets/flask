@@ -117,8 +117,6 @@ def render_template(template_name, **context):
     """
     ctx = _request_ctx_stack.top
     ctx.app.update_template_context(context)
-    if template_name[:1] == ':':
-        template_name = ctx.request.blueprint + template_name
     return _render(ctx.app.jinja_env.get_template(template_name),
                    context, ctx.app)
 
