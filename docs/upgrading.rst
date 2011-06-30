@@ -189,10 +189,12 @@ to upgrade.  What changed?
     some unnecessary leading dots in your code if you're not using
     modules.
 -   Blueprints do not automatically provide static folders.  They will
-    still export templates from a folder called `templates` next to their
-    location however.  If you want to continue serving static files you
-    need to tell the constructor explicitly the path to the static folder
-    (which can be relative to the blueprint's module path).
+    also no longer automatically export templates from a folder called
+    `templates` next to their location however but it can be enabled from
+    the constructor.  Same with static files: if you want to continue
+    serving static files you need to tell the constructor explicitly the
+    path to the static folder (which can be relative to the blueprint's
+    module path).
 -   Rendering templates was simplified.  Now the blueprints can provide
     template folders which are added to a general template searchpath.
     This means that you need to add another subfolder with the blueprint's
