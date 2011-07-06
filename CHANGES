@@ -3,6 +3,14 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.7.2
+-------------
+
+Bugfix release, released on July 6th 2011
+
+- Fixed an issue with URL processors not properly working on
+  blueprints.
+
 Version 0.7.1
 -------------
 
