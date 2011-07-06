@@ -41,7 +41,8 @@ will have separate configs and will be managed at the WSGI layer.
 Blueprints instead provide separation at the Flask level, share
 application config, and can change an application object as necessary with
 being registered. The downside is that you cannot unregister a blueprint
-once application without having to destroy the whole application object.
+once an application was created without having to destroy the whole
+application object.
 
 The Concept of Blueprints
 -------------------------
