@@ -830,6 +830,37 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         rv = c.post('/accept', data={'myfile': 'foo' * 100})
         assert rv.data == '42'
 
+    def test_url_processors(self):
+        app = flask.Flask(__name__)
+
+        @app.url_defaults
+        def add_language_code(endpoint, values):
+            if flask.g.lang_code is not None and \
+               app.url_map.is_endpoint_expecting(endpoint, 'lang_code'):
+                values.setdefault('lang_code', flask.g.lang_code)
+
+        @app.url_value_preprocessor
+        def pull_lang_code(endpoint, values):
+            flask.g.lang_code = values.pop('lang_code', None)
+
+        @app.route('/<lang_code>/')
+        def index():
+            return flask.url_for('about')
+
+        @app.route('/<lang_code>/about')
+        def about():
+            return flask.url_for('something_else')
+
+        @app.route('/foo')
+        def something_else():
+            return flask.url_for('about', lang_code='en')
+
+        c = app.test_client()
+
+        self.assertEqual(c.get('/de/').data, '/de/about')
+        self.assertEqual(c.get('/de/about').data, '/foo')
+        self.assertEqual(c.get('/foo').data, '/en/about')
+
 
 class JSONTestCase(unittest.TestCase):
 
@@ -1308,6 +1339,33 @@ class BlueprintTestCase(unittest.TestCase):
         self.assertEqual(c.get('/2/foo').data, u'19/42')
         self.assertEqual(c.get('/1/bar').data, u'23')
         self.assertEqual(c.get('/2/bar').data, u'19')
+
+    def test_blueprint_url_processors(self):
+        bp = flask.Blueprint('frontend', __name__, url_prefix='/<lang_code>')
+
+        @bp.url_defaults
+        def add_language_code(endpoint, values):
+            values.setdefault('lang_code', flask.g.lang_code)
+
+        @bp.url_value_preprocessor
+        def pull_lang_code(endpoint, values):
+            flask.g.lang_code = values.pop('lang_code')
+
+        @bp.route('/')
+        def index():
+            return flask.url_for('.about')
+
+        @bp.route('/about')
+        def about():
+            return flask.url_for('.index')
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp)
+
+        c = app.test_client()
+
+        self.assertEqual(c.get('/de/').data, '/de/about')
+        self.assertEqual(c.get('/de/about').data, '/de/')
 
     def test_templates_and_static(self):
         from blueprintapp import app
