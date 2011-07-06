@@ -167,4 +167,4 @@ falls back to another application if the creator function returns `None`::
         if user is not None:
             return create_app(user)
 
-    application = PathDispatcher('example.com', default_app, make_app)
+    application = PathDispatcher(default_app, make_app)
