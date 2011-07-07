@@ -25,10 +25,17 @@ class SessionMixin(object):
     def _set_permanent(self, value):
         self['_permanent'] = bool(value)
 
+    #: this reflects the ``'_permanent'`` key in the dict.
     permanent = property(_get_permanent, _set_permanent)
     del _get_permanent, _set_permanent
 
+    #: some session backends can tell you if a session is new, but that is
+    #: not necessarily guaranteed.  Use with caution.
     new = False
+
+    #: for some backends this will always be `True`, but some backends will
+    #: default this to false and detect changes in the dictionary for as
+    #: long as changes do not happen on mutable structures in the session.
     modified = True
 
 
