@@ -22,7 +22,7 @@ decorators::
 
 Functions marked with :meth:`~flask.Flask.before_request` are called before
 a request and passed no arguments.  Functions marked with
-:meth:`~flask.Flask.teardown_request` are called after a request and
+:meth:`~flask.Flask.after_request` are called after a request and
 passed the response that will be sent to the client.  They have to return
 that response object or a different one.  They are however not guaranteed
 to be executed if an exception is raised, this is where functions marked with
