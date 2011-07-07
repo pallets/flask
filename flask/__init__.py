@@ -35,3 +35,6 @@ from .signals import signals_available, template_rendered, request_started, \
 # only import json if it's available
 if json_available:
     from .helpers import json
+
+# backwards compat, goes away in 1.0
+from .sessions import SecureCookieSession as Session

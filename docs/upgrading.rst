@@ -19,6 +19,16 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+Version 0.8
+-----------
+
+Flask introduced a new session interface system.  We also noticed that
+there was a naming collision between `flask.session` the module that
+implements sessions and :data:`flask.session` which is the global session
+object.  With that introduction we moved the implementation details for
+the session system into a new module called :mod:`flask.sessions`.  If you
+used the previously undocumented session support we urge you to upgrade.
+
 Version 0.7
 -----------
 
