@@ -30,12 +30,14 @@ class SessionMixin(object):
     del _get_permanent, _set_permanent
 
     #: some session backends can tell you if a session is new, but that is
-    #: not necessarily guaranteed.  Use with caution.
+    #: not necessarily guaranteed.  Use with caution.  The default mixin
+    #: implementation just hardcodes `False` in.
     new = False
 
     #: for some backends this will always be `True`, but some backends will
     #: default this to false and detect changes in the dictionary for as
     #: long as changes do not happen on mutable structures in the session.
+    #: The default mixin implementation just hardcodes `True` in.
     modified = True
 
 
