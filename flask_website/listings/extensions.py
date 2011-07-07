@@ -21,8 +21,6 @@ class Extension(object):
 
     def to_json(self):
         rv = vars(self).copy()
-        # Keep developer notes out of JSON response.
-        rv.pop('notes')
         rv['description'] = unicode(rv['description'])
         return rv
 

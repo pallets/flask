@@ -10,7 +10,7 @@ mod = Module(__name__, url_prefix='/extensions')
 def index():
     if request_wants_json():
         return jsonify(extensions=[ext.to_json() for ext in extensions],
-                       unlisted_extensions=unlisted)
+                       unlisted_extensions=[ext.to_json() for ext in unlisted])
     return render_template('extensions/index.html', extensions=extensions)
 
 
