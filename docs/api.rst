@@ -195,8 +195,33 @@ To access the current session you can use the :class:`session` object:
       session will be deleted when the user closes the browser.
 
 
+Session Interface
+-----------------
+
+.. versionadded:: 0.7
+
+The session interface provides a simple way to replace the session
+implementation that Flask is using.
+
+.. currentmodule:: flask.sessions
+
+.. autoclass:: SessionInterface
+   :members:
+
+.. autoclass:: SecureCookieSessionInterface
+   :members:
+
+.. autoclass:: NullSession
+   :members:
+
+.. autoclass:: SessionMixin
+   :members:
+
+
 Application Globals
 -------------------
+
+.. currentmodule:: flask
 
 To share data that is valid for one request only from one function to
 another, a global variable is not good enough because it would break in

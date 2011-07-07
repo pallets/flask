@@ -122,7 +122,7 @@ class RequestContext(object):
         # request context (e.g. flask-sqlalchemy).
         self.session = self.app.open_session(self.request)
         if self.session is None:
-            self.session = _NullSession()
+            self.session = self.app.make_null_session()
 
     def pop(self):
         """Pops the request context and unbinds it by doing that.  This will

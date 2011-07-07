@@ -27,7 +27,7 @@ from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext
 from .globals import _request_ctx_stack, request
-from .session import Session, _NullSession
+from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
@@ -210,6 +210,12 @@ class Flask(_PackageBoundObject):
     #:
     #: .. versionadded:: 0.7
     test_client_class = None
+
+    #: the session interface to use.  By default an instance of
+    #: :class:`~flask.sessions.SecureCookieSessionInterface` is used here.
+    #:
+    #: .. versionadded:: 0.7
+    session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
                  static_folder='static', template_folder='templates'):
@@ -580,32 +586,32 @@ class Flask(_PackageBoundObject):
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
         session data in a signed cookie.  This requires that the
-        :attr:`secret_key` is set.
+        :attr:`secret_key` is set.  Instead of overriding this method
+        we recommend replacing the :class:`session_interface`.
 
         :param request: an instance of :attr:`request_class`.
         """
-        key = self.secret_key
-        if key is not None:
-            return Session.load_cookie(request, self.session_cookie_name,
-                                       secret_key=key)
+        return self.session_interface.open_session(self, request)
 
     def save_session(self, session, response):
         """Saves the session if it needs updates.  For the default
-        implementation, check :meth:`open_session`.
+        implementation, check :meth:`open_session`.  Instead of overriding this
+        method we recommend replacing the :class:`session_interface`.
 
         :param session: the session to be saved (a
                         :class:`~werkzeug.contrib.securecookie.SecureCookie`
                         object)
         :param response: an instance of :attr:`response_class`
         """
-        expires = domain = None
-        if session.permanent:
-            expires = datetime.utcnow() + self.permanent_session_lifetime
-        if self.config['SERVER_NAME'] is not None:
-            # chop of the port which is usually not supported by browsers
-            domain = '.' + self.config['SERVER_NAME'].rsplit(':', 1)[0]
-        session.save_cookie(response, self.session_cookie_name,
-                            expires=expires, httponly=True, domain=domain)
+        return self.session_interface.save_session(self, session, response)
+
+    def make_null_session(self):
+        """Creates a new instance of a missing session.  Instead of overriding
+        this method we recommend replacing the :class:`session_interface`.
+
+        .. versionadded:: 0.7
+        """
+        return self.session_interface.make_null_session(self)
 
     def register_module(self, module, **options):
         """Registers a module with this application.  The keyword argument
@@ -1184,7 +1190,7 @@ class Flask(_PackageBoundObject):
         """
         ctx = _request_ctx_stack.top
         bp = ctx.request.blueprint
-        if not isinstance(ctx.session, _NullSession):
+        if not self.session_interface.is_null_session(ctx.session):
             self.save_session(ctx.session, response)
         funcs = ()
         if bp is not None and bp in self.after_request_funcs:

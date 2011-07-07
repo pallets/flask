@@ -27,7 +27,6 @@ from .ctx import has_request_context
 from .module import Module
 from .blueprints import Blueprint
 from .templating import render_template, render_template_string
-from .session import Session
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
