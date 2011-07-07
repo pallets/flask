@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from urlparse import urljoin
-from flask import Module, render_template, request, flash, abort, redirect, \
+from flask import Blueprint, render_template, request, flash, abort, redirect, \
      g, url_for, jsonify
 from werkzeug.contrib.atom import AtomFeed
 from flask_website.utils import requires_login, requires_admin, \
      format_creole, request_wants_json
 from flask_website.database import Category, Snippet, Comment, db_session
 
-mod = Module(__name__, url_prefix='/snippets')
+mod = Blueprint('snippets', __name__, url_prefix='/snippets')
 
 
 @mod.route('/')
@@ -160,7 +160,7 @@ def manage_categories():
             category.slug = request.form['slug.%d' % category.id]
         db_session.commit()
         flash(u'Categories updated')
-        return redirect(url_for('manage_categories'))
+        return redirect(url_for('.manage_categories'))
     return render_template('snippets/manage_categories.html',
                            categories=categories)
 
@@ -172,7 +172,7 @@ def new_category():
     db_session.add(category)
     db_session.commit()
     flash(u'Category %s created.' % category.name)
-    return redirect(url_for('manage_categories'))
+    return redirect(url_for('.manage_categories'))
 
 
 @mod.route('/delete-category/<int:id>/', methods=['GET', 'POST'])
@@ -184,7 +184,7 @@ def delete_category(id):
     if request.method == 'POST':
         if 'cancel' in request.form:
             flash(u'Deletion was aborted')
-            return redirect(url_for('manage_categories'))
+            return redirect(url_for('.manage_categories'))
         move_to_id = request.form.get('move_to', type=int)
         if move_to_id:
             move_to = Category.query.get(move_to_id)
@@ -201,7 +201,7 @@ def delete_category(id):
             db_session.delete(category)
             flash(u'Category %s deleted' % category.name)
         db_session.commit()
-        return redirect(url_for('manage_categories'))
+        return redirect(url_for('.manage_categories'))
     return render_template('snippets/delete_category.html',
                            category=category,
                            other_categories=Category.query

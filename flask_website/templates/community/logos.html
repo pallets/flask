@@ -1,7 +1,7 @@
 {% extends "community/layout.html" %}
 {% block title %}Logos{% endblock %}
 {% macro logo(format) -%}
-  <a href="{{ url_for('.static', filename='logo/flask.' ~ format)
+  <a href="{{ url_for('static', filename='logo/flask.' ~ format)
     }}">{{ format|upper }} format</a>
 {%- endmacro %}
 {% block body %}

@@ -19,7 +19,7 @@
   {% endif %}
   <p>
     Want to share something?  Then add a
-    <a href="{{ url_for('new') }}">new snippet</a>.
+    <a href="{{ url_for('.new') }}">new snippet</a>.
   <h2>Snippets by Category</h2>
   <ul>
   {% for category in categories %}
@@ -38,7 +38,7 @@
   {% if g.user.is_admin %}
   <h2>Admin Tools</h2>
   <ul>
-    <li><a href="{{ url_for('manage_categories') }}">Manage categories</a>
+    <li><a href="{{ url_for('.manage_categories') }}">Manage categories</a>
   </ul>
   {% endif %}
 {% endblock %}

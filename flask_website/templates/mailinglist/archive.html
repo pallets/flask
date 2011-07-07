@@ -2,7 +2,7 @@
 {% block title %}Mailinglist Archive{% endblock %}
 {% block body %}
   <p class=backnav>
-    <a href="{{ url_for('index') }}">&laquo; list information</a>
+    <a href="{{ url_for('.index') }}">&laquo; list information</a>
   <h2>Mailinglist Archive</h2>
   <ul class=archive>
   {% for thread in threads %}

@@ -1,4 +1,4 @@
-from flask import Module, render_template, session, redirect, url_for, \
+from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, Response, jsonify
 from flaskext.openid import COMMON_PROVIDERS
 from flask_website import oid
@@ -7,7 +7,7 @@ from flask_website.utils import requires_login, request_wants_json
 from flask_website.database import db_session, User
 from flask_website.listings.releases import releases
 
-mod = Module(__name__)
+mod = Blueprint('general', __name__)
 
 
 @mod.route('/')
@@ -48,7 +48,7 @@ def login():
 @mod.route('/first-login/', methods=['GET', 'POST'])
 def first_login():
     if g.user is not None or 'openid' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('.login'))
     if request.method == 'POST':
         if 'cancel' in request.form:
             del session['openid']
@@ -75,7 +75,7 @@ def profile():
             g.user.name = name
             db_session.commit()
             flash(u'User profile updated')
-            return redirect(url_for('index'))
+            return redirect(url_for('.index'))
     return render_template('general/profile.html', name=name)
 
 
@@ -104,7 +104,7 @@ def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = g.user or User.query.filter_by(openid=resp.identity_url).first()
     if user is None:
-        return redirect(url_for('first_login', next=oid.get_next_url(),
+        return redirect(url_for('.first_login', next=oid.get_next_url(),
                                 name=resp.fullname or resp.nickname))
     if user.openid != resp.identity_url:
         user.openid = resp.identity_url

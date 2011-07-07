@@ -1,9 +1,9 @@
-from flask import Module, render_template, jsonify, redirect, \
+from flask import Blueprint, render_template, jsonify, redirect, \
      url_for
 from flask_website.utils import request_wants_json
 from flask_website.listings.extensions import extensions, unlisted
 
-mod = Module(__name__, url_prefix='/extensions')
+mod = Blueprint('extensions', __name__, url_prefix='/extensions')
 
 
 @mod.route('/')

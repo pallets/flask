@@ -3,7 +3,7 @@
 {% block head %}
   {{ super() }}
   <style type=text/css>
-    h1 { margin: 0 0 30px 0; background: url({{ url_for('.static', filename='logo.png') }}) no-repeat center; height: 165px; }
+    h1 { margin: 0 0 30px 0; background: url({{ url_for('static', filename='logo.png') }}) no-repeat center; height: 165px; }
     h1 span, p.tagline { display: none; }
   </style>
   <script type=text/javascript>
@@ -30,8 +30,8 @@
       please if you use it head over to the <a href="{{ url_for('community.logos') }}">logo
       page</a> for the logo and the usage guidelines.
     <p>
-      Quicklinks: <a href="{{ url_for('.static', filename='logo/flask.png') }}">PNG</a>
-      and <a href="{{ url_for('.static', filename='logo/flask.eps') }}">EPS</a>
+      Quicklinks: <a href="{{ url_for('static', filename='logo/flask.png') }}">PNG</a>
+      and <a href="{{ url_for('static', filename='logo/flask.eps') }}">EPS</a>
   </div>
 {% endblock %}
 {% block body %}

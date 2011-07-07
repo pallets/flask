@@ -8,7 +8,7 @@ body, html {
 }
 
 body {
-  background: url({{ url_for('.static', filename='ship.png') }}) no-repeat center right;
+  background: url({{ url_for('static', filename='ship.png') }}) no-repeat center right;
 }
 
 body:after {
@@ -18,7 +18,7 @@ body:after {
   top: 0;
   bottom: 0;
   width: 30px;
-  background: url({{ url_for('.static', filename='mask.png') }}) repeat-y left;
+  background: url({{ url_for('static', filename='mask.png') }}) repeat-y left;
 }
 
 a { color: #004B6B; }

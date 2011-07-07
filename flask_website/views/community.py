@@ -1,9 +1,9 @@
-from flask import Module, render_template, jsonify
+from flask import Blueprint, render_template, jsonify
 from flask_website.twitter import flask_tweets
 from flask_website.utils import request_wants_json
 from flask_website.listings.projects import projects
 
-mod = Module(__name__, url_prefix='/community')
+mod = Blueprint('community', __name__, url_prefix='/community')
 
 
 @mod.route('/')

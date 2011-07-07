@@ -2,7 +2,7 @@
 {% block title %}Badges{% endblock %}
 {% macro badge(filename, title) -%}
 <a href="{{ url_for('general.index', _external=true) }}"><img
-   src="{{ url_for('.static', filename='badges/' ~ filename, _external=true) }}"
+   src="{{ url_for('static', filename='badges/' ~ filename, _external=true) }}"
    border="0"
    alt="{{ title }}"
    title="{{ title }}"></a>

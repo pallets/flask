@@ -2,7 +2,7 @@
 {% block head %}
   {{ super() }}
   <style type=text/css>
-    h1 { background-image: url({{ url_for('.static', filename='profile.png') }}); }
+    h1 { background-image: url({{ url_for('static', filename='profile.png') }}); }
   </style>
 {% endblock %}
 {% block title %}Profile{% endblock %}
@@ -19,7 +19,7 @@
       <dt>OpenID:
       <dd>
         <span class=disabled>{{ g.user.openid|displayopenid }}</span>
-        (<a href="{{ url_for('change_openid') }}">change</a>)
+        (<a href="{{ url_for('.change_openid') }}">change</a>)
     </dl>
     <p>
       <input type=submit value="Update profile">

@@ -2,12 +2,12 @@
 {% block title %}{{ thread.title }}{% endblock %}
 {% block head %}
   {{ super() }}
-  <script type=text/javascript src="{{ url_for('.static',
+  <script type=text/javascript src="{{ url_for('static',
     filename='mailinglist.js') }}"></script>
 {% endblock %}
 {% block body %}
   <p class=backnav>
-    <a href="{{ url_for('archive') }}">&laquo; back to archive</a>
+    <a href="{{ url_for('.archive') }}">&laquo; back to archive</a>
   <h2>{{ thread.title }}</h2>
 
   <ul class=mailtree>

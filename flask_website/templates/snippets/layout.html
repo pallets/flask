@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
-  <link href="{{ url_for('recent_feed') }}" rel="alternate" title="Recent Flask Snippets" type="application/atom+xml">
+  <link href="{{ url_for('.recent_feed') }}" rel="alternate" title="Recent Flask Snippets" type="application/atom+xml">
   <style type=text/css>
-    h1 { background-image: url({{ url_for('.static', filename='snippets.png') }}); }
+    h1 { background-image: url({{ url_for('static', filename='snippets.png') }}); }
   </style>
 {% endblock %}
 {% block body_title %}

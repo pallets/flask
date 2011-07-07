@@ -2,7 +2,7 @@
 {% block head %}
   {{ super() }}
   <style type=text/css>
-    h1 { background-image: url({{ url_for('.static', filename='mailinglist.png') }}); }
+    h1 { background-image: url({{ url_for('static', filename='mailinglist.png') }}); }
   </style>
 {% endblock %}
 {% block body_title %}

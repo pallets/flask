@@ -4,12 +4,12 @@ from math import ceil
 from hashlib import md5
 from werkzeug import parse_date, http_date
 from jinja2.utils import urlize
-from flask import Module, render_template, json, url_for, abort, Markup, \
+from flask import Blueprint, render_template, json, url_for, abort, Markup, \
      jsonify
 from flask_website.utils import split_lines_wrapping, request_wants_json
 from flask_website import config
 
-mod = Module(__name__, url_prefix='/mailinglist')
+mod = Blueprint('mailinglist', __name__, url_prefix='/mailinglist')
 
 
 class Mail(object):

@@ -22,10 +22,9 @@ def load_current_user():
         if 'openid' in session else None
 
 
-@app.after_request
-def remove_db_session(response):
+@app.teardown_request
+def remove_db_session(exception):
     db_session.remove()
-    return response
 
 app.add_url_rule('/docs/', endpoint='docs.index', build_only=True)
 app.add_url_rule('/docs/<path:page>/', endpoint='docs.show',
@@ -40,11 +39,11 @@ from flask_website.views import community
 from flask_website.views import mailinglist
 from flask_website.views import snippets
 from flask_website.views import extensions
-app.register_module(general.mod)
-app.register_module(community.mod)
-app.register_module(mailinglist.mod)
-app.register_module(snippets.mod)
-app.register_module(extensions.mod)
+app.register_blueprint(general.mod)
+app.register_blueprint(community.mod)
+app.register_blueprint(mailinglist.mod)
+app.register_blueprint(snippets.mod)
+app.register_blueprint(extensions.mod)
 
 from flask_website.database import User, db_session
 from flask_website import utils

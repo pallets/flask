@@ -15,14 +15,14 @@
         <td><input type=text name=name.{{ category.id }} value="{{ category.name }}" size=24>
         <td><input type=text name=slug.{{ category.id }} value="{{ category.slug }}" size=17>
         <td>{{ category.snippets.count() }}
-        <td><a href="{{ url_for('delete_category', id=category.id) }}">delete</a>
+        <td><a href="{{ url_for('.delete_category', id=category.id) }}">delete</a>
     {% endfor %}
     </table>
     <p class=actions>
       <input type=submit value="Update categories">
   </form>
   {% endif %}
-  <form action="{{ url_for('new_category') }}" method=post>
+  <form action="{{ url_for('.new_category') }}" method=post>
     <p>Or create a new category:
       <input type=text name=name size=30>
       <input type=submit value=Create>
