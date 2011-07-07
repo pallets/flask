@@ -9,9 +9,9 @@ mod = Module(__name__, url_prefix='/extensions')
 @mod.route('/')
 def index():
     if request_wants_json():
-        return jsonify(extensions=[ext.to_json() for ext in extensions])
-    return render_template('extensions/index.html', extensions=extensions,
-                           unlisted=unlisted)
+        return jsonify(extensions=[ext.to_json() for ext in extensions],
+                       unlisted_extensions=unlisted)
+    return render_template('extensions/index.html', extensions=extensions)
 
 
 @mod.route('/creating/')
