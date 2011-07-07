@@ -11,6 +11,7 @@ Relase date to be decided, codename to be chosen.
 - Refactored session support into a session interface so that
   the implementation of the sessions can be changed without
   having to override the Flask class.
+- Empty session cookies are now deleted properly automatically.
 
 Version 0.7.2
 -------------
