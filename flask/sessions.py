@@ -89,7 +89,7 @@ class SessionInterface(object):
         app = Flask(__name__)
         app.session_interface = MySessionInterface()
 
-    .. versionadded:: 0.7
+    .. versionadded:: 0.8
     """
 
     #: :meth:`make_null_session` will look here for the class that should

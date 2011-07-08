@@ -198,7 +198,7 @@ To access the current session you can use the :class:`session` object:
 Session Interface
 -----------------
 
-.. versionadded:: 0.7
+.. versionadded:: 0.8
 
 The session interface provides a simple way to replace the session
 implementation that Flask is using.
