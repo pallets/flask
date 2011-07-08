@@ -5,7 +5,7 @@
       <li>
         <a href="http://twitter.com/{{ tweet.user }}">{{ tweet.user }}</a>:
           {{ tweet.text|urlize }}
-        <span class=meta>&mdash; {{ tweet.pub_date|timedeltaformat }} ago via {{ tweet.via }}</span>
+        <span class=meta>&mdash; {% if tweet.pub_date %}{{ tweet.pub_date|timedeltaformat }} ago {% endif %}via {{ tweet.via }}</span>
     {%- endfor %}
     </ul>
   </div>
