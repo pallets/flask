@@ -182,6 +182,17 @@ class Blueprint(_PackageBoundObject):
             return f
         return decorator
 
+    def app_template_filter(self, name = None):
+        """Like :meth:`Flask.template_filter` but for a blueprint. The filter
+        is available for the entire application.
+        """
+        def decorator(f):
+            def register_template(state):
+                state.app.jinja_env.filters[name or f.__name__] = f
+            self.record_once(register_template)
+            return f
+        return decorator
+
     def before_request(self, f):
         """Like :meth:`Flask.before_request` but for a blueprint.  This function
         is only executed before each request that is handled by a function of
