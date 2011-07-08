@@ -169,10 +169,9 @@ class SecureCookieSessionInterface(SessionInterface):
     def save_session(self, app, session, response):
         expires = self.get_expiration_time(app, session)
         domain = self.get_cookie_domain(app)
-        if not session:
-            if session.modified:
-                response.delete_cookie(app.session_cookie_name,
-                                       domain=domain)
-            return
-        session.save_cookie(response, app.session_cookie_name,
-                            expires=expires, httponly=True, domain=domain)
+        if session.modified and not session:
+            response.delete_cookie(app.session_cookie_name,
+                                   domain=domain)
+        else:
+            session.save_cookie(response, app.session_cookie_name,
+                                expires=expires, httponly=True, domain=domain)
