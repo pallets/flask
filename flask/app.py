@@ -13,7 +13,7 @@ from __future__ import with_statement
 
 import sys
 from threading import Lock
-from datetime import timedelta, datetime
+from datetime import timedelta
 from itertools import chain
 
 from werkzeug import ImmutableDict
