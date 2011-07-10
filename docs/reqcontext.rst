@@ -157,7 +157,7 @@ request handling as they are bound to the lifecycle of the
 popped, the :meth:`~flask.Flask.teardown_request` functions are called.
 
 This is important to know if the life of the request context is prolonged
-by using the test client in a with statement of when using the request
+by using the test client in a with statement or when using the request
 context from the command line::
 
     with app.test_client() as client:
