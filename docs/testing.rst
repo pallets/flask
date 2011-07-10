@@ -236,6 +236,20 @@ need to call :meth:`~flask.Flask.preprocess_request` yourself::
 This can be necessary to open database connections or something similar
 depending on how your application was designed.
 
+If you want to call the :meth:`~flask.Flask.after_request` functions you
+need to call into :meth:`~flask.Flask.process_response` which however
+requires that you pass it a response object::
+
+    app = flask.Flask(__name__)
+
+    with app.test_request_context('/?name=Peter'):
+        resp = Response('...')
+        resp = app.process_response(resp)
+        ...
+
+This in general is less useful because at that point you can directly
+start using the test client.
+
 
 Keeping the Context Around
 --------------------------
