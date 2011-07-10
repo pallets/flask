@@ -32,7 +32,7 @@ Consider an application like this::
         g.lang_code = lang_code
         ...
 
-This is an awful lot of reptition as you have to handle the language code
+This is an awful lot of repetition as you have to handle the language code
 setting on the :data:`~flask.g` object yourself in every single function.
 Sure, a decorator could be used to simplify this, but if you want to
 generate URLs from one function to another you would have to still provide
