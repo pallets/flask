@@ -9,7 +9,7 @@ connection in all our functions so it makes sense to initialize them
 before each request and shut them down afterwards.
 
 Flask allows us to do that with the :meth:`~flask.Flask.before_request`,
-:meth:`~flask.Flask.teardown_request` and :meth:`~flask.Flask.teardown_request`
+:meth:`~flask.Flask.after_request` and :meth:`~flask.Flask.teardown_request`
 decorators::
 
     @app.before_request
