@@ -12,7 +12,6 @@
 from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack
-from .session import _NullSession
 from .module import blueprint_is_module
 
 
