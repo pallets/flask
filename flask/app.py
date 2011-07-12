@@ -112,7 +112,7 @@ class Flask(_PackageBoundObject):
     #: configuration key.  Defaults to `False`.
     debug = ConfigAttribute('DEBUG')
 
-    #: The testing flask.  Set this to `True` to enable the test mode of
+    #: The testing flag.  Set this to `True` to enable the test mode of
     #: Flask extensions (and in the future probably also Flask itself).
     #: For example this might activate unittest helpers that have an
     #: additional runtime cost which should not be enabled by default.
