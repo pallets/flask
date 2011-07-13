@@ -82,7 +82,7 @@ class Flask(_PackageBoundObject):
         extension will look for the code in your application that triggered
         an SQL query in debug mode.  If the import name is not properly set
         up, that debugging information is lost.  (For example it would only
-        pick up SQL queries in `yourapplicaiton.app` and not
+        pick up SQL queries in `yourapplication.app` and not
         `yourapplication.views.frontend`)
 
     .. versionadded:: 0.5
