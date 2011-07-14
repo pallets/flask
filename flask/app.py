@@ -678,6 +678,10 @@ class Flask(_PackageBoundObject):
 
             app.view_functions['index'] = index
 
+        If a view function is provided some defaults can be specified directly
+        on the view function.  For more information refer to
+        :ref:`view-func-options`.
+
         .. versionchanged:: 0.2
            `view_func` parameter added.
 
