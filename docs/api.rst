@@ -489,3 +489,6 @@ Full example::
     index.methods = ['GET', 'OPTIONS']
 
     app.add_url_rule('/', index)
+
+.. versionadded:: 0.8
+   The `provide_automatic_options` functionality was added.
