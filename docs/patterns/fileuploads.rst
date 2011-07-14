@@ -28,6 +28,7 @@ bootstrapping code for our application::
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
     app = Flask(__name__)
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 So first we need a couple of imports.  Most should be straightforward, the
 :func:`werkzeug.secure_filename` is explained a little bit later.  The
@@ -58,7 +59,7 @@ the file and redirects the user to the URL for the uploaded file::
             file = request.files['file']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return redirect(url_for('uploaded_file',
                                         filename=filename))
         return '''
@@ -116,7 +117,7 @@ older versions of Flask::
     app.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
     app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-        '/uploads':  UPLOAD_FOLDER
+        '/uploads':  app.config['UPLOAD_FOLDER']
     })
 
 If you now run the application everything should work as expected.
