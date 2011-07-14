@@ -12,6 +12,8 @@ Relase date to be decided, codename to be chosen.
   the implementation of the sessions can be changed without
   having to override the Flask class.
 - Empty session cookies are now deleted properly automatically.
+- View functions can now opt out of getting the automatic
+  OPTIONS implementation.
 
 Version 0.7.2
 -------------

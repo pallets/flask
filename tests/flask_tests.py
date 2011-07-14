@@ -194,6 +194,23 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         rv = app.test_client().open('/', method='OPTIONS')
         assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
 
+    def test_options_handling_disabled(self):
+        app = flask.Flask(__name__)
+        def index():
+            return 'Hello World!'
+        index.provide_automatic_options = False
+        app.route('/')(index)
+        rv = app.test_client().open('/', method='OPTIONS')
+        assert rv.status_code == 405
+
+        app = flask.Flask(__name__)
+        def index2():
+            return 'Hello World!'
+        index2.provide_automatic_options = True
+        app.route('/', methods=['OPTIONS'])(index2)
+        rv = app.test_client().open('/', method='OPTIONS')
+        assert sorted(rv.allow) == ['OPTIONS']
+
     def test_request_dispatching(self):
         app = flask.Flask(__name__)
         @app.route('/')

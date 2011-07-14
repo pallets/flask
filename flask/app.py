@@ -703,15 +703,24 @@ class Flask(_PackageBoundObject):
             endpoint = _endpoint_from_view_func(view_func)
         options['endpoint'] = endpoint
         methods = options.pop('methods', None)
+
         # if the methods are not given and the view_func object knows its
         # methods we can use that instead.  If neither exists, we go with
         # a tuple of only `GET` as default.
         if methods is None:
             methods = getattr(view_func, 'methods', None) or ('GET',)
-        provide_automatic_options = False
-        if 'OPTIONS' not in methods:
-            methods = tuple(methods) + ('OPTIONS',)
-            provide_automatic_options = True
+
+        # starting with Flask 0.8 the view_func object can disable and
+        # force-enable the automatic options handling.
+        provide_automatic_options = getattr(view_func,
+            'provide_automatic_options', None)
+
+        if provide_automatic_options is None:
+            if 'OPTIONS' not in methods:
+                methods = tuple(methods) + ('OPTIONS',)
+                provide_automatic_options = True
+            else:
+                provide_automatic_options = False
 
         # due to a werkzeug bug we need to make sure that the defaults are
         # None if they are an empty dictionary.  This should not be necessary
