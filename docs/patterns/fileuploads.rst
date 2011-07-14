@@ -66,7 +66,7 @@ the file and redirects the user to the URL for the uploaded file::
         <!doctype html>
         <title>Upload new File</title>
         <h1>Upload new File</h1>
-        <form action="" method=post enctype=multipart/form-data>
+        <form action=/ method=post enctype=multipart/form-data>
           <input type=file name=file>
           <input type=submit value=Upload>
         </form>
