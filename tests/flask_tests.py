@@ -1414,6 +1414,12 @@ class BlueprintTestCase(unittest.TestCase):
         with flask.Flask(__name__).test_request_context():
             assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
+    def test_templates_list(self):
+        from blueprintapp import app
+        templates = sorted(app.jinja_env.list_templates())
+        self.assertEqual(templates, ['admin/index.html',
+                                     'frontend/index.html'])
+
     def test_dotted_names(self):
         frontend = flask.Blueprint('myapp.frontend', __name__)
         backend = flask.Blueprint('myapp.backend', __name__)
