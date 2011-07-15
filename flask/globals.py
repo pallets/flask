@@ -11,7 +11,7 @@
 """
 
 from functools import partial
-from werkzeug import LocalStack, LocalProxy
+from werkzeug.local import LocalStack, LocalProxy
 
 def _lookup_object(name):
     top = _request_ctx_stack.top

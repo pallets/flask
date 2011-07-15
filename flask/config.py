@@ -15,7 +15,7 @@ import imp
 import os
 import errno
 
-from werkzeug import import_string
+from werkzeug.utils import import_string
 
 
 class ConfigAttribute(object):

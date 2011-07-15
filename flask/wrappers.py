@@ -9,8 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from werkzeug import Request as RequestBase, Response as ResponseBase, \
-    cached_property
+from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
+from werkzeug.utils import cached_property
 
 from .helpers import json, _assert_have_json
 from .globals import _request_ctx_stack

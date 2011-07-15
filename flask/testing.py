@@ -10,7 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from werkzeug import Client, EnvironBuilder
+from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
 
 

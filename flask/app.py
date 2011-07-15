@@ -16,7 +16,7 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 
-from werkzeug import ImmutableDict
+from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed
@@ -551,7 +551,7 @@ class Flask(_PackageBoundObject):
                         Werkzeug server.  See :func:`werkzeug.run_simple`
                         for more information.
         """
-        from werkzeug import run_simple
+        from werkzeug.serving import run_simple
         if 'debug' in options:
             self.debug = options.pop('debug')
         options.setdefault('use_reloader', self.debug)
@@ -1267,7 +1267,7 @@ class Flask(_PackageBoundObject):
         :func:`werkzeug.create_environ` for more information, this
         function accepts the same arguments).
         """
-        from werkzeug import create_environ
+        from werkzeug.test import create_environ
         environ_overrides = kwargs.setdefault('environ_overrides', {})
         if self.config.get('SERVER_NAME'):
             server_name = self.config.get('SERVER_NAME')

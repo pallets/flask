@@ -36,8 +36,14 @@ except ImportError:
             json_available = False
 
 
-from werkzeug import Headers, wrap_file
+from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
+
+# this was moved in 0.7
+try:
+    from werkzeug.wsgi import wrap_file
+except ImportError:
+    from werkzeug.utils import wrap_file
 
 from jinja2 import FileSystemLoader
 
