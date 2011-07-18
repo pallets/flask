@@ -856,7 +856,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
            One can now additionally also register custom exception types
            that do not necessarily have to be a subclass of the
-           :class:~`werkzeug.exceptions.HTTPException` class.
+           :class:`~werkzeug.exceptions.HTTPException` class.
 
         :param code: the code as integer for the handler
         """
