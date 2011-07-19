@@ -421,7 +421,7 @@ def safe_join(directory, filename):
 
     :param directory: the base directory.
     :param filename: the untrusted filename relative to that directory.
-    :raises: :class:`~werkzeug.exceptions.NotFound` if the retsulting path
+    :raises: :class:`~werkzeug.exceptions.NotFound` if the resulting path
              would fall out of `directory`.
     """
     filename = posixpath.normpath(filename)
