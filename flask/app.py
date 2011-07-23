@@ -548,8 +548,9 @@ class Flask(_PackageBoundObject):
                      to have the server available externally as well.
         :param port: the port of the webserver
         :param options: the options to be forwarded to the underlying
-                        Werkzeug server.  See :func:`werkzeug.run_simple`
-                        for more information.
+                        Werkzeug server.  See
+                        :func:`werkzeug.serving.run_simple` for more
+                        information.
         """
         from werkzeug.serving import run_simple
         if 'debug' in options:
@@ -1264,7 +1265,7 @@ class Flask(_PackageBoundObject):
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
-        :func:`werkzeug.create_environ` for more information, this
+        :func:`werkzeug.test.EnvironBuilder` for more information, this
         function accepts the same arguments).
         """
         from werkzeug.test import create_environ
