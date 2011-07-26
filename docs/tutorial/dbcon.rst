@@ -39,3 +39,19 @@ environments.  That special :data:`~flask.g` object does some magic behind
 the scenes to ensure it does the right thing.
 
 Continue to :ref:`tutorial-views`.
+
+.. hint:: Where do I put this code?
+
+   If you've been following along in this tutorial, you might be wondering
+   where to put the code from this step and the next.  A logical place is to
+   group these module-level functions together, and put your new
+   ``before_request`` and ``teardown_request`` functions below your existing
+   ``init_db`` function (following the tutorial line-by-line).
+
+   If you need a moment to find your bearings, take a look at how the `example
+   source`_ is organized.  In Flask, you can put all of your application code
+   into a single Python module.  You don't have to, and if your app :ref:`grows
+   larger <larger-applications>`, it's a good idea not to.
+
+.. _example source:
+   http://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
