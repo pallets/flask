@@ -38,7 +38,7 @@ document that you might use for a simple two-column page. It's the job of
     </body>
 
 In this example, the ``{% block %}`` tags define four blocks that child templates
-can fill in. All the `block` tag does is to tell the template engine that a
+can fill in. All the `block` tag does is tell the template engine that a
 child template may override those portions of the template.
 
 Child Template
