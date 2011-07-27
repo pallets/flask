@@ -16,9 +16,7 @@ The trick is to have an inner function that uses a generator to generate
 data and to then invoke that function and pass it to a response object
 that has the ``direct_passthrough`` flag set.  This flag is used to inform
 the system that data is generated on the fly and should be passed through
-without buffering:
-
-.. sourcecode:: python
+without buffering::
 
     from flask import Response
 
@@ -39,9 +37,7 @@ Streaming from Templates
 
 The Jinja2 template engine also supports rendering templates piece by
 piece.  This functionality is not directly exposed by Flask because it is
-quite uncommon, but you can easily do it yourself:
-
-.. sourcecode:: python
+quite uncommon, but you can easily do it yourself::
 
     from flask import Response
 
