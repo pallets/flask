@@ -35,3 +35,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    lazyloading
    mongokit
    favicon
+   streaming
