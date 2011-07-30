@@ -23,6 +23,10 @@ class Request(RequestBase):
     It is what ends up as :class:`~flask.request`.  If you want to replace
     the request object used you can subclass this and set
     :attr:`~flask.Flask.request_class` to your subclass.
+
+    The request object is a :class:`~werkzeug.wrappers.Request` subclass and
+    provides all of the attributes Werkzeug defines plus a few Flask
+    specific ones.
     """
 
     #: the internal URL rule that matched the request.  This can be
