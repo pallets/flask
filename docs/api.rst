@@ -29,20 +29,7 @@ Incoming Request Data
 ---------------------
 
 .. autoclass:: Request
-
-.. class:: request
-
-   To access incoming request data, you can use the global `request`
-   object.  Flask parses incoming request data for you and gives you
-   access to it through that global object.  Internally Flask makes
-   sure that you always get the correct data for the active thread if you
-   are in a multithreaded environment.
-
-   This is a proxy.  See :ref:`notes-on-proxies` for more information.
-
-   The request object is an instance of a :class:`~werkzeug.wrappers.Request`
-   subclass and provides all of the attributes Werkzeug defines.  This
-   just shows a quick overview of the most important ones.
+   :members:
 
    .. attribute:: form
 
@@ -133,6 +120,21 @@ Incoming Request Data
       Contains the parsed body of the JSON request if the mimetype of
       the incoming data was `application/json`.  This requires Python 2.6
       or an installed version of simplejson.
+
+.. class:: request
+
+   To access incoming request data, you can use the global `request`
+   object.  Flask parses incoming request data for you and gives you
+   access to it through that global object.  Internally Flask makes
+   sure that you always get the correct data for the active thread if you
+   are in a multithreaded environment.
+
+   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+
+   The request object is an instance of a :class:`~werkzeug.wrappers.Request`
+   subclass and provides all of the attributes Werkzeug defines.  This
+   just shows a quick overview of the most important ones.
+
 
 Response Objects
 ----------------
