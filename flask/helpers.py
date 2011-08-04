@@ -555,7 +555,7 @@ class _PackageBoundObject(object):
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
-    def send_static_file(self, filename):
+    def send_static_file(self, filename, **options):
         """Function used internally to send static files from the static
         folder to the browser.
 
@@ -563,7 +563,7 @@ class _PackageBoundObject(object):
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
-        return send_from_directory(self.static_folder, filename)
+        return send_from_directory(self.static_folder, filename, **options)
 
     def open_resource(self, resource):
         """Opens a resource from the application's resource folder.  To see
