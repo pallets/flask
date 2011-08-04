@@ -62,7 +62,7 @@ A basic FastCGI configuration for lighttpd looks like that::
             "socket" => "/tmp/yourapplication-fcgi.sock",
             "bin-path" => "/var/www/yourapplication/yourapplication.fcgi",
             "check-local" => "disable",
-            "max-procs" -> 1
+            "max-procs" => 1
         ))
     )
 
