@@ -564,6 +564,18 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert rv.status_code == 500
         assert 'internal server error' == rv.data
 
+    def test_before_request_and_routing_errors(self):
+        app = flask.Flask(__name__)
+        @app.before_request
+        def attach_something():
+            flask.g.something = 'value'
+        @app.errorhandler(404)
+        def return_something(error):
+            return flask.g.something, 404
+        rv = app.test_client().get('/')
+        assert rv.status_code == 404
+        assert rv.data == 'value'
+
     def test_user_error_handling(self):
         class MyException(Exception):
             pass
