@@ -96,11 +96,8 @@ class Request(RequestBase):
         if self.mimetype == 'application/json':
             request_charset = self.mimetype_params.get('charset')
             if request_charset is not None:
-                j = json.loads(self.data, encoding=request_charset )
-            else:
-                j = json.loads(self.data)
-
-            return j
+                return json.loads(self.data, encoding=request_charset)
+            return json.loads(self.data)
 
 
 class Response(ResponseBase):
