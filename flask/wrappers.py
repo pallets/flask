@@ -107,7 +107,7 @@ class Request(RequestBase):
         # subclass that raises a different error for key errors.
         ctx = _request_ctx_stack.top
         if ctx is not None and ctx.app.debug and \
-           self.mimetype != 'multipart/form-data':
+           self.mimetype != 'multipart/form-data' and not self.files:
             make_enctype_error_multidict(self)
 
 
