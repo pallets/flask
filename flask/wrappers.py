@@ -12,6 +12,7 @@
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.utils import cached_property
 
+from .debughelpers import make_enctype_error_multidict
 from .helpers import json, _assert_have_json
 from .globals import _request_ctx_stack
 
@@ -98,6 +99,16 @@ class Request(RequestBase):
             if request_charset is not None:
                 return json.loads(self.data, encoding=request_charset)
             return json.loads(self.data)
+
+    def _load_form_data(self):
+        RequestBase._load_form_data(self)
+
+        # in debug mode we're replacing the files multidict with an ad-hoc
+        # subclass that raises a different error for key errors.
+        ctx = _request_ctx_stack.top
+        if ctx is not None and ctx.app.debug and \
+           self.mimetype != 'multipart/form-data':
+            make_enctype_error_multidict(self)
 
 
 class Response(ResponseBase):

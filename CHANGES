@@ -16,6 +16,8 @@ Relase date to be decided, codename to be chosen.
   OPTIONS implementation.
 - HTTP exceptions and Bad Request Key Errors can now be trapped so that they
   show up normally in the traceback.
+- Flask in debug mode is now detecting some common problems and tries to
+  warn you about them.
 
 Version 0.7.3
 -------------
