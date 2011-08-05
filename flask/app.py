@@ -996,6 +996,8 @@ class Flask(_PackageBoundObject):
         exception is not called and it shows up as regular exception in the
         traceback.  This is helpful for debugging implicitly raised HTTP
         exceptions.
+
+        .. versionadded:: 0.8
         """
         if self.config['TRAP_HTTP_EXCEPTIONS']:
             return True
