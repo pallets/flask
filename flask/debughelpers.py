@@ -24,8 +24,8 @@ class DebugFilesKeyError(KeyError, AssertionError):
                'provide enctype="multipart/form-data" in your form.' %
                (key, request.mimetype)]
         if form_matches:
-            buf.append('\n\nThe browser instead some file names.  This was '
-                       'submitted: %s' % ', '.join('"%s"' % x
+            buf.append('\n\nThe browser instead transmitted some file names. '
+                       'This was submitted: %s' % ', '.join('"%s"' % x
                             for x in form_matches))
         self.msg = ''.join(buf)
 
