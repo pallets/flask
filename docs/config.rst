@@ -81,6 +81,23 @@ The following configuration values are used internally by Flask:
                                   reject incoming requests with a
                                   content length greater than this by
                                   returning a 413 status code.
+``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
+                                  not execute the error handlers of HTTP
+                                  exceptions but instead treat the
+                                  exception like any other and bubble it
+                                  through the exception stack.  This is
+                                  helpful for hairy debugging situations
+                                  where you have to find out where an HTTP
+                                  exception is coming from.
+``TRAP_BAD_REQUEST_KEY_ERRORS``   Werkzeug's internal data structures that
+                                  deal with request specific data will
+                                  raise special key errors that are also
+                                  bad request exceptions.  By default
+                                  these will be converted into 400
+                                  responses which however can make
+                                  debugging some issues harder.  If this
+                                  config is set to ``True`` you will get
+                                  a regular traceback instead.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -113,6 +130,9 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 0.7
    ``PROPAGATE_EXCEPTIONS``, ``PRESERVE_CONTEXT_ON_EXCEPTION``
+
+.. versionadded:: 0.8
+   ``TRAP_BAD_REQUEST_KEY_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``
 
 Configuring from Files
 ----------------------

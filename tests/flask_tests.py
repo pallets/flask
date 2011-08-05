@@ -23,7 +23,7 @@ from contextlib import contextmanager
 from functools import update_wrapper
 from datetime import datetime
 from werkzeug import parse_date, parse_options_header
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, BadRequest
 from werkzeug.http import parse_set_header
 from jinja2 import TemplateNotFound
 from cStringIO import StringIO
@@ -591,6 +591,40 @@ class BasicFunctionalityTestCase(unittest.TestCase):
 
         c = app.test_client()
         assert c.get('/').data == '42'
+
+    def test_trapping_of_bad_request_key_errors(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/fail')
+        def fail():
+            flask.request.form['missing_key']
+        c = app.test_client()
+        assert c.get('/fail').status_code == 400
+
+        app.config['TRAP_BAD_REQUEST_KEY_ERRORS'] = True
+        c = app.test_client()
+        try:
+            c.get('/fail')
+        except KeyError, e:
+            assert isinstance(e, BadRequest)
+        else:
+            self.fail('Expected exception')
+
+    def test_trapping_of_all_http_exceptions(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.config['TRAP_HTTP_EXCEPTIONS'] = True
+        @app.route('/fail')
+        def fail():
+            flask.abort(404)
+
+        c = app.test_client()
+        try:
+            c.get('/fail')
+        except NotFound, e:
+            pass
+        else:
+            self.fail('Expected exception')
 
     def test_teardown_on_pop(self):
         buffer = []

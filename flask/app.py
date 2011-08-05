@@ -19,7 +19,7 @@ from itertools import chain
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed
+     MethodNotAllowed, BadRequest
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     locked_cached_property, _tojson_filter, _endpoint_from_view_func
@@ -197,7 +197,9 @@ class Flask(_PackageBoundObject):
         'USE_X_SENDFILE':                       False,
         'LOGGER_NAME':                          None,
         'SERVER_NAME':                          None,
-        'MAX_CONTENT_LENGTH':                   None
+        'MAX_CONTENT_LENGTH':                   None,
+        'TRAP_BAD_REQUEST_KEY_ERRORS':          False,
+        'TRAP_HTTP_EXCEPTIONS':                 False
     })
 
     #: The rule object to use for URL rules created.  This is used by
@@ -983,6 +985,24 @@ class Flask(_PackageBoundObject):
             return e
         return handler(e)
 
+    def trap_http_exception(self, e):
+        """Checks if an HTTP exception should be trapped or not.  By default
+        this will return `False` for all exceptions except for a bad request
+        key error if ``TRAP_BAD_REQUEST_KEY_ERRORS`` is set to `True`.  It
+        also returns `True` if ``TRAP_HTTP_EXCEPTIONS`` is set to `True`.
+
+        This is called for all HTTP exceptions raised by a view function.
+        If it returns `True` for any exception the error handler for this
+        exception is not called and it shows up as regular exception in the
+        traceback.  This is helpful for debugging implicitly raised HTTP
+        exceptions.
+        """
+        if self.config['TRAP_HTTP_EXCEPTIONS']:
+            return True
+        if self.config['TRAP_BAD_REQUEST_KEY_ERRORS']:
+            return isinstance(e, BadRequest) and isinstance(e, LookupError)
+        return False
+
     def handle_user_exception(self, e):
         """This method is called whenever an exception occurs that should be
         handled.  A special case are
@@ -993,13 +1013,15 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        # ensure not to trash sys.exc_info() at that point in case someone
-        # wants the traceback preserved in handle_http_exception.
-        if isinstance(e, HTTPException):
-            return self.handle_http_exception(e)
-
         exc_type, exc_value, tb = sys.exc_info()
         assert exc_value is e
+
+        # ensure not to trash sys.exc_info() at that point in case someone
+        # wants the traceback preserved in handle_http_exception.  Of course
+        # we cannot prevent users from trashing it themselves in a custom
+        # trap_http_exception method so that's their fault then.
+        if isinstance(e, HTTPException) and not self.trap_http_exception(e):
+            return self.handle_http_exception(e)
 
         blueprint_handlers = ()
         handlers = self.error_handler_spec.get(request.blueprint)

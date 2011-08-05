@@ -14,6 +14,8 @@ Relase date to be decided, codename to be chosen.
 - Empty session cookies are now deleted properly automatically.
 - View functions can now opt out of getting the automatic
   OPTIONS implementation.
+- HTTP exceptions and Bad Request Key Errors can now be trapped so that they
+  show up normally in the traceback.
 
 Version 0.7.3
 -------------
