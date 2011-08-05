@@ -77,6 +77,7 @@ And this is what `views.py` would look like::
 You should then end up with something like that::
 
     /yourapplication
+        /runserver.py
         /yourapplication
             /__init__.py
             /views.py
