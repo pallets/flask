@@ -20,13 +20,13 @@ class DebugFilesKeyError(KeyError, AssertionError):
         buf = ['You tried to access the file "%s" in the request.files '
                'dictionary but it does not exist.  The mimetype for the request '
                'is "%s" instead of "multipart/form-data" which means that no '
-               'files were transmitted.  To fix this error you most likely have '
-               'to provide enctype="multipart/form-data" in your form.' %
+               'file contents were transmitted.  To fix this error you should '
+               'provide enctype="multipart/form-data" in your form.' %
                (key, request.mimetype)]
         if form_matches:
-            buf.append('\n\nThe browser instead most likely submitted the '
-                       'filenames in the form.  This was submitted: %s' %
-                       ', '.join('"%s"' % x for x in form_matches))
+            buf.append('\n\nThe browser instead some file names.  This was '
+                       'submitted: %s' % ', '.join('"%s"' % x
+                            for x in form_matches))
         self.msg = ''.join(buf)
 
     def __str__(self):
