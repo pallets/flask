@@ -33,7 +33,7 @@ class DebugFilesKeyError(KeyError, AssertionError):
         return self.msg
 
 
-def make_enctype_error_multidict(request):
+def attach_enctype_error_multidict(request):
     """Since Flask 0.8 we're monkeypatching the files object in case a
     request is detected that does not use multipart form data but the files
     object is accessed.
