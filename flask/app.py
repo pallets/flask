@@ -909,11 +909,37 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    def before_request_call(self):
+        """A decorator that is used to register a function to run before each request.
+        Example::
+        
+          @app.before_request_call()
+          def my_func():
+              pass
+        """
+        def decorator(f):
+            self.before_request(f)
+            return f
+        return decorator
+        
     def before_request(self, f):
         """Registers a function to run before each request."""
         self.before_request_funcs.setdefault(None, []).append(f)
         return f
 
+    def after_request_call(self):
+        """A decorator that is used to register a function to run after each request.
+        Example::
+          
+          @app.after_request()
+          def my_func():
+              pass
+        """
+        def decorator(f):
+            self.after_request(f)
+            return f
+        return decorator
+        
     def after_request(self, f):
         """Register a function to be run after each request.  Your function
         must take one parameter, a :attr:`response_class` object and return
