@@ -11,16 +11,19 @@
 
 from __future__ import with_statement
 
+#Python imports
 import sys
 from threading import Lock
 from datetime import timedelta
 from itertools import chain
 
+#Werkzeug imports
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
 
+#Local imports 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     locked_cached_property, _tojson_filter, _endpoint_from_view_func
 from .wrappers import Request, Response
