@@ -27,7 +27,7 @@ class DebugFilesKeyError(KeyError, AssertionError):
             buf.append('\n\nThe browser instead transmitted some file names. '
                        'This was submitted: %s' % ', '.join('"%s"' % x
                             for x in form_matches))
-        self.msg = ''.join(buf)
+        self.msg = ''.join(buf).encode('utf-8')
 
     def __str__(self):
         return self.msg

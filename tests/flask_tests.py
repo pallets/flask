@@ -626,6 +626,26 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         else:
             self.fail('Expected exception')
 
+    def test_enctype_debug_helper(self):
+        from flask.debughelpers import DebugFilesKeyError
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.route('/fail', methods=['POST'])
+        def index():
+            return flask.request.files['foo'].filename
+
+        # with statement is important because we leave an exception on the
+        # stack otherwise and we want to ensure that this is not the case
+        # to not negatively affect other tests.
+        with app.test_client() as c:
+            try:
+                c.post('/fail', data={'foo': 'index.txt'})
+            except DebugFilesKeyError, e:
+                assert 'no file contents were transmitted' in str(e)
+                assert 'This was submitted: "index.txt"' in str(e)
+            else:
+                self.fail('Expected exception')
+
     def test_teardown_on_pop(self):
         buffer = []
         app = flask.Flask(__name__)
