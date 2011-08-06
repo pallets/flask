@@ -34,7 +34,7 @@ executed the before-request handlers for you.  If you are attempting to
 use the database from a script or the interactive Python shell you would
 have to do something like this::
 
-    with app.test_request_context()
+    with app.test_request_context():
         app.preprocess_request()
         # now you can use the g.db object
 
