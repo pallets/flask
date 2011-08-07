@@ -199,6 +199,13 @@ class Blueprint(_PackageBoundObject):
             .setdefault(None, []).append(f))
         return f
 
+    def before_app_first_request(self, f):
+        """Like :meth:`Flask.before_first_request`.  Such a function is
+        executed before the first request to the application.
+        """
+        self.record_once(lambda s: s.app.before_first_request_funcs.append(f))
+        return f
+
     def after_request(self, f):
         """Like :meth:`Flask.after_request` but for a blueprint.  This function
         is only executed after each request that is handled by a function of

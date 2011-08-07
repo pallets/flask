@@ -21,6 +21,8 @@ Relase date to be decided, codename to be chosen.
 - Flask in debug mode will now complain with an assertion error if a view
   was attached after the first request was handled.  This gives earlier
   feedback when users forget to import view code ahead of time.
+- Added the ability to register callbacks that are only triggered once at
+  the beginning of the first request. (:meth:`Flask.before_first_request`)
 
 Version 0.7.3
 -------------

@@ -950,6 +950,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         @app.route('/')
         def index():
             return 'Awesome'
+        self.assert_(not app.got_first_request)
         self.assertEqual(app.test_client().get('/').data, 'Awesome')
         try:
             @app.route('/foo')
@@ -965,6 +966,20 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         def working():
             return 'Meh'
         self.assertEqual(app.test_client().get('/foo').data, 'Meh')
+        self.assert_(app.got_first_request)
+
+    def test_before_first_request_functions(self):
+        got = []
+        app = flask.Flask(__name__)
+        @app.before_first_request
+        def foo():
+            got.append(42)
+        c = app.test_client()
+        c.get('/')
+        self.assertEqual(got, [42])
+        c.get('/')
+        self.assertEqual(got, [42])
+        self.assert_(app.got_first_request)
 
 
 class JSONTestCase(unittest.TestCase):

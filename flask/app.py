@@ -291,6 +291,13 @@ class Flask(_PackageBoundObject):
         #: function here, use the :meth:`before_request` decorator.
         self.before_request_funcs = {}
 
+        #: A lists of functions that should be called at the beginning of the
+        #: first request to this instance.  To register a function here, use
+        #: the :meth:`before_first_request` decorator.
+        #:
+        #: .. versionadded:: 0.8
+        self.before_first_request_funcs = []
+
         #: A dictionary with lists of functions that should be called after
         #: each request.  The key of the dictionary is the name of the blueprint
         #: this function is active for, `None` for all requests.  This can for
@@ -386,6 +393,7 @@ class Flask(_PackageBoundObject):
         # tracks internally if the application already handled at least one
         # request.
         self._got_first_request = False
+        self._before_request_lock = Lock()
 
         # register the static folder for the application.  Do that even
         # if the folder does not exist.  First of all it might be created
@@ -473,6 +481,15 @@ class Flask(_PackageBoundObject):
             self.init_jinja_globals()
 
         return rv
+
+    @property
+    def got_first_request(self):
+        """This attribute is set to `True` if the application started
+        handling the first request.
+
+        .. versionadded:: 0.8
+        """
+        return self._got_first_request
 
     def create_jinja_environment(self):
         """Creates the Jinja2 environment based on :attr:`jinja_options`
@@ -581,7 +598,13 @@ class Flask(_PackageBoundObject):
             self.debug = options.pop('debug')
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
-        return run_simple(host, port, self, **options)
+        try:
+            run_simple(host, port, self, **options)
+        finally:
+            # reset the first request information if the development server
+            # resetted normally.  This makes it possible to restart the server
+            # without reloader and that stuff from an interactive shell.
+            self._got_first_request = False
 
     def test_client(self, use_cookies=True):
         """Creates a test client for this application.  For information
@@ -941,6 +964,15 @@ class Flask(_PackageBoundObject):
         return f
 
     @setupmethod
+    def before_first_request(self, f):
+        """Registers a function to be run before the first request to this
+        instance of the application.
+
+        .. versionadded:: 0.8
+        """
+        self.before_first_request_funcs.append(f)
+
+    @setupmethod
     def after_request(self, f):
         """Register a function to be run after each request.  Your function
         must take one parameter, a :attr:`response_class` object and return
@@ -1131,7 +1163,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        self._got_first_request = True
+        self.try_trigger_before_first_request_functions()
         try:
             request_started.send(self)
             rv = self.preprocess_request()
@@ -1143,6 +1175,22 @@ class Flask(_PackageBoundObject):
         response = self.process_response(response)
         request_finished.send(self, response=response)
         return response
+
+    def try_trigger_before_first_request_functions(self):
+        """Called before each request and will ensure that it triggers
+        the :attr:`before_first_request_funcs` and only exactly once per
+        application instance (which means process usually).
+
+        .. versionadded:: 0.8
+        """
+        if self._got_first_request:
+            return
+        with self._before_request_lock:
+            if self._got_first_request:
+                return
+            self._got_first_request = True
+            for func in self.before_first_request_funcs:
+                func()
 
     def make_default_options_response(self):
         """This method is called to create the default `OPTIONS` response.
