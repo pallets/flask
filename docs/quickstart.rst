@@ -588,11 +588,38 @@ For some better examples, checkout the :ref:`uploading-files` pattern.
 Cookies
 ```````
 
-To access cookies you can use the :attr:`~flask.request.cookies`
-attribute.  Again this is a dictionary with all the cookies the client
-transmits.  If you want to use sessions, do not use the cookies directly
-but instead use the :ref:`sessions` in Flask that add some security on top
-of cookies for you.
+To access cookies you can use the :attr:`~flask.Request.cookies`
+attribute.  To set cookies you can use the
+:attr:`~flask.Response.set_cookie` method of response objects.  The
+:attr:`~flask.Request.cookies` attribute of request objects is a
+dictionary with all the cookies the client transmits.  If you want to use
+sessions, do not use the cookies directly but instead use the
+:ref:`sessions` in Flask that add some security on top of cookies for you.
+
+Reading cookies::
+
+    from flask import request
+
+    @app.route('/')
+    def index():
+        username = request.cookies.get('username')
+        # use cookies.get(key) instead of cookies[key] to not get a
+        # KeyError if the cookie is missing.
+
+Storing cookies::
+
+    from flask import make_response
+
+    @app.route('/')
+    def index():
+        resp = make_response(render_template(...))
+        resp.set_cookie('username', 'the username')
+        return resp
+
+Note that cookies are set on response objects.  Since you normally you
+just return strings from the view functions Flask will convert them into
+response objects for you.  If you explicitly want to do that you can use
+the :meth:`~flask.make_response` function and then modify it.
 
 
 Redirects and Errors
