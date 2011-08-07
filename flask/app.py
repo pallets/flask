@@ -15,6 +15,7 @@ import sys
 from threading import Lock
 from datetime import timedelta
 from itertools import chain
+from functools import update_wrapper
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule
@@ -36,6 +37,23 @@ from .signals import request_started, request_finished, got_request_exception, \
 
 # a lock used for logger initialization
 _logger_lock = Lock()
+
+
+def setupmethod(f):
+    """Wraps a method so that it performs a check in debug mode if the
+    first request was already handled.
+    """
+    def wrapper_func(self, *args, **kwargs):
+        if self.debug and self._got_first_request:
+            raise AssertionError('A setup function was called after the '
+                'first request was handled.  This usually indicates a bug '
+                'in the application where a module was not imported '
+                'and decorators or other functionality was called too late.\n'
+                'To fix this make sure to import all your view modules, '
+                'database models and everything related at a central place '
+                'before the application starts serving requests.')
+        return f(self, *args, **kwargs)
+    return update_wrapper(wrapper_func, f)
 
 
 class Flask(_PackageBoundObject):
@@ -365,6 +383,10 @@ class Flask(_PackageBoundObject):
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
+        # tracks internally if the application already handled at least one
+        # request.
+        self._got_first_request = False
+
         # register the static folder for the application.  Do that even
         # if the folder does not exist.  First of all it might be created
         # while the server is running (usually happens during development)
@@ -642,6 +664,7 @@ class Flask(_PackageBoundObject):
 
         self.register_blueprint(module, **options)
 
+    @setupmethod
     def register_blueprint(self, blueprint, **options):
         """Registers a blueprint on the application.
 
@@ -659,6 +682,7 @@ class Flask(_PackageBoundObject):
             first_registration = True
         blueprint.register(self, options, first_registration)
 
+    @setupmethod
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
@@ -812,6 +836,7 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    @setupmethod
     def endpoint(self, endpoint):
         """A decorator to register a function as an endpoint.
         Example::
@@ -827,6 +852,7 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    @setupmethod
     def errorhandler(self, code_or_exception):
         """A decorator that is used to register a function give a given
         error code.  Example::
@@ -877,6 +903,7 @@ class Flask(_PackageBoundObject):
         """
         self._register_error_handler(None, code_or_exception, f)
 
+    @setupmethod
     def _register_error_handler(self, key, code_or_exception, f):
         if isinstance(code_or_exception, HTTPException):
             code_or_exception = code_or_exception.code
@@ -889,6 +916,7 @@ class Flask(_PackageBoundObject):
             self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
                 .append((code_or_exception, f))
 
+    @setupmethod
     def template_filter(self, name=None):
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
@@ -906,11 +934,13 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    @setupmethod
     def before_request(self, f):
         """Registers a function to run before each request."""
         self.before_request_funcs.setdefault(None, []).append(f)
         return f
 
+    @setupmethod
     def after_request(self, f):
         """Register a function to be run after each request.  Your function
         must take one parameter, a :attr:`response_class` object and return
@@ -922,6 +952,7 @@ class Flask(_PackageBoundObject):
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
 
+    @setupmethod
     def teardown_request(self, f):
         """Register a function to be run at the end of each request,
         regardless of whether there was an exception or not.  These functions
@@ -948,11 +979,13 @@ class Flask(_PackageBoundObject):
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
 
+    @setupmethod
     def context_processor(self, f):
         """Registers a template context processor function."""
         self.template_context_processors[None].append(f)
         return f
 
+    @setupmethod
     def url_value_preprocessor(self, f):
         """Registers a function as URL value preprocessor for all view
         functions of the application.  It's called before the view functions
@@ -961,6 +994,7 @@ class Flask(_PackageBoundObject):
         self.url_value_preprocessors.setdefault(None, []).append(f)
         return f
 
+    @setupmethod
     def url_defaults(self, f):
         """Callback function for URL defaults for all view functions of the
         application.  It's called with the endpoint and values and should
@@ -1097,6 +1131,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
+        self._got_first_request = True
         try:
             request_started.send(self)
             rv = self.preprocess_request()

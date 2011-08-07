@@ -944,6 +944,28 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         self.assertEqual(c.get('/de/about').data, '/foo')
         self.assertEqual(c.get('/foo').data, '/en/about')
 
+    def test_debug_mode_complains_after_first_request(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.route('/')
+        def index():
+            return 'Awesome'
+        self.assertEqual(app.test_client().get('/').data, 'Awesome')
+        try:
+            @app.route('/foo')
+            def broken():
+                return 'Meh'
+        except AssertionError, e:
+            self.assert_('A setup function was called' in str(e))
+        else:
+            self.fail('Expected exception')
+
+        app.debug = False
+        @app.route('/foo')
+        def working():
+            return 'Meh'
+        self.assertEqual(app.test_client().get('/foo').data, 'Meh')
+
 
 class JSONTestCase(unittest.TestCase):
 

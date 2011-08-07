@@ -18,6 +18,9 @@ Relase date to be decided, codename to be chosen.
   show up normally in the traceback.
 - Flask in debug mode is now detecting some common problems and tries to
   warn you about them.
+- Flask in debug mode will now complain with an assertion error if a view
+  was attached after the first request was handled.  This gives earlier
+  feedback when users forget to import view code ahead of time.
 
 Version 0.7.3
 -------------
