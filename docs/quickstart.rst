@@ -621,6 +621,7 @@ just return strings from the view functions Flask will convert them into
 response objects for you.  If you explicitly want to do that you can use
 the :meth:`~flask.make_response` function and then modify it.
 
+For this also see :ref:`about-responses`.
 
 Redirects and Errors
 --------------------
@@ -657,6 +658,49 @@ you want to customize the error page, you can use the
 Note the ``404`` after the :func:`~flask.render_template` call.  This
 tells Flask that the status code of that page should be 404 which means
 not found.  By default 200 is assumed which translates to: all went well.
+
+.. _about-responses:
+
+About Responses
+---------------
+
+The return value from a view function is automatically converted into a
+response object for you.  If the return value is a string it's converted
+into a response object with the string as response body, an ``200 OK``
+error code and a ``text/html`` mimetype.  The logic that Flask applies to
+converting return values into response objects is as follows:
+
+1.  If a response object of the correct type is returned it's directly
+    returned from the view.
+2.  If it's a string, a response object is created with that data and the
+    default parameters.
+3.  If a tuple is returned the response object is created by passing the
+    tuple as arguments to the response object's constructor.
+4.  If neither of that works, Flask will assume the return value is a
+    valid WSGI application and converts that into a response object.
+
+If you want to get hold of the resulting response object inside the view
+you can use the :func:`~flask.make_response` function.
+
+Imagine you have a view like this:
+
+.. sourcecode:: python
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return render_template('error.html'), 404
+
+You just need to wrap the return expression with
+:func:`~flask.make_response` and get the result object to modify it, then
+return it:
+
+.. sourcecode:: python
+
+    @app.errorhandler(404)
+    def not_found(error):
+        resp = make_response(render_template('error.html'), 404)
+        resp.headers['X-Something'] = 'A value'
+        return resp
 
 .. _sessions:
 
