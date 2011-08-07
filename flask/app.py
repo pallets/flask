@@ -257,7 +257,7 @@ class Flask(_PackageBoundObject):
         #: to load a config from files.
         self.config = Config(self.root_path, self.default_config)
 
-        #: Prepare the deferred setup of the logger.
+        # Prepare the deferred setup of the logger.
         self._logger = None
         self.logger_name = self.import_name
 
@@ -1181,7 +1181,7 @@ class Flask(_PackageBoundObject):
         the :attr:`before_first_request_funcs` and only exactly once per
         application instance (which means process usually).
 
-        .. versionadded:: 0.8
+        :internal:
         """
         if self._got_first_request:
             return
