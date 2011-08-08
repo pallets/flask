@@ -90,7 +90,7 @@ class Request(RequestBase):
     @cached_property
     def json(self):
         """If the mimetype is `application/json` this will contain the
-        parsed JSON data.
+        parsed JSON data. Returns None if the the mimetype is incorrect.
         """
         if __debug__:
             _assert_have_json()
@@ -99,6 +99,8 @@ class Request(RequestBase):
             if request_charset is not None:
                 return json.loads(self.data, encoding=request_charset)
             return json.loads(self.data)
+        else:
+            return None
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
