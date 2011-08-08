@@ -14,7 +14,7 @@ Relase date to be decided, codename to be chosen.
 - Empty session cookies are now deleted properly automatically.
 - View functions can now opt out of getting the automatic
   OPTIONS implementation.
-- HTTP exceptions and Bad Request Key Errors can now be trapped so that they
+- HTTP exceptions and Bad Request errors can now be trapped so that they
   show up normally in the traceback.
 - Flask in debug mode is now detecting some common problems and tries to
   warn you about them.
@@ -23,6 +23,9 @@ Relase date to be decided, codename to be chosen.
   feedback when users forget to import view code ahead of time.
 - Added the ability to register callbacks that are only triggered once at
   the beginning of the first request. (:meth:`Flask.before_first_request`)
+- Malformed JSON data will now trigger a bad request HTTP exception instead
+  of a value error which usually would result in a 500 internal server
+  error if not handled.  This is a backwards incompatible change.
 
 Version 0.7.3
 -------------

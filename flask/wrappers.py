@@ -10,6 +10,7 @@
 """
 
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
+from werkzeug.exceptions import BadRequest
 from werkzeug.utils import cached_property
 
 from .debughelpers import attach_enctype_error_multidict
@@ -96,9 +97,21 @@ class Request(RequestBase):
             _assert_have_json()
         if self.mimetype == 'application/json':
             request_charset = self.mimetype_params.get('charset')
-            if request_charset is not None:
-                return json.loads(self.data, encoding=request_charset)
-            return json.loads(self.data)
+            try:
+                if request_charset is not None:
+                    return json.loads(self.data, encoding=request_charset)
+                return json.loads(self.data)
+            except ValueError, e:
+                return self.on_json_loading_failed(e)
+
+    def on_json_loading_failed(self, e):
+        """Called if decoding of the JSON data failed.  The return value of
+        this method is used by :attr:`json` when an error ocurred.  The
+        default implementation raises a :class:`~werkzeug.exceptions.BadRequest`.
+
+        .. versionadded:: 0.8
+        """
+        raise BadRequest()
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)

@@ -29,6 +29,13 @@ object.  With that introduction we moved the implementation details for
 the session system into a new module called :mod:`flask.sessions`.  If you
 used the previously undocumented session support we urge you to upgrade.
 
+If invalid JSON data was submitted Flask will now raise a
+:exc:`~werkzeug.exceptions.BadRequest` exception instead of letting the
+default :exc:`ValueError` bubble up.  This has the advantage that you no
+longer have to handle that error to avoid an internal server error showing
+up for the user.  If you were catching this down explicitly in the past
+as `ValueError` you will need to change this.
+
 Version 0.7
 -----------
 

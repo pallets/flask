@@ -984,6 +984,15 @@ class BasicFunctionalityTestCase(unittest.TestCase):
 
 class JSONTestCase(unittest.TestCase):
 
+    def test_json_bad_requests(self):
+        app = flask.Flask(__name__)
+        @app.route('/json', methods=['POST'])
+        def return_json():
+            return unicode(flask.request.json)
+        c = app.test_client()
+        rv = c.post('/json', data='malformed', content_type='application/json')
+        self.assertEqual(rv.status_code, 400)
+
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
         app.testing = True
