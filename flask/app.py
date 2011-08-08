@@ -216,7 +216,7 @@ class Flask(_PackageBoundObject):
         'LOGGER_NAME':                          None,
         'SERVER_NAME':                          None,
         'MAX_CONTENT_LENGTH':                   None,
-        'TRAP_BAD_REQUEST_KEY_ERRORS':          False,
+        'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False
     })
 
@@ -1054,7 +1054,7 @@ class Flask(_PackageBoundObject):
     def trap_http_exception(self, e):
         """Checks if an HTTP exception should be trapped or not.  By default
         this will return `False` for all exceptions except for a bad request
-        key error if ``TRAP_BAD_REQUEST_KEY_ERRORS`` is set to `True`.  It
+        key error if ``TRAP_BAD_REQUEST_ERRORS`` is set to `True`.  It
         also returns `True` if ``TRAP_HTTP_EXCEPTIONS`` is set to `True`.
 
         This is called for all HTTP exceptions raised by a view function.
@@ -1067,8 +1067,8 @@ class Flask(_PackageBoundObject):
         """
         if self.config['TRAP_HTTP_EXCEPTIONS']:
             return True
-        if self.config['TRAP_BAD_REQUEST_KEY_ERRORS']:
-            return isinstance(e, BadRequest) and isinstance(e, LookupError)
+        if self.config['TRAP_BAD_REQUEST_ERRORS']:
+            return isinstance(e, BadRequest)
         return False
 
     def handle_user_exception(self, e):

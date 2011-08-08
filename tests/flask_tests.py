@@ -601,7 +601,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         c = app.test_client()
         assert c.get('/fail').status_code == 400
 
-        app.config['TRAP_BAD_REQUEST_KEY_ERRORS'] = True
+        app.config['TRAP_BAD_REQUEST_ERRORS'] = True
         c = app.test_client()
         try:
             c.get('/fail')
