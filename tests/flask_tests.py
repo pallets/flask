@@ -981,6 +981,30 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         self.assertEqual(got, [42])
         self.assert_(app.got_first_request)
 
+    def test_routing_redirect_debugging(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        @app.route('/foo/', methods=['GET', 'POST'])
+        def foo():
+            return 'success'
+        with app.test_client() as c:
+            try:
+                c.post('/foo', data={})
+            except AssertionError, e:
+                self.assert_('http://localhost/foo/' in str(e))
+                self.assert_('Make sure to directly send your POST-request '
+                             'to this URL' in str(e))
+            else:
+                self.fail('Expected exception')
+
+            rv = c.get('/foo', data={}, follow_redirects=True)
+            self.assertEqual(rv.data, 'success')
+
+        app.debug = False
+        with app.test_client() as c:
+            rv = c.post('/foo', data={}, follow_redirects=True)
+            self.assertEqual(rv.data, 'success')
+
 
 class JSONTestCase(unittest.TestCase):
 

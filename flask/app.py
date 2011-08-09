@@ -18,7 +18,7 @@ from itertools import chain
 from functools import update_wrapper
 
 from werkzeug.datastructures import ImmutableDict
-from werkzeug.routing import Map, Rule
+from werkzeug.routing import Map, Rule, RequestRedirect
 from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
 
@@ -1134,6 +1134,22 @@ class Flask(_PackageBoundObject):
             return InternalServerError()
         return handler(e)
 
+    def raise_routing_exception(self, request):
+        """Exceptions that are recording during routing are reraised with
+        this method.  During debug we are not reraising redirect requests
+        for non ``GET``, ``HEAD``, or ``OPTIONS`` requests and we're raising
+        a different error instead to help debug situations.
+
+        :internal:
+        """
+        if not self.debug \
+           or not isinstance(request.routing_exception, RequestRedirect) \
+           or request.method in ('GET', 'HEAD', 'OPTIONS'):
+            raise request.routing_exception
+
+        from .debughelpers import FormDataRoutingRedirect
+        raise FormDataRoutingRedirect(request)
+
     def dispatch_request(self):
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
@@ -1146,7 +1162,7 @@ class Flask(_PackageBoundObject):
         """
         req = _request_ctx_stack.top.request
         if req.routing_exception is not None:
-            raise req.routing_exception
+            self.raise_routing_exception(req)
         rule = req.url_rule
         # if we provide automatic options for this URL and the
         # request came with the OPTIONS method, reply automatically

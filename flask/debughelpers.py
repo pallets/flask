@@ -33,6 +33,32 @@ class DebugFilesKeyError(KeyError, AssertionError):
         return self.msg
 
 
+class FormDataRoutingRedirect(AssertionError):
+    """This exception is raised by Flask in debug mode if it detects a
+    redirect caused by the routing system when the request method is not
+    GET, HEAD or OPTIONS.  Reasoning: form data will be dropped.
+    """
+
+    def __init__(self, request):
+        exc = request.routing_exception
+        buf = ['A request was sent to this URL (%s) but a redirect was '
+               'issued automatically by the routing system to "%s".'
+               % (request.url, exc.new_url)]
+
+        # In case just a slash was appended we can be extra helpful
+        if request.base_url + '/' == exc.new_url.split('?')[0]:
+            buf.append('  The URL was defined with a trailing slash so '
+                       'Flask will automatically redirect to the URL '
+                       'with the trailing slash if it was accessed '
+                       'without one.')
+
+        buf.append('  Make sure to directly send your %s-request to this URL '
+                   'since we can\'t make browsers or HTTP clients redirect '
+                   'with form data.' % request.method)
+        buf.append('\n\nNote: this exception is only raised in debug mode')
+        AssertionError.__init__(self, ''.join(buf).encode('utf-8'))
+
+
 def attach_enctype_error_multidict(request):
     """Since Flask 0.8 we're monkeypatching the files object in case a
     request is detected that does not use multipart form data but the files
