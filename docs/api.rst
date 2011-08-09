@@ -119,12 +119,6 @@ Incoming Request Data
       Libraries that do that are prototype, jQuery and Mochikit and
       probably some more.
 
-   .. attribute:: json
-
-      Contains the parsed body of the JSON request if the mimetype of
-      the incoming data was `application/json`.  This requires Python 2.6
-      or an installed version of simplejson.
-
 .. class:: request
 
    To access incoming request data, you can use the global `request`

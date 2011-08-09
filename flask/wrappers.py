@@ -91,7 +91,9 @@ class Request(RequestBase):
     @cached_property
     def json(self):
         """If the mimetype is `application/json` this will contain the
-        parsed JSON data.
+        parsed JSON data.  Otherwise this will be `None`.
+
+        This requires Python 2.6 or an installed version of simplejson.
         """
         if __debug__:
             _assert_have_json()
