@@ -192,6 +192,10 @@ projects = {
         Project('robinverton.de', 'http://robinverton.de/', u'''
             <p>
               Personal website of Robin Verton.
+        '''),
+        Project('ListaPrive', 'http://www.listaprive.com/', u'''
+            <p>
+              Your online Gift List
         ''')
     ],
     'apps': [
