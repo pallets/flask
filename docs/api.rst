@@ -59,6 +59,10 @@ Incoming Request Data
       of the time it is a better idea to use :attr:`data` which will give
       you that data as a string.  The stream only returns the data once.
 
+   .. attribute:: headers
+
+      The incoming request headers as a dictionary like object.
+
    .. attribute:: data
 
       Contains the incoming request data as string in case it came with
