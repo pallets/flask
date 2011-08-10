@@ -328,7 +328,7 @@ folder if it exists::
 
 The path to the instance folder can be found via the
 :attr:`Flask.instance_path`.  Flask also provides a shortcut to open a
-file from the instnace folder with :meth:`Flask.open_instance_resource`.
+file from the instance folder with :meth:`Flask.open_instance_resource`.
 
 Example usage for both::
 
