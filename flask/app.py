@@ -255,7 +255,7 @@ class Flask(_PackageBoundObject):
     #: the session interface to use.  By default an instance of
     #: :class:`~flask.sessions.SecureCookieSessionInterface` is used here.
     #:
-    #: .. versionadded:: 0.7
+    #: .. versionadded:: 0.8
     session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
