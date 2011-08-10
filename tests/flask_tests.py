@@ -1005,6 +1005,24 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             rv = c.post('/foo', data={}, follow_redirects=True)
             self.assertEqual(rv.data, 'success')
 
+    def test_basic_instance_paths(self):
+        here = os.path.abspath(os.path.dirname(__file__))
+        app = flask.Flask(__name__)
+        self.assertEqual(app.instance_path, os.path.join(here, 'instance'))
+
+        app = flask.Flask(__name__, instance_path=here)
+        self.assertEqual(app.instance_path, here)
+
+        try:
+            flask.Flask(__name__, instance_path='instance')
+        except ValueError, e:
+            self.assert_('must be absolute' in str(e))
+        else:
+            self.fail('Expected value error')
+
+        from blueprintapp import app
+        self.assertEqual(app.instance_path, os.path.join(here, 'instance'))
+
 
 class JSONTestCase(unittest.TestCase):
 

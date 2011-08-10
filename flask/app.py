@@ -11,6 +11,7 @@
 
 from __future__ import with_statement
 
+import os
 import sys
 from threading import Lock
 from datetime import timedelta
@@ -103,14 +104,33 @@ class Flask(_PackageBoundObject):
         pick up SQL queries in `yourapplication.app` and not
         `yourapplication.views.frontend`)
 
-    .. versionadded:: 0.5
-       The `static_path` parameter was added.
+    .. versionadded:: 0.7
+       The `static_url_path`, `static_folder`, and `template_folder`
+       parameters were added.
+
+    .. versionadded:: 0.8
+       The `instance_path` and `instance_relative_config` parameters were
+       added.
 
     :param import_name: the name of the application package
-    :param static_path: can be used to specify a different path for the
-                        static files on the web.  Defaults to ``/static``.
-                        This does not affect the folder the files are served
-                        *from*.
+    :param static_url_path: can be used to specify a different path for the
+                            static files on the web.  Defaults to the name
+                            of the `static_folder` folder.
+    :param static_folder: the folder with static files that should be served
+                          at `static_url_path`.  Defaults to the ``'static'``
+                          folder in the root path of the application.
+    :param template_folder: the folder that contains the templates that should
+                            be used by the application.  Defaults to
+                            ``'templates'`` folder in the root path of the
+                            application.
+    :param instance_path: An alternative instance path for the application.
+                          By default the folder ``'instance'`` next to the
+                          package or module is assumed to be the instance
+                          path.
+    :param instance_relative_config: if set to `True` relative filenames
+                                     for loading the config are assumed to
+                                     be relative to the instance path instead
+                                     of the application root.
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
@@ -238,7 +258,8 @@ class Flask(_PackageBoundObject):
     session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', template_folder='templates'):
+                 static_folder='static', template_folder='templates',
+                 instance_path=None, instance_relative_config=False):
         _PackageBoundObject.__init__(self, import_name,
                                      template_folder=template_folder)
         if static_path is not None:
@@ -251,11 +272,21 @@ class Flask(_PackageBoundObject):
             self.static_url_path = static_url_path
         if static_folder is not None:
             self.static_folder = static_folder
+        if instance_path is None:
+            instance_path = self.auto_find_instance_path()
+        elif not os.path.isabs(instance_path):
+            raise ValueError('If an instance path is provided it must be '
+                             'absolute.  A relative path was given instead.')
+
+        #: Holds the path to the instance folder.
+        #:
+        #: .. versionadded:: 0.8
+        self.instance_path = instance_path
 
         #: The configuration dictionary as :class:`Config`.  This behaves
         #: exactly like a regular dictionary but supports additional methods
         #: to load a config from files.
-        self.config = Config(self.root_path, self.default_config)
+        self.config = self.make_config(instance_relative_config)
 
         # Prepare the deferred setup of the logger.
         self._logger = None
@@ -490,6 +521,38 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.8
         """
         return self._got_first_request
+
+    def make_config(self, instance_relative=False):
+        """Used to create the config attribute by the Flask constructor.
+        The `instance_relative` parameter is passed in from the constructor
+        of Flask (there named `instance_relative_config`) and indicates if
+        the config should be relative to the instance path or the root path
+        of the application.
+
+        .. versionadded:: 0.8
+        """
+        root_path = self.root_path
+        if instance_relative:
+            root_path = self.instance_path
+        return Config(root_path, self.default_config)
+
+    def auto_find_instance_path(self):
+        """Tries to locate the instance path if it was not provided to the
+        constructor of the application class.  It will basically calculate
+        the path to a folder named ``instance`` next to your main file or
+        the package.
+
+        .. versionadded:: 0.8
+        """
+        root_mod = sys.modules[self.import_name.split('.')[0]]
+        instance_path = None
+        if hasattr(root_mod, '__path__'):
+            package_dir = os.path.dirname(root_mod.__file__)
+            instance_path = os.path.join(package_dir, os.path.pardir)
+        else:
+            instance_path = os.path.dirname(root_mod.__file__)
+        basedir = os.path.normpath(os.path.abspath(instance_path))
+        return os.path.join(basedir, 'instance')
 
     def create_jinja_environment(self):
         """Creates the Jinja2 environment based on :attr:`jinja_options`
