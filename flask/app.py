@@ -447,6 +447,23 @@ class Flask(_PackageBoundObject):
     error_handlers = property(_get_error_handlers, _set_error_handlers)
     del _get_error_handlers, _set_error_handlers
 
+    @locked_cached_property
+    def name(self):
+        """The name of the application.  This is usually the import name
+        with the difference that it's guessed from the run file if the
+        import name is main.  This name is used as a display name when
+        Flask needs the name of the application.  It can be set and overriden
+        to change the value.
+
+        .. versionadded:: 0.8
+        """
+        if self.import_name == '__main__':
+            fn = getattr(sys.modules['__main__'], '__file__', None)
+            if fn is None:
+                return 'unknown'
+            return os.path.splitext(os.path.basename(fn))[0]
+        return self.import_name
+
     @property
     def propagate_exceptions(self):
         """Returns the value of the `PROPAGATE_EXCEPTIONS` configuration
@@ -545,14 +562,26 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.8
         """
         root_mod = sys.modules[self.import_name.split('.')[0]]
-        instance_path = None
+        # we're not using root_mod.__file__ here since the module could be
+        # virtual.  We're trusting the _PackageBoundObject to have calculated
+        # the proper name.
+        package_path = self.root_path
         if hasattr(root_mod, '__path__'):
-            package_dir = os.path.dirname(root_mod.__file__)
-            instance_path = os.path.join(package_dir, os.path.pardir)
+            package_path = os.path.dirname(package_path)
+        site_parent, site_folder = os.path.split(package_path)
+
+        py_prefix = os.path.abspath(sys.prefix)
+        if package_path.startswith(py_prefix):
+            base_dir = py_prefix
+        elif site_folder == 'site-packages':
+            parent, folder = os.path.split(site_parent)
+            if folder.lower() == 'lib':
+                base_dir = parent
+            else:
+                base_dir = site_parent
         else:
-            instance_path = os.path.dirname(root_mod.__file__)
-        basedir = os.path.normpath(os.path.abspath(instance_path))
-        return os.path.join(basedir, 'instance')
+            return os.path.join(package_path, 'instance')
+        return os.path.join(base_dir, 'share', self.name + '-instance')
 
     def open_instance_resource(self, resource, mode='rb'):
         """Opens a resource from the application's instance folder

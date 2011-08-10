@@ -466,7 +466,7 @@ def send_from_directory(directory, filename, **options):
     return send_file(filename, conditional=True, **options)
 
 
-def _get_package_path(name):
+def get_package_path(name):
     """Returns the path to a package or cwd if that cannot be found."""
     try:
         return os.path.abspath(os.path.dirname(sys.modules[name].__file__))
@@ -512,7 +512,7 @@ class _PackageBoundObject(object):
         self.template_folder = template_folder
 
         #: Where is the app root located?
-        self.root_path = _get_package_path(self.import_name)
+        self.root_path = get_package_path(self.import_name)
 
         self._static_folder = None
         self._static_url_path = None

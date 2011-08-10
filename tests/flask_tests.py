@@ -1005,7 +1005,10 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             rv = c.post('/foo', data={}, follow_redirects=True)
             self.assertEqual(rv.data, 'success')
 
-    def test_basic_instance_paths(self):
+
+class InstanceTestCase(unittest.TestCase):
+
+    def test_uninstalled_module_paths(self):
         here = os.path.abspath(os.path.dirname(__file__))
         app = flask.Flask(__name__)
         self.assertEqual(app.instance_path, os.path.join(here, 'instance'))
@@ -1020,8 +1023,59 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         else:
             self.fail('Expected value error')
 
+    def test_uninstalled_package_paths(self):
         from blueprintapp import app
+        here = os.path.abspath(os.path.dirname(__file__))
         self.assertEqual(app.instance_path, os.path.join(here, 'instance'))
+
+    def test_installed_module_paths(self):
+        import types
+        expected_prefix = os.path.abspath('foo')
+        mod = types.ModuleType('myapp')
+        mod.__file__ = os.path.join(expected_prefix, 'lib',
+                                    'site-packages', 'myapp.py')
+        sys.modules['myapp'] = mod
+        try:
+            mod.app = flask.Flask(mod.__name__)
+            self.assertEqual(mod.app.instance_path,
+                             os.path.join(expected_prefix, 'share',
+                                          'myapp-instance'))
+        finally:
+            sys.modules['myapp'] = None
+
+    def test_installed_package_paths(self):
+        import types
+        expected_prefix = os.path.abspath('foo')
+        package_path = os.path.join(expected_prefix, 'lib',
+                                    'site-packages', 'myapp')
+        mod = types.ModuleType('myapp')
+        mod.__path__ = [package_path]
+        mod.__file__ = os.path.join(package_path, '__init__.py')
+        sys.modules['myapp'] = mod
+        try:
+            mod.app = flask.Flask(mod.__name__)
+            self.assertEqual(mod.app.instance_path,
+                             os.path.join(expected_prefix, 'share',
+                                          'myapp-instance'))
+        finally:
+            sys.modules['myapp'] = None
+
+    def test_prefix_installed_paths(self):
+        import types
+        expected_prefix = os.path.abspath(sys.prefix)
+        package_path = os.path.join(expected_prefix, 'lib',
+                                    'site-packages', 'myapp')
+        mod = types.ModuleType('myapp')
+        mod.__path__ = [package_path]
+        mod.__file__ = os.path.join(package_path, '__init__.py')
+        sys.modules['myapp'] = mod
+        try:
+            mod.app = flask.Flask(mod.__name__)
+            self.assertEqual(mod.app.instance_path,
+                             os.path.join(expected_prefix, 'share',
+                                          'myapp-instance'))
+        finally:
+            sys.modules['myapp'] = None
 
 
 class JSONTestCase(unittest.TestCase):
@@ -2114,6 +2168,7 @@ def suite():
     suite.addTest(unittest.makeSuite(SubdomainTestCase))
     suite.addTest(unittest.makeSuite(ViewTestCase))
     suite.addTest(unittest.makeSuite(DeprecationsTestCase))
+    suite.addTest(unittest.makeSuite(InstanceTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     if flask.signals_available:
