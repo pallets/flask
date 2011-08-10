@@ -568,8 +568,12 @@ class Flask(_PackageBoundObject):
         package_path = self.root_path
         if hasattr(root_mod, '__path__'):
             package_path = os.path.dirname(package_path)
-        site_parent, site_folder = os.path.split(package_path)
 
+        # leave the egg wrapper folder or the actual .egg on the filesystem
+        if os.path.basename(package_path).endswith('.egg'):
+            package_path = os.path.dirname(package_path)
+
+        site_parent, site_folder = os.path.split(package_path)
         py_prefix = os.path.abspath(sys.prefix)
         if package_path.startswith(py_prefix):
             base_dir = py_prefix

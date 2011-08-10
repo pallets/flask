@@ -1077,6 +1077,23 @@ class InstanceTestCase(unittest.TestCase):
         finally:
             sys.modules['myapp'] = None
 
+    def test_egg_installed_paths(self):
+        import types
+        expected_prefix = os.path.abspath(sys.prefix)
+        package_path = os.path.join(expected_prefix, 'lib', 'python2.5',
+                                    'site-packages', 'MyApp.egg', 'myapp')
+        mod = types.ModuleType('myapp')
+        mod.__path__ = [package_path]
+        mod.__file__ = os.path.join(package_path, '__init__.py')
+        sys.modules['myapp'] = mod
+        try:
+            mod.app = flask.Flask(mod.__name__)
+            self.assertEqual(mod.app.instance_path,
+                             os.path.join(expected_prefix, 'share',
+                                          'myapp-instance'))
+        finally:
+            sys.modules['myapp'] = None
+
 
 class JSONTestCase(unittest.TestCase):
 
