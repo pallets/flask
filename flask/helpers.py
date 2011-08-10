@@ -466,23 +466,29 @@ def send_from_directory(directory, filename, **options):
     return send_file(filename, conditional=True, **options)
 
 
-def get_root_path(name):
+def get_root_path(import_name):
     """Returns the path to a package or cwd if that cannot be found.  This
     returns the path of a package or the folder that contains a module.
 
     Not to be confused with the package path returned by :func:`find_package`.
     """
+    __import__(import_name)
     try:
-        return os.path.abspath(os.path.dirname(sys.modules[name].__file__))
-    except (KeyError, AttributeError):
+        directory = os.path.dirname(sys.modules[import_name].__file__)
+        return os.path.abspath(directory)
+    except AttributeError:
         return os.getcwd()
 
 
 def find_package(import_name):
     """Finds a package and returns the prefix (or None if the package is
     not installed) as well as the folder that contains the package or
-    module as a tuple.
+    module as a tuple.  The package path returned is the module that would
+    have to be added to the pythonpath in order to make it possible to
+    import the module.  The prefix is the path below which a UNIX like
+    folder structure exists (lib, share etc.).
     """
+    __import__(import_name)
     root_mod = sys.modules[import_name.split('.')[0]]
     package_path = getattr(root_mod, '__file__', None)
     if package_path is None:
