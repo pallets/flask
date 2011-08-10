@@ -294,7 +294,18 @@ control system it's called ``instance`` and placed directly next to your
 package or module by default.  This path can be overridden by specifying
 the `instance_path` parameter to your application::
 
-    app = Flask(__name__, instance_path='/path/to/instance')
+    app = Flask(__name__, instance_path='/path/to/instance/folder')
+
+Default locations::
+
+    Module situation:
+        /myapp.py
+        /instance
+
+    Package situation:
+        /myapp
+            /__init__.py
+        /instance
 
 Please keep in mind that this path *must* be absolute when provided.
 
