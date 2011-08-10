@@ -474,6 +474,43 @@ def get_package_path(name):
         return os.getcwd()
 
 
+def find_package(import_name):
+    """Finds a package and returns the prefix (or None if the package is
+    not installed) as well as the folder that contains the package or
+    module as a tuple.
+    """
+    root_mod = sys.modules[import_name.split('.')[0]]
+    package_path = getattr(root_mod, '__file__', None)
+    if package_path is None:
+        package_path = os.getcwd()
+    else:
+        package_path = os.path.abspath(os.path.dirname(package_path))
+    if hasattr(root_mod, '__path__'):
+        package_path = os.path.dirname(package_path)
+
+    # leave the egg wrapper folder or the actual .egg on the filesystem
+    test_package_path = package_path
+    if os.path.basename(test_package_path).endswith('.egg'):
+        test_package_path = os.path.dirname(test_package_path)
+
+    site_parent, site_folder = os.path.split(test_package_path)
+    py_prefix = os.path.abspath(sys.prefix)
+    if test_package_path.startswith(py_prefix):
+        return py_prefix, package_path
+    elif site_folder.lower() == 'site-packages':
+        parent, folder = os.path.split(site_parent)
+        # Windows like installations
+        if folder.lower() == 'lib':
+            base_dir = parent
+        # UNIX like installations
+        elif os.path.basename(parent).lower() == 'lib':
+            base_dir = os.path.dirname(parent)
+        else:
+            base_dir = site_parent
+        return base_dir, package_path
+    return None, package_path
+
+
 class locked_cached_property(object):
     """A decorator that converts a function into a lazy property.  The
     function wrapped is called the first time to retrieve the result

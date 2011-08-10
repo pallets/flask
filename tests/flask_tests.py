@@ -1038,7 +1038,7 @@ class InstanceTestCase(unittest.TestCase):
         try:
             mod.app = flask.Flask(mod.__name__)
             self.assertEqual(mod.app.instance_path,
-                             os.path.join(expected_prefix, 'share',
+                             os.path.join(expected_prefix, 'var',
                                           'myapp-instance'))
         finally:
             sys.modules['myapp'] = None
@@ -1055,7 +1055,7 @@ class InstanceTestCase(unittest.TestCase):
         try:
             mod.app = flask.Flask(mod.__name__)
             self.assertEqual(mod.app.instance_path,
-                             os.path.join(expected_prefix, 'share',
+                             os.path.join(expected_prefix, 'var',
                                           'myapp-instance'))
         finally:
             sys.modules['myapp'] = None
@@ -1072,7 +1072,7 @@ class InstanceTestCase(unittest.TestCase):
         try:
             mod.app = flask.Flask(mod.__name__)
             self.assertEqual(mod.app.instance_path,
-                             os.path.join(expected_prefix, 'share',
+                             os.path.join(expected_prefix, 'var',
                                           'myapp-instance'))
         finally:
             sys.modules['myapp'] = None
@@ -1089,7 +1089,7 @@ class InstanceTestCase(unittest.TestCase):
         try:
             mod.app = flask.Flask(mod.__name__)
             self.assertEqual(mod.app.instance_path,
-                             os.path.join(expected_prefix, 'share',
+                             os.path.join(expected_prefix, 'var',
                                           'myapp-instance'))
         finally:
             sys.modules['myapp'] = None

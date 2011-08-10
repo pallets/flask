@@ -24,7 +24,8 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    locked_cached_property, _tojson_filter, _endpoint_from_view_func
+    locked_cached_property, _tojson_filter, _endpoint_from_view_func, \
+    find_package
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext
@@ -561,35 +562,10 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.8
         """
-        root_mod = sys.modules[self.import_name.split('.')[0]]
-        # we're not using root_mod.__file__ here since the module could be
-        # virtual.  We're trusting the _PackageBoundObject to have calculated
-        # the proper name.
-        package_path = self.root_path
-        if hasattr(root_mod, '__path__'):
-            package_path = os.path.dirname(package_path)
-
-        # leave the egg wrapper folder or the actual .egg on the filesystem
-        if os.path.basename(package_path).endswith('.egg'):
-            package_path = os.path.dirname(package_path)
-
-        site_parent, site_folder = os.path.split(package_path)
-        py_prefix = os.path.abspath(sys.prefix)
-        if package_path.startswith(py_prefix):
-            base_dir = py_prefix
-        elif site_folder == 'site-packages':
-            parent, folder = os.path.split(site_parent)
-            # Windows like installations
-            if folder.lower() == 'lib':
-                base_dir = parent
-            # UNIX like installations
-            elif os.path.basename(parent).lower() == 'lib':
-                base_dir = os.path.dirname(parent)
-            else:
-                base_dir = site_parent
-        else:
+        prefix, package_path = find_package(self.import_name)
+        if prefix is None:
             return os.path.join(package_path, 'instance')
-        return os.path.join(base_dir, 'share', self.name + '-instance')
+        return os.path.join(prefix, 'var', self.name + '-instance')
 
     def open_instance_resource(self, resource, mode='rb'):
         """Opens a resource from the application's instance folder
