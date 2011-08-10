@@ -1032,7 +1032,7 @@ class InstanceTestCase(unittest.TestCase):
         import types
         expected_prefix = os.path.abspath('foo')
         mod = types.ModuleType('myapp')
-        mod.__file__ = os.path.join(expected_prefix, 'lib',
+        mod.__file__ = os.path.join(expected_prefix, 'lib', 'python2.5',
                                     'site-packages', 'myapp.py')
         sys.modules['myapp'] = mod
         try:
@@ -1046,7 +1046,7 @@ class InstanceTestCase(unittest.TestCase):
     def test_installed_package_paths(self):
         import types
         expected_prefix = os.path.abspath('foo')
-        package_path = os.path.join(expected_prefix, 'lib',
+        package_path = os.path.join(expected_prefix, 'lib', 'python2.5',
                                     'site-packages', 'myapp')
         mod = types.ModuleType('myapp')
         mod.__path__ = [package_path]
@@ -1063,7 +1063,7 @@ class InstanceTestCase(unittest.TestCase):
     def test_prefix_installed_paths(self):
         import types
         expected_prefix = os.path.abspath(sys.prefix)
-        package_path = os.path.join(expected_prefix, 'lib',
+        package_path = os.path.join(expected_prefix, 'lib', 'python2.5',
                                     'site-packages', 'myapp')
         mod = types.ModuleType('myapp')
         mod.__path__ = [package_path]

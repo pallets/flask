@@ -577,6 +577,8 @@ class Flask(_PackageBoundObject):
             parent, folder = os.path.split(site_parent)
             if folder.lower() == 'lib':
                 base_dir = parent
+            elif os.path.basename(parent).lower() == 'lib':
+                base_dir = os.path.dirname(parent)
             else:
                 base_dir = site_parent
         else:
