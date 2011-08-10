@@ -267,3 +267,64 @@ your configuration files.  However here a list of good recommendations:
     :ref:`fabric-deployment` pattern.
 
 .. _fabric: http://fabfile.org/
+
+
+.. _instance-folders:
+
+Instance Folders
+----------------
+
+.. versionadded:: 0.8
+
+Flask 0.8 introduces instance folders.  Flask for a long time made it
+possible to refer to paths relative to the application's folder directly
+(via :attr:`Flask.root_path`).  This was also how many developers loaded
+configurations stored next to the application.  Unfortunately however this
+only works well if applications are not packages in which case the root
+path refers to the contents of the package.
+
+With Flask 0.8 a new attribute was introduced:
+:attr:`Flask.instance_path`.  It refers to a new concept called the
+“instance folder”.  The instance folder is designed to not be under
+version control and be deployment specific.  It's the perfect place to
+drop things that either change at runtime or configuration files.
+
+To make it easier to put this folder into an ignore list for your version
+control system it's called ``instance`` and placed directly next to your
+package or module by default.  This path can be overridden by specifying
+the `instance_path` parameter to your application::
+
+    app = Flask(__name__, instance_path='/path/to/instance')
+
+Please keep in mind that this path *must* be absolute when provided.
+
+Since the config object provided loading of configuration files from
+relative filenames we made it possible to change the loading via filenames
+to be relative to the instance path if wanted.  The behavior of relative
+paths in config files can be flipped between “relative to the application
+root” (the default) to “relative to instance folder” via the
+`instance_relative_config` switch to the application constructor::
+
+    app = Flask(__name__, instance_relative_config=True)
+
+Here is a full example of how to configure Flask to preload the config
+from a module and then override the config from a file in the config
+folder if it exists::
+
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object('yourapplication.default_settings')
+    app.config.from_pyfile('application.cfg', silent=True)
+
+The path to the instance folder can be found via the
+:attr:`Flask.instance_path`.  Flask also provides a shortcut to open a
+file from the instnace folder with :meth:`Flask.open_instance_resource`.
+
+Example usage for both::
+
+    filename = os.path.join(app.instance_root, 'application.cfg')
+    with open(filename) as f:
+        config = f.read()
+
+    # or via open_instance_resource:
+    with app.open_instance_resource('application.cfg') as f:
+        config = f.read()

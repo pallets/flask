@@ -554,6 +554,17 @@ class Flask(_PackageBoundObject):
         basedir = os.path.normpath(os.path.abspath(instance_path))
         return os.path.join(basedir, 'instance')
 
+    def open_instance_resource(self, resource, mode='rb'):
+        """Opens a resource from the application's instance folder
+        (:attr:`instance_path`).  Otherwise works like
+        :meth:`open_resource`.  Instance resources can also be opened for
+        writing.
+
+        :param resource: the name of the resource.  To access resources within
+                         subfolders use forward slashes as separator.
+        """
+        return open(os.path.join(self.instance_path, resource), mode)
+
     def create_jinja_environment(self):
         """Creates the Jinja2 environment based on :attr:`jinja_options`
         and :meth:`select_jinja_autoescape`.  Since 0.7 this also adds

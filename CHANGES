@@ -30,7 +30,8 @@ Relase date to be decided, codename to be chosen.
   are located but also an instane path which is the designated place to
   drop files that are modified at runtime (uploads etc.).  Also this is
   conceptionally only instance depending and outside version control so it's
-  the perfect place to put configuration files etc.
+  the perfect place to put configuration files etc.  For more information
+  see :ref:`instance-folders`.
 
 Version 0.7.3
 -------------
