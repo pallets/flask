@@ -1008,20 +1008,22 @@ class BasicFunctionalityTestCase(unittest.TestCase):
 
 class InstanceTestCase(unittest.TestCase):
 
-    def test_uninstalled_module_paths(self):
+    def test_explicit_instance_paths(self):
         here = os.path.abspath(os.path.dirname(__file__))
-        app = flask.Flask(__name__)
-        self.assertEqual(app.instance_path, os.path.join(here, 'instance'))
-
-        app = flask.Flask(__name__, instance_path=here)
-        self.assertEqual(app.instance_path, here)
-
         try:
             flask.Flask(__name__, instance_path='instance')
         except ValueError, e:
             self.assert_('must be absolute' in str(e))
         else:
             self.fail('Expected value error')
+
+        app = flask.Flask(__name__, instance_path=here)
+        self.assertEqual(app.instance_path, here)
+
+    def test_uninstalled_module_paths(self):
+        here = os.path.abspath(os.path.dirname(__file__))
+        app = flask.Flask(__name__)
+        self.assertEqual(app.instance_path, os.path.join(here, 'instance'))
 
     def test_uninstalled_package_paths(self):
         from blueprintapp import app
