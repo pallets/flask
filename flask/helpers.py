@@ -254,7 +254,7 @@ def get_flashed_messages(with_categories=False):
     .. sourcecode:: html+jinja
 
         {% for category, msg in get_flashed_messages(with_categories=true) %}
-          <p class=flash-{{ category }}>{{ msg }}
+          <p class=flash-{{ category }}>{{ msg }}</p>
         {% endfor %}
 
     .. versionchanged:: 0.3
