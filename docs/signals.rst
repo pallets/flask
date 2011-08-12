@@ -124,7 +124,7 @@ debugging.  You can access the name of the signal with the
 
 .. admonition:: For Extension Developers
 
-   If you are writing a Flask extension and you to gracefully degrade for
+   If you are writing a Flask extension and you want to gracefully degrade for
    missing blinker installations, you can do so by using the
    :class:`flask.signals.Namespace` class.
 
