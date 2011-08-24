@@ -36,7 +36,7 @@ Or, if you prefer:
 
 .. sourcecode:: text
 
-    $ uwsgi -s /tmp/uwsgi.sock myapp:app
+    $ uwsgi -s /tmp/uwsgi.sock -w myapp:app
 
 Configuring nginx
 -----------------
