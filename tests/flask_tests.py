@@ -1057,6 +1057,19 @@ class TestToolsTestCase(FlaskTestCase):
             rv = c.get('/')
             self.assertEqual(rv.data, 'http://example.com:1234/foo/')
 
+    def test_environ_defaults(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            return flask.request.url
+
+        ctx = app.test_request_context()
+        self.assertEqual(ctx.request.url, 'http://localhost/')
+        with app.test_client() as c:
+            rv = c.get('/')
+            self.assertEqual(rv.data, 'http://localhost/')
+
     def test_session_transactions(self):
         app = flask.Flask(__name__)
         app.testing = True
