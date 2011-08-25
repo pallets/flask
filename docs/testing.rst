@@ -273,3 +273,35 @@ is no longer available (because you are trying to use it outside of the actual r
 However, keep in mind that any :meth:`~flask.Flask.after_request` functions
 are already called at this point so your database connection and
 everything involved is probably already closed down.
+
+
+Accessing and Modifying Sessions
+--------------------------------
+
+.. versionadded:: 0.8
+
+Sometimes it can be very helpful to access or modify the sessions from the
+test client.  Generally there are two ways for this.  Ify ou just want to
+ensure that a session has certain keys set to certain values you can just
+keep the context around and access :data:`flask.session`::
+
+    with app.test_client() as c:
+        rv = c.get('/')
+        assert flask.session['foo'] == 42
+
+This however does not make it possible to also modify the session or to
+access the session before a request was fired.  Starting with Flask 0.8 we
+provide a so called “session transaction” which simulates the appropriate
+calls to open a session in the context of the test client and to modify
+it.  At the end of the transaction the session is stored.  This works
+independently of the session backend used::
+
+    with app.test_client() as c:
+        with c.session_transaction() as sess:
+            sess['a_key'] = 'a value'
+
+        # once this is reached the session was stored
+
+Note that in this case you have to use the ``sess`` object instead of the
+:data:`flask.session` proxy.  The object however itself will provide the
+same interface.
