@@ -108,6 +108,8 @@ class FlaskClient(Client):
             self.context_preserved = _request_ctx_stack.top is not old
 
     def __enter__(self):
+        if self.preserve_context:
+            raise RuntimeError('Cannot nest client invocations')
         self.preserve_context = True
         return self
 
