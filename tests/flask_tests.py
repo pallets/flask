@@ -96,7 +96,15 @@ def emits_module_deprecation_warning(f):
 
 
 class FlaskTestCase(unittest.TestCase):
-    pass
+
+    def ensure_clean_request_context(self):
+        # make sure we're not leaking a request context since we are
+        # testing flask internally in debug mode in a few cases
+        self.assertEqual(flask._request_ctx_stack.top, None)
+
+    def tearDown(self):
+        unittest.TestCase.tearDown(self)
+        self.ensure_clean_request_context()
 
 
 class ContextTestCase(FlaskTestCase):
@@ -1881,23 +1889,23 @@ class LoggingTestCase(FlaskTestCase):
         @app.route('/exc')
         def exc():
             1/0
-        c = app.test_client()
 
-        with catch_stderr() as err:
-            c.get('/')
-            out = err.getvalue()
-            assert 'WARNING in flask_tests [' in out
-            assert 'flask_tests.py' in out
-            assert 'the standard library is dead' in out
-            assert 'this is a debug statement' in out
+        with app.test_client() as c:
+            with catch_stderr() as err:
+                c.get('/')
+                out = err.getvalue()
+                assert 'WARNING in flask_tests [' in out
+                assert 'flask_tests.py' in out
+                assert 'the standard library is dead' in out
+                assert 'this is a debug statement' in out
 
-        with catch_stderr() as err:
-            try:
-                c.get('/exc')
-            except ZeroDivisionError:
-                pass
-            else:
-                assert False, 'debug log ate the exception'
+            with catch_stderr() as err:
+                try:
+                    c.get('/exc')
+                except ZeroDivisionError:
+                    pass
+                else:
+                    assert False, 'debug log ate the exception'
 
     def test_exception_logging(self):
         out = StringIO()
