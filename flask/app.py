@@ -938,6 +938,9 @@ class Flask(_PackageBoundObject):
                           subdomain matching is in use.
         :param strict_slashes: can be used to disable the strict slashes
                                setting for this rule.  See above.
+        :param endpoint: Since version 0.8 you can also pass the enpoint,
+                         it will be used instead of generating the endpoint
+                         from the function name.
         :param options: other options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object.
         """
