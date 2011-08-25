@@ -153,36 +153,6 @@ class ContextTestCase(FlaskTestCase):
         else:
             assert 0, 'expected runtime error'
 
-    def test_test_client_context_binding(self):
-        app = flask.Flask(__name__)
-        @app.route('/')
-        def index():
-            flask.g.value = 42
-            return 'Hello World!'
-
-        @app.route('/other')
-        def other():
-            1/0
-
-        with app.test_client() as c:
-            resp = c.get('/')
-            assert flask.g.value == 42
-            assert resp.data == 'Hello World!'
-            assert resp.status_code == 200
-
-            resp = c.get('/other')
-            assert not hasattr(flask.g, 'value')
-            assert 'Internal Server Error' in resp.data
-            assert resp.status_code == 500
-            flask.g.value = 23
-
-        try:
-            flask.g.value
-        except (AttributeError, RuntimeError):
-            pass
-        else:
-            raise AssertionError('some kind of exception expected')
-
 
 class BasicFunctionalityTestCase(FlaskTestCase):
 
@@ -1110,6 +1080,36 @@ class TestToolsTestCase(FlaskTestCase):
             req = flask.request._get_current_object()
             with c.session_transaction():
                 self.assert_(req is flask.request._get_current_object())
+
+    def test_test_client_context_binding(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            flask.g.value = 42
+            return 'Hello World!'
+
+        @app.route('/other')
+        def other():
+            1/0
+
+        with app.test_client() as c:
+            resp = c.get('/')
+            assert flask.g.value == 42
+            assert resp.data == 'Hello World!'
+            assert resp.status_code == 200
+
+            resp = c.get('/other')
+            assert not hasattr(flask.g, 'value')
+            assert 'Internal Server Error' in resp.data
+            assert resp.status_code == 500
+            flask.g.value = 23
+
+        try:
+            flask.g.value
+        except (AttributeError, RuntimeError):
+            pass
+        else:
+            raise AssertionError('some kind of exception expected')
 
 
 class InstanceTestCase(FlaskTestCase):
