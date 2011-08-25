@@ -1747,6 +1747,57 @@ class BlueprintTestCase(unittest.TestCase):
         self.assertEqual(c.get('/py/bar/123').data, 'bp.123')
         self.assertEqual(c.get('/py/bar/foo').data, 'bp.bar_foo')
 
+    def test_route_decorator_custom_endpoint_with_dots(self):
+        bp = flask.Blueprint('bp', __name__)
+
+        @bp.route('/foo')
+        def foo():
+            return flask.request.endpoint
+
+        try:
+            @bp.route('/bar', endpoint='bar.bar')
+            def foo_bar():
+                return flask.request.endpoint
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('expected AssertionError not raised')
+
+        try:
+            @bp.route('/bar/123', endpoint='bar.123')
+            def foo_bar_foo():
+                return flask.request.endpoint
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('expected AssertionError not raised')
+
+        def foo_foo_foo():
+            pass
+
+        self.assertRaises(
+            AssertionError,
+            lambda: bp.add_url_rule(
+                '/bar/123', endpoint='bar.123', view_func=foo_foo_foo
+            )
+        )
+
+        self.assertRaises(
+            AssertionError,
+            bp.route('/bar/123', endpoint='bar.123'),
+            lambda: None
+        )
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+
+        c = app.test_client()
+        self.assertEqual(c.get('/py/foo').data, 'bp.foo')
+        # The rule's din't actually made it through
+        rv = c.get('/py/bar')
+        assert rv.status_code == 404
+        rv = c.get('/py/bar/123')
+        assert rv.status_code == 404
 
 class SendfileTestCase(unittest.TestCase):
 

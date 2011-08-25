@@ -166,6 +166,8 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the blueprint.
         """
+        if endpoint:
+            assert '.' not in endpoint, "Blueprint endpoint's should not contain dot's"
         self.record(lambda s:
             s.add_url_rule(rule, endpoint, view_func, **options))
 
