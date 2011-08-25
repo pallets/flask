@@ -223,7 +223,7 @@ Test Client
 
 .. currentmodule:: flask.testing
 
-.. autoclass:: TestClient
+.. autoclass:: FlaskClient
    :members:
 
 

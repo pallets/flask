@@ -706,7 +706,7 @@ class Flask(_PackageBoundObject):
                 rv = c.get('/?vodka=42')
                 assert request.args['vodka'] == '42'
 
-        See :class:`~flask.testing.TestClient` for more information.
+        See :class:`~flask.testing.FlaskClient` for more information.
 
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
@@ -1481,19 +1481,12 @@ class Flask(_PackageBoundObject):
         :func:`werkzeug.test.EnvironBuilder` for more information, this
         function accepts the same arguments).
         """
-        from werkzeug.test import create_environ
-        environ_overrides = kwargs.setdefault('environ_overrides', {})
-        if self.config.get('SERVER_NAME'):
-            server_name = self.config.get('SERVER_NAME')
-            if ':' not in server_name:
-                http_host, http_port = server_name, '80'
-            else:
-                http_host, http_port = server_name.split(':', 1)
-
-            environ_overrides.setdefault('SERVER_NAME', server_name)
-            environ_overrides.setdefault('HTTP_HOST', server_name)
-            environ_overrides.setdefault('SERVER_PORT', http_port)
-        return self.request_context(create_environ(*args, **kwargs))
+        from flask.testing import make_test_environ_builder
+        builder = make_test_environ_builder(self, *args, **kwargs)
+        try:
+            return self.request_context(builder.get_environ())
+        finally:
+            builder.close()
 
     def wsgi_app(self, environ, start_response):
         """The actual WSGI application.  This is not implemented in

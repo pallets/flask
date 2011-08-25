@@ -15,6 +15,17 @@ from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
 
 
+def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
+    """Creates a new test builder with some application defaults thrown in."""
+    http_host = app.config.get('SERVER_NAME')
+    app_root = app.config.get('APPLICATION_ROOT')
+    if base_url is None:
+        base_url = 'http://%s/' % (http_host or 'localhost')
+        if app_root:
+            base_url += app_root.lstrip('/')
+    return EnvironBuilder(path, base_url, *args, **kwargs)
+
+
 class FlaskClient(Client):
     """Works like a regular Werkzeug test client but has some knowledge about
     how Flask works to defer the cleanup of the request context stack to the
@@ -83,21 +94,8 @@ class FlaskClient(Client):
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)
         follow_redirects = kwargs.pop('follow_redirects', False)
+        builder = make_test_environ_builder(self.application, *args, **kwargs)
 
-        builder = EnvironBuilder(*args, **kwargs)
-
-        if self.application.config.get('SERVER_NAME'):
-            server_name = self.application.config.get('SERVER_NAME')
-            if ':' not in server_name:
-                http_host, http_port = server_name, None
-            else:
-                http_host, http_port = server_name.split(':', 1)
-            if builder.base_url == 'http://localhost/':
-                # Default Generated Base URL
-                if http_port != None:
-                    builder.host = http_host + ':' + http_port
-                else:
-                    builder.host = http_host
         old = _request_ctx_stack.top
         try:
             return Client.open(self, builder,

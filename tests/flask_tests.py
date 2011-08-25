@@ -1042,6 +1042,21 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
 class TestToolsTestCase(FlaskTestCase):
 
+    def test_environ_defaults_from_config(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.config['SERVER_NAME'] = 'example.com:1234'
+        app.config['APPLICATION_ROOT'] = '/foo'
+        @app.route('/')
+        def index():
+            return flask.request.url
+
+        ctx = app.test_request_context()
+        self.assertEqual(ctx.request.url, 'http://example.com:1234/foo/')
+        with app.test_client() as c:
+            rv = c.get('/')
+            self.assertEqual(rv.data, 'http://example.com:1234/foo/')
+
     def test_session_transactions(self):
         app = flask.Flask(__name__)
         app.testing = True
