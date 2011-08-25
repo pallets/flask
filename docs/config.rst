@@ -5,9 +5,10 @@ Configuration Handling
 
 .. versionadded:: 0.3
 
-Applications need some kind of configuration.  There are different things
-you might want to change like toggling debug mode, the secret key, and a
-lot of very similar things.
+Applications need some kind of configuration.  There are different settings
+you might want to change depending on the application environment like
+toggling the debug mode, setting the secret key, and other such
+environment-specific things.
 
 The way Flask is designed usually requires the configuration to be
 available when the application starts up.  You can hardcode the
@@ -31,8 +32,7 @@ can be modified just like any dictionary::
     app.config['DEBUG'] = True
 
 Certain configuration values are also forwarded to the
-:attr:`~flask.Flask` object so that you can read and write them from
-there::
+:attr:`~flask.Flask` object so you can read and write them from there::
 
     app.debug = True
 
@@ -147,10 +147,11 @@ The following configuration values are used internally by Flask:
 Configuring from Files
 ----------------------
 
-Configuration becomes more useful if you can configure from a file, and
-ideally that file would be outside of the actual application package so that
-you can install the package with distribute (:ref:`distribute-deployment`)
-and still modify that file afterwards.
+Configuration becomes more useful if you can store it in a separate file,
+ideally located outside the actual application package. This makes
+packaging and distributing your application possible via various package
+handling tools (:ref:`distribute-deployment`) and finally modifying the
+configuration file afterwards.
 
 So a common pattern is this::
 
@@ -178,12 +179,13 @@ The configuration files themselves are actual Python files.  Only values
 in uppercase are actually stored in the config object later on.  So make
 sure to use uppercase letters for your config keys.
 
-Here is an example configuration file::
+Here is an example of a configuration file::
 
+    # Example configuration
     DEBUG = False
     SECRET_KEY = '?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
 
-Make sure to load the configuration very early on so that extensions have
+Make sure to load the configuration very early on, so that extensions have
 the ability to access the configuration when starting up.  There are other
 methods on the config object as well to load from individual files.  For a
 complete reference, read the :class:`~flask.Config` object's
@@ -194,9 +196,9 @@ Configuration Best Practices
 ----------------------------
 
 The downside with the approach mentioned earlier is that it makes testing
-a little harder.  There is no one 100% solution for this problem in
-general, but there are a couple of things you can do to improve that
-experience:
+a little harder.  There is no single 100% solution for this problem in
+general, but there are a couple of things you can keep in mind to improve
+that experience:
 
 1.  create your application in a function and register blueprints on it.
     That way you can create multiple instances of your application with
@@ -211,10 +213,10 @@ experience:
 Development / Production
 ------------------------
 
-Most applications need more than one configuration.  There will at least
-be a separate configuration for a production server and one used during
-development.  The easiest way to handle this is to use a default
-configuration that is always loaded and part of version control, and a
+Most applications need more than one configuration.  There should be at
+least separate configurations for the production server and the one used
+during development.  The easiest way to handle this is to use a default
+configuration that is always loaded and part of the version control, and a
 separate configuration that overrides the values as necessary as mentioned
 in the example above::
 
