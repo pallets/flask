@@ -281,7 +281,7 @@ Accessing and Modifying Sessions
 .. versionadded:: 0.8
 
 Sometimes it can be very helpful to access or modify the sessions from the
-test client.  Generally there are two ways for this.  Ify ou just want to
+test client.  Generally there are two ways for this.  If you just want to
 ensure that a session has certain keys set to certain values you can just
 keep the context around and access :data:`flask.session`::
 
