@@ -942,7 +942,8 @@ class Flask(_PackageBoundObject):
                         :class:`~werkzeug.routing.Rule` object.
         """
         def decorator(f):
-            self.add_url_rule(rule, None, f, **options)
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
             return f
         return decorator
 

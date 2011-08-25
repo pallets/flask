@@ -1005,6 +1005,32 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             rv = c.post('/foo', data={}, follow_redirects=True)
             self.assertEqual(rv.data, 'success')
 
+    def test_route_decorator_custom_endpoint(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+
+        @app.route('/foo/')
+        def foo():
+            return flask.request.endpoint
+
+        @app.route('/bar/', endpoint='bar')
+        def for_bar():
+            return flask.request.endpoint
+
+        @app.route('/bar/123', endpoint='123')
+        def for_bar_foo():
+            return flask.request.endpoint
+
+        with app.test_request_context():
+            assert flask.url_for('foo') == '/foo/'
+            assert flask.url_for('bar') == '/bar/'
+            assert flask.url_for('123') == '/bar/123'
+
+        c = app.test_client()
+        self.assertEqual(c.get('/foo/').data, 'foo')
+        self.assertEqual(c.get('/bar/').data, 'bar')
+        self.assertEqual(c.get('/bar/123').data, '123')
+
 
 class InstanceTestCase(unittest.TestCase):
 
@@ -1686,6 +1712,40 @@ class BlueprintTestCase(unittest.TestCase):
         c = app.test_client()
         self.assertEqual(c.get('/').data, '1')
         self.assertEqual(c.get('/page/2').data, '2')
+
+    def test_route_decorator_custom_endpoint(self):
+
+        bp = flask.Blueprint('bp', __name__)
+
+        @bp.route('/foo')
+        def foo():
+            return flask.request.endpoint
+
+        @bp.route('/bar', endpoint='bar')
+        def foo_bar():
+            return flask.request.endpoint
+
+        @bp.route('/bar/123', endpoint='123')
+        def foo_bar_foo():
+            return flask.request.endpoint
+
+        @bp.route('/bar/foo')
+        def bar_foo():
+            return flask.request.endpoint
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+
+        @app.route('/')
+        def index():
+            return flask.request.endpoint
+
+        c = app.test_client()
+        self.assertEqual(c.get('/').data, 'index')
+        self.assertEqual(c.get('/py/foo').data, 'bp.foo')
+        self.assertEqual(c.get('/py/bar').data, 'bp.bar')
+        self.assertEqual(c.get('/py/bar/123').data, 'bp.123')
+        self.assertEqual(c.get('/py/bar/foo').data, 'bp.bar_foo')
 
 
 class SendfileTestCase(unittest.TestCase):

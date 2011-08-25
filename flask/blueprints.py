@@ -157,7 +157,8 @@ class Blueprint(_PackageBoundObject):
         :func:`url_for` function is prefixed with the name of the blueprint.
         """
         def decorator(f):
-            self.add_url_rule(rule, f.__name__, f, **options)
+            endpoint = options.pop("endpoint", f.__name__)
+            self.add_url_rule(rule, endpoint, f, **options)
             return f
         return decorator
 
