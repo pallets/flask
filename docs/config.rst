@@ -299,25 +299,37 @@ With Flask 0.8 a new attribute was introduced:
 version control and be deployment specific.  It's the perfect place to
 drop things that either change at runtime or configuration files.
 
-To make it easier to put this folder into an ignore list for your version
-control system it's called ``instance`` and placed directly next to your
-package or module by default.  This path can be overridden by specifying
-the `instance_path` parameter to your application::
+You can either explicitly provide the path of the instance folder when
+creating the Flask application or you can let Flask autodetect the
+instance folder.  For explicit configuration use the `instance_path`
+parameter::
 
     app = Flask(__name__, instance_path='/path/to/instance/folder')
 
-Default locations::
+Please keep in mind that this path *must* be absolute when provided.
 
-    Module situation:
+If the `instance_path` parameter is not provided the following default
+locations are used:
+
+-   Uninstalled module::
+
         /myapp.py
         /instance
 
-    Package situation:
+-   Uninstalled package::
+
         /myapp
             /__init__.py
         /instance
 
-Please keep in mind that this path *must* be absolute when provided.
+-   Installed module or package::
+
+        $PREFIX/lib/python2.X/site-packages/myapp
+        $PREFIX/var/myapp-instance
+
+    ``$PREFIX`` is the prefix of your Python installation.  This can be
+    ``/usr`` or the path to your virtualenv.  You can print the value of
+    ``sys.prefix`` to see what the prefix is set to.
 
 Since the config object provided loading of configuration files from
 relative filenames we made it possible to change the loading via filenames
