@@ -95,7 +95,11 @@ def emits_module_deprecation_warning(f):
     return update_wrapper(new_f, f)
 
 
-class ContextTestCase(unittest.TestCase):
+class FlaskTestCase(unittest.TestCase):
+    pass
+
+
+class ContextTestCase(FlaskTestCase):
 
     def test_context_binding(self):
         app = flask.Flask(__name__)
@@ -172,7 +176,7 @@ class ContextTestCase(unittest.TestCase):
             raise AssertionError('some kind of exception expected')
 
 
-class BasicFunctionalityTestCase(unittest.TestCase):
+class BasicFunctionalityTestCase(FlaskTestCase):
 
     def test_options_work(self):
         app = flask.Flask(__name__)
@@ -1028,7 +1032,7 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             self.assertEqual(rv.data, 'success')
 
 
-class TestToolsTestCase(unittest.TestCase):
+class TestToolsTestCase(FlaskTestCase):
 
     def test_session_transactions(self):
         app = flask.Flask(__name__)
@@ -1072,7 +1076,7 @@ class TestToolsTestCase(unittest.TestCase):
                 self.assert_(req is flask.request._get_current_object())
 
 
-class InstanceTestCase(unittest.TestCase):
+class InstanceTestCase(FlaskTestCase):
 
     def test_explicit_instance_paths(self):
         here = os.path.abspath(os.path.dirname(__file__))
@@ -1163,7 +1167,7 @@ class InstanceTestCase(unittest.TestCase):
             sys.modules['myapp'] = None
 
 
-class JSONTestCase(unittest.TestCase):
+class JSONTestCase(FlaskTestCase):
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
@@ -1239,7 +1243,7 @@ class JSONTestCase(unittest.TestCase):
         test_modified_url_encoding = None
 
 
-class TemplatingTestCase(unittest.TestCase):
+class TemplatingTestCase(FlaskTestCase):
 
     def test_context_processing(self):
         app = flask.Flask(__name__)
@@ -1361,7 +1365,7 @@ class TemplatingTestCase(unittest.TestCase):
         assert rv.data == 'Hello Custom World!'
 
 
-class ModuleTestCase(unittest.TestCase):
+class ModuleTestCase(FlaskTestCase):
 
     @emits_module_deprecation_warning
     def test_basic_module(self):
@@ -1587,7 +1591,7 @@ class ModuleTestCase(unittest.TestCase):
         assert c.get('/foo/bar').data == 'bar'
 
 
-class BlueprintTestCase(unittest.TestCase):
+class BlueprintTestCase(FlaskTestCase):
 
     def test_blueprint_specific_error_handling(self):
         frontend = flask.Blueprint('frontend', __name__)
@@ -1754,7 +1758,7 @@ class BlueprintTestCase(unittest.TestCase):
         self.assertEqual(c.get('/page/2').data, '2')
 
 
-class SendfileTestCase(unittest.TestCase):
+class SendfileTestCase(FlaskTestCase):
 
     def test_send_file_regular(self):
         app = flask.Flask(__name__)
@@ -1854,7 +1858,7 @@ class SendfileTestCase(unittest.TestCase):
             assert options['filename'] == 'index.txt'
 
 
-class LoggingTestCase(unittest.TestCase):
+class LoggingTestCase(FlaskTestCase):
 
     def test_logger_cache(self):
         app = flask.Flask(__name__)
@@ -1938,7 +1942,7 @@ class LoggingTestCase(unittest.TestCase):
             assert rv.data == 'Hello Server Error'
 
 
-class ConfigTestCase(unittest.TestCase):
+class ConfigTestCase(FlaskTestCase):
 
     def common_object_test(self, app):
         assert app.secret_key == 'devkey'
@@ -1998,7 +2002,7 @@ class ConfigTestCase(unittest.TestCase):
         assert not app.config.from_pyfile('missing.cfg', silent=True)
 
 
-class SubdomainTestCase(unittest.TestCase):
+class SubdomainTestCase(FlaskTestCase):
 
     def test_basic_support(self):
         app = flask.Flask(__name__)
@@ -2061,7 +2065,7 @@ class SubdomainTestCase(unittest.TestCase):
         assert rv.data == 'Outside'
 
 
-class TestSignals(unittest.TestCase):
+class TestSignals(FlaskTestCase):
 
     def test_template_rendered(self):
         app = flask.Flask(__name__)
@@ -2144,7 +2148,7 @@ class TestSignals(unittest.TestCase):
             flask.got_request_exception.disconnect(record, app)
 
 
-class ViewTestCase(unittest.TestCase):
+class ViewTestCase(FlaskTestCase):
 
     def common_test(self, app):
         c = app.test_client()
@@ -2219,7 +2223,7 @@ class ViewTestCase(unittest.TestCase):
         self.assertEqual(sorted(meths), ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST'])
 
 
-class DeprecationsTestCase(unittest.TestCase):
+class DeprecationsTestCase(FlaskTestCase):
 
     def test_init_jinja_globals(self):
         class MyFlask(flask.Flask):
