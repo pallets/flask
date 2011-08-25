@@ -30,9 +30,37 @@ class View(object):
                 return 'Hello %s!' % name
 
         app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
+
+    When you want to decorate a pluggable view you will have to either do that
+    when the view function is created (by wrapping the return value of
+    :meth:`as_view`) or you can use the :attr:`decorators` attribute::
+
+        class SecretView(View):
+            methods = ['GET']
+            decorators = [superuser_required]
+
+            def dispatch_request(self):
+                ...
+
+    The decorators stored in the decorators list are applied one after another
+    when the view function is created.  Note that you can *not* use the class
+    based decorators since those would decorate the view class and not the
+    generated view function!
     """
 
+    #: A for which methods this pluggable view can handle.
     methods = None
+
+    #: The canonical way to decorate class based views is to decorate the
+    #: return value of as_view().  However since this moves parts of the
+    #: logic from the class declaration to the place where it's hooked
+    #: into the routing system.
+    #:
+    #: You can place one or more decorators in this list and whenever the
+    #: view function is created the result is automatically decorated.
+    #:
+    #: .. versionadded:: 0.8
+    decorators = []
 
     def dispatch_request(self):
         """Subclasses have to override this method to implement the
@@ -54,6 +82,13 @@ class View(object):
         def view(*args, **kwargs):
             self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
+
+        if cls.decorators:
+            view.__name__ = name
+            view.__module__ = cls.__module__
+            for decorator in cls.decorators:
+                view = decorator(view)
+
         # we attach the view class to the view function for two reasons:
         # first of all it allows us to easily figure out what class based
         # view this thing came from, secondly it's also used for instanciating

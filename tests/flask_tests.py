@@ -2258,6 +2258,27 @@ class ViewTestCase(FlaskTestCase):
         meths = parse_set_header(c.open('/', method='OPTIONS').headers['Allow'])
         self.assertEqual(sorted(meths), ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST'])
 
+    def test_view_decorators(self):
+        app = flask.Flask(__name__)
+
+        def add_x_parachute(f):
+            def new_function(*args, **kwargs):
+                resp = flask.make_response(f(*args, **kwargs))
+                resp.headers['X-Parachute'] = 'awesome'
+                return resp
+            return new_function
+
+        class Index(flask.views.View):
+            decorators = [add_x_parachute]
+            def dispatch_request(self):
+                return 'Awesome'
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+        c = app.test_client()
+        rv = c.get('/')
+        self.assertEqual(rv.headers['X-Parachute'], 'awesome')
+        self.assertEqual(rv.data, 'Awesome')
+
 
 class DeprecationsTestCase(FlaskTestCase):
 
