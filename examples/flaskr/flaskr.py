@@ -50,7 +50,8 @@ def before_request():
 @app.teardown_request
 def teardown_request(exception):
     """Closes the database again at the end of the request."""
-    g.db.close()
+    if hasattr(g, 'db'):
+        g.db.close()
 
 
 @app.route('/')

@@ -24,7 +24,15 @@ So here is a simple example of how you can use SQLite 3 with Flask::
 
     @app.teardown_request
     def teardown_request(exception):
-        g.db.close()
+        if hasattr(g, 'db'):
+            g.db.close()
+
+.. note::
+
+   Please keep in mind that the teardown request functions are always
+   executed, even if a before-request handler failed or was never
+   executed.  Because of this we have to make sure here that the database
+   is there before we close it.
 
 Connect on Demand
 -----------------

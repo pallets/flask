@@ -131,7 +131,9 @@ understand what is actually happening.  The new behavior is quite simple:
 
 4.  At the end of the request the :meth:`~flask.Flask.teardown_request`
     functions are executed.  This always happens, even in case of an
-    unhandled exception down the road.
+    unhandled exception down the road or if a before-request handler was
+    not executed yet or at all (for example in test environments sometimes
+    you might want to not execute before-request callbacks).
 
 Now what happens on errors?  In production mode if an exception is not
 caught, the 500 internal server handler is called.  In development mode
@@ -182,6 +184,12 @@ It's easy to see the behavior from the command line:
 >>> ctx.pop()
 this runs after request
 >>>
+
+Keep in mind that teardown callbacks are always executed, even if
+before-request callbacks were not executed yet but an exception happened.
+Certain parts of the test system might also temporarily create a request
+context without calling the before-request handlers.  Make sure to write
+your teardown-request handlers in a way that they will never fail.
 
 .. _notes-on-proxies:
 

@@ -142,7 +142,8 @@ You are now encouraged to use this instead::
 
     @app.teardown_request
     def after_request(exception):
-        g.db.close()
+        if hasattr(g, 'db'):
+            g.db.close()
 
 On the upside this change greatly improves the internal code flow and
 makes it easier to customize the dispatching and error handling.  This
