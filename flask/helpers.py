@@ -145,6 +145,13 @@ def make_response(*args):
 
         response = make_response(render_template('not_found.html'), 404)
 
+    The other use case of this function is to force the return value of a
+    view function into a response which is helpful with view
+    decorators::
+
+        response = make_response(view_function())
+        response.headers['X-Parachutes'] = 'parachutes are cool'
+
     Internally this function does the following things:
 
     -   if no arguments are passed, it creates a new response argument
