@@ -236,6 +236,7 @@ class Flask(_PackageBoundObject):
         'USE_X_SENDFILE':                       False,
         'LOGGER_NAME':                          None,
         'SERVER_NAME':                          None,
+        'APPLICATION_ROOT':                     None,
         'MAX_CONTENT_LENGTH':                   None,
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False

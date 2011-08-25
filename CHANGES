@@ -32,6 +32,7 @@ Relase date to be decided, codename to be chosen.
   conceptionally only instance depending and outside version control so it's
   the perfect place to put configuration files etc.  For more information
   see :ref:`instance-folders`.
+- Added the ``APPLICATION_ROOT`` configuration variable.
 
 Version 0.7.3
 -------------

@@ -77,6 +77,13 @@ The following configuration values are used internally by Flask:
 ``SERVER_NAME``                   the name and port number of the server.
                                   Required for subdomain support (e.g.:
                                   ``'localhost:5000'``)
+``APPLICATION_ROOT``              If the application does not occupy
+                                  a whole domain or subdomain this can
+                                  be set to the path where the application
+                                  is configured to live.  This is for
+                                  session cookie as path value.  If
+                                  domains are used, this should be
+                                  ``None``.
 ``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
                                   reject incoming requests with a
                                   content length greater than this by
@@ -134,7 +141,8 @@ The following configuration values are used internally by Flask:
    ``PROPAGATE_EXCEPTIONS``, ``PRESERVE_CONTEXT_ON_EXCEPTION``
 
 .. versionadded:: 0.8
-   ``TRAP_BAD_REQUEST_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``
+   ``TRAP_BAD_REQUEST_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``,
+   ``APPLICATION_ROOT``
 
 Configuring from Files
 ----------------------

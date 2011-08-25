@@ -127,6 +127,13 @@ class SessionInterface(object):
             # chop of the port which is usually not supported by browsers
             return '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
 
+    def get_cookie_path(self, app):
+        """Returns the path for which the cookie should be valid.  The
+        default implementation uses the value from the ``APPLICATION_ROOT``
+        configuration variable or uses ``/`` if it's `None`.
+        """
+        return app.config['APPLICATION_ROOT'] or '/'
+
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
         or `None` if the session is linked to the browser session.  The
@@ -169,9 +176,10 @@ class SecureCookieSessionInterface(SessionInterface):
     def save_session(self, app, session, response):
         expires = self.get_expiration_time(app, session)
         domain = self.get_cookie_domain(app)
+        path = self.get_cookie_path(app)
         if session.modified and not session:
-            response.delete_cookie(app.session_cookie_name,
+            response.delete_cookie(app.session_cookie_name, path=path,
                                    domain=domain)
         else:
-            session.save_cookie(response, app.session_cookie_name,
+            session.save_cookie(response, app.session_cookie_name, path=path,
                                 expires=expires, httponly=True, domain=domain)

@@ -339,6 +339,28 @@ class BasicFunctionalityTestCase(unittest.TestCase):
         assert 'domain=.example.com' in rv.headers['set-cookie'].lower()
         assert 'httponly' in rv.headers['set-cookie'].lower()
 
+    def test_session_using_application_root(self):
+        class PrefixPathMiddleware(object):
+            def __init__(self, app, prefix):
+                self.app = app
+                self.prefix = prefix
+            def __call__(self, environ, start_response):
+                environ['SCRIPT_NAME'] = self.prefix
+                return self.app(environ, start_response)
+
+        app = flask.Flask(__name__)
+        app.wsgi_app = PrefixPathMiddleware(app.wsgi_app, '/bar')
+        app.config.update(
+            SECRET_KEY='foo',
+            APPLICATION_ROOT='/bar'
+        )
+        @app.route('/')
+        def index():
+            flask.session['testing'] = 42
+            return 'Hello World'
+        rv = app.test_client().get('/', 'http://example.com:8080/')
+        assert 'path=/bar' in rv.headers['set-cookie'].lower()
+
     def test_missing_session(self):
         app = flask.Flask(__name__)
         def expect_exception(f, *args, **kwargs):
