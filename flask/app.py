@@ -706,6 +706,8 @@ class Flask(_PackageBoundObject):
                 rv = c.get('/?vodka=42')
                 assert request.args['vodka'] == '42'
 
+        See :class:`~flask.testing.TestClient` for more information.
+
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
 

@@ -33,6 +33,8 @@ Relase date to be decided, codename to be chosen.
   the perfect place to put configuration files etc.  For more information
   see :ref:`instance-folders`.
 - Added the ``APPLICATION_ROOT`` configuration variable.
+- Implemented :meth:`~flask.testing.TestClient.session_transaction` to
+  easily modify sessions from the test environment.
 
 Version 0.7.3
 -------------

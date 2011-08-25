@@ -1028,6 +1028,50 @@ class BasicFunctionalityTestCase(unittest.TestCase):
             self.assertEqual(rv.data, 'success')
 
 
+class TestToolsTestCase(unittest.TestCase):
+
+    def test_session_transactions(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.secret_key = 'testing'
+
+        @app.route('/')
+        def index():
+            return unicode(flask.session['foo'])
+
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.assertEqual(len(sess), 0)
+                sess['foo'] = [42]
+                self.assertEqual(len(sess), 1)
+            rv = c.get('/')
+            self.assertEqual(rv.data, '[42]')
+
+    def test_session_transactions_no_null_sessions(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        with app.test_client() as c:
+            try:
+                with c.session_transaction() as sess:
+                    pass
+            except RuntimeError, e:
+                self.assert_('Session backend did not open a session' in str(e))
+            else:
+                self.fail('Expected runtime error')
+
+    def test_session_transactions_keep_context(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.secret_key = 'testing'
+
+        with app.test_client() as c:
+            rv = c.get('/')
+            req = flask.request._get_current_object()
+            with c.session_transaction():
+                self.assert_(req is flask.request._get_current_object())
+
+
 class InstanceTestCase(unittest.TestCase):
 
     def test_explicit_instance_paths(self):
@@ -2209,6 +2253,7 @@ def suite():
     suite.addTest(unittest.makeSuite(SubdomainTestCase))
     suite.addTest(unittest.makeSuite(ViewTestCase))
     suite.addTest(unittest.makeSuite(DeprecationsTestCase))
+    suite.addTest(unittest.makeSuite(TestToolsTestCase))
     suite.addTest(unittest.makeSuite(InstanceTestCase))
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
