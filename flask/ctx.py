@@ -91,7 +91,7 @@ class RequestContext(object):
 
         self.match_request()
 
-        # Support for deprecated functionality.  This is doing away with
+        # XXX: Support for deprecated functionality.  This is doing away with
         # Flask 1.0
         blueprint = self.request.blueprint
         if blueprint is not None:
