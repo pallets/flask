@@ -77,12 +77,6 @@ class run_audit(Command):
         else:
             print ("No problems found in sourcecode.")
 
-def run_tests():
-    import os, sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'tests'))
-    from flask_tests import suite
-    return suite()
-
 
 setup(
     name='Flask',
@@ -112,5 +106,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     cmdclass={'audit': run_audit},
-    test_suite='__main__.run_tests'
+    test_suite='flask.testsuite.suite'
 )
