@@ -21,6 +21,10 @@ from werkzeug.utils import import_string, find_modules
 
 
 def add_to_path(path):
+    """Adds an entry to sys.path_info if it's not already there."""
+    if not os.path.isdir(path):
+        raise RuntimeError('Tried to add nonexisting path')
+
     def _samefile(x, y):
         try:
             return os.path.samefile(x, y)
@@ -35,12 +39,8 @@ def add_to_path(path):
     sys.path.append(path)
 
 
-def setup_paths():
-    add_to_path(os.path.abspath(os.path.join(
-        os.path.dirname(__file__), 'test_apps')))
-
-
 def iter_suites():
+    """Yields all testsuites."""
     for module in find_modules(__name__):
         mod = import_string(module)
         if hasattr(mod, 'suite'):
@@ -48,6 +48,7 @@ def iter_suites():
 
 
 def find_all_tests(suite):
+    """Yields all the tests and their names from a given suite."""
     suites = [suite]
     while suites:
         s = suites.pop()
@@ -167,9 +168,27 @@ class BetterLoader(unittest.TestLoader):
         return rv
 
 
+def setup_path():
+    add_to_path(os.path.abspath(os.path.join(
+        os.path.dirname(__file__), 'test_apps')))
+
+
 def suite():
-    setup_paths()
+    """A testsuite that has all the Flask tests.  You can use this
+    function to integrate the Flask tests into your own testsuite
+    in case you want to test that monkeypatches to Flask do not
+    break it.
+    """
+    setup_path()
     suite = unittest.TestSuite()
     for other_suite in iter_suites():
         suite.addTest(other_suite)
     return suite
+
+
+def main():
+    """Runs the testsuite as command line application."""
+    try:
+        unittest.main(testLoader=BetterLoader(), defaultTest='suite')
+    except Exception, e:
+        print 'Error: %s' % e
