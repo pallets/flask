@@ -9,27 +9,30 @@ What does "micro" mean?
 -----------------------
 
 To me, the "micro" in microframework refers not only to the simplicity and
-small size of the framework, but also to the typically limited complexity
-and size of applications that are written with the framework.  Also the
-fact that you can have an entire application in a single Python file.  To
-be approachable and concise, a microframework sacrifices a few features
-that may be necessary in larger or more complex applications.
+small size of the framework, but also the fact that it does not make much
+decisions for you.  While Flask does pick a templating engine for you, we
+won't make such decisions for your datastore or other parts.
 
-For example, Flask uses thread-local objects internally so that you don't
-have to pass objects around from function to function within a request in
-order to stay threadsafe.  While this is a really easy approach and saves
-you a lot of time, it might also cause some troubles for very large
-applications because changes on these thread-local objects can happen
-anywhere in the same thread.
+For us however the term “micro” does not mean that the whole implementation
+has to fit into a single Python file.
 
-Flask provides some tools to deal with the downsides of this approach but
-it might be an issue for larger applications because in theory
-modifications on these objects might happen anywhere in the same thread.
+One of the design decisions with Flask was that simple tasks should be
+simple and not take up a lot of code and yet not limit yourself.  Because
+of that we took a few design choices that some people might find
+surprising or unorthodox.  For example, Flask uses thread-local objects
+internally so that you don't have to pass objects around from function to
+function within a request in order to stay threadsafe.  While this is a
+really easy approach and saves you a lot of time, it might also cause some
+troubles for very large applications because changes on these thread-local
+objects can happen anywhere in the same thread.  In order to solve these
+problems we don't hide the thread locals for you but instead embrace them
+and provide you with a lot of tools to make it as pleasant as possible to
+work with them.
 
 Flask is also based on convention over configuration, which means that
 many things are preconfigured.  For example, by convention, templates and
 static files are in subdirectories within the Python source tree of the
-application.
+application.  While this can be changed you usually don't have to.
 
 The main reason however why Flask is called a "microframework" is the idea
 to keep the core simple but extensible.  There is no database abstraction
@@ -40,21 +43,14 @@ was implemented in Flask itself.  There are currently extensions for
 object relational mappers, form validation, upload handling, various open
 authentication technologies and more.
 
-However Flask is not much code and it is built on a very solid foundation
-and with that it is very easy to adapt for large applications.  If you are
-interested in that, check out the :ref:`becomingbig` chapter.
+Since Flask is based on a very solid foundation there is not a lot of code
+in Flask itself.  As such it's easy to adapt even for lage applications
+and we are making sure that you can either configure it as much as
+possible by subclassing things or by forking the entire codebase.  If you
+are interested in that, check out the :ref:`becomingbig` chapter.
 
 If you are curious about the Flask design principles, head over to the
 section about :ref:`design`.
-
-A Framework and an Example
---------------------------
-
-Flask is not only a microframework; it is also an example.  Based on
-Flask, there will be a series of blog posts that explain how to create a
-framework.  Flask itself is just one way to implement a framework on top
-of existing libraries.  Unlike many other microframeworks, Flask does not
-try to implement everything on its own; it reuses existing code.
 
 Web Development is Dangerous
 ----------------------------
