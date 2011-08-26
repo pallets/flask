@@ -79,6 +79,22 @@ Furthermore this design makes it possible to use a factory function to
 create the application which is very helpful for unittesting and similar
 things (:ref:`app-factories`).
 
+The Routing System
+------------------
+
+Flask uses the Werkzeug routing system which has was designed to
+automatically order routes by complexity.  This means that you can declare
+routes in arbitrary order and they will still work as expected.  This is a
+requirement if you want to properly implement decorator based routing
+since decorators could be fired in undefined order when the application is
+split into multiple modules.
+
+Another design decision with the Werkzeug routing system is that routes
+in Werkzeug try to ensure that there is that URLs are unique.  Werkzeug
+will go quite far with that in that it will automatically redirect to a
+canonical URL if a route is ambiguous.
+
+
 One Template Engine
 -------------------
 
