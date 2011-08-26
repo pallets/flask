@@ -53,10 +53,12 @@ class FlaskClient(Client):
         :meth:`~flask.Flask.test_request_context` which are directly
         passed through.
         """
+        if self.cookie_jar is None:
+            raise RuntimeError('Session transactions only make sense '
+                               'with cookies enabled.')
         app = self.application
         environ_overrides = kwargs.pop('environ_overrides', {})
-        if self.cookie_jar is not None:
-            self.cookie_jar.inject_wsgi(environ_overrides)
+        self.cookie_jar.inject_wsgi(environ_overrides)
         outer_reqctx = _request_ctx_stack.top
         with app.test_request_context(*args, **kwargs) as c:
             sess = app.open_session(c.request)
@@ -80,9 +82,8 @@ class FlaskClient(Client):
             resp = app.response_class()
             if not app.session_interface.is_null_session(sess):
                 app.save_session(sess, resp)
-            if self.cookie_jar is not None:
-                headers = resp.get_wsgi_headers(c.request.environ)
-                self.cookie_jar.extract_wsgi(c.request.environ, headers)
+            headers = resp.get_wsgi_headers(c.request.environ)
+            self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
         if self.context_preserved:

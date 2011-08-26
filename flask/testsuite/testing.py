@@ -84,6 +84,18 @@ class TestToolsTestCase(FlaskTestCase):
             with c.session_transaction():
                 self.assert_(req is flask.request._get_current_object())
 
+    def test_session_transaction_needs_cookies(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        c = app.test_client(use_cookies=False)
+        try:
+            with c.session_transaction() as s:
+                pass
+        except RuntimeError, e:
+            self.assert_('cookies' in str(e))
+        else:
+            self.fail('Expected runtime error')
+
     def test_test_client_context_binding(self):
         app = flask.Flask(__name__)
         @app.route('/')
