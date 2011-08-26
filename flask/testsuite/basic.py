@@ -961,6 +961,17 @@ class SubdomainTestCase(FlaskTestCase):
         rv = c.get('/', 'http://mitsuhiko.localhost/')
         self.assert_equal(rv.data, 'index for mitsuhiko')
 
+    def test_subdomain_matching_with_ports(self):
+        app = flask.Flask(__name__)
+        app.config['SERVER_NAME'] = 'localhost:3000'
+        @app.route('/', subdomain='<user>')
+        def index(user):
+            return 'index for %s' % user
+
+        c = app.test_client()
+        rv = c.get('/', 'http://mitsuhiko.localhost:3000/')
+        self.assert_equal(rv.data, 'index for mitsuhiko')
+
     @emits_module_deprecation_warning
     def test_module_subdomain_support(self):
         app = flask.Flask(__name__)
