@@ -40,6 +40,8 @@ Relase date to be decided, codename to be chosen.
   as defaults.
 - Added :attr:`flask.views.View.decorators` to support simpler decorating of
   pluggable (class based) views.
+- Fixed an issue where the test client if used with the with statement did not
+  trigger the execution of the teardown handlers.
 
 Version 0.7.3
 -------------

@@ -126,6 +126,38 @@ class TestToolsTestCase(FlaskTestCase):
         else:
             raise AssertionError('some kind of exception expected')
 
+    def test_reuse_client(self):
+        app = flask.Flask(__name__)
+        c = app.test_client()
+
+        with c:
+            self.assert_equal(c.get('/').status_code, 404)
+
+        with c:
+            self.assert_equal(c.get('/').status_code, 404)
+
+    def test_test_client_calls_teardown_handlers(self):
+        app = flask.Flask(__name__)
+        called = []
+        @app.teardown_request
+        def remember(error):
+            called.append(error)
+
+        with app.test_client() as c:
+            self.assert_equal(called, [])
+            c.get('/')
+            self.assert_equal(called, [])
+        self.assert_equal(called, [None])
+
+        del called[:]
+        with app.test_client() as c:
+            self.assert_equal(called, [])
+            c.get('/')
+            self.assert_equal(called, [])
+            c.get('/')
+            self.assert_equal(called, [None])
+        self.assert_equal(called, [None, None])
+
 
 def suite():
     suite = unittest.TestSuite()

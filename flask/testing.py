@@ -86,9 +86,7 @@ class FlaskClient(Client):
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
-        if self.context_preserved:
-            _request_ctx_stack.pop()
-            self.context_preserved = False
+        self._pop_reqctx_if_necessary()
         kwargs.setdefault('environ_overrides', {}) \
             ['flask._preserve_context'] = self.preserve_context
 
@@ -114,5 +112,12 @@ class FlaskClient(Client):
 
     def __exit__(self, exc_type, exc_value, tb):
         self.preserve_context = False
+        self._pop_reqctx_if_necessary()
+
+    def _pop_reqctx_if_necessary(self):
         if self.context_preserved:
-            _request_ctx_stack.pop()
+            # we have to use _request_ctx_stack.top.pop instead of
+            # _request_ctx_stack.pop since we want teardown handlers
+            # to be executed.
+            _request_ctx_stack.top.pop()
+            self.context_preserved = False
