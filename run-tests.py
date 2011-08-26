@@ -39,7 +39,8 @@ class BetterLoader(TestLoader):
 
         all_tests = []
         for testcase, testname in find_all_tests_with_name():
-            if testname.endswith('.' + name) or ('.' + name + '.') in testname:
+            if testname.endswith('.' + name) or ('.' + name + '.') in testname or \
+               testname.startswith(name + '.'):
                 all_tests.append(testcase)
 
         if not all_tests:
