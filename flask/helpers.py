@@ -484,6 +484,8 @@ def get_root_path(import_name):
         directory = os.path.dirname(sys.modules[import_name].__file__)
         return os.path.abspath(directory)
     except AttributeError:
+        # this is necessary in case we are running from the interactive
+        # python shell.  It will never be used for production code however
         return os.getcwd()
 
 
@@ -499,6 +501,7 @@ def find_package(import_name):
     root_mod = sys.modules[import_name.split('.')[0]]
     package_path = getattr(root_mod, '__file__', None)
     if package_path is None:
+        # support for the interactive python shell
         package_path = os.getcwd()
     else:
         package_path = os.path.abspath(os.path.dirname(package_path))
