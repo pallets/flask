@@ -54,7 +54,8 @@ class FormDataRoutingRedirect(AssertionError):
 
         buf.append('  Make sure to directly send your %s-request to this URL '
                    'since we can\'t make browsers or HTTP clients redirect '
-                   'with form data.' % request.method)
+                   'with form data reliably or without user interaction.' %
+                   request.method)
         buf.append('\n\nNote: this exception is only raised in debug mode')
         AssertionError.__init__(self, ''.join(buf).encode('utf-8'))
 
