@@ -37,21 +37,21 @@ class BetterLoader(TestLoader):
                 if testname[len(common_prefix):] == name:
                     return testcase
 
-        all_results = []
+        all_tests = []
         for testcase, testname in find_all_tests_with_name():
-            if testname.endswith('.' + name):
-                all_results.append((testcase, testname))
+            if testname.endswith('.' + name) or ('.' + name + '.') in testname:
+                all_tests.append(testcase)
 
-        if len(all_results) == 1:
-            return all_results[0][0]
-        elif not len(all_results):
-            error = 'could not find testcase "%s"' % name
-        else:
-            error = 'Too many matches: for "%s"\n%s' % \
-                (name, '\n'.join('  - ' + n for c, n in all_results))
+        if not all_tests:
+            print >> sys.stderr, 'Error: could not find test case for "%s"' % name
+            sys.exit(1)
 
-        print >> sys.stderr, 'Error: %s' % error
-        sys.exit(1)
+        if len(all_tests) == 1:
+            return all_tests[0]
+        rv = unittest.TestSuite()
+        for test in all_tests:
+            rv.addTest(test)
+        return rv
 
 
 unittest.main(testLoader=BetterLoader(), defaultTest='suite')
