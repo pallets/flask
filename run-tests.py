@@ -1,3 +1,6 @@
 import unittest
 from flask.testsuite import BetterLoader
-unittest.main(testLoader=BetterLoader(), defaultTest='suite')
+try:
+    unittest.main(testLoader=BetterLoader(), defaultTest='suite')
+except Exception, e:
+    print 'Error: %s' % e

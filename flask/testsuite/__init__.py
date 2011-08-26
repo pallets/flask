@@ -157,8 +157,7 @@ class BetterLoader(unittest.TestLoader):
                 all_tests.append(testcase)
 
         if not all_tests:
-            print >> sys.stderr, 'Error: could not find test case for "%s"' % name
-            sys.exit(1)
+            raise LookupError('could not find test case for "%s"' % name)
 
         if len(all_tests) == 1:
             return all_tests[0]
