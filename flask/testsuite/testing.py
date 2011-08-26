@@ -102,8 +102,8 @@ class TestToolsTestCase(FlaskTestCase):
             self.assert_equal(resp.status_code, 200)
 
             resp = c.get('/other')
-            assert not hasattr(flask.g, 'value')
-            assert 'Internal Server Error' in resp.data
+            self.assert_(not hasattr(flask.g, 'value'))
+            self.assert_('Internal Server Error' in resp.data)
             self.assert_equal(resp.status_code, 500)
             flask.g.value = 23
 

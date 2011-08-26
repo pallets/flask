@@ -173,8 +173,8 @@ class ModuleTestCase(FlaskTestCase):
         self.assert_equal(rv.data.strip(), '/* nested file */')
 
         with app.test_request_context():
-            assert flask.url_for('admin.static', filename='test.txt') \
-                == '/admin/static/test.txt'
+            self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
+                              '/admin/static/test.txt')
 
         with app.test_request_context():
             try:
@@ -182,7 +182,7 @@ class ModuleTestCase(FlaskTestCase):
             except TemplateNotFound, e:
                 self.assert_equal(e.name, 'missing.html')
             else:
-                assert 0, 'expected exception'
+                self.assert_(0, 'expected exception')
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
@@ -198,13 +198,13 @@ class ModuleTestCase(FlaskTestCase):
             except NotFound:
                 pass
             else:
-                assert 0, 'expected exception'
+                self.assert_(0, 'expected exception')
             try:
                 f('../__init__.py')
             except NotFound:
                 pass
             else:
-                assert 0, 'expected exception'
+                self.assert_(0, 'expected exception')
 
             # testcase for a security issue that may exist on windows systems
             import os
@@ -217,7 +217,7 @@ class ModuleTestCase(FlaskTestCase):
                 except NotFound:
                     pass
                 else:
-                    assert 0, 'expected exception'
+                    self.assert_(0, 'expected exception')
             finally:
                 os.path = old_path
 
@@ -355,8 +355,8 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(rv.data.strip(), '/* nested file */')
 
         with app.test_request_context():
-            assert flask.url_for('admin.static', filename='test.txt') \
-                == '/admin/static/test.txt'
+            self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
+                              '/admin/static/test.txt')
 
         with app.test_request_context():
             try:
@@ -364,7 +364,7 @@ class BlueprintTestCase(FlaskTestCase):
             except TemplateNotFound, e:
                 self.assert_equal(e.name, 'missing.html')
             else:
-                assert 0, 'expected exception'
+                self.assert_(0, 'expected exception')
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')

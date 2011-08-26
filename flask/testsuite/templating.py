@@ -70,10 +70,10 @@ class TemplatingTestCase(FlaskTestCase):
     def test_no_escaping(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
-            assert flask.render_template_string('{{ foo }}',
-                foo='<test>') == '<test>'
-            assert flask.render_template('mail.txt', foo='<test>') \
-                == '<test> Mail'
+            self.assert_equal(flask.render_template_string('{{ foo }}',
+                              foo='<test>'), '<test>')
+            self.assert_equal(flask.render_template('mail.txt', foo='<test>'),
+                              '<test> Mail')
 
     def test_macros(self):
         app = flask.Flask(__name__)
@@ -86,7 +86,7 @@ class TemplatingTestCase(FlaskTestCase):
         @app.template_filter()
         def my_reverse(s):
             return s[::-1]
-        assert 'my_reverse' in  app.jinja_env.filters.keys()
+        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -95,7 +95,7 @@ class TemplatingTestCase(FlaskTestCase):
         @app.template_filter('strrev')
         def my_reverse(s):
             return s[::-1]
-        assert 'strrev' in  app.jinja_env.filters.keys()
+        self.assert_('strrev' in  app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 

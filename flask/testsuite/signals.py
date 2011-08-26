@@ -91,7 +91,7 @@ class SignalsTestCase(FlaskTestCase):
         try:
             self.assert_equal(app.test_client().get('/').status_code, 500)
             self.assert_equal(len(recorded), 1)
-            assert isinstance(recorded[0], ZeroDivisionError)
+            self.assert_(isinstance(recorded[0], ZeroDivisionError))
         finally:
             flask.got_request_exception.disconnect(record, app)
 

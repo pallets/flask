@@ -29,7 +29,7 @@ class DeprecationsTestCase(FlaskTestCase):
             c = app.test_client()
             self.assert_equal(c.get('/').data, '42')
             self.assert_equal(len(log), 1)
-            assert 'init_jinja_globals' in str(log[0]['message'])
+            self.assert_('init_jinja_globals' in str(log[0]['message']))
 
 
 def suite():

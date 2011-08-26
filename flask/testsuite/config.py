@@ -25,7 +25,7 @@ class ConfigTestCase(FlaskTestCase):
     def common_object_test(self, app):
         self.assert_equal(app.secret_key, 'devkey')
         self.assert_equal(app.config['TEST_KEY'], 'foo')
-        assert 'ConfigTestCase' not in app.config
+        self.assert_('ConfigTestCase' not in app.config)
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
@@ -54,13 +54,13 @@ class ConfigTestCase(FlaskTestCase):
             try:
                 app.config.from_envvar('FOO_SETTINGS')
             except RuntimeError, e:
-                assert "'FOO_SETTINGS' is not set" in str(e)
+                self.assert_("'FOO_SETTINGS' is not set" in str(e))
             else:
-                assert 0, 'expected exception'
-            assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
+                self.assert_(0, 'expected exception')
+            self.assert_(not app.config.from_envvar('FOO_SETTINGS', silent=True))
 
             os.environ = {'FOO_SETTINGS': __file__.rsplit('.')[0] + '.py'}
-            assert app.config.from_envvar('FOO_SETTINGS')
+            self.assert_(app.config.from_envvar('FOO_SETTINGS'))
             self.common_object_test(app)
         finally:
             os.environ = env
@@ -71,12 +71,12 @@ class ConfigTestCase(FlaskTestCase):
             app.config.from_pyfile('missing.cfg')
         except IOError, e:
             msg = str(e)
-            assert msg.startswith('[Errno 2] Unable to load configuration '
-                                  'file (No such file or directory):')
-            assert msg.endswith("missing.cfg'")
+            self.assert_(msg.startswith('[Errno 2] Unable to load configuration '
+                                        'file (No such file or directory):'))
+            self.assert_(msg.endswith("missing.cfg'"))
         else:
-            assert 0, 'expected config'
-        assert not app.config.from_pyfile('missing.cfg', silent=True)
+            self.assert_(0, 'expected config')
+        self.assert_(not app.config.from_pyfile('missing.cfg', silent=True))
 
 
 class InstanceTestCase(FlaskTestCase):
