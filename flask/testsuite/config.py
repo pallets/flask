@@ -29,7 +29,7 @@ class ConfigTestCase(FlaskTestCase):
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
-        app.config.from_pyfile(__file__.rsplit('.')[0] + '.py')
+        app.config.from_pyfile(__file__.rsplit('.', 1)[0] + '.py')
         self.common_object_test(app)
 
     def test_config_from_object(self):
@@ -59,7 +59,7 @@ class ConfigTestCase(FlaskTestCase):
                 self.assert_(0, 'expected exception')
             self.assert_(not app.config.from_envvar('FOO_SETTINGS', silent=True))
 
-            os.environ = {'FOO_SETTINGS': __file__.rsplit('.')[0] + '.py'}
+            os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
             self.assert_(app.config.from_envvar('FOO_SETTINGS'))
             self.common_object_test(app)
         finally:

@@ -231,7 +231,7 @@ class LoggingTestCase(FlaskTestCase):
                 c.get('/')
                 out = err.getvalue()
                 self.assert_('WARNING in helpers [' in out)
-                self.assert_(os.path.basename(__file__.rsplit('.')[0] + '.py') in out)
+                self.assert_(os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in out)
                 self.assert_('the standard library is dead' in out)
                 self.assert_('this is a debug statement' in out)
 
