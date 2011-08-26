@@ -1,4 +1,4 @@
-include Makefile CHANGES LICENSE AUTHORS
+include Makefile CHANGES LICENSE AUTHORS run-tests.py
 recursive-include artwork *
 recursive-include tests *
 recursive-include examples *
@@ -9,5 +9,8 @@ recursive-exclude tests *.pyc
 recursive-exclude tests *.pyo
 recursive-exclude examples *.pyc
 recursive-exclude examples *.pyo
+recursive-include flask/testsuite/static *
+recursive-include flask/testsuite/templates *
+recursive-include flask/testsuite/test_apps *
 prune docs/_build
 prune docs/_themes/.git

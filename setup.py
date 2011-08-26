@@ -88,7 +88,10 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    packages=['flask'],
+    packages=['flask', 'flask.testsuite'],
+    package_data={
+        'flask.testsuite': ['test_apps/*', 'static/*', 'templates/*']
+    },
     zip_safe=False,
     platforms='any',
     install_requires=[
