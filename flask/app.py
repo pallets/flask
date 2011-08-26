@@ -1305,17 +1305,18 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        # This would be nicer in Werkzeug 0.7, which however currently
-        # is not released.  Werkzeug 0.7 provides a method called
-        # allowed_methods() that returns all methods that are valid for
-        # a given path.
-        methods = []
-        try:
-            _request_ctx_stack.top.url_adapter.match(method='--')
-        except MethodNotAllowed, e:
-            methods = e.valid_methods
-        except HTTPException, e:
-            pass
+        adapter = _request_ctx_stack.top.url_adapter
+        if hasattr(adapter, 'allowed_methods'):
+            methods = adapter.allowed_methods()
+        else:
+            # fallback for Werkzeug < 0.7
+            methods = []
+            try:
+                adapter.match(method='--')
+            except MethodNotAllowed, e:
+                methods = e.valid_methods
+            except HTTPException, e:
+                pass
         rv = self.response_class()
         rv.allow.update(methods)
         return rv
