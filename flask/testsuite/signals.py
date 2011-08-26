@@ -29,10 +29,10 @@ class SignalsTestCase(FlaskTestCase):
         flask.template_rendered.connect(record, app)
         try:
             app.test_client().get('/')
-            assert len(recorded) == 1
+            self.assert_equal(len(recorded), 1)
             template, context = recorded[0]
-            assert template.name == 'simple_template.html'
-            assert context['whiskey'] == 42
+            self.assert_equal(template.name, 'simple_template.html')
+            self.assert_equal(context['whiskey'], 42)
         finally:
             flask.template_rendered.disconnect(record, app)
 
@@ -44,7 +44,7 @@ class SignalsTestCase(FlaskTestCase):
             calls.append('before-signal')
 
         def after_request_signal(sender, response):
-            assert response.data == 'stuff'
+            self.assert_equal(response.data, 'stuff')
             calls.append('after-signal')
 
         @app.before_request
@@ -67,11 +67,11 @@ class SignalsTestCase(FlaskTestCase):
 
         try:
             rv = app.test_client().get('/')
-            assert rv.data == 'stuff'
+            self.assert_equal(rv.data, 'stuff')
 
-            assert calls == ['before-signal', 'before-handler',
+            self.assert_equal(calls, ['before-signal', 'before-handler',
                              'handler', 'after-handler',
-                             'after-signal']
+                             'after-signal'])
         finally:
             flask.request_started.disconnect(before_request_signal, app)
             flask.request_finished.disconnect(after_request_signal, app)
@@ -89,8 +89,8 @@ class SignalsTestCase(FlaskTestCase):
 
         flask.got_request_exception.connect(record, app)
         try:
-            assert app.test_client().get('/').status_code == 500
-            assert len(recorded) == 1
+            self.assert_equal(app.test_client().get('/').status_code, 500)
+            self.assert_equal(len(recorded), 1)
             assert isinstance(recorded[0], ZeroDivisionError)
         finally:
             flask.got_request_exception.disconnect(record, app)

@@ -97,14 +97,14 @@ class TestToolsTestCase(FlaskTestCase):
 
         with app.test_client() as c:
             resp = c.get('/')
-            assert flask.g.value == 42
-            assert resp.data == 'Hello World!'
-            assert resp.status_code == 200
+            self.assert_equal(flask.g.value, 42)
+            self.assert_equal(resp.data, 'Hello World!')
+            self.assert_equal(resp.status_code, 200)
 
             resp = c.get('/other')
             assert not hasattr(flask.g, 'value')
             assert 'Internal Server Error' in resp.data
-            assert resp.status_code == 500
+            self.assert_equal(resp.status_code, 500)
             flask.g.value = 23
 
         try:

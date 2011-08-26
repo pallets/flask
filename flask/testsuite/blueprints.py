@@ -43,10 +43,10 @@ class ModuleTestCase(FlaskTestCase):
             return 'the index'
         app.register_module(admin)
         c = app.test_client()
-        assert c.get('/').data == 'the index'
-        assert c.get('/admin/').data == 'admin index'
-        assert c.get('/admin/login').data == 'admin login'
-        assert c.get('/admin/logout').data == 'admin logout'
+        self.assert_equal(c.get('/').data, 'the index')
+        self.assert_equal(c.get('/admin/').data, 'admin index')
+        self.assert_equal(c.get('/admin/login').data, 'admin login')
+        self.assert_equal(c.get('/admin/logout').data, 'admin logout')
 
     @emits_module_deprecation_warning
     def test_default_endpoint_name(self):
@@ -57,9 +57,9 @@ class ModuleTestCase(FlaskTestCase):
         mod.add_url_rule('/', view_func=index)
         app.register_module(mod)
         rv = app.test_client().get('/')
-        assert rv.data == 'Awesome'
+        self.assert_equal(rv.data, 'Awesome')
         with app.test_request_context():
-            assert flask.url_for('frontend.index') == '/'
+            self.assert_equal(flask.url_for('frontend.index'), '/')
 
     @emits_module_deprecation_warning
     def test_request_processing(self):
@@ -89,13 +89,13 @@ class ModuleTestCase(FlaskTestCase):
         app.register_module(admin)
         c = app.test_client()
 
-        assert c.get('/').data == 'the index'
-        assert catched == ['before-app', 'after-app']
+        self.assert_equal(c.get('/').data, 'the index')
+        self.assert_equal(catched, ['before-app', 'after-app'])
         del catched[:]
 
-        assert c.get('/admin/').data == 'the admin'
-        assert catched == ['before-app', 'before-admin',
-                           'after-admin', 'after-app']
+        self.assert_equal(c.get('/admin/').data, 'the admin')
+        self.assert_equal(catched, ['before-app', 'before-admin',
+                           'after-admin', 'after-app'])
 
     @emits_module_deprecation_warning
     def test_context_processors(self):
@@ -118,8 +118,8 @@ class ModuleTestCase(FlaskTestCase):
             return flask.render_template_string('{{ a }}{{ b }}{{ c }}')
         app.register_module(admin)
         c = app.test_client()
-        assert c.get('/').data == '13'
-        assert c.get('/admin/').data == '123'
+        self.assert_equal(c.get('/').data, '13')
+        self.assert_equal(c.get('/admin/').data, '123')
 
     @emits_module_deprecation_warning
     def test_late_binding(self):
@@ -129,7 +129,7 @@ class ModuleTestCase(FlaskTestCase):
         def index():
             return '42'
         app.register_module(admin, url_prefix='/admin')
-        assert app.test_client().get('/admin/').data == '42'
+        self.assert_equal(app.test_client().get('/admin/').data, '42')
 
     @emits_module_deprecation_warning
     def test_error_handling(self):
@@ -150,11 +150,11 @@ class ModuleTestCase(FlaskTestCase):
         app.register_module(admin)
         c = app.test_client()
         rv = c.get('/')
-        assert rv.status_code == 404
-        assert rv.data == 'not found'
+        self.assert_equal(rv.status_code, 404)
+        self.assert_equal(rv.data, 'not found')
         rv = c.get('/error')
-        assert rv.status_code == 500
-        assert 'internal server error' == rv.data
+        self.assert_equal(rv.status_code, 500)
+        self.assert_equal('internal server error', rv.data)
 
     def test_templates_and_static(self):
         app = moduleapp
@@ -162,15 +162,15 @@ class ModuleTestCase(FlaskTestCase):
         c = app.test_client()
 
         rv = c.get('/')
-        assert rv.data == 'Hello from the Frontend'
+        self.assert_equal(rv.data, 'Hello from the Frontend')
         rv = c.get('/admin/')
-        assert rv.data == 'Hello from the Admin'
+        self.assert_equal(rv.data, 'Hello from the Admin')
         rv = c.get('/admin/index2')
-        assert rv.data == 'Hello from the Admin'
+        self.assert_equal(rv.data, 'Hello from the Admin')
         rv = c.get('/admin/static/test.txt')
-        assert rv.data.strip() == 'Admin File'
+        self.assert_equal(rv.data.strip(), 'Admin File')
         rv = c.get('/admin/static/css/test.css')
-        assert rv.data.strip() == '/* nested file */'
+        self.assert_equal(rv.data.strip(), '/* nested file */')
 
         with app.test_request_context():
             assert flask.url_for('admin.static', filename='test.txt') \
@@ -180,12 +180,12 @@ class ModuleTestCase(FlaskTestCase):
             try:
                 flask.render_template('missing.html')
             except TemplateNotFound, e:
-                assert e.name == 'missing.html'
+                self.assert_equal(e.name, 'missing.html')
             else:
                 assert 0, 'expected exception'
 
         with flask.Flask(__name__).test_request_context():
-            assert flask.render_template('nested/nested.txt') == 'I\'m nested'
+            self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
 
     def test_safe_access(self):
         app = moduleapp
@@ -245,8 +245,8 @@ class ModuleTestCase(FlaskTestCase):
         app.register_module(module)
 
         c = app.test_client()
-        assert c.get('/foo/').data == 'index'
-        assert c.get('/foo/bar').data == 'bar'
+        self.assert_equal(c.get('/foo/').data, 'index')
+        self.assert_equal(c.get('/foo/bar').data, 'bar')
 
 
 class BlueprintTestCase(FlaskTestCase):
@@ -287,9 +287,9 @@ class BlueprintTestCase(FlaskTestCase):
 
         c = app.test_client()
 
-        assert c.get('/frontend-no').data == 'frontend says no'
-        assert c.get('/backend-no').data == 'backend says no'
-        assert c.get('/what-is-a-sideend').data == 'application itself says no'
+        self.assert_equal(c.get('/frontend-no').data, 'frontend says no')
+        self.assert_equal(c.get('/backend-no').data, 'backend says no')
+        self.assert_equal(c.get('/what-is-a-sideend').data, 'application itself says no')
 
     def test_blueprint_url_definitions(self):
         bp = flask.Blueprint('test', __name__)
@@ -344,15 +344,15 @@ class BlueprintTestCase(FlaskTestCase):
         c = app.test_client()
 
         rv = c.get('/')
-        assert rv.data == 'Hello from the Frontend'
+        self.assert_equal(rv.data, 'Hello from the Frontend')
         rv = c.get('/admin/')
-        assert rv.data == 'Hello from the Admin'
+        self.assert_equal(rv.data, 'Hello from the Admin')
         rv = c.get('/admin/index2')
-        assert rv.data == 'Hello from the Admin'
+        self.assert_equal(rv.data, 'Hello from the Admin')
         rv = c.get('/admin/static/test.txt')
-        assert rv.data.strip() == 'Admin File'
+        self.assert_equal(rv.data.strip(), 'Admin File')
         rv = c.get('/admin/static/css/test.css')
-        assert rv.data.strip() == '/* nested file */'
+        self.assert_equal(rv.data.strip(), '/* nested file */')
 
         with app.test_request_context():
             assert flask.url_for('admin.static', filename='test.txt') \
@@ -362,12 +362,12 @@ class BlueprintTestCase(FlaskTestCase):
             try:
                 flask.render_template('missing.html')
             except TemplateNotFound, e:
-                assert e.name == 'missing.html'
+                self.assert_equal(e.name, 'missing.html')
             else:
                 assert 0, 'expected exception'
 
         with flask.Flask(__name__).test_request_context():
-            assert flask.render_template('nested/nested.txt') == 'I\'m nested'
+            self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
 
     def test_templates_list(self):
         from blueprintapp import app

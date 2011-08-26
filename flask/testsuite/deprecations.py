@@ -27,8 +27,8 @@ class DeprecationsTestCase(FlaskTestCase):
                 return app.jinja_env.globals['foo']
 
             c = app.test_client()
-            assert c.get('/').data == '42'
-            assert len(log) == 1
+            self.assert_equal(c.get('/').data, '42')
+            self.assert_equal(len(log), 1)
             assert 'init_jinja_globals' in str(log[0]['message'])
 
 

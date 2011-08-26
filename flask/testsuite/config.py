@@ -23,8 +23,8 @@ SECRET_KEY = 'devkey'
 class ConfigTestCase(FlaskTestCase):
 
     def common_object_test(self, app):
-        assert app.secret_key == 'devkey'
-        assert app.config['TEST_KEY'] == 'foo'
+        self.assert_equal(app.secret_key, 'devkey')
+        self.assert_equal(app.config['TEST_KEY'], 'foo')
         assert 'ConfigTestCase' not in app.config
 
     def test_config_from_file(self):
