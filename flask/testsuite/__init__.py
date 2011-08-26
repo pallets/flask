@@ -20,6 +20,9 @@ from contextlib import contextmanager
 from werkzeug.utils import import_string, find_modules
 
 
+common_prefix = __name__ + '.'
+
+
 def add_to_path(path):
     def _samefile(x, y):
         try:
@@ -45,6 +48,25 @@ def iter_suites():
         mod = import_string(module)
         if hasattr(mod, 'suite'):
             yield mod.suite()
+
+
+def find_all_tests():
+    suites = [suite()]
+    while suites:
+        s = suites.pop()
+        try:
+            suites.extend(s)
+        except TypeError:
+            yield s
+
+
+def find_all_tests_with_name():
+    for testcase in find_all_tests():
+        yield testcase, '%s.%s.%s' % (
+            testcase.__class__.__module__,
+            testcase.__class__.__name__,
+            testcase._testMethodName
+        )
 
 
 @contextmanager
@@ -111,6 +133,36 @@ class FlaskTestCase(unittest.TestCase):
 
     def assert_equal(self, x, y):
         return self.assertEqual(x, y)
+
+
+class BetterLoader(unittest.TestLoader):
+
+    def loadTestsFromName(self, name, module=None):
+        if name == 'suite':
+            return suite()
+        for testcase, testname in find_all_tests_with_name():
+            if testname == name:
+                return testcase
+            if testname.startswith(common_prefix):
+                if testname[len(common_prefix):] == name:
+                    return testcase
+
+        all_tests = []
+        for testcase, testname in find_all_tests_with_name():
+            if testname.endswith('.' + name) or ('.' + name + '.') in testname or \
+               testname.startswith(name + '.'):
+                all_tests.append(testcase)
+
+        if not all_tests:
+            print >> sys.stderr, 'Error: could not find test case for "%s"' % name
+            sys.exit(1)
+
+        if len(all_tests) == 1:
+            return all_tests[0]
+        rv = unittest.TestSuite()
+        for test in all_tests:
+            rv.addTest(test)
+        return rv
 
 
 def suite():
