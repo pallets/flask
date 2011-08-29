@@ -1397,7 +1397,7 @@ class Flask(_PackageBoundObject):
         This also triggers the :meth:`url_value_processor` functions before
         the actualy :meth:`before_request` functions are called.
         """
-        bp = request.blueprint
+        bp = _request_ctx_stack.top.request.blueprint
 
         funcs = self.url_value_preprocessors.get(None, ())
         if bp is not None and bp in self.url_value_preprocessors:
@@ -1447,7 +1447,7 @@ class Flask(_PackageBoundObject):
         tighter control over certain resources under testing environments.
         """
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
-        bp = request.blueprint
+        bp = _request_ctx_stack.top.request.blueprint
         if bp is not None and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         exc = sys.exc_info()[1]
