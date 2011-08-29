@@ -59,6 +59,9 @@ class TestToolsTestCase(FlaskTestCase):
                 self.assert_equal(len(sess), 1)
             rv = c.get('/')
             self.assert_equal(rv.data, '[42]')
+            with c.session_transaction() as sess:
+                self.assert_equal(len(sess), 1)
+                self.assert_equal(sess['foo'], [42])
 
     def test_session_transactions_no_null_sessions(self):
         app = flask.Flask(__name__)
