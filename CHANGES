@@ -42,6 +42,7 @@ Relase date to be decided, codename to be chosen.
   pluggable (class based) views.
 - Fixed an issue where the test client if used with the with statement did not
   trigger the execution of the teardown handlers.
+- Added finer control over the session cookie parameters.
 
 Version 0.7.3
 -------------

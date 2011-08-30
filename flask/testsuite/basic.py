@@ -207,6 +207,28 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         rv = app.test_client().get('/', 'http://example.com:8080/')
         self.assert_('path=/bar' in rv.headers['set-cookie'].lower())
 
+    def test_session_using_session_settings(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SECRET_KEY='foo',
+            SERVER_NAME='www.example.com:8080',
+            APPLICATION_ROOT='/test',
+            SESSION_COOKIE_DOMAIN='.example.com',
+            SESSION_COOKIE_HTTPONLY=False,
+            SESSION_COOKIE_SECURE=True,
+            SESSION_COOKIE_PATH='/'
+        )
+        @app.route('/')
+        def index():
+            flask.session['testing'] = 42
+            return 'Hello World'
+        rv = app.test_client().get('/', 'http://www.example.com:8080/test/')
+        cookie = rv.headers['set-cookie'].lower()
+        self.assert_('domain=.example.com' in cookie)
+        self.assert_('path=/;' in cookie)
+        self.assert_('secure' in cookie)
+        self.assert_('httponly' not in cookie)
+
     def test_missing_session(self):
         app = flask.Flask(__name__)
         def expect_exception(f, *args, **kwargs):

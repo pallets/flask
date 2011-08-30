@@ -70,6 +70,20 @@ The following configuration values are used internally by Flask:
                                   very risky).
 ``SECRET_KEY``                    the secret key
 ``SESSION_COOKIE_NAME``           the name of the session cookie
+``SESSION_COOKIE_DOMAIN``         the domain for the session cookie.  If
+                                  this is not set, the cookie will be
+                                  valid for all subdomains of
+                                  ``SERVER_NAME``.
+``SESSION_COOKIE_PATH``           the path for the session cookie.  If
+                                  this is not set the cookie will be valid
+                                  for all of ``APPLICATION_ROOT`` or if
+                                  that is not set for ``'/'``.
+``SESSION_COOKIE_HTTPONLY``       controls if the cookie should be set
+                                  with the httponly flag.  Defaults to
+                                  `True`.
+``SESSION_COOKIE_SECURE``         controls if the cookie should be set
+                                  with the secure flag.  Defaults to
+                                  `False`.
 ``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
                                   :class:`datetime.timedelta` object.
 ``USE_X_SENDFILE``                enable/disable x-sendfile
@@ -142,7 +156,9 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 0.8
    ``TRAP_BAD_REQUEST_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``,
-   ``APPLICATION_ROOT``
+   ``APPLICATION_ROOT``, ``SESSION_COOKIE_DOMAIN``,
+   ``SESSION_COOKIE_PATH``, ``SESSION_COOKIE_HTTPONLY``,
+   ``SESSION_COOKIE_SECURE``
 
 Configuring from Files
 ----------------------
