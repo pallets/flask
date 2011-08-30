@@ -89,9 +89,7 @@ setup(
                 'and good intentions',
     long_description=__doc__,
     packages=['flask', 'flask.testsuite'],
-    package_data={
-        'flask.testsuite': ['test_apps/*', 'static/*', 'templates/*']
-    },
+    include_package_data = True,
     zip_safe=False,
     platforms='any',
     install_requires=[
