@@ -218,6 +218,15 @@ implementation that Flask is using.
    :members:
 
 
+Test Client
+-----------
+
+.. currentmodule:: flask.testing
+
+.. autoclass:: FlaskClient
+   :members:
+
+
 Application Globals
 -------------------
 

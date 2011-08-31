@@ -36,6 +36,11 @@ longer have to handle that error to avoid an internal server error showing
 up for the user.  If you were catching this down explicitly in the past
 as `ValueError` you will need to change this.
 
+Due to a bug in the test client Flask 0.7 did not trigger teardown
+handlers when the test client was used in a with statement.  This was
+since fixed but might require some changes in your testsuites if you
+relied on this behavior.
+
 Version 0.7
 -----------
 
@@ -142,7 +147,8 @@ You are now encouraged to use this instead::
 
     @app.teardown_request
     def after_request(exception):
-        g.db.close()
+        if hasattr(g, 'db'):
+            g.db.close()
 
 On the upside this change greatly improves the internal code flow and
 makes it easier to customize the dispatching and error handling.  This

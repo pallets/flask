@@ -70,6 +70,20 @@ The following configuration values are used internally by Flask:
                                   very risky).
 ``SECRET_KEY``                    the secret key
 ``SESSION_COOKIE_NAME``           the name of the session cookie
+``SESSION_COOKIE_DOMAIN``         the domain for the session cookie.  If
+                                  this is not set, the cookie will be
+                                  valid for all subdomains of
+                                  ``SERVER_NAME``.
+``SESSION_COOKIE_PATH``           the path for the session cookie.  If
+                                  this is not set the cookie will be valid
+                                  for all of ``APPLICATION_ROOT`` or if
+                                  that is not set for ``'/'``.
+``SESSION_COOKIE_HTTPONLY``       controls if the cookie should be set
+                                  with the httponly flag.  Defaults to
+                                  `True`.
+``SESSION_COOKIE_SECURE``         controls if the cookie should be set
+                                  with the secure flag.  Defaults to
+                                  `False`.
 ``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
                                   :class:`datetime.timedelta` object.
 ``USE_X_SENDFILE``                enable/disable x-sendfile
@@ -77,6 +91,13 @@ The following configuration values are used internally by Flask:
 ``SERVER_NAME``                   the name and port number of the server.
                                   Required for subdomain support (e.g.:
                                   ``'localhost:5000'``)
+``APPLICATION_ROOT``              If the application does not occupy
+                                  a whole domain or subdomain this can
+                                  be set to the path where the application
+                                  is configured to live.  This is for
+                                  session cookie as path value.  If
+                                  domains are used, this should be
+                                  ``None``.
 ``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
                                   reject incoming requests with a
                                   content length greater than this by
@@ -134,7 +155,10 @@ The following configuration values are used internally by Flask:
    ``PROPAGATE_EXCEPTIONS``, ``PRESERVE_CONTEXT_ON_EXCEPTION``
 
 .. versionadded:: 0.8
-   ``TRAP_BAD_REQUEST_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``
+   ``TRAP_BAD_REQUEST_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``,
+   ``APPLICATION_ROOT``, ``SESSION_COOKIE_DOMAIN``,
+   ``SESSION_COOKIE_PATH``, ``SESSION_COOKIE_HTTPONLY``,
+   ``SESSION_COOKIE_SECURE``
 
 Configuring from Files
 ----------------------
@@ -291,25 +315,37 @@ With Flask 0.8 a new attribute was introduced:
 version control and be deployment specific.  It's the perfect place to
 drop things that either change at runtime or configuration files.
 
-To make it easier to put this folder into an ignore list for your version
-control system it's called ``instance`` and placed directly next to your
-package or module by default.  This path can be overridden by specifying
-the `instance_path` parameter to your application::
+You can either explicitly provide the path of the instance folder when
+creating the Flask application or you can let Flask autodetect the
+instance folder.  For explicit configuration use the `instance_path`
+parameter::
 
     app = Flask(__name__, instance_path='/path/to/instance/folder')
 
-Default locations::
+Please keep in mind that this path *must* be absolute when provided.
 
-    Module situation:
+If the `instance_path` parameter is not provided the following default
+locations are used:
+
+-   Uninstalled module::
+
         /myapp.py
         /instance
 
-    Package situation:
+-   Uninstalled package::
+
         /myapp
             /__init__.py
         /instance
 
-Please keep in mind that this path *must* be absolute when provided.
+-   Installed module or package::
+
+        $PREFIX/lib/python2.X/site-packages/myapp
+        $PREFIX/var/myapp-instance
+
+    ``$PREFIX`` is the prefix of your Python installation.  This can be
+    ``/usr`` or the path to your virtualenv.  You can print the value of
+    ``sys.prefix`` to see what the prefix is set to.
 
 Since the config object provided loading of configuration files from
 relative filenames we made it possible to change the loading via filenames

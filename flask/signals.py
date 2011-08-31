@@ -34,7 +34,7 @@ except ImportError:
                                'not installed.')
         send = lambda *a, **kw: None
         connect = disconnect = has_receivers_for = receivers_for = \
-            temporarily_connected_to = _fail
+            temporarily_connected_to = connected_to = _fail
         del _fail
 
 # the namespace for code signals.  If you are not flask code, do

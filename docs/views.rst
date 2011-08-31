@@ -135,3 +135,24 @@ easily do that.  Each HTTP method maps to a function with the same name
 That way you also don't have to provide the
 :attr:`~flask.views.View.methods` attribute.  It's automatically set based
 on the methods defined in the class.
+
+Decorating Views
+----------------
+
+Since the view class itself is not the view function that is added to the
+routing system it does not make much sense to decorate the class itself.
+Instead you either have to decorate the return value of
+:meth:`~flask.views.View.as_view` by hand::
+
+    view = rate_limited(UserAPI.as_view('users'))
+    app.add_url_rule('/users/', view_func=view)
+
+Starting with Flask 0.8 there is also an alternative way where you can
+specify a list of decorators to apply in the class declaration::
+
+    class UserAPI(MethodView):
+        decorators = [rate_limited]
+
+Due to the implicit self from the caller's perspective you cannot use
+regular view decorators on the individual methods of the view however,
+keep this in mind.

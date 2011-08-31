@@ -77,12 +77,6 @@ class run_audit(Command):
         else:
             print ("No problems found in sourcecode.")
 
-def run_tests():
-    import os, sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'tests'))
-    from flask_tests import suite
-    return suite()
-
 
 setup(
     name='Flask',
@@ -94,7 +88,10 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    packages=['flask'],
+    packages=['flask', 'flask.testsuite'],
+    package_data={
+        'flask.testsuite': ['test_apps/*', 'static/*', 'templates/*']
+    },
     zip_safe=False,
     platforms='any',
     install_requires=[
@@ -112,5 +109,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     cmdclass={'audit': run_audit},
-    test_suite='__main__.run_tests'
+    test_suite='flask.testsuite.suite'
 )

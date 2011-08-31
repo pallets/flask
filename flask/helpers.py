@@ -145,6 +145,13 @@ def make_response(*args):
 
         response = make_response(render_template('not_found.html'), 404)
 
+    The other use case of this function is to force the return value of a
+    view function into a response which is helpful with view
+    decorators::
+
+        response = make_response(view_function())
+        response.headers['X-Parachutes'] = 'parachutes are cool'
+
     Internally this function does the following things:
 
     -   if no arguments are passed, it creates a new response argument
@@ -477,6 +484,8 @@ def get_root_path(import_name):
         directory = os.path.dirname(sys.modules[import_name].__file__)
         return os.path.abspath(directory)
     except AttributeError:
+        # this is necessary in case we are running from the interactive
+        # python shell.  It will never be used for production code however
         return os.getcwd()
 
 
@@ -492,6 +501,7 @@ def find_package(import_name):
     root_mod = sys.modules[import_name.split('.')[0]]
     package_path = getattr(root_mod, '__file__', None)
     if package_path is None:
+        # support for the interactive python shell
         package_path = os.getcwd()
     else:
         package_path = os.path.abspath(os.path.dirname(package_path))

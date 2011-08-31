@@ -231,11 +231,16 @@ class Flask(_PackageBoundObject):
         'PROPAGATE_EXCEPTIONS':                 None,
         'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
         'SECRET_KEY':                           None,
-        'SESSION_COOKIE_NAME':                  'session',
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
         'LOGGER_NAME':                          None,
         'SERVER_NAME':                          None,
+        'APPLICATION_ROOT':                     None,
+        'SESSION_COOKIE_NAME':                  'session',
+        'SESSION_COOKIE_DOMAIN':                None,
+        'SESSION_COOKIE_PATH':                  None,
+        'SESSION_COOKIE_HTTPONLY':              True,
+        'SESSION_COOKIE_SECURE':                False,
         'MAX_CONTENT_LENGTH':                   None,
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False
@@ -704,6 +709,8 @@ class Flask(_PackageBoundObject):
             with app.test_client() as c:
                 rv = c.get('/?vodka=42')
                 assert request.args['vodka'] == '42'
+
+        See :class:`~flask.testing.FlaskClient` for more information.
 
         .. versionchanged:: 0.4
            added support for `with` block usage for the client.
@@ -1217,13 +1224,23 @@ class Flask(_PackageBoundObject):
             else:
                 raise e
 
-        self.logger.exception('Exception on %s [%s]' % (
-            request.path,
-            request.method
-        ))
+        self.log_exception((exc_type, exc_value, tb))
         if handler is None:
             return InternalServerError()
         return handler(e)
+
+    def log_exception(self, exc_info):
+        """Logs an exception.  This is called by :meth:`handle_exception`
+        if debugging is disabled and right before the handler is called.
+        The default implementation logs the exception as error on the
+        :attr:`logger`.
+
+        .. versionadded:: 0.8
+        """
+        self.logger.error('Exception on %s [%s]' % (
+            request.path,
+            request.method
+        ), exc_info=exc_info)
 
     def raise_routing_exception(self, request):
         """Exceptions that are recording during routing are reraised with
@@ -1306,17 +1323,18 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        # This would be nicer in Werkzeug 0.7, which however currently
-        # is not released.  Werkzeug 0.7 provides a method called
-        # allowed_methods() that returns all methods that are valid for
-        # a given path.
-        methods = []
-        try:
-            _request_ctx_stack.top.url_adapter.match(method='--')
-        except MethodNotAllowed, e:
-            methods = e.valid_methods
-        except HTTPException, e:
-            pass
+        adapter = _request_ctx_stack.top.url_adapter
+        if hasattr(adapter, 'allowed_methods'):
+            methods = adapter.allowed_methods()
+        else:
+            # fallback for Werkzeug < 0.7
+            methods = []
+            try:
+                adapter.match(method='--')
+            except MethodNotAllowed, e:
+                methods = e.valid_methods
+            except HTTPException, e:
+                pass
         rv = self.response_class()
         rv.allow.update(methods)
         return rv
@@ -1387,7 +1405,7 @@ class Flask(_PackageBoundObject):
         This also triggers the :meth:`url_value_processor` functions before
         the actualy :meth:`before_request` functions are called.
         """
-        bp = request.blueprint
+        bp = _request_ctx_stack.top.request.blueprint
 
         funcs = self.url_value_preprocessors.get(None, ())
         if bp is not None and bp in self.url_value_preprocessors:
@@ -1437,7 +1455,7 @@ class Flask(_PackageBoundObject):
         tighter control over certain resources under testing environments.
         """
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
-        bp = request.blueprint
+        bp = _request_ctx_stack.top.request.blueprint
         if bp is not None and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         exc = sys.exc_info()[1]
@@ -1482,19 +1500,12 @@ class Flask(_PackageBoundObject):
         :func:`werkzeug.test.EnvironBuilder` for more information, this
         function accepts the same arguments).
         """
-        from werkzeug.test import create_environ
-        environ_overrides = kwargs.setdefault('environ_overrides', {})
-        if self.config.get('SERVER_NAME'):
-            server_name = self.config.get('SERVER_NAME')
-            if ':' not in server_name:
-                http_host, http_port = server_name, '80'
-            else:
-                http_host, http_port = server_name.split(':', 1)
-
-            environ_overrides.setdefault('SERVER_NAME', server_name)
-            environ_overrides.setdefault('HTTP_HOST', server_name)
-            environ_overrides.setdefault('SERVER_PORT', http_port)
-        return self.request_context(create_environ(*args, **kwargs))
+        from flask.testing import make_test_environ_builder
+        builder = make_test_environ_builder(self, *args, **kwargs)
+        try:
+            return self.request_context(builder.get_environ())
+        finally:
+            builder.close()
 
     def wsgi_app(self, environ, start_response):
         """The actual WSGI application.  This is not implemented in

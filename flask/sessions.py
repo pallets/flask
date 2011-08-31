@@ -123,9 +123,33 @@ class SessionInterface(object):
         """Helpful helper method that returns the cookie domain that should
         be used for the session cookie if session cookies are used.
         """
+        if app.config['SESSION_COOKIE_DOMAIN'] is not None:
+            return app.config['SESSION_COOKIE_DOMAIN']
         if app.config['SERVER_NAME'] is not None:
             # chop of the port which is usually not supported by browsers
             return '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
+
+    def get_cookie_path(self, app):
+        """Returns the path for which the cookie should be valid.  The
+        default implementation uses the value from the SESSION_COOKIE_PATH``
+        config var if it's set, and falls back to ``APPLICATION_ROOT`` or
+        uses ``/`` if it's `None`.
+        """
+        return app.config['SESSION_COOKIE_PATH'] or \
+               app.config['APPLICATION_ROOT'] or '/'
+
+    def get_cookie_httponly(self, app):
+        """Returns True if the session cookie should be httponly.  This
+        currently just returns the value of the ``SESSION_COOKIE_HTTPONLY``
+        config var.
+        """
+        return app.config['SESSION_COOKIE_HTTPONLY']
+
+    def get_cookie_secure(self, app):
+        """Returns True if the cookie should be secure.  This currently
+        just returns the value of the ``SESSION_COOKIE_SECURE`` setting.
+        """
+        return app.config['SESSION_COOKIE_SECURE']
 
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
@@ -169,9 +193,13 @@ class SecureCookieSessionInterface(SessionInterface):
     def save_session(self, app, session, response):
         expires = self.get_expiration_time(app, session)
         domain = self.get_cookie_domain(app)
+        path = self.get_cookie_path(app)
+        httponly = self.get_cookie_httponly(app)
+        secure = self.get_cookie_secure(app)
         if session.modified and not session:
-            response.delete_cookie(app.session_cookie_name,
+            response.delete_cookie(app.session_cookie_name, path=path,
                                    domain=domain)
         else:
-            session.save_cookie(response, app.session_cookie_name,
-                                expires=expires, httponly=True, domain=domain)
+            session.save_cookie(response, app.session_cookie_name, path=path,
+                                expires=expires, httponly=httponly,
+                                secure=secure, domain=domain)

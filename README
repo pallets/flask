@@ -11,23 +11,40 @@
 
     ~ Is it ready?
 
-      A preview release is out now, and I'm hoping for some
-      input about what you want from a microframework and
-      how it should look like.  Consider the API to slightly
-      improve over time.
+      It's still not 1.0 but it's shaping up nicely and is
+      already widely used.  Consider the API to slightly
+      improve over time but we don't plan on breaking it.
 
     ~ What do I need?
 
-      Jinja 2.4 and Werkzeug 0.6.1.  `easy_install` will
-      install them for you if you do `easy_install Flask==dev`.
+      Jinja 2.4 and Werkzeug 0.6.1.  `pip` or `easy_install` will
+      install them for you if you do `easy_install Flask`.
       I encourage you to use a virtualenv.  Check the docs for
       complete installation and usage instructions.
 
     ~ Where are the docs?
 
-      Go to http://flask.pocoo.org/ for a prebuilt version of
-      the current documentation.  Otherwise build them yourself
+      Go to http://flask.pocoo.org/docs/ for a prebuilt version
+      of the current documentation.  Otherwise build them yourself
       from the sphinx sources in the docs folder.
+
+    ~ Where are the tests?
+
+      Good that you're asking.  The tests are in the
+      flask/testsuite package.  To run the tests use the
+      `run-tests.py` file:
+
+        $ python run-tests.py
+
+      If it's not enough output for you, you can use the
+      `--verbose` flag:
+
+        $ python run-tests.py --verbose
+
+      If you just want one particular testcase to run you can
+      provide it on the command line:
+
+        $ python run-tests.py test_to_run
 
     ~ Where can I get help?
 

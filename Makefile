@@ -3,7 +3,7 @@
 all: clean-pyc test
 
 test:
-	python setup.py test
+	python run-tests.py
 
 audit:
 	python setup.py audit

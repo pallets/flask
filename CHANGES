@@ -32,6 +32,17 @@ Relase date to be decided, codename to be chosen.
   conceptionally only instance depending and outside version control so it's
   the perfect place to put configuration files etc.  For more information
   see :ref:`instance-folders`.
+- Added the ``APPLICATION_ROOT`` configuration variable.
+- Implemented :meth:`~flask.testing.TestClient.session_transaction` to
+  easily modify sessions from the test environment.
+- Refactored test client internally.  The ``APPLICATION_ROOT`` configuration
+  variable as well as ``SERVER_NAME`` are now properly used by the test client
+  as defaults.
+- Added :attr:`flask.views.View.decorators` to support simpler decorating of
+  pluggable (class based) views.
+- Fixed an issue where the test client if used with the with statement did not
+  trigger the execution of the teardown handlers.
+- Added finer control over the session cookie parameters.
 
 Version 0.7.3
 -------------
