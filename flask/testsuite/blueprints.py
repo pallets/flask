@@ -8,6 +8,9 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+
+from __future__ import with_statement
+
 import flask
 import unittest
 import warnings
@@ -414,6 +417,92 @@ class BlueprintTestCase(FlaskTestCase):
         c = app.test_client()
         self.assert_equal(c.get('/').data, '1')
         self.assert_equal(c.get('/page/2').data, '2')
+
+    def test_route_decorator_custom_endpoint(self):
+
+        bp = flask.Blueprint('bp', __name__)
+
+        @bp.route('/foo')
+        def foo():
+            return flask.request.endpoint
+
+        @bp.route('/bar', endpoint='bar')
+        def foo_bar():
+            return flask.request.endpoint
+
+        @bp.route('/bar/123', endpoint='123')
+        def foo_bar_foo():
+            return flask.request.endpoint
+
+        @bp.route('/bar/foo')
+        def bar_foo():
+            return flask.request.endpoint
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+
+        @app.route('/')
+        def index():
+            return flask.request.endpoint
+
+        c = app.test_client()
+        self.assertEqual(c.get('/').data, 'index')
+        self.assertEqual(c.get('/py/foo').data, 'bp.foo')
+        self.assertEqual(c.get('/py/bar').data, 'bp.bar')
+        self.assertEqual(c.get('/py/bar/123').data, 'bp.123')
+        self.assertEqual(c.get('/py/bar/foo').data, 'bp.bar_foo')
+
+    def test_route_decorator_custom_endpoint_with_dots(self):
+        bp = flask.Blueprint('bp', __name__)
+
+        @bp.route('/foo')
+        def foo():
+            return flask.request.endpoint
+
+        try:
+            @bp.route('/bar', endpoint='bar.bar')
+            def foo_bar():
+                return flask.request.endpoint
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('expected AssertionError not raised')
+
+        try:
+            @bp.route('/bar/123', endpoint='bar.123')
+            def foo_bar_foo():
+                return flask.request.endpoint
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('expected AssertionError not raised')
+
+        def foo_foo_foo():
+            pass
+
+        self.assertRaises(
+            AssertionError,
+            lambda: bp.add_url_rule(
+                '/bar/123', endpoint='bar.123', view_func=foo_foo_foo
+            )
+        )
+
+        self.assertRaises(
+            AssertionError,
+            bp.route('/bar/123', endpoint='bar.123'),
+            lambda: None
+        )
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+
+        c = app.test_client()
+        self.assertEqual(c.get('/py/foo').data, 'bp.foo')
+        # The rule's din't actually made it through
+        rv = c.get('/py/bar')
+        assert rv.status_code == 404
+        rv = c.get('/py/bar/123')
+        assert rv.status_code == 404
 
 
 def suite():

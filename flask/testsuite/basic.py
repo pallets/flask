@@ -8,6 +8,9 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+
+from __future__ import with_statement
+
 import re
 import flask
 import unittest
@@ -894,6 +897,32 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_client() as c:
             rv = c.post('/foo', data={}, follow_redirects=True)
             self.assert_equal(rv.data, 'success')
+
+    def test_route_decorator_custom_endpoint(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+
+        @app.route('/foo/')
+        def foo():
+            return flask.request.endpoint
+
+        @app.route('/bar/', endpoint='bar')
+        def for_bar():
+            return flask.request.endpoint
+
+        @app.route('/bar/123', endpoint='123')
+        def for_bar_foo():
+            return flask.request.endpoint
+
+        with app.test_request_context():
+            assert flask.url_for('foo') == '/foo/'
+            assert flask.url_for('bar') == '/bar/'
+            assert flask.url_for('123') == '/bar/123'
+
+        c = app.test_client()
+        self.assertEqual(c.get('/foo/').data, 'foo')
+        self.assertEqual(c.get('/bar/').data, 'bar')
+        self.assertEqual(c.get('/bar/123').data, '123')
 
 
 class ContextTestCase(FlaskTestCase):
