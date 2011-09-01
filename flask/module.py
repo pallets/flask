@@ -5,7 +5,7 @@
 
     Implements a class that represents module blueprints.
 
-    :copyright: (c) 2010 by Armin Ronacher.
+    :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 

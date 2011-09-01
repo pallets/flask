@@ -6,7 +6,7 @@
     Implements cookie based sessions based on Werkzeug's secure cookie
     system.
 
-    :copyright: (c) 2010 by Armin Ronacher.
+    :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 
