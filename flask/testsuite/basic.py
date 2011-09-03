@@ -702,63 +702,43 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         def subdomain():
             return 'Foo SubDomain'
 
-        try:
-            rv = app.test_client().get('/')
-            self.assert_equal(rv.data, 'Foo')
-        except ValueError, e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
-            )
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, 'Foo')
 
-        try:
-            rv = app.test_client().get('/', 'http://localhost.localdomain:5000')
-            self.assert_equal(rv.data, 'Foo')
-        except ValueError, e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
-            )
+        rv = app.test_client().get('/', 'http://localhost.localdomain:5000')
+        self.assert_equal(rv.data, 'Foo')
 
-        try:
-            rv = app.test_client().get('/', 'https://localhost.localdomain:5000')
-            self.assert_equal(rv.data, 'Foo')
-        except ValueError, e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
-            )
+        rv = app.test_client().get('/', 'https://localhost.localdomain:5000')
+        self.assert_equal(rv.data, 'Foo')
 
-        try:
-            app.config.update(SERVER_NAME='localhost.localdomain')
-            rv = app.test_client().get('/', 'https://localhost.localdomain')
-            self.assert_equal(rv.data, 'Foo')
-        except ValueError, e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
-            )
+        app.config.update(SERVER_NAME='localhost.localdomain')
+        rv = app.test_client().get('/', 'https://localhost.localdomain')
+        self.assert_equal(rv.data, 'Foo')
 
         try:
             app.config.update(SERVER_NAME='localhost.localdomain:443')
             rv = app.test_client().get('/', 'https://localhost.localdomain')
-            self.assert_equal(rv.data, 'Foo')
+            # Werkzeug 0.8
+            self.assert_equal(rv.status_code, 404)
         except ValueError, e:
+            # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " +
                     "('localhost.localdomain:443') does not match the " + \
                     "server name from the WSGI environment ('localhost.localdomain')")
 
         try:
             app.config.update(SERVER_NAME='localhost.localdomain')
-            app.test_client().get('/', 'http://foo.localhost')
+            rv = app.test_client().get('/', 'http://foo.localhost')
+            # Werkzeug 0.8
+            self.assert_equal(rv.status_code, 404)
         except ValueError, e:
+            # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " + \
                     "('localhost.localdomain') does not match the " + \
                     "server name from the WSGI environment ('foo.localhost')")
 
-        try:
-            rv = app.test_client().get('/', 'http://foo.localhost.localdomain')
-            self.assert_equal(rv.data, 'Foo SubDomain')
-        except ValueError, e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
-            )
+        rv = app.test_client().get('/', 'http://foo.localhost.localdomain')
+        self.assert_equal(rv.data, 'Foo SubDomain')
 
     def test_exception_propagation(self):
         def apprunner(configkey):
