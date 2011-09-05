@@ -621,6 +621,10 @@ just return strings from the view functions Flask will convert them into
 response objects for you.  If you explicitly want to do that you can use
 the :meth:`~flask.make_response` function and then modify it.
 
+Sometimes you might want to set a cookie at a point where the response
+object does not exist yet.  This is possible by utilizing the
+:ref:`deferred-callbacks` pattern.
+
 For this also see :ref:`about-responses`.
 
 Redirects and Errors
