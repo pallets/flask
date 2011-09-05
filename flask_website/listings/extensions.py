@@ -390,6 +390,14 @@ extensions = [
         docs='http://packages.python.org/Flask-GAE-Mini-Profiler',
         github='passy/flask-gae-mini-profiler'
     ),
+    Extension('Flask-Admin', 'Andy Wilson',
+        description='''
+            <p>
+              Flask extenstion module that provides an admin interface
+        ''',
+        docs='http://packages.python.org/Flask-Admin/',
+        github='wilsaj/flask-admin'
+    ),
 ]
 
 
