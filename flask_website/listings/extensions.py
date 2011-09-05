@@ -382,6 +382,14 @@ extensions = [
         docs='http://packages.python.org/Flask-MongoKit/',
         bitbucket='Jarus/flask-mongokit'
     ),
+    Extension('Flask-GAE-Mini-Profiler', 'Pascal Hartig',
+        description='''
+            <p>
+              Flask integration of gae_mini_profiler for Google App Engine.
+        ''',
+        docs='http://packages.python.org/Flask-GAE-Mini-Profiler',
+        github='passy/flask-gae-mini-profiler'
+    ),
 ]
 
 
