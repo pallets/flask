@@ -299,7 +299,7 @@ extensions = [
         ''',
         docs='http://packages.python.org/Flask-FlatPages/',
         github='SimonSapin/Flask-FlatPages',
-        approved=False
+        approved=True
     ),
     Extension('Flask-FluidDB', 'Ali Afshar',
         description='''
