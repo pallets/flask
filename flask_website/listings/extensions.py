@@ -469,6 +469,19 @@ unlisted = [
             bettercodes.org.
         '''
     ),
+    Extension('Flask-Solr', 'Ron DuPlain',
+        description='''
+            <p>
+              Add Solr support to Flask using pysolr.
+        ''',
+        docs=None,
+        github='willowtreeapps/flask-solr',
+        notes='''
+            Fully exposes pysolr API in Flask extension pattern, and code is
+            production-ready.  It lacks documentation and tests because the
+            author has yet to find the time.
+        '''
+    ),
 ]
 
 
