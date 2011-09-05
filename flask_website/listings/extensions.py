@@ -374,6 +374,14 @@ extensions = [
         ''',
         github='maxcountryman/flask-bcrypt',
     ),
+    Extension('Flask-MongoKit', 'Christoph Heer',
+        description='''
+            <p>
+              Flask extension to better integrate MongoKit into Flask
+        ''',
+        docs='http://packages.python.org/Flask-MongoKit/',
+        bitbucket='Jarus/flask-mongokit'
+    ),
 ]
 
 
