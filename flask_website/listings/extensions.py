@@ -398,6 +398,15 @@ extensions = [
         docs='http://packages.python.org/Flask-Admin/',
         github='wilsaj/flask-admin'
     ),
+    Extension('Flask-ZODB', 'Dag Odenhall',
+        description='''
+            <p>
+              Use the ZODB with Flask
+        ''',
+        docs='http://packages.python.org/Flask-ZODB/',
+        github='dag/flask-zodb',
+        approved=True
+    ),
 ]
 
 

@@ -8,6 +8,7 @@
     follow the <a href="{{ url_for('docs.show', page='extensiondev')
     }}">guide on creating extensions</a>.
   {% for extension in extensions %}
+  <a name={{ extension.name }}></a>
   <div class=extension>
     <h2{% if extension.approved %} class=approved{% endif %}>{{ extension.name }}</h2>
     <div class=description>
