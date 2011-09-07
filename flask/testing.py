@@ -59,7 +59,7 @@ class FlaskClient(Client):
             raise RuntimeError('Session transactions only make sense '
                                'with cookies enabled.')
         app = self.application
-        environ_overrides = kwargs.pop('environ_overrides', {})
+        environ_overrides = kwargs.setdefault('environ_overrides', {})
         self.cookie_jar.inject_wsgi(environ_overrides)
         outer_reqctx = _request_ctx_stack.top
         with app.test_request_context(*args, **kwargs) as c:
