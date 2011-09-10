@@ -20,7 +20,7 @@ from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
 
-class HTTPRoutingTestCase(FlaskCase):
+class HTTPRoutingTestCase(FlaskTestCase):
     def test_option_with_get(self):
         app = flask.Flask(__name__)
         @app.get('/')
@@ -50,7 +50,7 @@ class HTTPRoutingTestCase(FlaskCase):
 
     def test_option_with_delete(self):
         app = flask.Flask(__name__)
-        @app.post('/')
+        @app.delete('/')
         def index():
             return 'Hello World'
         rv = app.test_client().open('/', method='OPTIONS')
@@ -68,7 +68,7 @@ class HTTPRoutingTestCase(FlaskCase):
         rv = app.test_client().open('/', method='OPTIONS')
         self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
 
-    def test_request_dispatching(self):
+    def test_request_dispatching_with_http_methods(self):
         app = flask.Flask(__name__)
         @app.get('/')
         def index():
@@ -1105,4 +1105,5 @@ def suite():
     suite.addTest(unittest.makeSuite(BasicFunctionalityTestCase))
     suite.addTest(unittest.makeSuite(ContextTestCase))
     suite.addTest(unittest.makeSuite(SubdomainTestCase))
+    suite.addTest(unittest.makeSuite(HTTPRoutingTestCase))
     return suite
