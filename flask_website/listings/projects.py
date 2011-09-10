@@ -267,7 +267,12 @@ projects = {
                 Project('HTTPBin', 'http://httpbin.org/', u'''
             <p>
               An HTTP request & response service.
-        ''', source='https://github.com/kennethreitz/httpbin')
+        ''', source='https://github.com/kennethreitz/httpbin'),
+        Project('Instamator', 'http://instamator.ep.io/', u'''
+            <p>
+              Instamator generates usable feeds from your Instagram “likes”
+              so you can use them as you wish.
+        ''')
     ]
 }
 
