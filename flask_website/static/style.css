@@ -132,6 +132,24 @@ input.openid            { background: url(openid.png) no-repeat 4px center;
 .project dl dt             { width: 110px; float: left; height: 22px; }
 .project dl dd             { height: 22px; }
 
+/* search */
+.search-box                      { background: #eee; margin: 10px -30px;
+                                   padding: 10px 30px; color: #444; }
+.search-box input                { color: black; }
+.search-box input[type="text"]   { margin-left: 10px; }
+.search-box input[type="submit"] { background: #ddd; }
+.search-box p                    { margin: 0; }
+
+.search-results span.kind        { padding-left: 12px; font-size: 14px; }
+.search-results li               { margin: 10px 0; }
+.search-results p                { margin: 0; }
+.search-results p.description    { padding-left: 20px; color: #888;
+                                   font-size: 15px; }
+.search-results em.search-match  { font-style: normal; background: #DEEBF3;
+                                   color: #004B6B; font-weight: bold; }
+.search-results .ellipsis        { padding: 0 4px; color: #666;
+                                   font-weight: bold; }
+
 /* pygments style, same as flaskystyle */
 .hll { background-color: #ffffcc }
 .c { color: #8f5902; font-style: italic } /* Comment */

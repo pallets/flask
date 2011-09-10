@@ -16,5 +16,7 @@ THREAD_FOLDER = '_mailinglist/threads'
 LIST_NAME = 'flask'
 RSYNC_PATH = 'librelist.com::json/%s'
 SUBJECT_PREFIX = '[flask]'
+WHOOSH_INDEX = os.path.join(_basedir, 'flask-website.whoosh')
+DOCUMENTATION_PATH = os.path.join(_basedir, '../flask/docs/_build/dirhtml')
 
 del os

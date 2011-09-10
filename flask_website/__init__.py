@@ -1,11 +1,8 @@
 from flask import Flask, session, g, render_template
 from flaskext.openid import OpenID
 
-import websiteconfig as config
-
 app = Flask(__name__)
-app.debug = config.DEBUG
-app.secret_key = config.SECRET_KEY
+app.config.from_object('websiteconfig')
 
 from flask_website.openid_auth import DatabaseOpenIDStore
 oid = OpenID(app, store_factory=DatabaseOpenIDStore)
@@ -25,6 +22,7 @@ def load_current_user():
 @app.teardown_request
 def remove_db_session(exception):
     db_session.remove()
+
 
 app.add_url_rule('/docs/', endpoint='docs.index', build_only=True)
 app.add_url_rule('/docs/<path:page>/', endpoint='docs.show',

@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+  <style type=text/css>
+    h1 { background-image: url({{ url_for('static', filename='search.png') }}); }
+  </style>
+{% endblock %}
+{% block title %}Search{% endblock %}
+{% block body %}
+  <form action="" method=get class=search-box>
+    <p>Search this website for:
+      <input type=text name=q size=30 value="{{ q }}">
+      <input type=submit value="Search">
+  </form>
+  {% if q %}
+    <h2>Results for “{{ q }}”</h2>
+    <ul class=search-results>
+    {%- for result in results %}
+      <li class="search-result-{{ result.kind }}">
+        <p class=title><a href="{{ result.url }}">{{ result.title }}</a>
+          <span class=kind>[{{ result.kind }}]</span>
+        {%- if result.description %}
+        <p class=description>{{ result.description }}
+        {%- endif %}
+    {%- else %}
+      <li><em>We did not find anything :-(</em>
+    {%- endfor %}
+    </ul>
+    <div class=pagination>
+      {% if results.page > 1 %}
+        <a href="{{ url_for('.search', q=q, page=results.page - 1) }}">&laquo; Previous</a>
+      {% else %}
+        <span class=disabled>&laquo; Previous</span>
+      {% endif %}
+      | <strong>{{ results.page }}</strong> |
+      {% if results.page < results.pages %}
+        <a href="{{ url_for('.search', q=q, page=results.page + 1) }}">Next &raquo;</a>
+      {% else %}
+        <span class=disabled>Next &raquo;</span>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

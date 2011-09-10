@@ -1,6 +1,8 @@
 .DS_Store
 *.pyc
 *.pyo
+*.whoosh
+*.db
 env
 dist
 _mailinglist/*

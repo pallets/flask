@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
-     request, flash, g, Response, jsonify
+     request, flash, g, jsonify, abort
 from flaskext.openid import COMMON_PROVIDERS
 from flask_website import oid
+from flask_website.search import search as perform_search
 from flask_website.twitter import flask_tweets
 from flask_website.utils import requires_login, request_wants_json
 from flask_website.database import db_session, User
@@ -16,6 +17,18 @@ def index():
         return jsonify(releases=[r.to_json() for r in releases])
     return render_template('general/index.html', tweets=flask_tweets,
                            latest_release=releases[-1])
+
+
+@mod.route('/search/')
+def search():
+    q = request.args.get('q') or ''
+    page = request.args.get('page', type=int) or 1
+    results = None
+    if q:
+        results = perform_search(q, page=page)
+        if results is None:
+            abort(404)
+    return render_template('general/search.html', results=results, q=q)
 
 
 @mod.route('/logout/')

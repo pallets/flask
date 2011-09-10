@@ -11,7 +11,6 @@ from pygments.util import ClassNotFound
 from flask import g, url_for, flash, abort, request, redirect, Markup
 from flask_website.flaskystyle import FlaskyStyle # same as docs
 
-from flask_website.database import User
 
 pygments_formatter = HtmlFormatter(style=FlaskyStyle)
 
