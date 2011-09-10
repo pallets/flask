@@ -20,6 +20,80 @@ from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
 
+class HTTPRoutingTestCase(FlaskCase):
+    def test_option_with_get(self):
+        app = flask.Flask(__name__)
+        @app.get('/')
+        def index():
+            return 'Hello World'
+        rv = app.test_client().open('/', method='OPTIONS')
+        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
+        self.assert_equal(rv.data, '')
+
+    def test_option_with_post(self):
+        app = flask.Flask(__name__)
+        @app.post('/')
+        def index():
+            return 'Hello World'
+        rv = app.test_client().open('/', method='OPTIONS')
+        self.assert_equal(sorted(rv.allow), ['HEAD', 'OPTIONS', 'POST'])
+        self.assert_equal(rv.data, '')
+
+    def test_option_with_put(self):
+        app = flask.Flask(__name__)
+        @app.put('/')
+        def index():
+            return 'Hello World'
+        rv = app.test_client().open('/', method='OPTIONS')
+        self.assert_equal(sorted(rv.allow), ['HEAD', 'OPTIONS', 'PUT'])
+        self.assert_equal(rv.data, '')
+
+    def test_option_with_delete(self):
+        app = flask.Flask(__name__)
+        @app.post('/')
+        def index():
+            return 'Hello World'
+        rv = app.test_client().open('/', method='OPTIONS')
+        self.assert_equal(sorted(rv.allow), ['DELETE', 'HEAD', 'OPTIONS'])
+        self.assert_equal(rv.data, '')
+
+    def test_options_on_multiple_rules_with_http_methods(self):
+        app = flask.Flask(__name__)
+        @app.get('/')
+        def index():
+            return 'Hello World'
+        @app.post('/')
+        def index_put():
+            return 'Aha!'
+        rv = app.test_client().open('/', method='OPTIONS')
+        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
+
+    def test_request_dispatching(self):
+        app = flask.Flask(__name__)
+        @app.get('/')
+        def index():
+            return flask.request.method
+        @app.get('/more')
+        def get_more():
+            return flask.request.method
+        @app.post('/more')
+        def post_more():
+            return flask.request.method
+
+        c = app.test_client()
+        self.assert_equal(c.get('/').data, 'GET')
+        rv = c.post('/')
+        self.assert_equal(rv.status_code, 405)
+        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
+        rv = c.head('/')
+        self.assert_equal(rv.status_code, 200)
+        self.assert_(not rv.data) # head truncates
+        self.assert_equal(c.post('/more').data, 'POST')
+        self.assert_equal(c.get('/more').data, 'GET')
+        rv = c.delete('/more')
+        self.assert_equal(rv.status_code, 405)
+        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
+
 
 class BasicFunctionalityTestCase(FlaskTestCase):
 
