@@ -4,7 +4,7 @@ from openid.association import Association
 from openid.store.interface import OpenIDStore
 from openid.store import nonce
 
-from flask_website.database import User, db_session, OpenIDAssociation, \
+from flask_website.database import db_session, OpenIDAssociation, \
      OpenIDUserNonce
 
 
