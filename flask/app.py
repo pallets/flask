@@ -958,6 +958,7 @@ class Flask(_PackageBoundObject):
         return decorator
 
     def get(self, rule, **options):
+        """Short for :meth:`route` with methods=['GET']) as option."""
         def decorator(f):
             options["methods"] = ('GET', 'HEAD')
             endpoint = options.pop("endpoint", None)
@@ -967,6 +968,7 @@ class Flask(_PackageBoundObject):
 
 
     def post(self, rule, **options):
+        """Short for :meth:`route` with methods=['POST']) as option."""
         def decorator(f):
             options["methods"] = ('POST', 'HEAD')
             endpoint = options.pop("endpoint", None)
@@ -975,6 +977,7 @@ class Flask(_PackageBoundObject):
         return decorator
 
     def put(self, rule, **options):
+        """Short for :meth:`route` with methods=['PUT']) as option."""
         def decorator(f):
             options["methods"] = ('PUT', 'HEAD')
             endpoint = options.pop("endpoint", None)
@@ -983,6 +986,7 @@ class Flask(_PackageBoundObject):
         return decorator
 
     def delete(self, rule, **options):
+        """Short for :meth:`route` with methods=['DELETE']) as option."""
         def decorator(f):
             options["methods"] = ('DELETE', 'HEAD')
             endpoint = options.pop("endpoint", None)
