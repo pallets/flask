@@ -19,7 +19,8 @@
   {% endif %}
   <p>
     Want to share something?  Then add a
-    <a href="{{ url_for('.new') }}">new snippet</a>.
+    <a href="{{ url_for('.new') }}">new snippet</a>.  Can't find a snippet?
+    Try the <a href="{{ url_for('general.search') }}">search</a>.
   <h2>Snippets by Category</h2>
   <ul>
   {% for category in categories %}
