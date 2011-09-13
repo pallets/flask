@@ -380,7 +380,7 @@ extensions = [
               Flask extension to better integrate MongoKit into Flask
         ''',
         docs='http://packages.python.org/Flask-MongoKit/',
-        bitbucket='Jarus/flask-mongokit'
+        github='jarus/flask-mongokit'
     ),
     Extension('Flask-GAE-Mini-Profiler', 'Pascal Hartig',
         description='''
