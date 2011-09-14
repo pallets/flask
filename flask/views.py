@@ -64,7 +64,7 @@ class View(object):
 
     def dispatch_request(self):
         """Subclasses have to override this method to implement the
-        actual view functionc ode.  This method is called with all
+        actual view function code.  This method is called with all
         the arguments from the URL rule.
         """
         raise NotImplementedError()
