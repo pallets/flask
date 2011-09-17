@@ -43,6 +43,8 @@ Relase date to be decided, codename to be chosen.
 - Fixed an issue where the test client if used with the with statement did not
   trigger the execution of the teardown handlers.
 - Added finer control over the session cookie parameters.
+- HEAD requests to a method view now automatically dispatch to the `get`
+  method if no handler was implemented.
 
 Version 0.7.3
 -------------

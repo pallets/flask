@@ -110,6 +110,41 @@ class ViewTestCase(FlaskTestCase):
         self.assert_equal(rv.headers['X-Parachute'], 'awesome')
         self.assert_equal(rv.data, 'Awesome')
 
+    def test_implicit_head(self):
+        app = flask.Flask(__name__)
+
+        class Index(flask.views.MethodView):
+            def get(self):
+                return flask.Response('Blub', headers={
+                    'X-Method': flask.request.method
+                })
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+        c = app.test_client()
+        rv = c.get('/')
+        self.assert_equal(rv.data, 'Blub')
+        self.assert_equal(rv.headers['X-Method'], 'GET')
+        rv = c.head('/')
+        self.assert_equal(rv.data, '')
+        self.assert_equal(rv.headers['X-Method'], 'HEAD')
+
+    def test_explicit_head(self):
+        app = flask.Flask(__name__)
+
+        class Index(flask.views.MethodView):
+            def get(self):
+                return 'GET'
+            def head(self):
+                return flask.Response('', headers={'X-Method': 'HEAD'})
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+        c = app.test_client()
+        rv = c.get('/')
+        self.assert_equal(rv.data, 'GET')
+        rv = c.head('/')
+        self.assert_equal(rv.data, '')
+        self.assert_equal(rv.headers['X-Method'], 'HEAD')
+
 
 def suite():
     suite = unittest.TestSuite()

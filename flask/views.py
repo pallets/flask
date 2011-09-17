@@ -143,5 +143,9 @@ class MethodView(View):
 
     def dispatch_request(self, *args, **kwargs):
         meth = getattr(self, request.method.lower(), None)
-        assert meth is not None, 'Not implemented method'
+        # if the request method is HEAD and we don't have a handler for it
+        # retry with GET
+        if meth is None and request.method == 'HEAD':
+            meth = getattr(self, 'get', None)
+        assert meth is not None, 'Not implemented method %r' % request.method
         return meth(*args, **kwargs)
