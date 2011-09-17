@@ -156,3 +156,72 @@ specify a list of decorators to apply in the class declaration::
 Due to the implicit self from the caller's perspective you cannot use
 regular view decorators on the individual methods of the view however,
 keep this in mind.
+
+Method Views for APIs
+---------------------
+
+Web APIs are often working very closely with HTTP verbs so it makes a lot
+of sense to implement such an API based on the
+:class:`~flask.views.MethodView`.  That said, you will notice that the API
+will require different URL rules that go to the same method view most of
+the time.  For instance consider that you are exposing a user object on
+the web:
+
+=============== =============== ======================================
+URL             Method          Description
+--------------- --------------- --------------------------------------
+``/users/``     ``GET``         Gives a list of all users
+``/users/``     ``POST``        Creates a new user
+``/users/<id>`` ``GET``         Shows a single user
+``/users/<id>`` ``PUT``         Updates a single user
+``/users/<id>`` ``DELETE``      Deletes a single user
+=============== =============== ======================================
+
+So how would you go about doing that with the
+:class:`~flask.views.MethodView`?  The trick is to take advantage of the
+fact that you can provide multiple rules to the same view.
+
+Let's assume for the moment the view would look like this::
+
+    class UserAPI(MethodView):
+
+        def get(self, user_id):
+            if user_id is None:
+                # return a list of users
+                pass
+            else:
+                # expose a single user
+                pass
+
+        def post(self):
+            # create a new user
+            pass
+
+        def delete(self, user_id):
+            # delete a single user
+            pass
+
+        def put(self, user_id):
+            # update a single user
+            pass
+
+So how do we hook this up with the routing system?  By adding two rules
+and explicitly mentioning the methods for each::
+
+    user_view = UserAPI.as_view('user_api')
+    app.add_url_rule('/users/', defaults={'user_id': None},
+                     view_func=user_view, methods=['GET', 'POST'])
+    app.add_url_rule('/users/<int:user_id>', view_func=user_view,
+                     methods=['GET', 'PUT', 'DELETE'])
+
+If you have a lot of APIs that look similar you can refactor that
+registration code::
+
+    def register_api(view, endpoint, url, pk='id', pk_type='int'):
+        view_func = view.as_view(endpoint)
+        app.add_url_rule(url, defaults={pk: None},
+                         view_func=view_func, methods=['GET', 'POST'])
+        app.add_url_rule('%s<%s:%s>' % (url, pk), view_func=view_func,
+                         methods=['GET', 'PUT', 'DELETE'])
+
+    register_api(UserAPI, 'user_api', '/users/', pk='user_id')
