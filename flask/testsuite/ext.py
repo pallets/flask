@@ -17,7 +17,9 @@ class ExtImportHookTestCase(FlaskTestCase):
 
     def setup(self):
         for entry, value in sys.modules.items():
-            if entry.startswith('flask.ext.') and value is not None:
+            if (entry.startswith('flask.ext.') or
+                entry.startswith('flask_') or
+                entry.startswith('flaskext.')) and value is not None:
                 sys.modules.pop(entry, None)
         from flask import ext
         reload(ext)
@@ -54,6 +56,10 @@ class ExtImportHookTestCase(FlaskTestCase):
         self.assert_equal(newext_package.ext_id, 'newext_package')
         self.assert_equal(newext_package.__name__, 'flask_newext_package')
 
+    def test_flaskext_new_package_import_submodule_function(self):
+        from flask.ext.newext_package.submodule import test_function
+        self.assert_equal(test_function(), 42)
+
     def test_flaskext_new_package_import_submodule(self):
         from flask.ext.newext_package import submodule
         self.assert_equal(submodule.__name__, 'flask_newext_package.submodule')
@@ -81,6 +87,10 @@ class ExtImportHookTestCase(FlaskTestCase):
         from flask.ext.oldext_package import submodule
         self.assert_equal(submodule.__name__, 'flaskext.oldext_package.submodule')
         self.assert_equal(submodule.test_function(), 42)
+
+    def test_flaskext_old_package_import_submodule_function(self):
+        from flask.ext.oldext_package.submodule import test_function
+        self.assert_equal(test_function(), 42)
 
 
 def suite():
