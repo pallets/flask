@@ -31,6 +31,11 @@ class _ExtensionImporter(object):
         self.prefix = __name__ + '.'
         self.prefix_cutoff = __name__.count('.') + 1
 
+        # since people might reload the flask.ext module (by accident or
+        # intentionally) we have to make sure to not add more than one
+        # import hook.  We can't check class types here either since a new
+        # class will be created on reload.  As a result of that we check
+        # the name of the class and remove stale instances.
         def _name(x):
             cls = type(x)
             return cls.__module__ + '.' + cls.__name__
