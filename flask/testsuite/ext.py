@@ -31,6 +31,11 @@ class ExtImportHookTestCase(FlaskTestCase):
                 import_hooks += 1
         self.assert_equal(import_hooks, 1)
 
+    def teardown(self):
+        from flask import ext
+        for key in ext.__dict__:
+            self.assert_('.' not in key)
+
     def test_flaskext_new_simple_import_normal(self):
         from flask.ext.newext_simple import ext_id
         self.assert_equal(ext_id, 'newext_simple')

@@ -58,7 +58,8 @@ class _ExtensionImporter(object):
             except ImportError:
                 continue
             module = modules[fullname] = modules[realname]
-            setattr(modules[__name__], modname, module)
+            if '.' not in modname:
+                setattr(modules[__name__], modname, module)
             return module
         raise ImportError(fullname)
 
