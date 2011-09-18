@@ -36,4 +36,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    mongokit
    favicon
    streaming
-   cookies
+   deferredcallbacks
