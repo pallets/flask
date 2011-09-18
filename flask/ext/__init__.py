@@ -8,7 +8,7 @@
     force all extensions to upgrade at the same time.
 
     When a user does ``from flask.ext.foo import bar`` it will attempt to
-    imprt ``from flask_foo import bar`` first and when that fails it will
+    import ``from flask_foo import bar`` first and when that fails it will
     try to import ``from flaskext.foo import bar``.
 
     We're switching from namespace packages because it was just too painful for
@@ -17,38 +17,46 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import sys
 
 
 class _ExtensionImporter(object):
-    """This importer redirects imports from this submodule to other
-    locations.  This makes it possible to transition from the old
-    flaskext.name to the newer flask_name without people having a
-    hard time.
+    """This importer redirects imports from this submodule to other locations.
+    This makes it possible to transition from the old flaskext.name to the
+    newer flask_name without people having a hard time.
     """
     _module_choices = ['flask_%s', 'flaskext.%s']
-    _modules = sys.modules
+
+    def __init__(self):
+        from sys import meta_path
+        self.prefix = __name__ + '.'
+        self.prefix_cutoff = __name__.count('.') + 1
+
+        def _name(x):
+            cls = type(x)
+            return cls.__module__ + '.' + cls.__name__
+        this = _name(self)
+        meta_path[:] = [x for x in meta_path if _name(x) != this] + [self]
 
     def find_module(self, fullname, path=None):
-        if fullname.rsplit('.', 1)[0] == __name__:
+        if fullname.startswith(self.prefix):
             return self
 
     def load_module(self, fullname):
-        if fullname in self._modules:
-            return self._modules[fullname]
-        packname, modname = fullname.rsplit('.', 1)
+        from sys import modules
+        if fullname in modules:
+            return modules[fullname]
+        modname = fullname.split('.', self.prefix_cutoff)[self.prefix_cutoff]
         for path in self._module_choices:
             realname = path % modname
             try:
                 __import__(realname)
             except ImportError:
                 continue
-            module = self._modules[fullname] = self._modules[realname]
-            setattr(self._modules[__name__], modname, module)
-            module.__loader__ = self
+            module = modules[fullname] = modules[realname]
+            setattr(modules[__name__], modname, module)
             return module
         raise ImportError(fullname)
 
 
-sys.meta_path.append(_ExtensionImporter())
-del sys, _ExtensionImporter
+_ExtensionImporter()
+del _ExtensionImporter
