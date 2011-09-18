@@ -16,10 +16,10 @@ extension to behave.
 Anatomy of an Extension
 -----------------------
 
-Extensions are all located in a package called ``flaskext.something``
+Extensions are all located in a package called ``flask_something``
 where "something" is the name of the library you want to bridge.  So for
 example if you plan to add support for a library named `simplexml` to
-Flask, you would name your extension's package ``flaskext.simplexml``.
+Flask, you would name your extension's package ``flask_simplexml``.
 
 The name of the actual extension (the human readable name) however would
 be something like "Flask-SimpleXML".  Make sure to include the name
@@ -27,9 +27,11 @@ be something like "Flask-SimpleXML".  Make sure to include the name
 This is how users can then register dependencies to your extension in
 their `setup.py` files.
 
-The magic that makes it possible to have your library in a package called
-``flaskext.something`` is called a "namespace package".  Check out the
-guide below how to create something like that.
+Flask sets up a redirect package called :data:`flask.ext` where users
+should import the extensions from.  If you for instance have a package
+called ``flask_something`` users would import it as
+``flask.ext.something``.  This is done to transition from the old
+namespace packages.  See :ref:`ext-import-transition` for more details.
 
 But how do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
@@ -54,34 +56,14 @@ reviewed upfront if they behave as required.
 So let's get started with creating such a Flask extension.  The extension
 we want to create here will provide very basic support for SQLite3.
 
-There is a script on github called `Flask Extension Wizard`_ which helps
-you create the initial folder structure.  But for this very basic example
-we want to create all by hand to get a better feeling for it.
-
 First we create the following folder structure::
 
     flask-sqlite3/
-        flaskext/
-            __init__.py
-            sqlite3.py
-        setup.py
+        flask_sqlite3.py
         LICENSE
+        README
 
 Here's the contents of the most important files:
-
-flaskext/__init__.py
-````````````````````
-
-The only purpose of this file is to mark the package as namespace package.
-This is required so that multiple modules from different PyPI packages can
-reside in the same Python package::
-
-    __import__('pkg_resources').declare_namespace(__name__)
-
-If you want to know exactly what is happening there, checkout the
-distribute or setuptools docs which explain how this works.
-
-Just make sure to not put anything else in there!
 
 setup.py
 ````````
@@ -108,9 +90,12 @@ something you can work with::
         author_email='your-email@example.com',
         description='Very short description',
         long_description=__doc__,
-        packages=['flaskext'],
-        namespace_packages=['flaskext'],
+        py_modules=['flask_sqlite3'],
+        # if you would be using a package instead use packages instead
+        # of py_modules:
+        # packages=['flask_sqlite3'],
         zip_safe=False,
+        include_package_data=True,
         platforms='any',
         install_requires=[
             'Flask'
@@ -127,11 +112,10 @@ something you can work with::
     )
 
 That's a lot of code but you can really just copy/paste that from existing
-extensions and adapt.  This is also what the wizard creates for you if you
-use it.
+extensions and adapt.
 
-flaskext/sqlite3.py
-```````````````````
+flask_sqlite3.py
+````````````````
 
 Now this is where your extension code goes.  But how exactly should such
 an extension look like?  What are the best practices?  Continue reading
@@ -170,7 +154,7 @@ manager object that handles opening and closing database connections.
 The Extension Code
 ------------------
 
-Here's the contents of the `flaskext/sqlite3.py` for copy/paste::
+Here's the contents of the `flask_sqlite3.py` for copy/paste::
 
     from __future__ import absolute_import
     import sqlite3
@@ -223,7 +207,7 @@ So why did we decide on a class based approach here?  Because using our
 extension looks something like this::
 
     from flask import Flask
-    from flaskext.sqlite3 import SQLite3
+    from flask_sqlite3 import SQLite3
 
     app = Flask(__name__)
     app.config.from_pyfile('the-config.cfg')
@@ -343,7 +327,8 @@ Extension Registry`_ and marked appropriately.  If you want your own
 extension to be approved you have to follow these guidelines:
 
 1.  An approved Flask extension must provide exactly one package or module
-    inside the `flaskext` namespace package.
+    named ``flask_extensionname``.  They might also reside inside a
+    ``flaskext`` namespace packages though this is discouraged now.
 2.  It must ship a testing suite that can either be invoked with ``make test``
     or ``python setup.py test``.  For test suites invoked with ``make
     test`` the extension has to ensure that all dependencies for the test
@@ -376,8 +361,27 @@ extension to be approved you have to follow these guidelines:
     Python 2.7
 
 
-.. _Flask Extension Wizard:
-   http://github.com/mitsuhiko/flask-extension-wizard
+.. _ext-import-transition:
+
+Extension Import Transition
+---------------------------
+
+For a while we recommended using namespace packages for Flask extensions.
+This turned out to be problematic in practice because many different
+competing namespace package systems exist and pip would automatically
+switch between different systems and this caused a lot of problems for
+users.
+
+Instead we now recommend naming packages ``flask_foo`` instead of the now
+deprecated ``flaskext.foo``.  Flask 0.8 introduces a redirect import
+system that lets uses import from ``flask.ext.foo`` and it will try
+``flask_foo`` first and if that fails ``flaskext.foo``.
+
+Flask extensions should urge users to import from ``flask.ext.foo``
+instead of ``flask_foo`` or ``flaskext_foo`` so that extensions can
+transition to the new package name without affecting users.
+
+
 .. _OAuth extension: http://packages.python.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
