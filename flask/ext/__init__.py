@@ -3,13 +3,14 @@
     flask.ext
     ~~~~~~~~~
 
-    Redirect imports for extensions.  This module basically makes it possible
-    for us to transition from flaskext.foo to flask_foo without having to
-    force all extensions to upgrade at the same time.
+    Redirector for extension imports. This module makes it possible to
+    transition from the old namespaced packages (``flaskext.foo``) to
+    the new ``flask_foo`` packages without having to force upgrades
+    (and creating breakages) for all the extensions at the same time.
 
-    When a user does ``from flask.ext.foo import bar`` it will attempt to
-    import ``from flask_foo import bar`` first and when that fails it will
-    try to import ``from flaskext.foo import bar``.
+    When user does ``from flask.ext.foo import bar`` module attempts to
+    do ``from flask_foo import bar`` first and if this fails,
+    ``from flaskext.foo import bar`` is run instead.
 
     We're switching from namespace packages because it was just too painful for
     everybody involved.
@@ -20,9 +21,9 @@
 
 
 class _ExtensionImporter(object):
-    """This importer redirects imports from this submodule to other locations.
-    This makes it possible to transition from the old flaskext.name to the
-    newer flask_name without people having a hard time.
+    """This importer redirects imports from this submodule to other locations,
+    making it possible to transition from the old flaskext.name to the
+    newer flask_name without giving people a hard time.
     """
     _module_choices = ['flask_%s', 'flaskext.%s']
 

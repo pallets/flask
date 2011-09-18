@@ -3,7 +3,7 @@
     flask.ctx
     ~~~~~~~~~
 
-    Implements the objects required to keep the context.
+    Implements the objects required to keep the context around.
 
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
