@@ -49,7 +49,7 @@ class run_audit(Command):
     user_options = []
 
     def initialize_options(self):
-        all = None
+        pass
 
     def finalize_options(self):
         pass
@@ -62,21 +62,18 @@ class run_audit(Command):
             print "Audit requires PyFlakes installed in your system."""
             sys.exit(-1)
 
-        dirs = ['flask', 'tests']
-        # Add example directories
-        for dir in ['flaskr', 'jqueryexample', 'minitwit']:
-            dirs.append(os.path.join('examples', dir))
-        # TODO: Add test subdirectories
         warns = 0
+        # Define top-level directories
+        dirs = ('flask', 'examples', 'scripts')
         for dir in dirs:
-            for filename in os.listdir(dir):
-                if filename.endswith('.py') and filename != '__init__.py':
-                    warns += flakes.checkPath(os.path.join(dir, filename))
+            for root, _, files in os.walk(dir):
+                for file in files:
+                    if file != '__init__.py' and file.endswith('.py') :
+                        warns += flakes.checkPath(os.path.join(root, file))
         if warns > 0:
             print ("Audit finished with total %d warnings." % warns)
         else:
             print ("No problems found in sourcecode.")
-
 
 setup(
     name='Flask',
