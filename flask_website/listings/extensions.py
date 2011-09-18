@@ -366,6 +366,7 @@ extensions = [
         ''',
         docs='http://packages.python.org/Flask-Exceptional/',
         github='jzempel/flask-exceptional',
+        approved=True,
     ),
     Extension('Flask-Bcrypt', 'Max Countryman',
         description='''
