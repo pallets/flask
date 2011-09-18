@@ -20,6 +20,7 @@ instructions for web development with Flask.
    views
    reqcontext
    blueprints
+   extensions
    shell
    patterns/index
    deploying/index
