@@ -15,18 +15,22 @@ from .blueprints import Blueprint
 
 
 def blueprint_is_module(bp):
-    """Used to figure out if something is actually a module"""
+    """Checks whether object is actually a module"""
     return isinstance(bp, Module)
 
 
 class Module(Blueprint):
-    """Deprecated module support.  Until Flask 0.6 modules were a different
-    name of the concept now available as blueprints in Flask.  They are
-    essentially doing the same but have some bad semantics for templates and
-    static files that were fixed with blueprints.
+    """Deprecated module.
+
+    Modules functionality has been deprecated in favor of Blueprints.
+
+    Before Flask 0.7, the concept of Modules was basically the same as
+    of Blueprints, but their functionality due to some bad semantics
+    for templates and static files, has been therefore superseded by
+    Blueprints.
 
     .. versionchanged:: 0.7
-       Modules were deprecated in favor for blueprints.
+       Module has been deprecated in favor of Blueprints.
     """
 
     def __init__(self, import_name, name=None, url_prefix=None,
