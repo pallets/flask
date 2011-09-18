@@ -681,6 +681,7 @@ class Flask(_PackageBoundObject):
                      to have the server available externally as well.
         :param port: the port of the webserver
         :param debug: if given, enable or disable debug mode.
+                      See :attr:`debug`.
         :param options: the options to be forwarded to the underlying
                         Werkzeug server.  See
                         :func:`werkzeug.serving.run_simple` for more
