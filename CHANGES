@@ -45,6 +45,7 @@ Relase date to be decided, codename to be chosen.
 - Added finer control over the session cookie parameters.
 - HEAD requests to a method view now automatically dispatch to the `get`
   method if no handler was implemented.
+- Implemented the virtual :mod:`flask.ext` package to import extensions from.
 
 Version 0.7.3
 -------------
