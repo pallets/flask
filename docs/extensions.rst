@@ -43,7 +43,7 @@ And here is how you can use it::
 
     from flask.ext import foo
 
-Once the ``flaskext_compat`` module is imported the :data:`flask.ext` will
+Once the ``flaskext_compat`` module is activated the :data:`flask.ext` will
 exist and you can start importing from there.
 
 .. _Flask Extension Registry: http://flask.pocoo.org/extensions/
