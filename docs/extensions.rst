@@ -33,12 +33,14 @@ depending on how the extension is distributed.
 We recommend importing from ``flask.ext`` even with older versions of
 Flask however.  If you have an application that needs to work with
 versions of Flask older than 0.8 you should activate the
-``flaskext_compat`` module which provides the ``flask.ext`` module.  You
-can download it from github: `flaskext_compat.py`_
+``flaskext_compat`` module which provides the ``flask.ext`` module if
+you activate it.  You can download it from github: `flaskext_compat.py`_
 
-You can use it like this::
+And here is how you can use it::
 
     import flaskext_compat
+    flaskext_compat.activate()
+
     from flask.ext import foo
 
 Once the ``flaskext_compat`` module is imported the :data:`flask.ext` will
