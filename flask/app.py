@@ -657,7 +657,7 @@ class Flask(_PackageBoundObject):
         # existing views.
         context.update(orig_ctx)
 
-    def run(self, host='127.0.0.1', port=5000, **options):
+    def run(self, host='127.0.0.1', port=5000, debug=None, **options):
         """Runs the application on a local development server.  If the
         :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
@@ -680,14 +680,16 @@ class Flask(_PackageBoundObject):
         :param host: the hostname to listen on.  set this to ``'0.0.0.0'``
                      to have the server available externally as well.
         :param port: the port of the webserver
+        :param debug: if given, enable or disable debug mode.
+                      See :attr:`debug`.
         :param options: the options to be forwarded to the underlying
                         Werkzeug server.  See
                         :func:`werkzeug.serving.run_simple` for more
                         information.
         """
         from werkzeug.serving import run_simple
-        if 'debug' in options:
-            self.debug = options.pop('debug')
+        if debug is not None:
+            self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
         try:
