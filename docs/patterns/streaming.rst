@@ -13,10 +13,7 @@ Basic Usage
 
 This is a basic view function that generates a lot of CSV data on the fly.
 The trick is to have an inner function that uses a generator to generate
-data and to then invoke that function and pass it to a response object
-that has the ``direct_passthrough`` flag set.  This flag is used to inform
-the system that data is generated on the fly and should be passed through
-without buffering::
+data and to then invoke that function and pass it to a response object::
 
     from flask import Response
 
@@ -25,8 +22,7 @@ without buffering::
         def generate():
             for row in iter_all_rows():
                 yield ','.join(row) + '\n'
-        return Response(generate(), direct_passthrough=True,
-                        mimetype='text/csv')
+        return Response(generate(), mimetype='text/csv')
 
 Each ``yield`` expression is directly sent to the browser.  Now though
 that some WSGI middlewares might break streaming, so be careful there in
@@ -51,8 +47,7 @@ quite uncommon, but you can easily do it yourself::
     @app.route('/my-large-page.html')
     def render_large_template():
         rows = iter_all_rows()
-        return Response(stream_template('the_template.html', rows=rows),
-                        direct_passthrough=True)
+        return Response(stream_template('the_template.html', rows=rows))
 
 The trick here is to get the template object from the Jinja2 environment
 on the application and to call :meth:`~jinja2.Template.stream` instead of
