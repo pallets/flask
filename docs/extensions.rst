@@ -23,18 +23,16 @@ importable from ``flask.ext.foo``::
 
     from flask.ext import foo
 
-Flask < 0.8
------------
+Flask Before 0.8
+----------------
 
 If you are using Flask 0.7 or earlier the :data:`flask.ext` package will not
 exist, instead you have to import from ``flaskext.foo`` or ``flask_foo``
-depending on how the extension is distributed.
-
-We recommend importing from ``flask.ext`` even with older versions of
-Flask however.  If you have an application that needs to work with
-versions of Flask older than 0.8 you should activate the
-``flaskext_compat`` module which provides the ``flask.ext`` module if
-you activate it.  You can download it from github: `flaskext_compat.py`_
+depending on how the extension is distributed.  If you want to develop an
+application that supports Flask 0.7 or earlier you should still import
+from the :data:`flask.ext` package.  We provide you with a compatibility
+module that provides this package for older versions of Flask.  You can
+download it from github: `flaskext_compat.py`_
 
 And here is how you can use it::
 
