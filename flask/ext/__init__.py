@@ -73,6 +73,20 @@ class _ExtensionImporter(object):
         something went wrong when the module was imported.  (Eg: import
         of an import failed).
         """
+        # Why can we access f_globals' __name__ here and the value is
+        # not None?  I honestly don't know but here is my thinking.
+        # The module owns a reference to globals and the frame has one.
+        # Each function only keeps a reference to the globals not do the
+        # module which normally causes the problem that when the module
+        # shuts down all globals are set to None.  Now however when the
+        # import system fails Python takes the short way out and does not
+        # actually properly shut down the module by Noneing the values
+        # but by just removing the entry from sys.modules.  This means
+        # that the regular reference based cleanup kicks in.
+        #
+        # The good thing: At worst we will swallow an exception we should
+        # not and the error message will be messed up.  However I think
+        # this should be sufficiently reliable.
         while tb is not None:
             if tb.tb_frame.f_globals.get('__name__') == important_module:
                 return True
