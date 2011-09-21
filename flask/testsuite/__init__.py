@@ -134,6 +134,32 @@ class FlaskTestCase(unittest.TestCase):
     def assert_equal(self, x, y):
         return self.assertEqual(x, y)
 
+    def assert_raises(self, exc_type, callable=None, *args, **kwargs):
+        catcher = _ExceptionCatcher(self, exc_type)
+        if callable is None:
+            return catcher
+        with catcher:
+            callable(*args, **kwargs)
+
+
+class _ExceptionCatcher(object):
+
+    def __init__(self, test_case, exc_type):
+        self.test_case = test_case
+        self.exc_type = exc_type
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        exception_name = self.exc_type.__name__
+        if exc_type is None:
+            self.test_case.fail('Expected exception of type %r' %
+                                exception_name)
+        elif not issubclass(exc_type, self.exc_type):
+            raise exc_type, exc_value, tb
+        return True
+
 
 class BetterLoader(unittest.TestLoader):
     """A nicer loader that solves two problems.  First of all we are setting

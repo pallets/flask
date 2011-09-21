@@ -57,6 +57,17 @@ class _ExtensionImporter(object):
                 __import__(realname)
             except ImportError:
                 exc_type, exc_value, tb = exc_info()
+                # since we only establish the entry in sys.modules at the
+                # very this seems to be redundant, but if recursive imports
+                # happen we will call into the move import a second time.
+                # On the second invocation we still don't have an entry for
+                # fullname in sys.modules, but we will end up with the same
+                # fake module name and that import will succeed since this
+                # one already has a temporary entry in the modules dict.
+                # Since this one "succeeded" temporarily that second
+                # invocation now will have created a fullname entry in
+                # sys.modules which we have to kill.
+                modules.pop(fullname, None)
                 if self.is_important_traceback(realname, tb):
                     raise exc_type, exc_value, tb
                 continue

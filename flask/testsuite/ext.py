@@ -8,6 +8,8 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import with_statement
+
 import sys
 import unittest
 from flask.testsuite import FlaskTestCase
@@ -91,6 +93,11 @@ class ExtImportHookTestCase(FlaskTestCase):
     def test_flaskext_old_package_import_submodule_function(self):
         from flask.ext.oldext_package.submodule import test_function
         self.assert_equal(test_function(), 42)
+
+    def test_flaskext_broken_package_no_module_caching(self):
+        for x in xrange(2):
+            with self.assert_raises(ImportError):
+                import flask.ext.broken
 
 
 def suite():

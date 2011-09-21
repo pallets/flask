@@ -25,7 +25,8 @@ ext_module.__package__ = ext_module.__name__
 
 class _ExtensionImporter(object):
     """This importer redirects imports from the flask.ext module to other
-    locations.
+    locations.  For implementation details see the code in Flask 0.8
+    that does the same.
     """
     _module_choices = ['flask_%s', 'flaskext.%s']
     prefix = ext_module.__name__ + '.'
@@ -45,6 +46,7 @@ class _ExtensionImporter(object):
                 __import__(realname)
             except ImportError:
                 exc_type, exc_value, tb = sys.exc_info()
+                sys.modules.pop(fullname, None)
                 if self.is_important_traceback(realname, tb):
                     raise exc_type, exc_value, tb
                 continue
@@ -55,12 +57,6 @@ class _ExtensionImporter(object):
         raise ImportError('No module named %s' % fullname)
 
     def is_important_traceback(self, important_module, tb):
-        """Walks a traceback's frames and checks if any of the frames
-        originated in the given important module.  If that is the case
-        then we were able to import the module itself but apparently
-        something went wrong when the module was imported.  (Eg: import
-        of an import failed).
-        """
         while tb is not None:
             if tb.tb_frame.f_globals.get('__name__') == important_module:
                 return True
