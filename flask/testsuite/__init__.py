@@ -24,7 +24,10 @@ from werkzeug.utils import import_string, find_modules
 
 
 def add_to_path(path):
-    """Adds an entry to sys.path_info if it's not already there."""
+    """Adds an entry to sys.path_info if it's not already there.  This does
+    not append it but moves it to the front so that we can be sure it
+    is loaded.
+    """
     if not os.path.isdir(path):
         raise RuntimeError('Tried to add nonexisting path')
 
@@ -33,13 +36,8 @@ def add_to_path(path):
             return os.path.samefile(x, y)
         except (IOError, OSError):
             return False
-    for entry in sys.path:
-        try:
-            if os.path.samefile(path, entry):
-                return
-        except (OSError, IOError):
-            pass
-    sys.path.append(path)
+    sys.path[:] = [x for x in sys.path if not _samefile(path, x)]
+    sys.path.insert(0, path)
 
 
 def iter_suites():

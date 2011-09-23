@@ -18,10 +18,15 @@ from flask.testsuite import FlaskTestCase
 class ExtImportHookTestCase(FlaskTestCase):
 
     def setup(self):
+        # we clear this out for various reasons.  The most important one is
+        # that a real flaskext could be in there which would disable our
+        # fake package.  Secondly we want to make sure that the flaskext
+        # import hook does not break on reloading.
         for entry, value in sys.modules.items():
             if (entry.startswith('flask.ext.') or
                 entry.startswith('flask_') or
-                entry.startswith('flaskext.')) and value is not None:
+                entry.startswith('flaskext.') or
+                entry == 'flaskext') and value is not None:
                 sys.modules.pop(entry, None)
         from flask import ext
         reload(ext)
