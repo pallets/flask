@@ -24,7 +24,7 @@ from werkzeug.utils import import_string, find_modules
 
 
 def add_to_path(path):
-    """Adds an entry to sys.path_info if it's not already there.  This does
+    """Adds an entry to sys.path if it's not already there.  This does
     not append it but moves it to the front so that we can be sure it
     is loaded.
     """
