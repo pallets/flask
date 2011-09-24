@@ -19,6 +19,7 @@ def _lookup_object(name):
         raise RuntimeError('working outside of request context')
     return getattr(top, name)
 
+
 # context locals
 _request_ctx_stack = LocalStack()
 current_app = LocalProxy(partial(_lookup_object, 'app'))

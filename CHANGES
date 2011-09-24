@@ -46,6 +46,9 @@ Relase date to be decided, codename to be chosen.
 - HEAD requests to a method view now automatically dispatch to the `get`
   method if no handler was implemented.
 - Implemented the virtual :mod:`flask.ext` package to import extensions from.
+- The context preservation on exceptions is now an integral component of
+  Flask itself and no longer of the test client.  This cleaned up some
+  internal logic and lowers the odds of runaway request contexts in unittests.
 
 Version 0.7.3
 -------------

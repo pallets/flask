@@ -37,7 +37,7 @@ class FlaskClient(Client):
     Basic usage is outlined in the :ref:`testing` chapter.
     """
 
-    preserve_context = context_preserved = False
+    preserve_context = False
 
     @contextmanager
     def session_transaction(self, *args, **kwargs):
@@ -88,7 +88,6 @@ class FlaskClient(Client):
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
-        self._pop_reqctx_if_necessary()
         kwargs.setdefault('environ_overrides', {}) \
             ['flask._preserve_context'] = self.preserve_context
 
@@ -97,14 +96,10 @@ class FlaskClient(Client):
         follow_redirects = kwargs.pop('follow_redirects', False)
         builder = make_test_environ_builder(self.application, *args, **kwargs)
 
-        old = _request_ctx_stack.top
-        try:
-            return Client.open(self, builder,
-                               as_tuple=as_tuple,
-                               buffered=buffered,
-                               follow_redirects=follow_redirects)
-        finally:
-            self.context_preserved = _request_ctx_stack.top is not old
+        return Client.open(self, builder,
+                           as_tuple=as_tuple,
+                           buffered=buffered,
+                           follow_redirects=follow_redirects)
 
     def __enter__(self):
         if self.preserve_context:
@@ -114,12 +109,10 @@ class FlaskClient(Client):
 
     def __exit__(self, exc_type, exc_value, tb):
         self.preserve_context = False
-        self._pop_reqctx_if_necessary()
 
-    def _pop_reqctx_if_necessary(self):
-        if self.context_preserved:
-            # we have to use _request_ctx_stack.top.pop instead of
-            # _request_ctx_stack.pop since we want teardown handlers
-            # to be executed.
-            _request_ctx_stack.top.pop()
-            self.context_preserved = False
+        # on exit we want to clean up earlier.  Normally the request context
+        # stays preserved until the next request in the same thread comes
+        # in.  See RequestGlobals.push() for the general behavior.
+        top = _request_ctx_stack.top
+        if top is not None and top.preserved:
+            top.pop()

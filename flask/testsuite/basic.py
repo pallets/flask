@@ -904,6 +904,23 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assertEqual(c.get('/bar/').data, 'bar')
         self.assertEqual(c.get('/bar/123').data, '123')
 
+    def test_preserve_only_once(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+
+        @app.route('/fail')
+        def fail_func():
+            1/0
+
+        c = app.test_client()
+        for x in xrange(3):
+            with self.assert_raises(ZeroDivisionError):
+                c.get('/fail')
+
+        self.assert_(flask._request_ctx_stack.top is not None)
+        flask._request_ctx_stack.pop()
+        self.assert_(flask._request_ctx_stack.top is None)
+
 
 class ContextTestCase(FlaskTestCase):
 
