@@ -513,7 +513,7 @@ The following converters are available:
 `path`      like the default but also accepts slashes
 =========== ===============================================
 
-Here some examples::
+Here are some examples::
 
     @app.route('/')
     def index():
@@ -534,7 +534,7 @@ apply:
 1. If a rule ends with a slash and is requested without a slash by the
    user, the user is automatically redirected to the same page with a
    trailing slash attached.
-2. If a rule does not end with a trailing slash and the user request the
+2. If a rule does not end with a trailing slash and the user requests the
    page with a trailing slash, a 404 not found is raised.
 
 This is consistent with how web servers deal with static files.  This
