@@ -824,9 +824,11 @@ class Flask(_PackageBoundObject):
 
             app.view_functions['index'] = index
 
-        If a view function is provided some defaults can be specified directly
-        on the view function.  For more information refer to
-        :ref:`view-func-options`.
+        Internally :meth:`route` invokes :meth:`add_url_rule` so if you want
+        to customize the behavior via subclassing you only need to change
+        this method.
+
+        For more information refer to :ref:`url-route-registrations`.
 
         .. versionchanged:: 0.2
            `view_func` parameter added.
@@ -885,73 +887,29 @@ class Flask(_PackageBoundObject):
 
     def route(self, rule, **options):
         """A decorator that is used to register a view function for a
-        given URL rule.  Example::
+        given URL rule.  This does the same thing as :meth:`add_url_rule`
+        but is intended for decorator usage::
 
             @app.route('/')
             def index():
                 return 'Hello World'
 
-        Variables parts in the route can be specified with angular
-        brackets (``/user/<username>``).  By default a variable part
-        in the URL accepts any string without a slash however a different
-        converter can be specified as well by using ``<converter:name>``.
-
-        Variable parts are passed to the view function as keyword
-        arguments.
-
-        The following converters are possible:
-
-        =========== ===========================================
-        `int`       accepts integers
-        `float`     like `int` but for floating point values
-        `path`      like the default but also accepts slashes
-        =========== ===========================================
-
-        Here some examples::
-
-            @app.route('/')
-            def index():
-                pass
-
-            @app.route('/<username>')
-            def show_user(username):
-                pass
-
-            @app.route('/post/<int:post_id>')
-            def show_post(post_id):
-                pass
-
-        An important detail to keep in mind is how Flask deals with trailing
-        slashes.  The idea is to keep each URL unique so the following rules
-        apply:
-
-        1. If a rule ends with a slash and is requested without a slash
-           by the user, the user is automatically redirected to the same
-           page with a trailing slash attached.
-        2. If a rule does not end with a trailing slash and the user request
-           the page with a trailing slash, a 404 not found is raised.
-
-        This is consistent with how web servers deal with static files.  This
-        also makes it possible to use relative link targets safely.
-
-        The :meth:`route` decorator accepts a couple of other arguments
-        as well:
+        For more information refer to :ref:`url-route-registrations`.
 
         :param rule: the URL rule as string
-        :param methods: a list of methods this rule should be limited
+        :param endpoint: the endpoint for the registered URL rule.  Flask
+                         itself assumes the name of the view function as
+                         endpoint
+        :param view_func: the function to call when serving a request to the
+                          provided endpoint
+        :param options: the options to be forwarded to the underlying
+                        :class:`~werkzeug.routing.Rule` object.  A change
+                        to Werkzeug is handling of method options.  methods
+                        is a list of methods this rule should be limited
                         to (`GET`, `POST` etc.).  By default a rule
                         just listens for `GET` (and implicitly `HEAD`).
                         Starting with Flask 0.6, `OPTIONS` is implicitly
                         added and handled by the standard request handling.
-        :param subdomain: specifies the rule for the subdomain in case
-                          subdomain matching is in use.
-        :param strict_slashes: can be used to disable the strict slashes
-                               setting for this rule.  See above.
-        :param endpoint: Since version 0.8 you can also pass the enpoint,
-                         it will be used instead of generating the endpoint
-                         from the function name.
-        :param options: other options to be forwarded to the underlying
-                        :class:`~werkzeug.routing.Rule` object.
         """
         def decorator(f):
             endpoint = options.pop('endpoint', None)
