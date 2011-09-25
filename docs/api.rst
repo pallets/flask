@@ -545,7 +545,7 @@ definition for a URL that accepts an optional page::
 This specifies that ``/users/`` will be the URL for page one and
 ``/users/page/N`` will be the URL for page `N`.
 
-Here the parameters that :meth:`~flask.Flask.route` and
+Here are the parameters that :meth:`~flask.Flask.route` and
 :meth:`~flask.Flask.add_url_rule` accept.  The only difference is that
 with the route parameter the view function is defined with the decorator
 instead of the `view_func` parameter.
