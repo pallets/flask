@@ -86,6 +86,8 @@ The following configuration values are used internally by Flask:
                                   `False`.
 ``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
                                   :class:`datetime.timedelta` object.
+                                  Starting with Flask 0.8 this can also be
+                                  an integer representing seconds.
 ``USE_X_SENDFILE``                enable/disable x-sendfile
 ``LOGGER_NAME``                   the name of the logger
 ``SERVER_NAME``                   the name and port number of the server.

@@ -177,15 +177,6 @@ class Flask(_PackageBoundObject):
     #: `SESSION_COOKIE_NAME` configuration key.  Defaults to ``'session'``
     session_cookie_name = ConfigAttribute('SESSION_COOKIE_NAME')
 
-    #: A :class:`~datetime.timedelta` which is used to set the expiration
-    #: date of a permanent session.  The default is 31 days which makes a
-    #: permanent session survive for roughly one month.
-    #:
-    #: This attribute can also be configured from the config with the
-    #: `PERMANENT_SESSION_LIFETIME` configuration key.  Defaults to
-    #: ``timedelta(days=31)``
-    permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME')
-
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
     #: sent with the :func:`send_file` method.
@@ -494,6 +485,32 @@ class Flask(_PackageBoundObject):
         if rv is not None:
             return rv
         return self.debug
+
+    def _get_permanent_session_lifetime(self):
+        """A :class:`~datetime.timedelta` which is used to set the expiration
+        date of a permanent session.  The default is 31 days which makes a
+        permanent session survive for roughly one month.
+
+        This attribute can also be configured from the config with the
+        `PERMANENT_SESSION_LIFETIME` configuration key.  Defaults to
+        ``timedelta(days=31)``.
+
+        If you want to have this value as seconds you can use ``total_seconds()``::
+
+            app.permanent_session_lifetime.total_seconds()
+
+        Note that the config key can be a timedelta object or number of seconds
+        as integer since Flask 0.8.
+        """
+        rv = self.config['PERMANENT_SESSION_LIFETIME']
+        if not isinstance(rv, timedelta):
+            return timedelta(seconds=rv)
+        return rv
+    def _set_permanent_session_lifetime(self, value):
+        self.config['PERMANENT_SESSION_LIFETIME'] = value
+    permanent_session_lifetime = property(_get_permanent_session_lifetime,
+                                          _set_permanent_session_lifetime)
+    del _get_permanent_session_lifetime, _set_permanent_session_lifetime
 
     @property
     def logger(self):
