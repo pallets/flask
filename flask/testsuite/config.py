@@ -78,6 +78,11 @@ class ConfigTestCase(FlaskTestCase):
             self.assert_(0, 'expected config')
         self.assert_(not app.config.from_pyfile('missing.cfg', silent=True))
 
+    def test_session_lifetime(self):
+        app = flask.Flask(__name__)
+        app.config['PERMANENT_SESSION_LIFETIME'] = 42
+        self.assert_equal(app.permanent_session_lifetime.total_seconds(), 42)
+
 
 class InstanceTestCase(FlaskTestCase):
 
