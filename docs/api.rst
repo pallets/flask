@@ -490,14 +490,14 @@ Generally there are three ways to define rules for the routing system:
 3.  You can directly access the underlying Werkzeug routing system
     which is exposed as :attr:`flask.Flask.url_map`.
 
-Variables parts in the route can be specified with angular brackets
+Variable parts in the route can be specified with angular brackets
 (``/user/<username>``).  By default a variable part in the URL accepts any
 string without a slash however a different converter can be specified as
 well by using ``<converter:name>``.
 
 Variable parts are passed to the view function as keyword arguments.
 
-The following converters are possible available:
+The following converters are available:
 
 =========== ===============================================
 `unicode`   accepts any text without a slash (the default)
