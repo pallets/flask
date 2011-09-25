@@ -90,7 +90,9 @@ The following configuration values are used internally by Flask:
 ``LOGGER_NAME``                   the name of the logger
 ``SERVER_NAME``                   the name and port number of the server.
                                   Required for subdomain support (e.g.:
-                                  ``'localhost:5000'``)
+                                  ``'myapp.dev:5000'``)  Note that
+                                  localhost does not support subdomains so
+                                  setting this to “localhost” help.
 ``APPLICATION_ROOT``              If the application does not occupy
                                   a whole domain or subdomain this can
                                   be set to the path where the application
