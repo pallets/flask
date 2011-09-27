@@ -35,8 +35,8 @@ class ExtImportHookTestCase(FlaskTestCase):
         import_hooks = 0
         for item in sys.meta_path:
             cls = type(item)
-            if cls.__module__ == 'flask.ext' and \
-               cls.__name__ == '_ExtensionImporter':
+            if cls.__module__ == 'flask.exthook' and \
+               cls.__name__ == 'ExtensionImporter':
                 import_hooks += 1
         self.assert_equal(import_hooks, 1)
 
@@ -103,6 +103,18 @@ class ExtImportHookTestCase(FlaskTestCase):
         for x in xrange(2):
             with self.assert_raises(ImportError):
                 import flask.ext.broken
+
+    def test_no_error_swallowing(self):
+        try:
+            import flask.ext.broken
+        except ImportError:
+            exc_type, exc_value, tb = sys.exc_info()
+            self.assert_(exc_type is ImportError)
+            self.assert_equal(str(exc_value), 'No module named missing_module')
+            self.assert_(tb.tb_frame.f_globals is globals())
+
+            next = tb.tb_next
+            self.assert_('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
 
 
 def suite():

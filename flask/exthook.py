@@ -1,22 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-    flaskext_compat
-    ~~~~~~~~~~~~~~~
+    flask.exthook
+    ~~~~~~~~~~~~~
 
-    Implements the ``flask.ext`` virtual package for versions of Flask
-    older than 0.7.  This module is a noop if Flask 0.8 was detected.
+    Redirect imports for extensions.  This module basically makes it possible
+    for us to transition from flaskext.foo to flask_foo without having to
+    force all extensions to upgrade at the same time.
 
-    Usage::
+    When a user does ``from flask.ext.foo import bar`` it will attempt to
+    import ``from flask_foo import bar`` first and when that fails it will
+    try to import ``from flaskext.foo import bar``.
 
-        import flaskext_compat
-        from flask.ext import foo
+    We're switching from namespace packages because it was just too painful for
+    everybody involved.
+
+    This is used by `flask.ext`.
 
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 import sys
 import os
-import imp
 
 
 class ExtensionImporter(object):
@@ -113,12 +117,3 @@ class ExtensionImporter(object):
         test_string = os.path.sep + important_module.replace('.', os.path.sep)
         return test_string + '.py' in filename or \
                test_string + os.path.sep + '__init__.py' in filename
-
-
-def activate():
-    import flask
-    ext_module = imp.new_module('flask.ext')
-    ext_module.__path__ = []
-    flask.ext = sys.modules['flask.ext'] = ext_module
-    importer = ExtensionImporter(['flask_%s', 'flaskext.%s'], 'flask.ext')
-    importer.install()
