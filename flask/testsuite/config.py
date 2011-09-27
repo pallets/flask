@@ -81,7 +81,7 @@ class ConfigTestCase(FlaskTestCase):
     def test_session_lifetime(self):
         app = flask.Flask(__name__)
         app.config['PERMANENT_SESSION_LIFETIME'] = 42
-        self.assert_equal(app.permanent_session_lifetime.total_seconds(), 42)
+        self.assert_equal(app.permanent_session_lifetime.seconds, 42)
 
 
 class InstanceTestCase(FlaskTestCase):
