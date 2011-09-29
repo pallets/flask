@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.8
 -----------
 
-Relase date to be decided, codename to be chosen.
+Released on September 29th 2011, codename Rakija
 
 - Refactored session support into a session interface so that
   the implementation of the sessions can be changed without
