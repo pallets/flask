@@ -8,6 +8,10 @@ Version 0.8.1
 
 Bugfix release, release date to be decided
 
+- Fixed an issue with the undocumented `flask.session` module to not
+  work properly on Python 2.5.  It should not be used but did cause
+  some problems for package managers.
+
 Version 0.8
 -----------
 

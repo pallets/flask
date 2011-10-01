@@ -13,7 +13,7 @@
 from warnings import warn
 warn(DeprecationWarning('please use flask.sessions instead'))
 
-from .sessions import *
+from .sessions import SecureCookieSession, NullSession
 
 Session = SecureCookieSession
 _NullSession = NullSession
