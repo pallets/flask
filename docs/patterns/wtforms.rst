@@ -26,7 +26,7 @@ The Forms
 
 This is an example form for a typical registration page::
 
-    from wtforms import Form, BooleanField, TextField, validators
+    from wtforms import Form, BooleanField, TextField, PasswordField, validators
 
     class RegistrationForm(Form):
         username = TextField('Username', [validators.Length(min=4, max=25)])
