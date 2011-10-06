@@ -15,7 +15,6 @@ http_method_funcs = frozenset(['get', 'post', 'head', 'options',
                                'delete', 'put', 'trace'])
 
 
-
 class View(object):
     """Alternative way to use view functions.  A subclass has to implement
     :meth:`dispatch_request` which is called with the view arguments from
