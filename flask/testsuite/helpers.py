@@ -288,6 +288,15 @@ class LoggingTestCase(FlaskTestCase):
             self.assert_equal(rv.status_code, 500)
             self.assert_equal(rv.data, 'Hello Server Error')
 
+    def test_url_for_with_anchor(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return '42'
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('index', _anchor='x y'),
+                              '/#x%20y')
+
 
 def suite():
     suite = unittest.TestSuite()

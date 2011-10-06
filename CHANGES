@@ -8,6 +8,9 @@ Version 0.9
 
 Relase date to be decided, codename to be chosen.
 
+- The :func:`flask.url_for` function now can generate anchors to the
+  generated links.
+
 Version 0.8.1
 -------------
 
