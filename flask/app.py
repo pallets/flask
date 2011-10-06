@@ -924,6 +924,43 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    def get(self, rule, **options):
+        """Short for :meth:`route` with methods=['GET']) as option."""
+        def decorator(f):
+            options["methods"] = ('GET', 'HEAD')
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+        return decorator
+
+
+    def post(self, rule, **options):
+        """Short for :meth:`route` with methods=['POST']) as option."""
+        def decorator(f):
+            options["methods"] = ('POST', 'HEAD')
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+        return decorator
+
+    def put(self, rule, **options):
+        """Short for :meth:`route` with methods=['PUT']) as option."""
+        def decorator(f):
+            options["methods"] = ('PUT', 'HEAD')
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+        return decorator
+
+    def delete(self, rule, **options):
+        """Short for :meth:`route` with methods=['DELETE']) as option."""
+        def decorator(f):
+            options["methods"] = ('DELETE', 'HEAD')
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+        return decorator
+
     @setupmethod
     def endpoint(self, endpoint):
         """A decorator to register a function as an endpoint.
