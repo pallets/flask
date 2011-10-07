@@ -55,7 +55,7 @@ to the template::
     @contextmanager
     def captured_templates(app):
         recorded = []
-        def record(sender, template, context):
+        def record(sender, template, context, **extra):
             recorded.append((template, context))
         template_rendered.connect(record, app)
         try:
@@ -72,6 +72,9 @@ This can now easily be paired with a test client::
         template, context = templates[0]
         assert template.name == 'index.html'
         assert len(context['items']) == 10
+
+Make sure to subscribe with an extra ``**extra`` argument so that your
+calls don't fail if Flask introduces new arguments to the signals.
 
 All the template rendering in the code issued by the application `app`
 in the body of the `with` block will now be recorded in the `templates`
