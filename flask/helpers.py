@@ -56,6 +56,7 @@ def _assert_have_json():
     if not json_available:
         raise RuntimeError('simplejson not installed')
 
+
 # figure out if simplejson escapes slashes.  This behaviour was changed
 # from one version to another without reason.
 if not json_available or '\\/' not in json.dumps('/'):
