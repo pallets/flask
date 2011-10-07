@@ -86,7 +86,7 @@ specified that way one has to pass the list in as argument::
 
     from flask import template_rendered
 
-    def captured_templates(app, recorded):
+    def captured_templates(app, recorded, **extra):
         def record(sender, template, context):
             recorded.append((template, context))
         return template_rendered.connected_to(record, app)
@@ -94,7 +94,7 @@ specified that way one has to pass the list in as argument::
 The example above would then look like this::
 
     templates = []
-    with captured_templates(app, templates):
+    with captured_templates(app, templates, **extra):
         ...
         template, context = templates[0]
 
@@ -162,7 +162,7 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
     from flask import template_rendered
 
     @template_rendered.connect_via(app)
-    def when_template_rendered(sender, template, context):
+    def when_template_rendered(sender, template, context, **extra):
         print 'Template %s is rendered with %s' % (template.name, context)
 
 Core Signals
@@ -181,7 +181,7 @@ The following signals exist in Flask:
 
    Example subscriber::
 
-        def log_template_renders(sender, template, context):
+        def log_template_renders(sender, template, context, **extra):
             sender.logger.debug('Rendering template "%s" with context %s',
                                 template.name or 'string template',
                                 context)
@@ -199,7 +199,7 @@ The following signals exist in Flask:
 
    Example subscriber::
 
-        def log_request(sender):
+        def log_request(sender, **extra):
             sender.logger.debug('Request context is set up')
 
         from flask import request_started
@@ -213,7 +213,7 @@ The following signals exist in Flask:
 
    Example subscriber::
 
-        def log_response(sender, response):
+        def log_response(sender, response, **extra):
             sender.logger.debug('Request context is about to close down.  '
                                 'Response: %s', response)
 
@@ -230,7 +230,7 @@ The following signals exist in Flask:
 
    Example subscriber::
 
-        def log_exception(sender, exception):
+        def log_exception(sender, exception, **extra):
             sender.logger.debug('Got exception during processing: %s', exception)
 
         from flask import got_request_exception
@@ -246,7 +246,7 @@ The following signals exist in Flask:
 
    Example subscriber::
 
-        def close_db_connection(sender):
+        def close_db_connection(sender, **extra):
             session.close()
 
         from flask import request_tearing_down
