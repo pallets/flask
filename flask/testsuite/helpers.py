@@ -246,6 +246,13 @@ class LoggingTestCase(FlaskTestCase):
                 else:
                     self.assert_(False, 'debug log ate the exception')
 
+    def test_debug_log_override(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        app.logger_name = 'flask_tests/test_debug_log_override'
+        app.logger.level = 10
+        self.assert_equal(app.logger.level, 10)
+
     def test_exception_logging(self):
         out = StringIO()
         app = flask.Flask(__name__)
