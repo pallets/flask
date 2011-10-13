@@ -46,7 +46,7 @@ Released on September 29th 2011, codename Rakija
   of a value error which usually would result in a 500 internal server
   error if not handled.  This is a backwards incompatible change.
 - Applications now not only have a root path where the resources and modules
-  are located but also an instane path which is the designated place to
+  are located but also an instance path which is the designated place to
   drop files that are modified at runtime (uploads etc.).  Also this is
   conceptionally only instance depending and outside version control so it's
   the perfect place to put configuration files etc.  For more information
