@@ -9,6 +9,9 @@ course, you need an icon. It should be 16 × 16 pixels and in the ICO file
 format. This is not a requirement but a de-facto standard supported by all
 relevant browsers. Put the icon in your static directory as
 :file:`favicon.ico`.
+**NOTE:** For Favicon support in newer Versions of Firefox and Chrome use 
+a Icon in PNG Fileformat. You also gain transparency-support and png is more 
+easy to generate since only a few programs can safe in ico.
 
 Now, to get browsers to find your icon, the correct way is to add a link
 tag in your HTML. So, for example:
