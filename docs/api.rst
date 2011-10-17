@@ -144,7 +144,7 @@ Response Objects
 
       A :class:`Headers` object representing the response headers.
 
-   .. attribute:: status_code
+   .. attribute:: status
 
       The response status as integer.
 
