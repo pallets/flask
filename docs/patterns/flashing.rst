@@ -117,3 +117,26 @@ categories.  The loop looks slightly different in that situation then:
 This is just one example of how to render these flashed messages.  One
 might also use the category to add a prefix such as
 ``<strong>Error:</strong>`` to the message.
+
+Filtering Flash Messages
+------------------------
+
+.. versionadded:: 0.9
+
+Optionally you can pass a list of categories which filters the results of
+:func:`~flask.get_flashed_messages`.  This is useful if you wish to
+render each category in a separate block.
+
+.. sourcecode:: html+jinja
+
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+ {% if errors %}
+   <div class="errors">
+     <ul>
+     {% for message in messages %}
+       <li class="error">{{ message }}</li>
+     {% endfor %}
+     </ul>
+   </div>
+ {% endif %}
+{% endwith %}
