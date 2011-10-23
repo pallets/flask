@@ -21,7 +21,7 @@ class _RequestGlobals(object):
 
 def has_request_context():
     """If you have code that wants to test if a request context is there or
-    not this function can be used.  For instance, if you want to take advantage
+    not this function can be used.  For instance, you may want to take advantage
     of request information if the request object is available, but fail
     silently if it is unavailable.
 
