@@ -695,6 +695,10 @@ class Flask(_PackageBoundObject):
                         information.
         """
         from werkzeug.serving import run_simple
+        if host is None:
+            host = '127.0.0.1'
+        if port is None:
+            port = 5000
         if debug is not None:
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
