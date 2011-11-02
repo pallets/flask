@@ -375,7 +375,7 @@ file from the instance folder with :meth:`Flask.open_instance_resource`.
 
 Example usage for both::
 
-    filename = os.path.join(app.instance_root, 'application.cfg')
+    filename = os.path.join(app.instance_path, 'application.cfg')
     with open(filename) as f:
         config = f.read()
 
