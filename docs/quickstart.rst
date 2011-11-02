@@ -114,8 +114,40 @@ Screenshot of the debugger in action:
 
 .. admonition:: Working With Other Debuggers
 
-   Debuggers interfere with each other.  If you are using another debugger
-   (e.g. PyDev or IntelliJ), you may need to set ``app.debug = False``.
+   Debuggers interfere with each other.  
+   That said, you may still wish to use the debugger in a tool of your choice. 
+   Flask provides the following options to manage the debug process:
+
+   * ``debug``        - whether to enable debug mode and catch exceptinos
+   * ``use_debugger`` - whether to use the internal Flask debugger
+   * ``use_reloader`` - whether to reload and fork the process on exception
+
+   ``debug`` must be True (i.e., exceptions must caught) in order for the 
+   other two options to have any value.
+
+   If you're using Aptana/Eclipse for debugging you'll need to set both 
+   ``use_debugger`` and ``use_reloader`` to False.
+
+   A possible useful pattern for configuration is to set the following in your 
+   config.yaml (change the block as approriate for your application, of course)::
+
+       FLASK:
+           DEBUG: True
+           DEBUG_WITH_APTANA: True
+
+   Then in your application's entry-point (main.py), you could have something like::
+
+       if __name__ == "__main__":
+           # To allow aptana to receive errors, set use_debugger=False
+           app = create_app(config="config.yaml")
+
+           if app.debug: use_debugger = True
+           try:
+               # Disable Flask's debugger if external debugger is requested
+               use_debugger = not(app.config.get('DEBUG_WITH_APTANA'))
+           except:
+               pass
+           app.run(use_debugger=use_debugger, debug=app.debug, use_reloader=use_debugger, host='0.0.0.0')
 
 
 Routing
