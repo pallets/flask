@@ -187,12 +187,13 @@ def url_for(endpoint, **values):
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
     .. versionadded:: 0.9
-       The `_anchor` parameter was added.
+       The `_anchor` and `_method` parameters were added.
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
     :param _external: if set to `True`, an absolute URL is generated.
     :param _anchor: if provided this is added as anchor to the URL.
+    :param _method: if provided this explicitly specifies an HTTP method.
     """
     ctx = _request_ctx_stack.top
     blueprint_name = request.blueprint
@@ -211,8 +212,10 @@ def url_for(endpoint, **values):
             endpoint = endpoint[1:]
     external = values.pop('_external', False)
     anchor = values.pop('_anchor', None)
+    method = values.pop('_method', None)
     ctx.app.inject_url_defaults(endpoint, values)
-    rv = ctx.url_adapter.build(endpoint, values, force_external=external)
+    rv = ctx.url_adapter.build(endpoint, values, method=method,
+                               force_external=external)
     if anchor is not None:
         rv += '#' + url_quote(anchor)
     return rv

@@ -10,6 +10,8 @@ Relase date to be decided, codename to be chosen.
 
 - The :func:`flask.url_for` function now can generate anchors to the
   generated links.
+- The :func:`flask.url_for` function now can also explicitly generate
+  URL rules specific to a given HTTP method.
 - Logger now only returns the debug log setting if it was not set
   explicitly.
 

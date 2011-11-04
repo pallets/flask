@@ -304,6 +304,32 @@ class LoggingTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('index', _anchor='x y'),
                               '/#x%20y')
 
+    def test_url_with_method(self):
+        from flask.views import MethodView
+        app = flask.Flask(__name__)
+        class MyView(MethodView):
+            def get(self, id=None):
+                if id is None:
+                    return 'List'
+                return 'Get %d' % id
+            def post(self):
+                return 'Create'
+        myview = MyView.as_view('myview')
+        app.add_url_rule('/myview/', methods=['GET'],
+                         view_func=myview)
+        app.add_url_rule('/myview/<int:id>', methods=['GET'],
+                         view_func=myview)
+        app.add_url_rule('/myview/create', methods=['POST'],
+                         view_func=myview)
+
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('myview', _method='GET'),
+                              '/myview/')
+            self.assert_equal(flask.url_for('myview', id=42, _method='GET'),
+                              '/myview/42')
+            self.assert_equal(flask.url_for('myview', _method='POST'),
+                              '/myview/create')
+
 
 def suite():
     suite = unittest.TestSuite()
