@@ -210,7 +210,8 @@ and explicitly mentioning the methods for each::
 
     user_view = UserAPI.as_view('user_api')
     app.add_url_rule('/users/', defaults={'user_id': None},
-                     view_func=user_view, methods=['GET', 'POST'])
+                     view_func=user_view, methods=['GET',])
+    app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
     app.add_url_rule('/users/<int:user_id>', view_func=user_view,
                      methods=['GET', 'PUT', 'DELETE'])
 
@@ -220,7 +221,8 @@ registration code::
     def register_api(view, endpoint, url, pk='id', pk_type='int'):
         view_func = view.as_view(endpoint)
         app.add_url_rule(url, defaults={pk: None},
-                         view_func=view_func, methods=['GET', 'POST'])
+                         view_func=view_func, methods=['GET',])
+        app.add_url_rule(url, view_func=view_func, methods=['POST',])
         app.add_url_rule('%s<%s:%s>' % (url, pk), view_func=view_func,
                          methods=['GET', 'PUT', 'DELETE'])
 
