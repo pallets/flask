@@ -150,6 +150,10 @@ class RequestContext(object):
         assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
             % (rv, self)
 
+        # get rid of circular dependencies at the end of the request
+        # so that we don't require the GC to be active.
+        rv.request.environ['werkzeug.request'] = None
+
     def __enter__(self):
         self.push()
         return self

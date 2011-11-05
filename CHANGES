@@ -14,6 +14,12 @@ Relase date to be decided, codename to be chosen.
   URL rules specific to a given HTTP method.
 - Logger now only returns the debug log setting if it was not set
   explicitly.
+- Unregister a circular dependency between the WSGI environment and
+  the request object when shutting down the request.  This means that
+  environ ``werkzeug.request`` will be `None` after the response was
+  returned to the WSGI server but has the advantage that the garbage
+  collector is not needed on CPython to tear down the request unless
+  the user created circular dependencies themselves.
 
 Version 0.8.1
 -------------
