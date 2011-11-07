@@ -192,6 +192,7 @@ def url_for(endpoint, **values):
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
     :param _external: if set to `True`, an absolute URL is generated.
+    :param _secure : if set to `True`, an absolute secure URL is generated.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
@@ -213,9 +214,10 @@ def url_for(endpoint, **values):
     external = values.pop('_external', False)
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
+    secure = values.pop('_secure', False)
     ctx.app.inject_url_defaults(endpoint, values)
     rv = ctx.url_adapter.build(endpoint, values, method=method,
-                               force_external=external)
+                               force_external=external, force_secure=secure)
     if anchor is not None:
         rv += '#' + url_quote(anchor)
     return rv
