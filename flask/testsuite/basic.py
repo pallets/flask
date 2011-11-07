@@ -600,6 +600,16 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('hello', name='test x', _external=True),
                               'http://localhost/hello/test%20x')
 
+    def test_url_generation_with_secure(self):
+        app = flask.Flask(__name__)
+        @app.route('/hello/<name>', methods=['POST'])
+        def hello():
+            pass
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('hello', name='test x'), '/hello/test%20x')
+            self.assert_equal(flask.url_for('hello', name='test x', _secure=True),
+                              'https://localhost/hello/test%20x')
+
     def test_custom_converters(self):
         from werkzeug.routing import BaseConverter
         class ListConverter(BaseConverter):
