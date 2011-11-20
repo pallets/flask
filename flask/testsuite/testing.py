@@ -46,6 +46,32 @@ class TestToolsTestCase(FlaskTestCase):
             rv = c.get('/')
             self.assert_equal(rv.data, 'http://localhost/')
 
+    def test_redirect_keep_session(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'testing'
+
+        @app.route('/', methods=['GET', 'POST'])
+        def index():
+            if flask.request.method == 'POST':
+                return flask.redirect('/redirect')
+            flask.session['data'] = 'foo'
+            return 'index'
+
+        @app.route('/redirect')
+        def redirect():
+            return 'redirect'
+
+        with app.test_client() as c:
+            ctx = app.test_request_context()
+            ctx.push()
+            rv = c.get('/')
+            assert rv.data == 'index'
+            assert flask.session.get('data') == 'foo'
+            rv = c.post('/', data={}, follow_redirects=True)
+            assert rv.data == 'redirect'
+            assert flask.session.get('data') == 'foo'
+            ctx.pop()
+
     def test_session_transactions(self):
         app = flask.Flask(__name__)
         app.testing = True
