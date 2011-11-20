@@ -83,7 +83,7 @@ context are appended to it.
 
 Additionally there is a convenient helper method
 (:meth:`~blinker.base.Signal.connected_to`).  that allows you to
-temporarily subscribe a function to a signal with is a context manager on
+temporarily subscribe a function to a signal with a context manager on
 its own.  Because the return value of the context manager cannot be
 specified that way one has to pass the list in as argument::
 

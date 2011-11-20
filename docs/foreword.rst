@@ -44,7 +44,7 @@ object relational mappers, form validation, upload handling, various open
 authentication technologies and more.
 
 Since Flask is based on a very solid foundation there is not a lot of code
-in Flask itself.  As such it's easy to adapt even for lage applications
+in Flask itself.  As such it's easy to adapt even for large applications
 and we are making sure that you can either configure it as much as
 possible by subclassing things or by forking the entire codebase.  If you
 are interested in that, check out the :ref:`becomingbig` chapter.
