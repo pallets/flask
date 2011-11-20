@@ -616,7 +616,7 @@ Storing cookies::
         resp.set_cookie('username', 'the username')
         return resp
 
-Note that cookies are set on response objects.  Since you normally you
+Note that cookies are set on response objects.  Since you normally
 just return strings from the view functions Flask will convert them into
 response objects for you.  If you explicitly want to do that you can use
 the :meth:`~flask.make_response` function and then modify it.

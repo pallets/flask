@@ -221,7 +221,7 @@ registration code::
         view_func = view.as_view(endpoint)
         app.add_url_rule(url, defaults={pk: None},
                          view_func=view_func, methods=['GET', 'POST'])
-        app.add_url_rule('%s<%s:%s>' % (url, pk), view_func=view_func,
+        app.add_url_rule('%s<%s:%s>' % (url, pk, pk_type), view_func=view_func,
                          methods=['GET', 'PUT', 'DELETE'])
 
     register_api(UserAPI, 'user_api', '/users/', pk='user_id')
