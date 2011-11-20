@@ -279,6 +279,23 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
         self.assert_(match is None)
 
+    def test_session_stored_last(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'development-key'
+        app.testing = True
+
+        @app.after_request
+        def modify_session(response):
+            flask.session['foo'] = 42
+            return response
+        @app.route('/')
+        def dump_session_contents():
+            return repr(flask.session.get('foo'))
+
+        c = app.test_client()
+        self.assert_equal(c.get('/').data, 'None')
+        self.assert_equal(c.get('/').data, '42')
+
     def test_flashes(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'

@@ -1403,8 +1403,6 @@ class Flask(_PackageBoundObject):
         """
         ctx = _request_ctx_stack.top
         bp = ctx.request.blueprint
-        if not self.session_interface.is_null_session(ctx.session):
-            self.save_session(ctx.session, response)
         funcs = ()
         if bp is not None and bp in self.after_request_funcs:
             funcs = reversed(self.after_request_funcs[bp])
@@ -1412,6 +1410,8 @@ class Flask(_PackageBoundObject):
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
             response = handler(response)
+        if not self.session_interface.is_null_session(ctx.session):
+            self.save_session(ctx.session, response)
         return response
 
     def do_teardown_request(self):

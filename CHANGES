@@ -20,6 +20,9 @@ Relase date to be decided, codename to be chosen.
   returned to the WSGI server but has the advantage that the garbage
   collector is not needed on CPython to tear down the request unless
   the user created circular dependencies themselves.
+- Session is now stored after callbacks so that if the session payload
+  is stored in the session you can still modify it in an after
+  request callback.
 
 Version 0.8.1
 -------------
