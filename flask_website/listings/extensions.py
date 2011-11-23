@@ -426,6 +426,16 @@ extensions = [
         github='dqminh/flask-lettuce',
         approved=False
     ),
+    Extension('Flask-Sijax', 'Slavi Pantaleev',
+        description='''
+            <p>
+              Flask integration for Sijax,
+              a Python/jQuery library that makes AJAX easy to use
+        ''',
+        docs='http://packages.python.org/Flask-Sijax/',
+        github='spantaleev/flask-sijax',
+        approved=False
+    ),
 ]
 
 
