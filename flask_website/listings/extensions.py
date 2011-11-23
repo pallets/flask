@@ -408,6 +408,15 @@ extensions = [
         github='dag/flask-zodb',
         approved=True
     ),
+    Extension('Flask-Peewee', 'Charles Leifer',
+        description='''
+            <p>
+              Integrates Flask and the peewee orm
+        ''',
+        docs='http://charlesleifer.com/docs/flask-peewee/index.html',
+        github='coleifer/flask-peewee',
+        approved=False
+    ),
 ]
 
 
