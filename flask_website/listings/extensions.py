@@ -417,6 +417,15 @@ extensions = [
         github='coleifer/flask-peewee',
         approved=False
     ),
+    Extension('Flask-Lettuce', 'Daniel, Dao Quang Minh',
+        description='''
+            <p>
+              Add Lettuce support for Flask
+        ''',
+        # docs='http://packages.python.org/Flask-Lettuce/',
+        github='dqminh/flask-lettuce',
+        approved=False
+    ),
 ]
 
 
