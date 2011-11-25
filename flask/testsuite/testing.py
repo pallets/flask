@@ -53,24 +53,32 @@ class TestToolsTestCase(FlaskTestCase):
         @app.route('/', methods=['GET', 'POST'])
         def index():
             if flask.request.method == 'POST':
-                return flask.redirect('/redirect')
+                return flask.redirect('/getsession')
             flask.session['data'] = 'foo'
             return 'index'
 
-        @app.route('/redirect')
-        def redirect():
-            return 'redirect'
+        @app.route('/getsession')
+        def get_session():
+            return flask.session.get('data', '<missing>')
 
         with app.test_client() as c:
-            ctx = app.test_request_context()
-            ctx.push()
+            rv = c.get('/getsession')
+            assert rv.data == '<missing>'
+
             rv = c.get('/')
             assert rv.data == 'index'
             assert flask.session.get('data') == 'foo'
             rv = c.post('/', data={}, follow_redirects=True)
-            assert rv.data == 'redirect'
-            assert flask.session.get('data') == 'foo'
-            ctx.pop()
+            assert rv.data == 'foo'
+
+            # XXX: Currently the test client does not support
+            # keeping the context around if a redirect is followed.
+            # This would be nice to fix but right now the Werkzeug
+            # test client does not support that.
+            ##assert flask.session.get('data') == 'foo'
+
+            rv = c.get('/getsession')
+            assert rv.data == 'foo'
 
     def test_session_transactions(self):
         app = flask.Flask(__name__)
@@ -113,6 +121,7 @@ class TestToolsTestCase(FlaskTestCase):
         with app.test_client() as c:
             rv = c.get('/')
             req = flask.request._get_current_object()
+            self.assert_(req is not None)
             with c.session_transaction():
                 self.assert_(req is flask.request._get_current_object())
 
