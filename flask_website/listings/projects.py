@@ -196,6 +196,10 @@ projects = {
         Project('ListaPrive', 'http://www.listaprive.com/', u'''
             <p>
               Your online Gift List
+        '''),
+        Project('Punchfork', 'http://punchfork.com', u'''
+            <p>
+              Recipe aggregator powered by social data.
         ''')
     ],
     'apps': [
