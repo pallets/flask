@@ -408,6 +408,34 @@ extensions = [
         github='dag/flask-zodb',
         approved=True
     ),
+    Extension('Flask-Peewee', 'Charles Leifer',
+        description='''
+            <p>
+              Integrates Flask and the peewee orm
+        ''',
+        docs='http://charlesleifer.com/docs/flask-peewee/index.html',
+        github='coleifer/flask-peewee',
+        approved=False
+    ),
+    Extension('Flask-Lettuce', 'Daniel, Dao Quang Minh',
+        description='''
+            <p>
+              Add Lettuce support for Flask
+        ''',
+        # docs='http://packages.python.org/Flask-Lettuce/',
+        github='dqminh/flask-lettuce',
+        approved=False
+    ),
+    Extension('Flask-Sijax', 'Slavi Pantaleev',
+        description='''
+            <p>
+              Flask integration for Sijax,
+              a Python/jQuery library that makes AJAX easy to use
+        ''',
+        docs='http://packages.python.org/Flask-Sijax/',
+        github='spantaleev/flask-sijax',
+        approved=False
+    ),
 ]
 
 
