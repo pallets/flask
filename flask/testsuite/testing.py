@@ -71,11 +71,9 @@ class TestToolsTestCase(FlaskTestCase):
             rv = c.post('/', data={}, follow_redirects=True)
             assert rv.data == 'foo'
 
-            # XXX: Currently the test client does not support
-            # keeping the context around if a redirect is followed.
-            # This would be nice to fix but right now the Werkzeug
-            # test client does not support that.
-            ##assert flask.session.get('data') == 'foo'
+            # This support requires a new Werkzeug version
+            if not hasattr(c, 'redirect_client'):
+                assert flask.session.get('data') == 'foo'
 
             rv = c.get('/getsession')
             assert rv.data == 'foo'
