@@ -61,7 +61,12 @@ Store that file somewhere that you will find it again (e.g.:
 `/var/www/yourapplication`) and make sure that `yourapplication` and all
 the libraries that are in use are on the python load path.  If you don't
 want to install it system wide consider using a `virtual python`_
-instance.
+instance.  Keep in mind that you will have to actually install your
+application into the virtualenv as well.  Alternatively there is the
+option to just patch the path in the `.wsgi` file before the import::
+
+    import sys
+    sys.path.insert(0, '/path/to/the/application')
 
 Configuring Apache
 ------------------
