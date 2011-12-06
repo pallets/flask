@@ -276,7 +276,13 @@ projects = {
             <p>
               Instamator generates usable feeds from your Instagram “likes”
               so you can use them as you wish.
-        ''')
+        '''),
+        Project('Flask-Pastebin', 'http://github.com/mitsuhiko/flask-pastebin', u'''
+            <p>
+              Pastebin app with Flask and a few extensions that does Facebook
+              connect as well as realtime push notifications with socket.io
+              and juggernaut.
+        ''', source='http://github.com/mitsuhiko/flask-pastebin')
     ]
 }
 
