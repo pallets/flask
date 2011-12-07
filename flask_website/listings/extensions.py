@@ -436,6 +436,16 @@ extensions = [
         github='spantaleev/flask-sijax',
         approved=False
     ),
+    Extension('Flask-Dashed', 'Jean-Philippe Serafin',
+        description='''
+            <p>
+              Flask-Dashed provides tools for building
+              simple and extensible admin interfaces.
+        ''',
+        docs='http://jeanphix.github.com/Flask-Dashed/',
+        github='jeanphix/Flask-Dashed',
+        approved=False
+    ),
 ]
 
 
