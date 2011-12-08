@@ -146,5 +146,5 @@ class MethodView(View):
         # retry with GET
         if meth is None and request.method == 'HEAD':
             meth = getattr(self, 'get', None)
-        assert meth is not None, 'Not implemented method %r' % request.method
+        assert meth is not None, 'Unimplemented method %r' % request.method
         return meth(*args, **kwargs)
