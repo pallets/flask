@@ -144,14 +144,22 @@ routing system it does not make much sense to decorate the class itself.
 Instead you either have to decorate the return value of
 :meth:`~flask.views.View.as_view` by hand::
 
-    view = rate_limited(UserAPI.as_view('users'))
+    def user_required(f):
+        """Checks whether user is logged in or raises error 401."""
+        def decorator(*args, **kwargs):
+            if not g.user:
+                abort(401)
+            return f(*args, **kwargs)
+        return decorator
+
+    view = user_required(UserAPI.as_view('users'))
     app.add_url_rule('/users/', view_func=view)
 
 Starting with Flask 0.8 there is also an alternative way where you can
 specify a list of decorators to apply in the class declaration::
 
     class UserAPI(MethodView):
-        decorators = [rate_limited]
+        decorators = [user_required]
 
 Due to the implicit self from the caller's perspective you cannot use
 regular view decorators on the individual methods of the view however,
