@@ -9,8 +9,8 @@ Werkzeug is a toolkit for WSGI, the standard Python interface between web
 applications and a variety of servers for both development and deployment.
 Jinja2 renders templates.
 
-So how do you get all that on your computer quickly?  There are many ways
-which this section will explain, but the most kick-ass method is
+So how do you get all that on your computer quickly?  There are many ways,
+as this section will explain, but the most kick-ass method is
 virtualenv, so let's look at that first.
 
 Either way, you will need Python 2.5 or higher to get started, so be sure
@@ -58,7 +58,7 @@ even in your package manager.  If you use Ubuntu, try::
 
 If you are on Windows and don't have the `easy_install` command, you must
 install it first.  Check the :ref:`windows-easy-install` section for more
-information about how to do that.  Once you have it installed, run the
+information on how to do that.  Once you have it installed, run the
 same commands as above, but without the `sudo` prefix.
 
 Once you have virtualenv installed, just fire up a shell and create
@@ -78,7 +78,7 @@ the corresponding environment.  On OS X and Linux, do the following::
 
 (Note the space between the dot and the script name.  The dot means that
 this script should run in the context of the current shell.  If this command
-does not work in your shell, try replacing the dot with ``source``)
+does not work in your shell, try replacing the dot with ``source``.)
 
 If you are a Windows user, the following command is for you::
 
@@ -95,15 +95,15 @@ your virtualenv::
 A few seconds later you are good to go.
 
 
-System Wide Installation
+System-Wide Installation
 ------------------------
 
-This is possible as well, but I do not recommend it.  Just run
-`easy_install` with root rights::
+This is possible as well, though I do not recommend it.  Just run
+`easy_install` with root privileges::
 
     $ sudo easy_install Flask
 
-(Run it in an Admin shell on Windows systems and without `sudo`).
+(Run it in an Admin shell on Windows systems and without `sudo`.)
 
 
 Living on the Edge
@@ -159,7 +159,7 @@ to the `PATH` environment variable.  To do that, right-click on the
 "Computer" icon on the Desktop or in the Start menu, and choose
 "Properties".  Then, on Windows Vista and Windows 7 click on "Advanced System
 settings"; on Windows XP, click on the "Advanced" tab instead.  Then click
-on the "Environment variables" button and double click on the "Path"
+on the "Environment variables" button and double-click on the "Path"
 variable in the "System variables" section.  There append the path of your
 Python interpreter's Scripts folder; make sure you delimit it from
 existing values with a semicolon.  Assuming you are using Python 2.6 on
