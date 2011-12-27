@@ -153,12 +153,12 @@ rule with ``<converter:variable_name>``.  Here are some nice examples::
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
-        pass
+        return 'User %s' % username
 
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
         # show the post with the given id, the id is an integer
-        pass
+        return 'Post %d' % post_id
 
 The following converters exist:
 
@@ -178,11 +178,11 @@ The following converters exist:
 
         @app.route('/projects/')
         def projects():
-            pass
+            return 'The project page'
 
         @app.route('/about')
         def about():
-            pass
+            return 'The about page'
 
    They look rather similar, the difference is the trailing slash in the
    URL *definition*.  In the first case, the canonical URL for the
