@@ -455,6 +455,14 @@ extensions = [
         docs='http://packages.python.org/Flask-SeaSurf/',
         github='maxcountryman/flask-seasurf',
     ),
+    Extension('Flask-PyMongo', 'Dan Crosta',
+        description='''
+            <p>
+              Flask-PyMongo bridges Flask and PyMongo.
+        ''',
+        docs='http://readthedocs.org/docs/flask-pymongo/',
+        github='dcrosta/flask-pymongo',
+    ),
 ]
 
 
