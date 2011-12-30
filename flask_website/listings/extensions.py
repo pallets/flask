@@ -446,6 +446,15 @@ extensions = [
         github='jeanphix/Flask-Dashed',
         approved=False
     ),
+    Extension('Flask-SeaSurf', 'Max Countryman',
+        description='''
+            <p>
+              SeaSurf is a Flask extension for preventing
+              cross-site request forgery (CSRF).
+        ''',
+        docs='http://packages.python.org/Flask-SeaSurf/',
+        github='maxcountryman/flask-seasurf',
+    ),
 ]
 
 
