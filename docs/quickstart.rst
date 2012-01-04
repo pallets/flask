@@ -3,7 +3,7 @@
 Quickstart
 ==========
 
-Eager to get started?  This page gives a good introduction in how to get
+Eager to get started?  This page gives a good introduction on how to get
 started with Flask.  This assumes you already have Flask installed.  If
 you do not, head over to the :ref:`installation` section.
 
@@ -39,16 +39,16 @@ So what did that code do?
 
 1. First we imported the :class:`~flask.Flask` class.  An instance of this
    class will be our WSGI application.  The first argument is the name of
-   the application's module.  If you are using a single module (like here)
-   you should use `__name__` because depending on if it's started as
+   the application's module.  If you are using a single module (as in this example)
+   you should use `__name__` because depending on whether it's started as
    application or imported as module the name will be different
    (``'__main__'`` versus the actual import name).  For more information
-   on that, have a look at the :class:`~flask.Flask` documentation.
+   on this technique, have a look at the :class:`~flask.Flask` documentation.
 2. Next we create an instance of it.  We pass it the name of the module /
    package.  This is needed so that Flask knows where it should look for
    templates, static files and so on.
 3. Then we use the :meth:`~flask.Flask.route` decorator to tell Flask
-   what URL should trigger our function.
+   which URL should trigger our function.
 4. The function then has a name which is also used to generate URLs to
    that particular function, and returns the message we want to display in
    the user's browser.
@@ -63,15 +63,14 @@ To stop the server, hit control-C.
 
 .. admonition:: Externally Visible Server
 
-   If you run the server you will notice that the server is only available
+   If you run the server you will notice that the server is only accessible
    from your own computer, not from any other in the network.  This is the
    default because in debugging mode a user of the application can execute
-   arbitrary Python code on your computer.  If you have `debug` disabled
-   or trust the users on your network, you can make the server publicly
-   available.
+   arbitrary Python code on your computer.
 
-   Just change the call of the :meth:`~flask.Flask.run` method to look
-   like this::
+   If you have `debug` disabled or trust the users on your network, you can
+   make the server publicly available simply by changing the call of the
+   :meth:`~flask.Flask.run` method to look like this::
 
        app.run(host='0.0.0.0')
 
@@ -83,9 +82,9 @@ Debug Mode
 
 The :meth:`~flask.Flask.run` method is nice to start a local
 development server, but you would have to restart it manually after each
-change you do to code.  That is not very nice and Flask can do better.  If
-you enable the debug support the server will reload itself on code changes
-and also provide you with a helpful debugger if things go wrong.
+change to your code.  That is not very nice and Flask can do better.  If
+you enable debug support the server will reload itself on code changes,
+and it will also provide you with a helpful debugger if things go wrong.
 
 There are two ways to enable debugging.  Either set that flag on the
 application object::
@@ -93,7 +92,7 @@ application object::
     app.debug = True
     app.run()
 
-Or pass it to run::
+Or pass it to `run`::
 
     app.run(debug=True)
 
@@ -123,7 +122,7 @@ Routing
 -------
 
 Modern web applications have beautiful URLs.  This helps people remember
-the URLs which is especially handy for applications that are used from
+the URLs, which is especially handy for applications that are used from
 mobile devices with slower network connections.  If the user can directly
 go to the desired page without having to hit the index page it is more
 likely they will like the page and come back next time.
@@ -171,8 +170,8 @@ The following converters exist:
 .. admonition:: Unique URLs / Redirection Behaviour
 
    Flask's URL rules are based on Werkzeug's routing module.  The idea
-   behind that module is to ensure nice looking and also unique URLs based
-   on behaviour Apache and earlier servers coined.
+   behind that module is to ensure nice-looking and also unique URLs based
+   on behaviour coined by Apache and earlier servers.
 
    Take these two rules::
 
@@ -190,14 +189,14 @@ The following converters exist:
    that sense.  Accessing it without a trailing slash will cause Flask to
    redirect to the canonical URL with the trailing slash.
 
-   However in the second case the URL is defined without a slash so it
+   However, in the second case the URL is defined without a slash so it
    behaves similar to a file and accessing the URL with a trailing slash
-   will be a 404 error.
+   will result in a 404 error.
 
    Why is this?  This allows relative URLs to continue working if users
    access the page when they forget a trailing slash.  This behaviour is
    also consistent with how Apache and other servers work.  Also, the URLs
-   will stay unique which helps search engines not indexing the same page
+   will stay unique which ensures search engines do not index the same page
    twice.
 
 
@@ -238,7 +237,7 @@ parameter.  Here are some examples:
 (This also uses the :meth:`~flask.Flask.test_request_context` method
 explained below.  It basically tells Flask to think we are handling a
 request even though we are not, we are in an interactive Python shell.
-Have a look at the explanation below. :ref:`context-locals`).
+Have a look at the explanation below: :ref:`context-locals`.)
 
 Why would you want to build URLs instead of hardcoding them in your
 templates?  There are three good reasons for this:
@@ -270,10 +269,10 @@ that can be changed by providing the `methods` argument to the
 
 If `GET` is present, `HEAD` will be added automatically for you.  You
 don't have to deal with that.  It will also make sure that `HEAD` requests
-are handled like the `HTTP RFC`_ (the document describing the HTTP
+are handled as the `HTTP RFC`_ (the document describing the HTTP
 protocol) demands, so you can completely ignore that part of the HTTP
-specification.  Likewise as of Flask 0.6, `OPTIONS` is implemented for you
-as well automatically.
+specification.  Likewise, as of Flask 0.6, `OPTIONS` is implemented for you
+automatically as well.
 
 You have no idea what an HTTP method is?  Worry not, here is a quick
 introduction to HTTP methods and why they matter:
@@ -297,14 +296,14 @@ very common:
 `POST`
     The browser tells the server that it wants to *post* some new
     information to that URL and that the server must ensure the data is
-    stored and only stored once.  This is how HTML forms are usually
-    transmitting data to the server.
+    stored and only stored once.  This is how HTML forms usually
+    transmit data to the server.
 
 `PUT`
     Similar to `POST` but the server might trigger the store procedure
     multiple times by overwriting the old values more than once.  Now you
-    might be asking why is this useful, but there are some good reasons
-    to do it this way.  Consider that the connection gets lost during
+    might be asking why this is useful, but there are some good reasons
+    to do it this way.  Consider that the connection is lost during
     transmission: in this situation a system between the browser and the
     server might receive the request safely a second time without breaking
     things.  With `POST` that would not be possible because it must only
@@ -330,13 +329,13 @@ use it.
 Static Files
 ------------
 
-Dynamic web applications need static files as well.  That's usually where
+Dynamic web applications also need static files.  That's usually where
 the CSS and JavaScript files are coming from.  Ideally your web server is
 configured to serve them for you, but during development Flask can do that
 as well.  Just create a folder called `static` in your package or next to
 your module and it will be available at `/static` on the application.
 
-To generate URLs to that part of the URL, use the special ``'static'`` URL
+To generate URLs that part of the URL, use the special ``'static'`` URL
 name::
 
     url_for('static', filename='style.css')
@@ -352,7 +351,7 @@ the application secure.  Because of that Flask configures the `Jinja2
 <http://jinja.pocoo.org/2/>`_ template engine for you automatically.
 
 To render a template you can use the :func:`~flask.render_template`
-method.  All you have to do is to provide the name of the template and the
+method.  All you have to do is provide the name of the template and the
 variables you want to pass to the template engine as keyword arguments.
 Here's a simple example of how to render a template::
 
@@ -364,7 +363,7 @@ Here's a simple example of how to render a template::
         return render_template('hello.html', name=name)
 
 Flask will look for templates in the `templates` folder.  So if your
-application is a module, that folder is next to that module, if it's a
+application is a module, this folder is next to that module, if it's a
 package it's actually inside your package:
 
 **Case 1**: a module::
@@ -405,9 +404,9 @@ know how that works, head over to the :ref:`template-inheritance` pattern
 documentation.  Basically template inheritance makes it possible to keep
 certain elements on each page (like header, navigation and footer).
 
-Automatic escaping is enabled, so if name contains HTML it will be escaped
+Automatic escaping is enabled, so if `name` contains HTML it will be escaped
 automatically.  If you can trust a variable and you know that it will be
-safe HTML (because for example it came from a module that converts wiki
+safe HTML (for example because it came from a module that converts wiki
 markup to HTML) you can mark it as safe by using the
 :class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
@@ -442,7 +441,7 @@ For web applications it's crucial to react to the data a client sent to
 the server.  In Flask this information is provided by the global
 :class:`~flask.request` object.  If you have some experience with Python
 you might be wondering how that object can be global and how Flask
-manages to still be threadsafe.  The answer are context locals:
+manages to still be threadsafe.  The answer is context locals:
 
 
 .. _context-locals:
@@ -460,20 +459,20 @@ These objects are actually proxies to objects that are local to a specific
 context.  What a mouthful.  But that is actually quite easy to understand.
 
 Imagine the context being the handling thread.  A request comes in and the
-webserver decides to spawn a new thread (or something else, the
-underlying object is capable of dealing with other concurrency systems
-than threads as well).  When Flask starts its internal request handling it
+web server decides to spawn a new thread (or something else, the
+underlying object is capable of dealing with concurrency systems other
+than threads).  When Flask starts its internal request handling it
 figures out that the current thread is the active context and binds the
 current application and the WSGI environments to that context (thread).
-It does that in an intelligent way that one application can invoke another
+It does that in an intelligent way so that one application can invoke another
 application without breaking.
 
 So what does this mean to you?  Basically you can completely ignore that
-this is the case unless you are doing something like unittesting.  You
-will notice that code that depends on a request object will suddenly break
+this is the case unless you are doing something like unit testing.  You
+will notice that code which depends on a request object will suddenly break
 because there is no request object.  The solution is creating a request
 object yourself and binding it to the context.  The easiest solution for
-unittesting is by using the :meth:`~flask.Flask.test_request_context`
+unit testing is to use the :meth:`~flask.Flask.test_request_context`
 context manager.  In combination with the `with` statement it will bind a
 test request so that you can interact with it.  Here is an example::
 
@@ -680,8 +679,8 @@ converting return values into response objects is as follows:
     default parameters.
 3.  If a tuple is returned the response object is created by passing the
     tuple as arguments to the response object's constructor.
-4.  If neither of that works, Flask will assume the return value is a
-    valid WSGI application and converts that into a response object.
+4.  If none of that works, Flask will assume the return value is a
+    valid WSGI application and convert that into a response object.
 
 If you want to get hold of the resulting response object inside the view
 you can use the :func:`~flask.make_response` function.
@@ -711,8 +710,8 @@ return it:
 Sessions
 --------
 
-Besides the request object there is also a second object called
-:class:`~flask.session` that allows you to store information specific to a
+In addition to the request object there is also a second object called
+:class:`~flask.session` which allows you to store information specific to a
 user from one request to the next.  This is implemented on top of cookies
 for you and signs the cookies cryptographically.  What this means is that
 the user could look at the contents of your cookie but not modify it,
@@ -752,12 +751,12 @@ sessions work::
     # set the secret key.  keep this really secret:
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
-The here mentioned :func:`~flask.escape` does escaping for you if you are
-not using the template engine (like in this example).
+The :func:`~flask.escape` mentioned here does escaping for you if you are
+not using the template engine (as in this example).
 
 .. admonition:: How to generate good secret keys
 
-   The problem with random is that it's hard to judge what random is.  And
+   The problem with random is that it's hard to judge what is truly random.  And
    a secret key should be as random as possible.  Your operating system
    has ways to generate pretty random stuff based on a cryptographic
    random generator which can be used to get such a key:
@@ -775,9 +774,9 @@ Good applications and user interfaces are all about feedback.  If the user
 does not get enough feedback they will probably end up hating the
 application.  Flask provides a really simple way to give feedback to a
 user with the flashing system.  The flashing system basically makes it
-possible to record a message at the end of a request and access it next
-request and only next request.  This is usually combined with a layout
-template that does this.
+possible to record a message at the end of a request and access it on the next
+(and only the next) request.  This is usually combined with a layout
+template to expose the message.
 
 To flash a message use the :func:`~flask.flash` method, to get hold of the
 messages you can use :func:`~flask.get_flashed_messages` which is also
@@ -790,10 +789,10 @@ Logging
 .. versionadded:: 0.3
 
 Sometimes you might be in a situation where you deal with data that
-should be correct, but actually is not.  For example you may have some client
-side code that sends an HTTP request to the server but it's obviously
-malformed.  This might be caused by a user tempering with the data, or the
-client code failing.  Most of the time, it's okay to reply with ``400 Bad
+should be correct, but actually is not.  For example you may have some client-side
+code that sends an HTTP request to the server but it's obviously
+malformed.  This might be caused by a user tampering with the data, or the
+client code failing.  Most of the time it's okay to reply with ``400 Bad
 Request`` in that situation, but sometimes that won't do and the code has
 to continue working.
 
