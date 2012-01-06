@@ -11,8 +11,10 @@
 
 from __future__ import with_statement
 
+import imp
 import os
 import sys
+import pkgutil
 import posixpath
 import mimetypes
 from time import time
@@ -492,14 +494,12 @@ def get_root_path(import_name):
 
     Not to be confused with the package path returned by :func:`find_package`.
     """
-    __import__(import_name)
-    try:
-        directory = os.path.dirname(sys.modules[import_name].__file__)
-        return os.path.abspath(directory)
-    except AttributeError:
-        # this is necessary in case we are running from the interactive
-        # python shell.  It will never be used for production code however
+    loader = pkgutil.get_loader(import_name)
+    if loader is None:
         return os.getcwd()
+    filepath = os.path.abspath(loader.get_filename(import_name))
+    # filepath for import_name.py for a module, or __init__.py for a package.
+    return os.path.dirname(filepath)
 
 
 def find_package(import_name):
@@ -510,16 +510,17 @@ def find_package(import_name):
     import the module.  The prefix is the path below which a UNIX like
     folder structure exists (lib, share etc.).
     """
-    __import__(import_name)
-    root_mod = sys.modules[import_name.split('.')[0]]
-    package_path = getattr(root_mod, '__file__', None)
-    if package_path is None:
+    root_mod_name = import_name.split('.')[0]
+    loader = pkgutil.get_loader(root_mod_name)
+    if loader is not None:
+        filename = loader.get_filename(root_mod_name)
+        package_path = os.path.abspath(os.path.dirname(filename))
+        # package_path ends with __init__.py for a package
+        if loader.is_package(root_mod_name):
+            package_path = os.path.dirname(package_path)
+    else:
         # support for the interactive python shell
         package_path = os.getcwd()
-    else:
-        package_path = os.path.abspath(os.path.dirname(package_path))
-    if hasattr(root_mod, '__path__'):
-        package_path = os.path.dirname(package_path)
 
     # leave the egg wrapper folder or the actual .egg on the filesystem
     test_package_path = package_path
