@@ -157,7 +157,7 @@ Here is an example table and model (put this into `models.py`)::
             self.email = email
 
         def __repr__(self):
-            return '<User %r>' % (self.name, self.email)
+            return '<User %r>' % (self.name)
 
     users = Table('users', metadata,
         Column('id', Integer, primary_key=True),
