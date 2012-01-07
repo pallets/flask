@@ -331,10 +331,21 @@ class LoggingTestCase(FlaskTestCase):
                               '/myview/create')
 
 
+class NoImportsTestCase(FlaskTestCase):
+    "Test Flasks are created without __import__."
+
+    def test_name_with_import_error(self):
+        try:
+            flask.Flask('importerror')
+        except NotImplementedError:
+            self.fail('Flask(import_name) is importing import_name.')
+
+
 def suite():
     suite = unittest.TestSuite()
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
+    suite.addTest(unittest.makeSuite(NoImportsTestCase))
     return suite
