@@ -495,11 +495,18 @@ def get_root_path(import_name):
     Not to be confused with the package path returned by :func:`find_package`.
     """
     loader = pkgutil.get_loader(import_name)
-    if loader is None:
+    if loader is None or import_name == '__main__':
+        # import name is not found, or interactive/main module
         return os.getcwd()
-    filepath = os.path.abspath(loader.get_filename(import_name))
-    # filepath for import_name.py for a module, or __init__.py for a package.
-    return os.path.dirname(filepath)
+    # For .egg, zipimporter does not have get_filename until Python 2.7.
+    if hasattr(loader, 'get_filename'):
+        filepath = loader.get_filename(import_name)
+    else:
+        # Fall back to imports.
+        __import__(import_name)
+        filepath = sys.modules[import_name].__file__
+    # filepath is import_name.py for a module, or __init__.py for a package.
+    return os.path.dirname(os.path.abspath(filepath))
 
 
 def find_package(import_name):
@@ -512,24 +519,25 @@ def find_package(import_name):
     """
     root_mod_name = import_name.split('.')[0]
     loader = pkgutil.get_loader(root_mod_name)
-    if loader is not None:
-        filename = loader.get_filename(root_mod_name)
+    if loader is None or import_name == '__main__':
+        # import name is not found, or interactive/main module
+        package_path = os.getcwd()
+    else:
+        # For .egg, zipimporter does not have get_filename until Python 2.7.
+        if hasattr(loader, 'get_filename'):
+            filename = loader.get_filename(root_mod_name)
+        else:
+            # zipimporter's loader.archive points to the .egg or .zip
+            # archive filename is dropped in call to dirname below.
+            filename = loader.archive
         package_path = os.path.abspath(os.path.dirname(filename))
         # package_path ends with __init__.py for a package
         if loader.is_package(root_mod_name):
             package_path = os.path.dirname(package_path)
-    else:
-        # support for the interactive python shell
-        package_path = os.getcwd()
 
-    # leave the egg wrapper folder or the actual .egg on the filesystem
-    test_package_path = package_path
-    if os.path.basename(test_package_path).endswith('.egg'):
-        test_package_path = os.path.dirname(test_package_path)
-
-    site_parent, site_folder = os.path.split(test_package_path)
+    site_parent, site_folder = os.path.split(package_path)
     py_prefix = os.path.abspath(sys.prefix)
-    if test_package_path.startswith(py_prefix):
+    if package_path.startswith(py_prefix):
         return py_prefix, package_path
     elif site_folder.lower() == 'site-packages':
         parent, folder = os.path.split(site_parent)
