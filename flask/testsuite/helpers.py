@@ -332,7 +332,15 @@ class LoggingTestCase(FlaskTestCase):
 
 
 class NoImportsTestCase(FlaskTestCase):
-    "Test Flasks are created without __import__."
+    """Test Flasks are created without import.
+
+    Avoiding ``__import__`` helps create Flask instances where there are errors
+    at import time.  Those runtime errors will be apparent to the user soon
+    enough, but tools which build Flask instances meta-programmatically benefit
+    from a Flask which does not ``__import__``.  Instead of importing to
+    retrieve file paths or metadata on a module or package, use the pkgutil and
+    imp modules in the Python standard library.
+    """
 
     def test_name_with_import_error(self):
         try:
