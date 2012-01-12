@@ -146,6 +146,10 @@ Response Objects
 
    .. attribute:: status
 
+      A string with a response status.
+
+   .. attribute:: status_code
+
       The response status as integer.
 
 
