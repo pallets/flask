@@ -526,10 +526,17 @@ def find_package(import_name):
         # For .egg, zipimporter does not have get_filename until Python 2.7.
         if hasattr(loader, 'get_filename'):
             filename = loader.get_filename(root_mod_name)
-        else:
+        elif hasattr(loader, 'archive'):
             # zipimporter's loader.archive points to the .egg or .zip
             # archive filename is dropped in call to dirname below.
             filename = loader.archive
+        else:
+            # At least one loader is missing both get_filename and archive:
+            # Google App Engine's HardenedModulesHook
+            #
+            # Fall back to imports.
+            __import__(import_name)
+            filename = sys.modules[import_name].__file__
         package_path = os.path.abspath(os.path.dirname(filename))
         # package_path ends with __init__.py for a package
         if loader.is_package(root_mod_name):
