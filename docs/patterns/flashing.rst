@@ -129,14 +129,15 @@ render each category in a separate block.
 
 .. sourcecode:: html+jinja
 
-{% with errors = get_flashed_messages(category_filter=["error"]) %}
- {% if errors %}
-   <div class="errors">
-     <ul>
-     {% for message in messages %}
-       <li class="error">{{ message }}</li>
-     {% endfor %}
-     </ul>
-   </div>
- {% endif %}
-{% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+    <div class="alert-message block-message error">
+      <a class="close" href="#">×</a>
+      <ul>
+        {%- for msg in errors %}
+        <li>{{ msg }}</li>
+        {% endfor -%}
+      </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
