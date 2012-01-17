@@ -52,7 +52,7 @@ def setupmethod(f):
     first request was already handled.
 
     Disable this decorator by set ``ENABLE_GOT_FIRST_REQUEST_ASSERTION`` to 
-    True.
+    False (default is True).
     """
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request and \
