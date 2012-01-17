@@ -1018,9 +1018,19 @@ class Flask(_PackageBoundObject):
                      function name will be used.
         """
         def decorator(f):
-            self.jinja_env.filters[name or f.__name__] = f
+            self.add_template_filter(f, name=name)
             return f
         return decorator
+
+    @setupmethod
+    def add_template_filter(self, f, name=None):
+        """Register a custom template filter.  Works exactly like the
+        :meth:`template_filter` decorator.
+
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
+        """
+        self.jinja_env.filters[name or f.__name__] = f
 
     @setupmethod
     def before_request(self, f):
