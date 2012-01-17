@@ -23,6 +23,18 @@ Relase date to be decided, codename to be chosen.
 - Session is now stored after callbacks so that if the session payload
   is stored in the session you can still modify it in an after
   request callback.
+- The :class:`flask.Flask` class will avoid importing the provided import name
+  if it can (the required first parameter), to benefit tools which build Flask
+  instances programmatically.  The Flask class will fall back to using import
+  on systems with custom module hooks, e.g. Google App Engine, or when the
+  import name is inside a zip archive (usually a .egg) prior to Python 2.7.
+- Blueprints now have a decorator to add custom template filters application
+  wide, :meth:`flask.Blueprint.app_template_filter`.
+- The Flask and Blueprint classes now have a non-decorator method for adding
+  custom template filters application wide,
+  :meth:`flask.Flask.add_template_filter` and
+  :meth:`flask.Blueprint.add_app_template_filter`.
+
 
 Version 0.8.1
 -------------
