@@ -321,21 +321,60 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         @app.route('/test')
         def test():
+            messages = flask.get_flashed_messages()
+            self.assert_equal(len(messages), 3)
+            self.assert_equal(messages[0], u'Hello World')
+            self.assert_equal(messages[1], u'Hello World')
+            self.assert_equal(messages[2], flask.Markup(u'<em>Testing</em>'))
+            return ''
+
+        @app.route('/test_with_categories')
+        def test_with_categories():
             messages = flask.get_flashed_messages(with_categories=True)
             self.assert_equal(len(messages), 3)
             self.assert_equal(messages[0], ('message', u'Hello World'))
             self.assert_equal(messages[1], ('error', u'Hello World'))
             self.assert_equal(messages[2], ('warning', flask.Markup(u'<em>Testing</em>')))
             return ''
-            messages = flask.get_flashed_messages()
-            self.assert_equal(len(messages), 3)
+
+        @app.route('/test_filter')
+        def test_filter():
+            messages = flask.get_flashed_messages(category_filter=['message'], with_categories=True)
+            self.assert_equal(len(messages), 1)
+            self.assert_equal(messages[0], ('message', u'Hello World'))
+            return ''
+
+        @app.route('/test_filters')
+        def test_filters():
+            messages = flask.get_flashed_messages(category_filter=['message', 'warning'], with_categories=True)
+            self.assert_equal(len(messages), 2)
+            self.assert_equal(messages[0], ('message', u'Hello World'))
+            self.assert_equal(messages[1], ('warning', flask.Markup(u'<em>Testing</em>')))
+            return ''
+
+        @app.route('/test_filters_without_returning_categories')
+        def test_filters():
+            messages = flask.get_flashed_messages(category_filter=['message', 'warning'])
+            self.assert_equal(len(messages), 2)
             self.assert_equal(messages[0], u'Hello World')
-            self.assert_equal(messages[1], u'Hello World')
-            self.assert_equal(messages[2], flask.Markup(u'<em>Testing</em>'))
+            self.assert_equal(messages[1], flask.Markup(u'<em>Testing</em>'))
+            return ''
 
         c = app.test_client()
-        c.get('/')
+        c.get('/') # Flash some messages.
         c.get('/test')
+
+        c.get('/') # Flash more messages.
+        c.get('/test_with_categories')
+
+        c.get('/') # Flash more messages.
+        c.get('/test_filter')
+
+        c.get('/') # Flash more messages.
+        c.get('/test_filters')
+
+        c.get('/') # Flash more messages.
+        c.get('/test_filters_without_returning_categories')
 
     def test_request_processing(self):
         app = flask.Flask(__name__)
