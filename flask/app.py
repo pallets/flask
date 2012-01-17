@@ -1120,7 +1120,7 @@ class Flask(_PackageBoundObject):
         registered error handlers and fall back to returning the
         exception as response.
 
-        .. versionadded: 0.3
+        .. versionadded:: 0.3
         """
         handlers = self.error_handler_spec.get(request.blueprint)
         if handlers and e.code in handlers:
@@ -1189,7 +1189,7 @@ class Flask(_PackageBoundObject):
         for a 500 internal server error is used.  If no such handler
         exists, a default 500 internal server error message is displayed.
 
-        .. versionadded: 0.3
+        .. versionadded:: 0.3
         """
         exc_type, exc_value, tb = sys.exc_info()
 
