@@ -664,7 +664,7 @@ class Flask(_PackageBoundObject):
         # existing views.
         context.update(orig_ctx)
 
-    def run(self, host='127.0.0.1', port=5000, debug=None, **options):
+    def run(self, host=None, port=None, debug=None, **options):
         """Runs the application on a local development server.  If the
         :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
@@ -684,9 +684,10 @@ class Flask(_PackageBoundObject):
            won't catch any exceptions because there won't be any to
            catch.
 
-        :param host: the hostname to listen on.  set this to ``'0.0.0.0'``
-                     to have the server available externally as well.
-        :param port: the port of the webserver
+        :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
+                     have the server available externally as well. Defaults to
+                     ``'127.0.0.1'``.
+        :param port: the port of the webserver. Defaults to ``5000``.
         :param debug: if given, enable or disable debug mode.
                       See :attr:`debug`.
         :param options: the options to be forwarded to the underlying
