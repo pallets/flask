@@ -50,9 +50,13 @@ def _make_timedelta(value):
 def setupmethod(f):
     """Wraps a method so that it performs a check in debug mode if the
     first request was already handled.
+
+    Disable this decorator by set ``ENABLE_GOT_FIRST_REQUEST_ASSERTION`` to 
+    True.
     """
     def wrapper_func(self, *args, **kwargs):
-        if self.debug and self._got_first_request:
+        if self.debug and self._got_first_request and \
+                self.config.get('ENABLE_GOT_FIRST_REQUEST_ASSERTION', True):
             raise AssertionError('A setup function was called after the '
                 'first request was handled.  This usually indicates a bug '
                 'in the application where a module was not imported '
@@ -250,7 +254,8 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_SECURE':                False,
         'MAX_CONTENT_LENGTH':                   None,
         'TRAP_BAD_REQUEST_ERRORS':              False,
-        'TRAP_HTTP_EXCEPTIONS':                 False
+        'TRAP_HTTP_EXCEPTIONS':                 False,
+        'ENABLE_GOT_FIRST_REQUEST_ASSERTION':   True
     })
 
     #: The rule object to use for URL rules created.  This is used by
