@@ -319,7 +319,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             flask.flash(flask.Markup(u'<em>Testing</em>'), 'warning')
             return ''
 
-        @app.route('/test')
+        @app.route('/test/')
         def test():
             messages = flask.get_flashed_messages()
             self.assert_equal(len(messages), 3)
@@ -328,7 +328,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(messages[2], flask.Markup(u'<em>Testing</em>'))
             return ''
 
-        @app.route('/test_with_categories')
+        @app.route('/test_with_categories/')
         def test_with_categories():
             messages = flask.get_flashed_messages(with_categories=True)
             self.assert_equal(len(messages), 3)
@@ -337,14 +337,14 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(messages[2], ('warning', flask.Markup(u'<em>Testing</em>')))
             return ''
 
-        @app.route('/test_filter')
+        @app.route('/test_filter/')
         def test_filter():
             messages = flask.get_flashed_messages(category_filter=['message'], with_categories=True)
             self.assert_equal(len(messages), 1)
             self.assert_equal(messages[0], ('message', u'Hello World'))
             return ''
 
-        @app.route('/test_filters')
+        @app.route('/test_filters/')
         def test_filters():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'], with_categories=True)
             self.assert_equal(len(messages), 2)
@@ -352,7 +352,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(messages[1], ('warning', flask.Markup(u'<em>Testing</em>')))
             return ''
 
-        @app.route('/test_filters_without_returning_categories')
+        @app.route('/test_filters_without_returning_categories/')
         def test_filters():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'])
             self.assert_equal(len(messages), 2)
@@ -360,21 +360,33 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(messages[1], flask.Markup(u'<em>Testing</em>'))
             return ''
 
+        # Note: if status code assertions are missing, failed tests still pass.
+        #
+        # Since app.test_client() does not set debug=True, the AssertionErrors
+        # in the view functions are swallowed and the only indicator is a 500
+        # status code.
+        #
+        # Also, create new test client on each test to clean flashed messages.
+
         c = app.test_client()
-        c.get('/') # Flash some messages.
-        c.get('/test')
+        c.get('/')
+        assert c.get('/test/').status_code == 200
 
-        c.get('/') # Flash more messages.
-        c.get('/test_with_categories')
+        c = app.test_client()
+        c.get('/')
+        assert c.get('/test_with_categories/').status_code == 200
 
-        c.get('/') # Flash more messages.
-        c.get('/test_filter')
+        c = app.test_client()
+        c.get('/')
+        assert c.get('/test_filter/').status_code == 200
 
-        c.get('/') # Flash more messages.
-        c.get('/test_filters')
+        c = app.test_client()
+        c.get('/')
+        assert c.get('/test_filters/').status_code == 200
 
-        c.get('/') # Flash more messages.
-        c.get('/test_filters_without_returning_categories')
+        c = app.test_client()
+        c.get('/')
+        assert c.get('/test_filters_without_returning_categories/').status_code == 200
 
     def test_request_processing(self):
         app = flask.Flask(__name__)
