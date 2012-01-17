@@ -117,9 +117,30 @@ def jsonify(*args, **kwargs):
     information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2
+
+    .. versionadded:: 0.9
+        If the argument ``padded`` true than the json object will pad for
+        JSONP calls like from jquery. The response mimetype will also change
+        to ``text/javascript``.
+
+        The json object will pad as javascript function with the function name 
+        from the request argument ``callback`` or ``jsonp``. If the argument
+        ``padded`` a string jsonify will look for the function name in the
+        request argument with the name which is equal to ``padded``. Is there
+        no function name it will fallback and use ``jsonp`` as function name.
     """
     if __debug__:
         _assert_have_json()
+    if 'padded' in kwargs:
+        if isinstance(kwargs['padded'], str):
+            callback = request.args.get(kwargs['padded']) or 'jsonp'
+        else:
+            callback = request.args.get('callback') or \
+                       request.args.get('jsonp') or 'jsonp'
+        del kwargs['padded']
+        json_str = json.dumps(dict(*args, **kwargs), indent=None)
+        content = str(callback) + "(" + json_str + ")"
+        return current_app.response_class(content, mimetype='text/javascript')
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
