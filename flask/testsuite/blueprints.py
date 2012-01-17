@@ -504,6 +504,115 @@ class BlueprintTestCase(FlaskTestCase):
         rv = c.get('/py/bar/123')
         assert rv.status_code == 404
 
+    def test_template_filter(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_filter()
+        def my_reverse(s):
+            return s[::-1]
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
+        self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
+
+    def test_add_template_filter(self):
+        bp = flask.Blueprint('bp', __name__)
+        def my_reverse(s):
+            return s[::-1]
+        bp.add_app_template_filter(my_reverse)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
+        self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
+
+    def test_template_filter_with_name(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_filter('strrev')
+        def my_reverse(s):
+            return s[::-1]
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
+        self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
+
+    def test_add_template_filter_with_name(self):
+        bp = flask.Blueprint('bp', __name__)
+        def my_reverse(s):
+            return s[::-1]
+        bp.add_app_template_filter(my_reverse, 'strrev')
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
+        self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
+
+    def test_template_filter_with_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_filter()
+        def super_reverse(s):
+            return s[::-1]
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, 'dcba')
+
+    def test_template_filter_after_route_with_template(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_filter()
+        def super_reverse(s):
+            return s[::-1]
+        app.register_blueprint(bp, url_prefix='/py')
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, 'dcba')
+
+    def test_add_template_filter_with_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        def super_reverse(s):
+            return s[::-1]
+        bp.add_app_template_filter(super_reverse)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, 'dcba')
+
+    def test_template_filter_with_name_and_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_filter('super_reverse')
+        def my_reverse(s):
+            return s[::-1]
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, 'dcba')
+
+    def test_add_template_filter_with_name_and_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        def my_reverse(s):
+            return s[::-1]
+        bp.add_app_template_filter(my_reverse, 'super_reverse')
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_filter.html', value='abcd')
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, 'dcba')
+
 
 def suite():
     suite = unittest.TestSuite()
