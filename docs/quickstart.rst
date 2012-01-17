@@ -122,7 +122,7 @@ Screenshot of the debugger in action:
    * ``use_debugger`` - whether to use the internal Flask debugger
    * ``use_reloader`` - whether to reload and fork the process on exception
 
-   ``debug`` must be True (i.e., exceptions must caught) in order for the
+   ``debug`` must be True (i.e., exceptions must be caught) in order for the
    other two options to have any value.
 
    If you're using Aptana/Eclipse for debugging you'll need to set both

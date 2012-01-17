@@ -77,7 +77,7 @@ corresponding environment.  On OS X and Linux, do the following::
 
 (Note the space between the dot and the script name.  The dot means that this
 script should run in the context of the current shell.  If this command does
-not work in your shell, try replacing the dot with ``source``)
+not work in your shell, try replacing the dot with ``source``.)
 
 If you are a Windows user, the following command is for you::
 
