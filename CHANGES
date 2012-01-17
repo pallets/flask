@@ -37,6 +37,12 @@ Relase date to be decided, codename to be chosen.
 - The :func:`flask.get_flashed_messages` function now allows rendering flashed
   message categories in separate blocks, through a ``category_filter``
   argument.
+- The :meth:`flask.Flask.run` method now accepts `None` for `host` and `port`
+  arguments, using default values when `None`.  This allows for calling run
+  using configuration values, e.g. ``app.run(app.config.get('MYHOST'),
+  app.config.get('MYPORT'))``, with proper behavior whether or not a config
+  file is provided.
+
 
 Version 0.8.1
 -------------
