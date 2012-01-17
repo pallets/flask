@@ -34,7 +34,9 @@ Relase date to be decided, codename to be chosen.
   custom template filters application wide,
   :meth:`flask.Flask.add_template_filter` and
   :meth:`flask.Blueprint.add_app_template_filter`.
-
+- The :func:`flask.get_flashed_messages` function now allows rendering flashed
+  message categories in separate blocks, through a ``category_filter``
+  argument.
 
 Version 0.8.1
 -------------

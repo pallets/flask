@@ -251,7 +251,7 @@ def flash(message, category='message'):
     flashed message from the session and to display it to the user,
     the template has to call :func:`get_flashed_messages`.
 
-    .. versionchanged: 0.3
+    .. versionchanged:: 0.3
        `category` parameter added.
 
     :param message: the message to be flashed.
@@ -271,6 +271,16 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     but when `with_categories` is set to `True`, the return value will
     be a list of tuples in the form ``(category, message)`` instead.
 
+    Filter the flashed messages to one or more categories by providing those
+    categories in `category_filter`.  This allows rendering categories in
+    separate html blocks.  The `with_categories` and `category_filter`
+    arguments are distinct:
+
+    * `with_categories` controls whether categories are returned with message
+      text (`True` gives a tuple, where `False` gives just the message text).
+    * `category_filter` filters the messages down to only those matching the
+      provided categories.
+
     Example usage:
 
     .. sourcecode:: html+jinja
@@ -279,10 +289,27 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
           <p class=flash-{{ category }}>{{ msg }}
         {% endfor %}
 
+    Example usage similar to http://twitter.github.com/bootstrap/#alerts:
+
+    .. sourcecode:: html+jinja
+
+        {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+        <div class="alert-message block-message error">
+          <a class="close" href="#">×</a>
+          <ul>
+            {%- for msg in errors %}
+            <li>{{ msg }}</li>
+            {% endfor -%}
+          </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+
     .. versionchanged:: 0.3
        `with_categories` parameter added.
 
-    .. versionchanged: 0.9
+    .. versionchanged:: 0.9
         `category_filter` parameter added.
 
     :param with_categories: set to `True` to also receive categories.
