@@ -309,8 +309,15 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(list(flask.get_flashed_messages()), ['Zap', 'Zip'])
 
     def test_extended_flashing(self):
+        # Be sure app.testing=True below, else tests can fail silently.
+        #
+        # Specifically, if app.testing is not set to True, the AssertionErrors
+        # in the view functions will cause a 500 response to the test client
+        # instead of propagating exceptions.
+
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'
+        app.testing = True
 
         @app.route('/')
         def index():
@@ -360,33 +367,27 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(messages[1], flask.Markup(u'<em>Testing</em>'))
             return ''
 
-        # Note: if status code assertions are missing, failed tests still pass.
-        #
-        # Since app.test_client() does not set debug=True, the AssertionErrors
-        # in the view functions are swallowed and the only indicator is a 500
-        # status code.
-        #
-        # Also, create new test client on each test to clean flashed messages.
+        # Create new test client on each test to clean flashed messages.
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test/').status_code == 200
+        c.get('/test/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_with_categories/').status_code == 200
+        c.get('/test_with_categories/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_filter/').status_code == 200
+        c.get('/test_filter/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_filters/').status_code == 200
+        c.get('/test_filters/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_filters_without_returning_categories/').status_code == 200
+        c.get('/test_filters_without_returning_categories/')
 
     def test_request_processing(self):
         app = flask.Flask(__name__)
