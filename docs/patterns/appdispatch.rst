@@ -58,7 +58,7 @@ Dispatch by Subdomain
 
 Sometimes you might want to use multiple instances of the same application
 with different configurations.  Assuming the application is created inside
-a function and you can call that function to instanciate it, that is
+a function and you can call that function to instantiate it, that is
 really easy to implement.  In order to develop your application to support
 creating new instances in functions have a look at the
 :ref:`app-factories` pattern.

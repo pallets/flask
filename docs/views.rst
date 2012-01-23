@@ -74,7 +74,7 @@ enough to explain the basic principle.  When you have a class based view
 the question comes up what `self` points to.  The way this works is that
 whenever the request is dispatched a new instance of the class is created
 and the :meth:`~flask.views.View.dispatch_request` method is called with
-the parameters from the URL rule.  The class itself is instanciated with
+the parameters from the URL rule.  The class itself is instantiated with
 the parameters passed to the :meth:`~flask.views.View.as_view` function.
 For instance you can write a class like this::
 
