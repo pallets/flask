@@ -70,10 +70,10 @@ class View(object):
 
     @classmethod
     def as_view(cls, name, *class_args, **class_kwargs):
-        """Converts the class into an actual view function that can be
-        used with the routing system.  What it does internally is generating
-        a function on the fly that will instantiate the :class:`View`
-        on each request and call the :meth:`dispatch_request` method on it.
+        """Converts the class into an actual view function that can be used
+        with the routing system.  Internally this generates a function on the
+        fly which will instantiate the :class:`View` on each request and call
+        the :meth:`dispatch_request` method on it.
 
         The arguments passed to :meth:`as_view` are forwarded to the
         constructor of the class.
