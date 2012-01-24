@@ -23,12 +23,13 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 upload-docs:
-	$(MAKE) -C docs html dirhtml latex
+	$(MAKE) -C docs html dirhtml latex epub
 	$(MAKE) -C docs/_build/latex all-pdf
 	cd docs/_build/; mv html flask-docs; zip -r flask-docs.zip flask-docs; mv flask-docs html
 	rsync -a docs/_build/dirhtml/ pocoo.org:/var/www/flask.pocoo.org/docs/
 	rsync -a docs/_build/latex/Flask.pdf pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.pdf
 	rsync -a docs/_build/flask-docs.zip pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.zip
+	rsync -a docs/_build/epub/Flask.epub pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.epub
 
 docs:
 	$(MAKE) -C docs html
