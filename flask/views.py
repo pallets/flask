@@ -12,7 +12,7 @@ from .globals import request
 
 
 http_method_funcs = frozenset(['get', 'post', 'head', 'options',
-                               'delete', 'put', 'trace'])
+                               'delete', 'put', 'trace', 'patch'])
 
 
 class View(object):
