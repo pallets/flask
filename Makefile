@@ -22,6 +22,7 @@ clean-pyc:
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 
+# ebook-convert docs: http://manual.calibre-ebook.com/cli/ebook-convert.html
 upload-docs:
 	$(MAKE) -C docs html dirhtml latex epub
 	$(MAKE) -C docs/_build/latex all-pdf
@@ -30,6 +31,11 @@ upload-docs:
 	rsync -a docs/_build/latex/Flask.pdf pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.pdf
 	rsync -a docs/_build/flask-docs.zip pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.zip
 	rsync -a docs/_build/epub/Flask.epub pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.epub
+	@echo 'Building .mobi from .epub...'
+	@echo 'Command `ebook-covert` is provided by calibre package.'
+	@echo 'Requires X-forwarding for Qt features used in conversion (ssh -X).'
+	@echo 'Do not mind "Invalid value for ..." CSS errors if .mobi renders.'
+	ssh -X pocoo.org ebook-convert /var/www/flask.pocoo.org/docs/flask-docs.epub /var/www/flask.pocoo.org/docs/flask-docs.mobi --cover http://flask.pocoo.org/docs/_images/logo-full.png --authors 'Armin Ronacher'
 
 docs:
 	$(MAKE) -C docs html
