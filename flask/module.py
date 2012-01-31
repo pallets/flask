@@ -32,8 +32,8 @@ class Module(Blueprint):
     def __init__(self, import_name, name=None, url_prefix=None,
                  static_path=None, subdomain=None):
         if name is None:
-            assert '.' in import_name, 'name required if package name ' \
-                'does not point to a submodule'
+            assert '.' in import_name, ('name required if package name '
+                    'does not point to a submodule')
             name = import_name.rsplit('.', 1)[1]
         Blueprint.__init__(self, name, import_name, url_prefix=url_prefix,
                            subdomain=subdomain, template_folder='templates')

@@ -50,8 +50,8 @@ Next the functions that check if an extension is valid and that uploads
 the file and redirects the user to the URL for the uploaded file::
 
     def allowed_file(filename):
-        return '.' in filename and \
-               filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+        return ('.' in filename and
+                filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS)
 
     @app.route('/', methods=['GET', 'POST'])
     def upload_file():

@@ -38,9 +38,9 @@ parameter or the HTTP referrer or the index page::
     from flask import request, url_for
 
     def redirect_url():
-        return request.args.get('next') or \
-               request.referrer or \
-               url_for('index')
+        return (request.args.get('next') or
+                request.referrer or
+                url_for('index'))
 
 As you can see, it accesses the request object.  If you try to run this
 from a plain Python shell, this is the exception you will see:

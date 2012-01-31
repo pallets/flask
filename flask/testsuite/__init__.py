@@ -178,10 +178,10 @@ class BetterLoader(unittest.TestLoader):
 
         all_tests = []
         for testcase, testname in find_all_tests(root):
-            if testname == name or \
-               testname.endswith('.' + name) or \
-               ('.' + name + '.') in testname or \
-               testname.startswith(name + '.'):
+            if (testname == name or
+                    testname.endswith('.' + name) or
+                    ('.' + name + '.') in testname or
+                    testname.startswith(name + '.')):
                 all_tests.append(testcase)
 
         if not all_tests:

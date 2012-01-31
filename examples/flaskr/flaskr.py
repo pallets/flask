@@ -12,8 +12,8 @@
 from __future__ import with_statement
 from sqlite3 import dbapi2 as sqlite3
 from contextlib import closing
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
+from flask import (Flask, request, session, g, redirect, url_for, abort,
+     render_template, flash)
 
 # configuration
 DATABASE = '/tmp/flaskr.db'

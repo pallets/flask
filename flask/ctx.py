@@ -110,8 +110,8 @@ class RequestContext(object):
         of the request.
         """
         try:
-            url_rule, self.request.view_args = \
-                self.url_adapter.match(return_rule=True)
+            url_rule, self.request.view_args = (self.url_adapter
+                    .match(return_rule=True))
             self.request.url_rule = url_rule
         except HTTPException, e:
             self.request.routing_exception = e
@@ -147,8 +147,8 @@ class RequestContext(object):
         self.preserved = False
         self.app.do_teardown_request()
         rv = _request_ctx_stack.pop()
-        assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
-            % (rv, self)
+        assert rv is self, ('Popped wrong request context.  '
+                '(%r instead of %r)' % (rv, self))
 
         # get rid of circular dependencies at the end of the request
         # so that we don't require the GC to be active.
@@ -164,8 +164,8 @@ class RequestContext(object):
         # access the request object in the interactive shell.  Furthermore
         # the context can be force kept alive for the test client.
         # See flask.testing for how this works.
-        if self.request.environ.get('flask._preserve_context') or \
-           (tb is not None and self.app.preserve_context_on_exception):
+        if (self.request.environ.get('flask._preserve_context') or
+                (tb is not None and self.app.preserve_context_on_exception)):
             self.preserved = True
         else:
             self.pop()

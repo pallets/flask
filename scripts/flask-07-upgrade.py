@@ -35,8 +35,8 @@ except ImportError:
 TEMPLATE_LOOKAHEAD = 4096
 
 _app_re_part = r'((?:[a-zA-Z_][a-zA-Z0-9_]*app)|app|application)'
-_string_re_part = r"('([^'\\]*(?:\\.[^'\\]*)*)'" \
-                  r'|"([^"\\]*(?:\\.[^"\\]*)*)")'
+_string_re_part = (r"('([^'\\]*(?:\\.[^'\\]*)*)'"
+                   r'|"([^"\\]*(?:\\.[^"\\]*)*)")')
 
 _from_import_re = re.compile(r'^\s*from flask import\s+')
 _url_for_re = re.compile(r'\b(url_for\()(%s)' % _string_re_part)
@@ -68,14 +68,14 @@ def looks_like_teardown_function(node):
         return
     return_def = returns[0]
     resp_name = node.args.args[0]
-    if not isinstance(return_def.value, ast.Name) or \
-       return_def.value.id != resp_name.id:
+    if (not isinstance(return_def.value, ast.Name) or
+            return_def.value.id != resp_name.id):
         return
 
     for body_node in node.body:
         for child in ast.walk(body_node):
-            if isinstance(child, ast.Name) and \
-               child.id == resp_name.id:
+            if (isinstance(child, ast.Name) and
+                    child.id == resp_name.id):
                 if child is not return_def.value:
                     return
 

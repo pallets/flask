@@ -35,8 +35,8 @@ class ExtImportHookTestCase(FlaskTestCase):
         import_hooks = 0
         for item in sys.meta_path:
             cls = type(item)
-            if cls.__module__ == 'flask.exthook' and \
-               cls.__name__ == 'ExtensionImporter':
+            if (cls.__module__ == 'flask.exthook' and
+                    cls.__name__ == 'ExtensionImporter'):
                 import_hooks += 1
         self.assert_equal(import_hooks, 1)
 
