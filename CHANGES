@@ -89,7 +89,7 @@ Released on September 29th 2011, codename Rakija
   variable as well as ``SERVER_NAME`` are now properly used by the test client
   as defaults.
 - Added :attr:`flask.views.View.decorators` to support simpler decorating of
-  pluggable (class based) views.
+  pluggable (class-based) views.
 - Fixed an issue where the test client if used with the "with" statement did not
   trigger the execution of the teardown handlers.
 - Added finer control over the session cookie parameters.
@@ -177,7 +177,7 @@ Released on June 28th 2011, codename Grappa
   might occur during request processing (for instance database connection
   errors, timeouts from remote resources etc.).
 - Blueprints can provide blueprint specific error handlers.
-- Implemented generic :ref:`views` (class based views).
+- Implemented generic :ref:`views` (class-based views).
 
 Version 0.6.1
 -------------

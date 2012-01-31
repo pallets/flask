@@ -3,7 +3,7 @@
     flask.views
     ~~~~~~~~~~~
 
-    This module provides class based views inspired by the ones in Django.
+    This module provides class-based views inspired by the ones in Django.
 
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
@@ -50,7 +50,7 @@ class View(object):
     #: A for which methods this pluggable view can handle.
     methods = None
 
-    #: The canonical way to decorate class based views is to decorate the
+    #: The canonical way to decorate class-based views is to decorate the
     #: return value of as_view().  However since this moves parts of the
     #: logic from the class declaration to the place where it's hooked
     #: into the routing system.
@@ -89,7 +89,7 @@ class View(object):
                 view = decorator(view)
 
         # we attach the view class to the view function for two reasons:
-        # first of all it allows us to easily figure out what class based
+        # first of all it allows us to easily figure out what class-based
         # view this thing came from, secondly it's also used for instantiating
         # the view class so you can actually replace it with something else
         # for testing purposes and debugging.
@@ -120,7 +120,7 @@ class MethodViewType(type):
 
 
 class MethodView(View):
-    """Like a regular class based view but that dispatches requests to
+    """Like a regular class-based view but that dispatches requests to
     particular methods.  For instance if you implement a method called
     :meth:`get` it means you will response to ``'GET'`` requests and
     the :meth:`dispatch_request` implementation will automatically
