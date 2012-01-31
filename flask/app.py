@@ -531,8 +531,8 @@ class Flask(_PackageBoundObject):
 
         # Hack to support the init_jinja_globals method which is supported
         # until 1.0 but has an API deficiency.
-        if getattr(self.init_jinja_globals, 'im_func', None) is not \
-           Flask.init_jinja_globals.im_func:
+        if (getattr(self.init_jinja_globals, 'im_func', None) is not
+                Flask.init_jinja_globals.im_func):
             from warnings import warn
             warn(DeprecationWarning('This flask class uses a customized '
                 'init_jinja_globals() method which is deprecated. '
@@ -790,8 +790,8 @@ class Flask(_PackageBoundObject):
            The module system was deprecated in favor for the blueprint
            system.
         """
-        assert blueprint_is_module(module), 'register_module requires ' \
-            'actual module objects.  Please upgrade to blueprints though.'
+        assert blueprint_is_module(module), ('register_module requires '
+                'actual module objects.  Please upgrade to blueprints though.')
         if not self.enable_modules:
             raise RuntimeError('Module support was disabled but code '
                 'attempted to register a module named %r' % module)
@@ -814,11 +814,11 @@ class Flask(_PackageBoundObject):
         """
         first_registration = False
         if blueprint.name in self.blueprints:
-            assert self.blueprints[blueprint.name] is blueprint, \
-                'A blueprint\'s name collision ocurred between %r and ' \
-                '%r.  Both share the same name "%s".  Blueprints that ' \
-                'are created on the fly need unique names.' % \
-                (blueprint, self.blueprints[blueprint.name], blueprint.name)
+            assert self.blueprints[blueprint.name] is blueprint, ('A '
+                    'blueprint\'s name collision ocurred between %r and '
+                    '%r.  Both share the same name "%s".  Blueprints that '
+                    'are created on the fly need unique names.' % (
+                    blueprint, self.blueprints[blueprint.name], blueprint.name))
         else:
             self.blueprints[blueprint.name] = blueprint
             first_registration = True
@@ -1012,9 +1012,9 @@ class Flask(_PackageBoundObject):
         if isinstance(code_or_exception, HTTPException):
             code_or_exception = code_or_exception.code
         if isinstance(code_or_exception, (int, long)):
-            assert code_or_exception != 500 or key is None, \
-                'It is currently not possible to register a 500 internal ' \
-                'server error on a per-blueprint level.'
+            assert code_or_exception != 500 or key is None, ('It is '
+                    'currently not possible to register a 500 internal '
+                    'server error on a per-blueprint level.')
             self.error_handler_spec.setdefault(key, {})[code_or_exception] = f
         else:
             self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
@@ -1243,9 +1243,9 @@ class Flask(_PackageBoundObject):
 
         :internal:
         """
-        if not self.debug \
-           or not isinstance(request.routing_exception, RequestRedirect) \
-           or request.method in ('GET', 'HEAD', 'OPTIONS'):
+        if (not self.debug
+                or not isinstance(request.routing_exception, RequestRedirect)
+                or request.method in ('GET', 'HEAD', 'OPTIONS')):
             raise request.routing_exception
 
         from .debughelpers import FormDataRoutingRedirect
@@ -1267,8 +1267,8 @@ class Flask(_PackageBoundObject):
         rule = req.url_rule
         # if we provide automatic options for this URL and the
         # request came with the OPTIONS method, reply automatically
-        if getattr(rule, 'provide_automatic_options', False) \
-           and req.method == 'OPTIONS':
+        if (getattr(rule, 'provide_automatic_options', False)
+                and req.method == 'OPTIONS'):
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
         return self.view_functions[rule.endpoint](**req.view_args)

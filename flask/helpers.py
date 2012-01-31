@@ -86,8 +86,8 @@ def _endpoint_from_view_func(view_func):
     """Internal helper that returns the default endpoint for a given
     function.  This always is the function name.
     """
-    assert view_func is not None, 'expected view func if endpoint ' \
-                                  'is not provided.'
+    assert view_func is not None, ('expected view func if endpoint '
+                                   'is not provided.')
     return view_func.__name__
 
 
@@ -367,8 +367,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
         # XXX: this behaviour is now deprecated because it was unreliable.
         # removed in Flask 1.0
-        if not attachment_filename and not mimetype \
-           and isinstance(filename, basestring):
+        if (not attachment_filename and not mimetype
+                and isinstance(filename, basestring)):
             warn(DeprecationWarning('The filename support for file objects '
                 'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),

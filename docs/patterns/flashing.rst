@@ -30,8 +30,8 @@ So here is a full example::
     def login():
         error = None
         if request.method == 'POST':
-            if request.form['username'] != 'admin' or \
-                    request.form['password'] != 'secret':
+            if (request.form['username'] != 'admin' or
+                    request.form['password'] != 'secret'):
                 error = 'Invalid credentials'
             else:
                 flash('You were successfully logged in')

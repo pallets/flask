@@ -737,7 +737,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         except Exception, e:
             self.assert_(isinstance(e, ValueError))
             self.assert_equal(str(e), "the server name provided " +
-                    "('localhost.localdomain:5000') does not match the " + \
+                    "('localhost.localdomain:5000') does not match the " +
                     "server name from the WSGI environment ('localhost')")
 
         try:
@@ -792,7 +792,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         except ValueError, e:
             # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " +
-                    "('localhost.localdomain:443') does not match the " + \
+                    "('localhost.localdomain:443') does not match the " +
                     "server name from the WSGI environment ('localhost.localdomain')")
 
         try:
@@ -802,8 +802,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(rv.status_code, 404)
         except ValueError, e:
             # Werkzeug 0.7
-            self.assert_equal(str(e), "the server name provided " + \
-                    "('localhost.localdomain') does not match the " + \
+            self.assert_equal(str(e), "the server name provided " +
+                    "('localhost.localdomain') does not match the " +
                     "server name from the WSGI environment ('foo.localhost')")
 
         rv = app.test_client().get('/', 'http://foo.localhost.localdomain')
@@ -860,8 +860,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         @app.url_defaults
         def add_language_code(endpoint, values):
-            if flask.g.lang_code is not None and \
-               app.url_map.is_endpoint_expecting(endpoint, 'lang_code'):
+            if (flask.g.lang_code is not None and
+                    app.url_map.is_endpoint_expecting(endpoint, 'lang_code')):
                 values.setdefault('lang_code', flask.g.lang_code)
 
         @app.url_value_preprocessor

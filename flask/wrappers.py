@@ -121,8 +121,8 @@ class Request(RequestBase):
         # in debug mode we're replacing the files multidict with an ad-hoc
         # subclass that raises a different error for key errors.
         ctx = _request_ctx_stack.top
-        if ctx is not None and ctx.app.debug and \
-           self.mimetype != 'multipart/form-data' and not self.files:
+        if (ctx is not None and ctx.app.debug and
+                self.mimetype != 'multipart/form-data' and not self.files):
             attach_enctype_error_multidict(self)
 
 
