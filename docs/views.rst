@@ -23,7 +23,7 @@ database and renders into a template::
 
 This is simple and flexible, but if you want to provide this view in a
 generic fashion that can be adapted to other models and templates as well
-you might want more flexibility.  This is where pluggable class based
+you might want more flexibility.  This is where pluggable class-based
 views come into place.  As the first step to convert this into a class
 based view you would do this::
 
@@ -70,7 +70,7 @@ this by itself is not helpful, so let's refactor the code a bit::
             return User.query.all()
 
 This of course is not that helpful for such a small example, but it's good
-enough to explain the basic principle.  When you have a class based view
+enough to explain the basic principle.  When you have a class-based view
 the question comes up what `self` points to.  The way this works is that
 whenever the request is dispatched a new instance of the class is created
 and the :meth:`~flask.views.View.dispatch_request` method is called with

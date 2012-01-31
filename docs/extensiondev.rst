@@ -148,7 +148,7 @@ classes:
     a remote application that uses OAuth.
 
 What to use depends on what you have in mind.  For the SQLite 3 extension
-we will use the class based approach because it will provide users with a
+we will use the class-based approach because it will provide users with a
 manager object that handles opening and closing database connections.
 
 The Extension Code
@@ -203,7 +203,7 @@ So here's what these lines of code do:
 5.  Finally, we add a `get_db` function that simplifies access to the context's
     database.
 
-So why did we decide on a class based approach here?  Because using our
+So why did we decide on a class-based approach here?  Because using our
 extension looks something like this::
 
     from flask import Flask
