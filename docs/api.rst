@@ -476,7 +476,7 @@ Signals
 
 .. _blinker: http://pypi.python.org/pypi/blinker
 
-Class Based Views
+Class-Based Views
 -----------------
 
 .. versionadded:: 0.7
