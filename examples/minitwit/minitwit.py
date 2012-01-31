@@ -14,8 +14,8 @@ from sqlite3 import dbapi2 as sqlite3
 from hashlib import md5
 from datetime import datetime
 from contextlib import closing
-from flask import Flask, request, session, url_for, redirect, \
-     render_template, abort, g, flash
+from flask import (Flask, request, session, url_for, redirect,
+     render_template, abort, g, flash)
 from werkzeug import check_password_hash, generate_password_hash
 
 

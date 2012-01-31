@@ -20,22 +20,22 @@ from functools import update_wrapper
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect
-from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest
+from werkzeug.exceptions import (HTTPException, InternalServerError,
+     MethodNotAllowed, BadRequest)
 
-from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    locked_cached_property, _tojson_filter, _endpoint_from_view_func, \
-    find_package
+from .helpers import (_PackageBoundObject, url_for, get_flashed_messages,
+    locked_cached_property, _tojson_filter, _endpoint_from_view_func,
+    find_package)
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext
 from .globals import _request_ctx_stack, request
 from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
-from .templating import DispatchingJinjaLoader, Environment, \
-    _default_template_ctx_processor
-from .signals import request_started, request_finished, got_request_exception, \
-    request_tearing_down
+from .templating import (DispatchingJinjaLoader, Environment,
+    _default_template_ctx_processor)
+from .signals import (request_started, request_finished, got_request_exception,
+    request_tearing_down)
 
 # a lock used for logger initialization
 _logger_lock = Lock()
