@@ -339,13 +339,13 @@ extensions = [
         github='cobrateam/flask-mongoalchemy',
         approved=False
     ),
-    Extension('Flask-DebugToolbar', 'Michael van Tellingen',
+    Extension('Flask-DebugToolbar', 'Matt Good',
         description='''
             <p>
               A port of the Django debug toolbar to Flask
         ''',
-        docs='https://github.com/mvantellingen/flask-debugtoolbar',
-        github='mvantellingen/flask-debugtoolbar',
+        docs='https://github.com/mgood/flask-debugtoolbar',
+        github='mgood/flask-debugtoolbar',
         approved=False
     ),
     Extension('Flask-Login', 'Matthew Frazier',
