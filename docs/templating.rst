@@ -186,3 +186,22 @@ The context processor above makes a variable called `user` available in
 the template with the value of `g.user`.  This example is not very
 interesting because `g` is available in templates anyways, but it gives an
 idea how this works.
+
+It is also possible to inject functions that can have any number of
+arguments::
+
+    @app.context_processor
+    def price_formatter():
+        def loader(amount, currency=u'€'):
+            return u'{0:.2f}{1}.format(amount, currency)
+    return dict(format_price=loader)
+
+The above construct registers a "variable" function called
+`format_price` which can then be used in template::
+
+    {{ format_price(0.33) }}
+
+The difference from regular context processor' variables is that functions
+are evaluated upon template rendering compared to variables whose values
+are created during `app` startup . Therefore "variable" functions make it
+possible to inject dynamic data into templates.
