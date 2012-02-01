@@ -168,7 +168,13 @@ The two following examples work the same and both reverse an object::
     app.jinja_env.filters['reverse'] = reverse_filter
 
 In case of the decorator the argument is optional if you want to use the
-function name as name of the filter.
+function name as name of the filter.  Once registered, you can use the filter
+in your templates in the same way as Jinja2's builtin filters, for example if
+you have a Python list in context called `mylist`::
+
+    {% for x in mylist | reverse %}
+    {% endfor %}
+
 
 Context Processors
 ------------------
