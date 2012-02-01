@@ -147,6 +147,8 @@ autoescape %}`` block:
 Whenever you do this, please be very cautious about the variables you are
 using in this block.
 
+.. _registering-filters:
+
 Registering Filters
 -------------------
 
@@ -176,7 +178,7 @@ context processors exist in Flask.  Context processors run before the
 template is rendered and have the ability to inject new values into the
 template context.  A context processor is a function that returns a
 dictionary.  The keys and values of this dictionary are then merged with
-the template context::
+the template context, for all templates in the app::
 
     @app.context_processor
     def inject_user():
@@ -187,21 +189,21 @@ the template with the value of `g.user`.  This example is not very
 interesting because `g` is available in templates anyways, but it gives an
 idea how this works.
 
-It is also possible to inject functions that can have any number of
-arguments::
+Variables are not limited to values; a context processor can also make
+functions available to templates (since Python allows passing around
+functions)::
 
     @app.context_processor
-    def price_formatter():
-        def loader(amount, currency=u'€'):
+    def utility_processor():
+        def format_price(amount, currency=u'€'):
             return u'{0:.2f}{1}.format(amount, currency)
-    return dict(format_price=loader)
+        return dict(format_price=format_price)
 
-The above construct registers a "variable" function called
-`format_price` which can then be used in template::
+The context processor above makes the `format_price` function available to all
+templates::
 
     {{ format_price(0.33) }}
 
-The difference from regular context processor' variables is that functions
-are evaluated upon template rendering compared to variables whose values
-are created during `app` startup . Therefore "variable" functions make it
-possible to inject dynamic data into templates.
+You could also build `format_price` as a template filter (see
+:ref:`registering-filters`), but this demonstrates how to pass functions in a
+context processor.
