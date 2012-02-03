@@ -798,6 +798,13 @@ not using the template engine (as in this example).
 
    Just take that thing and copy/paste it into your code and you're done.
 
+A note on cookie-based sessions: Flask will take the values you put into the
+session object and serialize them into a cookie.  If you are finding some
+values do not persist across requests, cookies are indeed enabled, and you are
+not getting a clear error message, check the size of the cookie in your page
+responses compared to the size supported by web browsers.
+
+
 Message Flashing
 ----------------
 
