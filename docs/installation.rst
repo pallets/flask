@@ -66,22 +66,18 @@ folder within::
 
     $ mkdir myproject
     $ cd myproject
-    $ virtualenv env
-    New python executable in env/bin/python
+    $ virtualenv venv
+    New python executable in venv/bin/python
     Installing setuptools............done.
 
 Now, whenever you want to work on a project, you only have to activate the
 corresponding environment.  On OS X and Linux, do the following::
 
-    $ . env/bin/activate
-
-(Note the space between the dot and the script name.  The dot means that this
-script should run in the context of the current shell.  If this command does
-not work in your shell, try replacing the dot with ``source``.)
+    $ source venv/bin/activate
 
 If you are a Windows user, the following command is for you::
 
-    $ env\scripts\activate
+    $ venv\scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
@@ -89,7 +85,7 @@ your shell has changed to show the active environment).
 Now you can just enter the following command to get Flask activated in your
 virtualenv::
 
-    $ easy_install Flask
+    $ pip install Flask
 
 A few seconds later and you are good to go.
 
