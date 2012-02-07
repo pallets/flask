@@ -68,7 +68,7 @@ folder within::
     $ cd myproject
     $ virtualenv venv
     New python executable in venv/bin/python
-    Installing setuptools............done.
+    Installing distribute............done.
 
 Now, whenever you want to work on a project, you only have to activate the
 corresponding environment.  On OS X and Linux, do the following::
@@ -99,7 +99,7 @@ This is possible as well, though I do not recommend it.  Just run
     $ sudo pip install Flask
 
 (On Windows systems, run it in a command-prompt window with administrator
-privleges, and leave out `sudo`.)
+privileges, and leave out `sudo`.)
 
 
 Living on the Edge
@@ -115,9 +115,9 @@ Get the git checkout in a new virtualenv and run in development mode::
     Initialized empty Git repository in ~/dev/flask/.git/
     $ cd flask
     $ virtualenv venv --distribute
-    New python executable in env/bin/python
-    Installing setuptools............done.
-    $ source env/bin/activate
+    New python executable in venv/bin/python
+    Installing distribute............done.
+    $ source venv/bin/activate
     $ python setup.py develop
     ...
     Finished processing dependencies for Flask
