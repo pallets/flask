@@ -100,7 +100,7 @@ System-Wide Installation
 This is possible as well, though I do not recommend it.  Just run
 `easy_install` with root privileges::
 
-    $ sudo easy_install Flask
+    $ sudo pip install Flask
 
 (On Windows systems, run it in a command-prompt window with administrator
 privleges, and leave out `sudo`.)
@@ -110,7 +110,7 @@ Living on the Edge
 ------------------
 
 If you want to work with the latest version of Flask, there are two ways: you
-can either let `easy_install` pull in the development version, or you can tell
+can either let `pip` pull in the development version, or you can tell
 it to operate on a git checkout.  Either way, virtualenv is recommended.
 
 Get the git checkout in a new virtualenv and run in development mode::
@@ -138,19 +138,19 @@ To just get the development version without git, do this instead::
     $ . env/bin/activate
     New python executable in env/bin/python
     Installing setuptools............done.
-    $ easy_install Flask==dev
+    $ pip install Flask==dev
     ...
     Finished processing dependencies for Flask==dev
 
 .. _windows-easy-install:
 
-`easy_install` on Windows
--------------------------
+`pip` and `distribute` on Windows
+-----------------------------------
 
 On Windows, installation of `easy_install` is a little bit trickier, but still
-quite easy.  The easiest way to do it is to download the `ez_setup.py`_ file
-and run it.  The easiest way to run the file is to open your downloads folder
-and double-click on the file.
+quite easy.  The easiest way to do it is to download the
+`distribute_setup.py`_ file and run it.  The easiest way to run the file is to
+open your downloads folder and double-click on the file.
 
 Next, add the `easy_install` command and other Python scripts to the
 command search path, by adding your Python installation's Scripts folder
@@ -161,14 +161,18 @@ Then click on "Advanced System settings" (in Windows XP, click on the
 Finally, double-click on the "Path" variable in the "System variables" section,
 and add the path of your Python interpreter's Scripts folder. Be sure to
 delimit it from existing values with a semicolon.  Assuming you are using
-Python 2.6 on the default path, add the following value::
+Python 2.7 on the default path, add the following value::
 
 
-    ;C:\Python26\Scripts
+    ;C:\Python27\Scripts
 
 And you are done!  To check that it worked, open the Command Prompt and execute
 ``easy_install``.  If you have User Account Control enabled on Windows Vista or
 Windows 7, it should prompt you for administrator privileges.
 
+Now that you have ``easy_install``, you can use it to install ``pip``::
 
-.. _ez_setup.py: http://peak.telecommunity.com/dist/ez_setup.py
+    > easy_install pip
+
+
+.. _distribute_setup.py: http://python-distribute.org/distribute_setup.py
