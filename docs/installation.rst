@@ -73,7 +73,7 @@ folder within::
 Now, whenever you want to work on a project, you only have to activate the
 corresponding environment.  On OS X and Linux, do the following::
 
-    $ source venv/bin/activate
+    $ . venv/bin/activate
 
 If you are a Windows user, the following command is for you::
 
@@ -117,7 +117,7 @@ Get the git checkout in a new virtualenv and run in development mode::
     $ virtualenv venv --distribute
     New python executable in venv/bin/python
     Installing distribute............done.
-    $ source venv/bin/activate
+    $ . venv/bin/activate
     $ python setup.py develop
     ...
     Finished processing dependencies for Flask
@@ -131,7 +131,7 @@ To just get the development version without git, do this instead::
     $ mkdir flask
     $ cd flask
     $ virtualenv venv --distribute
-    $ source venv/bin/activate
+    $ . venv/bin/activate
     New python executable in venv/bin/python
     Installing distribute............done.
     $ pip install Flask==dev
