@@ -310,6 +310,13 @@ extensions = [
         bitbucket='aafshar/flask-fluiddb-main',
         approved=False
     ),
+    Extension('Flask-fillin', 'Christoph Heer',
+        description='''
+            <p>The Flask-fillin extension provides simple utilities for testing your forms in Flask application..
+        ''',
+        github='jarus/flask-fillin',
+        docs='http://packages.python.org/Flask-fillin/',
+    ),
     Extension('Flask-Gravatar', 'Zelenyak Aleksandr',
         description='''
             <p>
