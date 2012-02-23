@@ -280,7 +280,7 @@ If you're using Aptana/Eclipse for debugging you'll need to set both
 ``use_debugger`` and ``use_reloader`` to False.
 
 A possible useful pattern for configuration is to set the following in your
-config.yaml (change the block as approriate for your application, of course)::
+config.yaml (change the block as appropriate for your application, of course)::
 
    FLASK:
        DEBUG: True
