@@ -42,6 +42,9 @@ Relase date to be decided, codename to be chosen.
   using configuration values, e.g. ``app.run(app.config.get('MYHOST'),
   app.config.get('MYPORT'))``, with proper behavior whether or not a config
   file is provided.
+- The :meth:`flask.render_template` method now accepts a either an iterable of
+  template names or a single template name.  Previously, it only accepted a
+  single template name.  On an iterable, the first template found is rendered.
 
 
 Version 0.8.1
