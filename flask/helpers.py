@@ -92,6 +92,22 @@ def _endpoint_from_view_func(view_func):
 
 
 def jsonify(*args, **kwargs):
+    """Convenience function for calling
+    :func:`~flask.helpers.jsonify_status_code` with ``status_code`` equal to
+    200.
+
+    .. versionadded:: 0.2
+
+    .. versionchanged:: 0.9
+       This function now delegates to
+       :func:`~flask.helpers.jsonify_status_code`, setting the HTTP status code
+       to be 200.
+
+    """
+    return jsonify_status_code(200, *args, **kwargs)
+
+
+def jsonify_status_code(status_code, *args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
     the given arguments with an `application/json` mimetype.  The arguments
     to this function are the same as to the :class:`dict` constructor.
@@ -104,7 +120,8 @@ def jsonify(*args, **kwargs):
                            email=g.user.email,
                            id=g.user.id)
 
-    This will send a JSON response like this to the browser::
+    This will send a JSON response (with the response HTTP status code set to
+    `status_code`) like this to the browser::
 
         {
             "username": "admin",
@@ -116,12 +133,13 @@ def jsonify(*args, **kwargs):
     security reasons only objects are supported toplevel.  For more
     information about this, have a look at :ref:`json-security`.
 
-    .. versionadded:: 0.2
+    .. versionadded:: 0.9
     """
     if __debug__:
         _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+        indent=None if request.is_xhr else 2), mimetype='application/json',
+                                      status=status_code)
 
 
 def make_response(*args):
