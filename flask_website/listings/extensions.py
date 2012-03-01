@@ -141,38 +141,38 @@ extensions = [
             around it would be a good idea to decide on a common interface.
         '''
     ),
-    Extension('Flask-Mail', 'Dan Jacob',
+    Extension('Flask-Mail', 'Ron DuPlain (created by Dan Jacob)',
         description='''
             <p>Makes sending mails from Flask applications very easy and
             has also support for unittesting.
         ''',
-        bitbucket='danjac/flask-mail',
-        docs='http://packages.python.org/flask-mail/',
+        github='rduplain/flask-mail',
+        docs='http://packages.python.org/Flask-Mail/',
         approved=True
     ),
-    Extension('Flask-WTF', 'Dan Jacob',
+    Extension('Flask-WTF', 'Ron DuPlain (created by Dan Jacob)',
         description='''
             <p>Flask-WTF offers simple integration with WTForms. This
             integration includes optional CSRF handling for greater security.
         ''',
-        bitbucket='danjac/flask-wtf',
+        github='rduplain/flask-wtf',
         docs='http://packages.python.org/Flask-WTF/',
         approved=True
     ),
-    Extension('Flask-Testing', 'Dan Jacob',
+    Extension('Flask-Testing', 'Ron DuPlain (created by Dan Jacob)',
         description='''
             <p>The Flask-Testing extension provides unit testing utilities for Flask.
         ''',
-        bitbucket='danjac/flask-testing',
+        github='rduplain/flask-testing',
         docs='http://packages.python.org/Flask-Testing/',
         approved=True
     ),
-    Extension('Flask-Script', 'Dan Jacob',
+    Extension('Flask-Script', 'Ron DuPlain (created by Dan Jacob)',
         description='''
             <p>The Flask-Script extension provides support for writing external
             scripts in Flask. It uses argparse to parse command line arguments.
         ''',
-        bitbucket='danjac/flask-script',
+        github='rduplain/flask-script',
         docs='http://packages.python.org/Flask-Script/',
         approved=True,
         notes='''
