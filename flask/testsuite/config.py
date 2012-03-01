@@ -69,6 +69,24 @@ class ConfigTestCase(FlaskTestCase):
         finally:
             os.environ = env
 
+    def test_config_from_envvar_missing(self):
+        env = os.environ
+        try:
+            os.environ = {'FOO_SETTINGS': 'missing.cfg'}
+            try:
+                app = flask.Flask(__name__)
+                app.config.from_envvar('FOO_SETTINGS')
+            except IOError, e:
+                msg = str(e)
+                self.assert_(msg.startswith('[Errno 2] Unable to load configuration '
+                                            'file (No such file or directory):'))
+                self.assert_(msg.endswith("missing.cfg'"))
+            else:
+                self.assert_(0, 'expected config')
+            self.assert_(not app.config.from_envvar('FOO_SETTINGS', silent=True))
+        finally:
+            os.environ = env
+
     def test_config_missing(self):
         app = flask.Flask(__name__)
         try:
