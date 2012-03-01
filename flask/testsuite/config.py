@@ -82,8 +82,8 @@ class ConfigTestCase(FlaskTestCase):
                                             'file (No such file or directory):'))
                 self.assert_(msg.endswith("missing.cfg'"))
             else:
-                self.assert_(0, 'expected config')
-            self.assert_(not app.config.from_envvar('FOO_SETTINGS', silent=True))
+                self.fail('expected IOError')
+            self.assertFalse(app.config.from_envvar('FOO_SETTINGS', silent=True))
         finally:
             os.environ = env
 
