@@ -200,6 +200,17 @@ projects = {
         Project('Punchfork', 'http://punchfork.com', u'''
             <p>
               Recipe aggregator powered by social data.
+        '''),
+        Project('pycon.disqus.com', 'https://pycon.disqus.com/', u'''
+            <p>
+              PyCon with Disqus is a web application built on top of the Disqus
+              Web API. It's a place where you can ask questions and give
+              feedback about PyCon and meet likeminded individuals at the
+              conference.
+        '''),
+        Project('q-financial.com', 'http://www.q-financial.com/', u'''
+            <p>
+              Q-Financial | Historical Equity Data API.
         ''')
     ],
     'apps': [
