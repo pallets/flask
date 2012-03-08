@@ -44,6 +44,12 @@ projects = {
         Project(u's h o r e … software development', 'http://shore.be/', '''
             <p>Corporate website of Shore Software Development.
         '''),
+        Project(u'Radio eXodus', 'https://www.radio-exodus.de/', '''
+            <p>
+              Radio eXodus is a german internet radio station featuring mostly
+              metal and hard rock. Since 2007 the DJs and reporters provide
+              their listeners with news, reviews, feature shows and interviews.
+        '''),
         # this one might change URL soon, check on each update
         Project('rdrei.net', 'http://new.rdrei.net/', '''
             <p>Personal website of Pascal Hartig.
