@@ -274,8 +274,14 @@ projects = {
               Pastebin app with Flask and a few extensions that does Facebook
               connect as well as realtime push notifications with socket.io
               and juggernaut.
-        ''', source='http://github.com/mitsuhiko/flask-pastebin')
+        ''', source='http://github.com/mitsuhiko/flask-pastebin'),
+        Project('newsmeme', 'http://bitbucket.org/danjac/newsmeme', u'''
+            <p>
+              A hackernews/reddit clone written with Flask and
+              various Flask extensions.
+        ''', source='http://bitbucket.org/danjac/newsmeme'),
     ]
+
 }
 
 
