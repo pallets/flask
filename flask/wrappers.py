@@ -10,49 +10,12 @@
 """
 
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
-from werkzeug.exceptions import BadRequest, HTTPException
 from werkzeug.utils import cached_property
 
+from .exceptions import JSONBadRequest
 from .debughelpers import attach_enctype_error_multidict
 from .helpers import json, _assert_have_json
 from .globals import _request_ctx_stack
-
-
-class JSONHTTPException(HTTPException):
-    """A base class for HTTP exceptions with ``Content-Type:
-    application/json``.
-
-    The ``description`` attribute of this class must set to a string (*not* an
-    HTML string) which describes the error.
-
-    """
-
-    def get_body(self, environ):
-        """Overrides :meth:`werkzeug.exceptions.HTTPException.get_body` to
-        return the description of this error in JSON format instead of HTML.
-
-        """
-        return json.dumps(dict(description=self.get_description(environ)))
-
-    def get_headers(self, environ):
-        """Returns a list of headers including ``Content-Type:
-        application/json``.
-
-        """
-        return [('Content-Type', 'application/json')]
-
-
-class JSONBadRequest(JSONHTTPException, BadRequest):
-    """Represents an HTTP ``400 Bad Request`` error whose body contains an
-    error message in JSON format instead of HTML format (as in the superclass).
-
-    """
-
-    #: The description of the error which occurred as a string.
-    description = (
-        'The browser (or proxy) sent a request that this server could not '
-        'understand.'
-    )
 
 
 class Request(RequestBase):
