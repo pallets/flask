@@ -119,15 +119,16 @@ def jsonify(*args, **kwargs):
     .. versionadded:: 0.2
 
     .. versionadded:: 0.9
-        If the argument ``padded`` true than the json object will pad for
-        JSONP calls like from jquery. The response mimetype will also change
-        to ``text/javascript``.
+        If the ``padded`` argument is true, the JSON object will be padded
+        for JSONP calls and the response mimetype will be changed to 
+        ``text/javascript``. By default, the request arguments ``callback``
+        and ``jsonp`` will be used as the name for the callback function.
+        This will work with jQuery and most other JavaScript libraries
+        by default.
 
-        The json object will pad as javascript function with the function name 
-        from the request argument ``callback`` or ``jsonp``. If the argument
-        ``padded`` a string jsonify will look for the function name in the
-        request argument with the name which is equal to ``padded``. Is there
-        no function name it will fallback and use ``jsonp`` as function name.
+        If the ``padded`` argument is a string, jsonify will look for
+        the request argument with the same name and use that value as the
+        callback-function name.
     """
     if __debug__:
         _assert_have_json()
