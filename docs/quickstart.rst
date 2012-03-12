@@ -827,28 +827,6 @@ can do it like this::
     from werkzeug.contrib.fixers import LighttpdCGIRootFix
     app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
 
-Share your Local Server with a Friend
--------------------------------------
-
-`Localtunnel <http://progrium.com/localtunnel/>`_ is a neat tool you can use to
-quickly share your local Flask server to a friend.
-
-To install Localtunnel, open a terminal and run the following command::
-
-    sudo gem install localtunnel
-
-Then, with Flask running at ``http://localhost:5000``, open a new Terminal window
-and type::
-
-    localtunnel 5000
-    Port 5000 is now publicly accessible from http://54xy.localtunnel.com ...
-
-*(Get a*  ``gem: command not found``  *error? Download RubyGems*
-`here <http://rubygems.org/pages/download>`_ *.)*
-
-If you load the URL given in the localtunnel output in your browser, you
-should see your Flask app. It's actually being loaded from your own computer!
-
 Deploying to a Web Server
 -------------------------
 
@@ -863,3 +841,4 @@ easy for you to do so.
 - `Deploying Flask on ep.io <https://www.ep.io/docs/quickstart/flask/>`_
 - `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
 - `Deploying Flask on Google App Engine <https://github.com/kamalgill/flask-appengine-template>`_
+- `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
