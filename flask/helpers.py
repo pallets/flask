@@ -495,7 +495,8 @@ def send_from_directory(directory, filename, **options):
     filename = safe_join(directory, filename)
     if not os.path.isfile(filename):
         raise NotFound()
-    return send_file(filename, conditional=True, **options)
+    options.setdefault('conditional', True)
+    return send_file(filename, **options)
 
 
 def get_root_path(import_name):
@@ -651,6 +652,11 @@ class _PackageBoundObject(object):
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
+    def get_static_file_options(self, filename):
+        """Function used internally to determine what keyword arguments
+        to send to :func:`send_from_directory` for a specific file."""
+        return {}
+
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
         folder to the browser.
@@ -659,7 +665,8 @@ class _PackageBoundObject(object):
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
-        return send_from_directory(self.static_folder, filename)
+        return send_from_directory(self.static_folder, filename,
+                **self.get_static_file_options(filename))
 
     def open_resource(self, resource, mode='rb'):
         """Opens a resource from the application's resource folder.  To see
