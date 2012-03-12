@@ -121,7 +121,7 @@ def jsonify(*args, **kwargs):
     .. versionadded:: 0.9
         If the ``padded`` argument is true, the JSON object will be padded
         for JSONP calls and the response mimetype will be changed to 
-        ``text/javascript``. By default, the request arguments ``callback``
+        ``application/javascript``. By default, the request arguments ``callback``
         and ``jsonp`` will be used as the name for the callback function.
         This will work with jQuery and most other JavaScript libraries
         by default.
@@ -141,7 +141,7 @@ def jsonify(*args, **kwargs):
         del kwargs['padded']
         json_str = json.dumps(dict(*args, **kwargs), indent=None)
         content = str(callback) + "(" + json_str + ")"
-        return current_app.response_class(content, mimetype='text/javascript')
+        return current_app.response_class(content, mimetype='application/javascript')
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
