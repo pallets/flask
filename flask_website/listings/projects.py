@@ -215,8 +215,9 @@ projects = {
               geocron can send a text message reading "Pick me up dear" to your
               spouse.
         '''),
-        Project('Cockerel', 'http://dcolish.github.com/Cockerel/', '''
-            <p>An Online Logic Assistent Based on Coq.
+        Project('Cockerel', None, '''
+            <p>
+              An Online Logic Assistent Based on Coq.
         ''', source='http://github.com/dcolish/Cockerel'),
         Project('Ryshcate', 'http://ryshcate.leafstorm.us/', '''
             <p>
@@ -225,9 +226,10 @@ projects = {
         ''', source='http://bitbucket.org/leafstorm/ryshcate/'),
         Project(u'Übersuggest Keyword Suggestion Tool',
                 'http://suggest.thinkpragmatic.net/', u'''
-            <p>Übersuggest is a free tool that exploit the Google
-            suggest JSON API to get keyword ideas for your search marketing
-            campaign (PPC or SEO).
+            <p>
+              Übersuggest is a free tool that exploit the Google
+              suggest JSON API to get keyword ideas for your search marketing
+              campaign (PPC or SEO).
         ''', source='http://bitbucket.org/esaurito/ubersuggest'),
         Project(u'@font-face { … }', 'http://fontface.kr/', u'''
             <p>
@@ -244,24 +246,23 @@ projects = {
                neat and interesting.  Store it on Remar.kZ without having
                to enter your credentials.
         ''', source='http://bitbucket.org/little_arhat/remarkz'),
-        Project('Dominion', 'http://alexanderweb.de:8080/', u'''
+        Project('Dominion', None, u'''
             <p>
               Domination is a clone of a well-known card game.
         ''', source='https://bitbucket.org/xoraxax/domination/'),
-        Project('jitviewer', 'https://bitbucket.org/pypy/jitviewer', '''
+        Project('jitviewer', None, '''
             <p>
               web-based tool to inspect the output of PyPy JIT log
-        '''),
-        Project('blohg', 'http://hg.rafaelmartins.eng.br/blohg/', '''
+        ''', source='https://bitbucket.org/pypy/jitviewer'),
+        Project('blohg', None, '''
             <p>
-              A mercurial based blog engine.  Can be seen in action on
-              <a href="http://rafaelmartins.eng.br/">rafaelmartins.eng.br</a>.
+              A mercurial based blog engine.
         ''', source='http://hg.rafaelmartins.eng.br/blohg/'),
         Project('pidsim-web', 'http://pidsim.rafaelmartins.eng.br/?source=en_US', '''
             <p>
               PID Controller simulator.
         ''', source='http://hg.rafaelmartins.eng.br/pidsim-web/'),
-                Project('HTTPBin', 'http://httpbin.org/', u'''
+        Project('HTTPBin', 'http://httpbin.org/', u'''
             <p>
               An HTTP request & response service.
         ''', source='https://github.com/kennethreitz/httpbin'),
@@ -270,13 +271,13 @@ projects = {
               Instamator generates usable feeds from your Instagram “likes”
               so you can use them as you wish.
         '''),
-        Project('Flask-Pastebin', 'http://github.com/mitsuhiko/flask-pastebin', u'''
+        Project('Flask-Pastebin', None, u'''
             <p>
               Pastebin app with Flask and a few extensions that does Facebook
               connect as well as realtime push notifications with socket.io
               and juggernaut.
         ''', source='http://github.com/mitsuhiko/flask-pastebin'),
-        Project('newsmeme', 'http://bitbucket.org/danjac/newsmeme', u'''
+        Project('newsmeme', None, u'''
             <p>
               A hackernews/reddit clone written with Flask and
               various Flask extensions.
@@ -284,6 +285,7 @@ projects = {
     ]
 
 }
+
 
 
 # order projects by name
