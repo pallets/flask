@@ -169,8 +169,8 @@ The following converters exist:
 .. admonition:: Unique URLs / Redirection Behaviour
 
    Flask's URL rules are based on Werkzeug's routing module.  The idea behind
-   that module is to ensure beautiful and unique also unique URLs based on
-   precedents laid down by Apache and earlier HTTP servers.
+   that module is to ensure beautiful and unique URLs based on precedents
+   laid down by Apache and earlier HTTP servers.
 
    Take these two rules::
 
