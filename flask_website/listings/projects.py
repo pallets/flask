@@ -67,11 +67,6 @@ projects = {
               Meetup Meeter is a tool for you to know who you have and have not
               met at a particular meetup event.
         '''),
-        Project('newsmeme', 'http://thenewsmeme.com/', u'''
-            <p>
-              A hackernews/reddit clone written with Flask and
-              various Flask extensions.
-        ''', source='http://bitbucket.org/danjac/newsmeme'),
         Project('ymasuda.jp', 'http://ymasuda.jp/', u'''
             <p>
               Personal website of Yasushi Masuda.
@@ -100,10 +95,6 @@ projects = {
             <p>
               A website monitoring service.
         '''),
-        Project('Eugen\'s Blog', 'http://blog.eugenkiss.com/', u'''
-            <p>
-              Personal Website of Eugen Kiss.
-        ''', source='http://github.com/eugenkiss/Simblin'),
         Project('Blueslug', 'http://blueslug.com/', u'''
             <p>
               A flask-powered anti-social delicious clone
@@ -120,14 +111,6 @@ projects = {
         Project('Papyrus Research', 'http://www.papyrusresearch.com/', u'''
             <p>
               The website of Papyrus Research, a market research company.
-        '''),
-        Project('Viewfinder', 'http://viewfinder.io/', u'''
-            <p>
-              A website that helps you find photos you'll like on Flickr.
-        '''),
-        Project('Daily Lyric', 'http://dailylyric.appspot.com/', u'''
-            <p>
-              Gives a random song lyric every day
         '''),
         Project('Nexuo Community', 'http://community.nuxeo.com/', u'''
             <p>
@@ -171,14 +154,6 @@ projects = {
               A website to collect feedback of Python third party
               libraries about its compatibility with Python 3
         ''', source='https://github.com/baijum/getpython3'),
-        Project('Expert.io', 'http://expert.io/', u'''
-            <p>
-              Marketplace for your Expertise.
-        '''),
-        Project('ahall.org', 'http://ahall.org/', u'''
-            <p>
-              Alfred Hall on software development
-        '''),
         Project('Steyr Touristik GmbH', 'http://www.steyr-touristik.at/', u'''
             <p>
               Website of the Austrian Steyr Touristik GmbH.
