@@ -8,7 +8,7 @@ should or should not be using it.
 What does "micro" mean?
 -----------------------
 
-To me, the "micro" in microframework refers not only to the simplicity and
+As Flask considers it, the "micro" in microframework refers not only to the simplicity and
 small size of the framework, but also the fact that it does not make many
 decisions for you.  While Flask does pick a templating engine for you, we
 won't make such decisions for your datastore or other parts.
@@ -55,7 +55,7 @@ section about :ref:`design`.
 Web Development is Dangerous
 ----------------------------
 
-I'm not joking.  Well, maybe a little.  If you write a web
+If you write a web
 application, you are probably allowing users to register and leave their
 data on your server.  The users are entrusting you with data.  And even if
 you are the only user that might leave data in your application, you still
