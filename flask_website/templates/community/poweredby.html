@@ -1,15 +1,24 @@
 {% extends "community/layout.html" %}
 {% block title %}Powered By Flask{% endblock %}
+{% macro project_url(project) %}
+{%- if project.url -%}
+  {{ project.url }}
+ {%- elif project.source -%}
+  {{ project.source }}
+{%- endif -%}
+{% endmacro %}
 {% macro render_projects(kind) %}
   {% for project in projects[kind] %}
   <div class=project>
-    <h4><a href="{{ project.url }}">{{ project.name }}</a></h4>
+    <h4><a href="{{ project_url(project) }}">{{ project.name }}</a></h4>
     <div class=description>
       {{ project.description }}
     </div>
     <dl>
+      {% if project.url %}
       <dt>URL:
       <dd><a href="{{ project.url }}">{{ project.host }}</a>
+      {% endif %}
       {% if project.source %}
       <dt>Sourcecode:
       <dd><a href="{{ project.source }}">{{ project.sourcehost }}</a>
@@ -23,7 +32,7 @@
   <p>
     This is a list of websites and projects that disclosed that they
     are running on Flask.  If you want your own website or project
-    listed here, 
+    listed here,
     <a href=mailto:armin.ronacher@active-4.com>send me a mail</a>
     with the URL, name and description of the website.
   <h3>Websites</h3>

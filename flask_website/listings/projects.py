@@ -13,7 +13,8 @@ class Project(object):
 
     @property
     def host(self):
-        return urlparse(self.url)[1]
+        if self.url is not None:
+            return urlparse(self.url)[1]
 
     @property
     def sourcehost(self):
