@@ -852,12 +852,13 @@ should see your Flask app. It's actually being loaded from your own computer!
 Deploying to a Web Server
 -------------------------
 
-`Heroku <http://www.heroku.com>`_ offers a free web platform to host your
-Flask app, and is the easiest way for you to put your Flask app online.
-They have excellent instructions on how to deploy your Flask app `here
-<http://devcenter.heroku.com/articles/python>`_.
+If you want to make your Flask app available to the Internet at large, `Heroku
+<http://www.heroku.com>`_ is very easy to set up and will run small Flask
+applications for free. `Check out their tutorial on how to deploy Flask apps on
+their service <http://devcenter.heroku.com/articles/python>`_.
 
-Other resources for deploying Flask apps:
+There are a number of other websites that will host your Flask app and make it
+easy for you to do so.
 
 - `Deploying Flask on ep.io <https://www.ep.io/docs/quickstart/flask/>`_
 - `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
