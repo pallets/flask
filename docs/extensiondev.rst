@@ -332,9 +332,9 @@ extension to be approved you have to follow these guidelines:
 2.  It must ship a testing suite that can either be invoked with ``make test``
     or ``python setup.py test``.  For test suites invoked with ``make
     test`` the extension has to ensure that all dependencies for the test
-    are installed automatically, in case of ``python setup.py test``
-    dependencies for tests alone can be specified in the `setup.py`
-    file.  The test suite also has to be part of the distribution.
+    are installed automatically.  If tests are invoked with ``python setup.py
+    test``, test dependencies can be specified in the `setup.py` file.  The
+    test suite also has to be part of the distribution.
 3.  APIs of approved extensions will be checked for the following
     characteristics:
 
