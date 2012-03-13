@@ -827,18 +827,25 @@ can do it like this::
     from werkzeug.contrib.fixers import LighttpdCGIRootFix
     app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
 
+.. _quickstart_deployment:
+
 Deploying to a Web Server
 -------------------------
 
-If you want to make your Flask app available to the Internet at large, `Heroku
-<http://www.heroku.com>`_ is very easy to set up and will run small Flask
-applications for free. `Check out their tutorial on how to deploy Flask apps on
-their service <http://devcenter.heroku.com/articles/python>`_.
+Ready to deploy your new Flask app?  To wrap up the quickstart, you can
+immediately deploy to a hosted platform, all of which offer a free plan for
+small projects:
 
-There are a number of other websites that will host your Flask app and make it
-easy for you to do so.
-
+- `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
 - `Deploying Flask on ep.io <https://www.ep.io/docs/quickstart/flask/>`_
+- `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
+  with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
+
+Other places where you can host your Flask app:
+
 - `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
 - `Deploying Flask on Google App Engine <https://github.com/kamalgill/flask-appengine-template>`_
 - `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
+
+If you manage your own hosts and would like to host yourself, see the chapter
+on :ref:`deployment`.

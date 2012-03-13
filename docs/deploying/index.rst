@@ -13,6 +13,9 @@ If you have a different WSGI server look up the server documentation
 about how to use a WSGI app with it.  Just remember that your
 :class:`Flask` application object is the actual WSGI application.
 
+For hosted options to get up and running quickly, see
+:ref:`quickstart_deployment` in the Quickstart.
+
 .. toctree::
    :maxdepth: 2
 
