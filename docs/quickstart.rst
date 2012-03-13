@@ -168,8 +168,8 @@ The following converters exist:
 
 .. admonition:: Unique URLs / Redirection Behaviour
 
-   Flask's URL rules are based on Werkzeug's routing module.  The idea behind
-   that module is to ensure beautiful and unique also unique URLs based on
+   Flask's URL rules are based on Werkzeug's routing module.  The idea
+   behind that module is to ensure beautiful and unique URLs based on
    precedents laid down by Apache and earlier HTTP servers.
 
    Take these two rules::
@@ -234,7 +234,7 @@ some examples:
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method, explained
 below.  It tells Flask to behave as though it is handling a request, even
-though were are interacting with it through a Python shell.  Have a look at the
+though we are interacting with it through a Python shell.  Have a look at the
 explanation below. :ref:`context-locals`).
 
 Why would you want to build URLs instead of hard-coding them into your
