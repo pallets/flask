@@ -48,10 +48,14 @@ Relase date to be decided, codename to be chosen.
 - View functions can now return a tuple with the first instance being an
   instance of :class:`flask.Response`.  This allows for returning
   ``jsonify(error="error msg"), 400`` from a view function.
-- :class:`flask.Flask` now provides a `get_static_file_options` hook for
-  subclasses to override behavior of serving static files through Flask,
-  optionally by filename, which for example allows changing cache controls by
-  file extension.
+- :class:`flask.Flask` now provides a `get_send_file_options` hook for
+  subclasses to override behavior of serving static files from Flask when using
+  :meth:`flask.Flask.send_static_file` based on keywords in
+  :func:`flask.helpers.send_file`.  This hook is provided a filename, which for
+  example allows changing cache controls by file extension.  The default
+  max-age for `send_static_file` can be configured through a new
+  ``SEND_FILE_MAX_AGE_DEFAULT`` configuration variable, regardless of whether
+  the `get_send_file_options` hook is used.
 
 
 Version 0.8.1

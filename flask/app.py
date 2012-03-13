@@ -249,6 +249,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_HTTPONLY':              True,
         'SESSION_COOKIE_SECURE':                False,
         'MAX_CONTENT_LENGTH':                   None,
+        'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False
     })
@@ -1019,6 +1020,12 @@ class Flask(_PackageBoundObject):
         else:
             self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
                 .append((code_or_exception, f))
+
+    def get_send_file_options(self, filename):
+        # Override: Hooks in SEND_FILE_MAX_AGE_DEFAULT config.
+        options = super(Flask, self).get_send_file_options(filename)
+        options['cache_timeout'] = self.config['SEND_FILE_MAX_AGE_DEFAULT']
+        return options
 
     @setupmethod
     def template_filter(self, name=None):

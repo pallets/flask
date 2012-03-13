@@ -319,6 +319,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
 
+    Note `get_send_file_options` in :class:`flask.Flask` hooks the
+    ``SEND_FILE_MAX_AGE_DEFAULT`` configuration variable to set the default
+    cache_timeout.
+
     Please never pass filenames to this function from user sources without
     checking them first.  Something like this is usually sufficient to
     avoid security problems::
@@ -652,7 +656,7 @@ class _PackageBoundObject(object):
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
-    def get_static_file_options(self, filename):
+    def get_send_file_options(self, filename):
         """Provides keyword arguments to send to :func:`send_from_directory`.
 
         This allows subclasses to change the behavior when sending files based
@@ -660,14 +664,14 @@ class _PackageBoundObject(object):
         to 60 seconds (note the options are keywords for :func:`send_file`)::
 
             class MyFlask(flask.Flask):
-                def get_static_file_options(self, filename):
-                    options = super(MyFlask, self).get_static_file_options(filename)
+                def get_send_file_options(self, filename):
+                    options = super(MyFlask, self).get_send_file_options(filename)
                     if filename.lower().endswith('.js'):
                         options['cache_timeout'] = 60
                         options['conditional'] = True
                     return options
 
-        .. versionaded:: 0.9
+        .. versionadded:: 0.9
         """
         return {}
 
@@ -680,7 +684,7 @@ class _PackageBoundObject(object):
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
         return send_from_directory(self.static_folder, filename,
-                **self.get_static_file_options(filename))
+                **self.get_send_file_options(filename))
 
     def open_resource(self, resource, mode='rb'):
         """Opens a resource from the application's resource folder.  To see

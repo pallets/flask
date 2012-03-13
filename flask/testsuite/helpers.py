@@ -206,15 +206,20 @@ class SendfileTestCase(FlaskTestCase):
 
     def test_static_file(self):
         app = flask.Flask(__name__)
-        # default cache timeout is 12 hours (hard-coded)
+        # default cache timeout is 12 hours
         with app.test_request_context():
             rv = app.send_static_file('index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 12 * 60 * 60)
-        # override get_static_file_options with some new values and check them
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+        with app.test_request_context():
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 3600)
+        # override get_send_file_options with some new values and check them
         class StaticFileApp(flask.Flask):
-            def get_static_file_options(self, filename):
-                opts = super(StaticFileApp, self).get_static_file_options(filename)
+            def get_send_file_options(self, filename):
+                opts = super(StaticFileApp, self).get_send_file_options(filename)
                 opts['cache_timeout'] = 10
                 # this test catches explicit inclusion of the conditional
                 # keyword arg in the guts
