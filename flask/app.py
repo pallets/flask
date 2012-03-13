@@ -1361,7 +1361,21 @@ class Flask(_PackageBoundObject):
         if isinstance(rv, basestring):
             return self.response_class(rv)
         if isinstance(rv, tuple):
-            return self.response_class(*rv)
+            if len(rv) > 0 and isinstance(rv[0], self.response_class):
+                original = rv[0]
+                new_response = self.response_class('', *rv[1:])
+                if len(rv) < 3:
+                    # The args for the response class are
+                    # response=None, status=None, headers=None,
+                    # mimetype=None, content_type=None, ...
+                    # so if there's at least 3 elements the rv
+                    # tuple contains header information so the
+                    # headers from rv[0] "win."
+                    new_response.headers = original.headers
+                new_response.response = original.response
+                return new_response
+            else:
+                return self.response_class(*rv)
         return self.response_class.force_type(rv, request.environ)
 
     def create_url_adapter(self, request):
