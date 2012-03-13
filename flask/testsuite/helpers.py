@@ -17,7 +17,7 @@ import unittest
 from logging import StreamHandler
 from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
-from werkzeug.http import parse_options_header
+from werkzeug.http import parse_cache_control_header, parse_options_header
 
 
 def has_encoding(name):
@@ -203,6 +203,30 @@ class SendfileTestCase(FlaskTestCase):
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             self.assert_equal(value, 'attachment')
             self.assert_equal(options['filename'], 'index.txt')
+
+    def test_static_file(self):
+        app = flask.Flask(__name__)
+        # default cache timeout is 12 hours (hard-coded)
+        with app.test_request_context():
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 12 * 60 * 60)
+        # override get_static_file_options with some new values and check them
+        class StaticFileApp(flask.Flask):
+            def __init__(self):
+                super(StaticFileApp, self).__init__(__name__)
+            def get_static_file_options(self, filename):
+                opts = super(StaticFileApp, self).get_static_file_options(filename)
+                opts['cache_timeout'] = 10
+                # this test catches explicit inclusion of the conditional
+                # keyword arg in the guts
+                opts['conditional'] = True
+                return opts
+        app = StaticFileApp()
+        with app.test_request_context():
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 10)
 
 
 class LoggingTestCase(FlaskTestCase):
