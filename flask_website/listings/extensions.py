@@ -463,6 +463,15 @@ extensions = [
         docs='http://readthedocs.org/docs/flask-pymongo/',
         github='dcrosta/flask-pymongo',
     ),
+    Extension('Flask-Raptor', 'Dan Lepage',
+        description='''
+            <p>
+              Flask-Raptor provides support for adding raptors
+              to Flask instances.
+        ''',
+        docs='http://packages.python.org/Flask-Raptor/',
+        github='dplepage/flask-raptor',
+    ),
 ]
 
 
