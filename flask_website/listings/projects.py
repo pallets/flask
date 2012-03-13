@@ -13,7 +13,8 @@ class Project(object):
 
     @property
     def host(self):
-        return urlparse(self.url)[1]
+        if self.url is not None:
+            return urlparse(self.url)[1]
 
     @property
     def sourcehost(self):
@@ -67,11 +68,6 @@ projects = {
               Meetup Meeter is a tool for you to know who you have and have not
               met at a particular meetup event.
         '''),
-        Project('newsmeme', 'http://thenewsmeme.com/', u'''
-            <p>
-              A hackernews/reddit clone written with Flask and
-              various Flask extensions.
-        ''', source='http://bitbucket.org/danjac/newsmeme'),
         Project('ymasuda.jp', 'http://ymasuda.jp/', u'''
             <p>
               Personal website of Yasushi Masuda.
@@ -100,10 +96,6 @@ projects = {
             <p>
               A website monitoring service.
         '''),
-        Project('Eugen\'s Blog', 'http://blog.eugenkiss.com/', u'''
-            <p>
-              Personal Website of Eugen Kiss.
-        ''', source='http://github.com/eugenkiss/Simblin'),
         Project('Blueslug', 'http://blueslug.com/', u'''
             <p>
               A flask-powered anti-social delicious clone
@@ -120,14 +112,6 @@ projects = {
         Project('Papyrus Research', 'http://www.papyrusresearch.com/', u'''
             <p>
               The website of Papyrus Research, a market research company.
-        '''),
-        Project('Viewfinder', 'http://viewfinder.io/', u'''
-            <p>
-              A website that helps you find photos you'll like on Flickr.
-        '''),
-        Project('Daily Lyric', 'http://dailylyric.appspot.com/', u'''
-            <p>
-              Gives a random song lyric every day
         '''),
         Project('Nexuo Community', 'http://community.nuxeo.com/', u'''
             <p>
@@ -171,14 +155,6 @@ projects = {
               A website to collect feedback of Python third party
               libraries about its compatibility with Python 3
         ''', source='https://github.com/baijum/getpython3'),
-        Project('Expert.io', 'http://expert.io/', u'''
-            <p>
-              Marketplace for your Expertise.
-        '''),
-        Project('ahall.org', 'http://ahall.org/', u'''
-            <p>
-              Alfred Hall on software development
-        '''),
         Project('Steyr Touristik GmbH', 'http://www.steyr-touristik.at/', u'''
             <p>
               Website of the Austrian Steyr Touristik GmbH.
@@ -239,8 +215,9 @@ projects = {
               geocron can send a text message reading "Pick me up dear" to your
               spouse.
         '''),
-        Project('Cockerel', 'http://dcolish.github.com/Cockerel/', '''
-            <p>An Online Logic Assistent Based on Coq.
+        Project('Cockerel', None, '''
+            <p>
+              An Online Logic Assistent Based on Coq.
         ''', source='http://github.com/dcolish/Cockerel'),
         Project('Ryshcate', 'http://ryshcate.leafstorm.us/', '''
             <p>
@@ -249,9 +226,10 @@ projects = {
         ''', source='http://bitbucket.org/leafstorm/ryshcate/'),
         Project(u'Übersuggest Keyword Suggestion Tool',
                 'http://suggest.thinkpragmatic.net/', u'''
-            <p>Übersuggest is a free tool that exploit the Google
-            suggest JSON API to get keyword ideas for your search marketing
-            campaign (PPC or SEO).
+            <p>
+              Übersuggest is a free tool that exploit the Google
+              suggest JSON API to get keyword ideas for your search marketing
+              campaign (PPC or SEO).
         ''', source='http://bitbucket.org/esaurito/ubersuggest'),
         Project(u'@font-face { … }', 'http://fontface.kr/', u'''
             <p>
@@ -268,24 +246,23 @@ projects = {
                neat and interesting.  Store it on Remar.kZ without having
                to enter your credentials.
         ''', source='http://bitbucket.org/little_arhat/remarkz'),
-        Project('Dominion', 'http://alexanderweb.de:8080/', u'''
+        Project('Dominion', None, u'''
             <p>
               Domination is a clone of a well-known card game.
         ''', source='https://bitbucket.org/xoraxax/domination/'),
-        Project('jitviewer', 'https://bitbucket.org/pypy/jitviewer', '''
+        Project('jitviewer', None, '''
             <p>
               web-based tool to inspect the output of PyPy JIT log
-        '''),
-        Project('blohg', 'http://hg.rafaelmartins.eng.br/blohg/', '''
+        ''', source='https://bitbucket.org/pypy/jitviewer'),
+        Project('blohg', None, '''
             <p>
-              A mercurial based blog engine.  Can be seen in action on
-              <a href="http://rafaelmartins.eng.br/">rafaelmartins.eng.br</a>.
+              A mercurial based blog engine.
         ''', source='http://hg.rafaelmartins.eng.br/blohg/'),
         Project('pidsim-web', 'http://pidsim.rafaelmartins.eng.br/?source=en_US', '''
             <p>
               PID Controller simulator.
         ''', source='http://hg.rafaelmartins.eng.br/pidsim-web/'),
-                Project('HTTPBin', 'http://httpbin.org/', u'''
+        Project('HTTPBin', 'http://httpbin.org/', u'''
             <p>
               An HTTP request & response service.
         ''', source='https://github.com/kennethreitz/httpbin'),
@@ -294,14 +271,21 @@ projects = {
               Instamator generates usable feeds from your Instagram “likes”
               so you can use them as you wish.
         '''),
-        Project('Flask-Pastebin', 'http://github.com/mitsuhiko/flask-pastebin', u'''
+        Project('Flask-Pastebin', None, u'''
             <p>
               Pastebin app with Flask and a few extensions that does Facebook
               connect as well as realtime push notifications with socket.io
               and juggernaut.
-        ''', source='http://github.com/mitsuhiko/flask-pastebin')
+        ''', source='http://github.com/mitsuhiko/flask-pastebin'),
+        Project('newsmeme', None, u'''
+            <p>
+              A hackernews/reddit clone written with Flask and
+              various Flask extensions.
+        ''', source='http://bitbucket.org/danjac/newsmeme'),
     ]
+
 }
+
 
 
 # order projects by name
