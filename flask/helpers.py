@@ -653,8 +653,22 @@ class _PackageBoundObject(object):
                                                  self.template_folder))
 
     def get_static_file_options(self, filename):
-        """Function used internally to determine what keyword arguments
-        to send to :func:`send_from_directory` for a specific file."""
+        """Provides keyword arguments to send to :func:`send_from_directory`.
+
+        This allows subclasses to change the behavior when sending files based
+        on the filename.  For example, to set the cache timeout for .js files
+        to 60 seconds (note the options are keywords for :func:`send_file`)::
+
+            class MyFlask(flask.Flask):
+                def get_static_file_options(self, filename):
+                    options = super(MyFlask, self).get_static_file_options(filename)
+                    if filename.lower().endswith('.js'):
+                        options['cache_timeout'] = 60
+                        options['conditional'] = True
+                    return options
+
+        .. versionaded:: 0.9
+        """
         return {}
 
     def send_static_file(self, filename):

@@ -213,8 +213,6 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_equal(cc.max_age, 12 * 60 * 60)
         # override get_static_file_options with some new values and check them
         class StaticFileApp(flask.Flask):
-            def __init__(self):
-                super(StaticFileApp, self).__init__(__name__)
             def get_static_file_options(self, filename):
                 opts = super(StaticFileApp, self).get_static_file_options(filename)
                 opts['cache_timeout'] = 10
@@ -222,7 +220,7 @@ class SendfileTestCase(FlaskTestCase):
                 # keyword arg in the guts
                 opts['conditional'] = True
                 return opts
-        app = StaticFileApp()
+        app = StaticFileApp(__name__)
         with app.test_request_context():
             rv = app.send_static_file('index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
