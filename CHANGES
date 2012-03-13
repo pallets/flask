@@ -45,6 +45,9 @@ Relase date to be decided, codename to be chosen.
 - The :meth:`flask.render_template` method now accepts a either an iterable of
   template names or a single template name.  Previously, it only accepted a
   single template name.  On an iterable, the first template found is rendered.
+- View functions can now return a tuple with the first instance being an
+  instance of :class:`flask.Response`.  This allows for returning
+  ``jsonify(error="error msg"), 400`` from a view function.
 
 
 Version 0.8.1

@@ -659,6 +659,35 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(rv.data, 'W00t')
             self.assert_equal(rv.mimetype, 'text/html')
 
+    def test_make_response_with_response_instance(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.make_response(
+                flask.jsonify({'msg': 'W00t'}), 400)
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.data,
+                             '{\n  "msg": "W00t"\n}')
+            self.assertEqual(rv.mimetype, 'application/json')
+
+            rv = flask.make_response(
+                flask.Response(''), 400)
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.data, '')
+            self.assertEqual(rv.mimetype, 'text/html')
+
+            rv = flask.make_response(
+                flask.Response('', headers={'Content-Type': 'text/html'}),
+                400, None, 'application/json')
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.headers['Content-Type'], 'application/json')
+
+            rv = flask.make_response(
+                flask.Response('', mimetype='application/json'),
+                400, {'Content-Type': 'text/html'})
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.headers['Content-Type'], 'text/html')
+
+
     def test_url_generation(self):
         app = flask.Flask(__name__)
         @app.route('/hello/<name>', methods=['POST'])
