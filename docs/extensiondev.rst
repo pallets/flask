@@ -326,6 +326,10 @@ new releases.  These approved extensions are listed on the `Flask
 Extension Registry`_ and marked appropriately.  If you want your own
 extension to be approved you have to follow these guidelines:
 
+0.  An approved Flask extension requires a maintainer. In the event an
+    extension author would like to move beyond the project, the project should
+    find a new maintainer including full source hosting transition and PyPI
+    access.  If no maintainer is available, give access to the Flask core team.
 1.  An approved Flask extension must provide exactly one package or module
     named ``flask_extensionname``.  They might also reside inside a
     ``flaskext`` namespace packages though this is discouraged now.
