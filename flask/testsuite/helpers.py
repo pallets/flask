@@ -67,6 +67,25 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv.mimetype, 'application/json')
             self.assert_equal(flask.json.loads(rv.data), d)
 
+    def test_jsonify_status_code(self):
+        d = dict(a=23, b=42, c=[1, 2, 3])
+        app = flask.Flask(__name__)
+        app.config['DEBUG'] = True
+        app.testing = True
+        @app.route('/kw/<int:status>')
+        def return_kwargs(status):
+            return flask.jsonify_status_code(status, **d)
+        @app.route('/dict/<int:status>')
+        def return_dict(status):
+            return flask.jsonify_status_code(status, d)
+        c = app.test_client()
+        for url in '/kw', '/dict':
+            for status_code in (200, 400, 404):
+                rv = c.get(url + '/' + str(status_code))
+                self.assert_equal(rv.status_code, status_code)
+                self.assert_equal(rv.mimetype, 'application/json')
+                self.assert_equal(flask.json.loads(rv.data), d)
+
     def test_json_attr(self):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])

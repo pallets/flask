@@ -308,6 +308,8 @@ Returning JSON
 
 .. autofunction:: jsonify
 
+.. autofunction:: jsonify_status_code
+
 .. data:: json
 
     If JSON support is picked up, this will be the module that Flask is
