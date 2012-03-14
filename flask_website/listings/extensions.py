@@ -475,7 +475,9 @@ extensions = [
     Extension('Flask-Shelve', 'James Saryerwinnie',
         description='''
             <p>
-              Flask-Shelve bridges Flask and the shelve module.
+              Flask-Shelve bridges Flask and the Python standard library
+              `shelve` module, for very simple (slow) no-dependency key-value
+              storage.
         ''',
         docs='http://packages.python.org/Flask-Shelve/',
         github='jamesls/flask-shelve',
