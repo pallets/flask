@@ -472,6 +472,14 @@ extensions = [
         docs='http://packages.python.org/Flask-Raptor/',
         github='dplepage/flask-raptor',
     ),
+    Extension('Flask-Shelve', 'James Saryerwinnie',
+        description='''
+            <p>
+              Flask-Shelve bridges Flask and the shelve module.
+        ''',
+        docs='http://packages.python.org/Flask-Shelve/',
+        github='jamesls/flask-shelve',
+    ),
 ]
 
 
