@@ -123,6 +123,11 @@ def jsonify(*args, **kwargs):
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
+def padded_jsonify(*args, **kwargs):
+    if __debug__:
+        _assert_have_json()
+    content = str(callback) + '(' + json.dumps(dict(*args, **kwargs)) + ')'
+    return current_app.response_class(content, mimetype='application/json')
 
 def make_response(*args):
     """Sometimes it is necessary to set additional headers in a view.  Because
