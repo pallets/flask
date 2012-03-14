@@ -8,93 +8,48 @@ should or should not be using it.
 What does "micro" mean?
 -----------------------
 
-To me, the "micro" in microframework refers not only to the simplicity and
-small size of the framework, but also the fact that it does not make many
-decisions for you.  While Flask does pick a templating engine for you, we
-won't make such decisions for your datastore or other parts.
+“Micro” does not mean that your whole web application has to fit into
+a  single Python file (although it certainly can). Nor does it mean
+that Flask is lacking in functionality. The "micro" in microframework
+means Flask aims to keep the core simple but extensible. Flask won't make 
+many decisions for you, such as what database to use. Those decisions that 
+it does make, such as what templating engine to use, are easy to change. 
+Everything else is up to you, so that Flask can be everything you need 
+and nothing you don't.
 
-However, to us the term “micro” does not mean that the whole implementation
-has to fit into a single Python file.
+By default, Flask does not include a database abstraction layer, form
+validation or anything else where different libraries already exist that can
+handle that. Instead, FLask extensions add such functionality to your
+application as if it was implemented in Flask itself. Numerous extensions
+provide database integration, form validation, upload handling, various open
+authentication technologies, and more. Flask may be "micro", but the
+possibilities are endless.
 
-One of the design decisions with Flask was that simple tasks should be
-simple; they should not take a lot of code and yet they should not limit you.
-Because of that we made a few design choices that some people might find
-surprising or unorthodox.  For example, Flask uses thread-local objects
-internally so that you don't have to pass objects around from function to
-function within a request in order to stay threadsafe.  While this is a
-really easy approach and saves you a lot of time, it might also cause some
-troubles for very large applications because changes on these thread-local
-objects can happen anywhere in the same thread.  In order to solve these
-problems we don't hide the thread locals for you but instead embrace them
-and provide you with a lot of tools to make it as pleasant as possible to
-work with them.
+Convention over Configuration
+-----------------------------
 
-Flask is also based on convention over configuration, which means that
-many things are preconfigured.  For example, by convention templates and
-static files are stored in subdirectories within the application's Python source tree.
-While this can be changed you usually don't have to.
+Flask is based on convention over configuration, which means that many things
+are preconfigured. For example, by convention templates and static files are
+stored in subdirectories within the application's Python source tree. While
+this can be changed you usually don't have to. We want to minimize the time
+you need to spend in order to get up and running, without assuming things 
+about your needs.
 
-The main reason Flask is called a "microframework" is the idea
-to keep the core simple but extensible.  There is no database abstraction
-layer, no form validation or anything else where different libraries
-already exist that can handle that.  However Flask supports
-extensions to add such functionality to your application as if it
-was implemented in Flask itself.  There are currently extensions for
-object-relational mappers, form validation, upload handling, various open
-authentication technologies and more.
+Growing Up
+----------
 
-Since Flask is based on a very solid foundation there is not a lot of code
-in Flask itself.  As such it's easy to adapt even for large applications
-and we are making sure that you can either configure it as much as
-possible by subclassing things or by forking the entire codebase.  If you
-are interested in that, check out the :ref:`becomingbig` chapter.
+Since Flask is based on a very solid foundation there is not a lot of code in
+Flask itself.  As such it's easy to adapt even for large applications and we
+are making sure that you can either configure it as much as possible by
+subclassing things or by forking the entire codebase.  If you are interested
+in that, check out the :ref:`becomingbig` chapter.
 
-If you are curious about the Flask design principles, head over to the
-section about :ref:`design`.
+If you are curious about the Flask design principles, head over to the section
+about :ref:`design`.
 
-Web Development is Dangerous
-----------------------------
+For the Stalwart and Wizened...
+-------------------------------
 
-I'm not joking.  Well, maybe a little.  If you write a web
-application, you are probably allowing users to register and leave their
-data on your server.  The users are entrusting you with data.  And even if
-you are the only user that might leave data in your application, you still
-want that data to be stored securely.
-
-Unfortunately, there are many ways the security of a web application can be
-compromised.  Flask protects you against one of the most common security
-problems of modern web applications: cross-site scripting (XSS).  Unless
-you deliberately mark insecure HTML as secure, Flask and the underlying
-Jinja2 template engine have you covered.  But there are many more ways to
-cause security problems.
-
-The documentation will warn you about aspects of web development that
-require attention to security.  Some of these security concerns
-are far more complex than one might think, and we all sometimes underestimate
-the likelihood that a vulnerability will be exploited - until a clever
-attacker figures out a way to exploit our applications.  And don't think
-that your application is not important enough to attract an attacker.
-Depending on the kind of attack, chances are that automated bots are
-probing for ways to fill your database with spam, links to malicious
-software, and the like.
-
-So always keep security in mind when doing web development.
-
-The Status of Python 3
-----------------------
-
-Currently the Python community is in the process of improving libraries to
-support the new iteration of the Python programming language.  While the
-situation is greatly improving there are still some issues that make it
-hard for us to switch over to Python 3 just now.  These problems are
-partially caused by changes in the language that went unreviewed for too
-long, partially also because we have not quite worked out how the lower-
-level API should change to account for the Unicode differences in Python 3.
-
-Werkzeug and Flask will be ported to Python 3 as soon as a solution for
-the changes is found, and we will provide helpful tips how to upgrade
-existing applications to Python 3.  Until then, we strongly recommend
-using Python 2.6 and 2.7 with activated Python 3 warnings during
-development.  If you plan on upgrading to Python 3 in the near future we
-strongly recommend that you read `How to write forwards compatible
-Python code <http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
+If you're more curious about the minutiae of Flask's implementation, and
+whether its structure is right for your needs, read the
+:ref:`advanced_foreword`.
