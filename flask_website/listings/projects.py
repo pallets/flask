@@ -193,7 +193,11 @@ projects = {
         Project('q-financial.com', 'http://www.q-financial.com/', u'''
             <p>
               Q-Financial | Historical Equity Data API.
-        ''')
+        '''),
+        Project('saallergy.info', 'http://saallergy.info/', u'''
+            <p>
+              San Antonio Allergy Data
+        '''),
     ],
     'apps': [
         Project('960 Layout System', 'http://960ls.atomidata.com/', '''
