@@ -22,6 +22,7 @@ from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect
 from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
+from jinja2 import Markup
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     locked_cached_property, _tojson_filter, _endpoint_from_view_func, \
@@ -1028,7 +1029,7 @@ class Flask(_PackageBoundObject):
         return options
 
     @setupmethod
-    def template_filter(self, name=None):
+    def template_filter(self, name=None, safe=False):
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
@@ -1039,21 +1040,34 @@ class Flask(_PackageBoundObject):
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
+        :parameter safe: mark the result strings as "safe", not needing
+                         HTML/XML autoescaping. Same as adding the ``|safe``
+                         filter after every usage of this filter.
         """
         def decorator(f):
-            self.add_template_filter(f, name=name)
+            self.add_template_filter(f, name=name, safe=safe)
             return f
         return decorator
 
     @setupmethod
-    def add_template_filter(self, f, name=None):
+    def add_template_filter(self, f, name=None, safe=False):
         """Register a custom template filter.  Works exactly like the
         :meth:`template_filter` decorator.
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
+        :parameter safe: mark the result strings as "safe", not needing
+                         HTML/XML autoescaping. Same as adding the ``|safe``
+                         filter after every usage of this filter.
         """
-        self.jinja_env.filters[name or f.__name__] = f
+        if safe:
+            # functools.compose(Markup, f)  ... I wish
+            def safe_wrapper(*args, **kwargs):
+                return Markup(f(*args, **kwargs))
+            function = safe_wrapper
+        else:
+            function = f
+        self.jinja_env.filters[name or f.__name__] = function
 
     @setupmethod
     def before_request(self, f):

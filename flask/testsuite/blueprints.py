@@ -562,6 +562,30 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
+    def test_template_filter_safe(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_filter(safe=True)
+        def nl2br(s):
+            return s.replace('\n', '<br>')
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('nl2br' in  app.jinja_env.filters.keys())
+        result = app.jinja_env.filters['nl2br']('ab\ncd')
+        self.assert_equal(result, 'ab<br>cd')
+        self.assert_(isinstance(result, flask.Markup))
+
+    def test_add_template_filter_safe(self):
+        bp = flask.Blueprint('bp', __name__)
+        def nl2br(s):
+            return s.replace('\n', '<br>')
+        bp.add_app_template_filter(nl2br, safe=True)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('nl2br' in  app.jinja_env.filters.keys())
+        result = app.jinja_env.filters['nl2br']('ab\ncd')
+        self.assert_equal(result, 'ab<br>cd')
+        self.assert_(isinstance(result, flask.Markup))
+
     def test_template_filter_with_template(self):
         bp = flask.Blueprint('bp', __name__)
         @bp.app_template_filter()
