@@ -258,11 +258,11 @@ projects = {
             <p>
               web-based tool to inspect the output of PyPy JIT log
         ''', source='https://bitbucket.org/pypy/jitviewer'),
-        Project('blohg', None, '''
+        Project('blohg', 'http://blohg.org/', '''
             <p>
               A mercurial based blog engine.
         ''', source='http://hg.rafaelmartins.eng.br/blohg/'),
-        Project('pidsim-web', 'http://pidsim.rafaelmartins.eng.br/?source=en_US', '''
+        Project('pidsim-web', 'http://pidsim.rafaelmartins.eng.br/?locale=en_US', '''
             <p>
               PID Controller simulator.
         ''', source='http://hg.rafaelmartins.eng.br/pidsim-web/'),
