@@ -141,4 +141,4 @@ These results are also dict-like objects:
 u'admin@localhost'
 
 For more information about MongoKit, head over to the
-`website <http://bytebucket.org/namlook/mongokit/>`_.
+`website <https://github.com/namlook/mongokit>`_.
