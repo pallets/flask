@@ -94,7 +94,7 @@ System-Wide Installation
 ------------------------
 
 This is possible as well, though I do not recommend it.  Just run
-`easy_install` with root privileges::
+`pip` with root privileges::
 
     $ sudo pip install Flask
 
