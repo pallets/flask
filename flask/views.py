@@ -107,7 +107,7 @@ class MethodViewType(type):
         rv = type.__new__(cls, name, bases, d)
         if 'methods' not in d:
             methods = set(rv.methods or [])
-            for key, value in d.iteritems():
+            for key in d:
                 if key in http_method_funcs:
                     methods.add(key.upper())
             # if we have no method at all in there we don't want to
