@@ -380,7 +380,9 @@ extensions = [
             <p>
               Bcrypt support for hashing passwords
         ''',
+        docs='http://packages.python.org/Flask-Bcrypt/',
         github='maxcountryman/flask-bcrypt',
+        approved=True,
     ),
     Extension('Flask-MongoKit', 'Christoph Heer',
         description='''
