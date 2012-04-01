@@ -283,6 +283,13 @@ def flash(message, category='message'):
                      messages and ``'warning'`` for warnings.  However any
                      kind of string can be used as category.
     """
+    # Original implementation:
+    #
+    #     session.setdefault('_flashes', []).append((category, message))
+    #
+    # This assumed that changes made to mutable structures in the session are
+    # are always in sync with the sess on object, which is not true for session
+    # implementations that use external storage for keeping their keys/values.
     flashes = session.get('_flashes', [])
     flashes.append((category, message))
     session['_flashes'] = flashes
