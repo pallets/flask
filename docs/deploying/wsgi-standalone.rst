@@ -1,11 +1,31 @@
-.. _deploying-other-servers:
+.. _deploying-wsgi-standalone:
 
-Other Servers
-=============
+Standalone WSGI Containers
+==========================
 
-There are popular servers written in Python that allow the execution of WSGI
-applications as well.  These servers stand alone when they run; you can proxy
-to them from your web server.
+There are popular servers written in Python that contain WSGI applications and
+serve HTTP.  These servers stand alone when they run; you can proxy to them
+from your web server.  Note the section on :ref:`deploying-proxy-setups` if you
+run into issues.
+
+Gunicorn
+--------
+
+`Gunicorn`_ 'Green Unicorn' is a WSGI HTTP Server for UNIX. It's a pre-fork
+worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
+and `greenlet`_. Running a Flask application on this server is quite simple::
+
+    gunicorn myproject:app
+
+`Gunicorn`_ provides many command-line options -- see ``gunicorn -h``.
+For example, to run a Flask application with 4 worker processes (``-w
+4``) binding to localhost port 4000 (``-b 127.0.0.1:4000``)::
+
+    gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
+
+.. _Gunicorn: http://gunicorn.org/
+.. _eventlet: http://eventlet.net/
+.. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
 
 Tornado
 --------
@@ -14,7 +34,7 @@ Tornado
 server and tools that power `FriendFeed`_.  Because it is non-blocking and
 uses epoll, it can handle thousands of simultaneous standing connections,
 which means it is ideal for real-time web services.  Integrating this
-service with Flask is a trivial task::
+service with Flask is straightforward::
 
     from tornado.wsgi import WSGIContainer
     from tornado.httpserver import HTTPServer
@@ -46,24 +66,7 @@ event loop::
 .. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
 .. _libevent: http://monkey.org/~provos/libevent/
 
-Gunicorn
---------
-
-`Gunicorn`_ 'Green Unicorn' is a WSGI HTTP Server for UNIX. It's a pre-fork
-worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
-and `greenlet`_. Running a Flask application on this server is quite simple::
-
-    gunicorn myproject:app
-
-`Gunicorn`_ provides many command-line options -- see ``gunicorn -h``.
-For example, to run a Flask application with 4 worker processes (``-w
-4``) binding to localhost port 4000 (``-b 127.0.0.1:4000``)::
-
-    gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
-
-.. _Gunicorn: http://gunicorn.org/
-.. _eventlet: http://eventlet.net/
-.. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
+.. _deploying-proxy-setups:
 
 Proxy Setups
 ------------
