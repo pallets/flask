@@ -283,7 +283,9 @@ def flash(message, category='message'):
                      messages and ``'warning'`` for warnings.  However any
                      kind of string can be used as category.
     """
-    session.setdefault('_flashes', []).append((category, message))
+    flashes = session.get('_flashes', [])
+    flashes.append((category, message))
+    session['_flashes'] = flashes
 
 
 def get_flashed_messages(with_categories=False, category_filter=[]):
