@@ -80,7 +80,9 @@ setups, but you might want to write your own WSGI middleware for specific
 setups.
 
 Here's a simple nginx configuration which proxies to an application served on
-localhost at port 8000, setting appropriate headers::
+localhost at port 8000, setting appropriate headers:
+
+.. sourcecode:: nginx
 
     server {
         listen 80;
@@ -100,15 +102,18 @@ localhost at port 8000, setting appropriate headers::
         }
     }
 
-The most common setup invokes the host being set from `X-Forwarded-Host`
-and the remote address from `X-Forwarded-For`::
+If your httpd is not providing these headers, the most common setup invokes the
+host being set from `X-Forwarded-Host` and the remote address from
+`X-Forwarded-For`::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-Please keep in mind that it is a security issue to use such a middleware
-in a non-proxy setup because it will blindly trust the incoming
-headers which might be forged by malicious clients.
+.. admonition:: Trusting Headers
+
+   Please keep in mind that it is a security issue to use such a middleware in
+   a non-proxy setup because it will blindly trust the incoming headers which
+   might be forged by malicious clients.
 
 If you want to rewrite the headers from another header, you might want to
 use a fixer like this::
