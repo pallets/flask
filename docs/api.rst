@@ -306,6 +306,9 @@ Message Flashing
 Returning JSON
 --------------
 
+To customize JSON encoding during execution of the :func:`~flask.jsonify`
+function, see :attr:`Flask.json_encoder_class`.
+
 .. autofunction:: jsonify
 
 .. data:: json
@@ -336,6 +339,8 @@ Returning JSON
         </script>
 
     Note that the ``|tojson`` filter escapes forward slashes properly.
+
+.. autoclass:: JSONEncoder
 
 Template Rendering
 ------------------

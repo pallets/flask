@@ -25,7 +25,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     locked_cached_property, _tojson_filter, _endpoint_from_view_func, \
-    find_package
+    find_package, JSONEncoder
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext
@@ -270,6 +270,38 @@ class Flask(_PackageBoundObject):
     #:
     #: .. versionadded:: 0.8
     session_interface = SecureCookieSessionInterface()
+
+    #: The JSONEncoder to use when the :func:`~flask.jsonify` function is
+    #: called.
+    #:
+    #: Flask provides a default implementation which provides serialization for
+    #: :class:`datetime.datetime` objects to strings in ISO 8601 format.
+    #:
+    #: To customize encoding of Python objects to JSON strings, create a
+    #: subclass of :class:`flask.JSONEncoder` which implements the
+    #: :meth:`json.JSONEncoder.default` method, then set the
+    #: :attr:`json_encoder_class` attribute on your Flask application object.
+    #: For example, if you want a different string encoding of
+    #: :class:`~datetime.datetime` objects::
+    #:
+    #:     import datetime
+    #:     import flask
+    #:
+    #:     class MyEncoder(flask.JSONEncoder):
+    #:         def default(self, obj):
+    #:             if isinstance(obj, datetime.datetime):
+    #:                 return obj.strftime('%A, %B %d, %H:%M')
+    #:             return super(MyEncoder, self).default(obj)
+    #:
+    #:     app = flask.Flask(__name__)
+    #:     app.json_encoder_class = MyEncoder
+    #:
+    #:     @app.route('/currenttime')
+    #:     def current_time():
+    #:         return flask.jsonify(dict(time=datetime.datetime.now()))
+    #:
+    #: .. versionadded:: 0.9
+    json_encoder_class = JSONEncoder
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
                  static_folder='static', template_folder='templates',

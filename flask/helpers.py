@@ -11,6 +11,7 @@
 
 from __future__ import with_statement
 
+import datetime
 import imp
 import os
 import sys
@@ -142,8 +143,10 @@ def jsonify(*args, **kwargs):
         json_str = json.dumps(dict(*args, **kwargs), indent=None)
         content = str(callback) + "(" + json_str + ")"
         return current_app.response_class(content, mimetype='application/javascript')
-    return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+    content = json.dumps(dict(*args, **kwargs),
+                         cls=current_app.json_encoder_class,
+                         indent=None if request.is_xhr else 2)
+    return current_app.response_class(content, mimetype='application/json')
 
 
 def make_response(*args):
@@ -604,6 +607,28 @@ def find_package(import_name):
             base_dir = site_parent
         return base_dir, package_path
     return None, package_path
+
+
+class JSONEncoder(json.JSONEncoder):
+    """Default implementation of :class:`json.JSONEncoder` which provides
+    serialization for :class:`datetime.datetime` objects (to ISO 8601 format).
+
+    .. versionadded:: 0.9
+
+    """
+
+    def default(self, obj):
+        """Provides serialization for :class:`datetime.datetime` objects (in
+        addition to the serialization provided by the default
+        :class:`json.JSONEncoder` implementation).
+
+        If `obj` is a :class:`datetime.datetime` object, this converts it into
+        the corresponding ISO 8601 string representation.
+
+        """
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        return super(JSONEncoder, self).default(obj)
 
 
 class locked_cached_property(object):
