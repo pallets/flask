@@ -180,24 +180,6 @@ extensions = [
             Flask-Actions or similar packages.
         '''
     ),
-    Extension('flask-csrf', 'Steve Losh',
-        description='''
-            <p>A small Flask extension for adding
-            <a href=http://en.wikipedia.org/wiki/CSRF>CSRF</a> protection.
-        ''',
-        docs='http://sjl.bitbucket.org/flask-csrf/',
-        bitbucket='sjl/flask-csrf',
-        notes='''
-            Will not be approved because this is functionality that should be
-            handled in the form handling systems which is for Flask-WTF already
-            the case.  Also, this implementation only supports one open tab
-            with forms.
-
-            Name is not following Flask extension naming rules.
-
-            Considered for unlisting.
-        '''
-    ),
     Extension('flask-lesscss', 'Steve Losh',
         description='''
             <p>
@@ -463,6 +445,7 @@ extensions = [
         ''',
         docs='http://packages.python.org/Flask-SeaSurf/',
         github='maxcountryman/flask-seasurf',
+        approved=True,
     ),
     Extension('Flask-PyMongo', 'Dan Crosta',
         description='''
@@ -590,6 +573,18 @@ unlisted = [
             production-ready.  It lacks documentation and tests because the
             author has yet to find the time.
         '''
+    ),
+    Extension('flask-csrf', 'Steve Losh',
+        description='''
+            <p>A small Flask extension for adding
+            <a href=http://en.wikipedia.org/wiki/CSRF>CSRF</a> protection.
+        ''',
+        docs='http://sjl.bitbucket.org/flask-csrf/',
+        bitbucket='sjl/flask-csrf',
+        notes='''
+            Unlisted because duplicates the Flask-SeaSurf extension.
+        '''
+            
     ),
 ]
 
