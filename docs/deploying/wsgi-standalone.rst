@@ -71,12 +71,34 @@ event loop::
 Proxy Setups
 ------------
 
-If you deploy your application using one of these servers behind an HTTP
-proxy you will need to rewrite a few headers in order for the
-application to work.  The two problematic values in the WSGI environment
-usually are `REMOTE_ADDR` and `HTTP_HOST`.  Werkzeug ships a fixer that
-will solve some common setups, but you might want to write your own WSGI
-middleware for specific setups.
+If you deploy your application using one of these servers behind an HTTP proxy
+you will need to rewrite a few headers in order for the application to work.
+The two problematic values in the WSGI environment usually are `REMOTE_ADDR`
+and `HTTP_HOST`.  You can configure your httpd to pass these headers, or you
+can fix them in middleware.  Werkzeug ships a fixer that will solve some common
+setups, but you might want to write your own WSGI middleware for specific
+setups.
+
+Here's a simple nginx configuration which proxies to an application served on
+localhost at port 8000, setting appropriate headers::
+
+    server {
+        listen 80;
+
+        server_name _;
+
+        access_log  /var/log/nginx/access.log;
+        error_log  /var/log/nginx/error.log;
+
+        location / {
+            proxy_pass         http://127.0.0.1:8000/;
+            proxy_redirect     off;
+
+            proxy_set_header   Host             $host;
+            proxy_set_header   X-Real-IP        $remote_addr;
+            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        }
+    }
 
 The most common setup invokes the host being set from `X-Forwarded-Host`
 and the remote address from `X-Forwarded-For`::
