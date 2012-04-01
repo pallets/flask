@@ -185,28 +185,34 @@ class Blueprint(_PackageBoundObject):
             return f
         return decorator
 
-    def app_template_filter(self, name=None):
+    def app_template_filter(self, name=None, safe=False):
         """Register a custom template filter, available application wide.  Like
         :meth:`Flask.template_filter` but for a blueprint.
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
+        :parameter safe: mark the result strings as "safe", not needing
+                         HTML/XML autoescaping. Same as adding the ``|safe``
+                         filter after every usage of this filter.
         """
         def decorator(f):
-            self.add_app_template_filter(f, name=name)
+            self.add_app_template_filter(f, name=name, safe=safe)
             return f
         return decorator
 
-    def add_app_template_filter(self, f, name=None):
+    def add_app_template_filter(self, f, name=None, safe=False):
         """Register a custom template filter, available application wide.  Like
         :meth:`Flask.add_template_filter` but for a blueprint.  Works exactly
         like the :meth:`app_template_filter` decorator.
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
+        :parameter safe: mark the result strings as "safe", not needing
+                         HTML/XML autoescaping. Same as adding the ``|safe``
+                         filter after every usage of this filter.
         """
         def register_template(state):
-            state.app.jinja_env.filters[name or f.__name__] = f
+            state.app.add_template_filter(f, name=name, safe=safe)
         self.record_once(register_template)
 
     def before_request(self, f):

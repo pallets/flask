@@ -120,6 +120,26 @@ class TemplatingTestCase(FlaskTestCase):
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
+    def test_template_filter_safe(self):
+        app = flask.Flask(__name__)
+        @app.template_filter(safe=True)
+        def nl2br(s):
+            return s.replace('\n', '<br>')
+        self.assert_('nl2br' in  app.jinja_env.filters.keys())
+        result = app.jinja_env.filters['nl2br']('ab\ncd')
+        self.assert_equal(result, 'ab<br>cd')
+        self.assert_(isinstance(result, flask.Markup))
+
+    def test_add_template_filter_safe(self):
+        app = flask.Flask(__name__)
+        def nl2br(s):
+            return s.replace('\n', '<br>')
+        app.add_template_filter(nl2br, safe=True)
+        self.assert_('nl2br' in  app.jinja_env.filters.keys())
+        result = app.jinja_env.filters['nl2br']('ab\ncd')
+        self.assert_equal(result, 'ab<br>cd')
+        self.assert_(isinstance(result, flask.Markup))
+
     def test_template_filter_with_template(self):
         app = flask.Flask(__name__)
         @app.template_filter()

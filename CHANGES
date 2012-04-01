@@ -56,6 +56,9 @@ Relase date to be decided, codename to be chosen.
   max-age for `send_static_file` can be configured through a new
   ``SEND_FILE_MAX_AGE_DEFAULT`` configuration variable, regardless of whether
   the `get_send_file_options` hook is used.
+- :meth:`~flask.Flask.add_template_filter` and related methods not accept
+  a ``safe`` argument. Setting it to ``True`` wraps the result strings
+  in :class:`~flask.Markup`: mark them as safe for autoescaping.
 
 
 Version 0.8.1
