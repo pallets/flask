@@ -18,6 +18,7 @@ from logging import StreamHandler
 from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
+from flask.sessions import SecureCookieSessionInterface, SecureCookieSession
 
 
 def has_encoding(name):
@@ -129,6 +130,30 @@ class JSONTestCase(FlaskTestCase):
 
     if not has_encoding('euc-kr'):
         test_modified_url_encoding = None
+
+
+class FlashTestCase(FlaskTestCase):
+
+    def test_flashes_using_session_on_external_storage(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'testkey'
+
+        class MySecureCookieSession(SecureCookieSession):
+            def setdefault(self, key, value):
+                # If session implementation is not default, It might be
+                # not based on a dict => Doesn't have this method
+                raise AttributeError
+
+        class MySessionInterface(SecureCookieSessionInterface):
+            session_class = MySecureCookieSession
+
+        app.session_interface = MySessionInterface()
+
+        with app.test_request_context():
+            self.assert_(not flask.session.modified)
+            flask.flash('Fizz')
+            self.assert_(flask.session.modified)
+            self.assert_equal(list(flask.get_flashed_messages()), ['Fizz'])
 
 
 class SendfileTestCase(FlaskTestCase):
