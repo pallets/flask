@@ -484,6 +484,13 @@ extensions = [
         github='jfinkels/flask-restless',
         approved=False
     ),
+    Extension('Flask-Heroku', 'Kenneth Reitz',
+        description='''
+            <p>Sets Flask configuration defaults for Heroku-esque environment variables
+        ''',
+        github='kennethreitz/flask-heroku',
+        approved=False
+    ),
 ]
 
 
