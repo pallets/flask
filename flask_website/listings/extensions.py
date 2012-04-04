@@ -474,6 +474,16 @@ extensions = [
         docs='http://packages.python.org/Flask-Shelve/',
         github='jamesls/flask-shelve',
     ),
+    Extension('Flask-Restless', 'Jeffrey Finkelstein',
+        description='''
+            <p>Flask-Restless provides simple generation of ReSTful APIs for
+              database models defined using Flask-SQLAlchemy. The generated
+              APIs send and receive messages in JSON format.
+        ''',
+        docs='http://readthedocs.org/docs/flask-restless/en/latest/',
+        github='jfinkels/flask-restless',
+        approved=False
+    ),
 ]
 
 
@@ -584,16 +594,6 @@ unlisted = [
         notes='''
             Unlisted because duplicates the Flask-SeaSurf extension.
         '''
-    ),
-    Extension('Flask-Restless', 'Jeffrey Finkelstein',
-        description='''
-            <p>Flask-Restless provides simple generation of ReSTful APIs for
-              database models defined using Flask-SQLAlchemy. The generated
-              APIs send and receive messages in JSON format.
-        ''',
-        docs='http://readthedocs.org/docs/flask-restless/en/latest/',
-        github='jfinkels/flask-restless',
-        approved=False
     ),
 ]
 
