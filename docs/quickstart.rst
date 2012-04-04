@@ -333,8 +333,7 @@ configured to serve them for you, but during development Flask can do that
 as well.  Just create a folder called `static` in your package or next to
 your module and it will be available at `/static` on the application.
 
-To generate URLs that part of the URL, use the special ``'static'`` URL
-name::
+To generate URLs for static files, use the special ``'static'`` endpoint name::
 
     url_for('static', filename='style.css')
 
