@@ -431,6 +431,7 @@ def suite():
     suite = unittest.TestSuite()
     if flask.json_available:
         suite.addTest(unittest.makeSuite(JSONTestCase))
+    suite.addTest(unittest.makeSuite(FlashTestCase))
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(NoImportsTestCase))
