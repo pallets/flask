@@ -122,9 +122,6 @@ collection first, this is somewhat the same as a table in the SQL world.
 >>> user = {'name': u'admin', 'email': u'admin@localhost'}
 >>> collection.insert(user)
 
-print list(collection.find())
-print collection.find_one({'name': u'admin'})
-
 MongoKit will automatically commit for us.
 
 To query your database, you use the collection directly:
