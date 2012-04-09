@@ -6,7 +6,7 @@ The Request Context
 This document describes the behavior in Flask 0.7 which is mostly in line
 with the old behavior but has some small, subtle differences.
 
-It is recommended that you read the :api:`app-context` chapter first.
+It is recommended that you read the :ref:`app-context` chapter first.
 
 Diving into Context Locals
 --------------------------

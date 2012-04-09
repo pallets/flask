@@ -1,4 +1,4 @@
-.. _app_context:
+.. _app-context:
 
 The Application Context
 =======================
