@@ -18,7 +18,7 @@ from flask.testsuite import FlaskTestCase
 
 class AppContextTestCase(FlaskTestCase):
 
-    def test_basic_support(self):
+    def test_basic_url_generation(self):
         app = flask.Flask(__name__)
         app.config['SERVER_NAME'] = 'localhost'
         app.config['PREFERRED_URL_SCHEME'] = 'https'
@@ -30,6 +30,28 @@ class AppContextTestCase(FlaskTestCase):
         with app.app_context():
             rv = flask.url_for('index')
             self.assert_equal(rv, 'https://localhost/')
+
+    def test_url_generation_requires_server_name(self):
+        app = flask.Flask(__name__)
+        with app.app_context():
+            with self.assert_raises(RuntimeError):
+                flask.url_for('index')
+
+    def test_url_generation_without_context_fails(self):
+        with self.assert_raises(RuntimeError):
+            flask.url_for('index')
+
+    def test_request_context_means_app_context(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            self.assert_equal(flask.current_app._get_current_object(), app)
+        self.assert_equal(flask._app_ctx_stack.top, None)
+
+    def test_app_context_provides_current_app(self):
+        app = flask.Flask(__name__)
+        with app.app_context():
+            self.assert_equal(flask.current_app._get_current_object(), app)
+        self.assert_equal(flask._app_ctx_stack.top, None)
 
 
 def suite():

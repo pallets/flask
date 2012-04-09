@@ -200,6 +200,9 @@ def url_for(endpoint, **values):
     """
     appctx = _app_ctx_stack.top
     reqctx = _request_ctx_stack.top
+    if appctx is None:
+        raise RuntimeError('Attempted to generate a URL with the application '
+                           'context being pushed.  This has to be executed ')
 
     # If request specific information is available we have some extra
     # features that support "relative" urls.
@@ -225,6 +228,11 @@ def url_for(endpoint, **values):
     # the urls external by default.
     else:
         url_adapter = appctx.url_adapter
+        if url_adapter is None:
+            raise RuntimeError('Application was not able to create a URL '
+                               'adapter for request independent URL generation. '
+                               'You might be able to fix this by setting '
+                               'the SERVER_NAME config variable.')
         external = values.pop('_external', True)
 
     anchor = values.pop('_anchor', None)
