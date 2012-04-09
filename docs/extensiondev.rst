@@ -224,7 +224,9 @@ So here's what these lines of code do:
     one.
 3.  Next, we define a ``connect`` method that opens a database connection.
 4.  Finally, we add a ``connection`` property that on first access opens
-    the database connection and stores it on the context.
+    the database connection and stores it on the context.  This is also
+    the recommended way to handling resources: fetch resources lazily the
+    first time they are used.
 
     Note here that we're attaching our database connection to the top
     application context via ``_app_ctx_stack.top``. Extensions should use
