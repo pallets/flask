@@ -18,6 +18,7 @@ instructions for web development with Flask.
    config
    signals
    views
+   appcontext
    reqcontext
    blueprints
    extensions

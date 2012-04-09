@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import sys
+
 from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack, _app_ctx_stack
@@ -86,8 +88,11 @@ class AppContext(object):
         """Binds the app context to the current context."""
         _app_ctx_stack.push(self)
 
-    def pop(self):
+    def pop(self, exc=None):
         """Pops the app context."""
+        if exc is None:
+            exc = sys.exc_info()[1]
+        self.app.do_teardown_appcontext(exc)
         rv = _app_ctx_stack.pop()
         assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
             % (rv, self)
@@ -197,13 +202,18 @@ class RequestContext(object):
         if self.session is None:
             self.session = self.app.make_null_session()
 
-    def pop(self):
+    def pop(self, exc=None):
         """Pops the request context and unbinds it by doing that.  This will
         also trigger the execution of functions registered by the
         :meth:`~flask.Flask.teardown_request` decorator.
+
+        .. versionchanged:: 0.9
+           Added the `exc` argument.
         """
         self.preserved = False
-        self.app.do_teardown_request()
+        if exc is None:
+            exc = sys.exc_info()[1]
+        self.app.do_teardown_request(exc)
         rv = _request_ctx_stack.pop()
         assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
             % (rv, self)
@@ -231,7 +241,7 @@ class RequestContext(object):
            (tb is not None and self.app.preserve_context_on_exception):
             self.preserved = True
         else:
-            self.pop()
+            self.pop(exc_value)
 
     def __repr__(self):
         return '<%s \'%s\' [%s] of %s>' % (

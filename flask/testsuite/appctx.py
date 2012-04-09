@@ -53,6 +53,18 @@ class AppContextTestCase(FlaskTestCase):
             self.assert_equal(flask.current_app._get_current_object(), app)
         self.assert_equal(flask._app_ctx_stack.top, None)
 
+    def test_app_tearing_down(self):
+        cleanup_stuff = []
+        app = flask.Flask(__name__)
+        @app.teardown_appcontext
+        def cleanup(exception):
+            cleanup_stuff.append(exception)
+
+        with app.app_context():
+            pass
+
+        self.assert_equal(cleanup_stuff, [None])
+
 
 def suite():
     suite = unittest.TestSuite()

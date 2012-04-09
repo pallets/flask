@@ -469,8 +469,18 @@ Signals
 .. data:: request_tearing_down
 
    This signal is sent when the application is tearing down the request.
-   This is always called, even if an error happened.  No arguments are
-   provided.
+   This is always called, even if an error happened.  An `exc` keyword
+   argument is passed with the exception that caused the teardown.
+
+   .. versionchanged:: 0.9
+      The `exc` parameter was added.
+
+.. data:: appcontext_tearing_down
+
+   This signal is sent when the application is tearing down the
+   application context.  This is always called, even if an error happened.
+   An `exc` keyword argument is passed with the exception that caused the
+   teardown.
 
 .. currentmodule:: None
 

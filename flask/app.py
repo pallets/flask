@@ -35,7 +35,7 @@ from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
-    request_tearing_down
+    request_tearing_down, appcontext_tearing_down
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -363,6 +363,14 @@ class Flask(_PackageBoundObject):
         #:
         #: .. versionadded:: 0.7
         self.teardown_request_funcs = {}
+
+        #: A list of functions that are called when the application context
+        #: is destroyed.  Since the application context is also torn down
+        #: if the request ends this is the place to store code that disconnects
+        #: from databases.
+        #:
+        #: .. versionadded:: 0.9
+        self.teardown_appcontext_funcs = []
 
         #: A dictionary with lists of functions that can be used as URL
         #: value processor functions.  Whenever a URL is built these functions
@@ -1106,8 +1114,40 @@ class Flask(_PackageBoundObject):
         that they will fail.  If they do execute code that might fail they
         will have to surround the execution of these code by try/except
         statements and log ocurring errors.
+
+        When a teardown function was called because of a exception it will
+        be passed an error object.
         """
         self.teardown_request_funcs.setdefault(None, []).append(f)
+        return f
+
+    @setupmethod
+    def teardown_appcontext(self, f):
+        """Registers a function to be called when the application context
+        ends.  These functions are typically also called when the request
+        context is popped.
+
+        Example::
+
+            ctx = app.app_context()
+            ctx.push()
+            ...
+            ctx.pop()
+
+        When ``ctx.pop()`` is executed in the above example, the teardown
+        functions are called just before the app context moves from the
+        stack of active contexts.  This becomes relevant if you are using
+        such constructs in tests.
+
+        Since a request context typically also manages an application
+        context it would also be called when you pop a request context.
+
+        When a teardown function was called because of an exception it will
+        be passed an error object.
+
+        .. versionadded:: 0.9
+        """
+        self.teardown_appcontext_funcs.append(f)
         return f
 
     @setupmethod
@@ -1485,23 +1525,39 @@ class Flask(_PackageBoundObject):
             self.save_session(ctx.session, response)
         return response
 
-    def do_teardown_request(self):
+    def do_teardown_request(self, exc=None):
         """Called after the actual request dispatching and will
         call every as :meth:`teardown_request` decorated function.  This is
         not actually called by the :class:`Flask` object itself but is always
         triggered when the request context is popped.  That way we have a
         tighter control over certain resources under testing environments.
+
+        .. versionchanged:: 0.9
+           Added the `exc` argument.  Previously this was always using the
+           current exception information.
         """
+        if exc is None:
+            exc = sys.exc_info()[1]
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
         bp = _request_ctx_stack.top.request.blueprint
         if bp is not None and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
-        exc = sys.exc_info()[1]
         for func in funcs:
             rv = func(exc)
-            if rv is not None:
-                return rv
-        request_tearing_down.send(self)
+        request_tearing_down.send(self, exc=exc)
+
+    def do_teardown_appcontext(self, exc=None):
+        """Called when an application context is popped.  This works pretty
+        much the same as :meth:`do_teardown_request` but for the application
+        context.
+
+        .. versionadded:: 0.9
+        """
+        if exc is None:
+            exc = sys.exc_info()[1]
+        for func in reversed(self.teardown_appcontext_funcs):
+            func(exc)
+        appcontext_tearing_down.send(self, exc=exc)
 
     def app_context(self):
         """Binds the application only.  For as long as the application is bound
