@@ -224,7 +224,7 @@ class RequestContext(object):
 
         # Get rid of the app as well if necessary.
         if self._pushed_application_context:
-            self._pushed_application_context.pop()
+            self._pushed_application_context.pop(exc)
             self._pushed_application_context = None
 
     def __enter__(self):
