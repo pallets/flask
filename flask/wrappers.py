@@ -118,7 +118,6 @@ class Request(RequestBase):
                              this server could not understand."}
 
         .. versionchanged:: 0.9
-
            Return a :class:`JSONBadRequest` instead of a
            :class:`~werkzeug.exceptions.BadRequest` by default.
 
