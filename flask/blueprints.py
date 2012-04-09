@@ -25,7 +25,7 @@ class BlueprintSetupState(object):
         #: a reference to the current application
         self.app = app
 
-        #: a reference to the blurprint that created this setup state.
+        #: a reference to the blueprint that created this setup state.
         self.blueprint = blueprint
 
         #: a dictionary with all options that were passed to the
