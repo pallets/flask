@@ -110,6 +110,13 @@ The following configuration values are used internally by Flask:
                                   reject incoming requests with a
                                   content length greater than this by
                                   returning a 413 status code.
+``SEND_FILE_MAX_AGE_DEFAULT``:    Default cache control max age to use with
+                                  :meth:`flask.Flask.send_static_file`, in
+                                  seconds. Override this value on a per-file
+                                  basis using the
+                                  :meth:`flask.Flask.get_send_file_options` and
+                                  :meth:`flask.Blueprint.get_send_file_options`
+                                  hooks. Defaults to 43200 (12 hours).
 ``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
                                   not execute the error handlers of HTTP
                                   exceptions but instead treat the
@@ -276,7 +283,7 @@ configuration::
 
     class ProductionConfig(Config):
         DATABASE_URI = 'mysql://user@localhost/foo'
-    
+
     class DevelopmentConfig(Config):
         DEBUG = True
 

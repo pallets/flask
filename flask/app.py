@@ -249,6 +249,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_HTTPONLY':              True,
         'SESSION_COOKIE_SECURE':                False,
         'MAX_CONTENT_LENGTH':                   None,
+        'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
         'PREFERRED_URL_SCHEME':                 'http'
@@ -1021,6 +1022,12 @@ class Flask(_PackageBoundObject):
             self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
                 .append((code_or_exception, f))
 
+    def get_send_file_options(self, filename):
+        # Override: Hooks in SEND_FILE_MAX_AGE_DEFAULT config.
+        options = super(Flask, self).get_send_file_options(filename)
+        options['cache_timeout'] = self.config['SEND_FILE_MAX_AGE_DEFAULT']
+        return options
+
     @setupmethod
     def template_filter(self, name=None):
         """A decorator that is used to register custom template filter.
@@ -1362,7 +1369,21 @@ class Flask(_PackageBoundObject):
         if isinstance(rv, basestring):
             return self.response_class(rv)
         if isinstance(rv, tuple):
-            return self.response_class(*rv)
+            if len(rv) > 0 and isinstance(rv[0], self.response_class):
+                original = rv[0]
+                new_response = self.response_class('', *rv[1:])
+                if len(rv) < 3:
+                    # The args for the response class are
+                    # response=None, status=None, headers=None,
+                    # mimetype=None, content_type=None, ...
+                    # so if there's at least 3 elements the rv
+                    # tuple contains header information so the
+                    # headers from rv[0] "win."
+                    new_response.headers = original.headers
+                new_response.response = original.response
+                return new_response
+            else:
+                return self.response_class(*rv)
         return self.response_class.force_type(rv, request.environ)
 
     def create_url_adapter(self, request):

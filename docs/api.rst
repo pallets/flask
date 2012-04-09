@@ -525,7 +525,7 @@ Variable parts are passed to the view function as keyword arguments.
 The following converters are available:
 
 =========== ===============================================
-`unicode`   accepts any text without a slash (the default)
+`string`    accepts any text without a slash (the default)
 `int`       accepts integers
 `float`     like `int` but for floating point values
 `path`      like the default but also accepts slashes

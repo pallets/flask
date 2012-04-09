@@ -16,6 +16,7 @@ import unittest
 import warnings
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import NotFound
+from werkzeug.http import parse_cache_control_header
 from jinja2 import TemplateNotFound
 
 
@@ -356,6 +357,19 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(rv.data.strip(), 'Admin File')
         rv = c.get('/admin/static/css/test.css')
         self.assert_equal(rv.data.strip(), '/* nested file */')
+
+        # try/finally, in case other tests use this app for Blueprint tests.
+        max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        try:
+            expected_max_age = 3600
+            if app.config['SEND_FILE_MAX_AGE_DEFAULT'] == expected_max_age:
+                expected_max_age = 7200
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = expected_max_age
+            rv = c.get('/admin/static/css/test.css')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, expected_max_age)
+        finally:
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 
         with app.test_request_context():
             self.assert_equal(flask.url_for('admin.static', filename='test.txt'),

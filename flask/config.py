@@ -106,8 +106,7 @@ class Config(dict):
                                'loaded.  Set this variable and make it '
                                'point to a configuration file' %
                                variable_name)
-        self.from_pyfile(rv)
-        return True
+        return self.from_pyfile(rv, silent=silent)
 
     def from_pyfile(self, filename, silent=False):
         """Updates the values in the config from a Python file.  This function

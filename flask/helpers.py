@@ -118,9 +118,31 @@ def jsonify(*args, **kwargs):
     information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2
+
+    .. versionadded:: 0.9
+        If the ``padded`` argument is true, the JSON object will be padded
+        for JSONP calls and the response mimetype will be changed to 
+        ``application/javascript``. By default, the request arguments ``callback``
+        and ``jsonp`` will be used as the name for the callback function.
+        This will work with jQuery and most other JavaScript libraries
+        by default.
+
+        If the ``padded`` argument is a string, jsonify will look for
+        the request argument with the same name and use that value as the
+        callback-function name.
     """
     if __debug__:
         _assert_have_json()
+    if 'padded' in kwargs:
+        if isinstance(kwargs['padded'], str):
+            callback = request.args.get(kwargs['padded']) or 'jsonp'
+        else:
+            callback = request.args.get('callback') or \
+                       request.args.get('jsonp') or 'jsonp'
+        del kwargs['padded']
+        json_str = json.dumps(dict(*args, **kwargs), indent=None)
+        content = str(callback) + "(" + json_str + ")"
+        return current_app.response_class(content, mimetype='application/javascript')
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
@@ -283,7 +305,16 @@ def flash(message, category='message'):
                      messages and ``'warning'`` for warnings.  However any
                      kind of string can be used as category.
     """
-    session.setdefault('_flashes', []).append((category, message))
+    # Original implementation:
+    #
+    #     session.setdefault('_flashes', []).append((category, message))
+    #
+    # This assumed that changes made to mutable structures in the session are
+    # are always in sync with the sess on object, which is not true for session
+    # implementations that use external storage for keeping their keys/values.
+    flashes = session.get('_flashes', [])
+    flashes.append((category, message))
+    session['_flashes'] = flashes
 
 
 def get_flashed_messages(with_categories=False, category_filter=[]):
@@ -340,6 +371,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     to send certain files as attachment (HTML for instance).  The mimetype
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
+
+    Note `get_send_file_options` in :class:`flask.Flask` hooks the
+    ``SEND_FILE_MAX_AGE_DEFAULT`` configuration variable to set the default
+    cache_timeout.
 
     Please never pass filenames to this function from user sources without
     checking them first.  Something like this is usually sufficient to
@@ -517,7 +552,8 @@ def send_from_directory(directory, filename, **options):
     filename = safe_join(directory, filename)
     if not os.path.isfile(filename):
         raise NotFound()
-    return send_file(filename, conditional=True, **options)
+    options.setdefault('conditional', True)
+    return send_file(filename, **options)
 
 
 def get_root_path(import_name):
@@ -673,6 +709,25 @@ class _PackageBoundObject(object):
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
+    def get_send_file_options(self, filename):
+        """Provides keyword arguments to send to :func:`send_from_directory`.
+
+        This allows subclasses to change the behavior when sending files based
+        on the filename.  For example, to set the cache timeout for .js files
+        to 60 seconds (note the options are keywords for :func:`send_file`)::
+
+            class MyFlask(flask.Flask):
+                def get_send_file_options(self, filename):
+                    options = super(MyFlask, self).get_send_file_options(filename)
+                    if filename.lower().endswith('.js'):
+                        options['cache_timeout'] = 60
+                        options['conditional'] = True
+                    return options
+
+        .. versionadded:: 0.9
+        """
+        return {}
+
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
         folder to the browser.
@@ -681,7 +736,8 @@ class _PackageBoundObject(object):
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
-        return send_from_directory(self.static_folder, filename)
+        return send_from_directory(self.static_folder, filename,
+                **self.get_send_file_options(filename))
 
     def open_resource(self, resource, mode='rb'):
         """Opens a resource from the application's resource folder.  To see

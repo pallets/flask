@@ -4,11 +4,10 @@ uWSGI
 =====
 
 uWSGI is a deployment option on servers like `nginx`_, `lighttpd`_, and
-`cherokee`_; see :ref:`deploying-fastcgi` and
-:ref:`deploying-other-servers` for other options.  To use your WSGI
-application with uWSGI protocol you will need a uWSGI server
-first. uWSGI is both a protocol and an application server; the
-application server can serve uWSGI, FastCGI, and HTTP protocols.
+`cherokee`_; see :ref:`deploying-fastcgi` and :ref:`deploying-wsgi-standalone`
+for other options.  To use your WSGI application with uWSGI protocol you will
+need a uWSGI server first. uWSGI is both a protocol and an application server;
+the application server can serve uWSGI, FastCGI, and HTTP protocols.
 
 The most popular uWSGI server is `uwsgi`_, which we will use for this
 guide.  Make sure to have it installed to follow along.

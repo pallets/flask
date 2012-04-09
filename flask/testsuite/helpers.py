@@ -17,7 +17,7 @@ import unittest
 from logging import StreamHandler
 from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
-from werkzeug.http import parse_options_header
+from werkzeug.http import parse_cache_control_header, parse_options_header
 
 
 def has_encoding(name):
@@ -40,6 +40,18 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
 
+    def test_json_bad_requests_content_type(self):
+        app = flask.Flask(__name__)
+        @app.route('/json', methods=['POST'])
+        def return_json():
+            return unicode(flask.request.json)
+        c = app.test_client()
+        rv = c.post('/json', data='malformed', content_type='application/json')
+        self.assert_equal(rv.status_code, 400)
+        self.assert_equal(rv.mimetype, 'application/json')
+        self.assert_('description' in flask.json.loads(rv.data))
+        self.assert_('<p>' not in flask.json.loads(rv.data)['description'])
+
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
         app.testing = True
@@ -61,11 +73,25 @@ class JSONTestCase(FlaskTestCase):
         @app.route('/dict')
         def return_dict():
             return flask.jsonify(d)
+        @app.route("/padded")
+        def return_padded_json():
+            return flask.jsonify(d, padded=True)
+        @app.route("/padded_custom")
+        def return_padded_json_custom_callback():
+            return flask.jsonify(d, padded='my_func_name')
         c = app.test_client()
         for url in '/kw', '/dict':
             rv = c.get(url)
             self.assert_equal(rv.mimetype, 'application/json')
             self.assert_equal(flask.json.loads(rv.data), d)
+        for get_arg in 'callback=funcName', 'jsonp=funcName':
+            rv = c.get('/padded?' + get_arg)
+            self.assert_( rv.data.startswith("funcName(") )
+            self.assert_( rv.data.endswith(")") )
+            rv_json = rv.data.split('(')[1].split(')')[0]
+            self.assert_equal(flask.json.loads(rv_json), d)
+        rv = c.get('/padded_custom?my_func_name=funcName')
+        self.assert_( rv.data.startswith("funcName(") )
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
@@ -203,6 +229,33 @@ class SendfileTestCase(FlaskTestCase):
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             self.assert_equal(value, 'attachment')
             self.assert_equal(options['filename'], 'index.txt')
+
+    def test_static_file(self):
+        app = flask.Flask(__name__)
+        # default cache timeout is 12 hours
+        with app.test_request_context():
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 12 * 60 * 60)
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+        with app.test_request_context():
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 3600)
+        # override get_send_file_options with some new values and check them
+        class StaticFileApp(flask.Flask):
+            def get_send_file_options(self, filename):
+                opts = super(StaticFileApp, self).get_send_file_options(filename)
+                opts['cache_timeout'] = 10
+                # this test catches explicit inclusion of the conditional
+                # keyword arg in the guts
+                opts['conditional'] = True
+                return opts
+        app = StaticFileApp(__name__)
+        with app.test_request_context():
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 10)
 
 
 class LoggingTestCase(FlaskTestCase):

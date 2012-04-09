@@ -168,8 +168,8 @@ The following converters exist:
 
 .. admonition:: Unique URLs / Redirection Behaviour
 
-   Flask's URL rules are based on Werkzeug's routing module.  The idea behind
-   that module is to ensure beautiful and unique also unique URLs based on
+   Flask's URL rules are based on Werkzeug's routing module.  The idea
+   behind that module is to ensure beautiful and unique URLs based on
    precedents laid down by Apache and earlier HTTP servers.
 
    Take these two rules::
@@ -193,7 +193,7 @@ The following converters exist:
    with a trailing slash will produce a 404 "Not Found" error.
 
    This behavior allows relative URLs to continue working if users access the
-   page when they forget a trailing slash, consistent with how with how Apache
+   page when they forget a trailing slash, consistent with how Apache
    and other servers work.  Also, the URLs will stay unique, which helps search
    engines avoid indexing the same page twice.
 
@@ -234,7 +234,7 @@ some examples:
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method, explained
 below.  It tells Flask to behave as though it is handling a request, even
-though were are interacting with it through a Python shell.  Have a look at the
+though we are interacting with it through a Python shell.  Have a look at the
 explanation below. :ref:`context-locals`).
 
 Why would you want to build URLs instead of hard-coding them into your
@@ -333,8 +333,7 @@ configured to serve them for you, but during development Flask can do that
 as well.  Just create a folder called `static` in your package or next to
 your module and it will be available at `/static` on the application.
 
-To generate URLs that part of the URL, use the special ``'static'`` URL
-name::
+To generate URLs for static files, use the special ``'static'`` endpoint name::
 
     url_for('static', filename='style.css')
 
@@ -826,3 +825,26 @@ can do it like this::
 
     from werkzeug.contrib.fixers import LighttpdCGIRootFix
     app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
+
+.. _quickstart_deployment:
+
+Deploying to a Web Server
+-------------------------
+
+Ready to deploy your new Flask app?  To wrap up the quickstart, you can
+immediately deploy to a hosted platform, all of which offer a free plan for
+small projects:
+
+- `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
+- `Deploying Flask on ep.io <https://www.ep.io/docs/quickstart/flask/>`_
+- `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
+  with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
+
+Other places where you can host your Flask app:
+
+- `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
+- `Deploying Flask on Google App Engine <https://github.com/kamalgill/flask-appengine-template>`_
+- `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
+
+If you manage your own hosts and would like to host yourself, see the chapter
+on :ref:`deployment`.

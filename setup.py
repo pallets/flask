@@ -59,7 +59,7 @@ class run_audit(Command):
         try:
             import pyflakes.scripts.pyflakes as flakes
         except ImportError:
-            print "Audit requires PyFlakes installed in your system."""
+            print "Audit requires PyFlakes installed in your system."
             sys.exit(-1)
 
         warns = 0
@@ -100,6 +100,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
