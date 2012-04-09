@@ -45,6 +45,9 @@ Relase date to be decided, codename to be chosen.
 - The :meth:`flask.render_template` method now accepts a either an iterable of
   template names or a single template name.  Previously, it only accepted a
   single template name.  On an iterable, the first template found is rendered.
+- Added :meth:`flask.Flask.app_context` which works very similar to the
+  request context but only provides access to the current application.  This
+  also adds support for URL generation without an active request context.
 
 
 Version 0.8.1

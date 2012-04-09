@@ -265,11 +265,15 @@ Useful Functions and Classes
 
    Points to the application handling the request.  This is useful for
    extensions that want to support multiple applications running side
-   by side.
+   by side.  This is powered by the application context and not by the
+   request context, so you can change the value of this proxy by
+   using the :meth:`~flask.Flask.app_context` method.
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: has_request_context
+
+.. autofunction:: has_app_context
 
 .. autofunction:: url_for
 
@@ -411,6 +415,16 @@ Useful Internals
           ctx = _request_ctx_stack.top
           if ctx is not None:
               return ctx.session
+
+.. autoclass:: flask.ctx.AppContext
+   :members:
+
+.. data:: _app_ctx_stack
+
+   Works similar to the request context but only binds the application.
+   This is mainly there for extensions to store data.
+
+   .. versionadded:: 0.9
 
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:

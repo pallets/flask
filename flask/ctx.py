@@ -59,6 +59,16 @@ def has_request_context():
     return _request_ctx_stack.top is not None
 
 
+def has_app_context():
+    """Worksl ike :func:`has_request_context` but for the application
+    context.  You can also just do a boolean check on the
+    :data:`current_app` object instead.
+
+    .. versionadded:: 0.9
+    """
+    return _app_ctx_stack.top is not None
+
+
 class AppContext(object):
     """The application context binds an application object implicitly
     to the current thread or greenlet, similar to how the
