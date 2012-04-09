@@ -11,12 +11,20 @@
 
 from werkzeug.exceptions import HTTPException
 
-from .globals import _request_ctx_stack
+from .globals import _request_ctx_stack, _app_ctx_stack
 from .module import blueprint_is_module
 
 
 class _RequestGlobals(object):
     pass
+
+
+def _push_app_if_necessary(app):
+    top = _app_ctx_stack.top
+    if top is None or top.app != app:
+        ctx = app.app_context()
+        ctx.push()
+        return ctx
 
 
 def has_request_context():
@@ -49,6 +57,36 @@ def has_request_context():
     .. versionadded:: 0.7
     """
     return _request_ctx_stack.top is not None
+
+
+class AppContext(object):
+    """The application context binds an application object implicitly
+    to the current thread or greenlet, similar to how the
+    :class:`RequestContext` binds request information.  The application
+    context is also implicitly created if a request context is created
+    but the application is not on top of the individual application
+    context.
+    """
+
+    def __init__(self, app):
+        self.app = app
+
+    def push(self):
+        """Binds the app context to the current context."""
+        _app_ctx_stack.push(self)
+
+    def pop(self):
+        """Pops the app context."""
+        rv = _app_ctx_stack.pop()
+        assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
+            % (rv, self)
+
+    def __enter__(self):
+        self.push()
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        self.pop()
 
 
 class RequestContext(object):
@@ -93,6 +131,11 @@ class RequestContext(object):
         # is pushed the preserved context is popped.
         self.preserved = False
 
+        # Indicates if pushing this request context also triggered the pushing
+        # of an application context.  If it implicitly pushed an application
+        # context, it will be stored there
+        self._pushed_application_context = None
+
         self.match_request()
 
         # XXX: Support for deprecated functionality.  This is going away with
@@ -130,6 +173,10 @@ class RequestContext(object):
         if top is not None and top.preserved:
             top.pop()
 
+        # Before we push the request context we have to ensure that there
+        # is an application context.
+        self._pushed_application_context = _push_app_if_necessary(self.app)
+
         _request_ctx_stack.push(self)
 
         # Open the session at the moment that the request context is
@@ -153,6 +200,11 @@ class RequestContext(object):
         # get rid of circular dependencies at the end of the request
         # so that we don't require the GC to be active.
         rv.request.environ['werkzeug.request'] = None
+
+        # Get rid of the app as well if necessary.
+        if self._pushed_application_context:
+            self._pushed_application_context.pop()
+            self._pushed_application_context = None
 
     def __enter__(self):
         self.push()

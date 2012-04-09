@@ -28,7 +28,7 @@ from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     find_package
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
-from .ctx import RequestContext
+from .ctx import RequestContext, AppContext
 from .globals import _request_ctx_stack, request
 from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
@@ -1457,6 +1457,21 @@ class Flask(_PackageBoundObject):
             if rv is not None:
                 return rv
         request_tearing_down.send(self)
+
+    def app_context(self):
+        """Binds the application only.  For as long as the application is bound
+        to the current context the :data:`flask.current_app` points to that
+        application.  An application context is automatically created when a
+        request context is pushed if necessary.
+
+        Example usage::
+
+            with app.app_context():
+                ...
+
+        .. versionadded:: 0.9
+        """
+        return AppContext(self)
 
     def request_context(self, environ):
         """Creates a :class:`~flask.ctx.RequestContext` from the given
