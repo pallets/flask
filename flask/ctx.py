@@ -62,7 +62,7 @@ def has_request_context():
 
 
 def has_app_context():
-    """Worksl ike :func:`has_request_context` but for the application
+    """Works like :func:`has_request_context` but for the application
     context.  You can also just do a boolean check on the
     :data:`current_app` object instead.
 
