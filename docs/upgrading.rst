@@ -19,6 +19,21 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+Version 0.9
+-----------
+
+The behavior of returning tuples from a function was simplified.  If you
+return a tuple it no longer defines the arguments for the response object
+you're creating, it's now always a tuple in the form ``(response, status,
+headers)`` where at least one item has to be provided.  If you depend on
+the old behavior, you can add it easily by subclassing Flask::
+
+    class TraditionalFlask(Flask):
+        def make_response(self, rv):
+            if isinstance(rv, tuple):
+                return self.response_class(*rv)
+            return Flask.make_response(self, rv)
+
 Version 0.8
 -----------
 

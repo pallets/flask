@@ -1354,37 +1354,48 @@ class Flask(_PackageBoundObject):
                                 string as body
         :class:`unicode`        a response object is created with the
                                 string encoded to utf-8 as body
-        :class:`tuple`          the response object is created with the
-                                contents of the tuple as arguments
         a WSGI function         the function is called as WSGI application
                                 and buffered as response object
+        :class:`tuple`          A tuple in the form ``(response, status,
+                                headers)`` where `response` is any of the
+                                types defined here, `status` is a string
+                                or an integer and `headers` is a list of
+                                a dictionary with header values.
         ======================= ===========================================
 
         :param rv: the return value from the view function
+
+        .. versionchanged:: 0.9
+           Previously a tuple was interpreted as the arguments for the
+           response object.
         """
+        status = headers = None
+        if isinstance(rv, tuple):
+            rv, status, headers = rv + (None,) * (3 - len(rv))
+
         if rv is None:
             raise ValueError('View function did not return a response')
-        if isinstance(rv, self.response_class):
-            return rv
-        if isinstance(rv, basestring):
-            return self.response_class(rv)
-        if isinstance(rv, tuple):
-            if len(rv) > 0 and isinstance(rv[0], self.response_class):
-                original = rv[0]
-                new_response = self.response_class('', *rv[1:])
-                if len(rv) < 3:
-                    # The args for the response class are
-                    # response=None, status=None, headers=None,
-                    # mimetype=None, content_type=None, ...
-                    # so if there's at least 3 elements the rv
-                    # tuple contains header information so the
-                    # headers from rv[0] "win."
-                    new_response.headers = original.headers
-                new_response.response = original.response
-                return new_response
+
+        if not isinstance(rv, self.response_class):
+            # When we create a response object directly, we let the constructor
+            # set the headers and status.  We do this because there can be
+            # some extra logic involved when creating these objects with
+            # specific values (like defualt content type selection).
+            if isinstance(rv, basestring):
+                rv = self.response_class(rv, headers=headers, status=status)
+                headers = status = None
             else:
-                return self.response_class(*rv)
-        return self.response_class.force_type(rv, request.environ)
+                rv = self.response_class.force_type(rv, request.environ)
+
+        if status is not None:
+            if isinstance(status, basestring):
+                rv.status = status
+            else:
+                rv.status_code = status
+        if headers:
+            rv.headers.extend(headers)
+
+        return rv
 
     def create_url_adapter(self, request):
         """Creates a URL adapter for the given request.  The URL adapter

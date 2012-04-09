@@ -63,6 +63,8 @@ Relase date to be decided, codename to be chosen.
   the `get_send_file_options` hook is used.
 - Fixed an assumption in sessions implementation which could break message
   flashing on sessions implementations which use external storage.
+- Changed the behavior of tuple return values from functions.  They are no
+  longer arguments to the response object, they now have a defined meaning.
 
 Version 0.8.1
 -------------

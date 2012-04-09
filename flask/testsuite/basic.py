@@ -631,7 +631,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return u'Hällo Wörld'.encode('utf-8')
         @app.route('/args')
         def from_tuple():
-            return 'Meh', 400, {'X-Foo': 'Testing'}, 'text/plain'
+            return 'Meh', 400, {
+                'X-Foo': 'Testing',
+                'Content-Type': 'text/plain; charset=utf-8'
+            }
         c = app.test_client()
         self.assert_equal(c.get('/unicode').data, u'Hällo Wörld'.encode('utf-8'))
         self.assert_equal(c.get('/string').data, u'Hällo Wörld'.encode('utf-8'))
@@ -677,16 +680,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
             rv = flask.make_response(
                 flask.Response('', headers={'Content-Type': 'text/html'}),
-                400, None, 'application/json')
-            self.assertEqual(rv.status_code, 400)
-            self.assertEqual(rv.headers['Content-Type'], 'application/json')
-
-            rv = flask.make_response(
-                flask.Response('', mimetype='application/json'),
-                400, {'Content-Type': 'text/html'})
+                400, [('X-Foo', 'bar')])
             self.assertEqual(rv.status_code, 400)
             self.assertEqual(rv.headers['Content-Type'], 'text/html')
-
+            self.assertEqual(rv.headers['X-Foo'], 'bar')
 
     def test_url_generation(self):
         app = flask.Flask(__name__)
