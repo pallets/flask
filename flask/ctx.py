@@ -70,6 +70,7 @@ class AppContext(object):
 
     def __init__(self, app):
         self.app = app
+        self.url_adapter = app.create_url_adapter(None)
 
     def push(self):
         """Binds the app context to the current context."""

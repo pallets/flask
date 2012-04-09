@@ -250,7 +250,8 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_SECURE':                False,
         'MAX_CONTENT_LENGTH':                   None,
         'TRAP_BAD_REQUEST_ERRORS':              False,
-        'TRAP_HTTP_EXCEPTIONS':                 False
+        'TRAP_HTTP_EXCEPTIONS':                 False,
+        'PREFERRED_URL_SCHEME':                 'http'
     })
 
     #: The rule object to use for URL rules created.  This is used by
@@ -1370,9 +1371,21 @@ class Flask(_PackageBoundObject):
         so the request is passed explicitly.
 
         .. versionadded:: 0.6
+
+        .. versionchanged:: 0.9
+           This can now also be called without a request object when the
+           UR adapter is created for the application context.
         """
-        return self.url_map.bind_to_environ(request.environ,
-            server_name=self.config['SERVER_NAME'])
+        if request is not None:
+            return self.url_map.bind_to_environ(request.environ,
+                server_name=self.config['SERVER_NAME'])
+        # We need at the very least the server name to be set for this
+        # to work.
+        if self.config['SERVER_NAME'] is not None:
+            return self.url_map.bind(
+                self.config['SERVER_NAME'],
+                script_name=self.config['APPLICATION_ROOT'] or '/',
+                url_scheme=self.config['PREFERRED_URL_SCHEME'])
 
     def inject_url_defaults(self, endpoint, values):
         """Injects the URL defaults for the given endpoint directly into

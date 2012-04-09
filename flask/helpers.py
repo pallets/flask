@@ -50,7 +50,8 @@ except ImportError:
 
 from jinja2 import FileSystemLoader
 
-from .globals import session, _request_ctx_stack, current_app, request
+from .globals import session, _request_ctx_stack, _app_ctx_stack, \
+     current_app, request
 
 
 def _assert_have_json():
@@ -197,27 +198,40 @@ def url_for(endpoint, **values):
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
-    ctx = _request_ctx_stack.top
-    blueprint_name = request.blueprint
-    if not ctx.request._is_old_module:
-        if endpoint[:1] == '.':
-            if blueprint_name is not None:
-                endpoint = blueprint_name + endpoint
-            else:
+    appctx = _app_ctx_stack.top
+    reqctx = _request_ctx_stack.top
+
+    # If request specific information is available we have some extra
+    # features that support "relative" urls.
+    if reqctx is not None:
+        url_adapter = reqctx.url_adapter
+        blueprint_name = request.blueprint
+        if not reqctx.request._is_old_module:
+            if endpoint[:1] == '.':
+                if blueprint_name is not None:
+                    endpoint = blueprint_name + endpoint
+                else:
+                    endpoint = endpoint[1:]
+        else:
+            # TODO: get rid of this deprecated functionality in 1.0
+            if '.' not in endpoint:
+                if blueprint_name is not None:
+                    endpoint = blueprint_name + '.' + endpoint
+            elif endpoint.startswith('.'):
                 endpoint = endpoint[1:]
+        external = values.pop('_external', False)
+
+    # Otherwise go with the url adapter from the appctx and make
+    # the urls external by default.
     else:
-        # TODO: get rid of this deprecated functionality in 1.0
-        if '.' not in endpoint:
-            if blueprint_name is not None:
-                endpoint = blueprint_name + '.' + endpoint
-        elif endpoint.startswith('.'):
-            endpoint = endpoint[1:]
-    external = values.pop('_external', False)
+        url_adapter = appctx.url_adapter
+        external = values.pop('_external', True)
+
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
-    ctx.app.inject_url_defaults(endpoint, values)
-    rv = ctx.url_adapter.build(endpoint, values, method=method,
-                               force_external=external)
+    appctx.app.inject_url_defaults(endpoint, values)
+    rv = url_adapter.build(endpoint, values, method=method,
+                           force_external=external)
     if anchor is not None:
         rv += '#' + url_quote(anchor)
     return rv
