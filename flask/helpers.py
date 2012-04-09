@@ -726,7 +726,9 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.9
         """
-        return {}
+        options = {}
+        options['cache_timeout'] = current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        return options
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
