@@ -250,6 +250,17 @@ You can then use the database from views like this::
         cur = db.connection.cursor()
         cur.execute(...)
 
+Likewise if you are outside of a request but you are using Flask 0.9 or
+later with the app context support, you can use the database in the same
+way::
+
+    with app.app_context():
+        cur = db.connection.cursor()
+        cur.execute(...)
+
+At the end of the `with` block the teardown handles will be executed
+automatically.
+
 Additionally, the ``init_app`` method is used to support the factory pattern
 for creating apps::
 
