@@ -58,7 +58,7 @@ class ExtensionImporter(object):
             except ImportError:
                 exc_type, exc_value, tb = sys.exc_info()
                 # since we only establish the entry in sys.modules at the
-                # very this seems to be redundant, but if recursive imports
+                # end this seems to be redundant, but if recursive imports
                 # happen we will call into the move import a second time.
                 # On the second invocation we still don't have an entry for
                 # fullname in sys.modules, but we will end up with the same
@@ -71,7 +71,7 @@ class ExtensionImporter(object):
 
                 # If it's an important traceback we reraise it, otherwise
                 # we swallow it and try the next choice.  The skipped frame
-                # is the one from __import__ above which we don't care about
+                # is the one from __import__ above which we don't care about.
                 if self.is_important_traceback(realname, tb):
                     raise exc_type, exc_value, tb.tb_next
                 continue
@@ -106,7 +106,7 @@ class ExtensionImporter(object):
         if module_name == important_module:
             return True
 
-        # Some python verisons will will clean up modules so early that the
+        # Some python versions will clean up modules so early that the
         # module name at that point is no longer set.  Try guessing from
         # the filename then.
         filename = os.path.abspath(tb.tb_frame.f_code.co_filename)
