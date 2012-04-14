@@ -482,7 +482,7 @@ extensions = [
         ''',
         docs='http://readthedocs.org/docs/flask-restless/en/latest/',
         github='jfinkels/flask-restless',
-        approved=False
+        approved=True
     ),
     Extension('Flask-Heroku', 'Kenneth Reitz',
         description='''
