@@ -586,7 +586,7 @@ with the route parameter the view function is defined with the decorator
 instead of the `view_func` parameter.
 
 =============== ==========================================================
-`rule`          the URL roule as string
+`rule`          the URL rule as string
 `endpoint`      the endpoint for the registered URL rule.  Flask itself
                 assumes that the name of the view function is the name
                 of the endpoint if not explicitly stated.
