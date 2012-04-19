@@ -34,11 +34,12 @@ the old behavior, you can add it easily by subclassing Flask::
                 return self.response_class(*rv)
             return Flask.make_response(self, rv)
 
-If you have an extension that was using :data:`~flask._request_ctx_stack`
-before, please consider changing to :data:`~flask._app_ctx_stack` if it
-makes sense for your extension.  This will for example be the case for
-extensions that connect to databases.  This will allow your users to
-easier use your extension with more complex use cases outside of requests.
+If you maintain an extension that was using :data:`~flask._request_ctx_stack`
+before, please consider changing to :data:`~flask._app_ctx_stack` if it makes
+sense for your extension.  For instance, the app context stack makes sense for
+extensions which connect to databases.  Using the app context stack instead of
+the request stack will make extensions more readily handle use cases outside of
+requests.
 
 Version 0.8
 -----------
