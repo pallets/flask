@@ -153,7 +153,7 @@ explanation of the little bit of code above:
 2. ``$('selector')`` selects an element and lets you operate on it.
 3. ``element.bind('event', func)`` specifies a function that should run
    when the user clicked on the element.  If that function returns
-   `false`, the default behaviour will not kick in (in this case, navigate
+   `false`, the default behavior will not kick in (in this case, navigate
    to the `#` URL).
 4. ``$.getJSON(url, data, func)`` sends a `GET` request to `url` and will
    send the contents of the `data` object as query parameters.  Once the

@@ -166,7 +166,7 @@ The following converters exist:
 `path`      like the default but also accepts slashes
 =========== ===========================================
 
-.. admonition:: Unique URLs / Redirection Behaviour
+.. admonition:: Unique URLs / Redirection Behavior
 
    Flask's URL rules are based on Werkzeug's routing module.  The idea
    behind that module is to ensure beautiful and unique URLs based on

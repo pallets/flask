@@ -1360,7 +1360,7 @@ class Flask(_PackageBoundObject):
     def make_default_options_response(self):
         """This method is called to create the default `OPTIONS` response.
         This can be changed through subclassing to change the default
-        behaviour of `OPTIONS` responses.
+        behavior of `OPTIONS` responses.
 
         .. versionadded:: 0.7
         """

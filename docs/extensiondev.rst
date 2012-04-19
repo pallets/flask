@@ -40,7 +40,7 @@ that it works with multiple Flask application instances at once.  This is
 a requirement because many people will use patterns like the
 :ref:`app-factories` pattern to create their application as needed to aid
 unittests and to support multiple configurations.  Because of that it is
-crucial that your application supports that kind of behaviour.
+crucial that your application supports that kind of behavior.
 
 Most importantly the extension must be shipped with a `setup.py` file and
 registered on PyPI.  Also the development checkout link should work so
@@ -145,7 +145,7 @@ initialization functions:
 classes:
 
     Classes work mostly like initialization functions but can later be
-    used to further change the behaviour.  For an example look at how the
+    used to further change the behavior.  For an example look at how the
     `OAuth extension`_ works: there is an `OAuth` object that provides
     some helper functions like `OAuth.remote_app` to create a reference to
     a remote application that uses OAuth.

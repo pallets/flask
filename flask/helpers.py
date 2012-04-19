@@ -60,7 +60,7 @@ def _assert_have_json():
         raise RuntimeError('simplejson not installed')
 
 
-# figure out if simplejson escapes slashes.  This behaviour was changed
+# figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
 if not json_available or '\\/' not in json.dumps('/'):
 
@@ -121,7 +121,7 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.9
         If the ``padded`` argument is true, the JSON object will be padded
-        for JSONP calls and the response mimetype will be changed to 
+        for JSONP calls and the response mimetype will be changed to
         ``application/javascript``. By default, the request arguments ``callback``
         and ``jsonp`` will be used as the name for the callback function.
         This will work with jQuery and most other JavaScript libraries
@@ -387,7 +387,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. versionadded:: 0.5
        The `add_etags`, `cache_timeout` and `conditional` parameters were
-       added.  The default behaviour is now to attach etags.
+       added.  The default behavior is now to attach etags.
 
     .. versionchanged:: 0.7
        mimetype guessing and etag support for file objects was
@@ -422,7 +422,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         file = filename_or_fp
         filename = getattr(file, 'name', None)
 
-        # XXX: this behaviour is now deprecated because it was unreliable.
+        # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
            and isinstance(filename, basestring):
@@ -433,7 +433,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if add_etags:
             warn(DeprecationWarning('In future flask releases etags will no '
                 'longer be generated for file objects passed to the send_file '
-                'function because this behaviour was unreliable.  Pass '
+                'function because this behavior was unreliable.  Pass '
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 

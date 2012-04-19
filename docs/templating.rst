@@ -63,7 +63,7 @@ by default:
 
    The :func:`flask.get_flashed_messages` function.
 
-.. admonition:: The Jinja Context Behaviour
+.. admonition:: The Jinja Context Behavior
 
    These variables are added to the context of variables, they are not
    global variables.  The difference is that by default these will not
