@@ -54,16 +54,19 @@ can execute it:
 Configuring Apache
 ------------------
 
-The example above is good enough for a basic Apache deployment but your `.fcgi` file will appear in your application URL e.g. www.example.com/yourapplication.fcgi/news/. There are few ways to resolve it. A preferable way is to use Apache ScriptAlias configuration directive::
+The example above is good enough for a basic Apache deployment but your `.fcgi`
+file will appear in your application URL
+e.g. example.com/yourapplication.fcgi/news/. There are few ways to configure
+your application so that yourapplication.fcgi does not appear in the URL. A
+preferable way is to use the ScriptAlias configuration directive::
 
     <VirtualHost *>
         ServerName example.com
         ScriptAlias / /path/to/yourapplication.fcgi/
     </VirtualHost>
 
-Another way is to use a custom WSGI middleware. For example on a shared web hosting::
-
-    .htaccess
+If you cannot set ScriptAlias, for example on an shared web host, you can use
+WSGI middleware to remove yourapplication.fcgi from the URLs. Set .htaccess::
 
     <IfModule mod_fcgid.c>
        AddHandler fcgid-script .fcgi
@@ -81,7 +84,7 @@ Another way is to use a custom WSGI middleware. For example on a shared web host
        RewriteRule ^(.*)$ yourapplication.fcgi/$1 [QSA,L]
     </IfModule>
 
-    yourapplication.fcgi
+Set yourapplication.fcgi::
 
     #!/usr/bin/python
     #: optional path to your local python site-packages folder
@@ -128,16 +131,15 @@ A basic FastCGI configuration for lighttpd looks like that::
         "^(/static.*)$" => "$1",
         "^(/.*)$" => "/yourapplication.fcgi$1"
 
-Remember to enable the FastCGI, alias and rewrite modules. This
-configuration binds the application to `/yourapplication`.  If you want
-the application to work in the URL root you have to work around a
-lighttpd bug with the
+Remember to enable the FastCGI, alias and rewrite modules. This configuration
+binds the application to `/yourapplication`.  If you want the application to
+work in the URL root you have to work around a lighttpd bug with the
 :class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix` middleware.
 
 Make sure to apply it only if you are mounting the application the URL
-root. Also, see the Lighty docs for more information on `FastCGI and
-Python <http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModFastCGI>`_
-(note that explicitly passing a socket to run() is no longer necessary).
+root. Also, see the Lighty docs for more information on `FastCGI and Python
+<http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModFastCGI>`_ (note that
+explicitly passing a socket to run() is no longer necessary).
 
 Configuring nginx
 -----------------
@@ -151,7 +153,7 @@ A basic flask FastCGI configuration for nginx looks like this::
     location /yourapplication { try_files $uri @yourapplication; }
     location @yourapplication {
         include fastcgi_params;
-    fastcgi_split_path_info ^(/yourapplication)(.*)$;
+        fastcgi_split_path_info ^(/yourapplication)(.*)$;
         fastcgi_param PATH_INFO $fastcgi_path_info;
         fastcgi_param SCRIPT_NAME $fastcgi_script_name;
         fastcgi_pass unix:/tmp/yourapplication-fcgi.sock;
