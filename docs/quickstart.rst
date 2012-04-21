@@ -839,7 +839,6 @@ immediately deploy to a hosted platform, all of which offer a free plan for
 small projects:
 
 - `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
-- `Deploying Flask on ep.io <https://www.ep.io/docs/quickstart/flask/>`_
 - `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
   with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
 
