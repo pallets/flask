@@ -19,6 +19,7 @@ from threading import Thread
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
+from werkzeug.routing import BuildError
 
 
 class BasicFunctionalityTestCase(FlaskTestCase):
@@ -694,6 +695,17 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('hello', name='test x'), '/hello/test%20x')
             self.assert_equal(flask.url_for('hello', name='test x', _external=True),
                               'http://localhost/hello/test%20x')
+
+    def test_build_error_handler(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            self.assertRaises(BuildError, flask.url_for, 'spam')
+        def handler(error, endpoint, **values):
+            # Just a test.
+            return '/test_handler/'
+        app.build_error_handler = handler
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('spam'), '/test_handler/')
 
     def test_custom_converters(self):
         from werkzeug.routing import BaseConverter

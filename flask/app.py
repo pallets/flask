@@ -329,6 +329,17 @@ class Flask(_PackageBoundObject):
         #: decorator.
         self.error_handler_spec = {None: self._error_handlers}
 
+        #: If not `None`, this function is called when :meth:`url_for` raises
+        #: :exc:`~werkzeug.routing.BuildError`, with the call signature::
+        #:
+        #:     self.build_error_handler(error, endpoint, **values)
+        #:
+        #: Here, `error` is the instance of `BuildError`, and `endpoint` and
+        #: `**values` are the arguments passed into :meth:`url_for`.
+        #:
+        #: .. versionadded:: 0.9
+        self.build_error_handler = None
+
         #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
         #: the blueprint this function is active for, `None` for all requests.
@@ -1472,6 +1483,15 @@ class Flask(_PackageBoundObject):
             funcs = chain(funcs, self.url_default_functions.get(bp, ()))
         for func in funcs:
             func(endpoint, values)
+
+    def handle_build_error(self, error, endpoint, **values):
+        """Handle :class:`~werkzeug.routing.BuildError` on :meth:`url_for`.
+
+        Calls :attr:`build_error_handler` if it is not `None`.
+        """
+        if self.build_error_handler is None:
+            raise error
+        return self.build_error_handler(error, endpoint, **values)
 
     def preprocess_request(self):
         """Called before the actual request dispatching and will

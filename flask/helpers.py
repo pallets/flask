@@ -20,6 +20,7 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
 # try to load the best simplejson implementation available.  If JSON
@@ -214,6 +215,10 @@ def url_for(endpoint, **values):
     .. versionadded:: 0.9
        The `_anchor` and `_method` parameters were added.
 
+    .. versionadded:: 0.9
+       Calls :meth:`Flask.handle_build_error` on
+       :exc:`~werkzeug.routing.BuildError`.
+
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
     :param _external: if set to `True`, an absolute URL is generated.
@@ -260,6 +265,15 @@ def url_for(endpoint, **values):
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
     appctx.app.inject_url_defaults(endpoint, values)
+    try:
+        rv = url_adapter.build(endpoint, values, method=method,
+                               force_external=external)
+    except BuildError, error:
+        values['_external'] = external
+        values['_anchor'] = anchor
+        values['_method'] = method
+        return appctx.app.handle_build_error(error, endpoint, **values)
+
     rv = url_adapter.build(endpoint, values, method=method,
                            force_external=external)
     if anchor is not None:
