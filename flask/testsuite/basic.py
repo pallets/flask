@@ -698,8 +698,23 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
     def test_build_error_handler(self):
         app = flask.Flask(__name__)
+
+        # Test base case, a URL which results in a BuildError.
         with app.test_request_context():
             self.assertRaises(BuildError, flask.url_for, 'spam')
+
+        # Verify the error is re-raised if not the current exception.
+        try:
+            with app.test_request_context():
+                flask.url_for('spam')
+        except BuildError, error:
+            pass
+        try:
+            raise RuntimeError('Test case where BuildError is not current.')
+        except RuntimeError:
+            self.assertRaises(BuildError, app.handle_build_error, error, 'spam')
+
+        # Test a custom handler.
         def handler(error, endpoint, **values):
             # Just a test.
             return '/test_handler/'

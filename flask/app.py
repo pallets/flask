@@ -1490,7 +1490,11 @@ class Flask(_PackageBoundObject):
         Calls :attr:`build_error_handler` if it is not `None`.
         """
         if self.build_error_handler is None:
-            raise error
+            exc_type, exc_value, tb = sys.exc_info()
+            if exc_value is error:
+                raise exc_type, exc_value, tb
+            else:
+                raise error
         return self.build_error_handler(error, endpoint, **values)
 
     def preprocess_request(self):
