@@ -1468,7 +1468,7 @@ class Flask(_PackageBoundObject):
         """
         funcs = self.url_default_functions.get(None, ())
         if '.' in endpoint:
-            bp = endpoint.split('.', 1)[0]
+            bp = endpoint.rsplit('.', 1)[0]
             funcs = chain(funcs, self.url_default_functions.get(bp, ()))
         for func in funcs:
             func(endpoint, values)
