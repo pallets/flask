@@ -526,7 +526,7 @@ deal with that problem.
 To access parameters submitted in the URL (``?key=value``) you can use the
 :attr:`~flask.request.args` attribute::
 
-    searchword = request.args.get('q', '')
+    searchword = request.args.get('key', '')
 
 We recommend accessing URL parameters with `get` or by catching the
 `KeyError` because users might change the URL and presenting them a 400
