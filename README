@@ -6,7 +6,7 @@
     ~ What is Flask?
 
       Flask is a microframework for Python based on Werkzeug
-      and Jinja2.  It's intended for small scale applications
+      and Jinja2.  It's intended for getting started very quickly
       and was developed with best intentions in mind.
 
     ~ Is it ready?
@@ -17,10 +17,11 @@
 
     ~ What do I need?
 
-      Jinja 2.4 and Werkzeug 0.6.1.  `pip` or `easy_install` will
-      install them for you if you do `easy_install Flask`.
-      I encourage you to use a virtualenv.  Check the docs for
-      complete installation and usage instructions.
+      Jinja 2.4 and Werkzeug 0.7 or later.
+      `pip` or `easy_install` will install them for you if you do
+      `pip install Flask`.  I encourage you to use a virtualenv.
+      Check the docs for complete installation and usage
+      instructions.
 
     ~ Where are the docs?
 
@@ -50,3 +51,5 @@
 
       Either use the #pocoo IRC channel on irc.freenode.net or
       ask on the mailinglist: http://flask.pocoo.org/mailinglist/
+
+      See http://flask.pocoo.org/community/ for more resources.

@@ -61,7 +61,7 @@ information about how to do that.  Once you have it installed, run the same
 commands as above, but without the `sudo` prefix.
 
 Once you have virtualenv installed, just fire up a shell and create
-your own environment.  I usually create a project folder and an `env`
+your own environment.  I usually create a project folder and a `venv`
 folder within::
 
     $ mkdir myproject

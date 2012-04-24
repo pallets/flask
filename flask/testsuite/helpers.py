@@ -106,14 +106,17 @@ class JSONTestCase(FlaskTestCase):
         @app.route('/dict')
         def return_dict():
             return flask.jsonify(d)
+        @app.route("/unpadded")
+        def return_padded_false():
+            return flask.jsonify(d, padded=False)
         @app.route("/padded")
-        def return_padded_json():
+        def return_padded_true():
             return flask.jsonify(d, padded=True)
         @app.route("/padded_custom")
         def return_padded_json_custom_callback():
             return flask.jsonify(d, padded='my_func_name')
         c = app.test_client()
-        for url in '/kw', '/dict':
+        for url in '/kw', '/dict', '/unpadded':
             rv = c.get(url)
             self.assert_equal(rv.mimetype, 'application/json')
             self.assert_equal(flask.json.loads(rv.data), d)

@@ -49,6 +49,9 @@ Relase date to be decided, codename to be chosen.
 - The :meth:`flask.render_template` method now accepts a either an iterable of
   template names or a single template name.  Previously, it only accepted a
   single template name.  On an iterable, the first template found is rendered.
+- Added :meth:`flask.Flask.app_context` which works very similar to the
+  request context but only provides access to the current application.  This
+  also adds support for URL generation without an active request context.
 - View functions can now return a tuple with the first instance being an
   instance of :class:`flask.Response`.  This allows for returning
   ``jsonify(error="error msg"), 400`` from a view function.
@@ -62,6 +65,8 @@ Relase date to be decided, codename to be chosen.
   the `get_send_file_options` hook is used.
 - Fixed an assumption in sessions implementation which could break message
   flashing on sessions implementations which use external storage.
+- Changed the behavior of tuple return values from functions.  They are no
+  longer arguments to the response object, they now have a defined meaning.
 
 Version 0.8.1
 -------------
@@ -150,7 +155,7 @@ Released on June 28th 2011, codename Grappa
 
 - Added :meth:`~flask.Flask.make_default_options_response`
   which can be used by subclasses to alter the default
-  behaviour for `OPTIONS` responses.
+  behavior for `OPTIONS` responses.
 - Unbound locals now raise a proper :exc:`RuntimeError` instead
   of an :exc:`AttributeError`.
 - Mimetype guessing and etag support based on file objects is now
@@ -160,7 +165,7 @@ Released on June 28th 2011, codename Grappa
 - Static file handling for modules now requires the name of the
   static folder to be supplied explicitly.  The previous autodetection
   was not reliable and caused issues on Google's App Engine.  Until
-  1.0 the old behaviour will continue to work but issue dependency
+  1.0 the old behavior will continue to work but issue dependency
   warnings.
 - fixed a problem for Flask to run on jython.
 - added a `PROPAGATE_EXCEPTIONS` configuration variable that can be
@@ -278,14 +283,14 @@ Released on July 6th 2010, codename Calvados
   the session cookie cross-subdomain wide.
 - autoescaping is no longer active for all templates.  Instead it
   is only active for ``.html``, ``.htm``, ``.xml`` and ``.xhtml``.
-  Inside templates this behaviour can be changed with the
+  Inside templates this behavior can be changed with the
   ``autoescape`` tag.
 - refactored Flask internally.  It now consists of more than a
   single file.
 - :func:`flask.send_file` now emits etags and has the ability to
   do conditional responses builtin.
 - (temporarily) dropped support for zipped applications.  This was a
-  rarely used feature and led to some confusing behaviour.
+  rarely used feature and led to some confusing behavior.
 - added support for per-package template and static-file directories.
 - removed support for `create_jinja_loader` which is no longer used
   in 0.5 due to the improved module support.

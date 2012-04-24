@@ -72,9 +72,12 @@ class MemoryTestCase(FlaskTestCase):
         # Trigger caches
         fire()
 
-        with self.assert_no_leak():
-            for x in xrange(10):
-                fire()
+        # This test only works on CPython 2.7.
+        if sys.version_info >= (2, 7) and \
+                not hasattr(sys, 'pypy_translation_info'):
+            with self.assert_no_leak():
+                for x in xrange(10):
+                    fire()
 
 
 def suite():

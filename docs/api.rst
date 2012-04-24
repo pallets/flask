@@ -265,11 +265,15 @@ Useful Functions and Classes
 
    Points to the application handling the request.  This is useful for
    extensions that want to support multiple applications running side
-   by side.
+   by side.  This is powered by the application context and not by the
+   request context, so you can change the value of this proxy by
+   using the :meth:`~flask.Flask.app_context` method.
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: has_request_context
+
+.. autofunction:: has_app_context
 
 .. autofunction:: url_for
 
@@ -417,6 +421,16 @@ Useful Internals
           if ctx is not None:
               return ctx.session
 
+.. autoclass:: flask.ctx.AppContext
+   :members:
+
+.. data:: _app_ctx_stack
+
+   Works similar to the request context but only binds the application.
+   This is mainly there for extensions to store data.
+
+   .. versionadded:: 0.9
+
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:
 
@@ -460,8 +474,18 @@ Signals
 .. data:: request_tearing_down
 
    This signal is sent when the application is tearing down the request.
-   This is always called, even if an error happened.  No arguments are
-   provided.
+   This is always called, even if an error happened.  An `exc` keyword
+   argument is passed with the exception that caused the teardown.
+
+   .. versionchanged:: 0.9
+      The `exc` parameter was added.
+
+.. data:: appcontext_tearing_down
+
+   This signal is sent when the application is tearing down the
+   application context.  This is always called, even if an error happened.
+   An `exc` keyword argument is passed with the exception that caused the
+   teardown.
 
 .. currentmodule:: None
 
@@ -567,7 +591,7 @@ with the route parameter the view function is defined with the decorator
 instead of the `view_func` parameter.
 
 =============== ==========================================================
-`rule`          the URL roule as string
+`rule`          the URL rule as string
 `endpoint`      the endpoint for the registered URL rule.  Flask itself
                 assumes that the name of the view function is the name
                 of the endpoint if not explicitly stated.

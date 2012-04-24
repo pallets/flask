@@ -90,7 +90,7 @@ the dynamic application creation.
 
 The perfect level for abstraction in that regard is the WSGI layer.  You
 write your own WSGI application that looks at the request that comes and
-and delegates it to your Flask application.  If that application does not
+delegates it to your Flask application.  If that application does not
 exist yet, it is dynamically created and remembered::
 
     from threading import Lock

@@ -17,7 +17,7 @@ here:
 Declarative
 -----------
 
-The default behaviour of MongoKit is the declarative one that is based on
+The default behavior of MongoKit is the declarative one that is based on
 common ideas from Django or the SQLAlchemy declarative extension.
 
 Here an example `app.py` module for your application::

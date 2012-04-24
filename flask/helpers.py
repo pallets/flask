@@ -21,6 +21,7 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
 # try to load the best simplejson implementation available.  If JSON
@@ -51,7 +52,8 @@ except ImportError:
 
 from jinja2 import FileSystemLoader
 
-from .globals import session, _request_ctx_stack, current_app, request
+from .globals import session, _request_ctx_stack, _app_ctx_stack, \
+     current_app, request
 
 
 def _assert_have_json():
@@ -60,7 +62,7 @@ def _assert_have_json():
         raise RuntimeError('simplejson not installed')
 
 
-# figure out if simplejson escapes slashes.  This behaviour was changed
+# figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
 if not json_available or '\\/' not in json.dumps('/'):
 
@@ -121,7 +123,7 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.9
         If the ``padded`` argument is true, the JSON object will be padded
-        for JSONP calls and the response mimetype will be changed to 
+        for JSONP calls and the response mimetype will be changed to
         ``application/javascript``. By default, the request arguments ``callback``
         and ``jsonp`` will be used as the name for the callback function.
         This will work with jQuery and most other JavaScript libraries
@@ -213,8 +215,46 @@ def url_for(endpoint, **values):
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
+    To integrate applications, :class:`Flask` has a hook to intercept URL build
+    errors through :attr:`Flask.build_error_handler`.  The `url_for` function
+    results in a :exc:`~werkzeug.routing.BuildError` when the current app does
+    not have a URL for the given endpoint and values.  When it does, the
+    :data:`~flask.current_app` calls its :attr:`~Flask.build_error_handler` if
+    it is not `None`, which can return a string to use as the result of
+    `url_for` (instead of `url_for`'s default to raise the
+    :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
+    An example::
+
+        def external_url_handler(error, endpoint, **values):
+            "Looks up an external URL when `url_for` cannot build a URL."
+            # This is an example of hooking the build_error_handler.
+            # Here, lookup_url is some utility function you've built
+            # which looks up the endpoint in some external URL registry.
+            url = lookup_url(endpoint, **values)
+            if url is None:
+                # External lookup did not have a URL.
+                # Re-raise the BuildError, in context of original traceback.
+                exc_type, exc_value, tb = sys.exc_info()
+                if exc_value is error:
+                    raise exc_type, exc_value, tb
+                else:
+                    raise error
+            # url_for will use this result, instead of raising BuildError.
+            return url
+
+        app.build_error_handler = external_url_handler
+
+    Here, `error` is the instance of :exc:`~werkzeug.routing.BuildError`, and
+    `endpoint` and `**values` are the arguments passed into `url_for`.  Note
+    that this is for building URLs outside the current application, and not for
+    handling 404 NotFound errors.
+
     .. versionadded:: 0.9
        The `_anchor` and `_method` parameters were added.
+
+    .. versionadded:: 0.9
+       Calls :meth:`Flask.handle_build_error` on
+       :exc:`~werkzeug.routing.BuildError`.
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
@@ -222,27 +262,57 @@ def url_for(endpoint, **values):
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
-    ctx = _request_ctx_stack.top
-    blueprint_name = request.blueprint
-    if not ctx.request._is_old_module:
-        if endpoint[:1] == '.':
-            if blueprint_name is not None:
-                endpoint = blueprint_name + endpoint
-            else:
+    appctx = _app_ctx_stack.top
+    reqctx = _request_ctx_stack.top
+    if appctx is None:
+        raise RuntimeError('Attempted to generate a URL with the application '
+                           'context being pushed.  This has to be executed ')
+
+    # If request specific information is available we have some extra
+    # features that support "relative" urls.
+    if reqctx is not None:
+        url_adapter = reqctx.url_adapter
+        blueprint_name = request.blueprint
+        if not reqctx.request._is_old_module:
+            if endpoint[:1] == '.':
+                if blueprint_name is not None:
+                    endpoint = blueprint_name + endpoint
+                else:
+                    endpoint = endpoint[1:]
+        else:
+            # TODO: get rid of this deprecated functionality in 1.0
+            if '.' not in endpoint:
+                if blueprint_name is not None:
+                    endpoint = blueprint_name + '.' + endpoint
+            elif endpoint.startswith('.'):
                 endpoint = endpoint[1:]
+        external = values.pop('_external', False)
+
+    # Otherwise go with the url adapter from the appctx and make
+    # the urls external by default.
     else:
-        # TODO: get rid of this deprecated functionality in 1.0
-        if '.' not in endpoint:
-            if blueprint_name is not None:
-                endpoint = blueprint_name + '.' + endpoint
-        elif endpoint.startswith('.'):
-            endpoint = endpoint[1:]
-    external = values.pop('_external', False)
+        url_adapter = appctx.url_adapter
+        if url_adapter is None:
+            raise RuntimeError('Application was not able to create a URL '
+                               'adapter for request independent URL generation. '
+                               'You might be able to fix this by setting '
+                               'the SERVER_NAME config variable.')
+        external = values.pop('_external', True)
+
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
-    ctx.app.inject_url_defaults(endpoint, values)
-    rv = ctx.url_adapter.build(endpoint, values, method=method,
+    appctx.app.inject_url_defaults(endpoint, values)
+    try:
+        rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
+    except BuildError, error:
+        values['_external'] = external
+        values['_anchor'] = anchor
+        values['_method'] = method
+        return appctx.app.handle_build_error(error, endpoint, **values)
+
+    rv = url_adapter.build(endpoint, values, method=method,
+                           force_external=external)
     if anchor is not None:
         rv += '#' + url_quote(anchor)
     return rv
@@ -368,7 +438,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. versionadded:: 0.5
        The `add_etags`, `cache_timeout` and `conditional` parameters were
-       added.  The default behaviour is now to attach etags.
+       added.  The default behavior is now to attach etags.
 
     .. versionchanged:: 0.7
        mimetype guessing and etag support for file objects was
@@ -403,7 +473,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         file = filename_or_fp
         filename = getattr(file, 'name', None)
 
-        # XXX: this behaviour is now deprecated because it was unreliable.
+        # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
            and isinstance(filename, basestring):
@@ -414,7 +484,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if add_etags:
             warn(DeprecationWarning('In future flask releases etags will no '
                 'longer be generated for file objects passed to the send_file '
-                'function because this behaviour was unreliable.  Pass '
+                'function because this behavior was unreliable.  Pass '
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
@@ -729,7 +799,9 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.9
         """
-        return {}
+        options = {}
+        options['cache_timeout'] = current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        return options
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static

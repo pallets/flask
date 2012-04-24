@@ -19,6 +19,7 @@ from threading import Thread
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
+from werkzeug.routing import BuildError
 
 
 class BasicFunctionalityTestCase(FlaskTestCase):
@@ -631,7 +632,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return u'Hällo Wörld'.encode('utf-8')
         @app.route('/args')
         def from_tuple():
-            return 'Meh', 400, {'X-Foo': 'Testing'}, 'text/plain'
+            return 'Meh', 400, {
+                'X-Foo': 'Testing',
+                'Content-Type': 'text/plain; charset=utf-8'
+            }
         c = app.test_client()
         self.assert_equal(c.get('/unicode').data, u'Hällo Wörld'.encode('utf-8'))
         self.assert_equal(c.get('/string').data, u'Hällo Wörld'.encode('utf-8'))
@@ -677,16 +681,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
             rv = flask.make_response(
                 flask.Response('', headers={'Content-Type': 'text/html'}),
-                400, None, 'application/json')
-            self.assertEqual(rv.status_code, 400)
-            self.assertEqual(rv.headers['Content-Type'], 'application/json')
-
-            rv = flask.make_response(
-                flask.Response('', mimetype='application/json'),
-                400, {'Content-Type': 'text/html'})
+                400, [('X-Foo', 'bar')])
             self.assertEqual(rv.status_code, 400)
             self.assertEqual(rv.headers['Content-Type'], 'text/html')
-
+            self.assertEqual(rv.headers['X-Foo'], 'bar')
 
     def test_url_generation(self):
         app = flask.Flask(__name__)
@@ -697,6 +695,32 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('hello', name='test x'), '/hello/test%20x')
             self.assert_equal(flask.url_for('hello', name='test x', _external=True),
                               'http://localhost/hello/test%20x')
+
+    def test_build_error_handler(self):
+        app = flask.Flask(__name__)
+
+        # Test base case, a URL which results in a BuildError.
+        with app.test_request_context():
+            self.assertRaises(BuildError, flask.url_for, 'spam')
+
+        # Verify the error is re-raised if not the current exception.
+        try:
+            with app.test_request_context():
+                flask.url_for('spam')
+        except BuildError, error:
+            pass
+        try:
+            raise RuntimeError('Test case where BuildError is not current.')
+        except RuntimeError:
+            self.assertRaises(BuildError, app.handle_build_error, error, 'spam')
+
+        # Test a custom handler.
+        def handler(error, endpoint, **values):
+            # Just a test.
+            return '/test_handler/'
+        app.build_error_handler = handler
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('spam'), '/test_handler/')
 
     def test_custom_converters(self):
         from werkzeug.routing import BaseConverter

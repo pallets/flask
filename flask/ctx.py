@@ -9,14 +9,24 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import sys
+
 from werkzeug.exceptions import HTTPException
 
-from .globals import _request_ctx_stack
+from .globals import _request_ctx_stack, _app_ctx_stack
 from .module import blueprint_is_module
 
 
 class _RequestGlobals(object):
     pass
+
+
+def _push_app_if_necessary(app):
+    top = _app_ctx_stack.top
+    if top is None or top.app != app:
+        ctx = app.app_context()
+        ctx.push()
+        return ctx
 
 
 def has_request_context():
@@ -49,6 +59,50 @@ def has_request_context():
     .. versionadded:: 0.7
     """
     return _request_ctx_stack.top is not None
+
+
+def has_app_context():
+    """Works like :func:`has_request_context` but for the application
+    context.  You can also just do a boolean check on the
+    :data:`current_app` object instead.
+
+    .. versionadded:: 0.9
+    """
+    return _app_ctx_stack.top is not None
+
+
+class AppContext(object):
+    """The application context binds an application object implicitly
+    to the current thread or greenlet, similar to how the
+    :class:`RequestContext` binds request information.  The application
+    context is also implicitly created if a request context is created
+    but the application is not on top of the individual application
+    context.
+    """
+
+    def __init__(self, app):
+        self.app = app
+        self.url_adapter = app.create_url_adapter(None)
+
+    def push(self):
+        """Binds the app context to the current context."""
+        _app_ctx_stack.push(self)
+
+    def pop(self, exc=None):
+        """Pops the app context."""
+        if exc is None:
+            exc = sys.exc_info()[1]
+        self.app.do_teardown_appcontext(exc)
+        rv = _app_ctx_stack.pop()
+        assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
+            % (rv, self)
+
+    def __enter__(self):
+        self.push()
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        self.pop()
 
 
 class RequestContext(object):
@@ -93,9 +147,14 @@ class RequestContext(object):
         # is pushed the preserved context is popped.
         self.preserved = False
 
+        # Indicates if pushing this request context also triggered the pushing
+        # of an application context.  If it implicitly pushed an application
+        # context, it will be stored there
+        self._pushed_application_context = None
+
         self.match_request()
 
-        # XXX: Support for deprecated functionality.  This is doing away with
+        # XXX: Support for deprecated functionality.  This is going away with
         # Flask 1.0
         blueprint = self.request.blueprint
         if blueprint is not None:
@@ -130,6 +189,10 @@ class RequestContext(object):
         if top is not None and top.preserved:
             top.pop()
 
+        # Before we push the request context we have to ensure that there
+        # is an application context.
+        self._pushed_application_context = _push_app_if_necessary(self.app)
+
         _request_ctx_stack.push(self)
 
         # Open the session at the moment that the request context is
@@ -139,13 +202,18 @@ class RequestContext(object):
         if self.session is None:
             self.session = self.app.make_null_session()
 
-    def pop(self):
+    def pop(self, exc=None):
         """Pops the request context and unbinds it by doing that.  This will
         also trigger the execution of functions registered by the
         :meth:`~flask.Flask.teardown_request` decorator.
+
+        .. versionchanged:: 0.9
+           Added the `exc` argument.
         """
         self.preserved = False
-        self.app.do_teardown_request()
+        if exc is None:
+            exc = sys.exc_info()[1]
+        self.app.do_teardown_request(exc)
         rv = _request_ctx_stack.pop()
         assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
             % (rv, self)
@@ -153,6 +221,11 @@ class RequestContext(object):
         # get rid of circular dependencies at the end of the request
         # so that we don't require the GC to be active.
         rv.request.environ['werkzeug.request'] = None
+
+        # Get rid of the app as well if necessary.
+        if self._pushed_application_context:
+            self._pushed_application_context.pop(exc)
+            self._pushed_application_context = None
 
     def __enter__(self):
         self.push()
@@ -168,7 +241,7 @@ class RequestContext(object):
            (tb is not None and self.app.preserve_context_on_exception):
             self.preserved = True
         else:
-            self.pop()
+            self.pop(exc_value)
 
     def __repr__(self):
         return '<%s \'%s\' [%s] of %s>' % (

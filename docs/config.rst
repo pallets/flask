@@ -95,7 +95,10 @@ The following configuration values are used internally by Flask:
                                   ``'myapp.dev:5000'``)  Note that
                                   localhost does not support subdomains so
                                   setting this to “localhost” does not
-                                  help.
+                                  help.  Setting a ``SERVER_NAME`` also
+                                  by default enables URL generation
+                                  without a request context but with an
+                                  application context.
 ``APPLICATION_ROOT``              If the application does not occupy
                                   a whole domain or subdomain this can
                                   be set to the path where the application
@@ -133,6 +136,9 @@ The following configuration values are used internally by Flask:
                                   used to debug those situations.  If this
                                   config is set to ``True`` you will get
                                   a regular traceback instead.
+``PREFERRED_URL_SCHEME``          The URL scheme that should be used for
+                                  URL generation if no URL scheme is
+                                  available.  This defaults to ``http``.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -171,6 +177,9 @@ The following configuration values are used internally by Flask:
    ``APPLICATION_ROOT``, ``SESSION_COOKIE_DOMAIN``,
    ``SESSION_COOKIE_PATH``, ``SESSION_COOKIE_HTTPONLY``,
    ``SESSION_COOKIE_SECURE``
+
+.. versionadded:: 0.9
+   ``PREFERRED_URL_SCHEME``
 
 Configuring from Files
 ----------------------

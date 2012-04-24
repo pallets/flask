@@ -1,3 +1,5 @@
+.. _extension-dev:
+
 Flask Extension Development
 ===========================
 
@@ -38,7 +40,7 @@ that it works with multiple Flask application instances at once.  This is
 a requirement because many people will use patterns like the
 :ref:`app-factories` pattern to create their application as needed to aid
 unittests and to support multiple configurations.  Because of that it is
-crucial that your application supports that kind of behaviour.
+crucial that your application supports that kind of behavior.
 
 Most importantly the extension must be shipped with a `setup.py` file and
 registered on PyPI.  Also the development checkout link should work so
@@ -143,7 +145,7 @@ initialization functions:
 classes:
 
     Classes work mostly like initialization functions but can later be
-    used to further change the behaviour.  For an example look at how the
+    used to further change the behavior.  For an example look at how the
     `OAuth extension`_ works: there is an `OAuth` object that provides
     some helper functions like `OAuth.remote_app` to create a reference to
     a remote application that uses OAuth.
@@ -152,6 +154,11 @@ What to use depends on what you have in mind.  For the SQLite 3 extension
 we will use the class-based approach because it will provide users with an
 object that handles opening and closing database connections.
 
+What's important about classes is that they encourage to be shared around
+on module level.  In that case, the object itself must not under any
+circumstances store any application specific state and must be shareable
+between different application.
+
 The Extension Code
 ------------------
 
@@ -159,7 +166,13 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
 
     import sqlite3
 
-    from flask import _request_ctx_stack
+    # Find the stack on which we want to store the database connection.
+    # Starting with Flask 0.9, the _app_ctx_stack is the correct one,
+    # before that we need to use the _request_ctx_stack.
+    try:
+        from flask import _app_ctx_stack as stack
+    except ImportError:
+        from flask import _request_ctx_stack as stack
 
 
     class SQLite3(object):
@@ -172,26 +185,28 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
                 self.app = None
 
         def init_app(self, app):
-            self.app = app
-            self.app.config.setdefault('SQLITE3_DATABASE', ':memory:')
-            self.app.teardown_request(self.teardown_request)
-            self.app.before_request(self.before_request)
+            app.config.setdefault('SQLITE3_DATABASE', ':memory:')
+            # Use the newstyle teardown_appcontext if it's available,
+            # otherwise fall back to the request context
+            if hasattr(app, 'teardown_appcontext'):
+                app.teardown_appcontext(self.teardown)
+            else:
+                app.teardown_request(self.teardown)
 
         def connect(self):
             return sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
 
-        def before_request(self):
-            ctx = _request_ctx_stack.top
-            ctx.sqlite3_db = self.connect()
-
-        def teardown_request(self, exception):
-            ctx = _request_ctx_stack.top
-            ctx.sqlite3_db.close()
+        def teardown(self, exception):
+            ctx = stack.top
+            if hasattr(ctx, 'sqlite3_db'):
+                ctx.sqlite3_db.close()
 
         @property
         def connection(self):
-            ctx = _request_ctx_stack.top
+            ctx = stack.top
             if ctx is not None:
+                if not hasattr(ctx, 'sqlite3_db'):
+                    ctx.sqlite3_db = self.connect()
                 return ctx.sqlite3_db
 
 
@@ -204,14 +219,21 @@ So here's what these lines of code do:
     factory pattern for creating applications.  The ``init_app`` will set the
     configuration for the database, defaulting to an in memory database if
     no configuration is supplied.  In addition, the ``init_app`` method attaches
-    ``before_request`` and ``teardown_request`` handlers.
+    the ``teardown`` handler.  It will try to use the newstyle app context
+    handler and if it does not exist, falls back to the request context
+    one.
 3.  Next, we define a ``connect`` method that opens a database connection.
-4.  Then we set up the request handlers we bound to the app above.  Note here
-    that we're attaching our database connection to the top request context via
-    ``_request_ctx_stack.top``. Extensions should use the top context and not the
-    ``g`` object to store things like database connections.
-5.  Finally, we add a ``connection`` property that simplifies access to the context's
-    database.
+4.  Finally, we add a ``connection`` property that on first access opens
+    the database connection and stores it on the context.  This is also
+    the recommended way to handling resources: fetch resources lazily the
+    first time they are used.
+
+    Note here that we're attaching our database connection to the top
+    application context via ``_app_ctx_stack.top``. Extensions should use
+    the top context for storing their own information with a sufficiently
+    complex name.  Note that we're falling back to the
+    ``_request_ctx_stack.top`` if the application is using an older
+    version of Flask that does not support it.
 
 So why did we decide on a class-based approach here?  Because using our
 extension looks something like this::
@@ -230,6 +252,17 @@ You can then use the database from views like this::
         cur = db.connection.cursor()
         cur.execute(...)
 
+Likewise if you are outside of a request but you are using Flask 0.9 or
+later with the app context support, you can use the database in the same
+way::
+
+    with app.app_context():
+        cur = db.connection.cursor()
+        cur.execute(...)
+
+At the end of the `with` block the teardown handles will be executed
+automatically.
+
 Additionally, the ``init_app`` method is used to support the factory pattern
 for creating apps::
 
@@ -241,19 +274,38 @@ for creating apps::
 Keep in mind that supporting this factory pattern for creating apps is required
 for approved flask extensions (described below).
 
+.. admonition:: Note on ``init_app``
 
-Using _request_ctx_stack
-------------------------
+   As you noticed, ``init_app`` does not assign ``app`` to ``self``.  This
+   is intentional!  Class based Flask extensions must only store the
+   application on the object when the application was passed to the
+   constructor.  This tells the extension: I am not interested in using
+   multiple applications.
 
-In the example above, before every request, a ``sqlite3_db`` variable is assigned
-to ``_request_ctx_stack.top``.  In a view function, this variable is accessible
-using the ``connection`` property of ``SQLite3``.  During the teardown of a
-request, the ``sqlite3_db`` connection is closed.  By using this pattern, the
-*same* connection to the sqlite3 database is accessible to anything that needs it
-for the duration of the request.
+   When the extension needs to find the current application and it does
+   not have a reference to it, it must either use the
+   :data:`~flask.current_app` context local or change the API in a way
+   that you can pass the application explicitly.
 
-End-Of-Request Behavior
------------------------
+
+Using _app_ctx_stack
+--------------------
+
+In the example above, before every request, a ``sqlite3_db`` variable is
+assigned to ``_app_ctx_stack.top``.  In a view function, this variable is
+accessible using the ``connection`` property of ``SQLite3``.  During the
+teardown of a request, the ``sqlite3_db`` connection is closed.  By using
+this pattern, the *same* connection to the sqlite3 database is accessible
+to anything that needs it for the duration of the request.
+
+If the :data:`~flask._app_ctx_stack` does not exist because the user uses
+an old version of Flask, it is recommended to fall back to
+:data:`~flask._request_ctx_stack` which is bound to a request.
+
+Teardown Behavior
+-----------------
+
+*This is only relevant if you want to support Flask 0.6 and older*
 
 Due to the change in Flask 0.7 regarding functions that are run at the end
 of the request your extension will have to be extra careful there if it
@@ -269,7 +321,6 @@ pattern is a good way to support both::
         app.teardown_request(close_connection)
     else:
         app.after_request(close_connection)
-
 
 Strictly speaking the above code is wrong, because teardown functions are
 passed the exception and typically don't return anything.  However because

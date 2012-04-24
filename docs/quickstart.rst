@@ -166,7 +166,7 @@ The following converters exist:
 `path`      like the default but also accepts slashes
 =========== ===========================================
 
-.. admonition:: Unique URLs / Redirection Behaviour
+.. admonition:: Unique URLs / Redirection Behavior
 
    Flask's URL rules are based on Werkzeug's routing module.  The idea
    behind that module is to ensure beautiful and unique URLs based on
@@ -526,7 +526,7 @@ deal with that problem.
 To access parameters submitted in the URL (``?key=value``) you can use the
 :attr:`~flask.request.args` attribute::
 
-    searchword = request.args.get('q', '')
+    searchword = request.args.get('key', '')
 
 We recommend accessing URL parameters with `get` or by catching the
 `KeyError` because users might change the URL and presenting them a 400
@@ -674,8 +674,11 @@ converting return values into response objects is as follows:
     returned from the view.
 2.  If it's a string, a response object is created with that data and the
     default parameters.
-3.  If a tuple is returned the response object is created by passing the
-    tuple as arguments to the response object's constructor.
+3.  If a tuple is returned the items in the tuple can provide extra
+    information.  Such tuples have to be in the form ``(response, status,
+    headers)`` where at least one item has to be in the tuple.  The
+    `status` value will override the status code and `headers` can be a
+    list or dictionary of additional header values.
 4.  If none of that works, Flask will assume the return value is a
     valid WSGI application and convert that into a response object.
 
@@ -741,7 +744,7 @@ sessions work::
 
     @app.route('/logout')
     def logout():
-        # remove the username from the session if its there
+        # remove the username from the session if it's there
         session.pop('username', None)
         return redirect(url_for('index'))
 
@@ -836,7 +839,6 @@ immediately deploy to a hosted platform, all of which offer a free plan for
 small projects:
 
 - `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
-- `Deploying Flask on ep.io <https://www.ep.io/docs/quickstart/flask/>`_
 - `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
   with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
 

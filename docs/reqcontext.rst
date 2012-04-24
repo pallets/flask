@@ -6,27 +6,7 @@ The Request Context
 This document describes the behavior in Flask 0.7 which is mostly in line
 with the old behavior but has some small, subtle differences.
 
-One of the design ideas behind Flask is that there are two different
-“states” in which code is executed.  The application setup state in which
-the application implicitly is on the module level.  It starts when the
-:class:`Flask` object is instantiated, and it implicitly ends when the
-first request comes in.  While the application is in this state a few
-assumptions are true:
-
--   the programmer can modify the application object safely.
--   no request handling happened so far
--   you have to have a reference to the application object in order to
-    modify it, there is no magic proxy that can give you a reference to
-    the application object you're currently creating or modifying.
-
-On the contrast, during request handling, a couple of other rules exist:
-
--   while a request is active, the context local objects
-    (:data:`flask.request` and others) point to the current request.
--   any code can get hold of these objects at any time.
-
-The magic that makes this works is internally referred in Flask as the
-“request context”.
+It is recommended that you read the :ref:`app-context` chapter first.
 
 Diving into Context Locals
 --------------------------
@@ -106,6 +86,10 @@ the stack is the current active request.
 the very top, :meth:`~flask.ctx.RequestContext.pop` removes it from the
 stack again.  On popping the application's
 :func:`~flask.Flask.teardown_request` functions are also executed.
+
+Another thing of note is that the request context will automatically also
+create an :ref:`application context <app-context>` when it's pushed and
+there is no application context for that application so far.
 
 .. _callbacks-and-errors:
 
