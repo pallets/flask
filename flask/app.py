@@ -150,6 +150,13 @@ class Flask(_PackageBoundObject):
 
     #: The class that is used for the :data:`~flask.g` instance.
     #:
+    #: Example use cases for a custom class:
+    #:
+    #: 1. Store arbitrary attributes on flask.g.
+    #: 2. Add a property for lazy per-request database connectors.
+    #: 3. Return None instead of AttributeError on expected attributes.
+    #: 4. Raise exception if an unexpected attr is set, a "controlled" flask.g.
+    #:
     #: .. versionadded:: 0.9
     request_globals_class = _RequestGlobals
 
