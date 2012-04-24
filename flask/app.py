@@ -1041,12 +1041,6 @@ class Flask(_PackageBoundObject):
             self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
                 .append((code_or_exception, f))
 
-    def get_send_file_options(self, filename):
-        # Override: Hooks in SEND_FILE_MAX_AGE_DEFAULT config.
-        options = super(Flask, self).get_send_file_options(filename)
-        options['cache_timeout'] = self.config['SEND_FILE_MAX_AGE_DEFAULT']
-        return options
-
     @setupmethod
     def template_filter(self, name=None):
         """A decorator that is used to register custom template filter.

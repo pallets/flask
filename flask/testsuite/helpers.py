@@ -237,26 +237,35 @@ class SendfileTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         # default cache timeout is 12 hours
         with app.test_request_context():
+            # Test with static file handler.
             rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 12 * 60 * 60)
+            # Test again with direct use of send_file utility.
+            rv = flask.send_file('static/index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 12 * 60 * 60)
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
         with app.test_request_context():
+            # Test with static file handler.
             rv = app.send_static_file('index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 3600)
-        # override get_send_file_options with some new values and check them
+            # Test again with direct use of send_file utility.
+            rv = flask.send_file('static/index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 3600)
         class StaticFileApp(flask.Flask):
-            def get_send_file_options(self, filename):
-                opts = super(StaticFileApp, self).get_send_file_options(filename)
-                opts['cache_timeout'] = 10
-                # this test catches explicit inclusion of the conditional
-                # keyword arg in the guts
-                opts['conditional'] = True
-                return opts
+            def get_send_file_max_age(self, filename):
+                return 10
         app = StaticFileApp(__name__)
         with app.test_request_context():
+            # Test with static file handler.
             rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 10)
+            # Test again with direct use of send_file utility.
+            rv = flask.send_file('static/index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 10)
 

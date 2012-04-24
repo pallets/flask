@@ -111,12 +111,15 @@ The following configuration values are used internally by Flask:
                                   content length greater than this by
                                   returning a 413 status code.
 ``SEND_FILE_MAX_AGE_DEFAULT``:    Default cache control max age to use with
-                                  :meth:`flask.Flask.send_static_file`, in
+                                  :meth:`~flask.Flask.send_static_file` (the
+                                  default static file handler) and
+                                  :func:`~flask.send_file`, in
                                   seconds. Override this value on a per-file
                                   basis using the
-                                  :meth:`flask.Flask.get_send_file_options` and
-                                  :meth:`flask.Blueprint.get_send_file_options`
-                                  hooks. Defaults to 43200 (12 hours).
+                                  :meth:`~flask.Flask.get_send_file_max_age`
+                                  hook on :class:`~flask.Flask` or
+                                  :class:`~flask.Blueprint`,
+                                  respectively. Defaults to 43200 (12 hours).
 ``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
                                   not execute the error handlers of HTTP
                                   exceptions but instead treat the
