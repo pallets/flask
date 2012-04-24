@@ -1492,6 +1492,7 @@ class Flask(_PackageBoundObject):
         if self.build_error_handler is None:
             exc_type, exc_value, tb = sys.exc_info()
             if exc_value is error:
+                # exception is current, raise in context of original traceback.
                 raise exc_type, exc_value, tb
             else:
                 raise error
