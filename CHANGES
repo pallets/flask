@@ -8,6 +8,8 @@ Version 0.9
 
 Relase date to be decided, codename to be chosen.
 
+- The :func:`flask.jsonify` now correctly does *not* pad its JSON response with
+  "jsonp" when the ``padded`` keyword argument is ``False``.
 - The :func:`flask.Request.on_json_loading_failed` now returns a JSON formatted
   response by default.
 - The :func:`flask.url_for` function now can generate anchors to the
