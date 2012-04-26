@@ -28,7 +28,7 @@ from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
     find_package, JSONEncoder
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
-from .ctx import RequestContext, AppContext
+from .ctx import RequestContext, AppContext, _RequestGlobals
 from .globals import _request_ctx_stack, request
 from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
@@ -147,6 +147,18 @@ class Flask(_PackageBoundObject):
     #: The class that is used for response objects.  See
     #: :class:`~flask.Response` for more information.
     response_class = Response
+
+    #: The class that is used for the :data:`~flask.g` instance.
+    #:
+    #: Example use cases for a custom class:
+    #:
+    #: 1. Store arbitrary attributes on flask.g.
+    #: 2. Add a property for lazy per-request database connectors.
+    #: 3. Return None instead of AttributeError on expected attributes.
+    #: 4. Raise exception if an unexpected attr is set, a "controlled" flask.g.
+    #:
+    #: .. versionadded:: 0.9
+    request_globals_class = _RequestGlobals
 
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
@@ -1072,12 +1084,6 @@ class Flask(_PackageBoundObject):
         else:
             self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
                 .append((code_or_exception, f))
-
-    def get_send_file_options(self, filename):
-        # Override: Hooks in SEND_FILE_MAX_AGE_DEFAULT config.
-        options = super(Flask, self).get_send_file_options(filename)
-        options['cache_timeout'] = self.config['SEND_FILE_MAX_AGE_DEFAULT']
-        return options
 
     @setupmethod
     def template_filter(self, name=None):

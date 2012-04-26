@@ -1,27 +1,26 @@
+.. _advanced_foreword:
+
 Foreword for Experienced Programmers
 ====================================
 
-This chapter is for programmers who have worked with other frameworks in the
-past, and who may have more specific or esoteric concerns that the typical
-user.
+Thread-Locals in Flask
+----------------------
 
-Threads in Flask
-----------------
-
-One of the design decisions with Flask was that simple tasks should be simple;
+One of the design decisions in Flask was that simple tasks should be simple;
 they should not take a lot of code and yet they should not limit you. Because
-of that we made a few design choices that some people might find surprising or
-unorthodox. For example, Flask uses thread-local objects internally so that
-you don’t have to pass objects around from function to function within a
-request in order to stay threadsafe. While this is a really easy approach and
-saves you a lot of time, it might also cause some troubles for very large
-applications because changes on these thread-local objects can happen anywhere
-in the same thread. In order to solve these problems we don’t hide the thread
-locals for you but instead embrace them and provide you with a lot of tools to
-make it as pleasant as possible to work with them.
+of that, Flask has few design choices that some people might find surprising or
+unorthodox. For example, Flask uses thread-local objects internally so that you
+don’t have to pass objects around from function to function within a request in
+order to stay threadsafe. This approach is convenient, but requires a valid
+request context for dependency injection or when attempting to reuse code which
+uses a value pegged to the request.  The Flask project is honest about
+thread-locals, does not hide them, and calls out in the code and documentation
+where they are used.
 
-Web Development is Dangerous
-----------------------------
+Develop for the Web with Caution
+--------------------------------
+
+Always keep security in mind when building web applications.
 
 If you write a web application, you are probably allowing users to register
 and leave their data on your server.  The users are entrusting you with data.
@@ -30,22 +29,22 @@ you still want that data to be stored securely.
 
 Unfortunately, there are many ways the security of a web application can be
 compromised.  Flask protects you against one of the most common security
-problems of modern web applications: cross-site scripting (XSS).  Unless
-you deliberately mark insecure HTML as secure, Flask and the underlying
-Jinja2 template engine have you covered.  But there are many more ways to
-cause security problems.
+problems of modern web applications: cross-site scripting (XSS).  Unless you
+deliberately mark insecure HTML as secure, Flask and the underlying Jinja2
+template engine have you covered.  But there are many more ways to cause
+security problems.
 
-The documentation will warn you about aspects of web development that
-require attention to security.  Some of these security concerns
-are far more complex than one might think, and we all sometimes underestimate
-the likelihood that a vulnerability will be exploited - until a clever
-attacker figures out a way to exploit our applications.  And don't think
-that your application is not important enough to attract an attacker.
-Depending on the kind of attack, chances are that automated bots are
-probing for ways to fill your database with spam, links to malicious
-software, and the like.
+The documentation will warn you about aspects of web development that require
+attention to security.  Some of these security concerns are far more complex
+than one might think, and we all sometimes underestimate the likelihood that a
+vulnerability will be exploited - until a clever attacker figures out a way to
+exploit our applications.  And don't think that your application is not
+important enough to attract an attacker.  Depending on the kind of attack,
+chances are that automated bots are probing for ways to fill your database with
+spam, links to malicious software, and the like.
 
-So always keep security in mind when doing web development.
+Flask is no different from any other framework in that you the developer must
+build with caution, watching for exploits when building to your requirements.
 
 The Status of Python 3
 ----------------------
@@ -65,3 +64,5 @@ using Python 2.6 and 2.7 with activated Python 3 warnings during
 development.  If you plan on upgrading to Python 3 in the near future we
 strongly recommend that you read `How to write forwards compatible
 Python code <http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
+
+Continue to :ref:`installation` or the :ref:`quickstart`.

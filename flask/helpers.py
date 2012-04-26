@@ -409,7 +409,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
-              cache_timeout=60 * 60 * 12, conditional=False):
+              cache_timeout=None, conditional=False):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -422,10 +422,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     to send certain files as attachment (HTML for instance).  The mimetype
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
-
-    Note `get_send_file_options` in :class:`flask.Flask` hooks the
-    ``SEND_FILE_MAX_AGE_DEFAULT`` configuration variable to set the default
-    cache_timeout.
 
     Please never pass filenames to this function from user sources without
     checking them first.  Something like this is usually sufficient to
@@ -446,6 +442,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
        able to, otherwise attach an etag yourself.  This functionality
        will be removed in Flask 1.0
 
+    .. versionchanged:: 0.9
+       cache_timeout pulls its default from application config, when None.
+
     :param filename_or_fp: the filename of the file to send.  This is
                            relative to the :attr:`~Flask.root_path` if a
                            relative path is specified.
@@ -462,7 +461,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                                 differs from the file's filename.
     :param add_etags: set to `False` to disable attaching of etags.
     :param conditional: set to `True` to enable conditional responses.
-    :param cache_timeout: the timeout in seconds for the headers.
+
+    :param cache_timeout: the timeout in seconds for the headers. When `None`
+                          (default), this value is set by
+                          :meth:`~Flask.get_send_file_max_age` of
+                          :data:`~flask.current_app`.
     """
     mtime = None
     if isinstance(filename_or_fp, basestring):
@@ -526,6 +529,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.last_modified = int(mtime)
 
     rv.cache_control.public = True
+    if cache_timeout is None:
+        cache_timeout = current_app.get_send_file_max_age(filename)
     if cache_timeout:
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
@@ -782,26 +787,31 @@ class _PackageBoundObject(object):
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
-    def get_send_file_options(self, filename):
-        """Provides keyword arguments to send to :func:`send_from_directory`.
+    def get_send_file_max_age(self, filename):
+        """Provides default cache_timeout for the :func:`send_file` functions.
+
+        By default, this function returns ``SEND_FILE_MAX_AGE_DEFAULT`` from
+        the configuration of :data:`~flask.current_app`.
+
+        Static file functions such as :func:`send_from_directory` use this
+        function, and :func:`send_file` calls this function on
+        :data:`~flask.current_app` when the given cache_timeout is `None`. If a
+        cache_timeout is given in :func:`send_file`, that timeout is used;
+        otherwise, this method is called.
 
         This allows subclasses to change the behavior when sending files based
         on the filename.  For example, to set the cache timeout for .js files
-        to 60 seconds (note the options are keywords for :func:`send_file`)::
+        to 60 seconds::
 
             class MyFlask(flask.Flask):
-                def get_send_file_options(self, filename):
-                    options = super(MyFlask, self).get_send_file_options(filename)
-                    if filename.lower().endswith('.js'):
-                        options['cache_timeout'] = 60
-                        options['conditional'] = True
-                    return options
+                def get_send_file_max_age(self, name):
+                    if name.lower().endswith('.js'):
+                        return 60
+                    return flask.Flask.get_send_file_max_age(self, name)
 
         .. versionadded:: 0.9
         """
-        options = {}
-        options['cache_timeout'] = current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
-        return options
+        return current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
@@ -811,8 +821,11 @@ class _PackageBoundObject(object):
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
+        # Ensure get_send_file_max_age is called in all cases.
+        # Here, we ensure get_send_file_max_age is called for Blueprints.
+        cache_timeout = self.get_send_file_max_age(filename)
         return send_from_directory(self.static_folder, filename,
-                **self.get_send_file_options(filename))
+                                   cache_timeout=cache_timeout)
 
     def open_resource(self, resource, mode='rb'):
         """Opens a resource from the application's resource folder.  To see
