@@ -65,6 +65,16 @@ class AppContextTestCase(FlaskTestCase):
 
         self.assert_equal(cleanup_stuff, [None])
 
+    def test_custom_request_globals_class(self):
+        class CustomRequestGlobals(object):
+            def __init__(self):
+                self.spam = 'eggs'
+        app = flask.Flask(__name__)
+        app.request_globals_class = CustomRequestGlobals
+        with app.test_request_context():
+            self.assert_equal(
+                flask.render_template_string('{{ g.spam }}'), 'eggs')
+
 
 def suite():
     suite = unittest.TestSuite()

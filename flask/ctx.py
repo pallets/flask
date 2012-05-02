@@ -18,6 +18,7 @@ from .module import blueprint_is_module
 
 
 class _RequestGlobals(object):
+    """A plain object."""
     pass
 
 
@@ -139,7 +140,7 @@ class RequestContext(object):
         self.app = app
         self.request = app.request_class(environ)
         self.url_adapter = app.create_url_adapter(self.request)
-        self.g = _RequestGlobals()
+        self.g = app.request_globals_class()
         self.flashes = None
         self.session = None
 
