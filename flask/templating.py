@@ -41,6 +41,39 @@ class Environment(BaseEnvironment):
             options['loader'] = app.create_global_jinja_loader()
         BaseEnvironment.__init__(self, **options)
         self.app = app
+        
+    def _load_template(self, name, globals):
+        loader = None
+        reqctx = _request_ctx_stack.top
+        if reqctx.request.blueprint == None:
+            cache_name = 'app::' + name
+            loader = reqctx.app.jinja_loader
+        else:
+            cache_name = reqctx.request.blueprint + '::' + name
+            loader = reqctx.app.blueprints[reqctx.request.blueprint].jinja_loader
+            
+        if self.loader is None and self.loader is None:
+            raise TypeError('no loader for this environment specified')
+        if self.cache is not None:
+            template = self.cache.get(cache_name)
+            if template is not None and (not self.auto_reload or \
+                                         template.is_up_to_date):
+                return template
+            
+        template = None
+        if loader is not None:
+            try:
+                template = loader.load(self, name, globals)
+            except TemplateNotFound:
+                pass
+                
+        if template is None:
+            template = self.loader.load(self, name, globals)
+        
+        if self.cache is not None:
+            self.cache[cache_name] = template
+            
+        return template
 
 
 class DispatchingJinjaLoader(BaseLoader):
