@@ -138,7 +138,7 @@ projects = {
             <p>
               Russian game website.
         '''),
-        Project('Get Python 3', 'http://getpython3.net/', u'''
+        Project('Get Python 3', None, u'''
             <p>
               A website to collect feedback of Python third party
               libraries about its compatibility with Python 3
