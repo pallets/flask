@@ -38,10 +38,6 @@ projects = {
             <p>
               The website of the Brighton Python User Group
         ''', source='http://github.com/j4mie/brightonpy.org/'),
-        Project('vlasiku.lojban.org', 'http://vlasisku.lojban.org/', '''
-            <p>
-              An intelligent search engine for the Lojban dictionary.
-        '''),
         Project(u's h o r e … software development', 'http://shore.be/', '''
             <p>Corporate website of Shore Software Development.
         '''),
@@ -118,7 +114,7 @@ projects = {
               Activity stream aggregator and umbrella home page for the Nuxeo
               Open Source ECM project sites.
         ''', source='https://github.com/sfermigier/nuxeo.org'),
-        Project('Planete GT LL', 'http://www.gt-logiciel-libre.org/', u'''
+        Project('Planete GT LL', None, u'''
             <p>
               News aggregator for the open source workgroup of the Paris Region
               innovation cluster, Systematic.
@@ -133,10 +129,6 @@ projects = {
             <p>
               A collection of responsive web designs.
         '''),
-        Project('Life Short, Coding More', 'http://www.liul.net/', u'''
-            <p>
-              Personal blog.
-        '''),
         Project('Flask Feedback', 'http://feedback.flask.pocoo.org/', u'''
             <p>
               Website by the Flask project that collects feedback from
@@ -145,10 +137,6 @@ projects = {
         Project('pizje.ns-keip', 'http://pizje.ns-keip.ru/', u'''
             <p>
               Russian game website.
-        '''),
-        Project('Python Edinburgh', 'http://www.pythonedinburgh.org/', u'''
-            <p>
-              Website of the user group for Pythonistas in Edinburgh.
         '''),
         Project('Get Python 3', 'http://getpython3.net/', u'''
             <p>
@@ -223,7 +211,7 @@ projects = {
             <p>
               An Online Logic Assistent Based on Coq.
         ''', source='http://github.com/dcolish/Cockerel'),
-        Project('Ryshcate', 'http://ryshcate.leafstorm.us/', '''
+        Project('Ryshcate', None, '''
             <p>
               Ryshcate is a Flask powered pastebin with sourcecode
               available.
