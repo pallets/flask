@@ -19,7 +19,7 @@ from itertools import chain
 from functools import update_wrapper
 
 from werkzeug.datastructures import ImmutableDict
-from werkzeug.routing import Map, Rule, RequestRedirect
+from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
 from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
 
@@ -373,16 +373,14 @@ class Flask(_PackageBoundObject):
         #: decorator.
         self.error_handler_spec = {None: self._error_handlers}
 
-        #: If not `None`, this function is called when :meth:`url_for` raises
-        #: :exc:`~werkzeug.routing.BuildError`, with the call signature::
-        #:
-        #:     self.build_error_handler(error, endpoint, **values)
-        #:
-        #: Here, `error` is the instance of `BuildError`, and `endpoint` and
-        #: `**values` are the arguments passed into :meth:`url_for`.
+        #: A list of functions that are called when :meth:`url_for` raises a
+        #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
+        #: is called with `error`, `endpoint` and `values`.  If a function
+        #: returns `None` or raises a `BuildError` the next function is
+        #: tried.
         #:
         #: .. versionadded:: 0.9
-        self.build_error_handler = None
+        self.url_build_error_handlers = []
 
         #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
@@ -949,6 +947,10 @@ class Flask(_PackageBoundObject):
         # a tuple of only `GET` as default.
         if methods is None:
             methods = getattr(view_func, 'methods', None) or ('GET',)
+        methods = set(methods)
+
+        # Methods that should always be added
+        required_methods = set(getattr(view_func, 'required_methods', ()))
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
@@ -957,10 +959,13 @@ class Flask(_PackageBoundObject):
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
-                methods = tuple(methods) + ('OPTIONS',)
                 provide_automatic_options = True
+                required_methods.add('OPTIONS')
             else:
                 provide_automatic_options = False
+
+        # Add the required methods now.
+        methods |= required_methods
 
         # due to a werkzeug bug we need to make sure that the defaults are
         # None if they are an empty dictionary.  This should not be necessary
@@ -1522,19 +1527,24 @@ class Flask(_PackageBoundObject):
         for func in funcs:
             func(endpoint, values)
 
-    def handle_build_error(self, error, endpoint, **values):
+    def handle_url_build_error(self, error, endpoint, values):
         """Handle :class:`~werkzeug.routing.BuildError` on :meth:`url_for`.
-
-        Calls :attr:`build_error_handler` if it is not `None`.
         """
-        if self.build_error_handler is None:
-            exc_type, exc_value, tb = sys.exc_info()
-            if exc_value is error:
-                # exception is current, raise in context of original traceback.
-                raise exc_type, exc_value, tb
-            else:
-                raise error
-        return self.build_error_handler(error, endpoint, **values)
+        exc_type, exc_value, tb = sys.exc_info()
+        for handler in self.url_build_error_handlers:
+            try:
+                rv = handler(error, endpoint, values)
+                if rv is not None:
+                    return rv
+            except BuildError, error:
+                pass
+
+        # At this point we want to reraise the exception.  If the error is
+        # still the same one we can reraise it with the original traceback,
+        # otherwise we raise it from here.
+        if error is exc_value:
+            raise exc_type, exc_value, tb
+        raise error
 
     def preprocess_request(self):
         """Called before the actual request dispatching and will
@@ -1577,7 +1587,7 @@ class Flask(_PackageBoundObject):
         """
         ctx = _request_ctx_stack.top
         bp = ctx.request.blueprint
-        funcs = ()
+        funcs = ctx._after_request_functions
         if bp is not None and bp in self.after_request_funcs:
             funcs = reversed(self.after_request_funcs[bp])
         if None in self.after_request_funcs:
