@@ -11,7 +11,6 @@
 
 from __future__ import with_statement
 
-import imp
 import os
 import sys
 import pkgutil
@@ -303,10 +302,12 @@ def url_for(endpoint, **values):
         rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
     except BuildError, error:
+        # We need to inject the values again so that the app callback can
+        # deal with that sort of stuff.
         values['_external'] = external
         values['_anchor'] = anchor
         values['_method'] = method
-        return appctx.app.handle_build_error(error, endpoint, **values)
+        return appctx.app.handle_url_build_error(error, endpoint, values)
 
     rv = url_adapter.build(endpoint, values, method=method,
                            force_external=external)

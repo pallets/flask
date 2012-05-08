@@ -712,13 +712,13 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             raise RuntimeError('Test case where BuildError is not current.')
         except RuntimeError:
-            self.assertRaises(BuildError, app.handle_build_error, error, 'spam')
+            self.assertRaises(BuildError, app.handle_url_build_error, error, 'spam', {})
 
         # Test a custom handler.
-        def handler(error, endpoint, **values):
+        def handler(error, endpoint, values):
             # Just a test.
             return '/test_handler/'
-        app.build_error_handler = handler
+        app.url_build_error_handlers.append(handler)
         with app.test_request_context():
             self.assert_equal(flask.url_for('spam'), '/test_handler/')
 
