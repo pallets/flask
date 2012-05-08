@@ -1555,7 +1555,7 @@ class Flask(_PackageBoundObject):
         """
         ctx = _request_ctx_stack.top
         bp = ctx.request.blueprint
-        funcs = ()
+        funcs = ctx._after_request_functions
         if bp is not None and bp in self.after_request_funcs:
             funcs = reversed(self.after_request_funcs[bp])
         if None in self.after_request_funcs:
