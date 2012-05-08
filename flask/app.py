@@ -915,6 +915,10 @@ class Flask(_PackageBoundObject):
         # a tuple of only `GET` as default.
         if methods is None:
             methods = getattr(view_func, 'methods', None) or ('GET',)
+        methods = set(methods)
+
+        # Methods that should always be added
+        required_methods = set(getattr(view_func, 'required_methods', ()))
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
@@ -923,10 +927,13 @@ class Flask(_PackageBoundObject):
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
-                methods = tuple(methods) + ('OPTIONS',)
                 provide_automatic_options = True
+                required_methods.add('OPTIONS')
             else:
                 provide_automatic_options = False
+
+        # Add the required methods now.
+        methods |= required_methods
 
         # due to a werkzeug bug we need to make sure that the defaults are
         # None if they are an empty dictionary.  This should not be necessary
