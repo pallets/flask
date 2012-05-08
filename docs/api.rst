@@ -636,6 +636,10 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
     decorators that want to customize the `OPTIONS` response on a per-view
     basis.
 
+-   `required_methods`: if this attribute is set, Flask will always add
+    these methods when registering a URL rule even if the methods were
+    explicitly overriden in the ``route()`` call.
+
 Full example::
 
     def index():
