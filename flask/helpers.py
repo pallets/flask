@@ -133,18 +133,19 @@ def jsonify(*args, **kwargs):
     """
     if __debug__:
         _assert_have_json()
-    if 'padded' in kwargs:
-        if isinstance(kwargs['padded'], str):
-            callback = request.args.get(kwargs['padded']) or 'jsonp'
+    padded = kwargs.pop('padded', False)
+    indent = None if request.is_xhr or padded else 2
+    mimetype = 'application/json'
+    content = json.dumps(dict(*args, **kwargs), indent=indent)
+    if padded:
+        mimetype = 'application/javascript'
+        if isinstance(padded, str):
+            callback = request.args.get(padded) or 'jsonp'
         else:
-            callback = request.args.get('callback') or \
-                       request.args.get('jsonp') or 'jsonp'
-        del kwargs['padded']
-        json_str = json.dumps(dict(*args, **kwargs), indent=None)
-        content = str(callback) + "(" + json_str + ")"
-        return current_app.response_class(content, mimetype='application/javascript')
-    return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+            callback = (request.args.get('callback') or
+                        request.args.get('jsonp') or 'jsonp')
+        content = '%s(%s)' % (str(callback), content)
+    return current_app.response_class(content, mimetype=mimetype)
 
 
 def make_response(*args):
