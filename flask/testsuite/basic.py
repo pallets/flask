@@ -411,6 +411,21 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_('after' in evts)
         self.assert_equal(rv, 'request|after')
 
+    def test_after_request_processing(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            @flask.after_this_request
+            def foo(response):
+                response.headers['X-Foo'] = 'a header'
+                return response
+            return 'Test'
+        c = app.test_client()
+        resp = c.get('/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.headers['X-Foo'], 'a header')
+
     def test_teardown_request_handler(self):
         called = []
         app = flask.Flask(__name__)

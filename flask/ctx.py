@@ -11,6 +11,7 @@
 
 import sys
 
+from functools import partial
 from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack, _app_ctx_stack
@@ -28,6 +29,31 @@ def _push_app_if_necessary(app):
         ctx = app.app_context()
         ctx.push()
         return ctx
+
+
+def after_this_request(f):
+    """Executes a function after this request.  This is useful to modify
+    response objects.  The function is passed the response object and has
+    to return the same or a new one.
+
+    Example::
+
+        @app.route('/')
+        def index():
+            @after_this_request
+            def add_header():
+                response.headers['X-Foo'] = 'Parachute'
+                return response
+            return 'Hello World!'
+
+    This is more useful if a function other than the view function wants to
+    modify a response.  For instance think of a decorator that wants to add
+    some headers without converting the return value into a response object.
+
+    .. versionadded:: 0.9
+    """
+    _request_ctx_stack.top._after_request_functions.append(f)
+    return f
 
 
 def has_request_context():
@@ -152,6 +178,10 @@ class RequestContext(object):
         # of an application context.  If it implicitly pushed an application
         # context, it will be stored there
         self._pushed_application_context = None
+
+        # Functions that should be executed after the request on the response
+        # object.  These will even be called in case of an error.
+        self._after_request_functions = []
 
         self.match_request()
 
