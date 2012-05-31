@@ -134,10 +134,7 @@ def jsonify(*args, **kwargs):
     if __debug__:
         _assert_have_json()
 
-    padded = kwargs.get('padded', False)
-    if 'padded' in kwargs:
-        del kwargs['padded']
-
+    padded = kwargs.pop('padded', False)
     if padded:
         if isinstance(padded, str):
             callback = request.args.get(padded) or 'jsonp'
