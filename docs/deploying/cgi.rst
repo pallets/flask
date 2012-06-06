@@ -41,6 +41,20 @@ In Apache for example you can put a like like this into the config:
 
     ScriptAlias /app /path/to/the/application.cgi
 
+On shared webhosting, though, you might not have access to your Apache config.
+In this case, a file called `.htaccess`, sitting in the public directory you want
+your app to be available, works too:
+
+.. sourcecode:: apache
+    
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f # Don't interfere with static files
+
+    # RewriteRule ^(.*)$ /path/to/the/application.cgi [L]
+    # If the above line causes flask to ignore the request uri (i.e. always routes to /),
+    # try the following line instead:
+    RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
+
 For more information consult the documentation of your webserver.
 
 .. _App Engine: http://code.google.com/appengine/
