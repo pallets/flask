@@ -35,7 +35,7 @@ Usually there are two ways to configure the server.  Either just copy the
 `.cgi` into a `cgi-bin` (and use `mod_rewrite` or something similar to
 rewrite the URL) or let the server point to the file directly.
 
-In Apache for example you can put a like like this into the config:
+In Apache for example you can put something like this into the config:
 
 .. sourcecode:: apache
 
