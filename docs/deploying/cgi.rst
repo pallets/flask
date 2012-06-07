@@ -50,10 +50,10 @@ your app to be available, works too:
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f # Don't interfere with static files
 
-    # RewriteRule ^(.*)$ /path/to/the/application.cgi [L]
+    RewriteRule ^(.*)$ /path/to/the/application.cgi [L]
     # If the above line causes flask to ignore the request uri (i.e. always routes to /),
     # try the following line instead:
-    RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
+    # RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
 
 For more information consult the documentation of your webserver.
 
