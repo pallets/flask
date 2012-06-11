@@ -54,6 +54,11 @@ class ExtensionImporter(object):
     def load_module(self, fullname):
         if fullname in sys.modules:
             return sys.modules[fullname]
+
+        extdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + 'ext'
+        if extdir not in sys.path:
+          sys.path.append(extdir)
+
         modname = fullname.split('.', self.prefix_cutoff)[self.prefix_cutoff]
         for path in self.module_choices:
             realname = path % modname
