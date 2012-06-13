@@ -533,7 +533,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     rv.cache_control.public = True
     if cache_timeout is None:
         cache_timeout = current_app.get_send_file_max_age(filename)
-    if cache_timeout:
+    if cache_timeout is not None:
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
 
