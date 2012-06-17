@@ -953,6 +953,29 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(c.get('/de/').data, '/de/about')
         self.assert_equal(c.get('/de/about').data, '/foo')
         self.assert_equal(c.get('/foo').data, '/en/about')
+        
+    def test_inject_blueprint_url_defaults(self):
+        app = flask.Flask(__name__)
+        bp = flask.Blueprint('foo.bar.baz', __name__, 
+                       template_folder='template')
+
+        @bp.url_defaults
+        def bp_defaults(endpoint, values):
+            values['page'] = 'login'
+        @bp.route('/<page>')
+        def view(page): pass
+
+        app.register_blueprint(bp)
+
+        values = dict()
+        app.inject_url_defaults('foo.bar.baz.view', values)
+        expected = dict(page='login')
+        self.assert_equal(values, expected) 
+
+        with app.test_request_context('/somepage'):
+            url = flask.url_for('foo.bar.baz.view')
+        expected = '/login'
+        self.assert_equal(url, expected)
 
     def test_debug_mode_complains_after_first_request(self):
         app = flask.Flask(__name__)
