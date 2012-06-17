@@ -650,9 +650,56 @@ class BlueprintTestCase(FlaskTestCase):
         rv = app.test_client().get('/')
         self.assert_equal(rv.data, 'dcba')
 
+class Blueprint2TestCase(FlaskTestCase):
+
+    def test_templates_and_static(self):
+        from blueprintapp2 import app
+        c = app.test_client()
+        
+        rv = c.get('/app_level')
+        self.assert_equal(rv.data, 'Hello from app level view!')
+        rv = c.get('/')
+        self.assert_equal(rv.data, 'Hello from the Frontend')
+        rv = c.get('/admin/')
+        self.assert_equal(rv.data, 'Hello from the Admin')
+        rv = c.get('/admin/index2')
+        self.assert_equal(rv.data, 'Hello from the Admin')
+        rv = c.get('/admin/static/test.txt')
+        self.assert_equal(rv.data.strip(), 'Admin File')
+        rv = c.get('/admin/static/css/test.css')
+        self.assert_equal(rv.data.strip(), '/* nested file */')
+
+        # try/finally, in case other tests use this app for Blueprint tests.
+        max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        try:
+            expected_max_age = 3600
+            if app.config['SEND_FILE_MAX_AGE_DEFAULT'] == expected_max_age:
+                expected_max_age = 7200
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = expected_max_age
+            rv = c.get('/admin/static/css/test.css')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, expected_max_age)
+        finally:
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
+
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
+                              '/admin/static/test.txt')
+
+        with app.test_request_context():
+            try:
+                flask.render_template('missing.html')
+            except TemplateNotFound, e:
+                self.assert_equal(e.name, 'missing.html')
+            else:
+                self.assert_(0, 'expected exception')
+
+        with flask.Flask(__name__).test_request_context():
+            self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BlueprintTestCase))
+    suite.addTest(unittest.makeSuite(Blueprint2TestCase))
     suite.addTest(unittest.makeSuite(ModuleTestCase))
     return suite
