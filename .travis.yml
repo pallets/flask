@@ -9,3 +9,7 @@ python:
 before_install: pip install simplejson
 
 script: python setup.py test
+
+branches:
+  except:
+    - website
