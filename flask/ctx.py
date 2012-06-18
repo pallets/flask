@@ -41,7 +41,7 @@ def after_this_request(f):
         @app.route('/')
         def index():
             @after_this_request
-            def add_header():
+            def add_header(response):
                 response.headers['X-Foo'] = 'Parachute'
                 return response
             return 'Hello World!'
