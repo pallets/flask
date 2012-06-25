@@ -47,10 +47,10 @@ registered on PyPI.  Also the development checkout link should work so
 that people can easily install the development version into their
 virtualenv without having to download the library by hand.
 
-Flask extensions must be licensed as BSD or MIT or a more liberal license
-to be enlisted on the Flask Extension Registry.  Keep in mind that the
-Flask Extension Registry is a moderated place and libraries will be
-reviewed upfront if they behave as required.
+Flask extensions must be licensed under a BSD, MIT or more liberal license
+to be able to be enlisted in the Flask Extension Registry.  Keep in mind
+that the Flask Extension Registry is a moderated place and libraries will
+be reviewed upfront if they behave as required.
 
 "Hello Flaskext!"
 -----------------

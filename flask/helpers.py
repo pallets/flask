@@ -12,7 +12,6 @@
 from __future__ import with_statement
 
 import datetime
-import imp
 import os
 import sys
 import pkgutil
@@ -120,32 +119,9 @@ def jsonify(*args, **kwargs):
     information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2
-
-    .. versionadded:: 0.9
-        If the ``padded`` argument is true, the JSON object will be padded
-        for JSONP calls and the response mimetype will be changed to
-        ``application/javascript``. By default, the request arguments ``callback``
-        and ``jsonp`` will be used as the name for the callback function.
-        This will work with jQuery and most other JavaScript libraries
-        by default.
-
-        If the ``padded`` argument is a string, jsonify will look for
-        the request argument with the same name and use that value as the
-        callback-function name.
     """
     if __debug__:
         _assert_have_json()
-    if 'padded' in kwargs:
-        if isinstance(kwargs['padded'], str):
-            callback = request.args.get(kwargs['padded']) or 'jsonp'
-        else:
-            callback = request.args.get('callback') or \
-                       request.args.get('jsonp') or 'jsonp'
-        del kwargs['padded']
-        json_str = json.dumps(dict(*args, **kwargs),
-                              cls=current_app.json_encoder_class, indent=None)
-        content = str(callback) + "(" + json_str + ")"
-        return current_app.response_class(content, mimetype='application/javascript')
     content = json.dumps(dict(*args, **kwargs),
                          cls=current_app.json_encoder_class,
                          indent=None if request.is_xhr else 2)
@@ -307,10 +283,12 @@ def url_for(endpoint, **values):
         rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
     except BuildError, error:
+        # We need to inject the values again so that the app callback can
+        # deal with that sort of stuff.
         values['_external'] = external
         values['_anchor'] = anchor
         values['_method'] = method
-        return appctx.app.handle_build_error(error, endpoint, **values)
+        return appctx.app.handle_url_build_error(error, endpoint, values)
 
     rv = url_adapter.build(endpoint, values, method=method,
                            force_external=external)
@@ -532,7 +510,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     rv.cache_control.public = True
     if cache_timeout is None:
         cache_timeout = current_app.get_send_file_max_age(filename)
-    if cache_timeout:
+    if cache_timeout is not None:
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
 

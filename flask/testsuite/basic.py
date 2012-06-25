@@ -411,6 +411,21 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_('after' in evts)
         self.assert_equal(rv, 'request|after')
 
+    def test_after_request_processing(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            @flask.after_this_request
+            def foo(response):
+                response.headers['X-Foo'] = 'a header'
+                return response
+            return 'Test'
+        c = app.test_client()
+        resp = c.get('/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.headers['X-Foo'], 'a header')
+
     def test_teardown_request_handler(self):
         called = []
         app = flask.Flask(__name__)
@@ -712,13 +727,13 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             raise RuntimeError('Test case where BuildError is not current.')
         except RuntimeError:
-            self.assertRaises(BuildError, app.handle_build_error, error, 'spam')
+            self.assertRaises(BuildError, app.handle_url_build_error, error, 'spam', {})
 
         # Test a custom handler.
-        def handler(error, endpoint, **values):
+        def handler(error, endpoint, values):
             # Just a test.
             return '/test_handler/'
-        app.build_error_handler = handler
+        app.url_build_error_handlers.append(handler)
         with app.test_request_context():
             self.assert_equal(flask.url_for('spam'), '/test_handler/')
 
@@ -938,6 +953,29 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(c.get('/de/').data, '/de/about')
         self.assert_equal(c.get('/de/about').data, '/foo')
         self.assert_equal(c.get('/foo').data, '/en/about')
+        
+    def test_inject_blueprint_url_defaults(self):
+        app = flask.Flask(__name__)
+        bp = flask.Blueprint('foo.bar.baz', __name__, 
+                       template_folder='template')
+
+        @bp.url_defaults
+        def bp_defaults(endpoint, values):
+            values['page'] = 'login'
+        @bp.route('/<page>')
+        def view(page): pass
+
+        app.register_blueprint(bp)
+
+        values = dict()
+        app.inject_url_defaults('foo.bar.baz.view', values)
+        expected = dict(page='login')
+        self.assert_equal(values, expected) 
+
+        with app.test_request_context('/somepage'):
+            url = flask.url_for('foo.bar.baz.view')
+        expected = '/login'
+        self.assert_equal(url, expected)
 
     def test_debug_mode_complains_after_first_request(self):
         app = flask.Flask(__name__)

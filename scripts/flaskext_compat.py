@@ -9,6 +9,7 @@
     Usage::
 
         import flaskext_compat
+        flaskext_compat.activate()
         from flask.ext import foo
 
     :copyright: (c) 2011 by Armin Ronacher.

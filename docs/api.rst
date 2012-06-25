@@ -289,6 +289,8 @@ Useful Functions and Classes
 
 .. autofunction:: make_response
 
+.. autofunction:: after_this_request
+
 .. autofunction:: send_file
 
 .. autofunction:: send_from_directory
@@ -640,6 +642,10 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
     HTTP `OPTIONS` response.  This can be useful when working with
     decorators that want to customize the `OPTIONS` response on a per-view
     basis.
+
+-   `required_methods`: if this attribute is set, Flask will always add
+    these methods when registering a URL rule even if the methods were
+    explicitly overriden in the ``route()`` call.
 
 Full example::
 
