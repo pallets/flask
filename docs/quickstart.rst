@@ -514,8 +514,9 @@ attributes mentioned above::
                 return log_the_user_in(request.form['username'])
             else:
                 error = 'Invalid username/password'
-        # this is executed if the request method was GET or the
-        # credentials were invalid
+        # the code below this is executed if the request method
+        # was GET or the credentials were invalid
+        return render_template('login.html', error=error)
 
 What happens if the key does not exist in the `form` attribute?  In that
 case a special :exc:`KeyError` is raised.  You can catch it like a
