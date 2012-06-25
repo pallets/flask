@@ -11,6 +11,7 @@
 
 from __future__ import with_statement
 
+import datetime
 import os
 import sys
 import pkgutil
@@ -113,16 +114,27 @@ def jsonify(*args, **kwargs):
             "id": 42
         }
 
+    This function will use the JSON encoder specified by the
+    :attr:`Flask.json_encoder_class` attribute (which is :class:`JSONEncoder`
+    by default).
+
     This requires Python 2.6 or an installed version of simplejson.  For
     security reasons only objects are supported toplevel.  For more
     information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2
+
+    .. versionchanged:: 0.9
+       Now uses the JSON encoder specified by :attr:`Flask.json_encoder_class`
+       on :data:`flask.current_app`.
+
     """
     if __debug__:
         _assert_have_json()
-    return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+    content = json.dumps(dict(*args, **kwargs),
+                         cls=current_app.json_encoder_class,
+                         indent=None if request.is_xhr else 2)
+    return current_app.response_class(content, mimetype='application/json')
 
 
 def make_response(*args):
@@ -658,6 +670,28 @@ def find_package(import_name):
             base_dir = site_parent
         return base_dir, package_path
     return None, package_path
+
+
+class JSONEncoder(json.JSONEncoder):
+    """Default implementation of :class:`json.JSONEncoder` which provides
+    serialization for :class:`datetime.datetime` objects (to ISO 8601 format).
+
+    .. versionadded:: 0.9
+
+    """
+
+    def default(self, obj):
+        """Provides serialization for :class:`datetime.datetime` objects (in
+        addition to the serialization provided by the default
+        :class:`json.JSONEncoder` implementation).
+
+        If `obj` is a :class:`datetime.datetime` object, this converts it into
+        the corresponding ISO 8601 string representation.
+
+        """
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        return super(JSONEncoder, self).default(obj)
 
 
 class locked_cached_property(object):

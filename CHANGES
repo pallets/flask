@@ -8,6 +8,8 @@ Version 0.9
 
 Relase date to be decided, codename to be chosen.
 
+- Added :attr:`flask.Flask.json_encoder_class` so users can customize JSON
+  encoding during execution of the :func:`flask.jsonify` function.
 - The :func:`flask.Request.on_json_loading_failed` now returns a JSON formatted
   response by default.
 - The :func:`flask.url_for` function now can generate anchors to the
