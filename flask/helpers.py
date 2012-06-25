@@ -114,11 +114,20 @@ def jsonify(*args, **kwargs):
             "id": 42
         }
 
+    This function will use the JSON encoder specified by the
+    :attr:`Flask.json_encoder_class` attribute (which is :class:`JSONEncoder`
+    by default).
+
     This requires Python 2.6 or an installed version of simplejson.  For
     security reasons only objects are supported toplevel.  For more
     information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2
+
+    .. versionchanged:: 0.9
+       Now uses the JSON encoder specified by :attr:`Flask.json_encoder_class`
+       on :data:`flask.current_app`.
+
     """
     if __debug__:
         _assert_have_json()
