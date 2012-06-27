@@ -397,6 +397,64 @@ class NoImportsTestCase(FlaskTestCase):
             self.fail('Flask(import_name) is importing import_name.')
 
 
+class StreamingTestCase(FlaskTestCase):
+
+    def test_streaming_with_context(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            def generate():
+                yield 'Hello '
+                yield flask.request.args['name']
+                yield '!'
+            return flask.Response(flask.stream_with_context(generate()))
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        self.assertEqual(rv.data, 'Hello World!')
+
+    def test_streaming_with_context_as_decorator(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            @flask.stream_with_context
+            def generate():
+                yield 'Hello '
+                yield flask.request.args['name']
+                yield '!'
+            return flask.Response(generate())
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        self.assertEqual(rv.data, 'Hello World!')
+
+    def test_streaming_with_context_and_custom_close(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        called = []
+        class Wrapper(object):
+            def __init__(self, gen):
+                self._gen = gen
+            def __iter__(self):
+                return self
+            def close(self):
+                called.append(42)
+            def next(self):
+                return self._gen.next()
+        @app.route('/')
+        def index():
+            def generate():
+                yield 'Hello '
+                yield flask.request.args['name']
+                yield '!'
+            return flask.Response(flask.stream_with_context(
+                Wrapper(generate())))
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        self.assertEqual(rv.data, 'Hello World!')
+        self.assertEqual(called, [42])
+
+
 def suite():
     suite = unittest.TestSuite()
     if flask.json_available:
@@ -404,4 +462,5 @@ def suite():
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(NoImportsTestCase))
+    suite.addTest(unittest.makeSuite(StreamingTestCase))
     return suite

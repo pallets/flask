@@ -375,6 +375,11 @@ Extensions
 
    .. versionadded:: 0.8
 
+Stream Helpers
+--------------
+
+.. autofunction:: stream_with_context
+
 Useful Internals
 ----------------
 

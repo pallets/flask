@@ -21,6 +21,7 @@ from zlib import adler32
 from threading import RLock
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
+from functools import update_wrapper
 
 # try to load the best simplejson implementation available.  If JSON
 # is not installed, we add a failing class.
@@ -90,6 +91,78 @@ def _endpoint_from_view_func(view_func):
     assert view_func is not None, 'expected view func if endpoint ' \
                                   'is not provided.'
     return view_func.__name__
+
+
+def stream_with_context(generator_or_function):
+    """Request contexts disappear when the response is started on the server.
+    This is done for efficiency reasons and to make it less likely to encounter
+    memory leaks with badly written WSGI middlewares.  The downside is that if
+    you are using streamed responses, the generator cannot access request bound
+    information any more.
+
+    This function however can help you keep the context around for longer::
+
+        from flask import stream_with_context, request, Response
+
+        @app.route('/stream')
+        def streamed_response():
+            @stream_with_context
+            def generate():
+                yield 'Hello '
+                yield request.args['name']
+                yield '!'
+            return Response(generate())
+
+    Alternatively it can also be used around a specific generator:
+
+        from flask import stream_with_context, request, Response
+
+        @app.route('/stream')
+        def streamed_response():
+            def generate():
+                yield 'Hello '
+                yield request.args['name']
+                yield '!'
+            return Response(stream_with_context(generate()))
+
+    .. versionadded:: 0.9
+    """
+    try:
+        gen = iter(generator_or_function)
+    except TypeError:
+        def decorator(*args, **kwargs):
+            gen = generator_or_function()
+            return stream_with_context(gen)
+        return update_wrapper(decorator, generator_or_function)
+
+    def generator():
+        ctx = _request_ctx_stack.top
+        if ctx is None:
+            raise RuntimeError('Attempted to stream with context but '
+                'there was no context in the first place to keep around.')
+        with ctx:
+            # Dummy sentinel.  Has to be inside the context block or we're
+            # not actually keeping the context around.
+            yield None
+
+            # The try/finally is here so that if someone passes a WSGI level
+            # iterator in we're still running the cleanup logic.  Generators
+            # don't need that because they are closed on their destruction
+            # automatically.
+            try:
+                for item in gen:
+                    yield item
+            finally:
+                if hasattr(gen, 'close'):
+                    gen.close()
+
+    # The trick is to start the generator.  Then the code execution runs until
+    # the first dummy None is yielded at which point the context was already
+    # pushed.  This item is discarded.  Then when the iteration continues the
+    # real generator is executed.
+    wrapped_g = generator()
+    wrapped_g.next()
+    return wrapped_g
 
 
 def jsonify(*args, **kwargs):

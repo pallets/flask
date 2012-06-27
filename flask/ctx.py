@@ -22,14 +22,6 @@ class _RequestGlobals(object):
     pass
 
 
-def _push_app_if_necessary(app):
-    top = _app_ctx_stack.top
-    if top is None or top.app != app:
-        ctx = app.app_context()
-        ctx.push()
-        return ctx
-
-
 def after_this_request(f):
     """Executes a function after this request.  This is useful to modify
     response objects.  The function is passed the response object and has
@@ -110,15 +102,22 @@ class AppContext(object):
         self.app = app
         self.url_adapter = app.create_url_adapter(None)
 
+        # Like request context, app contexts can be pushed multiple times
+        # but there a basic "refcount" is enough to track them.
+        self._refcnt = 0
+
     def push(self):
         """Binds the app context to the current context."""
+        self._refcnt += 1
         _app_ctx_stack.push(self)
 
     def pop(self, exc=None):
         """Pops the app context."""
-        if exc is None:
-            exc = sys.exc_info()[1]
-        self.app.do_teardown_appcontext(exc)
+        self._refcnt -= 1
+        if self._refcnt <= 0:
+            if exc is None:
+                exc = sys.exc_info()[1]
+            self.app.do_teardown_appcontext(exc)
         rv = _app_ctx_stack.pop()
         assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
             % (rv, self)
@@ -128,7 +127,7 @@ class AppContext(object):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        self.pop()
+        self.pop(exc_value)
 
 
 class RequestContext(object):
@@ -169,14 +168,15 @@ class RequestContext(object):
         self.flashes = None
         self.session = None
 
+        # Request contexts can be pushed multiple times and interleaved with
+        # other request contexts.  Now only if the last level is popped we
+        # get rid of them.  Additionally if an application context is missing
+        # one is created implicitly so for each level we add this information
+        self._implicit_app_ctx_stack = []
+
         # indicator if the context was preserved.  Next time another context
         # is pushed the preserved context is popped.
         self.preserved = False
-
-        # Indicates if pushing this request context also triggered the pushing
-        # of an application context.  If it implicitly pushed an application
-        # context, it will be stored there
-        self._pushed_application_context = None
 
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
@@ -222,7 +222,13 @@ class RequestContext(object):
 
         # Before we push the request context we have to ensure that there
         # is an application context.
-        self._pushed_application_context = _push_app_if_necessary(self.app)
+        app_ctx = _app_ctx_stack.top
+        if app_ctx is None or app_ctx.app != self.app:
+            app_ctx = self.app.app_context()
+            app_ctx.push()
+            self._implicit_app_ctx_stack.append(app_ctx)
+        else:
+            self._implicit_app_ctx_stack.append(None)
 
         _request_ctx_stack.push(self)
 
@@ -241,22 +247,28 @@ class RequestContext(object):
         .. versionchanged:: 0.9
            Added the `exc` argument.
         """
-        self.preserved = False
-        if exc is None:
-            exc = sys.exc_info()[1]
-        self.app.do_teardown_request(exc)
+        app_ctx = self._implicit_app_ctx_stack.pop()
+
+        clear_request = False
+        if not self._implicit_app_ctx_stack:
+            self.preserved = False
+            if exc is None:
+                exc = sys.exc_info()[1]
+            self.app.do_teardown_request(exc)
+            clear_request = True
+
         rv = _request_ctx_stack.pop()
         assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
             % (rv, self)
 
         # get rid of circular dependencies at the end of the request
         # so that we don't require the GC to be active.
-        rv.request.environ['werkzeug.request'] = None
+        if clear_request:
+            rv.request.environ['werkzeug.request'] = None
 
         # Get rid of the app as well if necessary.
-        if self._pushed_application_context:
-            self._pushed_application_context.pop(exc)
-            self._pushed_application_context = None
+        if app_ctx is not None:
+            app_ctx.pop(exc)
 
     def __enter__(self):
         self.push()

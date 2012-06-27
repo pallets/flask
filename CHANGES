@@ -71,6 +71,8 @@ Relase date to be decided, codename to be chosen.
 - Added `required_methods` attribute to view functions to force-add methods
   on registration.
 - Added :func:`flask.after_this_request`.
+- Added :func:`flask.stream_with_context` and the ability to push contexts
+  multiple times without producing unexpected behavior.
 
 Version 0.8.1
 -------------
