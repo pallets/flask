@@ -35,11 +35,22 @@ Usually there are two ways to configure the server.  Either just copy the
 `.cgi` into a `cgi-bin` (and use `mod_rewrite` or something similar to
 rewrite the URL) or let the server point to the file directly.
 
-In Apache for example you can put a like like this into the config:
+In Apache for example you can put something like this into the config:
 
 .. sourcecode:: apache
 
     ScriptAlias /app /path/to/the/application.cgi
+
+On shared webhosting, though, you might not have access to your Apache config.
+In this case, a file called `.htaccess`, sitting in the public directory you want
+your app to be available, works too but the `ScriptAlias` directive won't
+work in that case:
+
+.. sourcecode:: apache
+    
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f # Don't interfere with static files
+    RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
 
 For more information consult the documentation of your webserver.
 
