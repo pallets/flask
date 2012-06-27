@@ -179,7 +179,8 @@ class RequestContext(object):
         self._pushed_application_context = None
 
         # Functions that should be executed after the request on the response
-        # object.  These will even be called in case of an error.
+        # object.  These will be called before the regular "after_request"
+        # functions.
         self._after_request_functions = []
 
         self.match_request()
