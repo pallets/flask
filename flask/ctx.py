@@ -11,7 +11,6 @@
 
 import sys
 
-from functools import partial
 from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack, _app_ctx_stack
