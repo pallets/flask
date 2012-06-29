@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.9
 -----------
 
-Relase date to be decided, codename to be chosen.
+Release date to be decided, codename to be chosen.
 
 - The :func:`flask.Request.on_json_loading_failed` now returns a JSON formatted
   response by default.
@@ -50,7 +50,7 @@ Relase date to be decided, codename to be chosen.
 - Added :meth:`flask.Flask.app_context` which works very similar to the
   request context but only provides access to the current application.  This
   also adds support for URL generation without an active request context.
-- View functions can now return a tuple with the first instance being an
+- View functions can now return a tuple with the first element being an
   instance of :class:`flask.Response`.  This allows for returning
   ``jsonify(error="error msg"), 400`` from a view function.
 - :class:`~flask.Flask` and :class:`~flask.Blueprint` now provide a
