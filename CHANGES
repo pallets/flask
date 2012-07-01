@@ -77,7 +77,7 @@ Relase date to be decided, codename to be chosen.
 Version 0.8.1
 -------------
 
-Bugfix release, release date to be decided
+Bugfix release, released on July 1th 2012
 
 - Fixed an issue with the undocumented `flask.session` module to not
   work properly on Python 2.5.  It should not be used but did cause
