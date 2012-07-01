@@ -77,7 +77,7 @@ Released on July 1st 2012, codename Camapri.
 Version 0.8.1
 -------------
 
-Bugfix release, released on July 1th 2012
+Bugfix release, released on July 1st 2012
 
 - Fixed an issue with the undocumented `flask.session` module to not
   work properly on Python 2.5.  It should not be used but did cause
