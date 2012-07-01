@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.9
 -----------
 
-Released on July 1st 2012, codename Camapri.
+Released on July 1st 2012, codename Campari.
 
 - The :func:`flask.Request.on_json_loading_failed` now returns a JSON formatted
   response by default.
