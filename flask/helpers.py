@@ -113,7 +113,7 @@ def stream_with_context(generator_or_function):
                 yield '!'
             return Response(generate())
 
-    Alternatively it can also be used around a specific generator:
+    Alternatively it can also be used around a specific generator::
 
         from flask import stream_with_context, request, Response
 
