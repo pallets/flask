@@ -268,7 +268,7 @@ class Flask(_PackageBoundObject):
         'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
-        'ENABLE_GOT_FIRST_REQUEST_ASSERTION':   True
+        'ENABLE_GOT_FIRST_REQUEST_ASSERTION':   True,
         'PREFERRED_URL_SCHEME':                 'http'
     })
 
