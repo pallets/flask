@@ -3,7 +3,7 @@
 Introducing Flaskr
 ==================
 
-We will call our blogging application flaskr here, feel free to chose a
+We will call our blogging application flaskr here, feel free to choose a
 less web-2.0-ish name ;)  Basically we want it to do the following things:
 
 1. let the user sign in and out with credentials specified in the
