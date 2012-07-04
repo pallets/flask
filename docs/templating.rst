@@ -63,7 +63,7 @@ by default:
 
    The :func:`flask.get_flashed_messages` function.
 
-.. admonition:: The Jinja Context Behaviour
+.. admonition:: The Jinja Context Behavior
 
    These variables are added to the context of variables, they are not
    global variables.  The difference is that by default these will not
@@ -147,6 +147,8 @@ autoescape %}`` block:
 Whenever you do this, please be very cautious about the variables you are
 using in this block.
 
+.. _registering-filters:
+
 Registering Filters
 -------------------
 
@@ -166,7 +168,13 @@ The two following examples work the same and both reverse an object::
     app.jinja_env.filters['reverse'] = reverse_filter
 
 In case of the decorator the argument is optional if you want to use the
-function name as name of the filter.
+function name as name of the filter.  Once registered, you can use the filter
+in your templates in the same way as Jinja2's builtin filters, for example if
+you have a Python list in context called `mylist`::
+
+    {% for x in mylist | reverse %}
+    {% endfor %}
+
 
 Context Processors
 ------------------
@@ -176,7 +184,7 @@ context processors exist in Flask.  Context processors run before the
 template is rendered and have the ability to inject new values into the
 template context.  A context processor is a function that returns a
 dictionary.  The keys and values of this dictionary are then merged with
-the template context::
+the template context, for all templates in the app::
 
     @app.context_processor
     def inject_user():
@@ -186,3 +194,22 @@ The context processor above makes a variable called `user` available in
 the template with the value of `g.user`.  This example is not very
 interesting because `g` is available in templates anyways, but it gives an
 idea how this works.
+
+Variables are not limited to values; a context processor can also make
+functions available to templates (since Python allows passing around
+functions)::
+
+    @app.context_processor
+    def utility_processor():
+        def format_price(amount, currency=u'€'):
+            return u'{0:.2f}{1}.format(amount, currency)
+        return dict(format_price=format_price)
+
+The context processor above makes the `format_price` function available to all
+templates::
+
+    {{ format_price(0.33) }}
+
+You could also build `format_price` as a template filter (see
+:ref:`registering-filters`), but this demonstrates how to pass functions in a
+context processor.

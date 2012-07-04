@@ -265,11 +265,15 @@ Useful Functions and Classes
 
    Points to the application handling the request.  This is useful for
    extensions that want to support multiple applications running side
-   by side.
+   by side.  This is powered by the application context and not by the
+   request context, so you can change the value of this proxy by
+   using the :meth:`~flask.Flask.app_context` method.
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: has_request_context
+
+.. autofunction:: has_app_context
 
 .. autofunction:: url_for
 
@@ -284,6 +288,8 @@ Useful Functions and Classes
 .. autofunction:: redirect
 
 .. autofunction:: make_response
+
+.. autofunction:: after_this_request
 
 .. autofunction:: send_file
 
@@ -369,6 +375,11 @@ Extensions
 
    .. versionadded:: 0.8
 
+Stream Helpers
+--------------
+
+.. autofunction:: stream_with_context
+
 Useful Internals
 ----------------
 
@@ -411,6 +422,16 @@ Useful Internals
           ctx = _request_ctx_stack.top
           if ctx is not None:
               return ctx.session
+
+.. autoclass:: flask.ctx.AppContext
+   :members:
+
+.. data:: _app_ctx_stack
+
+   Works similar to the request context but only binds the application.
+   This is mainly there for extensions to store data.
+
+   .. versionadded:: 0.9
 
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:
@@ -455,8 +476,18 @@ Signals
 .. data:: request_tearing_down
 
    This signal is sent when the application is tearing down the request.
-   This is always called, even if an error happened.  No arguments are
-   provided.
+   This is always called, even if an error happened.  An `exc` keyword
+   argument is passed with the exception that caused the teardown.
+
+   .. versionchanged:: 0.9
+      The `exc` parameter was added.
+
+.. data:: appcontext_tearing_down
+
+   This signal is sent when the application is tearing down the
+   application context.  This is always called, even if an error happened.
+   An `exc` keyword argument is passed with the exception that caused the
+   teardown.
 
 .. currentmodule:: None
 
@@ -476,7 +507,7 @@ Signals
 
 .. _blinker: http://pypi.python.org/pypi/blinker
 
-Class Based Views
+Class-Based Views
 -----------------
 
 .. versionadded:: 0.7
@@ -511,7 +542,7 @@ Variable parts are passed to the view function as keyword arguments.
 The following converters are available:
 
 =========== ===============================================
-`unicode`   accepts any text without a slash (the default)
+`string`    accepts any text without a slash (the default)
 `int`       accepts integers
 `float`     like `int` but for floating point values
 `path`      like the default but also accepts slashes
@@ -562,7 +593,7 @@ with the route parameter the view function is defined with the decorator
 instead of the `view_func` parameter.
 
 =============== ==========================================================
-`rule`          the URL roule as string
+`rule`          the URL rule as string
 `endpoint`      the endpoint for the registered URL rule.  Flask itself
                 assumes that the name of the view function is the name
                 of the endpoint if not explicitly stated.
@@ -611,6 +642,10 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
     HTTP `OPTIONS` response.  This can be useful when working with
     decorators that want to customize the `OPTIONS` response on a per-view
     basis.
+
+-   `required_methods`: if this attribute is set, Flask will always add
+    these methods when registering a URL rule even if the methods were
+    explicitly overriden in the ``route()`` call.
 
 Full example::
 

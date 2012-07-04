@@ -85,8 +85,10 @@ Here's an example `_formhelpers.html` template with such a macro:
       <dt>{{ field.label }}
       <dd>{{ field(**kwargs)|safe }}
       {% if field.errors %}
-        <ul class="errors">
-        {% for error in field.errors %}<li>{{ error }}{% endfor %}
+        <ul class=errors>
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
         </ul>
       {% endif %}
       </dd>
@@ -106,7 +108,7 @@ takes advantage of the `_formhelpers.html` template:
 .. sourcecode:: html+jinja
 
     {% from "_formhelpers.html" import render_field %}
-    <form method="post" action="/register">
+    <form method=post action="/register">
       <dl>
         {{ render_field(form.username) }}
         {{ render_field(form.email) }}

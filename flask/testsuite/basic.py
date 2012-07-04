@@ -19,6 +19,7 @@ from threading import Thread
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
+from werkzeug.routing import BuildError
 
 
 class BasicFunctionalityTestCase(FlaskTestCase):
@@ -309,8 +310,15 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(list(flask.get_flashed_messages()), ['Zap', 'Zip'])
 
     def test_extended_flashing(self):
+        # Be sure app.testing=True below, else tests can fail silently.
+        #
+        # Specifically, if app.testing is not set to True, the AssertionErrors
+        # in the view functions will cause a 500 response to the test client
+        # instead of propagating exceptions.
+
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'
+        app.testing = True
 
         @app.route('/')
         def index():
@@ -360,33 +368,27 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(messages[1], flask.Markup(u'<em>Testing</em>'))
             return ''
 
-        # Note: if status code assertions are missing, failed tests still pass.
-        #
-        # Since app.test_client() does not set debug=True, the AssertionErrors
-        # in the view functions are swallowed and the only indicator is a 500
-        # status code.
-        #
-        # Also, create new test client on each test to clean flashed messages.
+        # Create new test client on each test to clean flashed messages.
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test/').status_code == 200
+        c.get('/test/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_with_categories/').status_code == 200
+        c.get('/test_with_categories/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_filter/').status_code == 200
+        c.get('/test_filter/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_filters/').status_code == 200
+        c.get('/test_filters/')
 
         c = app.test_client()
         c.get('/')
-        assert c.get('/test_filters_without_returning_categories/').status_code == 200
+        c.get('/test_filters_without_returning_categories/')
 
     def test_request_processing(self):
         app = flask.Flask(__name__)
@@ -408,6 +410,21 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         rv = app.test_client().get('/').data
         self.assert_('after' in evts)
         self.assert_equal(rv, 'request|after')
+
+    def test_after_request_processing(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            @flask.after_this_request
+            def foo(response):
+                response.headers['X-Foo'] = 'a header'
+                return response
+            return 'Test'
+        c = app.test_client()
+        resp = c.get('/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.headers['X-Foo'], 'a header')
 
     def test_teardown_request_handler(self):
         called = []
@@ -630,7 +647,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return u'Hällo Wörld'.encode('utf-8')
         @app.route('/args')
         def from_tuple():
-            return 'Meh', 400, {'X-Foo': 'Testing'}, 'text/plain'
+            return 'Meh', 400, {
+                'X-Foo': 'Testing',
+                'Content-Type': 'text/plain; charset=utf-8'
+            }
         c = app.test_client()
         self.assert_equal(c.get('/unicode').data, u'Hällo Wörld'.encode('utf-8'))
         self.assert_equal(c.get('/string').data, u'Hällo Wörld'.encode('utf-8'))
@@ -658,6 +678,29 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(rv.data, 'W00t')
             self.assert_equal(rv.mimetype, 'text/html')
 
+    def test_make_response_with_response_instance(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.make_response(
+                flask.jsonify({'msg': 'W00t'}), 400)
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.data,
+                             '{\n  "msg": "W00t"\n}')
+            self.assertEqual(rv.mimetype, 'application/json')
+
+            rv = flask.make_response(
+                flask.Response(''), 400)
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.data, '')
+            self.assertEqual(rv.mimetype, 'text/html')
+
+            rv = flask.make_response(
+                flask.Response('', headers={'Content-Type': 'text/html'}),
+                400, [('X-Foo', 'bar')])
+            self.assertEqual(rv.status_code, 400)
+            self.assertEqual(rv.headers['Content-Type'], 'text/html')
+            self.assertEqual(rv.headers['X-Foo'], 'bar')
+
     def test_url_generation(self):
         app = flask.Flask(__name__)
         @app.route('/hello/<name>', methods=['POST'])
@@ -667,6 +710,32 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('hello', name='test x'), '/hello/test%20x')
             self.assert_equal(flask.url_for('hello', name='test x', _external=True),
                               'http://localhost/hello/test%20x')
+
+    def test_build_error_handler(self):
+        app = flask.Flask(__name__)
+
+        # Test base case, a URL which results in a BuildError.
+        with app.test_request_context():
+            self.assertRaises(BuildError, flask.url_for, 'spam')
+
+        # Verify the error is re-raised if not the current exception.
+        try:
+            with app.test_request_context():
+                flask.url_for('spam')
+        except BuildError, error:
+            pass
+        try:
+            raise RuntimeError('Test case where BuildError is not current.')
+        except RuntimeError:
+            self.assertRaises(BuildError, app.handle_url_build_error, error, 'spam', {})
+
+        # Test a custom handler.
+        def handler(error, endpoint, values):
+            # Just a test.
+            return '/test_handler/'
+        app.url_build_error_handlers.append(handler)
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('spam'), '/test_handler/')
 
     def test_custom_converters(self):
         from werkzeug.routing import BaseConverter
@@ -884,6 +953,29 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(c.get('/de/').data, '/de/about')
         self.assert_equal(c.get('/de/about').data, '/foo')
         self.assert_equal(c.get('/foo').data, '/en/about')
+        
+    def test_inject_blueprint_url_defaults(self):
+        app = flask.Flask(__name__)
+        bp = flask.Blueprint('foo.bar.baz', __name__, 
+                       template_folder='template')
+
+        @bp.url_defaults
+        def bp_defaults(endpoint, values):
+            values['page'] = 'login'
+        @bp.route('/<page>')
+        def view(page): pass
+
+        app.register_blueprint(bp)
+
+        values = dict()
+        app.inject_url_defaults('foo.bar.baz.view', values)
+        expected = dict(page='login')
+        self.assert_equal(values, expected) 
+
+        with app.test_request_context('/somepage'):
+            url = flask.url_for('foo.bar.baz.view')
+        expected = '/login'
+        self.assert_equal(url, expected)
 
     def test_debug_mode_complains_after_first_request(self):
         app = flask.Flask(__name__)

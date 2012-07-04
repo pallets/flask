@@ -59,3 +59,26 @@ The template is then evaluated as the stream is iterated over.  Since each
 time you do a yield the server will flush the content to the client you
 might want to buffer up a few items in the template which you can do with
 ``rv.enable_buffering(size)``.  ``5`` is a sane default.
+
+Streaming with Context
+----------------------
+
+.. versionadded:: 0.9
+
+Note that when you stream data, the request context is already gone the
+moment the function executes.  Flask 0.9 provides you with a helper that
+can keep the request context around during the execution of the
+generator::
+
+    from flask import stream_with_context, request, Response
+
+    @app.route('/stream')
+    def streamed_response():
+        def generate():
+            yield 'Hello '
+            yield request.args['name']
+            yield '!'
+        return Response(stream_with_context(generate()))
+
+Without the :func:`~flask.stream_with_context` function you would get a
+:class:`RuntimeError` at that point.

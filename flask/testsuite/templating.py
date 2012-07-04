@@ -178,6 +178,25 @@ class TemplatingTestCase(FlaskTestCase):
         self.assert_equal(rv.data, 'Hello Custom World!')
 
 
+    def test_iterable_loader(self):
+        app = flask.Flask(__name__)
+        @app.context_processor
+        def context_processor():
+            return {'whiskey': 'Jameson'}
+        @app.route('/')
+        def index():
+            return flask.render_template(
+                ['no_template.xml', # should skip this one
+                'simple_template.html', # should render this
+                'context_template.html'],
+                value=23)
+
+        rv = app.test_client().get('/')
+        self.assert_equal(rv.data, '<h1>Jameson</h1>')
+
+
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TemplatingTestCase))

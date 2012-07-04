@@ -48,7 +48,7 @@ allocated will be freed again.
 
 Another thing that becomes possible when you have an explicit object lying
 around in your code is that you can subclass the base class
-(:class:`~flask.Flask`) to alter specific behaviour.  This would not be
+(:class:`~flask.Flask`) to alter specific behavior.  This would not be
 possible without hacks if the object were created ahead of time for you
 based on a class that is not exposed to you.
 

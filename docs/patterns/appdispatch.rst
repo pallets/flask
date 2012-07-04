@@ -30,6 +30,24 @@ at :func:`werkzeug.serving.run_simple`::
 Note that :func:`run_simple <werkzeug.serving.run_simple>` is not intended for
 use in production.  Use a :ref:`full-blown WSGI server <deployment>`.
 
+In order to use the interactive debuggger, debugging must be enabled both on
+the application and the simple server, here is the "hello world" example with
+debugging and :func:`run_simple <werkzeug.serving.run_simple>`::
+
+    from flask import Flask
+    from werkzeug.serving import run_simple
+
+    app = Flask(__name__)
+    app.debug = True
+
+    @app.route('/')
+    def hello_world():
+        return 'Hello World!'
+
+    if __name__ == '__main__':
+        run_simple('localhost', 5000, app,
+                   use_reloader=True, use_debugger=True, use_evalex=True)
+
 
 Combining Applications
 ----------------------
@@ -58,7 +76,7 @@ Dispatch by Subdomain
 
 Sometimes you might want to use multiple instances of the same application
 with different configurations.  Assuming the application is created inside
-a function and you can call that function to instanciate it, that is
+a function and you can call that function to instantiate it, that is
 really easy to implement.  In order to develop your application to support
 creating new instances in functions have a look at the
 :ref:`app-factories` pattern.
@@ -72,7 +90,7 @@ the dynamic application creation.
 
 The perfect level for abstraction in that regard is the WSGI layer.  You
 write your own WSGI application that looks at the request that comes and
-and delegates it to your Flask application.  If that application does not
+delegates it to your Flask application.  If that application does not
 exist yet, it is dynamically created and remembered::
 
     from threading import Lock

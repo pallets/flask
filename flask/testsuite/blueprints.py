@@ -16,6 +16,7 @@ import unittest
 import warnings
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import NotFound
+from werkzeug.http import parse_cache_control_header
 from jinja2 import TemplateNotFound
 
 
@@ -357,6 +358,19 @@ class BlueprintTestCase(FlaskTestCase):
         rv = c.get('/admin/static/css/test.css')
         self.assert_equal(rv.data.strip(), '/* nested file */')
 
+        # try/finally, in case other tests use this app for Blueprint tests.
+        max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        try:
+            expected_max_age = 3600
+            if app.config['SEND_FILE_MAX_AGE_DEFAULT'] == expected_max_age:
+                expected_max_age = 7200
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = expected_max_age
+            rv = c.get('/admin/static/css/test.css')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, expected_max_age)
+        finally:
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
+
         with app.test_request_context():
             self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
                               '/admin/static/test.txt')
@@ -371,6 +385,29 @@ class BlueprintTestCase(FlaskTestCase):
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
+
+    def test_default_static_cache_timeout(self):
+        app = flask.Flask(__name__)
+        class MyBlueprint(flask.Blueprint):
+            def get_send_file_max_age(self, filename):
+                return 100
+
+        blueprint = MyBlueprint('blueprint', __name__, static_folder='static')
+        app.register_blueprint(blueprint)
+
+        # try/finally, in case other tests use this app for Blueprint tests.
+        max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        try:
+            with app.test_request_context():
+                unexpected_max_age = 3600
+                if app.config['SEND_FILE_MAX_AGE_DEFAULT'] == unexpected_max_age:
+                    unexpected_max_age = 7200
+                app.config['SEND_FILE_MAX_AGE_DEFAULT'] = unexpected_max_age
+                rv = blueprint.send_static_file('index.html')
+                cc = parse_cache_control_header(rv.headers['Cache-Control'])
+                self.assert_equal(cc.max_age, 100)
+        finally:
+            app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 
     def test_templates_list(self):
         from blueprintapp import app

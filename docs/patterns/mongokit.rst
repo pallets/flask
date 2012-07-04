@@ -17,7 +17,7 @@ here:
 Declarative
 -----------
 
-The default behaviour of MongoKit is the declarative one that is based on
+The default behavior of MongoKit is the declarative one that is based on
 common ideas from Django or the SQLAlchemy declarative extension.
 
 Here an example `app.py` module for your application::
@@ -122,9 +122,6 @@ collection first, this is somewhat the same as a table in the SQL world.
 >>> user = {'name': u'admin', 'email': u'admin@localhost'}
 >>> collection.insert(user)
 
-print list(collection.find())
-print collection.find_one({'name': u'admin'})
-
 MongoKit will automatically commit for us.
 
 To query your database, you use the collection directly:
@@ -141,4 +138,4 @@ These results are also dict-like objects:
 u'admin@localhost'
 
 For more information about MongoKit, head over to the
-`website <http://bytebucket.org/namlook/mongokit/>`_.
+`website <https://github.com/namlook/mongokit>`_.

@@ -10,7 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = '0.9-dev'
+__version__ = '0.9'
 
 # utilities we import from Werkzeug and Jinja2 that are unused
 # in the module but are exported as public interface.
@@ -22,9 +22,12 @@ from .app import Flask, Request, Response
 from .config import Config
 from .helpers import url_for, jsonify, json_available, flash, \
     send_file, send_from_directory, get_flashed_messages, \
-    get_template_attribute, make_response, safe_join
-from .globals import current_app, g, request, session, _request_ctx_stack
-from .ctx import has_request_context
+    get_template_attribute, make_response, safe_join, \
+    stream_with_context
+from .globals import current_app, g, request, session, _request_ctx_stack, \
+     _app_ctx_stack
+from .ctx import has_request_context, has_app_context, \
+     after_this_request
 from .module import Module
 from .blueprints import Blueprint
 from .templating import render_template, render_template_string

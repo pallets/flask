@@ -3,45 +3,58 @@
 Becoming Big
 ============
 
-Your application is becoming more and more complex?  If you suddenly
-realize that Flask does things in a way that does not work out for your
-application there are ways to deal with that.
+Here are your options when growing your codebase or scaling your application.
 
-Flask is powered by Werkzeug and Jinja2, two libraries that are in use at
-a number of large websites out there and all Flask does is bring those
-two together.  Being a microframework Flask does not do much more than
-combining existing libraries - there is not a lot of code involved.
-What that means for large applications is that it's very easy to take the
-code from Flask and put it into a new module within the applications and
-expand on that.
+Read the Source.
+----------------
 
-Flask is designed to be extended and modified in a couple of different
-ways:
+Flask started in part to demonstrate how to build your own framework on top of
+existing well-used tools Werkzeug (WSGI) and Jinja (templating), and as it
+developed, it became useful to a wide audience.  As you grow your codebase,
+don't just use Flask -- understand it.  Read the source.  Flask's code is
+written to be read; it's documentation published so you can use its internal
+APIs.  Flask sticks to documented APIs in upstream libraries, and documents its
+internal utilities so that you can find the hook points needed for your
+project.
 
--   Flask extensions.  For a lot of reusable functionality you can create
-    extensions.  For extensions a number of hooks exist throughout Flask
-    with signals and callback functions.
+Hook. Extend.
+-------------
 
--   Subclassing.  The majority of functionality can be changed by creating
-    a new subclass of the :class:`~flask.Flask` class and overriding
-    methods provided for this exact purpose.
+The :ref:`api` docs are full of available overrides, hook points, and
+:ref:`signals`. You can provide custom classes for things like the request and
+response objects.  Dig deeper on the APIs you use, and look for the
+customizations which are available out of the box in a Flask release.  Look for
+ways in which your project can be refactored into a collection of utilities and
+Flask extensions.  Explore the many `extensions
+<http://flask.pocoo.org/extensions/>` in the community, and look for patterns to
+build your own extensions if you do not find the tools you need.
 
--   Forking.  If nothing else works out you can just take the Flask
-    codebase at a given point and copy/paste it into your application
-    and change it.  Flask is designed with that in mind and makes this
-    incredible easy.  You just have to take the package and copy it
-    into your application's code and rename it (for example to
-    `framework`).  Then you can start modifying the code in there.
+Subclass.
+---------
 
-Why consider Forking?
+The :class:`~flask.Flask` class has many methods designed for subclassing. You
+can quickly add or customize behavior by subclassing :class:`~flask.Flask` (see
+the linked method docs) and using that subclass wherever you instantiate an
+application class. This works well with :ref:`app-factories`.
+
+Wrap with middleware.
 ---------------------
 
-The majority of code of Flask is within Werkzeug and Jinja2.  These
-libraries do the majority of the work.  Flask is just the paste that glues
-those together.  For every project there is the point where the underlying
-framework gets in the way (due to assumptions the original developers
-had).  This is natural because if this would not be the case, the
-framework would be a very complex system to begin with which causes a
+The :ref:`app-dispatch` chapter shows in detail how to apply middleware. You
+can introduce WSGI middleware to wrap your Flask instances and introduce fixes
+and changes at the layer between your Flask application and your HTTP
+server. Werkzeug includes several `middlewares
+<http://werkzeug.pocoo.org/docs/middlewares/>`_.
+
+Fork.
+-----
+
+If none of the above options work, fork Flask.  The majority of code of Flask
+is within Werkzeug and Jinja2.  These libraries do the majority of the work.
+Flask is just the paste that glues those together.  For every project there is
+the point where the underlying framework gets in the way (due to assumptions
+the original developers had).  This is natural because if this would not be the
+case, the framework would be a very complex system to begin with which causes a
 steep learning curve and a lot of user frustration.
 
 This is not unique to Flask.  Many people use patched and modified
@@ -55,8 +68,8 @@ Furthermore integrating upstream changes can be a complex process,
 depending on the number of changes.  Because of that, forking should be
 the very last resort.
 
-Scaling like a Pro
-------------------
+Scale like a pro.
+-----------------
 
 For many web applications the complexity of the code is less an issue than
 the scaling for the number of users or data entries expected.  Flask by
@@ -78,11 +91,11 @@ majority of servers are using either threads, greenlets or separate
 processes to achieve concurrency which are all methods well supported by
 the underlying Werkzeug library.
 
-Dialogue with the Community
+Discuss with the community.
 ---------------------------
 
-The Flask developers are very interested to keep everybody happy, so as
-soon as you find an obstacle in your way, caused by Flask, don't hesitate
-to contact the developers on the mailinglist or IRC channel.  The best way
-for the Flask and Flask-extension developers to improve it for larger
+The Flask developers keep the framework accessible to users with codebases big
+and small. If you find an obstacle in your way, caused by Flask, don't hesitate
+to contact the developers on the mailinglist or IRC channel.  The best way for
+the Flask and Flask extension developers to improve the tools for larger
 applications is getting feedback from users.

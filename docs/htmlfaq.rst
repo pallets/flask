@@ -52,7 +52,7 @@ Development of the HTML5 specification was started in 2004 under the name
 "Web Applications 1.0" by the Web Hypertext Application Technology Working
 Group, or WHATWG (which was formed by the major browser vendors Apple,
 Mozilla, and Opera) with the goal of writing a new and improved HTML
-specification, based on existing browser behaviour instead of unrealistic
+specification, based on existing browser behavior instead of unrealistic
 and backwards-incompatible specifications.
 
 For example, in HTML4 ``<title/Hello/`` theoretically parses exactly the

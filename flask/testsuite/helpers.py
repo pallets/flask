@@ -17,7 +17,7 @@ import unittest
 from logging import StreamHandler
 from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
-from werkzeug.http import parse_options_header
+from werkzeug.http import parse_cache_control_header, parse_options_header
 
 
 def has_encoding(name):
@@ -39,6 +39,18 @@ class JSONTestCase(FlaskTestCase):
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
+
+    def test_json_bad_requests_content_type(self):
+        app = flask.Flask(__name__)
+        @app.route('/json', methods=['POST'])
+        def return_json():
+            return unicode(flask.request.json)
+        c = app.test_client()
+        rv = c.post('/json', data='malformed', content_type='application/json')
+        self.assert_equal(rv.status_code, 400)
+        self.assert_equal(rv.mimetype, 'application/json')
+        self.assert_('description' in flask.json.loads(rv.data))
+        self.assert_('<p>' not in flask.json.loads(rv.data)['description'])
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
@@ -204,6 +216,42 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_equal(value, 'attachment')
             self.assert_equal(options['filename'], 'index.txt')
 
+    def test_static_file(self):
+        app = flask.Flask(__name__)
+        # default cache timeout is 12 hours
+        with app.test_request_context():
+            # Test with static file handler.
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 12 * 60 * 60)
+            # Test again with direct use of send_file utility.
+            rv = flask.send_file('static/index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 12 * 60 * 60)
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+        with app.test_request_context():
+            # Test with static file handler.
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 3600)
+            # Test again with direct use of send_file utility.
+            rv = flask.send_file('static/index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 3600)
+        class StaticFileApp(flask.Flask):
+            def get_send_file_max_age(self, filename):
+                return 10
+        app = StaticFileApp(__name__)
+        with app.test_request_context():
+            # Test with static file handler.
+            rv = app.send_static_file('index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 10)
+            # Test again with direct use of send_file utility.
+            rv = flask.send_file('static/index.html')
+            cc = parse_cache_control_header(rv.headers['Cache-Control'])
+            self.assert_equal(cc.max_age, 10)
+
 
 class LoggingTestCase(FlaskTestCase):
 
@@ -349,6 +397,64 @@ class NoImportsTestCase(FlaskTestCase):
             self.fail('Flask(import_name) is importing import_name.')
 
 
+class StreamingTestCase(FlaskTestCase):
+
+    def test_streaming_with_context(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            def generate():
+                yield 'Hello '
+                yield flask.request.args['name']
+                yield '!'
+            return flask.Response(flask.stream_with_context(generate()))
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        self.assertEqual(rv.data, 'Hello World!')
+
+    def test_streaming_with_context_as_decorator(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            @flask.stream_with_context
+            def generate():
+                yield 'Hello '
+                yield flask.request.args['name']
+                yield '!'
+            return flask.Response(generate())
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        self.assertEqual(rv.data, 'Hello World!')
+
+    def test_streaming_with_context_and_custom_close(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        called = []
+        class Wrapper(object):
+            def __init__(self, gen):
+                self._gen = gen
+            def __iter__(self):
+                return self
+            def close(self):
+                called.append(42)
+            def next(self):
+                return self._gen.next()
+        @app.route('/')
+        def index():
+            def generate():
+                yield 'Hello '
+                yield flask.request.args['name']
+                yield '!'
+            return flask.Response(flask.stream_with_context(
+                Wrapper(generate())))
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        self.assertEqual(rv.data, 'Hello World!')
+        self.assertEqual(called, [42])
+
+
 def suite():
     suite = unittest.TestSuite()
     if flask.json_available:
@@ -356,4 +462,5 @@ def suite():
     suite.addTest(unittest.makeSuite(SendfileTestCase))
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(NoImportsTestCase))
+    suite.addTest(unittest.makeSuite(StreamingTestCase))
     return suite

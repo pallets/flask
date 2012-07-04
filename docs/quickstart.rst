@@ -77,6 +77,8 @@ To stop the server, hit control-C.
    This tells your operating system to listen on all public IPs.
 
 
+.. _debug-mode:
+
 Debug Mode
 ----------
 
@@ -112,42 +114,7 @@ Screenshot of the debugger in action:
    :class: screenshot
    :alt: screenshot of debugger in action
 
-.. admonition:: Working With Other Debuggers
-
-   Debuggers interfere with each other.
-   That said, you may still wish to use the debugger in a tool of your choice.
-   Flask provides the following options to manage the debug process:
-
-   * ``debug``        - whether to enable debug mode and catch exceptinos
-   * ``use_debugger`` - whether to use the internal Flask debugger
-   * ``use_reloader`` - whether to reload and fork the process on exception
-
-   ``debug`` must be True (i.e., exceptions must be caught) in order for the
-   other two options to have any value.
-
-   If you're using Aptana/Eclipse for debugging you'll need to set both
-   ``use_debugger`` and ``use_reloader`` to False.
-
-   A possible useful pattern for configuration is to set the following in your
-   config.yaml (change the block as approriate for your application, of course)::
-
-       FLASK:
-           DEBUG: True
-           DEBUG_WITH_APTANA: True
-
-   Then in your application's entry-point (main.py), you could have something like::
-
-       if __name__ == "__main__":
-           # To allow aptana to receive errors, set use_debugger=False
-           app = create_app(config="config.yaml")
-
-           if app.debug: use_debugger = True
-           try:
-               # Disable Flask's debugger if external debugger is requested
-               use_debugger = not(app.config.get('DEBUG_WITH_APTANA'))
-           except:
-               pass
-           app.run(use_debugger=use_debugger, debug=app.debug, use_reloader=use_debugger, host='0.0.0.0')
+Have another debugger in mind? See :ref:`working-with-debuggers`.
 
 
 Routing
@@ -199,10 +166,10 @@ The following converters exist:
 `path`      like the default but also accepts slashes
 =========== ===========================================
 
-.. admonition:: Unique URLs / Redirection Behaviour
+.. admonition:: Unique URLs / Redirection Behavior
 
-   Flask's URL rules are based on Werkzeug's routing module.  The idea behind
-   that module is to ensure beautiful and unique also unique URLs based on
+   Flask's URL rules are based on Werkzeug's routing module.  The idea
+   behind that module is to ensure beautiful and unique URLs based on
    precedents laid down by Apache and earlier HTTP servers.
 
    Take these two rules::
@@ -226,7 +193,7 @@ The following converters exist:
    with a trailing slash will produce a 404 "Not Found" error.
 
    This behavior allows relative URLs to continue working if users access the
-   page when they forget a trailing slash, consistent with how with how Apache
+   page when they forget a trailing slash, consistent with how Apache
    and other servers work.  Also, the URLs will stay unique, which helps search
    engines avoid indexing the same page twice.
 
@@ -267,7 +234,7 @@ some examples:
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method, explained
 below.  It tells Flask to behave as though it is handling a request, even
-though were are interacting with it through a Python shell.  Have a look at the
+though we are interacting with it through a Python shell.  Have a look at the
 explanation below. :ref:`context-locals`).
 
 Why would you want to build URLs instead of hard-coding them into your
@@ -366,8 +333,7 @@ configured to serve them for you, but during development Flask can do that
 as well.  Just create a folder called `static` in your package or next to
 your module and it will be available at `/static` on the application.
 
-To generate URLs that part of the URL, use the special ``'static'`` URL
-name::
+To generate URLs for static files, use the special ``'static'`` endpoint name::
 
     url_for('static', filename='style.css')
 
@@ -548,8 +514,9 @@ attributes mentioned above::
                 return log_the_user_in(request.form['username'])
             else:
                 error = 'Invalid username/password'
-        # this is executed if the request method was GET or the
-        # credentials were invalid
+        # the code below this is executed if the request method
+        # was GET or the credentials were invalid
+        return render_template('login.html', error=error)
 
 What happens if the key does not exist in the `form` attribute?  In that
 case a special :exc:`KeyError` is raised.  You can catch it like a
@@ -560,7 +527,7 @@ deal with that problem.
 To access parameters submitted in the URL (``?key=value``) you can use the
 :attr:`~flask.request.args` attribute::
 
-    searchword = request.args.get('q', '')
+    searchword = request.args.get('key', '')
 
 We recommend accessing URL parameters with `get` or by catching the
 `KeyError` because users might change the URL and presenting them a 400
@@ -708,8 +675,11 @@ converting return values into response objects is as follows:
     returned from the view.
 2.  If it's a string, a response object is created with that data and the
     default parameters.
-3.  If a tuple is returned the response object is created by passing the
-    tuple as arguments to the response object's constructor.
+3.  If a tuple is returned the items in the tuple can provide extra
+    information.  Such tuples have to be in the form ``(response, status,
+    headers)`` where at least one item has to be in the tuple.  The
+    `status` value will override the status code and `headers` can be a
+    list or dictionary of additional header values.
 4.  If none of that works, Flask will assume the return value is a
     valid WSGI application and convert that into a response object.
 
@@ -775,7 +745,7 @@ sessions work::
 
     @app.route('/logout')
     def logout():
-        # remove the username from the session if its there
+        # remove the username from the session if it's there
         session.pop('username', None)
         return redirect(url_for('index'))
 
@@ -797,6 +767,13 @@ not using the template engine (as in this example).
    '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 
    Just take that thing and copy/paste it into your code and you're done.
+
+A note on cookie-based sessions: Flask will take the values you put into the
+session object and serialize them into a cookie.  If you are finding some
+values do not persist across requests, cookies are indeed enabled, and you are
+not getting a clear error message, check the size of the cookie in your page
+responses compared to the size supported by web browsers.
+
 
 Message Flashing
 ----------------
@@ -852,3 +829,25 @@ can do it like this::
 
     from werkzeug.contrib.fixers import LighttpdCGIRootFix
     app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
+
+.. _quickstart_deployment:
+
+Deploying to a Web Server
+-------------------------
+
+Ready to deploy your new Flask app?  To wrap up the quickstart, you can
+immediately deploy to a hosted platform, all of which offer a free plan for
+small projects:
+
+- `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
+- `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
+  with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
+
+Other places where you can host your Flask app:
+
+- `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
+- `Deploying Flask on Google App Engine <https://github.com/kamalgill/flask-appengine-template>`_
+- `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
+
+If you manage your own hosts and would like to host yourself, see the chapter
+on :ref:`deployment`.

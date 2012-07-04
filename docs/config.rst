@@ -95,7 +95,10 @@ The following configuration values are used internally by Flask:
                                   ``'myapp.dev:5000'``)  Note that
                                   localhost does not support subdomains so
                                   setting this to “localhost” does not
-                                  help.
+                                  help.  Setting a ``SERVER_NAME`` also
+                                  by default enables URL generation
+                                  without a request context but with an
+                                  application context.
 ``APPLICATION_ROOT``              If the application does not occupy
                                   a whole domain or subdomain this can
                                   be set to the path where the application
@@ -107,6 +110,16 @@ The following configuration values are used internally by Flask:
                                   reject incoming requests with a
                                   content length greater than this by
                                   returning a 413 status code.
+``SEND_FILE_MAX_AGE_DEFAULT``:    Default cache control max age to use with
+                                  :meth:`~flask.Flask.send_static_file` (the
+                                  default static file handler) and
+                                  :func:`~flask.send_file`, in
+                                  seconds. Override this value on a per-file
+                                  basis using the
+                                  :meth:`~flask.Flask.get_send_file_max_age`
+                                  hook on :class:`~flask.Flask` or
+                                  :class:`~flask.Blueprint`,
+                                  respectively. Defaults to 43200 (12 hours).
 ``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
                                   not execute the error handlers of HTTP
                                   exceptions but instead treat the
@@ -126,6 +139,9 @@ The following configuration values are used internally by Flask:
                                   used to debug those situations.  If this
                                   config is set to ``True`` you will get
                                   a regular traceback instead.
+``PREFERRED_URL_SCHEME``          The URL scheme that should be used for
+                                  URL generation if no URL scheme is
+                                  available.  This defaults to ``http``.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -164,6 +180,9 @@ The following configuration values are used internally by Flask:
    ``APPLICATION_ROOT``, ``SESSION_COOKIE_DOMAIN``,
    ``SESSION_COOKIE_PATH``, ``SESSION_COOKIE_HTTPONLY``,
    ``SESSION_COOKIE_SECURE``
+
+.. versionadded:: 0.9
+   ``PREFERRED_URL_SCHEME``
 
 Configuring from Files
 ----------------------
@@ -267,7 +286,7 @@ configuration::
 
     class ProductionConfig(Config):
         DATABASE_URI = 'mysql://user@localhost/foo'
-    
+
     class DevelopmentConfig(Config):
         DEBUG = True
 

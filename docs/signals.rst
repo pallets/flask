@@ -131,6 +131,8 @@ debugging.  You can access the name of the signal with the
    missing blinker installations, you can do so by using the
    :class:`flask.signals.Namespace` class.
 
+.. _signals-sending:
+
 Sending Signals
 ---------------
 
@@ -155,6 +157,17 @@ function, you can pass ``current_app._get_current_object()`` as sender.
    ``current_app._get_current_object()`` instead.  The reason for this is
    that :data:`~flask.current_app` is a proxy and not the real application
    object.
+
+
+Signals and Flask's Request Context
+-----------------------------------
+
+Signals fully support :ref:`request-context` when receiving signals.
+Context-local variables are consistently available between
+:data:`~flask.request_started` and :data:`~flask.request_finished`, so you can
+rely on :class:`flask.g` and others as needed.  Note the limitations described
+in :ref:`signals-sending` and the :data:`~flask.request_tearing_down` signal.
+
 
 Decorator Based Signal Subscriptions
 ------------------------------------
@@ -254,5 +267,28 @@ The following signals exist in Flask:
 
         from flask import request_tearing_down
         request_tearing_down.connect(close_db_connection, app)
+
+   As of Flask 0.9, this will also be passed an `exc` keyword argument
+   that has a reference to the exception that caused the teardown if
+   there was one.
+
+.. data:: flask.appcontext_tearing_down
+   :noindex:
+
+   This signal is sent when the app context is tearing down.  This is always
+   called, even if an exception is caused.  Currently functions listening
+   to this signal are called after the regular teardown handlers, but this
+   is not something you can rely on.
+
+   Example subscriber::
+
+        def close_db_connection(sender, **extra):
+            session.close()
+
+        from flask import request_tearing_down
+        appcontext_tearing_down.connect(close_db_connection, app)
+
+   This will also be passed an `exc` keyword argument that has a reference
+   to the exception that caused the teardown if there was one.
 
 .. _blinker: http://pypi.python.org/pypi/blinker

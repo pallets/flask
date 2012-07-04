@@ -11,7 +11,6 @@
 
 from __future__ import with_statement
 
-import imp
 import os
 import sys
 import pkgutil
@@ -20,7 +19,9 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
+from functools import update_wrapper
 
 # try to load the best simplejson implementation available.  If JSON
 # is not installed, we add a failing class.
@@ -50,7 +51,8 @@ except ImportError:
 
 from jinja2 import FileSystemLoader
 
-from .globals import session, _request_ctx_stack, current_app, request
+from .globals import session, _request_ctx_stack, _app_ctx_stack, \
+     current_app, request
 
 
 def _assert_have_json():
@@ -59,7 +61,7 @@ def _assert_have_json():
         raise RuntimeError('simplejson not installed')
 
 
-# figure out if simplejson escapes slashes.  This behaviour was changed
+# figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
 if not json_available or '\\/' not in json.dumps('/'):
 
@@ -89,6 +91,78 @@ def _endpoint_from_view_func(view_func):
     assert view_func is not None, 'expected view func if endpoint ' \
                                   'is not provided.'
     return view_func.__name__
+
+
+def stream_with_context(generator_or_function):
+    """Request contexts disappear when the response is started on the server.
+    This is done for efficiency reasons and to make it less likely to encounter
+    memory leaks with badly written WSGI middlewares.  The downside is that if
+    you are using streamed responses, the generator cannot access request bound
+    information any more.
+
+    This function however can help you keep the context around for longer::
+
+        from flask import stream_with_context, request, Response
+
+        @app.route('/stream')
+        def streamed_response():
+            @stream_with_context
+            def generate():
+                yield 'Hello '
+                yield request.args['name']
+                yield '!'
+            return Response(generate())
+
+    Alternatively it can also be used around a specific generator:
+
+        from flask import stream_with_context, request, Response
+
+        @app.route('/stream')
+        def streamed_response():
+            def generate():
+                yield 'Hello '
+                yield request.args['name']
+                yield '!'
+            return Response(stream_with_context(generate()))
+
+    .. versionadded:: 0.9
+    """
+    try:
+        gen = iter(generator_or_function)
+    except TypeError:
+        def decorator(*args, **kwargs):
+            gen = generator_or_function()
+            return stream_with_context(gen)
+        return update_wrapper(decorator, generator_or_function)
+
+    def generator():
+        ctx = _request_ctx_stack.top
+        if ctx is None:
+            raise RuntimeError('Attempted to stream with context but '
+                'there was no context in the first place to keep around.')
+        with ctx:
+            # Dummy sentinel.  Has to be inside the context block or we're
+            # not actually keeping the context around.
+            yield None
+
+            # The try/finally is here so that if someone passes a WSGI level
+            # iterator in we're still running the cleanup logic.  Generators
+            # don't need that because they are closed on their destruction
+            # automatically.
+            try:
+                for item in gen:
+                    yield item
+            finally:
+                if hasattr(gen, 'close'):
+                    gen.close()
+
+    # The trick is to start the generator.  Then the code execution runs until
+    # the first dummy None is yielded at which point the context was already
+    # pushed.  This item is discarded.  Then when the iteration continues the
+    # real generator is executed.
+    wrapped_g = generator()
+    wrapped_g.next()
+    return wrapped_g
 
 
 def jsonify(*args, **kwargs):
@@ -188,8 +262,46 @@ def url_for(endpoint, **values):
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
+    To integrate applications, :class:`Flask` has a hook to intercept URL build
+    errors through :attr:`Flask.build_error_handler`.  The `url_for` function
+    results in a :exc:`~werkzeug.routing.BuildError` when the current app does
+    not have a URL for the given endpoint and values.  When it does, the
+    :data:`~flask.current_app` calls its :attr:`~Flask.build_error_handler` if
+    it is not `None`, which can return a string to use as the result of
+    `url_for` (instead of `url_for`'s default to raise the
+    :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
+    An example::
+
+        def external_url_handler(error, endpoint, **values):
+            "Looks up an external URL when `url_for` cannot build a URL."
+            # This is an example of hooking the build_error_handler.
+            # Here, lookup_url is some utility function you've built
+            # which looks up the endpoint in some external URL registry.
+            url = lookup_url(endpoint, **values)
+            if url is None:
+                # External lookup did not have a URL.
+                # Re-raise the BuildError, in context of original traceback.
+                exc_type, exc_value, tb = sys.exc_info()
+                if exc_value is error:
+                    raise exc_type, exc_value, tb
+                else:
+                    raise error
+            # url_for will use this result, instead of raising BuildError.
+            return url
+
+        app.build_error_handler = external_url_handler
+
+    Here, `error` is the instance of :exc:`~werkzeug.routing.BuildError`, and
+    `endpoint` and `**values` are the arguments passed into `url_for`.  Note
+    that this is for building URLs outside the current application, and not for
+    handling 404 NotFound errors.
+
     .. versionadded:: 0.9
        The `_anchor` and `_method` parameters were added.
+
+    .. versionadded:: 0.9
+       Calls :meth:`Flask.handle_build_error` on
+       :exc:`~werkzeug.routing.BuildError`.
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
@@ -197,27 +309,59 @@ def url_for(endpoint, **values):
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
-    ctx = _request_ctx_stack.top
-    blueprint_name = request.blueprint
-    if not ctx.request._is_old_module:
-        if endpoint[:1] == '.':
-            if blueprint_name is not None:
-                endpoint = blueprint_name + endpoint
-            else:
+    appctx = _app_ctx_stack.top
+    reqctx = _request_ctx_stack.top
+    if appctx is None:
+        raise RuntimeError('Attempted to generate a URL with the application '
+                           'context being pushed.  This has to be executed ')
+
+    # If request specific information is available we have some extra
+    # features that support "relative" urls.
+    if reqctx is not None:
+        url_adapter = reqctx.url_adapter
+        blueprint_name = request.blueprint
+        if not reqctx.request._is_old_module:
+            if endpoint[:1] == '.':
+                if blueprint_name is not None:
+                    endpoint = blueprint_name + endpoint
+                else:
+                    endpoint = endpoint[1:]
+        else:
+            # TODO: get rid of this deprecated functionality in 1.0
+            if '.' not in endpoint:
+                if blueprint_name is not None:
+                    endpoint = blueprint_name + '.' + endpoint
+            elif endpoint.startswith('.'):
                 endpoint = endpoint[1:]
+        external = values.pop('_external', False)
+
+    # Otherwise go with the url adapter from the appctx and make
+    # the urls external by default.
     else:
-        # TODO: get rid of this deprecated functionality in 1.0
-        if '.' not in endpoint:
-            if blueprint_name is not None:
-                endpoint = blueprint_name + '.' + endpoint
-        elif endpoint.startswith('.'):
-            endpoint = endpoint[1:]
-    external = values.pop('_external', False)
+        url_adapter = appctx.url_adapter
+        if url_adapter is None:
+            raise RuntimeError('Application was not able to create a URL '
+                               'adapter for request independent URL generation. '
+                               'You might be able to fix this by setting '
+                               'the SERVER_NAME config variable.')
+        external = values.pop('_external', True)
+
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
-    ctx.app.inject_url_defaults(endpoint, values)
-    rv = ctx.url_adapter.build(endpoint, values, method=method,
+    appctx.app.inject_url_defaults(endpoint, values)
+    try:
+        rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
+    except BuildError, error:
+        # We need to inject the values again so that the app callback can
+        # deal with that sort of stuff.
+        values['_external'] = external
+        values['_anchor'] = anchor
+        values['_method'] = method
+        return appctx.app.handle_url_build_error(error, endpoint, values)
+
+    rv = url_adapter.build(endpoint, values, method=method,
+                           force_external=external)
     if anchor is not None:
         rv += '#' + url_quote(anchor)
     return rv
@@ -261,7 +405,16 @@ def flash(message, category='message'):
                      messages and ``'warning'`` for warnings.  However any
                      kind of string can be used as category.
     """
-    session.setdefault('_flashes', []).append((category, message))
+    # Original implementation:
+    #
+    #     session.setdefault('_flashes', []).append((category, message))
+    #
+    # This assumed that changes made to mutable structures in the session are
+    # are always in sync with the sess on object, which is not true for session
+    # implementations that use external storage for keeping their keys/values.
+    flashes = session.get('_flashes', [])
+    flashes.append((category, message))
+    session['_flashes'] = flashes
 
 
 def get_flashed_messages(with_categories=False, category_filter=[]):
@@ -305,7 +458,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
-              cache_timeout=60 * 60 * 12, conditional=False):
+              cache_timeout=None, conditional=False):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -330,13 +483,16 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. versionadded:: 0.5
        The `add_etags`, `cache_timeout` and `conditional` parameters were
-       added.  The default behaviour is now to attach etags.
+       added.  The default behavior is now to attach etags.
 
     .. versionchanged:: 0.7
        mimetype guessing and etag support for file objects was
        deprecated because it was unreliable.  Pass a filename if you are
        able to, otherwise attach an etag yourself.  This functionality
        will be removed in Flask 1.0
+
+    .. versionchanged:: 0.9
+       cache_timeout pulls its default from application config, when None.
 
     :param filename_or_fp: the filename of the file to send.  This is
                            relative to the :attr:`~Flask.root_path` if a
@@ -354,7 +510,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                                 differs from the file's filename.
     :param add_etags: set to `False` to disable attaching of etags.
     :param conditional: set to `True` to enable conditional responses.
-    :param cache_timeout: the timeout in seconds for the headers.
+
+    :param cache_timeout: the timeout in seconds for the headers. When `None`
+                          (default), this value is set by
+                          :meth:`~Flask.get_send_file_max_age` of
+                          :data:`~flask.current_app`.
     """
     mtime = None
     if isinstance(filename_or_fp, basestring):
@@ -365,7 +525,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         file = filename_or_fp
         filename = getattr(file, 'name', None)
 
-        # XXX: this behaviour is now deprecated because it was unreliable.
+        # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
            and isinstance(filename, basestring):
@@ -376,7 +536,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if add_etags:
             warn(DeprecationWarning('In future flask releases etags will no '
                 'longer be generated for file objects passed to the send_file '
-                'function because this behaviour was unreliable.  Pass '
+                'function because this behavior was unreliable.  Pass '
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
@@ -418,7 +578,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.last_modified = int(mtime)
 
     rv.cache_control.public = True
-    if cache_timeout:
+    if cache_timeout is None:
+        cache_timeout = current_app.get_send_file_max_age(filename)
+    if cache_timeout is not None:
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
 
@@ -495,7 +657,8 @@ def send_from_directory(directory, filename, **options):
     filename = safe_join(directory, filename)
     if not os.path.isfile(filename):
         raise NotFound()
-    return send_file(filename, conditional=True, **options)
+    options.setdefault('conditional', True)
+    return send_file(filename, **options)
 
 
 def get_root_path(import_name):
@@ -504,17 +667,29 @@ def get_root_path(import_name):
 
     Not to be confused with the package path returned by :func:`find_package`.
     """
+    # Module already imported and has a file attribute.  Use that first.
+    mod = sys.modules.get(import_name)
+    if mod is not None and hasattr(mod, '__file__'):
+        return os.path.dirname(os.path.abspath(mod.__file__))
+
+    # Next attempt: check the loader.
     loader = pkgutil.get_loader(import_name)
+
+    # Loader does not exist or we're referring to an unloaded main module
+    # or a main module without path (interactive sessions), go with the
+    # current working directory.
     if loader is None or import_name == '__main__':
-        # import name is not found, or interactive/main module
         return os.getcwd()
+
     # For .egg, zipimporter does not have get_filename until Python 2.7.
+    # Some other loaders might exhibit the same behavior.
     if hasattr(loader, 'get_filename'):
         filepath = loader.get_filename(import_name)
     else:
         # Fall back to imports.
         __import__(import_name)
         filepath = sys.modules[import_name].__file__
+
     # filepath is import_name.py for a module, or __init__.py for a package.
     return os.path.dirname(os.path.abspath(filepath))
 
@@ -651,6 +826,32 @@ class _PackageBoundObject(object):
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
+    def get_send_file_max_age(self, filename):
+        """Provides default cache_timeout for the :func:`send_file` functions.
+
+        By default, this function returns ``SEND_FILE_MAX_AGE_DEFAULT`` from
+        the configuration of :data:`~flask.current_app`.
+
+        Static file functions such as :func:`send_from_directory` use this
+        function, and :func:`send_file` calls this function on
+        :data:`~flask.current_app` when the given cache_timeout is `None`. If a
+        cache_timeout is given in :func:`send_file`, that timeout is used;
+        otherwise, this method is called.
+
+        This allows subclasses to change the behavior when sending files based
+        on the filename.  For example, to set the cache timeout for .js files
+        to 60 seconds::
+
+            class MyFlask(flask.Flask):
+                def get_send_file_max_age(self, name):
+                    if name.lower().endswith('.js'):
+                        return 60
+                    return flask.Flask.get_send_file_max_age(self, name)
+
+        .. versionadded:: 0.9
+        """
+        return current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
+
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
         folder to the browser.
@@ -659,7 +860,11 @@ class _PackageBoundObject(object):
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')
-        return send_from_directory(self.static_folder, filename)
+        # Ensure get_send_file_max_age is called in all cases.
+        # Here, we ensure get_send_file_max_age is called for Blueprints.
+        cache_timeout = self.get_send_file_max_age(filename)
+        return send_from_directory(self.static_folder, filename,
+                                   cache_timeout=cache_timeout)
 
     def open_resource(self, resource, mode='rb'):
         """Opens a resource from the application's resource folder.  To see

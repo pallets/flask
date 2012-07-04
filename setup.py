@@ -25,7 +25,7 @@ And Easy to Setup
 
 ::
 
-    $ easy_install Flask
+    $ pip install Flask
     $ python hello.py
      * Running on http://localhost:5000/
 
@@ -59,7 +59,7 @@ class run_audit(Command):
         try:
             import pyflakes.scripts.pyflakes as flakes
         except ImportError:
-            print "Audit requires PyFlakes installed in your system."""
+            print "Audit requires PyFlakes installed in your system."
             sys.exit(-1)
 
         warns = 0
@@ -77,7 +77,7 @@ class run_audit(Command):
 
 setup(
     name='Flask',
-    version='0.9-dev',
+    version='0.9',
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
@@ -90,7 +90,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'Werkzeug>=0.6.1',
+        'Werkzeug>=0.7',
         'Jinja2>=2.4'
     ],
     classifiers=[
@@ -100,6 +100,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
