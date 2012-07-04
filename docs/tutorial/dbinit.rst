@@ -24,8 +24,7 @@ If you want to do that, you first have to import the
 :func:`contextlib.closing` function from the contextlib package.  If you
 want to use Python 2.5 it's also necessary to enable the `with` statement
 first (`__future__` imports must be the very first import). Accordingly,
-the following lines should be to your existing import lines in
-`flaskr.py`::
+add the following lines to your existing imports in `flaskr.py`::
 
     from __future__ import with_statement
     from contextlib import closing
