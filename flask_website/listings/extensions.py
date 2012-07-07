@@ -491,6 +491,14 @@ extensions = [
         github='kennethreitz/flask-heroku',
         approved=False
     ),
+    Extension('Flask-MakoTemplates', 'Beranger Enselme',
+        description='''
+            <p>Provides support for the Mako templating language
+        ''',
+        docs='http://packages.python.org/Flask-MakoTemplates/',
+        github='benselme/flask-makotemplates',
+        approved=False
+    ),
 ]
 
 
