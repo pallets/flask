@@ -491,6 +491,15 @@ extensions = [
         github='kennethreitz/flask-heroku',
         approved=False
     ),
+    Extension('Flask-MakoTemplates', 'Beranger Enselme',
+        description='''
+            <p>Allows for <a href="http://www.makotemplates.org/">Mako templates</a>
+            to be used instead of Jinja2
+        ''',
+        github='benselme/flask-makotemplates',
+        docs='http://packages.python.org/Flask-MakoTemplates/',
+        approved=False
+    ),
 ]
 
 
