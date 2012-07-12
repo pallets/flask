@@ -95,8 +95,6 @@ Set yourapplication.fcgi::
     from yourapplication import app
 
     class ScriptNameStripper(object):
-       to_strip = '/yourapplication.fcgi'
-
        def __init__(self, app):
            self.app = app
 
