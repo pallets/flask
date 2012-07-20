@@ -90,9 +90,9 @@ since decorators could be fired in undefined order when the application is
 split into multiple modules.
 
 Another design decision with the Werkzeug routing system is that routes
-in Werkzeug try to ensure that there is that URLs are unique.  Werkzeug
-will go quite far with that in that it will automatically redirect to a
-canonical URL if a route is ambiguous.
+in Werkzeug try to ensure that URLs are unique.  Werkzeug will go quite far
+with that in that it will automatically redirect to a canonical URL if a route
+is ambiguous.
 
 
 One Template Engine
