@@ -387,7 +387,7 @@ extensions = [
             <p>
               Flask extension module that provides an admin interface
         ''',
-        docs='http://packages.python.org/Flask-Admin/',
+        docs='http://flask-admin.readthedocs.org/en/latest/index.html',
         github='wilsaj/flask-admin'
     ),
     Extension('Flask-ZODB', 'Dag Odenhall',
