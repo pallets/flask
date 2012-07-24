@@ -491,6 +491,14 @@ extensions = [
         github='kennethreitz/flask-heroku',
         approved=False
     ),
+    Extension('Flask-WeasyPrint', 'Simon Sapin',
+        description='''
+            <p>Make PDF with <a href="http://weasyprint.org/">WeasyPrint</a>
+               in your Flask app.
+        ''',
+        docs='http://packages.python.org/Flask-WeasyPrint/',
+        github='SimonSapin/Flask-WeasyPrint',
+    ),
 ]
 
 
