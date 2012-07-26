@@ -1468,7 +1468,7 @@ class Flask(_PackageBoundObject):
 
         .. versionchanged:: 0.9
            This can now also be called without a request object when the
-           UR adapter is created for the application context.
+           URL adapter is created for the application context.
         """
         if request is not None:
             return self.url_map.bind_to_environ(request.environ,
