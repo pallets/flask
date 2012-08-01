@@ -113,7 +113,7 @@ def stream_with_context(generator_or_function):
                 yield '!'
             return Response(generate())
 
-    Alternatively it can also be used around a specific generator:
+    Alternatively it can also be used around a specific generator::
 
         from flask import stream_with_context, request, Response
 
@@ -305,7 +305,9 @@ def url_for(endpoint, **values):
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
-    :param _external: if set to `True`, an absolute URL is generated.
+    :param _external: if set to `True`, an absolute URL is generated. Server
+      address can be changed via `SERVER_NAME` configuration variable which
+      defaults to `localhost`.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
