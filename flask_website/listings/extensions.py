@@ -159,11 +159,11 @@ extensions = [
         docs='http://packages.python.org/Flask-WTF/',
         approved=True
     ),
-    Extension('Flask-Testing', 'Ron DuPlain (created by Dan Jacob)',
+    Extension('Flask-Testing', u'Christoph Heer & Ron DuPlain (created by Dan Jacob)',
         description='''
             <p>The Flask-Testing extension provides unit testing utilities for Flask.
         ''',
-        github='rduplain/flask-testing',
+        github='jarus/flask-testing',
         docs='http://packages.python.org/Flask-Testing/',
         approved=True
     ),
@@ -387,7 +387,7 @@ extensions = [
             <p>
               Flask extension module that provides an admin interface
         ''',
-        docs='http://packages.python.org/Flask-Admin/',
+        docs='http://flask-admin.readthedocs.org/en/latest/index.html',
         github='wilsaj/flask-admin'
     ),
     Extension('Flask-ZODB', 'Dag Odenhall',
