@@ -23,14 +23,16 @@ for you to the application.
 If you want to do that, you first have to import the
 :func:`contextlib.closing` function from the contextlib package.  If you
 want to use Python 2.5 it's also necessary to enable the `with` statement
-first (`__future__` imports must be the very first import)::
+first (`__future__` imports must be the very first import). Accordingly,
+add the following lines to your existing imports in `flaskr.py`::
 
     from __future__ import with_statement
     from contextlib import closing
 
 Next we can create a function called `init_db` that initializes the
 database.  For this we can use the `connect_db` function we defined
-earlier.  Just add that function below the `connect_db` function::
+earlier.  Just add that function below the `connect_db` function in
+`flask.py`::
 
     def init_db():
         with closing(connect_db()) as db:
