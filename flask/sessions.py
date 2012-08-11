@@ -10,8 +10,12 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import cPickle as pickle
 from datetime import datetime
 from werkzeug.contrib.securecookie import SecureCookie
+from werkzeug.http import http_date, parse_date
+from .helpers import json, _assert_have_json
+from . import Markup
 
 
 class SessionMixin(object):
@@ -41,10 +45,74 @@ class SessionMixin(object):
     modified = True
 
 
+class TaggedJSONSerializer(object):
+    """A customized JSON serializer that supports a few extra types that
+    we take for granted when serializing (tuples, markup objects, datetime).
+    """
+
+    def dumps(self, value):
+        if __debug__:
+            _assert_have_json()
+        def _tag(value):
+            if isinstance(value, tuple):
+                return {'##t': [_tag(x) for x in value]}
+            elif callable(getattr(value, '__html__', None)):
+                return {'##m': unicode(value.__html__())}
+            elif isinstance(value, list):
+                return [_tag(x) for x in value]
+            elif isinstance(value, datetime):
+                return {'##d': http_date(value)}
+            elif isinstance(value, dict):
+                return dict((k, _tag(v)) for k, v in value.iteritems())
+            return value
+        return json.dumps(_tag(value), separators=(',', ':'))
+
+    def loads(self, value):
+        if __debug__:
+            _assert_have_json()
+        def object_hook(obj):
+            if len(obj) != 1:
+                return obj
+            the_key, the_value = obj.iteritems().next()
+            if the_key == '##t':
+                return tuple(the_value)
+            elif the_key == '##m':
+                return Markup(the_value)
+            elif the_key == '##d':
+                return parse_date(the_value)
+            return obj
+        return json.loads(value, object_hook=object_hook)
+
+
+session_json_serializer = TaggedJSONSerializer()
+
+
 class SecureCookieSession(SecureCookie, SessionMixin):
     """Expands the session with support for switching between permanent
-    and non-permanent sessions.
+    and non-permanent sessions and changes the default pickle based
+    serialization format to a tagged json one.
     """
+    serialization_method = session_json_serializer
+
+
+class _UpgradeSerializer(object):
+    def dumps(self, value):
+        return session_json_serializer.dumps(value)
+    def loads(self, value):
+        try:
+            return session_json_serializer.loads(value)
+        except Exception:
+            return pickle.loads(value)
+
+
+class UpgradeSecureCookieSession(SecureCookieSession):
+    """This cookie sesion implementation tries json first but will also
+    support pickle based session.  This exists mainly to upgrade existing
+    pickle based users transparently to json.
+
+    .. versionadded:: 0.10
+    """
+    serialization_method = _UpgradeSerializer()
 
 
 class NullSession(SecureCookieSession):
@@ -203,3 +271,13 @@ class SecureCookieSessionInterface(SessionInterface):
             session.save_cookie(response, app.session_cookie_name, path=path,
                                 expires=expires, httponly=httponly,
                                 secure=secure, domain=domain)
+
+
+class UpgradeSecureCookieSessionInterface(SecureCookieSessionInterface):
+    """This session interface works exactly like the regular one but uses
+    the :class:`UpgradeSecureCookieSession` classes to upgrade from pickle
+    sessions to JSON sessions.
+
+    .. versionadded:: 0.10
+    """
+    session_class = UpgradeSecureCookieSession

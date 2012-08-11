@@ -215,6 +215,13 @@ implementation that Flask is using.
 .. autoclass:: SecureCookieSessionInterface
    :members:
 
+.. autoclass:: UpgradeSecureCookieSessionInterface
+
+.. autoclass:: SecureCookieSession
+   :members:
+
+.. autoclass:: UpgradeSecureCookieSession
+
 .. autoclass:: NullSession
    :members:
 
