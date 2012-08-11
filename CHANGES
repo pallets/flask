@@ -11,7 +11,7 @@ Release date to be decided.
 Version 0.9
 -----------
 
-Released on July 1st 2012, codename Camapri.
+Released on July 1st 2012, codename Campari.
 
 - The :func:`flask.Request.on_json_loading_failed` now returns a JSON formatted
   response by default.
@@ -82,7 +82,7 @@ Released on July 1st 2012, codename Camapri.
 Version 0.8.1
 -------------
 
-Bugfix release, released on July 1th 2012
+Bugfix release, released on July 1st 2012
 
 - Fixed an issue with the undocumented `flask.session` module to not
   work properly on Python 2.5.  It should not be used but did cause
