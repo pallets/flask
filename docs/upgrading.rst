@@ -29,46 +29,9 @@ format changed from pickle to a specialized JSON format.  This change has
 been done in order to avoid the damage an attacker can do if the secret
 key is leaked.  When you upgrade you will notice two major changes: all
 sessions that were issued before the upgrade are invalidated and you can
-only store a limited amount of types in the session.  There are two ways
-to avoid these problems on upgrading:
+only store a limited amount of types in the session.
 
-Automatically Upgrade Sessions
-``````````````````````````````
-
-The first method is to allow pickle based sessions for a limited amount of
-time.  This can be done by using the
-:class:`~flask.sessions.UpgradeSecureCookieSession` session
-implementation::
-
-    from flask import Flask
-    from flask.sessions import UpgradeSecureCookieSessionInterface
-
-    app = Flask(__name__)
-    app.session_interface = UpgradeSecureCookieSessionInterface
-
-For as long as this class is being used both pickle and json sessions are
-supported but changes are written in JSON format only.
-
-Revert to Pickle Sessions
-`````````````````````````
-
-You can also revert to pickle based sessions if you want::
-
-    import pickle
-    from flask import Flask
-    from flask.sessions import SecureCookieSession, \
-         SecureCookieSessionInterface
-
-    class PickleSessionInterface(SecureCookieSessionInterface):
-        class session_class(SecureCookieSession):
-            serialization_method = pickle
-
-    app = Flask(__name__)
-    app.session_interface = PickleSessionInterface
-
-If you want to continue to use pickle based data we strongly recommend
-switching to a server side session store however.
-
+TODO: add external module for session upgrading
 
 Version 0.9
 -----------
