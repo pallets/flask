@@ -23,21 +23,9 @@ from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 from functools import update_wrapper
 
-# try to load the best simplejson implementation available.  If JSON
-# is not installed, we add a failing class.
-json_available = True
-json = None
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json
-    except ImportError:
-        try:
-            # Google Appengine offers simplejson via django
-            from django.utils import simplejson as json
-        except ImportError:
-            json_available = False
+# Use the same json implementation as itsdangerous on which we
+# depend anyways.
+from itsdangerous import simplejson as json
 
 
 from werkzeug.datastructures import Headers
@@ -55,19 +43,10 @@ from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
 
 
-def _assert_have_json():
-    """Helper function that fails if JSON is unavailable."""
-    if not json_available:
-        raise RuntimeError('simplejson not installed')
-
-
 # figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
-if not json_available or '\\/' not in json.dumps('/'):
-
+if '\\/' not in json.dumps('/'):
     def _tojson_filter(*args, **kwargs):
-        if __debug__:
-            _assert_have_json()
         return json.dumps(*args, **kwargs).replace('/', '\\/')
 else:
     _tojson_filter = json.dumps
@@ -192,8 +171,6 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.2
     """
-    if __debug__:
-        _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 

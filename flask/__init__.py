@@ -20,7 +20,7 @@ from jinja2 import Markup, escape
 
 from .app import Flask, Request, Response
 from .config import Config
-from .helpers import url_for, jsonify, json_available, flash, \
+from .helpers import url_for, jsonify, flash, \
     send_file, send_from_directory, get_flashed_messages, \
     get_template_attribute, make_response, safe_join, \
     stream_with_context
@@ -37,8 +37,8 @@ from .signals import signals_available, template_rendered, request_started, \
      request_finished, got_request_exception, request_tearing_down
 
 # only import json if it's available
-if json_available:
-    from .helpers import json
+from .helpers import json
 
 # backwards compat, goes away in 1.0
 from .sessions import SecureCookieSession as Session
+json_available = True
