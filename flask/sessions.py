@@ -10,12 +10,13 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import cPickle as pickle
 from datetime import datetime
-from werkzeug.contrib.securecookie import SecureCookie
 from werkzeug.http import http_date, parse_date
-from .helpers import json, _assert_have_json
+from werkzeug.datastructures import CallbackDict
+from .helpers import json
 from . import Markup
+
+from itsdangerous import URLSafeTimedSerializer, BadSignature
 
 
 class SessionMixin(object):
@@ -51,8 +52,6 @@ class TaggedJSONSerializer(object):
     """
 
     def dumps(self, value):
-        if __debug__:
-            _assert_have_json()
         def _tag(value):
             if isinstance(value, tuple):
                 return {'##t': [_tag(x) for x in value]}
@@ -68,8 +67,6 @@ class TaggedJSONSerializer(object):
         return json.dumps(_tag(value), separators=(',', ':'))
 
     def loads(self, value):
-        if __debug__:
-            _assert_have_json()
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
@@ -87,32 +84,14 @@ class TaggedJSONSerializer(object):
 session_json_serializer = TaggedJSONSerializer()
 
 
-class SecureCookieSession(SecureCookie, SessionMixin):
-    """Expands the session with support for switching between permanent
-    and non-permanent sessions and changes the default pickle based
-    serialization format to a tagged json one.
-    """
-    serialization_method = session_json_serializer
+class SecureCookieSession(CallbackDict, SessionMixin):
+    """Baseclass for sessions based on signed cookies."""
 
-
-class _UpgradeSerializer(object):
-    def dumps(self, value):
-        return session_json_serializer.dumps(value)
-    def loads(self, value):
-        try:
-            return session_json_serializer.loads(value)
-        except Exception:
-            return pickle.loads(value)
-
-
-class UpgradeSecureCookieSession(SecureCookieSession):
-    """This cookie sesion implementation tries json first but will also
-    support pickle based session.  This exists mainly to upgrade existing
-    pickle based users transparently to json.
-
-    .. versionadded:: 0.10
-    """
-    serialization_method = _UpgradeSerializer()
+    def __init__(self, initial=None):
+        def on_update(self):
+            self.modified = True
+        CallbackDict.__init__(self, initial, on_update)
+        self.modified = False
 
 
 class NullSession(SecureCookieSession):
@@ -246,38 +225,43 @@ class SessionInterface(object):
 
 
 class SecureCookieSessionInterface(SessionInterface):
-    """The cookie session interface that uses the Werkzeug securecookie
-    as client side session backend.
-    """
+    salt = 'cookie-session'
     session_class = SecureCookieSession
+    serializer = session_json_serializer
+
+    def get_serializer(self, app):
+        if not app.secret_key:
+            return None
+        return URLSafeTimedSerializer(app.secret_key,
+                                      salt=self.salt,
+                                      serializer=self.serializer)
 
     def open_session(self, app, request):
-        key = app.secret_key
-        if key is not None:
-            return self.session_class.load_cookie(request,
-                                                  app.session_cookie_name,
-                                                  secret_key=key)
+        s = self.get_serializer(app)
+        if s is None:
+            return None
+        val = request.cookies.get(app.session_cookie_name)
+        if not val:
+            return self.session_class()
+        max_age = app.permanent_session_lifetime.total_seconds()
+        try:
+            data = s.loads(val, max_age=max_age)
+            return self.session_class(data)
+        except BadSignature:
+            return self.session_class()
 
     def save_session(self, app, session, response):
-        expires = self.get_expiration_time(app, session)
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
-        if session.modified and not session:
-            response.delete_cookie(app.session_cookie_name, path=path,
-                                   domain=domain)
-        else:
-            session.save_cookie(response, app.session_cookie_name, path=path,
-                                expires=expires, httponly=httponly,
-                                secure=secure, domain=domain)
-
-
-class UpgradeSecureCookieSessionInterface(SecureCookieSessionInterface):
-    """This session interface works exactly like the regular one but uses
-    the :class:`UpgradeSecureCookieSession` classes to upgrade from pickle
-    sessions to JSON sessions.
-
-    .. versionadded:: 0.10
-    """
-    session_class = UpgradeSecureCookieSession
+        if not session:
+            if session.modified:
+                response.delete_cookie(app.session_cookie_name,
+                                       domain=domain, path=path)
+            return
+        expires = self.get_expiration_time(app, session)
+        val = self.get_serializer(app).dumps(dict(session))
+        response.set_cookie(app.session_cookie_name, val,
+                            expires=expires, httponly=httponly,
+                            domain=domain, path=path, secure=secure)

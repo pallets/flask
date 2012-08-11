@@ -91,7 +91,8 @@ setup(
     platforms='any',
     install_requires=[
         'Werkzeug>=0.7',
-        'Jinja2>=2.4'
+        'Jinja2>=2.4',
+        'itsdangerous>=0.16'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
