@@ -26,7 +26,7 @@ response objects.  Dig deeper on the APIs you use, and look for the
 customizations which are available out of the box in a Flask release.  Look for
 ways in which your project can be refactored into a collection of utilities and
 Flask extensions.  Explore the many `extensions
-<http://flask.pocoo.org/extensions/>` in the community, and look for patterns to
+<http://flask.pocoo.org/extensions/>`_ in the community, and look for patterns to
 build your own extensions if you do not find the tools you need.
 
 Subclass.
