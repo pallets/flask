@@ -36,7 +36,7 @@ based view you would do this::
             users = User.query.all()
             return render_template('users.html', objects=users)
 
-    app.add_url_rule('/users/', ShowUsers.as_view('show_users'))
+    app.add_url_rule('/users/', view_func=ShowUsers.as_view('show_users'))
 
 As you can see what you have to do is to create a subclass of
 :class:`flask.views.View` and implement
