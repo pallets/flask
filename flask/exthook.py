@@ -62,19 +62,19 @@ class ExtensionImporter(object):
             except ImportError:
                 exc_type, exc_value, tb = sys.exc_info()
                 # since we only establish the entry in sys.modules at the
-                # very this seems to be redundant, but if recursive imports
-                # happen we will call into the move import a second time.
-                # On the second invocation we still don't have an entry for
-                # fullname in sys.modules, but we will end up with the same
-                # fake module name and that import will succeed since this
-                # one already has a temporary entry in the modules dict.
+                # very least this seems to be redundant, but if recursive
+                # imports happen we will call into the move import a second
+                # time. On the second invocation we still don't have an entry
+                # for fullname in sys.modules, but we will end up with the
+                # same fake module name and that import will succeed since
+                # this one already has a temporary entry in the modules dict.
                 # Since this one "succeeded" temporarily that second
                 # invocation now will have created a fullname entry in
                 # sys.modules which we have to kill.
                 sys.modules.pop(fullname, None)
 
                 # If it's an important traceback we reraise it, otherwise
-                # we swallow it and try the next choice.  The skipped frame
+                # we swallow it and try the next choice. The skipped frame
                 # is the one from __import__ above which we don't care about
                 if self.is_important_traceback(realname, tb):
                     raise exc_type, exc_value, tb.tb_next
@@ -87,9 +87,9 @@ class ExtensionImporter(object):
 
     def is_important_traceback(self, important_module, tb):
         """Walks a traceback's frames and checks if any of the frames
-        originated in the given important module.  If that is the case then we
+        originated in the given important module. If that is the case then we
         were able to import the module itself but apparently something went
-        wrong when the module was imported.  (Eg: import of an import failed).
+        wrong when the module was imported (eg: import of an import failed).
         """
         while tb is not None:
             if self.is_important_frame(important_module, tb):
@@ -105,13 +105,13 @@ class ExtensionImporter(object):
 
         module_name = g['__name__']
 
-        # Python 2.7 Behavior.  Modules are cleaned up late so the
-        # name shows up properly here.  Success!
+        # Python 2.7 Behavior. Modules are cleaned up late so the
+        # name shows up properly here. Success!
         if module_name == important_module:
             return True
 
-        # Some python verisons will will clean up modules so early that the
-        # module name at that point is no longer set.  Try guessing from
+        # Some python versions will clean up modules so early that the
+        # module name at that point is no longer set. Try guessing from
         # the filename then.
         filename = os.path.abspath(tb.tb_frame.f_code.co_filename)
         test_string = os.path.sep + important_module.replace('.', os.path.sep)
