@@ -942,7 +942,7 @@ class Flask(_PackageBoundObject):
 
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
-        self.url_map.add(rule)
+        self.url_map.add(rule, host_matching=True)
         if view_func is not None:
             self.view_functions[endpoint] = view_func
 
