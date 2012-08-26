@@ -344,7 +344,7 @@ extensions = [
               handles the common tasks of logging in, logging out, and
               remembering your users' sessions over extended periods of time.
         ''',
-        bitbucket='leafstorm/flask-login',
+        github='maxcountryman/flask-login',
         docs='http://packages.python.org/Flask-Login/',
         approved=True
     ),
