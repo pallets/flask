@@ -145,6 +145,25 @@ class ViewTestCase(FlaskTestCase):
         self.assert_equal(rv.data, '')
         self.assert_equal(rv.headers['X-Method'], 'HEAD')
 
+    def test_method_override(self):
+        app = flask.Flask(__name__)
+
+        class Override(flask.views.MethodView):
+            def put(self):
+                return 'PUT'
+
+            def post(self):
+                return 'POST'
+
+        app.add_url_rule('/', view_func=Override.as_view('override'))
+        c = app.test_client()
+        rv = c.post('/')
+        self.assert_equal(rv.data, 'POST')
+        rv = c.put('/')
+        self.assert_equal(rv.data, 'PUT')
+        rv = c.post('/', headers=[('X-HTTP-Method-Override', 'PUT')])
+        self.assert_equal(rv.data, 'PUT')
+
 
 def suite():
     suite = unittest.TestSuite()
