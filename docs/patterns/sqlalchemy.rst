@@ -42,7 +42,7 @@ Here the example `database.py` module for your application::
     engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
-                                             bind=engine)) 
+                                             bind=engine))
     Base = declarative_base()
     Base.query = db_session.query_property()
 
@@ -130,7 +130,7 @@ Here is an example `database.py` module for your application::
     metadata = MetaData()
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
-                                             bind=engine)) 
+                                             bind=engine))
     def init_db():
         metadata.create_all(bind=engine)
 
@@ -189,7 +189,7 @@ To insert data you can use the `insert` method.  We have to get a
 connection first so that we can use a transaction:
 
 >>> con = engine.connect()
->>> con.execute(users.insert(name='admin', email='admin@localhost'))
+>>> con.execute(users.insert(), name='admin', email='admin@localhost')
 
 SQLAlchemy will automatically commit for us.
 
