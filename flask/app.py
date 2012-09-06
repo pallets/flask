@@ -1522,7 +1522,7 @@ class Flask(_PackageBoundObject):
         request handling is stopped.
 
         This also triggers the :meth:`url_value_processor` functions before
-        the actually :meth:`before_request` functions are called.
+        the actual :meth:`before_request` functions are called.
         """
         bp = _request_ctx_stack.top.request.blueprint
 
