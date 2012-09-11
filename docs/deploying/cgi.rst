@@ -28,15 +28,15 @@ First you need to create the CGI application file.  Let's call it
 
     CGIHandler().run(app)
 
-Using CGI and Virtualenv
+Using CGI and virtualenv
 ------------------------
 
 If your app uses virtualenv to manage its enviroment you'll need to make
 a few changes to the above script to load the virtualenv enviroment::
 
     #!/my/virtualenv/folder/bin/python
-    import sys
-    sys.path.append("/my/virtualenv/folder")
+    import site
+    site.addsitedir("/my/virtualenv/folder/lib/pythonX.Y/site-packages")
 
     from wsgiref.handlers import CGIHandler
     from yourapplication import app
