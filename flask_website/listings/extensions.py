@@ -141,25 +141,25 @@ extensions = [
             around it would be a good idea to decide on a common interface.
         '''
     ),
-    Extension('Flask-Mail', 'Ron DuPlain (created by Dan Jacob)',
+    Extension('Flask-Mail', 'Matt Wright (created by Dan Jacob)',
         description='''
             <p>Makes sending mails from Flask applications very easy and
             has also support for unittesting.
         ''',
-        github='rduplain/flask-mail',
+        github='mattupstate/flask-mail',
         docs='http://packages.python.org/Flask-Mail/',
         approved=True
     ),
-    Extension('Flask-WTF', 'Ron DuPlain (created by Dan Jacob)',
+    Extension('Flask-WTF', 'Anthony Ford (created by Dan Jacob)',
         description='''
             <p>Flask-WTF offers simple integration with WTForms. This
             integration includes optional CSRF handling for greater security.
         ''',
-        github='rduplain/flask-wtf',
+        github='ajford/flask-wtf',
         docs='http://packages.python.org/Flask-WTF/',
         approved=True
     ),
-    Extension('Flask-Testing', u'Christoph Heer & Ron DuPlain (created by Dan Jacob)',
+    Extension('Flask-Testing', u'Christoph Heer (created by Dan Jacob)',
         description='''
             <p>The Flask-Testing extension provides unit testing utilities for Flask.
         ''',
@@ -167,12 +167,12 @@ extensions = [
         docs='http://packages.python.org/Flask-Testing/',
         approved=True
     ),
-    Extension('Flask-Script', 'Ron DuPlain (created by Dan Jacob)',
+    Extension('Flask-Script', 'Sean Lynch (created by Dan Jacob)',
         description='''
             <p>The Flask-Script extension provides support for writing external
             scripts in Flask. It uses argparse to parse command line arguments.
         ''',
-        github='rduplain/flask-script',
+        github='techniq/flask-script',
         docs='http://packages.python.org/Flask-Script/',
         approved=True,
         notes='''
@@ -344,7 +344,7 @@ extensions = [
               handles the common tasks of logging in, logging out, and
               remembering your users' sessions over extended periods of time.
         ''',
-        bitbucket='leafstorm/flask-login',
+        github='maxcountryman/flask-login',
         docs='http://packages.python.org/Flask-Login/',
         approved=True
     ),
@@ -382,13 +382,13 @@ extensions = [
         docs='http://packages.python.org/Flask-GAE-Mini-Profiler',
         github='passy/flask-gae-mini-profiler'
     ),
-    Extension('Flask-Admin', 'Andy Wilson',
+    Extension('Flask-Admin', 'Serge Koval',
         description='''
             <p>
               Flask extension module that provides an admin interface
         ''',
-        docs='http://packages.python.org/Flask-Admin/',
-        github='wilsaj/flask-admin'
+        docs='http://flask-admin.readthedocs.org/en/latest/index.html',
+        github='mrjoes/flask-admin'
     ),
     Extension('Flask-ZODB', 'Dag Odenhall',
         description='''
@@ -491,6 +491,7 @@ extensions = [
         github='kennethreitz/flask-heroku',
         approved=False
     ),
+
     Extension('Flask-Mako', 'Beranger Enselme, Frank Murphy',
         description='''
             <p>Allows for <a href="http://www.makotemplates.org/">Mako templates</a>
@@ -499,6 +500,14 @@ extensions = [
         github='benselme/flask-mako',
         docs='http://packages.python.org/Flask-Mako/',
         approved=False
+    ),
+    Extension('Flask-WeasyPrint', 'Simon Sapin',
+        description='''
+            <p>Make PDF with <a href="http://weasyprint.org/">WeasyPrint</a>
+               in your Flask app.
+        ''',
+        docs='http://packages.python.org/Flask-WeasyPrint/',
+        github='SimonSapin/Flask-WeasyPrint',
     ),
 ]
 
@@ -596,8 +605,7 @@ unlisted = [
         github='willowtreeapps/flask-solr',
         notes='''
             Fully exposes pysolr API in Flask extension pattern, and code is
-            production-ready.  It lacks documentation and tests because the
-            author has yet to find the time.
+            production-ready.  It lacks documentation and tests.
         '''
     ),
     Extension('flask-csrf', 'Steve Losh',
