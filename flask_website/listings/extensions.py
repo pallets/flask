@@ -491,6 +491,16 @@ extensions = [
         github='kennethreitz/flask-heroku',
         approved=False
     ),
+
+    Extension('Flask-Mako', 'Beranger Enselme, Frank Murphy',
+        description='''
+            <p>Allows for <a href="http://www.makotemplates.org/">Mako templates</a>
+            to be used instead of Jinja2
+        ''',
+        github='benselme/flask-mako',
+        docs='http://packages.python.org/Flask-Mako/',
+        approved=False
+    ),
     Extension('Flask-WeasyPrint', 'Simon Sapin',
         description='''
             <p>Make PDF with <a href="http://weasyprint.org/">WeasyPrint</a>
