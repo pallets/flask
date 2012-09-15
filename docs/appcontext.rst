@@ -44,8 +44,7 @@ you can have more than one application in the same Python process.
 
 So how does the code find the “right” application?  In the past we
 recommended passing applications around explicitly, but that caused issues
-with libraries that were not designed with that in mind for libraries for
-which it was too inconvenient to make this work.
+with libraries that were not designed with that in mind.
 
 A common workaround for that problem was to use the
 :data:`~flask.current_app` proxy later on, which was bound to the current
