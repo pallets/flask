@@ -270,10 +270,6 @@ happen.  With Flask 0.4 this is possible by using the
 If you were to use just the :meth:`~flask.Flask.test_client` without
 the `with` block, the `assert` would fail with an error because `request`
 is no longer available (because you are trying to use it outside of the actual request).
-However, keep in mind that any :meth:`~flask.Flask.after_request` functions
-are already called at this point so your database connection and
-everything involved is probably already closed down.
-
 
 Accessing and Modifying Sessions
 --------------------------------
