@@ -61,23 +61,23 @@ information about how to do that.  Once you have it installed, run the same
 commands as above, but without the `sudo` prefix.
 
 Once you have virtualenv installed, just fire up a shell and create
-your own environment.  I usually create a project folder and a `venv`
+your own environment.  I usually create a project folder and a `env`
 folder within::
 
     $ mkdir myproject
     $ cd myproject
-    $ virtualenv venv
-    New python executable in venv/bin/python
+    $ virtualenv env
+    New python executable in env/bin/python
     Installing distribute............done.
 
 Now, whenever you want to work on a project, you only have to activate the
 corresponding environment.  On OS X and Linux, do the following::
 
-    $ . venv/bin/activate
+    $ . env/bin/activate
 
 If you are a Windows user, the following command is for you::
 
-    $ venv\scripts\activate
+    $ env\scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
@@ -114,10 +114,10 @@ Get the git checkout in a new virtualenv and run in development mode::
     $ git clone http://github.com/mitsuhiko/flask.git
     Initialized empty Git repository in ~/dev/flask/.git/
     $ cd flask
-    $ virtualenv venv --distribute
-    New python executable in venv/bin/python
+    $ virtualenv env --distribute
+    New python executable in env/bin/python
     Installing distribute............done.
-    $ . venv/bin/activate
+    $ . env/bin/activate
     $ python setup.py develop
     ...
     Finished processing dependencies for Flask
@@ -130,9 +130,9 @@ To just get the development version without git, do this instead::
 
     $ mkdir flask
     $ cd flask
-    $ virtualenv venv --distribute
-    $ . venv/bin/activate
-    New python executable in venv/bin/python
+    $ virtualenv env --distribute
+    $ . env/bin/activate
+    New python executable in env/bin/python
     Installing distribute............done.
     $ pip install Flask==dev
     ...
