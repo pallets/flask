@@ -97,6 +97,8 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv, '"<\\/script>"')
             rv = render('{{ "<\0/script>"|tojson|safe }}')
             self.assert_equal(rv, '"<\\u0000\\/script>"')
+            rv = render('{{ "<!--<script>"|tojson|safe }}')
+            self.assert_equal(rv, '"<\\u0021--<script>"')
 
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):

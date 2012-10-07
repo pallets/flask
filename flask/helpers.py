@@ -45,11 +45,13 @@ from .globals import session, _request_ctx_stack, _app_ctx_stack, \
 
 # figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
-if '\\/' not in json.dumps('/'):
-    def _tojson_filter(*args, **kwargs):
-        return json.dumps(*args, **kwargs).replace('/', '\\/')
-else:
-    _tojson_filter = json.dumps
+_slash_escape = '\\/' not in json.dumps('/')
+
+def _tojson_filter(*args, **kwargs):
+    rv = json.dumps(*args, **kwargs)
+    if _slash_escape:
+        rv = rv.replace('/', '\\/')
+    return rv.replace('<!', '<\\u0021')
 
 
 # sentinel
