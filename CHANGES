@@ -13,6 +13,7 @@ Release date to be decided.
   :ref:`upgrading-to-010` for more information.
 - Added ``template_test`` methods in addition to the already existing
   ``template_filter`` method family.
+- Set the content-length header for x-sendfile.
 
 Version 0.9
 -----------
