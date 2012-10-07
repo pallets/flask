@@ -17,6 +17,7 @@ import flask
 import threading
 import unittest
 from werkzeug.test import run_wsgi_app, create_environ
+from werkzeug.exceptions import NotFound
 from flask.testsuite import FlaskTestCase
 
 
@@ -78,6 +79,11 @@ class MemoryTestCase(FlaskTestCase):
             with self.assert_no_leak():
                 for x in xrange(10):
                     fire()
+
+    def test_safe_join_toplevel_pardir(self):
+        from flask.helpers import safe_join
+        with self.assert_raises(NotFound):
+            safe_join('/foo', '..')
 
 
 def suite():

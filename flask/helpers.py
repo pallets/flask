@@ -604,7 +604,9 @@ def safe_join(directory, filename):
     for sep in _os_alt_seps:
         if sep in filename:
             raise NotFound()
-    if os.path.isabs(filename) or filename.startswith('../'):
+    if os.path.isabs(filename) or \
+       filename == '..' or \
+       filename.startswith('../'):
         raise NotFound()
     return os.path.join(directory, filename)
 
