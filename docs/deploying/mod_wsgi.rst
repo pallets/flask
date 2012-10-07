@@ -91,6 +91,20 @@ execute the application under a different user for security reasons:
         </Directory>
     </VirtualHost>
 
+Note: WSGIDaemonProcess isn't implemented in Windows and Apache will 
+refuse to run with the above configuration. On a Windows system, eliminate those lines:
+
+.. sourcecode:: apache
+
+	<VirtualHost *>
+		ServerName example.com
+		WSGIScriptAlias / C:\yourdir\yourapp.wsgi
+		<Directory C:\yourdir>
+			Order deny,allow
+			Allow from all
+		</Directory>
+	</VirtualHost>
+
 For more information consult the `mod_wsgi wiki`_.
 
 .. _mod_wsgi: http://code.google.com/p/modwsgi/
