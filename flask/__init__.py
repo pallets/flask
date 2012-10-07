@@ -34,7 +34,8 @@ from .templating import render_template, render_template_string
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
-     request_finished, got_request_exception, request_tearing_down
+     request_finished, got_request_exception, request_tearing_down, \
+     appcontext_tearing_down
 
 # only import json if it's available
 from .helpers import json
