@@ -23,10 +23,6 @@ from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 from functools import update_wrapper
 
-# Use the same json implementation as itsdangerous on which we
-# depend anyways.
-from itsdangerous import simplejson as json
-
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
@@ -41,17 +37,6 @@ from jinja2 import FileSystemLoader
 
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-
-
-# figure out if simplejson escapes slashes.  This behavior was changed
-# from one version to another without reason.
-_slash_escape = '\\/' not in json.dumps('/')
-
-def _tojson_filter(*args, **kwargs):
-    rv = json.dumps(*args, **kwargs)
-    if _slash_escape:
-        rv = rv.replace('/', '\\/')
-    return rv.replace('<!', '<\\u0021')
 
 
 # sentinel
@@ -144,37 +129,6 @@ def stream_with_context(generator_or_function):
     wrapped_g = generator()
     wrapped_g.next()
     return wrapped_g
-
-
-def jsonify(*args, **kwargs):
-    """Creates a :class:`~flask.Response` with the JSON representation of
-    the given arguments with an `application/json` mimetype.  The arguments
-    to this function are the same as to the :class:`dict` constructor.
-
-    Example usage::
-
-        @app.route('/_get_current_user')
-        def get_current_user():
-            return jsonify(username=g.user.username,
-                           email=g.user.email,
-                           id=g.user.id)
-
-    This will send a JSON response like this to the browser::
-
-        {
-            "username": "admin",
-            "email": "admin@localhost",
-            "id": 42
-        }
-
-    This requires Python 2.6 or an installed version of simplejson.  For
-    security reasons only objects are supported toplevel.  For more
-    information about this, have a look at :ref:`json-security`.
-
-    .. versionadded:: 0.2
-    """
-    return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
 
 
 def make_response(*args):

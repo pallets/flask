@@ -17,6 +17,9 @@ Release date to be decided.
 - ``tojson`` filter now does not escape script blocks in HTML5 parsers.
 - Flask will now raise an error if you attempt to register a new function
   on an already used endpoint.
+- Added wrapper module around simplejson and added default serialization
+  of datetime objects.  This allows much easier customization of how
+  JSON is handled by Flask or any Flask extension.
 
 Version 0.9
 -----------

@@ -14,7 +14,7 @@ from werkzeug.utils import cached_property
 
 from .exceptions import JSONBadRequest
 from .debughelpers import attach_enctype_error_multidict
-from .helpers import json
+from . import json
 from .globals import _request_ctx_stack
 
 

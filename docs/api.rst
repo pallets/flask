@@ -312,42 +312,70 @@ Message Flashing
 
 .. autofunction:: get_flashed_messages
 
-Returning JSON
---------------
+JSON Support
+------------
+
+.. module:: flask.json
+
+Flask uses ``simplejson`` for the JSON implementation.  Since simplejson
+is provided both by the standard library as well as extension Flask will
+try simplejson first and then fall back to the stdlib json module.  On top
+of that it will delegate access to the current application's JSOn encoders
+and decoders for easier customization.
+
+So for starters instead of doing::
+
+    try:
+        import simplejson as json
+    except ImportError:
+        import json
+
+You can instead just do this::
+
+    from flask import json
+
+For usage examples, read the :mod:`json` documentation in the standard
+lirbary.  The following extensions are by default applied to the stdlib's
+JSON module:
+
+1.  ``datetime`` objects are serialized as :rfc:`822` strings.
+2.  Any object with an ``__html__`` method (like :class:`~flask.Markup`)
+    will ahve that method called and then the return value is serialized
+    as string.
+
+The :func:`~htmlsafe_dumps` function of this json module is also available
+as filter called ``|tojson`` in Jinja2.  Note that inside `script`
+tags no escaping must take place, so make sure to disable escaping
+with ``|safe`` if you intend to use it inside `script` tags:
+
+.. sourcecode:: html+jinja
+
+    <script type=text/javascript>
+        doSomethingWith({{ user.username|tojson|safe }});
+    </script>
+
+Note that the ``|tojson`` filter escapes forward slashes properly.
 
 .. autofunction:: jsonify
 
-.. data:: json
+.. autofunction:: dumps
 
-    If JSON support is picked up, this will be the module that Flask is
-    using to parse and serialize JSON.  So instead of doing this yourself::
+.. autofunction:: dump
 
-        try:
-            import simplejson as json
-        except ImportError:
-            import json
+.. autofunction:: loads
 
-    You can instead just do this::
+.. autofunction:: load
 
-        from flask import json
+.. autoclass:: JSONEncoder
+   :members:
 
-    For usage examples, read the :mod:`json` documentation.
-
-    The :func:`~json.dumps` function of this json module is also available
-    as filter called ``|tojson`` in Jinja2.  Note that inside `script`
-    tags no escaping must take place, so make sure to disable escaping
-    with ``|safe`` if you intend to use it inside `script` tags:
-
-    .. sourcecode:: html+jinja
-
-        <script type=text/javascript>
-            doSomethingWith({{ user.username|tojson|safe }});
-        </script>
-
-    Note that the ``|tojson`` filter escapes forward slashes properly.
+.. autoclass:: JSONDecoder
+   :members:
 
 Template Rendering
 ------------------
+
+.. currentmodule:: flask
 
 .. autofunction:: render_template
 

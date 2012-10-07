@@ -24,8 +24,8 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    locked_cached_property, _tojson_filter, _endpoint_from_view_func, \
-    find_package
+    locked_cached_property, _endpoint_from_view_func, find_package
+from . import json
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext, AppContext, _RequestGlobals
@@ -237,6 +237,16 @@ class Flask(_PackageBoundObject):
         '%(message)s\n' +
         '-' * 80
     )
+
+    #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
+    #:
+    #: .. versionadded:: 0.10
+    json_encoder = json.JSONEncoder
+
+    #: The JSON decoder class to use.  Defaults to :class:`~flask.json.JSONDecoder`.
+    #:
+    #: .. versionadded:: 0.10
+    json_decoder = json.JSONDecoder
 
     #: Options that are passed directly to the Jinja2 environment.
     jinja_options = ImmutableDict(
@@ -637,7 +647,7 @@ class Flask(_PackageBoundObject):
             url_for=url_for,
             get_flashed_messages=get_flashed_messages
         )
-        rv.filters['tojson'] = _tojson_filter
+        rv.filters['tojson'] = json.htmlsafe_dumps
         return rv
 
     def create_global_jinja_loader(self):

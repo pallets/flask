@@ -13,8 +13,7 @@ import hashlib
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
-from .helpers import json
-from . import Markup
+from . import Markup, json
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
