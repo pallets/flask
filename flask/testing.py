@@ -15,6 +15,7 @@ from __future__ import with_statement
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
+from urlparse import urlparse
 
 
 def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
@@ -22,9 +23,12 @@ def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
     http_host = app.config.get('SERVER_NAME')
     app_root = app.config.get('APPLICATION_ROOT')
     if base_url is None:
-        base_url = 'http://%s/' % (http_host or 'localhost')
+        url = urlparse(path)
+        base_url = 'http://%s/' % (url.netloc or http_host or 'localhost')
         if app_root:
             base_url += app_root.lstrip('/')
+        if url.netloc:
+            path = url.path
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
 

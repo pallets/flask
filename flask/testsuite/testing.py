@@ -198,7 +198,46 @@ class TestToolsTestCase(FlaskTestCase):
         self.assert_equal(called, [None, None])
 
 
+class SubdomainTestCase(FlaskTestCase):
+
+    def setUp(self):
+        self.app = flask.Flask(__name__)
+        self.app.config['SERVER_NAME'] = 'example.com'
+        self.client = self.app.test_client()
+
+        self._ctx = self.app.test_request_context()
+        self._ctx.push()
+
+    def tearDown(self):
+        if self._ctx is not None:
+            self._ctx.pop()
+
+    def test_subdomain(self):
+        @self.app.route('/', subdomain='<company_id>')
+        def view(company_id):
+            return company_id
+
+        url = flask.url_for('view', company_id='xxx')
+        response = self.client.get(url)
+
+        self.assertEquals(200, response.status_code)
+        self.assertEquals('xxx', response.data)
+
+
+    def test_nosubdomain(self):
+        @self.app.route('/<company_id>')
+        def view(company_id):
+            return company_id
+
+        url = flask.url_for('view', company_id='xxx')
+        response = self.client.get(url)
+
+        self.assertEquals(200, response.status_code)
+        self.assertEquals('xxx', response.data)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestToolsTestCase))
+    suite.addTest(unittest.makeSuite(SubdomainTestCase))
     return suite
