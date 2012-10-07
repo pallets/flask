@@ -110,7 +110,7 @@ class ExtensionImporter(object):
         if module_name == important_module:
             return True
 
-        # Some python verisons will will clean up modules so early that the
+        # Some python versions will will clean up modules so early that the
         # module name at that point is no longer set.  Try guessing from
         # the filename then.
         filename = os.path.abspath(tb.tb_frame.f_code.co_filename)

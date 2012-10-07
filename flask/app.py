@@ -541,8 +541,8 @@ class Flask(_PackageBoundObject):
         Here some examples::
 
             app.logger.debug('A value for debugging')
-            app.logger.warning('A warning ocurred (%d apples)', 42)
-            app.logger.error('An error occoured')
+            app.logger.warning('A warning occurred (%d apples)', 42)
+            app.logger.error('An error occurred')
 
         .. versionadded:: 0.3
         """
@@ -846,7 +846,7 @@ class Flask(_PackageBoundObject):
         first_registration = False
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, \
-                'A blueprint\'s name collision ocurred between %r and ' \
+                'A blueprint\'s name collision occurred between %r and ' \
                 '%r.  Both share the same name "%s".  Blueprints that ' \
                 'are created on the fly need unique names.' % \
                 (blueprint, self.blueprints[blueprint.name], blueprint.name)
@@ -1146,7 +1146,7 @@ class Flask(_PackageBoundObject):
         a new response object or the same (see :meth:`process_response`).
 
         As of Flask 0.7 this function might not be executed at the end of the
-        request in case an unhandled exception ocurred.
+        request in case an unhandled exception occurred.
         """
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
@@ -1170,10 +1170,10 @@ class Flask(_PackageBoundObject):
         stack of active contexts.  This becomes relevant if you are using
         such constructs in tests.
 
-        Generally teardown functions must take every necesary step to avoid
+        Generally teardown functions must take every necessary step to avoid
         that they will fail.  If they do execute code that might fail they
         will have to surround the execution of these code by try/except
-        statements and log ocurring errors.
+        statements and log occurring errors.
 
         When a teardown function was called because of a exception it will
         be passed an error object.
@@ -1560,7 +1560,7 @@ class Flask(_PackageBoundObject):
         request handling is stopped.
 
         This also triggers the :meth:`url_value_processor` functions before
-        the actualy :meth:`before_request` functions are called.
+        the actual :meth:`before_request` functions are called.
         """
         bp = _request_ctx_stack.top.request.blueprint
 
@@ -1713,7 +1713,7 @@ class Flask(_PackageBoundObject):
            The behavior of the before and after request callbacks was changed
            under error conditions and a new callback was added that will
            always execute at the end of the request, independent on if an
-           error ocurred or not.  See :ref:`callbacks-and-errors`.
+           error occurred or not.  See :ref:`callbacks-and-errors`.
 
         :param environ: a WSGI environment
         :param start_response: a callable accepting a status code,
