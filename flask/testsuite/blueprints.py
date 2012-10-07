@@ -548,7 +548,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_('my_reverse' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -559,7 +559,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_('my_reverse' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -570,7 +570,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_('strrev' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -581,7 +581,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse, 'strrev')
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_('strrev' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -650,6 +650,114 @@ class BlueprintTestCase(FlaskTestCase):
         rv = app.test_client().get('/')
         self.assert_equal(rv.data, 'dcba')
 
+    def test_template_test(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_test()
+        def is_boolean(value):
+            return isinstance(value, bool)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('is_boolean' in app.jinja_env.tests.keys())
+        self.assert_equal(app.jinja_env.tests['is_boolean'], is_boolean)
+        self.assert_(app.jinja_env.tests['is_boolean'](False))
+
+    def test_add_template_test(self):
+        bp = flask.Blueprint('bp', __name__)
+        def is_boolean(value):
+            return isinstance(value, bool)
+        bp.add_app_template_test(is_boolean)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('is_boolean' in app.jinja_env.tests.keys())
+        self.assert_equal(app.jinja_env.tests['is_boolean'], is_boolean)
+        self.assert_(app.jinja_env.tests['is_boolean'](False))
+
+    def test_template_test_with_name(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_test('boolean')
+        def is_boolean(value):
+            return isinstance(value, bool)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
+        self.assert_(app.jinja_env.tests['boolean'](False))
+
+    def test_add_template_test_with_name(self):
+        bp = flask.Blueprint('bp', __name__)
+        def is_boolean(value):
+            return isinstance(value, bool)
+        bp.add_app_template_test(is_boolean, 'boolean')
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
+        self.assert_(app.jinja_env.tests['boolean'](False))
+
+    def test_template_test_with_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_test()
+        def boolean(value):
+            return isinstance(value, bool)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_test.html', value=False)
+        rv = app.test_client().get('/')
+        self.assert_('Success!' in rv.data)
+
+    def test_template_test_after_route_with_template(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return flask.render_template('template_test.html', value=False)
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_test()
+        def boolean(value):
+            return isinstance(value, bool)
+        app.register_blueprint(bp, url_prefix='/py')
+        rv = app.test_client().get('/')
+        self.assert_('Success!' in rv.data)
+
+    def test_add_template_test_with_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        def boolean(value):
+            return isinstance(value, bool)
+        bp.add_app_template_test(boolean)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_test.html', value=False)
+        rv = app.test_client().get('/')
+        self.assert_('Success!' in rv.data)
+
+    def test_template_test_with_name_and_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        @bp.app_template_test('boolean')
+        def is_boolean(value):
+            return isinstance(value, bool)
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_test.html', value=False)
+        rv = app.test_client().get('/')
+        self.assert_('Success!' in rv.data)
+
+    def test_add_template_test_with_name_and_template(self):
+        bp = flask.Blueprint('bp', __name__)
+        def is_boolean(value):
+            return isinstance(value, bool)
+        bp.add_app_template_test(is_boolean, 'boolean')
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/py')
+        @app.route('/')
+        def index():
+            return flask.render_template('template_test.html', value=False)
+        rv = app.test_client().get('/')
+        self.assert_('Success!' in rv.data)
 
 def suite():
     suite = unittest.TestSuite()
