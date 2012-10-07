@@ -38,3 +38,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    streaming
    deferredcallbacks
    methodoverrides
+   requestchecksum
