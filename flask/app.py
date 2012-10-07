@@ -942,8 +942,13 @@ class Flask(_PackageBoundObject):
 
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
+
         self.url_map.add(rule)
         if view_func is not None:
+            old_func = self.view_functions.get(endpoint)
+            if old_func is not None and old_func is not view_func:
+                raise AssertionError('View function mapping is overwriting an '
+                                     'existing endpoint function: %s' % endpoint)
             self.view_functions[endpoint] = view_func
 
     def route(self, rule, **options):

@@ -145,6 +145,23 @@ class ViewTestCase(FlaskTestCase):
         self.assert_equal(rv.data, '')
         self.assert_equal(rv.headers['X-Method'], 'HEAD')
 
+    def test_endpoint_override(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+
+        class Index(flask.views.View):
+            methods = ['GET', 'POST']
+            def dispatch_request(self):
+                return flask.request.method
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+
+        with self.assert_raises(AssertionError):
+            app.add_url_rule('/', view_func=Index.as_view('index'))
+
+        # But these tests should still pass. We just log a warning.
+        self.common_test(app)
+
 
 def suite():
     suite = unittest.TestSuite()

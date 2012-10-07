@@ -387,7 +387,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return ''
 
         @app.route('/test_filters_without_returning_categories/')
-        def test_filters():
+        def test_filters2():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'])
             self.assert_equal(len(messages), 2)
             self.assert_equal(messages[0], u'Hello World')
