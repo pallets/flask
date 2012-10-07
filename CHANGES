@@ -11,6 +11,8 @@ Release date to be decided.
 - Changed default cookie serialization format from pickle to JSON to
   limit the impact an attacker can do if the secret key leaks.  See
   :ref:`upgrading-to-010` for more information.
+- Added ``template_test`` methods in addition to the already existing
+  ``template_filter`` method family.
 
 Version 0.9
 -----------
