@@ -571,7 +571,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             os.path.getmtime(filename),
             os.path.getsize(filename),
             adler32(
-                filename.encode('utf8') if isinstance(filename, unicode)
+                filename.encode('utf-8') if isinstance(filename, unicode)
                 else filename
             ) & 0xffffffff
         ))
