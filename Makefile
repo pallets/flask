@@ -11,9 +11,6 @@ audit:
 release:
 	python scripts/make-release.py
 
-tox-test:
-	PYTHONDONTWRITEBYTECODE= tox
-
 ext-test:
 	python tests/flaskext_test.py --browse
 
