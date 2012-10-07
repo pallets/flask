@@ -19,6 +19,10 @@ from . import Markup
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
 
+def total_seconds(td):
+    return td.days * 60 * 60 * 24 + td.seconds
+
+
 class SessionMixin(object):
     """Expands a basic dictionary with an accessors that are expected
     by Flask extensions and users for the session.
@@ -267,7 +271,7 @@ class SecureCookieSessionInterface(SessionInterface):
         val = request.cookies.get(app.session_cookie_name)
         if not val:
             return self.session_class()
-        max_age = app.permanent_session_lifetime.total_seconds()
+        max_age = total_seconds(app.permanent_session_lifetime)
         try:
             data = s.loads(val, max_age=max_age)
             return self.session_class(data)
