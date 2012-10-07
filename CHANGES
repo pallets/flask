@@ -15,6 +15,8 @@ Release date to be decided.
   ``template_filter`` method family.
 - Set the content-length header for x-sendfile.
 - ``tojson`` filter now does not escape script blocks in HTML5 parsers.
+- Flask will now raise an error if you attempt to register a new function
+  on an already used endpoint.
 
 Version 0.9
 -----------
