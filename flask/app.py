@@ -1087,6 +1087,44 @@ class Flask(_PackageBoundObject):
         self.jinja_env.filters[name or f.__name__] = f
 
     @setupmethod
+    def template_test(self, name=None):
+        """A decorator that is used to register custom template test.
+        You can specify a name for the test, otherwise the function
+        name will be used. Example::
+
+          @app.template_test()
+          def is_prime(n):
+              if n == 2:
+                  return True
+              for i in xrange(2, int(math.ceil(math.sqrt(n))) + 1):
+                  if n % i == 0:
+                      return False
+              return True
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the test, otherwise the
+                     function name will be used.
+        """
+        def decorator(f):
+            self.add_template_test(f, name=name)
+            return f
+        return decorator
+
+    @setupmethod
+    def add_template_test(self, f, name=None):
+        """Register a custom template test.  Works exactly like the
+        :meth:`template_test` decorator.
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the test, otherwise the
+                     function name will be used.
+        """
+        self.jinja_env.tests[name or f.__name__] = f
+
+
+    @setupmethod
     def before_request(self, f):
         """Registers a function to run before each request."""
         self.before_request_funcs.setdefault(None, []).append(f)
