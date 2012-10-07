@@ -32,9 +32,12 @@ def add_to_path(path):
         raise RuntimeError('Tried to add nonexisting path')
 
     def _samefile(x, y):
+        if x == y:
+            return True
         try:
             return os.path.samefile(x, y)
-        except (IOError, OSError):
+        except (IOError, OSError, AttributeError):
+            # Windows has no samefile
             return False
     sys.path[:] = [x for x in sys.path if not _samefile(path, x)]
     sys.path.insert(0, path)
