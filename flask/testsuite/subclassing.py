@@ -18,14 +18,14 @@ from flask.testsuite import FlaskTestCase
 
 class FlaskSubclassingTestCase(FlaskTestCase):
 
-    def test_supressed_exception_logging(self):
-        class SupressedFlask(flask.Flask):
+    def test_suppressed_exception_logging(self):
+        class SuppressedFlask(flask.Flask):
             def log_exception(self, exc_info):
                 pass
 
         out = StringIO()
-        app = SupressedFlask(__name__)
-        app.logger_name = 'flask_tests/test_supressed_exception_logging'
+        app = SuppressedFlask(__name__)
+        app.logger_name = 'flask_tests/test_suppressed_exception_logging'
         app.logger.addHandler(StreamHandler(out))
 
         @app.route('/')

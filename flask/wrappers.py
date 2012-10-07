@@ -106,7 +106,7 @@ class Request(RequestBase):
 
     def on_json_loading_failed(self, e):
         """Called if decoding of the JSON data failed.  The return value of
-        this method is used by :attr:`json` when an error ocurred.  The default
+        this method is used by :attr:`json` when an error occurred.  The default
         implementation raises a :class:`JSONBadRequest`, which is a subclass of
         :class:`~werkzeug.exceptions.BadRequest` which sets the
         ``Content-Type`` to ``application/json`` and provides a JSON-formatted

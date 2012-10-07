@@ -210,7 +210,7 @@ Manual Error Handler Attaching
 
 While it is still possible to attach error handlers to
 :attr:`Flask.error_handlers` it's discouraged to do so and in fact
-deprecated.  In generaly we no longer recommend custom error handler
+deprecated.  In general we no longer recommend custom error handler
 attaching via assignments to the underlying dictionary due to the more
 complex internal handling to support arbitrary exception classes and
 blueprints.  See :meth:`Flask.errorhandler` for more information.

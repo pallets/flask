@@ -37,7 +37,7 @@ context local.
 Purpose of the Application Context
 ----------------------------------
 
-The main reason for the application's context existance is that in the
+The main reason for the application's context existence is that in the
 past a bunch of functionality was attached to the request context in lack
 of a better solution.  Since one of the pillar's of Flask's design is that
 you can have more than one application in the same Python process.
@@ -58,7 +58,7 @@ Creating an Application Context
 To make an application context there are two ways.  The first one is the
 implicit one: whenever a request context is pushed, an application context
 will be created alongside if this is necessary.  As a result of that, you
-can ignore the existance of the application context unless you need it.
+can ignore the existence of the application context unless you need it.
 
 The second way is the explicit way using the
 :meth:`~flask.Flask.app_context` method::
