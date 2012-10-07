@@ -70,30 +70,36 @@ class JSONDecoder(_json.JSONDecoder):
 
 def dumps(obj, **kwargs):
     """Serialize ``obj`` to a JSON formatted ``str`` by using the application's
-    configured encoder (:attr:`~flask.Flask.json_encoder`).
+    configured encoder (:attr:`~flask.Flask.json_encoder`) if there is an
+    application on the stack.
     """
-    kwargs.setdefault('cls', current_app.json_encoder)
+    if current_app:
+        kwargs.setdefault('cls', current_app.json_encoder)
     return _json.dumps(obj, **kwargs)
 
 
 def dump(obj, fp, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
-    kwargs.setdefault('cls', current_app.json_encoder)
+    if current_app:
+        kwargs.setdefault('cls', current_app.json_encoder)
     return _json.dump(obj, fp, **kwargs)
 
 
 def loads(s, **kwargs):
     """Unserialize a JSON object from a string ``s`` by using the application's
-    configured decoder (:attr:`~flask.Flask.json_decoder`).
+    configured decoder (:attr:`~flask.Flask.json_decoder`) if there is an
+    application on the stack.
     """
-    kwargs.setdefault('cls', current_app.json_decoder)
+    if current_app:
+        kwargs.setdefault('cls', current_app.json_decoder)
     return _json.loads(s, **kwargs)
 
 
 def load(fp, **kwargs):
     """Like :func:`loads` but reads from a file object.
     """
-    kwargs.setdefault('cls', current_app.json_decoder)
+    if current_app:
+        kwargs.setdefault('cls', current_app.json_decoder)
     return _json.load(fp, **kwargs)
 
 
