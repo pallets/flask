@@ -19,6 +19,20 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+.. _upgrading-to-010:
+
+Version 0.10
+------------
+
+The biggest change going from 0.9 to 0.10 is that the cookie serialization
+format changed from pickle to a specialized JSON format.  This change has
+been done in order to avoid the damage an attacker can do if the secret
+key is leaked.  When you upgrade you will notice two major changes: all
+sessions that were issued before the upgrade are invalidated and you can
+only store a limited amount of types in the session.
+
+TODO: add external module for session upgrading
+
 Version 0.9
 -----------
 

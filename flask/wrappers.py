@@ -14,7 +14,7 @@ from werkzeug.utils import cached_property
 
 from .exceptions import JSONBadRequest
 from .debughelpers import attach_enctype_error_multidict
-from .helpers import json, _assert_have_json
+from .helpers import json
 from .globals import _request_ctx_stack
 
 
@@ -95,8 +95,6 @@ class Request(RequestBase):
 
         This requires Python 2.6 or an installed version of simplejson.
         """
-        if __debug__:
-            _assert_have_json()
         if self.mimetype == 'application/json':
             request_charset = self.mimetype_params.get('charset')
             try:

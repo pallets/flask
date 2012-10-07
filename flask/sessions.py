@@ -10,8 +10,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import hashlib
 from datetime import datetime
-from werkzeug.contrib.securecookie import SecureCookie
+from werkzeug.http import http_date, parse_date
+from werkzeug.datastructures import CallbackDict
+from .helpers import json
+from . import Markup
+
+from itsdangerous import URLSafeTimedSerializer, BadSignature
 
 
 class SessionMixin(object):
@@ -41,10 +47,52 @@ class SessionMixin(object):
     modified = True
 
 
-class SecureCookieSession(SecureCookie, SessionMixin):
-    """Expands the session with support for switching between permanent
-    and non-permanent sessions.
+class TaggedJSONSerializer(object):
+    """A customized JSON serializer that supports a few extra types that
+    we take for granted when serializing (tuples, markup objects, datetime).
     """
+
+    def dumps(self, value):
+        def _tag(value):
+            if isinstance(value, tuple):
+                return {' t': [_tag(x) for x in value]}
+            elif callable(getattr(value, '__html__', None)):
+                return {' m': unicode(value.__html__())}
+            elif isinstance(value, list):
+                return [_tag(x) for x in value]
+            elif isinstance(value, datetime):
+                return {' d': http_date(value)}
+            elif isinstance(value, dict):
+                return dict((k, _tag(v)) for k, v in value.iteritems())
+            return value
+        return json.dumps(_tag(value), separators=(',', ':'))
+
+    def loads(self, value):
+        def object_hook(obj):
+            if len(obj) != 1:
+                return obj
+            the_key, the_value = obj.iteritems().next()
+            if the_key == ' t':
+                return tuple(the_value)
+            elif the_key == ' m':
+                return Markup(the_value)
+            elif the_key == ' d':
+                return parse_date(the_value)
+            return obj
+        return json.loads(value, object_hook=object_hook)
+
+
+session_json_serializer = TaggedJSONSerializer()
+
+
+class SecureCookieSession(CallbackDict, SessionMixin):
+    """Baseclass for sessions based on signed cookies."""
+
+    def __init__(self, initial=None):
+        def on_update(self):
+            self.modified = True
+        CallbackDict.__init__(self, initial, on_update)
+        self.modified = False
 
 
 class NullSession(SecureCookieSession):
@@ -97,6 +145,13 @@ class SessionInterface(object):
     #: :meth:`is_null_session` method will perform a typecheck against
     #: this type.
     null_session_class = NullSession
+
+    #: A flag that indicates if the session interface is pickle based.
+    #: This can be used by flask extensions to make a decision in regards
+    #: to how to deal with the session object.
+    #:
+    #: .. versionadded:: 0.10
+    pickle_based = False
 
     def make_null_session(self, app):
         """Creates a null session which acts as a replacement object if the
@@ -178,28 +233,60 @@ class SessionInterface(object):
 
 
 class SecureCookieSessionInterface(SessionInterface):
-    """The cookie session interface that uses the Werkzeug securecookie
-    as client side session backend.
+    """The default session interface that stores sessions in signed cookies
+    through the :mod:`itsdangerous` module.
     """
+    #: the salt that should be applied on top of the secret key for the
+    #: signing of cookie based sessions.
+    salt = 'cookie-session'
+    #: the hash function to use for the signature.  The default is sha1
+    digest_method = staticmethod(hashlib.sha1)
+    #: the name of the itsdangerous supported key derivation.  The default
+    #: is hmac.
+    key_derivation = 'hmac'
+    #: A python serializer for the payload.  The default is a compact
+    #: JSON derived serializer with support for some extra Python types
+    #: such as datetime objects or tuples.
+    serializer = session_json_serializer
     session_class = SecureCookieSession
 
+    def get_signing_serializer(self, app):
+        if not app.secret_key:
+            return None
+        signer_kwargs = dict(
+            key_derivation=self.key_derivation,
+            digest_method=self.digest_method
+        )
+        return URLSafeTimedSerializer(app.secret_key, salt=self.salt,
+                                      serializer=self.serializer,
+                                      signer_kwargs=signer_kwargs)
+
     def open_session(self, app, request):
-        key = app.secret_key
-        if key is not None:
-            return self.session_class.load_cookie(request,
-                                                  app.session_cookie_name,
-                                                  secret_key=key)
+        s = self.get_signing_serializer(app)
+        if s is None:
+            return None
+        val = request.cookies.get(app.session_cookie_name)
+        if not val:
+            return self.session_class()
+        max_age = app.permanent_session_lifetime.total_seconds()
+        try:
+            data = s.loads(val, max_age=max_age)
+            return self.session_class(data)
+        except BadSignature:
+            return self.session_class()
 
     def save_session(self, app, session, response):
-        expires = self.get_expiration_time(app, session)
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
+        if not session:
+            if session.modified:
+                response.delete_cookie(app.session_cookie_name,
+                                       domain=domain, path=path)
+            return
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
-        if session.modified and not session:
-            response.delete_cookie(app.session_cookie_name, path=path,
-                                   domain=domain)
-        else:
-            session.save_cookie(response, app.session_cookie_name, path=path,
-                                expires=expires, httponly=httponly,
-                                secure=secure, domain=domain)
+        expires = self.get_expiration_time(app, session)
+        val = self.get_signing_serializer(app).dumps(dict(session))
+        response.set_cookie(app.session_cookie_name, val,
+                            expires=expires, httponly=httponly,
+                            domain=domain, path=path, secure=secure)
