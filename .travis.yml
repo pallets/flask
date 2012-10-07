@@ -23,3 +23,5 @@ notifications:
   irc:
     channels:
       - "irc.freenode.org#pocoo"
+    use_notice: true
+    skip_join: true
