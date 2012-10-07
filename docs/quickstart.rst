@@ -627,9 +627,9 @@ For this also see :ref:`about-responses`.
 Redirects and Errors
 --------------------
 
-To redirect a user to somewhere else you can use the
-:func:`~flask.redirect` function. To abort a request early with an error
-code use the :func:`~flask.abort` function.  Here an example how this works::
+To redirect a user to another endpoint, use the :func:`~flask.redirect`
+function; to abort a request early with an error code, use the
+:func:`~flask.abort` function::
 
     from flask import abort, redirect, url_for
 
