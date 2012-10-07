@@ -142,6 +142,13 @@ class MethodView(View):
 
     def dispatch_request(self, *args, **kwargs):
         meth = getattr(self, request.method.lower(), None)
+
+        # If the request method has been explicitly overriden, use that
+        # instead of the original HTTP verb.
+        if 'X-HTTP-Method-Override' in request.headers:
+            override = request.headers['X-HTTP-Method-Override']
+            meth = getattr(self, override.lower(), None)
+
         # if the request method is HEAD and we don't have a handler for it
         # retry with GET
         if meth is None and request.method == 'HEAD':
