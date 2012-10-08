@@ -20,6 +20,9 @@ Release date to be decided.
 - Added wrapper module around simplejson and added default serialization
   of datetime objects.  This allows much easier customization of how
   JSON is handled by Flask or any Flask extension.
+- Removed deprecated internal ``flask.session`` module alias.  Use
+  ``flask.sessions`` instead to get the session module.  This is not to
+  be confused with ``flask.session`` the session proxy.
 
 Version 0.9
 -----------
