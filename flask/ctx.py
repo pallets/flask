@@ -213,7 +213,7 @@ class RequestContext(object):
         # on the stack.  The rationale is that you want to access that
         # information under debug situations.  However if someone forgets to
         # pop that context again we want to make sure that on the next push
-        # it's invalidated otherwise we run at risk that something leaks
+        # it's invalidated, otherwise we run at risk that something leaks
         # memory.  This is usually only a problem in testsuite since this
         # functionality is not active in production environments.
         top = _request_ctx_stack.top
@@ -234,7 +234,8 @@ class RequestContext(object):
 
         # Open the session at the moment that the request context is
         # available. This allows a custom open_session method to use the
-        # request context (e.g. flask-sqlalchemy).
+        # request context (e.g. code that access database information
+        # stored on `g` instead of the appcontext).
         self.session = self.app.open_session(self.request)
         if self.session is None:
             self.session = self.app.make_null_session()
