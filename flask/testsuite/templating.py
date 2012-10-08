@@ -37,6 +37,18 @@ class TemplatingTestCase(FlaskTestCase):
         rv = app.test_client().get('/')
         self.assert_equal(rv.data, '42')
 
+    def test_request_less_rendering(self):
+        app = flask.Flask(__name__)
+        app.config['WORLD_NAME'] = 'Special World'
+        @app.context_processor
+        def context_processor():
+            return dict(foo=42)
+
+        with app.app_context():
+            rv = flask.render_template_string('Hello {{ config.WORLD_NAME }} '
+                                              '{{ foo }}')
+            self.assert_equal(rv, 'Hello Special World 42')
+
     def test_standard_context(self):
         app = flask.Flask(__name__)
         app.secret_key = 'development key'

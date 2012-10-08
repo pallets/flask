@@ -645,7 +645,8 @@ class Flask(_PackageBoundObject):
         rv = Environment(self, **options)
         rv.globals.update(
             url_for=url_for,
-            get_flashed_messages=get_flashed_messages
+            get_flashed_messages=get_flashed_messages,
+            config=self.config
         )
         rv.filters['tojson'] = json.htmlsafe_dumps
         return rv
@@ -694,9 +695,11 @@ class Flask(_PackageBoundObject):
                         to add extra variables.
         """
         funcs = self.template_context_processors[None]
-        bp = _request_ctx_stack.top.request.blueprint
-        if bp is not None and bp in self.template_context_processors:
-            funcs = chain(funcs, self.template_context_processors[bp])
+        reqctx = _request_ctx_stack.top
+        if reqctx is not None:
+            bp = reqctx.request.blueprint
+            if bp is not None and bp in self.template_context_processors:
+                funcs = chain(funcs, self.template_context_processors[bp])
         orig_ctx = context.copy()
         for func in funcs:
             context.update(func())

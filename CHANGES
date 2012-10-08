@@ -23,6 +23,13 @@ Release date to be decided.
 - Removed deprecated internal ``flask.session`` module alias.  Use
   ``flask.sessions`` instead to get the session module.  This is not to
   be confused with ``flask.session`` the session proxy.
+- Templates can now be rendered without request context.  The behavior is
+  slightly different as the ``request``, ``session`` and ``g`` objects
+  will not be available and blueprint's context processors are not
+  called.
+- The config object is now available to the template as a real global and
+  not through a context processor which makes it available even in imported
+  templates by default.
 
 Version 0.9
 -----------

@@ -38,20 +38,29 @@ by default:
 
    .. versionadded:: 0.6
 
+   .. versionchanged:: 0.10
+      This is now always available, even in imported templates.
+
 .. data:: request
    :noindex:
 
-   The current request object (:class:`flask.request`)
+   The current request object (:class:`flask.request`).  This variable is
+   unavailable if the template was rendered without an active request
+   context.
 
 .. data:: session
    :noindex:
 
-   The current session object (:class:`flask.session`)
+   The current session object (:class:`flask.session`).  This variable
+   is unavailable if the template was rendered without an active request
+   context.
 
 .. data:: g
    :noindex:
 
-   The request-bound object for global variables (:data:`flask.g`)
+   The request-bound object for global variables (:data:`flask.g`).  This
+   variable is unavailable if the template was rendered without an active
+   request context.
 
 .. function:: url_for
    :noindex:
