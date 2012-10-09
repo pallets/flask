@@ -13,9 +13,8 @@ import time
 from sqlite3 import dbapi2 as sqlite3
 from hashlib import md5
 from datetime import datetime
-from contextlib import closing
 from flask import Flask, request, session, url_for, redirect, \
-     render_template, abort, g, flash
+     render_template, abort, g, flash, _app_ctx_stack
 from werkzeug import check_password_hash, generate_password_hash
 
 
@@ -31,14 +30,29 @@ app.config.from_object(__name__)
 app.config.from_envvar('MINITWIT_SETTINGS', silent=True)
 
 
-def connect_db():
-    """Returns a new connection to the database."""
-    return sqlite3.connect(app.config['DATABASE'])
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    top = _app_ctx_stack.top
+    if not hasattr(top, 'sqlite_db'):
+        top.sqlite_db = sqlite3.connect(app.config['DATABASE'])
+        top.sqlite_db.row_factory = sqlite3.Row
+    return top.sqlite_db
+
+
+@app.teardown_appcontext
+def close_database(exception):
+    """Closes the database again at the end of the request."""
+    top = _app_ctx_stack.top
+    if hasattr(top, 'sqlite_db'):
+        top.sqlite_db.close()
 
 
 def init_db():
     """Creates the database tables."""
-    with closing(connect_db()) as db:
+    with app.app_context():
+        db = get_db()
         with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
         db.commit()
@@ -46,16 +60,15 @@ def init_db():
 
 def query_db(query, args=(), one=False):
     """Queries the database and returns a list of dictionaries."""
-    cur = g.db.execute(query, args)
-    rv = [dict((cur.description[idx][0], value)
-               for idx, value in enumerate(row)) for row in cur.fetchall()]
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
     return (rv[0] if rv else None) if one else rv
 
 
 def get_user_id(username):
     """Convenience method to look up the id for a username."""
-    rv = g.db.execute('select user_id from user where username = ?',
-                       [username]).fetchone()
+    rv = query_db('select user_id from user where username = ?',
+                  [username], one=True)
     return rv[0] if rv else None
 
 
@@ -72,21 +85,10 @@ def gravatar_url(email, size=80):
 
 @app.before_request
 def before_request():
-    """Make sure we are connected to the database each request and look
-    up the current user so that we know he's there.
-    """
-    g.db = connect_db()
     g.user = None
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                           [session['user_id']], one=True)
-
-
-@app.teardown_request
-def teardown_request(exception):
-    """Closes the database again at the end of the request."""
-    if hasattr(g, 'db'):
-        g.db.close()
 
 
 @app.route('/')
@@ -145,9 +147,10 @@ def follow_user(username):
     whom_id = get_user_id(username)
     if whom_id is None:
         abort(404)
-    g.db.execute('insert into follower (who_id, whom_id) values (?, ?)',
-                [session['user_id'], whom_id])
-    g.db.commit()
+    db = get_db()
+    db.execute('insert into follower (who_id, whom_id) values (?, ?)',
+              [session['user_id'], whom_id])
+    db.commit()
     flash('You are now following "%s"' % username)
     return redirect(url_for('user_timeline', username=username))
 
@@ -160,9 +163,10 @@ def unfollow_user(username):
     whom_id = get_user_id(username)
     if whom_id is None:
         abort(404)
-    g.db.execute('delete from follower where who_id=? and whom_id=?',
-                [session['user_id'], whom_id])
-    g.db.commit()
+    db = get_db()
+    db.execute('delete from follower where who_id=? and whom_id=?',
+              [session['user_id'], whom_id])
+    db.commit()
     flash('You are no longer following "%s"' % username)
     return redirect(url_for('user_timeline', username=username))
 
@@ -173,10 +177,11 @@ def add_message():
     if 'user_id' not in session:
         abort(401)
     if request.form['text']:
-        g.db.execute('''insert into message (author_id, text, pub_date)
-            values (?, ?, ?)''', (session['user_id'], request.form['text'],
-                                  int(time.time())))
-        g.db.commit()
+        db = get_db()
+        db.execute('''insert into message (author_id, text, pub_date)
+          values (?, ?, ?)''', (session['user_id'], request.form['text'],
+                                int(time.time())))
+        db.commit()
         flash('Your message was recorded')
     return redirect(url_for('timeline'))
 
@@ -221,11 +226,12 @@ def register():
         elif get_user_id(request.form['username']) is not None:
             error = 'The username is already taken'
         else:
-            g.db.execute('''insert into user (
-                username, email, pw_hash) values (?, ?, ?)''',
-                [request.form['username'], request.form['email'],
-                 generate_password_hash(request.form['password'])])
-            g.db.commit()
+            db = get_db()
+            db.execute('''insert into user (
+              username, email, pw_hash) values (?, ?, ?)''',
+              [request.form['username'], request.form['email'],
+               generate_password_hash(request.form['password'])])
+            db.commit()
             flash('You were successfully registered and can login now')
             return redirect(url_for('login'))
     return render_template('register.html', error=error)
@@ -245,4 +251,5 @@ app.jinja_env.filters['gravatar'] = gravatar_url
 
 
 if __name__ == '__main__':
+    init_db()
     app.run()

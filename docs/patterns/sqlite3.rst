@@ -3,61 +3,61 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can implement the opening of database connections at the
-beginning of the request and closing at the end with the
-:meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.teardown_request`
-decorators in combination with the special :class:`~flask.g` object.
+In Flask you can implement the opening of database connections on demand
+and closing it when the context dies (usually at the end of the request)
+easily.
 
-So here is a simple example of how you can use SQLite 3 with Flask::
+Here is a simple example of how you can use SQLite 3 with Flask::
 
     import sqlite3
-    from flask import g
+    from flask import _app_ctx_stack
 
     DATABASE = '/path/to/database.db'
 
-    def connect_db():
-        return sqlite3.connect(DATABASE)
+    def get_db():
+        top = _app_ctx_stack.top
+        if not hasattr(top, 'sqlite_db'):
+            top.sqlite_db = sqlite3.connect(DATABASE)
+        return top.sqlite_db
 
-    @app.before_request
-    def before_request():
-        g.db = connect_db()
+    @app.teardown_appcontext
+    def close_connection(exception):
+        top = _app_ctx_stack.top
+        if hasattr(top, 'sqlite_db'):
+            top.sqlite_db.close()
 
-    @app.teardown_request
-    def teardown_request(exception):
-        if hasattr(g, 'db'):
-            g.db.close()
+All the application needs to do in order to now use the database is having
+an active application context (which is always true if there is an request
+in flight) or to create an application context itself.  At that point the
+``get_db`` function can be used to get the current database connection.
+Whenever the context is destroyed the database connection will be
+terminated.
+
+Example::
+
+    @app.route('/')
+    def index():
+        cur = get_db().cursor()
+        ...
+
 
 .. note::
 
-   Please keep in mind that the teardown request functions are always
-   executed, even if a before-request handler failed or was never
-   executed.  Because of this we have to make sure here that the database
-   is there before we close it.
+   Please keep in mind that the teardown request and appcontext functions
+   are always executed, even if a before-request handler failed or was
+   never executed.  Because of this we have to make sure here that the
+   database is there before we close it.
 
 Connect on Demand
 -----------------
 
-The downside of this approach is that this will only work if Flask
-executed the before-request handlers for you.  If you are attempting to
-use the database from a script or the interactive Python shell you would
-have to do something like this::
+The upside of this approach (connecting on first use) is that this will
+only opening the connection if truly necessary.  If you want to use this
+code outside a request context you can use it in a Python shell by opening
+the application context by hand::
 
-    with app.test_request_context():
-        app.preprocess_request()
-        # now you can use the g.db object
-
-In order to trigger the execution of the connection code.  You won't be
-able to drop the dependency on the request context this way, but you could
-make it so that the application connects when necessary::
-
-    def get_connection():
-        db = getattr(g, '_db', None)
-        if db is None:
-            db = g._db = connect_db()
-        return db
-
-Downside here is that you have to use ``db = get_connection()`` instead of
-just being able to use ``g.db`` directly.
+    with app.app_context():
+        # now you can use get_db()
 
 .. _easy-querying:
 
@@ -66,16 +66,28 @@ Easy Querying
 
 Now in each request handling function you can access `g.db` to get the
 current open database connection.  To simplify working with SQLite, a
-helper function can be useful::
+row factory function is useful.  It is executed for every result returned
+from the database to convert the result.  For instance in order to get
+dictionaries instead of tuples this can be used::
 
+    def make_dicts(cursor, row):
+        return dict((cur.description[idx][0], value)
+                    for idx, value in enumerate(row))
+
+    db.row_factory = make_dicts
+
+Additionally it is a good idea to provide a query function that combines
+getting the cursor, executing and fetching the results::
+    
     def query_db(query, args=(), one=False):
-        cur = g.db.execute(query, args)
-        rv = [dict((cur.description[idx][0], value)
-                   for idx, value in enumerate(row)) for row in cur.fetchall()]
+        cur = get_db().execute(query, args)
+        rv = cur.fetchall()
+        cur.close()
         return (rv[0] if rv else None) if one else rv
 
-This handy little function makes working with the database much more
-pleasant than it is by just using the raw cursor and connection objects.
+This handy little function in combination with a row factory makes working
+with the database much more pleasant than it is by just using the raw
+cursor and connection objects.
 
 Here is how you can use it::
 
@@ -105,10 +117,9 @@ Relational databases need schemas, so applications often ship a
 a function that creates the database based on that schema.  This function
 can do that for you::
 
-    from contextlib import closing
-    
     def init_db():
-        with closing(connect_db()) as db:
+        with app.app_context():
+            db = get_db()
             with app.open_resource('schema.sql') as f:
                 db.cursor().executescript(f.read())
             db.commit()

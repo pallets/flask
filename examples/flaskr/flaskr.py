@@ -11,9 +11,8 @@
 """
 from __future__ import with_statement
 from sqlite3 import dbapi2 as sqlite3
-from contextlib import closing
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
+     render_template, flash, _app_ctx_stack
 
 # configuration
 DATABASE = '/tmp/flaskr.db'
@@ -28,35 +27,37 @@ app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 
-def connect_db():
-    """Returns a new connection to the database."""
-    return sqlite3.connect(app.config['DATABASE'])
-
-
 def init_db():
     """Creates the database tables."""
-    with closing(connect_db()) as db:
+    with app.app_context():
+        db = get_db()
         with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
         db.commit()
 
 
-@app.before_request
-def before_request():
-    """Make sure we are connected to the database each request."""
-    g.db = connect_db()
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    top = _app_ctx_stack.top
+    if not hasattr(top, 'sqlite_db'):
+        top.sqlite_db = sqlite3.connect(app.config['DATABASE'])
+    return top.sqlite_db
 
 
-@app.teardown_request
-def teardown_request(exception):
+@app.teardown_appcontext
+def close_db_connection(exception):
     """Closes the database again at the end of the request."""
-    if hasattr(g, 'db'):
-        g.db.close()
+    top = _app_ctx_stack.top
+    if hasattr(top, 'sqlite_db'):
+        top.sqlite_db.close()
 
 
 @app.route('/')
 def show_entries():
-    cur = g.db.execute('select title, text from entries order by id desc')
+    db = get_db()
+    cur = db.execute('select title, text from entries order by id desc')
     entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
     return render_template('show_entries.html', entries=entries)
 
@@ -65,9 +66,10 @@ def show_entries():
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into entries (title, text) values (?, ?)',
+    db = get_db()
+    db.execute('insert into entries (title, text) values (?, ?)',
                  [request.form['title'], request.form['text']])
-    g.db.commit()
+    db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
 
@@ -95,4 +97,5 @@ def logout():
 
 
 if __name__ == '__main__':
+    init_db()
     app.run()
