@@ -66,6 +66,29 @@ event loop::
 .. _greenlet: http://codespeak.net/py/0.9.2/greenlet.html
 .. _libevent: http://monkey.org/~provos/libevent/
 
+Twisted Web
+-----------
+
+`Twisted Web`_ is the web server shipped with `Twisted`_, a mature,
+non-blocking event-driven networking library. Twisted Web comes with a
+standard WSGI container which can be controlled from the command line using
+the ``twistd`` utility::
+
+    twistd web --wsgi myproject.app
+
+This example will run a Flask application called ``app`` from a module named
+``myproject``.
+
+Twisted Web supports many flags and options, and the ``twistd`` utility does
+as well; see ``twistd -h`` and ``twistd web -h`` for more information. For
+example, to run a Twisted Web server in the foreground, on port 8080, with an
+application from ``myproject``::
+
+    twistd -n web --port 8080 --wsgi myproject.app
+
+.. _Twisted: https://twistedmatrix.com/
+.. _Twisted Web: https://twistedmatrix.com/trac/wiki/TwistedWeb
+
 .. _deploying-proxy-setups:
 
 Proxy Setups
