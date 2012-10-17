@@ -295,8 +295,6 @@ def url_for(endpoint, **values):
         values['_method'] = method
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
-    rv = url_adapter.build(endpoint, values, method=method,
-                           force_external=external)
     if anchor is not None:
         rv += '#' + url_quote(anchor)
     return rv
