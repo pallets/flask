@@ -68,20 +68,37 @@ class JSONDecoder(_json.JSONDecoder):
     """
 
 
+def _dump_arg_defaults(kwargs):
+    """Inject default arguments for dump functions."""
+    if current_app:
+        kwargs.setdefault('cls', current_app.json_encoder)
+        if not current_app.config['JSON_AS_ASCII']:
+            kwargs.setdefault('ensure_ascii', False)
+
+
+def _load_arg_defaults(kwargs):
+    """Inject default arguments for load functions."""
+    if current_app:
+        kwargs.setdefault('cls', current_app.json_decoder)
+
+
 def dumps(obj, **kwargs):
     """Serialize ``obj`` to a JSON formatted ``str`` by using the application's
     configured encoder (:attr:`~flask.Flask.json_encoder`) if there is an
     application on the stack.
+
+    This function can return ``unicode`` strings or ascii-only bytestrings by
+    default which coerce into unicode strings automatically.  That behavior by
+    default is controlled by the ``JSON_AS_ASCII`` configuration variable
+    and can be overriden by the simplejson ``ensure_ascii`` parameter.
     """
-    if current_app:
-        kwargs.setdefault('cls', current_app.json_encoder)
+    _dump_arg_defaults(kwargs)
     return _json.dumps(obj, **kwargs)
 
 
 def dump(obj, fp, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
-    if current_app:
-        kwargs.setdefault('cls', current_app.json_encoder)
+    _dump_arg_defaults(kwargs)
     return _json.dump(obj, fp, **kwargs)
 
 
@@ -90,16 +107,14 @@ def loads(s, **kwargs):
     configured decoder (:attr:`~flask.Flask.json_decoder`) if there is an
     application on the stack.
     """
-    if current_app:
-        kwargs.setdefault('cls', current_app.json_decoder)
+    _load_arg_defaults(kwargs)
     return _json.loads(s, **kwargs)
 
 
 def load(fp, **kwargs):
     """Like :func:`loads` but reads from a file object.
     """
-    if current_app:
-        kwargs.setdefault('cls', current_app.json_decoder)
+    _load_arg_defaults(kwargs)
     return _json.load(fp, **kwargs)
 
 

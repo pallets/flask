@@ -30,6 +30,10 @@ Release date to be decided.
 - The config object is now available to the template as a real global and
   not through a context processor which makes it available even in imported
   templates by default.
+- Added an option to generate non-ascii encoded JSON which should result
+  in less bytes being transmitted over the network.  It's disabled by
+  default to not cause confusion with existing libraries that might expect
+  ``flask.json.dumps`` to return bytestrings by default.
 
 Version 0.9
 -----------

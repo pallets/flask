@@ -79,6 +79,19 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv.mimetype, 'application/json')
             self.assert_equal(flask.json.loads(rv.data), d)
 
+    def test_json_as_unicode(self):
+        app = flask.Flask(__name__)
+
+        app.config['JSON_AS_ASCII'] = True
+        with app.app_context():
+            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            self.assert_equal(rv, '"\\u2603"')
+
+        app.config['JSON_AS_ASCII'] = False
+        with app.app_context():
+            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            self.assert_equal(rv, u'"\u2603"')
+
     def test_json_attr(self):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])

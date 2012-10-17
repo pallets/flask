@@ -142,6 +142,13 @@ The following configuration values are used internally by Flask:
 ``PREFERRED_URL_SCHEME``          The URL scheme that should be used for
                                   URL generation if no URL scheme is
                                   available.  This defaults to ``http``.
+``JSON_AS_ASCII``                 By default Flask serialize object to
+                                  ascii-encoded JSON.  If this is set to
+                                  ``False`` Flask will not encode to ASCII
+                                  and output strings as-is and return
+                                  unicode strings.  ``jsonfiy`` will
+                                  automatically encode it in ``utf-8``
+                                  then for transport for instance.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -183,6 +190,9 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 0.9
    ``PREFERRED_URL_SCHEME``
+
+.. versionadded:: 0.10
+   ``JSON_AS_ASCII``
 
 Configuring from Files
 ----------------------

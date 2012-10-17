@@ -274,7 +274,8 @@ class Flask(_PackageBoundObject):
         'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
-        'PREFERRED_URL_SCHEME':                 'http'
+        'PREFERRED_URL_SCHEME':                 'http',
+        'JSON_AS_ASCII':                        True
     })
 
     #: The rule object to use for URL rules created.  This is used by
