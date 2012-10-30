@@ -66,6 +66,14 @@ class TaggedJSONSerializer(object):
                 return {' d': http_date(value)}
             elif isinstance(value, dict):
                 return dict((k, _tag(v)) for k, v in value.iteritems())
+            elif isinstance(value, str):
+                try:
+                    return unicode(value)
+                except UnicodeError:
+                    raise UnexpectedUnicodeError(u'A byte string with '
+                        u'non-ASCII data was passed to the session system '
+                        u'which can only store unicode strings.  Consider '
+                        u'base64 encoding your string (String was %r)' % value)
             return value
         return json.dumps(_tag(value), separators=(',', ':'))
 
@@ -292,3 +300,6 @@ class SecureCookieSessionInterface(SessionInterface):
         response.set_cookie(app.session_cookie_name, val,
                             expires=expires, httponly=httponly,
                             domain=domain, path=path, secure=secure)
+
+
+from flask.debughelpers import UnexpectedUnicodeError
