@@ -37,6 +37,11 @@ from .templating import DispatchingJinjaLoader, Environment, \
 from .signals import request_started, request_finished, got_request_exception, \
     request_tearing_down, appcontext_tearing_down
 
+try:
+    bytes
+except NameError:
+    bytes = str  # Python < 2.6
+
 # a lock used for logger initialization
 _logger_lock = Lock()
 
@@ -573,8 +578,15 @@ class Flask(_PackageBoundObject):
 
         # Hack to support the init_jinja_globals method which is supported
         # until 1.0 but has an API deficiency.
-        if getattr(self.init_jinja_globals, 'im_func', None) is not \
-           Flask.init_jinja_globals.im_func:
+        if sys.version_info >= (3, ):
+            init_jinja_globals_modified = (
+                getattr(self.init_jinja_globals, '__func__', None)
+                is not Flask.init_jinja_globals)
+        else:
+            init_jinja_globals_modified = (
+                getattr(self.init_jinja_globals, 'im_func', None)
+                is not Flask.init_jinja_globals.im_func)
+        if init_jinja_globals_modified:
             from warnings import warn
             warn(DeprecationWarning('This flask class uses a customized '
                 'init_jinja_globals() method which is deprecated. '
@@ -1318,7 +1330,10 @@ class Flask(_PackageBoundObject):
             if isinstance(e, typecheck):
                 return handler(e)
 
-        raise exc_type, exc_value, tb
+        if sys.version_info > (3, ):
+            raise exc_value.with_traceback(tb)
+        else:
+            raise exc_type, exc_value, tb
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
@@ -1340,7 +1355,10 @@ class Flask(_PackageBoundObject):
             # (the function was actually called from the except part)
             # otherwise, we just raise the error again
             if exc_value is e:
-                raise exc_type, exc_value, tb
+                if sys.version_info > (3, ):
+                    raise exc_value.with_traceback(tb)
+                else:
+                    raise exc_type, exc_value, tb
             else:
                 raise e
 
@@ -1500,7 +1518,7 @@ class Flask(_PackageBoundObject):
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
             # specific values (like defualt content type selection).
-            if isinstance(rv, basestring):
+            if isinstance(rv, (bytes, unicode)):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:
@@ -1568,7 +1586,10 @@ class Flask(_PackageBoundObject):
         # still the same one we can reraise it with the original traceback,
         # otherwise we raise it from here.
         if error is exc_value:
-            raise exc_type, exc_value, tb
+            if sys.version_info > (3, ):
+                raise exc_value.with_traceback(tb)
+            else:
+                raise exc_type, exc_value, tb
         raise error
 
     def preprocess_request(self):
@@ -1739,11 +1760,12 @@ class Flask(_PackageBoundObject):
                                a list of headers and an optional
                                exception context to start the response
         """
-        with self.request_context(environ):
+        with self.request_context(environ) as ctx:
             try:
                 response = self.full_dispatch_request()
             except Exception, e:
                 response = self.make_response(self.handle_exception(e))
+                ctx.commit_exc_info()
             return response(environ, start_response)
 
     @property

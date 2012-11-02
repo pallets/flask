@@ -17,6 +17,11 @@ from . import Markup, json
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
+try:
+    bytes
+except NameError:
+    bytes = str  # Python < 2.6
+
 
 def total_seconds(td):
     return td.days * 60 * 60 * 24 + td.seconds
@@ -73,7 +78,7 @@ class TaggedJSONSerializer(object):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
-            the_key, the_value = obj.iteritems().next()
+            the_key, the_value = list(obj.iteritems())[0]
             if the_key == ' t':
                 return tuple(the_value)
             elif the_key == ' m':
@@ -81,6 +86,9 @@ class TaggedJSONSerializer(object):
             elif the_key == ' d':
                 return parse_date(the_value)
             return obj
+        if isinstance(value, bytes):
+            # NOTE: In Python 3, json.loads() only accepts unicode strings
+            value = value.decode('latin1')
         return json.loads(value, object_hook=object_hook)
 
 

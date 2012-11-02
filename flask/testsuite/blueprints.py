@@ -17,6 +17,7 @@ import warnings
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_cache_control_header
+from werkzeug._internal import _b
 from jinja2 import TemplateNotFound
 
 
@@ -47,10 +48,10 @@ class ModuleTestCase(FlaskTestCase):
             return 'the index'
         app.register_module(admin)
         c = app.test_client()
-        self.assert_equal(c.get('/').data, 'the index')
-        self.assert_equal(c.get('/admin/').data, 'admin index')
-        self.assert_equal(c.get('/admin/login').data, 'admin login')
-        self.assert_equal(c.get('/admin/logout').data, 'admin logout')
+        self.assert_equal(c.get('/').data, _b('the index'))
+        self.assert_equal(c.get('/admin/').data, _b('admin index'))
+        self.assert_equal(c.get('/admin/login').data, _b('admin login'))
+        self.assert_equal(c.get('/admin/logout').data, _b('admin logout'))
 
     @emits_module_deprecation_warning
     def test_default_endpoint_name(self):
@@ -61,7 +62,7 @@ class ModuleTestCase(FlaskTestCase):
         mod.add_url_rule('/', view_func=index)
         app.register_module(mod)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'Awesome')
+        self.assert_equal(rv.data, _b('Awesome'))
         with app.test_request_context():
             self.assert_equal(flask.url_for('frontend.index'), '/')
 
@@ -93,11 +94,11 @@ class ModuleTestCase(FlaskTestCase):
         app.register_module(admin)
         c = app.test_client()
 
-        self.assert_equal(c.get('/').data, 'the index')
+        self.assert_equal(c.get('/').data, _b('the index'))
         self.assert_equal(catched, ['before-app', 'after-app'])
         del catched[:]
 
-        self.assert_equal(c.get('/admin/').data, 'the admin')
+        self.assert_equal(c.get('/admin/').data, _b('the admin'))
         self.assert_equal(catched, ['before-app', 'before-admin',
                            'after-admin', 'after-app'])
 
@@ -122,8 +123,8 @@ class ModuleTestCase(FlaskTestCase):
             return flask.render_template_string('{{ a }}{{ b }}{{ c }}')
         app.register_module(admin)
         c = app.test_client()
-        self.assert_equal(c.get('/').data, '13')
-        self.assert_equal(c.get('/admin/').data, '123')
+        self.assert_equal(c.get('/').data, _b('13'))
+        self.assert_equal(c.get('/admin/').data, _b('123'))
 
     @emits_module_deprecation_warning
     def test_late_binding(self):
@@ -133,7 +134,7 @@ class ModuleTestCase(FlaskTestCase):
         def index():
             return '42'
         app.register_module(admin, url_prefix='/admin')
-        self.assert_equal(app.test_client().get('/admin/').data, '42')
+        self.assert_equal(app.test_client().get('/admin/').data, _b('42'))
 
     @emits_module_deprecation_warning
     def test_error_handling(self):
@@ -155,10 +156,10 @@ class ModuleTestCase(FlaskTestCase):
         c = app.test_client()
         rv = c.get('/')
         self.assert_equal(rv.status_code, 404)
-        self.assert_equal(rv.data, 'not found')
+        self.assert_equal(rv.data, _b('not found'))
         rv = c.get('/error')
         self.assert_equal(rv.status_code, 500)
-        self.assert_equal('internal server error', rv.data)
+        self.assert_equal(rv.data, _b('internal server error'))
 
     def test_templates_and_static(self):
         app = moduleapp
@@ -166,15 +167,15 @@ class ModuleTestCase(FlaskTestCase):
         c = app.test_client()
 
         rv = c.get('/')
-        self.assert_equal(rv.data, 'Hello from the Frontend')
+        self.assert_equal(rv.data, _b('Hello from the Frontend'))
         rv = c.get('/admin/')
-        self.assert_equal(rv.data, 'Hello from the Admin')
+        self.assert_equal(rv.data, _b('Hello from the Admin'))
         rv = c.get('/admin/index2')
-        self.assert_equal(rv.data, 'Hello from the Admin')
+        self.assert_equal(rv.data, _b('Hello from the Admin'))
         rv = c.get('/admin/static/test.txt')
-        self.assert_equal(rv.data.strip(), 'Admin File')
+        self.assert_equal(rv.data.strip(), _b('Admin File'))
         rv = c.get('/admin/static/css/test.css')
-        self.assert_equal(rv.data.strip(), '/* nested file */')
+        self.assert_equal(rv.data.strip(), _b('/* nested file */'))
 
         with app.test_request_context():
             self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
@@ -186,7 +187,7 @@ class ModuleTestCase(FlaskTestCase):
             except TemplateNotFound, e:
                 self.assert_equal(e.name, 'missing.html')
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
@@ -202,13 +203,13 @@ class ModuleTestCase(FlaskTestCase):
             except NotFound:
                 pass
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
             try:
                 f('../__init__.py')
             except NotFound:
                 pass
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
 
             # testcase for a security issue that may exist on windows systems
             import os
@@ -221,7 +222,7 @@ class ModuleTestCase(FlaskTestCase):
                 except NotFound:
                     pass
                 else:
-                    self.assert_(0, 'expected exception')
+                    self.assertTrue(0, 'expected exception')
             finally:
                 os.path = old_path
 
@@ -249,8 +250,8 @@ class ModuleTestCase(FlaskTestCase):
         app.register_module(module)
 
         c = app.test_client()
-        self.assert_equal(c.get('/foo/').data, 'index')
-        self.assert_equal(c.get('/foo/bar').data, 'bar')
+        self.assert_equal(c.get('/foo/').data, _b('index'))
+        self.assert_equal(c.get('/foo/bar').data, _b('bar'))
 
 
 class BlueprintTestCase(FlaskTestCase):
@@ -291,9 +292,9 @@ class BlueprintTestCase(FlaskTestCase):
 
         c = app.test_client()
 
-        self.assert_equal(c.get('/frontend-no').data, 'frontend says no')
-        self.assert_equal(c.get('/backend-no').data, 'backend says no')
-        self.assert_equal(c.get('/what-is-a-sideend').data, 'application itself says no')
+        self.assert_equal(c.get('/frontend-no').data, _b('frontend says no'))
+        self.assert_equal(c.get('/backend-no').data, _b('backend says no'))
+        self.assert_equal(c.get('/what-is-a-sideend').data, _b('application itself says no'))
 
     def test_blueprint_url_definitions(self):
         bp = flask.Blueprint('test', __name__)
@@ -311,10 +312,10 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(bp, url_prefix='/2', url_defaults={'bar': 19})
 
         c = app.test_client()
-        self.assert_equal(c.get('/1/foo').data, u'23/42')
-        self.assert_equal(c.get('/2/foo').data, u'19/42')
-        self.assert_equal(c.get('/1/bar').data, u'23')
-        self.assert_equal(c.get('/2/bar').data, u'19')
+        self.assert_equal(c.get('/1/foo').data, _b('23/42'))
+        self.assert_equal(c.get('/2/foo').data, _b('19/42'))
+        self.assert_equal(c.get('/1/bar').data, _b('23'))
+        self.assert_equal(c.get('/2/bar').data, _b('19'))
 
     def test_blueprint_url_processors(self):
         bp = flask.Blueprint('frontend', __name__, url_prefix='/<lang_code>')
@@ -340,23 +341,23 @@ class BlueprintTestCase(FlaskTestCase):
 
         c = app.test_client()
 
-        self.assert_equal(c.get('/de/').data, '/de/about')
-        self.assert_equal(c.get('/de/about').data, '/de/')
+        self.assert_equal(c.get('/de/').data, _b('/de/about'))
+        self.assert_equal(c.get('/de/about').data, _b('/de/'))
 
     def test_templates_and_static(self):
         from blueprintapp import app
         c = app.test_client()
 
         rv = c.get('/')
-        self.assert_equal(rv.data, 'Hello from the Frontend')
+        self.assert_equal(rv.data, _b('Hello from the Frontend'))
         rv = c.get('/admin/')
-        self.assert_equal(rv.data, 'Hello from the Admin')
+        self.assert_equal(rv.data, _b('Hello from the Admin'))
         rv = c.get('/admin/index2')
-        self.assert_equal(rv.data, 'Hello from the Admin')
+        self.assert_equal(rv.data, _b('Hello from the Admin'))
         rv = c.get('/admin/static/test.txt')
-        self.assert_equal(rv.data.strip(), 'Admin File')
+        self.assert_equal(rv.data.strip(), _b('Admin File'))
         rv = c.get('/admin/static/css/test.css')
-        self.assert_equal(rv.data.strip(), '/* nested file */')
+        self.assert_equal(rv.data.strip(), _b('/* nested file */'))
 
         # try/finally, in case other tests use this app for Blueprint tests.
         max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
@@ -381,7 +382,7 @@ class BlueprintTestCase(FlaskTestCase):
             except TemplateNotFound, e:
                 self.assert_equal(e.name, 'missing.html')
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
@@ -436,9 +437,9 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(backend)
 
         c = app.test_client()
-        self.assert_equal(c.get('/fe').data.strip(), '/be')
-        self.assert_equal(c.get('/fe2').data.strip(), '/fe')
-        self.assert_equal(c.get('/be').data.strip(), '/fe')
+        self.assert_equal(c.get('/fe').data.strip(), _b('/be'))
+        self.assert_equal(c.get('/fe2').data.strip(), _b('/fe'))
+        self.assert_equal(c.get('/be').data.strip(), _b('/fe'))
 
     def test_empty_url_defaults(self):
         bp = flask.Blueprint('bp', __name__)
@@ -452,8 +453,8 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(bp)
 
         c = app.test_client()
-        self.assert_equal(c.get('/').data, '1')
-        self.assert_equal(c.get('/page/2').data, '2')
+        self.assert_equal(c.get('/').data, _b('1'))
+        self.assert_equal(c.get('/page/2').data, _b('2'))
 
     def test_route_decorator_custom_endpoint(self):
 
@@ -483,11 +484,11 @@ class BlueprintTestCase(FlaskTestCase):
             return flask.request.endpoint
 
         c = app.test_client()
-        self.assertEqual(c.get('/').data, 'index')
-        self.assertEqual(c.get('/py/foo').data, 'bp.foo')
-        self.assertEqual(c.get('/py/bar').data, 'bp.bar')
-        self.assertEqual(c.get('/py/bar/123').data, 'bp.123')
-        self.assertEqual(c.get('/py/bar/foo').data, 'bp.bar_foo')
+        self.assertEqual(c.get('/').data, _b('index'))
+        self.assertEqual(c.get('/py/foo').data, _b('bp.foo'))
+        self.assertEqual(c.get('/py/bar').data, _b('bp.bar'))
+        self.assertEqual(c.get('/py/bar/123').data, _b('bp.123'))
+        self.assertEqual(c.get('/py/bar/foo').data, _b('bp.bar_foo'))
 
     def test_route_decorator_custom_endpoint_with_dots(self):
         bp = flask.Blueprint('bp', __name__)
@@ -534,7 +535,7 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(bp, url_prefix='/py')
 
         c = app.test_client()
-        self.assertEqual(c.get('/py/foo').data, 'bp.foo')
+        self.assertEqual(c.get('/py/foo').data, _b('bp.foo'))
         # The rule's din't actually made it through
         rv = c.get('/py/bar')
         assert rv.status_code == 404
@@ -548,7 +549,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in app.jinja_env.filters.keys())
+        self.assertTrue('my_reverse' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -559,7 +560,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in app.jinja_env.filters.keys())
+        self.assertTrue('my_reverse' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -570,7 +571,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in app.jinja_env.filters.keys())
+        self.assertTrue('strrev' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -581,7 +582,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse, 'strrev')
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in app.jinja_env.filters.keys())
+        self.assertTrue('strrev' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -596,7 +597,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_template_filter_after_route_with_template(self):
         app = flask.Flask(__name__)
@@ -609,7 +610,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app.register_blueprint(bp, url_prefix='/py')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_add_template_filter_with_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -622,7 +623,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_template_filter_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -635,7 +636,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_add_template_filter_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -648,7 +649,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_template_test(self):
         bp = flask.Blueprint('bp', __name__)
@@ -657,9 +658,9 @@ class BlueprintTestCase(FlaskTestCase):
             return isinstance(value, bool)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('is_boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('is_boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['is_boolean'], is_boolean)
-        self.assert_(app.jinja_env.tests['is_boolean'](False))
+        self.assertTrue(app.jinja_env.tests['is_boolean'](False))
 
     def test_add_template_test(self):
         bp = flask.Blueprint('bp', __name__)
@@ -668,9 +669,9 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_test(is_boolean)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('is_boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('is_boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['is_boolean'], is_boolean)
-        self.assert_(app.jinja_env.tests['is_boolean'](False))
+        self.assertTrue(app.jinja_env.tests['is_boolean'](False))
 
     def test_template_test_with_name(self):
         bp = flask.Blueprint('bp', __name__)
@@ -679,9 +680,9 @@ class BlueprintTestCase(FlaskTestCase):
             return isinstance(value, bool)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
-        self.assert_(app.jinja_env.tests['boolean'](False))
+        self.assertTrue(app.jinja_env.tests['boolean'](False))
 
     def test_add_template_test_with_name(self):
         bp = flask.Blueprint('bp', __name__)
@@ -690,9 +691,9 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_test(is_boolean, 'boolean')
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
-        self.assert_(app.jinja_env.tests['boolean'](False))
+        self.assertTrue(app.jinja_env.tests['boolean'](False))
 
     def test_template_test_with_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -705,7 +706,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_template_test_after_route_with_template(self):
         app = flask.Flask(__name__)
@@ -718,7 +719,7 @@ class BlueprintTestCase(FlaskTestCase):
             return isinstance(value, bool)
         app.register_blueprint(bp, url_prefix='/py')
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_add_template_test_with_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -731,7 +732,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_template_test_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -744,7 +745,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_add_template_test_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -757,7 +758,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
 def suite():
     suite = unittest.TestSuite()

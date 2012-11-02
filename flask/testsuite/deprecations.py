@@ -14,6 +14,7 @@ from __future__ import with_statement
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase, catch_warnings
+from werkzeug._internal import _b
 
 
 class DeprecationsTestCase(FlaskTestCase):
@@ -30,9 +31,9 @@ class DeprecationsTestCase(FlaskTestCase):
                 return app.jinja_env.globals['foo']
 
             c = app.test_client()
-            self.assert_equal(c.get('/').data, '42')
+            self.assert_equal(c.get('/').data, _b('42'))
             self.assert_equal(len(log), 1)
-            self.assert_('init_jinja_globals' in str(log[0]['message']))
+            self.assertTrue('init_jinja_globals' in str(log[0]['message']))
 
 
 def suite():

@@ -101,9 +101,9 @@ def emits_module_deprecation_warning(f):
     def new_f(self, *args, **kwargs):
         with catch_warnings() as log:
             f(self, *args, **kwargs)
-            self.assert_(log, 'expected deprecation warning')
+            self.assertTrue(log, 'expected deprecation warning')
             for entry in log:
-                self.assert_('Modules are deprecated' in str(entry['message']))
+                self.assertTrue('Modules are deprecated' in str(entry['message']))
     return update_wrapper(new_f, f)
 
 

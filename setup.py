@@ -38,6 +38,7 @@ Links
   <http://github.com/mitsuhiko/flask/zipball/master#egg=Flask-dev>`_
 
 """
+import sys
 from setuptools import Command, setup
 
 class run_audit(Command):
@@ -59,7 +60,7 @@ class run_audit(Command):
         try:
             import pyflakes.scripts.pyflakes as flakes
         except ImportError:
-            print "Audit requires PyFlakes installed in your system."
+            print("Audit requires PyFlakes installed in your system.")
             sys.exit(-1)
 
         warns = 0
@@ -71,10 +72,14 @@ class run_audit(Command):
                     if file != '__init__.py' and file.endswith('.py') :
                         warns += flakes.checkPath(os.path.join(root, file))
         if warns > 0:
-            print "Audit finished with total %d warnings." % warns
+            print("Audit finished with total %d warnings." % warns)
         else:
-            print "No problems found in sourcecode."
+            print("No problems found in sourcecode.")
 
+
+kwargs = {}
+if sys.version_info >= (3, ):
+    kwargs['use_2to3'] = True
 setup(
     name='Flask',
     version='0.10-dev',
@@ -104,9 +109,14 @@ setup(
         'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.1',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     cmdclass={'audit': run_audit},
-    test_suite='flask.testsuite.suite'
+    test_suite='flask.testsuite.suite',
+    **kwargs
 )

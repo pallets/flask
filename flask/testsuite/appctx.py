@@ -89,7 +89,7 @@ class AppContextTestCase(FlaskTestCase):
             with flask._app_ctx_stack.top:
                 with flask._request_ctx_stack.top:
                     pass
-            self.assert_(flask._request_ctx_stack.request.environ
+            self.assertTrue(flask._request_ctx_stack.request.environ
                 ['werkzeug.request'] is not None)
         c = app.test_client()
         c.get('/')

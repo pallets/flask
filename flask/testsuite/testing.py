@@ -14,6 +14,7 @@ from __future__ import with_statement
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
+from werkzeug._internal import _b
 
 
 class TestToolsTestCase(FlaskTestCase):
@@ -31,7 +32,7 @@ class TestToolsTestCase(FlaskTestCase):
         self.assert_equal(ctx.request.url, 'http://example.com:1234/foo/')
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.data, 'http://example.com:1234/foo/')
+            self.assert_equal(rv.data, _b('http://example.com:1234/foo/'))
 
     def test_environ_defaults(self):
         app = flask.Flask(__name__)
@@ -44,7 +45,7 @@ class TestToolsTestCase(FlaskTestCase):
         self.assert_equal(ctx.request.url, 'http://localhost/')
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.data, 'http://localhost/')
+            self.assert_equal(rv.data, _b('http://localhost/'))
 
     def test_redirect_keep_session(self):
         app = flask.Flask(__name__)
@@ -63,20 +64,20 @@ class TestToolsTestCase(FlaskTestCase):
 
         with app.test_client() as c:
             rv = c.get('/getsession')
-            assert rv.data == '<missing>'
+            assert rv.data == _b('<missing>')
 
             rv = c.get('/')
-            assert rv.data == 'index'
+            assert rv.data == _b('index')
             assert flask.session.get('data') == 'foo'
             rv = c.post('/', data={}, follow_redirects=True)
-            assert rv.data == 'foo'
+            assert rv.data == _b('foo')
 
             # This support requires a new Werkzeug version
             if not hasattr(c, 'redirect_client'):
                 assert flask.session.get('data') == 'foo'
 
             rv = c.get('/getsession')
-            assert rv.data == 'foo'
+            assert rv.data == _b('foo')
 
     def test_session_transactions(self):
         app = flask.Flask(__name__)
@@ -93,7 +94,7 @@ class TestToolsTestCase(FlaskTestCase):
                 sess['foo'] = [42]
                 self.assert_equal(len(sess), 1)
             rv = c.get('/')
-            self.assert_equal(rv.data, '[42]')
+            self.assert_equal(rv.data, _b('[42]'))
             with c.session_transaction() as sess:
                 self.assert_equal(len(sess), 1)
                 self.assert_equal(sess['foo'], [42])
@@ -107,7 +108,7 @@ class TestToolsTestCase(FlaskTestCase):
                 with c.session_transaction() as sess:
                     pass
             except RuntimeError, e:
-                self.assert_('Session backend did not open a session' in str(e))
+                self.assertTrue('Session backend did not open a session' in str(e))
             else:
                 self.fail('Expected runtime error')
 
@@ -119,9 +120,9 @@ class TestToolsTestCase(FlaskTestCase):
         with app.test_client() as c:
             rv = c.get('/')
             req = flask.request._get_current_object()
-            self.assert_(req is not None)
+            self.assertTrue(req is not None)
             with c.session_transaction():
-                self.assert_(req is flask.request._get_current_object())
+                self.assertTrue(req is flask.request._get_current_object())
 
     def test_session_transaction_needs_cookies(self):
         app = flask.Flask(__name__)
@@ -131,7 +132,7 @@ class TestToolsTestCase(FlaskTestCase):
             with c.session_transaction() as s:
                 pass
         except RuntimeError, e:
-            self.assert_('cookies' in str(e))
+            self.assertTrue('cookies' in str(e))
         else:
             self.fail('Expected runtime error')
 
@@ -149,12 +150,12 @@ class TestToolsTestCase(FlaskTestCase):
         with app.test_client() as c:
             resp = c.get('/')
             self.assert_equal(flask.g.value, 42)
-            self.assert_equal(resp.data, 'Hello World!')
+            self.assert_equal(resp.data, _b('Hello World!'))
             self.assert_equal(resp.status_code, 200)
 
             resp = c.get('/other')
-            self.assert_(not hasattr(flask.g, 'value'))
-            self.assert_('Internal Server Error' in resp.data)
+            self.assertTrue(not hasattr(flask.g, 'value'))
+            self.assertTrue(_b('Internal Server Error') in resp.data)
             self.assert_equal(resp.status_code, 500)
             flask.g.value = 23
 
@@ -220,8 +221,8 @@ class SubdomainTestCase(FlaskTestCase):
         url = flask.url_for('view', company_id='xxx')
         response = self.client.get(url)
 
-        self.assertEquals(200, response.status_code)
-        self.assertEquals('xxx', response.data)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(_b('xxx'), response.data)
 
 
     def test_nosubdomain(self):
@@ -232,8 +233,8 @@ class SubdomainTestCase(FlaskTestCase):
         url = flask.url_for('view', company_id='xxx')
         response = self.client.get(url)
 
-        self.assertEquals(200, response.status_code)
-        self.assertEquals('xxx', response.data)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(_b('xxx'), response.data)
 
 
 def suite():

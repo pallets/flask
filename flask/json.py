@@ -28,6 +28,12 @@ __all__ = ['dump', 'dumps', 'load', 'loads', 'htmlsafe_dump',
            'jsonify']
 
 
+try:
+    bytes
+except NameError:
+    bytes = str  # Python < 2.6
+
+
 class JSONEncoder(_json.JSONEncoder):
     """The default Flask JSON encoder.  This one extends the default simplejson
     encoder by also supporting ``datetime`` objects as well as ``Markup``
@@ -108,6 +114,8 @@ def loads(s, **kwargs):
     application on the stack.
     """
     _load_arg_defaults(kwargs)
+    if isinstance(s, bytes):
+        s = s.decode('ascii')
     return _json.loads(s, **kwargs)
 
 

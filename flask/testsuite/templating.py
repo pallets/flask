@@ -14,6 +14,7 @@ from __future__ import with_statement
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
+from werkzeug._internal import _b
 
 
 class TemplatingTestCase(FlaskTestCase):
@@ -27,7 +28,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('context_template.html', value=23)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '<p>23|42')
+        self.assert_equal(rv.data, _b('<p>23|42'))
 
     def test_original_win(self):
         app = flask.Flask(__name__)
@@ -35,7 +36,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template_string('{{ config }}', config=42)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '42')
+        self.assert_equal(rv.data, _b('42'))
 
     def test_request_less_rendering(self):
         app = flask.Flask(__name__)
@@ -63,7 +64,7 @@ class TemplatingTestCase(FlaskTestCase):
                 {{ session.test }}
             ''')
         rv = app.test_client().get('/?foo=42')
-        self.assert_equal(rv.data.split(), ['42', '23', 'False', 'aha'])
+        self.assert_equal(rv.data.split(), [_b('42'), _b('23'), _b('False'), _b('aha')])
 
     def test_escaping(self):
         text = '<p>Hello World!'
@@ -74,12 +75,12 @@ class TemplatingTestCase(FlaskTestCase):
                                          html=flask.Markup(text))
         lines = app.test_client().get('/').data.splitlines()
         self.assert_equal(lines, [
-            '&lt;p&gt;Hello World!',
-            '<p>Hello World!',
-            '<p>Hello World!',
-            '<p>Hello World!',
-            '&lt;p&gt;Hello World!',
-            '<p>Hello World!'
+            _b('&lt;p&gt;Hello World!'),
+            _b('<p>Hello World!'),
+            _b('<p>Hello World!'),
+            _b('<p>Hello World!'),
+            _b('&lt;p&gt;Hello World!'),
+            _b('<p>Hello World!')
         ])
 
     def test_no_escaping(self):
@@ -101,7 +102,7 @@ class TemplatingTestCase(FlaskTestCase):
         @app.template_filter()
         def my_reverse(s):
             return s[::-1]
-        self.assert_('my_reverse' in app.jinja_env.filters.keys())
+        self.assertTrue('my_reverse' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -110,7 +111,7 @@ class TemplatingTestCase(FlaskTestCase):
         def my_reverse(s):
             return s[::-1]
         app.add_template_filter(my_reverse)
-        self.assert_('my_reverse' in app.jinja_env.filters.keys())
+        self.assertTrue('my_reverse' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -119,7 +120,7 @@ class TemplatingTestCase(FlaskTestCase):
         @app.template_filter('strrev')
         def my_reverse(s):
             return s[::-1]
-        self.assert_('strrev' in app.jinja_env.filters.keys())
+        self.assertTrue('strrev' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -128,7 +129,7 @@ class TemplatingTestCase(FlaskTestCase):
         def my_reverse(s):
             return s[::-1]
         app.add_template_filter(my_reverse, 'strrev')
-        self.assert_('strrev' in app.jinja_env.filters.keys())
+        self.assertTrue('strrev' in app.jinja_env.filters.keys())
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -141,7 +142,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_add_template_filter_with_template(self):
         app = flask.Flask(__name__)
@@ -152,7 +153,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -163,7 +164,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_add_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -174,43 +175,43 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, _b('dcba'))
 
     def test_template_test(self):
         app = flask.Flask(__name__)
         @app.template_test()
         def boolean(value):
             return isinstance(value, bool)
-        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['boolean'], boolean)
-        self.assert_(app.jinja_env.tests['boolean'](False))
+        self.assertTrue(app.jinja_env.tests['boolean'](False))
 
     def test_add_template_test(self):
         app = flask.Flask(__name__)
         def boolean(value):
             return isinstance(value, bool)
         app.add_template_test(boolean)
-        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['boolean'], boolean)
-        self.assert_(app.jinja_env.tests['boolean'](False))
+        self.assertTrue(app.jinja_env.tests['boolean'](False))
 
     def test_template_test_with_name(self):
         app = flask.Flask(__name__)
         @app.template_test('boolean')
         def is_boolean(value):
             return isinstance(value, bool)
-        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
-        self.assert_(app.jinja_env.tests['boolean'](False))
+        self.assertTrue(app.jinja_env.tests['boolean'](False))
 
     def test_add_template_test_with_name(self):
         app = flask.Flask(__name__)
         def is_boolean(value):
             return isinstance(value, bool)
         app.add_template_test(is_boolean, 'boolean')
-        self.assert_('boolean' in app.jinja_env.tests.keys())
+        self.assertTrue('boolean' in app.jinja_env.tests.keys())
         self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
-        self.assert_(app.jinja_env.tests['boolean'](False))
+        self.assertTrue(app.jinja_env.tests['boolean'](False))
 
     def test_template_test_with_template(self):
         app = flask.Flask(__name__)
@@ -221,7 +222,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_add_template_test_with_template(self):
         app = flask.Flask(__name__)
@@ -232,7 +233,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -243,7 +244,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_add_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -254,7 +255,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assertTrue(_b('Success!') in rv.data)
 
     def test_custom_template_loader(self):
         class MyFlask(flask.Flask):
@@ -267,7 +268,7 @@ class TemplatingTestCase(FlaskTestCase):
             return flask.render_template('index.html')
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.data, 'Hello Custom World!')
+        self.assert_equal(rv.data, _b('Hello Custom World!'))
 
     def test_iterable_loader(self):
         app = flask.Flask(__name__)
@@ -283,7 +284,7 @@ class TemplatingTestCase(FlaskTestCase):
                 value=23)
 
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '<h1>Jameson</h1>')
+        self.assert_equal(rv.data, _b('<h1>Jameson</h1>'))
 
 
 def suite():
