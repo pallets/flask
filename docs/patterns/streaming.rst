@@ -24,7 +24,7 @@ data and to then invoke that function and pass it to a response object::
                 yield ','.join(row) + '\n'
         return Response(generate(), mimetype='text/csv')
 
-Each ``yield`` expression is directly sent to the browser.  Now though
+Each ``yield`` expression is directly sent to the browser.  Note though
 that some WSGI middlewares might break streaming, so be careful there in
 debug environments with profilers and other things you might have enabled.
 
