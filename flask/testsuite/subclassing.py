@@ -13,8 +13,7 @@ import flask
 import unittest
 from StringIO import StringIO
 from logging import StreamHandler
-from flask.testsuite import FlaskTestCase
-from werkzeug._internal import _b
+from flask.testsuite import _b, FlaskTestCase
 
 
 class FlaskSubclassingTestCase(FlaskTestCase):

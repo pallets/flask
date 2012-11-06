@@ -12,9 +12,8 @@ from __future__ import with_statement
 import flask
 import flask.views
 import unittest
-from flask.testsuite import FlaskTestCase
+from flask.testsuite import _b, FlaskTestCase
 from werkzeug.http import parse_set_header
-from werkzeug._internal import _b
 
 
 class ViewTestCase(FlaskTestCase):

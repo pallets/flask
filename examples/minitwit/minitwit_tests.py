@@ -12,7 +12,7 @@ import os
 import minitwit
 import unittest
 import tempfile
-from werkzeug._internal import _b
+from flask.testsuite import _b
 
 
 class MiniTwitTestCase(unittest.TestCase):

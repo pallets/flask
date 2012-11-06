@@ -16,9 +16,8 @@ import flask
 import unittest
 from logging import StreamHandler
 from StringIO import StringIO
-from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
+from flask.testsuite import _b, FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
-from werkzeug._internal import _b
 
 
 def has_encoding(name):

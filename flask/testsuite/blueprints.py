@@ -14,10 +14,9 @@ from __future__ import with_statement
 import flask
 import unittest
 import warnings
-from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
+from flask.testsuite import _b, FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_cache_control_header
-from werkzeug._internal import _b
 from jinja2 import TemplateNotFound
 
 

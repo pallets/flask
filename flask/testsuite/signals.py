@@ -10,8 +10,7 @@
 """
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase
-from werkzeug._internal import _b
+from flask.testsuite import _b, FlaskTestCase
 
 
 class SignalsTestCase(FlaskTestCase):

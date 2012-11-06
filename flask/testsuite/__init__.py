@@ -23,6 +23,11 @@ from contextlib import contextmanager
 from werkzeug.utils import import_string, find_modules
 
 
+if sys.version_info >= (3, ):
+    _b = lambda _: _ if isinstance(_, bytes) else _.encode('utf-8')
+else:
+    _b = str
+
 def add_to_path(path):
     """Adds an entry to sys.path if it's not already there.  This does
     not append it but moves it to the front so that we can be sure it

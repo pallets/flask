@@ -17,11 +17,10 @@ import pickle
 import unittest
 from datetime import datetime
 from threading import Thread
-from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
+from flask.testsuite import _b, FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
-from werkzeug._internal import _b
 
 
 class BasicFunctionalityTestCase(FlaskTestCase):

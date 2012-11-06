@@ -12,7 +12,7 @@ import os
 import flaskr
 import unittest
 import tempfile
-from werkzeug._internal import _b
+from flask.testsuite import _b
 
 
 class FlaskrTestCase(unittest.TestCase):

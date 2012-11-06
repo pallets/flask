@@ -17,8 +17,7 @@ import flask
 import threading
 import unittest
 from werkzeug.exceptions import NotFound
-from werkzeug._internal import _b
-from flask.testsuite import FlaskTestCase
+from flask.testsuite import _b, FlaskTestCase
 
 
 _gc_lock = threading.Lock()

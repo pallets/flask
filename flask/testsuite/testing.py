@@ -13,8 +13,7 @@ from __future__ import with_statement
 
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase
-from werkzeug._internal import _b
+from flask.testsuite import _b, FlaskTestCase
 
 
 class TestToolsTestCase(FlaskTestCase):

@@ -13,8 +13,7 @@ from __future__ import with_statement
 
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase, catch_warnings
-from werkzeug._internal import _b
+from flask.testsuite import _b, FlaskTestCase, catch_warnings
 
 
 class DeprecationsTestCase(FlaskTestCase):
