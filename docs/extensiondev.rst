@@ -166,6 +166,8 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
 
     import sqlite3
 
+    from flask import current_app
+
     # Find the stack on which we want to store the database connection.
     # Starting with Flask 0.9, the _app_ctx_stack is the correct one,
     # before that we need to use the _request_ctx_stack.
@@ -194,7 +196,7 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
                 app.teardown_request(self.teardown)
 
         def connect(self):
-            return sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
+            return sqlite3.connect(current_app.config['SQLITE3_DATABASE'])
 
         def teardown(self, exception):
             ctx = stack.top
