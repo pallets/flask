@@ -7,7 +7,7 @@ python:
   - 3.2
   - pypy
 
-before_install: pip install simplejson
+before_install: if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then pip install simplejson; fi
 
 install: if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install -r requirements.py3.txt --use-mirrors; fi
 
