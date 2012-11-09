@@ -1,0 +1,2 @@
+-e git+git://github.com/puzzlet/itsdangerous.git@py3#egg=itsdangerous
+-e git+git://github.com/puzzlet/werkzeug.git@py3-dev#egg=Werkzeug
