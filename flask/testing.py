@@ -67,6 +67,9 @@ class FlaskClient(Client):
         self.cookie_jar.inject_wsgi(environ_overrides)
         outer_reqctx = _request_ctx_stack.top
         with app.test_request_context(*args, **kwargs) as c:
+
+            app.preprocess_request()
+
             sess = app.open_session(c.request)
             if sess is None:
                 raise RuntimeError('Session backend did not open a session. '
