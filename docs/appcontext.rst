@@ -18,7 +18,7 @@ assumptions are true:
     modify it, there is no magic proxy that can give you a reference to
     the application object you're currently creating or modifying.
 
-In the contrast, during request handling, a couple of other rules exist:
+In contrast, during request handling, a couple of other rules exist:
 
 -   while a request is active, the context local objects
     (:data:`flask.request` and others) point to the current request.
