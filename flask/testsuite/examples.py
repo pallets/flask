@@ -16,6 +16,12 @@ from flask.testsuite import add_to_path
 def setup_path():
     example_path = os.path.join(os.path.dirname(__file__),
                                 os.pardir, os.pardir, 'examples')
+    if not os.path.isdir(example_path):
+        # this is the case when you run 'python setup.py test' in Python 3
+        example_path = os.path.join(
+            os.path.dirname(__file__),
+            os.pardir, os.pardir, os.pardir, os.pardir,
+            'examples')
     add_to_path(os.path.join(example_path, 'flaskr'))
     add_to_path(os.path.join(example_path, 'minitwit'))
 

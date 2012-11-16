@@ -167,6 +167,7 @@ class RequestContext(object):
         self.g = app.request_globals_class()
         self.flashes = None
         self.session = None
+        self.last_exception = None
 
         # Request contexts can be pushed multiple times and interleaved with
         # other request contexts.  Now only if the last level is popped we
@@ -205,6 +206,9 @@ class RequestContext(object):
             self.request.url_rule = url_rule
         except HTTPException, e:
             self.request.routing_exception = e
+
+    def commit_exc_info(self):
+        _, self.last_exception, _ = sys.exc_info()
 
     def push(self):
         """Binds the request context to the current context."""
@@ -285,7 +289,7 @@ class RequestContext(object):
            (tb is not None and self.app.preserve_context_on_exception):
             self.preserved = True
         else:
-            self.pop(exc_value)
+            self.pop(exc_value or self.last_exception)
 
     def __repr__(self):
         return '<%s \'%s\' [%s] of %s>' % (

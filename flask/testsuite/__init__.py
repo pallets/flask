@@ -23,6 +23,11 @@ from contextlib import contextmanager
 from werkzeug.utils import import_string, find_modules
 
 
+if sys.version_info >= (3, ):
+    _b = lambda _: _ if isinstance(_, bytes) else _.encode('utf-8')
+else:
+    _b = str
+
 def add_to_path(path):
     """Adds an entry to sys.path if it's not already there.  This does
     not append it but moves it to the front so that we can be sure it
@@ -101,9 +106,9 @@ def emits_module_deprecation_warning(f):
     def new_f(self, *args, **kwargs):
         with catch_warnings() as log:
             f(self, *args, **kwargs)
-            self.assert_(log, 'expected deprecation warning')
+            self.assertTrue(log, 'expected deprecation warning')
             for entry in log:
-                self.assert_('Modules are deprecated' in str(entry['message']))
+                self.assertTrue('Modules are deprecated' in str(entry['message']))
     return update_wrapper(new_f, f)
 
 

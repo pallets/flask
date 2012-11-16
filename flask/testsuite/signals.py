@@ -10,7 +10,7 @@
 """
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase
+from flask.testsuite import _b, FlaskTestCase
 
 
 class SignalsTestCase(FlaskTestCase):
@@ -44,7 +44,7 @@ class SignalsTestCase(FlaskTestCase):
             calls.append('before-signal')
 
         def after_request_signal(sender, response):
-            self.assert_equal(response.data, 'stuff')
+            self.assert_equal(response.data, _b('stuff'))
             calls.append('after-signal')
 
         @app.before_request
@@ -67,7 +67,7 @@ class SignalsTestCase(FlaskTestCase):
 
         try:
             rv = app.test_client().get('/')
-            self.assert_equal(rv.data, 'stuff')
+            self.assert_equal(rv.data, _b('stuff'))
 
             self.assert_equal(calls, ['before-signal', 'before-handler',
                              'handler', 'after-handler',
@@ -91,7 +91,7 @@ class SignalsTestCase(FlaskTestCase):
         try:
             self.assert_equal(app.test_client().get('/').status_code, 500)
             self.assert_equal(len(recorded), 1)
-            self.assert_(isinstance(recorded[0], ZeroDivisionError))
+            self.assertTrue(isinstance(recorded[0], ZeroDivisionError))
         finally:
             flask.got_request_exception.disconnect(record, app)
 

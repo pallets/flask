@@ -13,7 +13,7 @@ import flask
 import unittest
 from StringIO import StringIO
 from logging import StreamHandler
-from flask.testsuite import FlaskTestCase
+from flask.testsuite import _b, FlaskTestCase
 
 
 class FlaskSubclassingTestCase(FlaskTestCase):
@@ -34,7 +34,7 @@ class FlaskSubclassingTestCase(FlaskTestCase):
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_('Internal Server Error' in rv.data)
+        self.assertTrue(_b('Internal Server Error') in rv.data)
 
         err = out.getvalue()
         self.assert_equal(err, '')

@@ -29,7 +29,11 @@ class ExtImportHookTestCase(FlaskTestCase):
                 entry == 'flaskext') and value is not None:
                 sys.modules.pop(entry, None)
         from flask import ext
-        reload(ext)
+        if sys.version_info > (3, ):
+            import imp
+            imp.reload(ext)
+        else:
+            reload(ext)
 
         # reloading must not add more hooks
         import_hooks = 0
@@ -43,7 +47,7 @@ class ExtImportHookTestCase(FlaskTestCase):
     def teardown(self):
         from flask import ext
         for key in ext.__dict__:
-            self.assert_('.' not in key)
+            self.assertTrue('.' not in key)
 
     def test_flaskext_new_simple_import_normal(self):
         from flask.ext.newext_simple import ext_id
@@ -109,12 +113,14 @@ class ExtImportHookTestCase(FlaskTestCase):
             import flask.ext.broken
         except ImportError:
             exc_type, exc_value, tb = sys.exc_info()
-            self.assert_(exc_type is ImportError)
+            self.assertTrue(exc_type is ImportError)
             self.assert_equal(str(exc_value), 'No module named missing_module')
-            self.assert_(tb.tb_frame.f_globals is globals())
+            self.assertTrue(tb.tb_frame.f_globals is globals())
 
             next = tb.tb_next
-            self.assert_('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
+            if sys.version_info > (3, ):
+                next = next.tb_next
+            self.assertTrue('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
 
 
 def suite():

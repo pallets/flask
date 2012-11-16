@@ -16,9 +16,8 @@ import sys
 import flask
 import threading
 import unittest
-from werkzeug.test import run_wsgi_app, create_environ
 from werkzeug.exceptions import NotFound
-from flask.testsuite import FlaskTestCase
+from flask.testsuite import _b, FlaskTestCase
 
 
 _gc_lock = threading.Lock()
@@ -68,7 +67,7 @@ class MemoryTestCase(FlaskTestCase):
             with app.test_client() as c:
                 rv = c.get('/')
                 self.assert_equal(rv.status_code, 200)
-                self.assert_equal(rv.data, '<h1>42</h1>')
+                self.assert_equal(rv.data, _b('<h1>42</h1>'))
 
         # Trigger caches
         fire()

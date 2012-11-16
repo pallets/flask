@@ -98,8 +98,7 @@ class Request(RequestBase):
         if self.mimetype == 'application/json':
             request_charset = self.mimetype_params.get('charset')
             try:
-                if request_charset is not None:
-                    return json.loads(self.data, encoding=request_charset)
+                self.data = self.data.decode(request_charset or 'ascii')
                 return json.loads(self.data)
             except ValueError, e:
                 return self.on_json_loading_failed(e)
