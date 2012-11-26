@@ -22,6 +22,8 @@
 import sys
 import os
 
+from stevedore.extension import ExtensionManager
+
 
 class ExtensionImporter(object):
     """This importer redirects imports from this submodule to other locations.
@@ -34,6 +36,9 @@ class ExtensionImporter(object):
         self.wrapper_module = wrapper_module
         self.prefix = wrapper_module + '.'
         self.prefix_cutoff = wrapper_module.count('.') + 1
+        self.extension_manager = ExtensionManager('flask.ext')
+        self.extensions = {}
+        self.extension_manager.map(self.add_extension)
 
     def __eq__(self, other):
         return self.__class__.__module__ == other.__class__.__module__ and \
@@ -43,6 +48,9 @@ class ExtensionImporter(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def add_extension(self, ext):
+        self.extensions[ext.name] = ext.plugin
 
     def install(self):
         sys.meta_path[:] = [x for x in sys.meta_path if self != x] + [self]
@@ -55,6 +63,13 @@ class ExtensionImporter(object):
         if fullname in sys.modules:
             return sys.modules[fullname]
         modname = fullname.split('.', self.prefix_cutoff)[self.prefix_cutoff]
+
+        if modname in self.extensions.keys():
+            module = self.extensions[modname]
+            if '.'  not in modname:
+                setattr(sys.modules[self.wrapper_module], modname, module)
+            return module
+
         for path in self.module_choices:
             realname = path % modname
             try:
