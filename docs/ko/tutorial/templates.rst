@@ -1,36 +1,39 @@
 .. _tutorial-templates:
 
-Step 6: The Templates
+스텝 6: 템플릿
 =====================
 
-Now we should start working on the templates.  If we request the URLs now
-we would only get an exception that Flask cannot find the templates.  The
-templates are using `Jinja2`_ syntax and have autoescaping enabled by
-default.  This means that unless you mark a value in the code with
-:class:`~flask.Markup` or with the ``|safe`` filter in the template,
-Jinja2 will ensure that special characters such as ``<`` or ``>`` are
-escaped with their XML equivalents.
+이제 우리는 템플릿을 작업해야 한다. 만약 우리가 지금까지 만든 flaskr에 
+URL을 요청하는 경우 Flask는 템플릿(templates)을 찾을 수 없다는 예외를 발생시킬것이다.
+템플릿들은 `Jinja2`_ 문법을 사용하고 있고 autoescaping 가 기본으로 활성화되있다.
+이 의미는 개발자가 직접 :class"`~flask.Markup` 이나 혹은 ``|safe`` 필터를 템플릿에서
+직접 관리하지 않아도 된다는 뜻이다.
+Jinja2는 ``<`` 혹은 ``>`` 와 같은 특별한 문자들에 대하여 XML에서 표기하는 동등한 표기법으로
+탈피할 수 있도록 보장한다.
 
-We are also using template inheritance which makes it possible to reuse
-the layout of the website in all pages.
+우리는 또한 가능한 모든 페이지에서 웹 사이트의 레이아웃을 재사용 할 수있도록 템플릿 상속을 
+할 수 있도록 하고 있다.
 
-Put the following templates into the `templates` folder:
+
+다음의 템플릿을 `templates` 폴더에 넣도록 하자:
 
 .. _Jinja2: http://jinja.pocoo.org/2/documentation/templates
+
 
 layout.html
 -----------
 
-This template contains the HTML skeleton, the header and a link to log in
-(or log out if the user was already logged in).  It also displays the
-flashed messages if there are any.  The ``{% block body %}`` block can be
-replaced by a block of the same name (``body``) in a child template.
+이 템플릿은 HTML의 뼈대(skeleton)을, 헤더 및 로그인링크 (혹은 사용자가 로그인
+한 경우에는 로그아웃 링크)들을 포함하고 있다. 또한 상황에 딸라 메시지를 보여주기도 한다.
+부모 템플릿의 ``{% block body %}`` 블럭은 이를 상속받은 후손 템플릿에서 동일한 이름의 블럭위치에
+치환된다.
 
-The :class:`~flask.session` dict is available in the template as well and
-you can use that to check if the user is logged in or not.  Note that in
-Jinja you can access missing attributes and items of objects / dicts which
-makes the following code work, even if there is no ``'logged_in'`` key in
-the session:
+:class:`~flask.session` dict 객체도 템플릿안에서 사용 가능할 수 있으며 이를 이용해
+사용자가 로그인되어 있는지 그렇지 않은지 확인 할 수 있다. 
+
+Jinja에서는 세션에서 키(key)가 없는 경우에도 제공된 dict 객체의 누락된 속성값이나 객체에 
+접근이 가능하다. 세션곅체에  ``'logged_in'`` 키가 없는 경우에도 가능하다.
+
 
 .. sourcecode:: html+jinja
 
@@ -55,11 +58,11 @@ the session:
 show_entries.html
 -----------------
 
-This template extends the `layout.html` template from above to display the
-messages.  Note that the `for` loop iterates over the messages we passed
-in with the :func:`~flask.render_template` function.  We also tell the
-form to submit to your `add_entry` function and use `POST` as `HTTP`
-method:
+이 템플릿은 `layout.html` 템플릿을 상속받는 메시지를 보여주는 템플릿이다.
+유의할 점은 `for` 루프는 우리가 :func:`~flask.render_template` 함수에서
+전달한 메시지에들 만큼 반복된다는 점이다.
+우리는 또한 form이 전송될때 `add_entry` 함수가 `HTTP`의 `POST` 메소드를 통해서 
+전송된다는 것을 이야기 해둔다.:
 
 .. sourcecode:: html+jinja
 
@@ -88,8 +91,7 @@ method:
 login.html
 ----------
 
-Finally the login template which basically just displays a form to allow
-the user to login:
+마지막으로 로그인 템플릿은 기본적으로 사용자가 로그인을 할 수 있도록 보여주는 form 이다. :
 
 .. sourcecode:: html+jinja
 
@@ -108,4 +110,4 @@ the user to login:
       </form>
     {% endblock %}
 
-Continue with :ref:`tutorial-css`.
+다음 섹션에서 계속 :ref:`tutorial-css`.

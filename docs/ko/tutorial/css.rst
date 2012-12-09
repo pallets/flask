@@ -1,11 +1,11 @@
 .. _tutorial-css:
 
-Step 7: Adding Style
+스텝 7: 스타일 추가하기
 ====================
 
-Now that everything else works, it's time to add some style to the
-application.  Just create a stylesheet called `style.css` in the `static`
-folder we created before:
+이제 모든것들이 작동한다. 이제 약간의 스타일을 어플리케이션에 추가해볼 시간이다.
+전에 생성해 두었던 `static` 폴더에 `style.css` 이라고 불리는 스타일시트를 생성해서 추가해 보자:
+
 
 .. sourcecode:: css
 
@@ -28,4 +28,4 @@ folder we created before:
                       border: 1px solid #AACBE2; }
     .error          { background: #F0D6D6; padding: 0.5em; }
 
-Continue with :ref:`tutorial-testing`.
+다음 섹션에서 계속 :ref:`tutorial-testing`.

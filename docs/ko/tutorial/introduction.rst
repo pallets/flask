@@ -1,33 +1,36 @@
 .. _tutorial-introduction:
 
-Introducing Flaskr
+Flaskr 소개하기
 ==================
 
-We will call our blogging application flaskr here, feel free to choose a
-less web-2.0-ish name ;)  Basically we want it to do the following things:
+우리는 우리의 블로깅 어플리케이션을 flaskr 이라고 부를 것이다. 
+웬지 덜 웹 2.0스러운 이름을 선택해야할 것 같은 느낌에서 자유로워 진것 같다.
+기본적으로 우리는 flaskr을 통해서 다음 사항들을 하기를 원한다: 
 
-1. let the user sign in and out with credentials specified in the
-   configuration.  Only one user is supported.
-2. when the user is logged in they can add new entries to the page
-   consisting of a text-only title and some HTML for the text.  This HTML
-   is not sanitized because we trust the user here.
-3. the page shows all entries so far in reverse order (newest on top) and
-   the user can add new ones from there if logged in.
 
-We will be using SQLite3 directly for that application because it's good
-enough for an application of that size.  For larger applications however
-it makes a lot of sense to use `SQLAlchemy`_ that handles database
-connections in a more intelligent way, allows you to target different
-relational databases at once and more.  You might also want to consider
-one of the popular NoSQL databases if your data is more suited for those.
+1.사용자가 지정한 자격증명 설정을 이용하여 로그인/로그아웃을 할 수 있게 한다. 
+  사용자는 단한명만 지원한다.
 
-Here a screenshot from the final application:
+2.사용자가 로그인하면 사용자는 제목과 내용을 몇몇 HTML과 텍스트로만 입력할 수 있다. 
+  우리는 사용자를 신뢰하기 때문에 HTML에 대한 위험성 검증은 하지 않는다.
+
+3.flaskr 페이지에서는 지금까지 등록된 모든 항목들을 시간의 역순으로 상단에 보여준다
+최근것을 제일 위로)`(최근것을 제일 위로)  로그인한 사용자는 새로 글을 추가 할 수 있다.
+
+
+이정도 규모의 어플리케이션에서 사용하기에는 SQLite3도 충분한 선택이다. 
+그러나 더 큰 규모의 어플리케이션을 위해서는 더 현명한 방법으로 데이타베이스 연결을 
+핸들링하고 다른 RDBMS를 사용이 가능한 `SQLAlchemy`_ 를 사용하는 것이 맞다. 
+만약 여러분의 데이타가 NoSQL에 더 적합하다면 인기있는 NoSQL 데이타베이스 중 하나를 
+고려하기를 원할 수도 있다.
+
+아래는 최종 완성된 어플리케이션의 스크린샷이다.:
 
 .. image:: ../_static/flaskr.png
    :align: center
    :class: screenshot
    :alt: screenshot of the final application
 
-Continue with :ref:`tutorial-folders`.
+계속해서 스텝 0 폴더 생성하기를 보자. :ref:`tutorial-folders`.
 
 .. _SQLAlchemy: http://www.sqlalchemy.org/

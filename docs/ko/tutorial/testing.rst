@@ -1,10 +1,11 @@
 .. _tutorial-testing:
 
-Bonus: Testing the Application
+보너스: 어플리케이션 테스트 하기 
 ==============================
 
-Now that you have finished the application and everything works as
-expected, it's probably not a bad idea to add automated tests to simplify
-modifications in the future.  The application above is used as a basic
-example of how to perform unittesting in the :ref:`testing` section of the
-documentation.  Go there to see how easy it is to test Flask applications.
+이제 당신은 어플리케이션 개발을 끝마쳤고 모든것들이 예상한대로 작동한다.
+미래에 어플리케이션을 수정하게될 경우를 대비해 테스트를 자동화하는 것은 
+나쁜 생각이 아니다. 위에서 소개한 어플리케이션은 유닛테스트를 어떻게 수행하는지에
+대한 기본적인 예제를 가지고 있다. 이 문서의 :ref:`testing` 섹션을 참고하라.
+해당 문서를 살펴보고 어떻게 쉽게 Flask 어플리케이션을 테스트 할 수있는지 알아보자
+
