@@ -19,7 +19,7 @@ instead.  Sometimes however moving that code there is just not a very
 pleasant experience or makes code look very awkward.
 
 As an alternative possibility you can attach a bunch of callback functions
-to the :data:`~flask.g` object and call then at the end of the request.
+to the :data:`~flask.g` object and call them at the end of the request.
 This way you can defer code execution from anywhere in the application.
 
 
