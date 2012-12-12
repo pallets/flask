@@ -56,6 +56,11 @@ except pkg_resources.DistributionNotFound:
     print 'Has to be available.  Either install the package into your'
     print 'development environment or run "setup.py develop" to setup the'
     print 'metadata.  A virtualenv is recommended!'
+
+    print 'If you run the command above but still receive this error,'
+    print 'make sure your sphinx installation has the same library path'
+    print 'as your Flask installation.  A system-wide sphinx installation will'
+    print 'not work with a virtualenv Flask installation.'
     sys.exit(1)
 del pkg_resources
 
