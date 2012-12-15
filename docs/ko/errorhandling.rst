@@ -287,8 +287,7 @@ config.yaml을 이용해서 다음과 같은 유용한 설정패턴을 사용하
        DEBUG: True
        DEBUG_WITH_APTANA: True
 
-이렇게 설정한다음 어플리케이션의 시작점(main.py)에 다음과 같이 사용할 수 있다.
-Then in your application's entry-point (main.py), you could have something like::
+이렇게 설정한다음 어플리케이션의 시작점(main.py)에 다음과 같이 사용할 수 있다.::
 
    if __name__ == "__main__":
        # To allow aptana to receive errors, set use_debugger=False
