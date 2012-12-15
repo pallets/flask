@@ -237,55 +237,57 @@ iterating over them to attach handlers::
         logger.addHandler(file_handler)
 
 
-Debugging Application Errors
+어플리케이션 에러 디버깅
 ============================
 
-For production applications, configure your application with logging and
-notifications as described in :ref:`application-errors`.  This section provides
-pointers when debugging deployment configuration and digging deeper with a
-full-featured Python debugger.
+제품화된 어플리케이션의 경우, :ref:`application-errors` 에 설명된것을 참고하여
+로깅과 알림설정을 구성하는 것이 좋다. 이 섹션은 디버깅을 위한 설정으로 배포할때 
+완전한 기능을 갖춘 Python 디버거를 깊이있게 사용하는 방법을 제공한다. 
 
 
-When in Doubt, Run Manually
+
+의심이 들때는 수동으로 실행하자
 ---------------------------
 
-Having problems getting your application configured for production?  If you
-have shell access to your host, verify that you can run your application
-manually from the shell in the deployment environment.  Be sure to run under
-the same user account as the configured deployment to troubleshoot permission
-issues.  You can use Flask's builtin development server with `debug=True` on
-your production host, which is helpful in catching configuration issues, but
-**be sure to do this temporarily in a controlled environment.** Do not run in
-production with `debug=True`.
+제품화를 위해 설정된 어플리케이션에서 문제를 겪고 있는가?
+만약 해당 호스트에 쉘 접근 권한을 가지고 있다면, 배포 환경에서 쉘을 이용해
+수동으로 어플리케이션을 실행 할 수 있는지 확인한다.
+권한에 관련된 문제를 해결하기 위해서는 배포환경에 설정된 것과 동일한 사용자
+계정에서 실행되어야 한다. 제품화된 운영 호스트에서 `debug=True` 를 이용하여 
+Flask에 내장된 개발 서버를 사용하면 설정 문제를 해결하는데 도움이되지만, 
+**이와같은 설정은 통제된 환경에서 임시적으로만 사용해야 함을 명심하자.**
+`debug=True` 설정은 운영환경 혹은 제품화되었을때는 절대 사용해서는 안된다.
 
 
 .. _working-with-debuggers:
 
-Working with Debuggers
+
+디버거로 작업하기
 ----------------------
 
-To dig deeper, possibly to trace code execution, Flask provides a debugger out
-of the box (see :ref:`debug-mode`).  If you would like to use another Python
-debugger, note that debuggers interfere with each other.  You have to set some
-options in order to use your favorite debugger:
+좀더깊이 들어가서 코드 실행을 추적한다면, Flask는 독자적인 디버거를 제공한다.
+(:ref:`debug-mode` 참고) 만약 또다른 Python 디버거를 사용하고 싶다면 이 디버거들은
+서로 간섭현상이 발생하므로 주의가 필요하다. 선호하는 디버거를 사용하기 위해서는 
+몇몇  디버깅 옵션을 설정해야만 한다.:
 
-* ``debug``        - whether to enable debug mode and catch exceptinos
-* ``use_debugger`` - whether to use the internal Flask debugger
-* ``use_reloader`` - whether to reload and fork the process on exception
+* ``debug``        - 디버그 모드를 사용하고 예외를 잡을 수 있는지 여부
+* ``use_debugger`` - Flask 내부 디버거를 사용할지 여부
+* ``use_reloader`` - 예외발생시 프로세스를 포크하고 리로드할지 여부
 
-``debug`` must be True (i.e., exceptions must be caught) in order for the other
-two options to have any value.
+``debug`` 옵션은 다른 두 옵션 이 어떤값을 갖던지 반드시 True 이어야 한다. 
+(즉, 예외는 잡아야만 한다.) 
 
-If you're using Aptana/Eclipse for debugging you'll need to set both
-``use_debugger`` and ``use_reloader`` to False.
+만약 Eclipse에서 Aptana를 디버깅을 위해 사용하고 싶다면, ``use_debugger` 와 `use_reloader``
+옵션을 False로 설정해야 한다.
 
-A possible useful pattern for configuration is to set the following in your
-config.yaml (change the block as appropriate for your application, of course)::
+config.yaml을 이용해서 다음과 같은 유용한 설정패턴을 사용하는 것이 가능하다
+(물론 자신의 어플리케이션을위해 적절하게 블럭안의 값들을 변경시킬 수 있다.)::
 
    FLASK:
        DEBUG: True
        DEBUG_WITH_APTANA: True
 
+이렇게 설정한다음 어플리케이션의 시작점(main.py)에 다음과 같이 사용할 수 있다.
 Then in your application's entry-point (main.py), you could have something like::
 
    if __name__ == "__main__":
