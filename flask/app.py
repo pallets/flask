@@ -29,7 +29,7 @@ from . import json
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext, AppContext, _AppCtxGlobals
-from .globals import _request_ctx_stack, request
+from .globals import _request_ctx_stack, request, session, g
 from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
@@ -663,7 +663,13 @@ class Flask(_PackageBoundObject):
         rv.globals.update(
             url_for=url_for,
             get_flashed_messages=get_flashed_messages,
-            config=self.config
+            config=self.config,
+            # request, session and g are normally added with the
+            # context processor for efficiency reasons but for imported
+            # templates we also want the proxies in there.
+            request=request,
+            session=session,
+            g=g
         )
         rv.filters['tojson'] = json.htmlsafe_dumps
         return rv

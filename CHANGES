@@ -39,6 +39,10 @@ Release date to be decided.
 - ``flask.Flask.request_globals_class`` got renamed to
   ``flask.Flask.app_ctx_globals_class`` which is a better name to what it
   does since 0.10.
+- `request`, `session` and `g` are now also added as proxies to the template
+  context which makes them available in imported templates.  One has to be
+  very careful with those though because usage outside of macros might
+  cause caching.
 
 Version 0.9
 -----------
