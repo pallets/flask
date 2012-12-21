@@ -1104,8 +1104,11 @@ class BasicFunctionalityTestCase(FlaskTestCase):
                 c.get('/fail')
 
         self.assert_(flask._request_ctx_stack.top is not None)
-        flask._request_ctx_stack.pop()
+        self.assert_(flask._app_ctx_stack.top is not None)
+        # implicit appctx disappears too
+        flask._request_ctx_stack.top.pop()
         self.assert_(flask._request_ctx_stack.top is None)
+        self.assert_(flask._app_ctx_stack.top is None)
 
 
 class ContextTestCase(FlaskTestCase):

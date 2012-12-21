@@ -28,7 +28,7 @@ from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
 from . import json
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
-from .ctx import RequestContext, AppContext, _RequestGlobals
+from .ctx import RequestContext, AppContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, request
 from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
@@ -157,8 +157,24 @@ class Flask(_PackageBoundObject):
     #: 3. Return None instead of AttributeError on expected attributes.
     #: 4. Raise exception if an unexpected attr is set, a "controlled" flask.g.
     #:
-    #: .. versionadded:: 0.9
-    request_globals_class = _RequestGlobals
+    #: In Flask 0.9 this property was called `request_globals_class` but it
+    #: was changed in 0.10 to :attr:`app_ctx_globals_class` because the
+    #: flask.g object is not application context scoped.
+    #:
+    #: .. versionadded:: 0.10
+    app_ctx_globals_class = _AppCtxGlobals
+
+    # Backwards compatibility support
+    def _get_request_globals_class(self):
+        return self.app_ctx_globals_class
+    def _set_request_globals_class(self, value):
+        from warnings import warn
+        warn(DeprecationWarning('request_globals_class attribute is now '
+                                'called app_ctx_globals_class'))
+        self.app_ctx_globals_class = value
+    request_globals_class = property(_get_request_globals_class,
+                                     _set_request_globals_class)
+    del _get_request_globals_class, _set_request_globals_class
 
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled

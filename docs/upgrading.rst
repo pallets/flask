@@ -36,6 +36,13 @@ extensions for tuples and strings with HTML markup.
 In order to not break people's sessions it is possible to continue using
 the old session system by using the `Flask-OldSessions_` extension.
 
+Flask also started storing the :data:`flask.g` object on the application
+context instead of the request context.  This change should be transparent
+for you but it means that you now can store things on the ``g`` object
+when there is no request context yet but an application context.  The old
+``flask.Flask.request_globals_class`` attribute was renamed to
+:attr:`flask.Flask.app_ctx_globals_class`.
+
 .. _Flask-OldSessions: http://packages.python.org/Flask-OldSessions/
 
 Version 0.9

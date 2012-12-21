@@ -17,7 +17,7 @@ from .globals import _request_ctx_stack, _app_ctx_stack
 from .module import blueprint_is_module
 
 
-class _RequestGlobals(object):
+class _AppCtxGlobals(object):
     """A plain object."""
     pass
 
@@ -101,6 +101,7 @@ class AppContext(object):
     def __init__(self, app):
         self.app = app
         self.url_adapter = app.create_url_adapter(None)
+        self.g = app.app_ctx_globals_class()
 
         # Like request context, app contexts can be pushed multiple times
         # but there a basic "refcount" is enough to track them.
@@ -164,7 +165,6 @@ class RequestContext(object):
         self.app = app
         self.request = app.request_class(environ)
         self.url_adapter = app.create_url_adapter(self.request)
-        self.g = app.request_globals_class()
         self.flashes = None
         self.session = None
 
@@ -194,6 +194,13 @@ class RequestContext(object):
             bp = app.blueprints.get(blueprint)
             if bp is not None and blueprint_is_module(bp):
                 self.request._is_old_module = True
+
+    def _get_g(self):
+        return _app_ctx_stack.top.g
+    def _set_g(self, value):
+        _app_ctx_stack.top.g = value
+    g = property(_get_g, _set_g)
+    del _get_g, _set_g
 
     def match_request(self):
         """Can be overridden by a subclass to hook into the matching

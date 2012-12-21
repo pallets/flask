@@ -258,6 +258,10 @@ thing, like it does for :class:`request` and :class:`session`.
    Just store on this whatever you want.  For example a database
    connection or the user that is currently logged in.
 
+   Starting with Flask 0.10 this is stored on the application context and
+   no longer on the request context which means it becomes available if
+   only the application context is bound and not yet a request.
+
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 

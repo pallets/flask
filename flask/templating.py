@@ -22,13 +22,14 @@ def _default_template_ctx_processor():
     `session` and `g`.
     """
     reqctx = _request_ctx_stack.top
-    if reqctx is None:
-        return {}
-    return dict(
-        request=reqctx.request,
-        session=reqctx.session,
-        g=reqctx.g
-    )
+    appctx = _app_ctx_stack.top
+    rv = {}
+    if appctx is not None:
+        rv['g'] = appctx.g
+    if reqctx is not None:
+        rv['request'] = reqctx.request
+        rv['session'] = reqctx.session
+    return rv
 
 
 class Environment(BaseEnvironment):
