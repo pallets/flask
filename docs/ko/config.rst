@@ -1,111 +1,113 @@
 .. _config:
 
-Configuration Handling
+설정 다루기
 ======================
 
 .. versionadded:: 0.3
 
-Applications need some kind of configuration.  There are different settings
-you might want to change depending on the application environment like
-toggling the debug mode, setting the secret key, and other such
-environment-specific things.
+어플리케이션들은 일종의 설정 및 구성을 필요로 한다. 어플리케이션 실행 환경에서 다양한 
+종류의 설정 값들을 변경 할 수 있다. 디버깅모드를 변경하거나 비밀 키(secret key)를 
+설정하거나그밖의 다른 환경에 관련된 값을 변경시킬 수 있다.
 
-The way Flask is designed usually requires the configuration to be
-available when the application starts up.  You can hardcode the
-configuration in the code, which for many small applications is not
-actually that bad, but there are better ways.
+Flask는 일반적인 경우 어플리케이션이 구동될때에 설정값들을 사용될 수 있어야
+하도록 설계되었다. 설정값들을 하드코드(hard code)로 적용 할 수도 있는데 이 방식은
+작은 규모의 어프리케이션에서는 그리 나쁘지 않은 방법이지만 더 나은 방법들이 있다.
 
-Independent of how you load your config, there is a config object
-available which holds the loaded configuration values:
-The :attr:`~flask.Flask.config` attribute of the :class:`~flask.Flask`
-object.  This is the place where Flask itself puts certain configuration
-values and also where extensions can put their configuration values.  But
-this is also where you can have your own configuration.
 
-Configuration Basics
+설정값을 독립적으로 로드하는 방법으로, 이미 로드된 설정들값들 중에 속해 있는
+설정 객체(config object)를 사용할 수 있다:
+:class:`~flask.Flask` 객체의 :attr:`~flask.Flask.config` 속성을 참고.
+이 객체의 속성을 통해 Flask 자신의 특정 설정값을 저장할수 있고 Flask의
+확장 플러그인들도 자신의 설정값을 저장할 수 있다.
+마찬가지로, 여러분의 어플리키에션 성정값 역시 저장할 수 있다.
+
+
+설정 기초연습
 --------------------
 
-The :attr:`~flask.Flask.config` is actually a subclass of a dictionary and
-can be modified just like any dictionary::
+:attr:`~flask.Flask.config` 은 실제로는 dictionary 의 서브클래스이며,
+다른 dictionary 처럼 다음과 같이 수정될 수 있다::
 
     app = Flask(__name__)
     app.config['DEBUG'] = True
 
-Certain configuration values are also forwarded to the
-:attr:`~flask.Flask` object so you can read and write them from there::
+확정된 설정값들은 또한 :attr:`~flask.Flask` 객체로 전달될 수 있으며,
+그 객체를 통해 설정값들을 읽거나 쓸수 있다. ::
 
     app.debug = True
 
-To update multiple keys at once you can use the :meth:`dict.update`
-method::
+한번에 다수의 키(key)들을 업데이트 하기 위해서는 :meth:`dict.update` 
+함수를 사용 할 수 있다. ::
 
     app.config.update(
         DEBUG=True,
         SECRET_KEY='...'
     )
 
-Builtin Configuration Values
+
+내장된 고유 설정값들
 ----------------------------
 
-The following configuration values are used internally by Flask:
+다음의 설정값들은 Flask 의 내부에서 이미 사용되고 있는 것들이다. :
 
 .. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
 
 ================================= =========================================
-``DEBUG``                         enable/disable debug mode
-``TESTING``                       enable/disable testing mode
-``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
-                                  propagation of exceptions.  If not set or
-                                  explicitly set to `None` this is
-                                  implicitly true if either `TESTING` or
-                                  `DEBUG` is true.
-``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
-                                  debug mode the request context is not
-                                  popped on exceptions to enable debuggers
-                                  to introspect the data.  This can be
-                                  disabled by this key.  You can also use
-                                  this setting to force-enable it for non
-                                  debug execution which might be useful to
-                                  debug production applications (but also
-                                  very risky).
-``SECRET_KEY``                    the secret key
-``SESSION_COOKIE_NAME``           the name of the session cookie
-``SESSION_COOKIE_DOMAIN``         the domain for the session cookie.  If
-                                  this is not set, the cookie will be
-                                  valid for all subdomains of
-                                  ``SERVER_NAME``.
-``SESSION_COOKIE_PATH``           the path for the session cookie.  If
-                                  this is not set the cookie will be valid
-                                  for all of ``APPLICATION_ROOT`` or if
-                                  that is not set for ``'/'``.
-``SESSION_COOKIE_HTTPONLY``       controls if the cookie should be set
-                                  with the httponly flag.  Defaults to
-                                  `True`.
-``SESSION_COOKIE_SECURE``         controls if the cookie should be set
-                                  with the secure flag.  Defaults to
-                                  `False`.
-``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
-                                  :class:`datetime.timedelta` object.
-                                  Starting with Flask 0.8 this can also be
-                                  an integer representing seconds.
-``USE_X_SENDFILE``                enable/disable x-sendfile
-``LOGGER_NAME``                   the name of the logger
-``SERVER_NAME``                   the name and port number of the server.
-                                  Required for subdomain support (e.g.:
-                                  ``'myapp.dev:5000'``)  Note that
-                                  localhost does not support subdomains so
-                                  setting this to “localhost” does not
-                                  help.  Setting a ``SERVER_NAME`` also
-                                  by default enables URL generation
-                                  without a request context but with an
-                                  application context.
-``APPLICATION_ROOT``              If the application does not occupy
-                                  a whole domain or subdomain this can
-                                  be set to the path where the application
-                                  is configured to live.  This is for
-                                  session cookie as path value.  If
-                                  domains are used, this should be
-                                  ``None``.
+``DEBUG``                         디버그 모드를 활성화/비활성화 함
+``TESTING``                       테스팅 모드를 활성화/비활성화 함
+``PROPAGATE_EXCEPTIONS``          명시적으로 예외를 전파하는 것에 대한 
+                                  활성화 혹은 비활성화 함.
+                                  이 값을 특별히 설정을 안하거나 
+                                  명시적으로 `None` 으로 설정했을 경우라도 
+                                  `TESTING` 혹은 `DEBUG` 가 true 라면 이 값
+                                  역시 true 가 된다.
+``PRESERVE_CONTEXT_ON_EXCEPTION`` 어플리케이션이 디버그모드에 있는 경우 
+                                  요청 컨텍스트는 디버거에서 데이터를 확인
+                                  하기 위해 예외를 발생시키지 않는다.
+                                  이 설정을 이 키값을 설정하여 이 설정을
+                                  비활성화 할 수 있다. 또한 이 설정은 
+                                  제품화된(하지만 매우 위험 할 수 있는) 
+                                  어플리케이션을 디버깅하기위해 유리 할수 
+                                  있으며 디버거 실행을 위해 강제로 
+                                  사용하도록 설정하고 싶을 때 사용가능하다.
+``SECRET_KEY``                    비밀키
+``SESSION_COOKIE_NAME``           세션 쿠키의 이름
+``SESSION_COOKIE_DOMAIN``         세션 쿠키에 대한 도메인.
+                                  이값이 설정되어 있지 않은 경우 쿠키는
+                                  ``SERVER_NAME`` 의 모든 하위 도메인에 
+                                  대하여 유효하다.
+``SESSION_COOKIE_PATH``           세션 쿠키에 대한 경로를 설정한다.  
+                                  이값이 설정되어 있지 않은 경우 쿠키는
+                                  ``'/'`` 로 설정되어 있지 않은 모든
+                                  ``APPLICATION_ROOT`` 에 대해서 유효하다
+``SESSION_COOKIE_HTTPONLY``       쿠키가 httponly 플래그를 설정해야만 
+                                  하도록 통제한다.
+                                  기본값은 `True` 이다.
+``SESSION_COOKIE_SECURE``         쿠키가 secure 플래그를 설정해야만 
+                                  하도록 통제한다. 기본값은 `False` 이다.
+``PERMANENT_SESSION_LIFETIME``    :class:`datetime.timedelta` 를 이용하여 
+                                  영구 세션 유지 시간을 설정한다.
+                                  Flask 0.8버전부터 integer 타입의 초단위로
+                                  설정이 가능하다.
+``USE_X_SENDFILE``                x-sendfile 기능을 활성화/비활성화 함
+``LOGGER_NAME``                   로거의 이름을 설정함
+``SERVER_NAME``                   서버의 이름과 포트 번호를 뜻한다.
+                                  서브도메인을 지원하기 위해 요구된다. (예:
+                                  ``'myapp.dev:5000'``)  
+                                  이 값을 “localhost” 로 설정하는 것은 서브
+                                  도메인을 지원하지 않는 것에 그리 도움이
+                                  되지는 않는다는 것을 주의하자.
+                                  또한 ``SERVER_NAME`` 를 설정하는 것은
+                                  기본적으로 요청 컨텍스트 없이 어플리케이션
+                                  컨텍스트를 통해 URL을 생성 할 수 있도록 
+                                  해준다.
+``APPLICATION_ROOT``              어플리케이션이 전체 도메인을 사용하지 
+                                  않거나 서브도메인을 사용하지 않는 경우
+                                  이 값은 어플리케이션이 어느 경로에서 
+                                  실행되기 위해 설정되어 있는지 결정한다.
+                                  이값은 세션 쿠키에서 경로 값으로 사용된다
+                                  만약 도메인이 사용되는 경우 이 값은 
+                                  ``None`` 이다.
 ``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
                                   reject incoming requests with a
                                   content length greater than this by
