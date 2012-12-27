@@ -98,6 +98,27 @@ class TestToolsTestCase(FlaskTestCase):
                 self.assert_equal(len(sess), 1)
                 self.assert_equal(sess['foo'], [42])
 
+    def test_session_transactions_setup_request(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.secret_key = 'testing'
+
+        @app.before_request
+        def before_request():
+            flask.g.exists = True
+
+        @app.after_request
+        def after_request():
+            assert flask.g.exists
+
+        @app.teardown_request
+        def teardown_request( exc=None ):
+            assert flask.g.exists
+
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                pass
+
     def test_session_transactions_no_null_sessions(self):
         app = flask.Flask(__name__)
         app.testing = True
