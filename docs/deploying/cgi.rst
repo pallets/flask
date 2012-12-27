@@ -17,7 +17,7 @@ Engine`_, where execution happens in a CGI-like environment.
    we do not want if we deploy that application to CGI / app engine.
 
    With CGI, you will also have to make sure that your code does not contain
-   any ``print`` statements, or that ``sys.stdin`` is overridden by something
+   any ``print`` statements, or that ``sys.stdout`` is overridden by something
    that doesn't write into the HTTP response.
 
 Creating a `.cgi` file
