@@ -2,6 +2,7 @@ from __future__ import with_statement
 import urllib2
 import time
 import threading
+import re
 from flask import json, Markup
 from werkzeug import url_encode, parse_date, http_date
 
@@ -16,6 +17,8 @@ class SearchResult(object):
         self.profile_image = result['profile_image_url']
         self.type = result['metadata']['result_type']
         self.retweets = result['metadata'].get('recent_retweets') or 0
+        self.original_tweeter = result['original_tweeter']
+        self.retweeted_by = result['retweeted_by']
 
     def to_json(self):
         rv = vars(self).copy()
@@ -26,10 +29,12 @@ class SearchResult(object):
 
 class SearchQuery(object):
     fetch_timeout = 10
-
-    def __init__(self, required=None, optional=None, timeout=60, lang=None):
-        self.required = set(x.lower() for x in (required or ()))
-        self.optional = set(x.lower() for x in (optional or ()))
+    
+    tweeters_pattern = re.compile('(?P<rt>RT @(?P<rt_name>[\w_]+)\:)+')
+    
+    def __init__(self, required=(), optional=(), timeout=60, lang=None):
+        self.required = set(x.lower() for x in required)
+        self.optional = set(x.lower() for x in optional)
         self.lang = lang
         self.timeout = timeout
         self._last_fetch = 0
@@ -58,6 +63,61 @@ class SearchQuery(object):
             'lang':         self.lang
         }))
 
+    def parse_tweet(self, tweet):
+        """
+        Takes a tweet and returns a dictionary containing the user, tweet's text, tweet's id and list of user who tweeted this tweet
+        """
+        text = tweet['text']
+        """
+        here rt would be a list of 2-tuples like ('RT @lovesh_h:', 'lovesh_h') where the last tuple would be the original tweeter of the tweet
+        """
+        rt = self.tweeters_pattern.findall(text)
+        tweet_text_only = text
+        for i in rt:
+            tweet_text_only = tweet_text_only.replace(i[0], '')
+        tweet_text_only = tweet_text_only.strip()
+        result = {}
+        result['text'] = tweet_text_only
+        if len(rt) > 0:
+            result['original_tweeter'] = rt[-1][1]
+            result['retweeted_by'] = set(i[1] for i in rt[:-1]) 
+            result['retweeted_by'].add(tweet['from_user'])     
+        else:
+            result['original_tweeter'] = tweet['from_user']
+            result['retweeted_by'] = set()
+        result['from_user'] = tweet['from_user']
+        result['id_str'] = tweet['id_str']
+        result['source'] = tweet['source']
+        result['created_at'] = tweet['created_at']
+        result['profile_image_url'] = tweet['profile_image_url']
+        result['metadata'] = tweet['metadata']
+        return result
+        
+    
+    def get_unique_tweets(self, tweets):
+        """
+        2 tweets are considered to have same text if the text of one tweet is exactly similar to the other's text
+        Take a list of tweets and returns list of tweets with each element as a dictionary with keys as tweet's text, retweeters,
+        source, from_user, etc 
+        
+        """
+        parsed_tweets = [self.parse_tweet(tweet) for tweet in tweets]
+        unique_tweets = {}
+        for pt in parsed_tweets:
+            tweet_text = pt['text']
+            if tweet_text not in unique_tweets:
+                unique_tweets[tweet_text] = pt
+            else:
+                unique_tweets[tweet_text]['retweeted_by'].update(pt['retweeted_by'])
+                
+                if unique_tweets[tweet_text]['original_tweeter'] != pt['original_tweeter']:
+                    """
+                    In case 2 tweeters tweeted the same text without retweeting each other's tweet
+                    """
+                    unique_tweets[tweet_text]['retweeted_by'].add(pt['original_tweeter'])
+            
+        return unique_tweets.values()
+        
     def fetch(self):
         def _accept(text):
             text = text.lower()
@@ -69,7 +129,8 @@ class SearchQuery(object):
                     return True
             return False
         rv = json.load(urllib2.urlopen(self.get_url()))
-        return [SearchResult(x) for x in rv['results'] if
+        unique_tweets = self.get_unique_tweets(rv['results'])
+        return [SearchResult(x) for x in unique_tweets if
                 _accept(x['from_user'] + u': ' + x['text'])]
 
     @property
@@ -106,5 +167,6 @@ flask_tweets = SearchQuery(
     required=['flask'],
     optional=['code', 'dev', 'python', 'py', 'pocoo', 'micro',
               'mitsuhiko', 'framework', 'django', 'jinja', 'werkzeug',
-              'documentation', 'app']
+              'documentation', 'app',
+              'rest', 'api']
 )
