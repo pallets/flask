@@ -3,7 +3,7 @@
     <ul>
     {%- for tweet in tweets.get(limit) %}
       <li>
-        <a href="http://twitter.com/{{ tweet.user }}">{{ tweet.user }}</a>:
+        <a href="http://twitter.com/{{ tweet.original_tweeter }}">{{ tweet.original_tweeter }}</a>:
           {{ tweet.text|urlize }}
         <span class=meta>&mdash; {% if tweet.pub_date %}{{ tweet.pub_date|timedeltaformat }} ago {% endif %}via {{ tweet.via }} {% if tweet.retweeted_by %} Also tweeted by {% for t in tweet.retweeted_by %} <a href="http://twitter.com/{{ t }}">{{ t }}</a>{% endfor %}{% endif %}</span>
     {%- endfor %}
