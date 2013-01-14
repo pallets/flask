@@ -49,7 +49,7 @@ this the following function needs to be registered as
     @app.after_request
     def call_after_request_callbacks(response):
         for callback in getattr(g, 'after_request_callbacks', ()):
-            response = callback(response)
+            callback(response)
         return response
 
 
