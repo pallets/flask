@@ -43,6 +43,8 @@ Release date to be decided.
   context which makes them available in imported templates.  One has to be
   very careful with those though because usage outside of macros might
   cause caching.
+- Flask will no longer invoke the wrong error handlers if a proxy
+  exception is passed through.
 
 Version 0.9
 -----------
