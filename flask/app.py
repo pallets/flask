@@ -1283,6 +1283,10 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.3
         """
         handlers = self.error_handler_spec.get(request.blueprint)
+        # Proxy exceptions don't have error codes.  We want to always return
+        # those unchanged as errors
+        if e.code is None:
+            return e
         if handlers and e.code in handlers:
             handler = handlers[e.code]
         else:
@@ -1327,12 +1331,8 @@ class Flask(_PackageBoundObject):
         # ensure not to trash sys.exc_info() at that point in case someone
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
-        # trap_http_exception method so that's their fault then.  Proxy
-        # exceptions generally must always be trapped (filtered out by
-        # e.code == None)
-        if isinstance(e, HTTPException) \
-           and e.code is not None \
-           and not self.trap_http_exception(e):
+        # trap_http_exception method so that's their fault then.
+        if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
 
         blueprint_handlers = ()

@@ -86,7 +86,32 @@ class MemoryTestCase(FlaskTestCase):
             safe_join('/foo', '..')
 
 
+class ExceptionTestCase(FlaskTestCase):
+
+    def test_aborting(self):
+        class Foo(Exception):
+            whatever = 42
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.errorhandler(Foo)
+        def handle_foo(e):
+            return str(e.whatever)
+        @app.route('/')
+        def index():
+            raise flask.abort(flask.redirect(flask.url_for('test')))
+        @app.route('/test')
+        def test():
+            raise Foo()
+
+        with app.test_client() as c:
+            rv = c.get('/')
+            self.assertEqual(rv.headers['Location'], 'http://localhost/test')
+            rv = c.get('/test')
+            self.assertEqual(rv.data, '42')
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MemoryTestCase))
+    suite.addTest(unittest.makeSuite(ExceptionTestCase))
     return suite
