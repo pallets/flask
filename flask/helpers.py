@@ -549,6 +549,16 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     return rv
 
 
+def join_paths(*paths):
+    try:
+        return os.path.join(*paths)
+    except UnicodeDecodeError:
+        encoding = sys.getfilesystemencoding()
+        paths = (x if isinstance(x, unicode) else unicode(x, encoding)
+                 for x in paths)
+        return os.path.join(*paths)
+
+
 def safe_join(directory, filename):
     """Safely join `directory` and `filename`.
 
@@ -573,7 +583,7 @@ def safe_join(directory, filename):
        filename == '..' or \
        filename.startswith('../'):
         raise NotFound()
-    return os.path.join(directory, filename)
+    return join_paths(directory, filename)
 
 
 def send_from_directory(directory, filename, **options):
@@ -739,7 +749,7 @@ class _PackageBoundObject(object):
 
     def _get_static_folder(self):
         if self._static_folder is not None:
-            return os.path.join(self.root_path, self._static_folder)
+            return join_paths(self.root_path, self._static_folder)
     def _set_static_folder(self, value):
         self._static_folder = value
     static_folder = property(_get_static_folder, _set_static_folder)
@@ -772,7 +782,7 @@ class _PackageBoundObject(object):
         .. versionadded:: 0.5
         """
         if self.template_folder is not None:
-            return FileSystemLoader(os.path.join(self.root_path,
+            return FileSystemLoader(join_paths(self.root_path,
                                                  self.template_folder))
 
     def get_send_file_max_age(self, filename):
@@ -839,4 +849,4 @@ class _PackageBoundObject(object):
         """
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
-        return open(os.path.join(self.root_path, resource), mode)
+        return open(join_paths(self.root_path, resource), mode)
