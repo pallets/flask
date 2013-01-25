@@ -76,6 +76,10 @@ dictionaries instead of tuples this can be used::
 
     db.row_factory = make_dicts
 
+Or even simpler::
+
+    db.row_factory = sqlite3.Row
+
 Additionally it is a good idea to provide a query function that combines
 getting the cursor, executing and fetching the results::
     

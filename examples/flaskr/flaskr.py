@@ -42,7 +42,10 @@ def get_db():
     """
     top = _app_ctx_stack.top
     if not hasattr(top, 'sqlite_db'):
-        top.sqlite_db = sqlite3.connect(app.config['DATABASE'])
+        sqlite_db = sqlite3.connect(app.config['DATABASE'])
+        sqlite_db.row_factory = sqlite3.Row
+        top.sqlite_db = sqlite_db
+
     return top.sqlite_db
 
 
@@ -58,7 +61,7 @@ def close_db_connection(exception):
 def show_entries():
     db = get_db()
     cur = db.execute('select title, text from entries order by id desc')
-    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
 
