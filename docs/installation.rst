@@ -14,9 +14,7 @@ could do that, but the most kick-ass method is virtualenv, so let's have a look
 at that first.
 
 You will need Python 2.5 or higher to get started, so be sure to have an
-up-to-date Python 2.x installation.  At the time of writing, the WSGI
-specification has not yet been finalized for Python 3, so Flask cannot support
-the 3.x series of Python.
+up-to-date Python 2.x installation.  Python 3.x is not supported.
 
 .. _virtualenv:
 
