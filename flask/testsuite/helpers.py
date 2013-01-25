@@ -397,6 +397,28 @@ class LoggingTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('index', _anchor='x y'),
                               '/#x%20y')
 
+    def test_url_for_with_scheme(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return '42'
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('index',
+                                            _external=True,
+                                            _scheme='https'),
+                              'https://localhost/')
+
+    def test_url_for_with_scheme_not_external(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return '42'
+        with app.test_request_context():
+            self.assert_raises(ValueError,
+                               flask.url_for,
+                               'index',
+                               _scheme='https')
+
     def test_url_with_method(self):
         from flask.views import MethodView
         app = flask.Flask(__name__)
