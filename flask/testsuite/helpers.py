@@ -297,6 +297,13 @@ class SendfileTestCase(FlaskTestCase):
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 10)
 
+    def test_attachment_filename(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'))
+            rv = flask.send_file('static/index.html', attachment_filename='test.png')
+            self.assertEqual('image/png', rv.headers['Content-Type'])
+
 
 class LoggingTestCase(FlaskTestCase):
 
