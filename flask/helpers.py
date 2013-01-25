@@ -252,8 +252,9 @@ def url_for(endpoint, **values):
     appctx = _app_ctx_stack.top
     reqctx = _request_ctx_stack.top
     if appctx is None:
-        raise RuntimeError('Attempted to generate a URL with the application '
-                           'context being pushed.  This has to be executed ')
+        raise RuntimeError('Attempted to generate a URL without the '
+                           'application context being pushed. This has to be '
+                           'executed when application context is available.')
 
     # If request specific information is available we have some extra
     # features that support "relative" urls.
