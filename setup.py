@@ -92,7 +92,8 @@ setup(
     install_requires=[
         'Werkzeug>=0.7',
         'Jinja2>=2.4',
-        'itsdangerous>=0.17'
+        'itsdangerous>=0.17',
+        'stevedore>=0.6',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
