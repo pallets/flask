@@ -229,6 +229,9 @@ def url_for(endpoint, **values):
     that this is for building URLs outside the current application, and not for
     handling 404 NotFound errors.
 
+    .. versionadded:: 0.10
+       The `_scheme` parameter was added.
+
     .. versionadded:: 0.9
        The `_anchor` and `_method` parameters were added.
 
@@ -241,6 +244,8 @@ def url_for(endpoint, **values):
     :param _external: if set to `True`, an absolute URL is generated. Server
       address can be changed via `SERVER_NAME` configuration variable which
       defaults to `localhost`.
+    :param _scheme: a string specifying the desired URL scheme. The `_external`
+      parameter must be set to `True` or a `ValueError` is raised.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
@@ -283,7 +288,14 @@ def url_for(endpoint, **values):
 
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
+    scheme = values.pop('_scheme', None)
     appctx.app.inject_url_defaults(endpoint, values)
+
+    if scheme is not None:
+        if not external:
+            raise ValueError('When specifying _scheme, _external must be True')
+        url_adapter.url_scheme = scheme
+
     try:
         rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
