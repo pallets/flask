@@ -25,28 +25,19 @@ deal with that sort of problem?  By default if your application runs in
 production mode, Flask will display a very simple page for you and log the
 exception to the :attr:`~flask.Flask.logger`.
 
-But there is more you can do, and we will cover some better setups to deal
-with errors.
+If you want to define your own exception handling code, there are two
+ways you can achive this:
+1. Use the :meth:`~flask.Flask.errorhandler` decorator to specify your own function to be called.
+2. Subscribe to the got_request_exception signal.
+
+Each method will allow you to define any exception handling strategy you prefer.
+Below are some suggested strategies for what to do when processing exceptions.
 
 Error Mails
 -----------
 
-If the application runs in production mode (which it will do on your
-server) you won't see any log messages by default.  Why is that?  Flask
-tries to be a zero-configuration framework.  Where should it drop the logs
-for you if there is no configuration?  Guessing is not a good idea because
-chances are, the place it guessed is not the place where the user has
-permission to create a logfile.  Also, for most small applications nobody
-will look at the logs anyways.
-
-In fact, I promise you right now that if you configure a logfile for the
-application errors you will never look at it except for debugging an issue
-when a user reported it for you.  What you want instead is a mail the
-second the exception happened.  Then you get an alert and you can do
-something about it.
-
 Flask uses the Python builtin logging system, and it can actually send
-you mails for errors which is probably what you want.  Here is how you can
+you mails for errors which if you so choose.  Here is how you can
 configure the Flask logger to send you mails for exceptions::
 
     ADMINS = ['yourname@example.com']
@@ -75,6 +66,11 @@ Before you run that in production, please also look at :ref:`logformat` to
 put more information into that error mail.  That will save you from a lot
 of frustration.
 
+Be also aware, this solution will send you an individual email each
+time an error occurs. If you get a lot of exceptions of the same type
+quickly, this could overload your SMTP server or your
+inbox. Consequently, this simple email solution should only be used
+when you know you won't have a flood of errors. 
 
 Logging to a File
 -----------------
