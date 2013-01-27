@@ -1250,6 +1250,13 @@ class Flask(_PackageBoundObject):
 
         When a teardown function was called because of a exception it will
         be passed an error object.
+
+        .. admonition:: Debug Note
+
+           In debug mode Flask will not tear down a request on an exception
+           immediately.  Instead if will keep it alive so that the interactive
+           debugger can still access it.  This behavior can be controlled
+           by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
         """
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
