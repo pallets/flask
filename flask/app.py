@@ -1166,6 +1166,38 @@ class Flask(_PackageBoundObject):
 
 
     @setupmethod
+    def template_global(self, name=None):
+        """A decorator that is used to register a custom template global function.
+        You can specify a name for the global function, otherwise the function
+        name will be used. Example::
+
+        @app.template_global()
+        def double(n):
+            return 2 * n
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the global function, otherwise the
+        function name will be used.
+        """
+        def decorator(f):
+            self.add_template_global(f, name=name)
+            return f
+        return decorator
+
+    @setupmethod
+    def add_template_global(self, f, name=None):
+        """Register a custom template global function. Works exactly like the
+        :meth:`template_global` decorator.
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the global function, otherwise the
+        function name will be used.
+        """
+        self.jinja_env.globals[name or f.__name__] = f
+
+    @setupmethod
     def before_request(self, f):
         """Registers a function to run before each request."""
         self.before_request_funcs.setdefault(None, []).append(f)

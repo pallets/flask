@@ -237,6 +237,34 @@ class Blueprint(_PackageBoundObject):
             state.app.jinja_env.tests[name or f.__name__] = f
         self.record_once(register_template)
 
+    def app_template_global(self, name=None):
+        """Register a custom template global, available application wide.  Like
+        :meth:`Flask.template_global` but for a blueprint.
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the global, otherwise the
+                     function name will be used.
+        """
+        def decorator(f):
+            self.add_app_template_global(f, name=name)
+            return f
+        return decorator
+
+    def add_app_template_global(self, f, name=None):
+        """Register a custom template global, available application wide.  Like
+        :meth:`Flask.add_template_global` but for a blueprint.  Works exactly
+        like the :meth:`app_template_global` decorator.
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the global, otherwise the
+                     function name will be used.
+        """
+        def register_template(state):
+            state.app.jinja_env.globals[name or f.__name__] = f
+        self.record_once(register_template)
+
     def before_request(self, f):
         """Like :meth:`Flask.before_request` but for a blueprint.  This function
         is only executed before each request that is handled by a function of

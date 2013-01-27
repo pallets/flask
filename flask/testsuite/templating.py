@@ -256,6 +256,18 @@ class TemplatingTestCase(FlaskTestCase):
         rv = app.test_client().get('/')
         self.assert_('Success!' in rv.data)
 
+    def test_add_template_global(self):
+        app = flask.Flask(__name__)
+        @app.template_global()
+        def get_stuff():
+            return 42
+        self.assert_('get_stuff' in app.jinja_env.globals.keys())
+        self.assert_equal(app.jinja_env.globals['get_stuff'], get_stuff)
+        self.assert_(app.jinja_env.globals['get_stuff'](), 42)
+        with app.app_context():
+            rv = flask.render_template_string('{{ get_stuff() }}')
+            self.assert_equal(rv, '42')
+
     def test_custom_template_loader(self):
         class MyFlask(flask.Flask):
             def create_global_jinja_loader(self):
