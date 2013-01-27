@@ -490,7 +490,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
     if mimetype is None and (filename or attachment_filename):
-        mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+        mimetype = mimetypes.guess_type(attachment_filename or filename)[0]
     if mimetype is None:
         mimetype = 'application/octet-stream'
 
