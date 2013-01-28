@@ -47,6 +47,8 @@ Release date to be decided.
   cause caching.
 - Flask will no longer invoke the wrong error handlers if a proxy
   exception is passed through.
+- Added a workaround for chrome's cookies in localhost not working
+  as intended with domain names.
 
 Version 0.9
 -----------
