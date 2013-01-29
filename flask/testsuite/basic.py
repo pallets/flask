@@ -190,6 +190,22 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_('domain=.example.com' in rv.headers['set-cookie'].lower())
         self.assert_('httponly' in rv.headers['set-cookie'].lower())
 
+    def test_session_using_server_name_port_and_path(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SECRET_KEY='foo',
+            SERVER_NAME='example.com:8080',
+            APPLICATION_ROOT='/foo'
+        )
+        @app.route('/')
+        def index():
+            flask.session['testing'] = 42
+            return 'Hello World'
+        rv = app.test_client().get('/', 'http://example.com:8080/foo')
+        self.assert_('domain=example.com' in rv.headers['set-cookie'].lower())
+        self.assert_('path=/foo' in rv.headers['set-cookie'].lower())
+        self.assert_('httponly' in rv.headers['set-cookie'].lower())
+
     def test_session_using_application_root(self):
         class PrefixPathMiddleware(object):
             def __init__(self, app, prefix):

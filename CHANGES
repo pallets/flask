@@ -49,6 +49,8 @@ Release date to be decided.
   exception is passed through.
 - Added a workaround for chrome's cookies in localhost not working
   as intended with domain names.
+- Changed logic for picking defaults for cookie values from sessions
+  to work better with Google Chrome.
 
 Version 0.9
 -----------

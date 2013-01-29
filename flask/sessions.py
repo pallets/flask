@@ -193,11 +193,21 @@ class SessionInterface(object):
         if app.config['SERVER_NAME'] is not None:
             # chop of the port which is usually not supported by browsers
             rv = '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
+
             # Google chrome does not like cookies set to .localhost, so
             # we just go with no domain then.  Flask documents anyways that
             # cross domain cookies need a fully qualified domain name
             if rv == '.localhost':
                 rv = None
+
+            # If we infer the cookie domain from the server name we need
+            # to check if we are in a subpath.  In that case we can't
+            # set a cross domain cookie.
+            if rv is not None:
+                path = self.get_cookie_path(app)
+                if path != '/':
+                    rv = rv.lstrip('.')
+
             return rv
 
     def get_cookie_path(self, app):
