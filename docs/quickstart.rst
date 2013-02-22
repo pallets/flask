@@ -43,9 +43,9 @@ So what did that code do?
    the application's module or package.  If you are using a single module (as
    in this example), you should use `__name__` because depending on if it's
    started as application or imported as module the name will be different
-   (``'__main__'`` versus the actual import name).  For more information, have
-   a look at the :class:`~flask.Flask` documentation. This is needed so that
-   Flask knows where to look for templates, static files, and so on.
+   (``'__main__'`` versus the actual import name). This is needed so that
+   Flask knows where to look for templates, static files, and so on. For more
+   information, have a look at the :class:`~flask.Flask` documentation.
 3. We then use the :meth:`~flask.Flask.route` decorator to tell Flask what URL
    should trigger our function.
 4. The function is given a name which is also used to generate URLs for that
