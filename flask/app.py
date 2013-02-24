@@ -1545,6 +1545,8 @@ class Flask(_PackageBoundObject):
                                 types defined here, `status` is a string
                                 or an integer and `headers` is a list of
                                 a dictionary with header values.
+        an iterable             an arbitrary iterables's items will be
+                                streamed to the client.
         ======================= ===========================================
 
         :param rv: the return value from the view function
@@ -1552,6 +1554,8 @@ class Flask(_PackageBoundObject):
         .. versionchanged:: 0.9
            Previously a tuple was interpreted as the arguments for the
            response object.
+        .. versionchanged:: 0.10
+           Allow arbitrary iterables as input
         """
         status = headers = None
         if isinstance(rv, tuple):
@@ -1565,7 +1569,8 @@ class Flask(_PackageBoundObject):
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
             # specific values (like defualt content type selection).
-            if isinstance(rv, basestring):
+            if isinstance(rv, basestring) or hasattr(rv, '__iter__') or \
+               hasattr(rv, '__getattr__'):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:

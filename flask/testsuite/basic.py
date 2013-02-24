@@ -720,6 +720,29 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(rv.data, 'W00t')
             self.assert_equal(rv.mimetype, 'text/html')
 
+    def test_make_response_iterators(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.make_response(['H', 'E', 'L', 'L', 'O'])
+            self.assert_equal(rv.status_code, 200)
+            self.assert_equal(rv.data, 'HELLO')
+            self.assert_equal(rv.mimetype, 'text/html')
+
+            rv = flask.make_response(range(5), 403)
+            self.assert_equal(rv.status_code, 403)
+            self.assert_equal(rv.data, '01234')
+            self.assert_equal(rv.mimetype, 'text/html')
+
+            def custom_generator():
+                data = 'abcdefgh'
+                for x in data:
+                    yield x
+
+            rv = flask.make_response(custom_generator())
+            self.assert_equal(rv.status_code, 200)
+            self.assert_equal(rv.data, 'abcdefgh')
+            self.assert_equal(rv.mimetype, 'text/html')
+
     def test_make_response_with_response_instance(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
