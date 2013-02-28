@@ -8,6 +8,8 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import with_statement
+
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
@@ -94,6 +96,31 @@ class SignalsTestCase(FlaskTestCase):
             self.assert_(isinstance(recorded[0], ZeroDivisionError))
         finally:
             flask.got_request_exception.disconnect(record, app)
+
+    def test_flash_signal(self):
+        app = flask.Flask(__name__)
+        app.config['SECRET_KEY'] = 'secret'
+
+        @app.route('/')
+        def index():
+            flask.flash('This is a flash message', category='notice')
+            return flask.redirect('/other')
+
+        recorded = []
+        def record(sender, message, category):
+            recorded.append((message, category))
+
+        flask.message_flashed.connect(record, app)
+        try:
+            client = app.test_client()
+            with client.session_transaction():
+                client.get('/')
+                self.assert_equal(len(recorded), 1)
+                message, category = recorded[0]
+                self.assert_equal(message, 'This is a flash message')
+                self.assert_equal(category, 'notice')
+        finally:
+            flask.message_flashed.disconnect(record, app)
 
 
 def suite():
