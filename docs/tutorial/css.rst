@@ -10,7 +10,7 @@ folder we created before:
 .. sourcecode:: css
 
     body            { font-family: sans-serif; background: #eee; }
-    a, h1, h2       { color: #377BA8; }
+    a, h1, h2       { color: #377ba8; }
     h1, h2          { font-family: 'Georgia', serif; margin: 0; }
     h1              { border-bottom: 2px solid #eee; }
     h2              { font-size: 1.2em; }
@@ -24,8 +24,8 @@ folder we created before:
     .add-entry dl   { font-weight: bold; }
     .metanav        { text-align: right; font-size: 0.8em; padding: 0.3em;
                       margin-bottom: 1em; background: #fafafa; }
-    .flash          { background: #CEE5F5; padding: 0.5em;
-                      border: 1px solid #AACBE2; }
-    .error          { background: #F0D6D6; padding: 0.5em; }
+    .flash          { background: #cee5F5; padding: 0.5em;
+                      border: 1px solid #aacbe2; }
+    .error          { background: #f0d6d6; padding: 0.5em; }
 
 Continue with :ref:`tutorial-testing`.
