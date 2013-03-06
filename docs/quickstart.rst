@@ -694,7 +694,7 @@ Imagine you have a view like this:
         return render_template('error.html'), 404
 
 You just need to wrap the return expression with
-:func:`~flask.make_response` and get the result object to modify it, then
+:func:`~flask.make_response` and get the response object to modify it, then
 return it:
 
 .. sourcecode:: python
