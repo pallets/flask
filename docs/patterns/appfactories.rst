@@ -30,6 +30,9 @@ The idea is to set up the application in a function.  Like this::
         app = Flask(__name__)
         app.config.from_pyfile(config_filename)
 
+        from yourapplication.model import db
+        db.init_app(app)
+
         from yourapplication.views.admin import admin
         from yourapplication.views.frontend import frontend
         app.register_blueprint(admin)
@@ -50,6 +53,21 @@ get access to the application with the config?  Use
         return render_template(current_app.config['INDEX_TEMPLATE'])
 
 Here we look up the name of a template in the config.
+
+Extension objects are not initially bound to an application. Using
+``db.init_app``, the app gets configured for the extension. No
+application-specific state is stored on the extension object, so one extension
+object can be used for multiple apps. For more information about the design of
+extensions refer to :doc:`/extensiondev`.
+
+Your `model.py` might look like this when using `Flask-SQLAlchemy
+<http://pythonhosted.org/Flask-SQLAlchemy/>`_::
+
+    from flask.ext.sqlalchemy import SQLAlchemy
+    # no app object passed! Instead we use use db.init_app in the factory.
+    db = SQLAlchemy()
+
+    # create some models
 
 Using Applications
 ------------------
