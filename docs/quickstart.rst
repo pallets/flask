@@ -570,7 +570,7 @@ pass it through the :func:`~werkzeug.utils.secure_filename` function that
 Werkzeug provides for you::
 
     from flask import request
-    from werkzeug import secure_filename
+    from werkzeug.utils import secure_filename
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
