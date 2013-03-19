@@ -15,6 +15,7 @@ from werkzeug.utils import cached_property
 from .exceptions import JSONBadRequest
 from .debughelpers import attach_enctype_error_multidict
 from . import json
+from .json import JSONDict
 from .globals import _request_ctx_stack
 
 
@@ -99,11 +100,19 @@ class Request(RequestBase):
             request_charset = self.mimetype_params.get('charset')
             try:
                 if request_charset is not None:
-                    return json.loads(self.data, encoding=request_charset)
-                return json.loads(self.data)
+                    return self.build_json(
+                               json.loads(self.data,
+                                          encoding=request_charset)
+                           )
+                return self.build_json(json.loads(self.data))
             except ValueError, e:
                 return self.on_json_loading_failed(e)
-
+    
+    def build_json(self, obj):
+        if isinstance(obj, dict):
+            return JSONDict(obj)
+        return obj
+    
     def on_json_loading_failed(self, e):
         """Called if decoding of the JSON data failed.  The return value of
         this method is used by :attr:`json` when an error occurred.  The default
