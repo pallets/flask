@@ -122,6 +122,21 @@ class SignalsTestCase(FlaskTestCase):
         finally:
             flask.message_flashed.disconnect(record, app)
 
+    def test_blueprint_registered(self):
+        app = flask.Flask(__name__)
+        bp = flask.Blueprint('simple_bp', __name__)
+
+        recorded = []
+
+        def record(sender, blueprint):
+            recorded.append(blueprint)
+
+        flask.blueprint_registered.connect(record, app)
+        try:
+            app.register_blueprint(bp)
+            self.assert_equal(recorded, [bp])
+        finally:
+            flask.blueprint_registered.disconnect(record, app)
 
 def suite():
     suite = unittest.TestSuite()
