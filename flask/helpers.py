@@ -35,6 +35,7 @@ except ImportError:
 
 from jinja2 import FileSystemLoader
 
+from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
 
@@ -361,6 +362,8 @@ def flash(message, category='message'):
     flashes = session.get('_flashes', [])
     flashes.append((category, message))
     session['_flashes'] = flashes
+    message_flashed.send(current_app._get_current_object(),
+                         message=message, category=category)
 
 
 def get_flashed_messages(with_categories=False, category_filter=[]):
