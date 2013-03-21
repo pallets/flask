@@ -291,4 +291,22 @@ The following signals exist in Flask:
    This will also be passed an `exc` keyword argument that has a reference
    to the exception that caused the teardown if there was one.
 
+.. data:: flask.message_flashed
+   :noindex:
+
+   This signal is sent when the application is flashing a message.  The
+   messages is sent as `message` keyword argument and the category as
+   `category`.
+
+   Example subscriber::
+
+        recorded = []
+        def record(sender, message, category, **extra):
+            recorded.append((message, category))
+
+        from flask import message_flashed
+        message_flashed.connect(record, app)
+
+   .. versionadded:: 0.10
+
 .. _blinker: http://pypi.python.org/pypi/blinker

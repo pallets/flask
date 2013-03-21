@@ -524,6 +524,14 @@ Signals
    An `exc` keyword argument is passed with the exception that caused the
    teardown.
 
+.. data:: message_flashed
+
+   This signal is sent when the application is flashing a message.  The
+   messages is sent as `message` keyword argument and the category as
+   `category`.
+
+   .. versionadded:: 0.10
+
 .. currentmodule:: None
 
 .. class:: flask.signals.Namespace
