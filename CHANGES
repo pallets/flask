@@ -51,6 +51,7 @@ Release date to be decided.
   as intended with domain names.
 - Changed logic for picking defaults for cookie values from sessions
   to work better with Google Chrome.
+- Added `message_flashed` signal that simplifies flashing testing.
 
 Version 0.9
 -----------
