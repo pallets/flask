@@ -8,6 +8,7 @@
     :copyright: (c) 2012 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import uuid
 from datetime import datetime
 from .globals import current_app, request
 
@@ -55,6 +56,8 @@ class JSONEncoder(_json.JSONEncoder):
         """
         if isinstance(o, datetime):
             return http_date(o)
+        if isinstance(o, uuid.UUID):
+            return str(o)
         if hasattr(o, '__html__'):
             return unicode(o.__html__())
         return _json.JSONEncoder.default(self, o)
