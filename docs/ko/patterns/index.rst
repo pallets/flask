@@ -1,7 +1,7 @@
 .. _patterns:
 
-Patterns for Flask
-==================
+플라스크를 위한 패턴들
+======================
 
 Certain things are common enough that the chances are high you will find
 them in most web applications.  For example quite a lot of applications
