@@ -1,11 +1,9 @@
 .. _larger-applications:
 
-Larger Applications
+더 큰 어플케이션들
 ===================
 
-For larger applications it's a good idea to use a package instead of a
-module.  That is quite simple.  Imagine a small application looks like
-this::
+더 큰 어플리케이션들의 경우, 모듈 대신 패키지를 사용하는게 좋다.패키지의 사용은 꽤 간단하다.작은 어플리케이션은 아래와 같은 구조로 되있다고 생각해보자.::
 
     /yourapplication
         /yourapplication.py
@@ -17,15 +15,15 @@ this::
             login.html
             ...
 
-Simple Packages
+간단한 패키지
 ---------------
 
-To convert that into a larger one, just create a new folder
-`yourapplication` inside the existing one and move everything below it.
-Then rename `yourapplication.py` to `__init__.py`.  (Make sure to delete
-all `.pyc` files first, otherwise things would most likely break)
+작은 어플리케이션을 큰 어플리케이션 구조로 변환하기 위해, 단지 기존에 존재하던 폴더에
+새 폴더 `yourapplication` 를 생성하고 그 폴더로 모두 옯긴다.
+그리고 나서, `yourapplication.py`를 `__init__.py`으로 이름을 바꾼다. 
+(먼저 모든 `.pyc` 을 삭제해야지, 그렇지 않으면 모든 파일이 깨질 가능성이 크다.)
 
-You should then end up with something like that::
+여러분은 아래와 같은 구조를 최종적으로 보게 될 것이다::
 
     /yourapplication
         /yourapplication
@@ -38,10 +36,10 @@ You should then end up with something like that::
                 login.html
                 ...
 
-But how do you run your application now?  The naive ``python
-yourapplication/__init__.py`` will not work.  Let's just say that Python
-does not want modules in packages to be the startup file.  But that is not
-a big problem, just add a new file called `runserver.py` next to the inner
+하지만 이 상황에서 여러분은 어떻게 어플리케이션을 실행하는가?
+``python yourapplication/__init__.py``와 같은 순진한 명령은 실행되지 않을 것이다.
+Let's just say that Python does not want modules in packages to be the startup file.  
+But that is not a big problem, just add a new file called `runserver.py` next to the inner
 `yourapplication` folder with the following contents::
 
     from yourapplication import app
