@@ -95,18 +95,14 @@
    왜냐하면 `__init__.py`에 있는 뷰들을 실제로 사용하지 않고 단지 모듈들이 임포트되었는지
    보장하고 그 파일의 제일 하단에서 임포트하기 때문이다.
    
-   There are still some problems with that approach but if you want to use
-   decorators there is no way around that.  Check out the
-   :ref:`becomingbig` section for some inspiration how to deal with that.
    이런 접근법에도 일부 문제가 남아있지만 여러분이 데코레이터(decoroator)를 사용하고 싶다면
    문제를 피할 방도는 없다. 그것을 다루는 방법에 대한 몇 가지 영감을 위해 :ref:`becomingbig` 단락을 확인해라
 
+
 .. _working-with-modules:
 
-Working with Blueprints
+청사진(Blueprints)으로 작업하기
 -----------------------
 
-If you have larger applications it's recommended to divide them into
-smaller groups where each group is implemented with the help of a
-blueprint.  For a gentle introduction into this topic refer to the
-:ref:`blueprints` chapter of the documentation.
+여러분이 더 큰 규모의 어플리케이션을 갖고 있다면, 그것들을 청사진으로 구현된 더 작은 그룹으로
+나누는 것을 추천한다. 이 주제에 대한 가벼운 소개는 이 문서의 :ref:`blueprints` 장을 참고해라.
