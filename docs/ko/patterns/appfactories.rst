@@ -1,15 +1,15 @@
 .. _app-factories:
 
-Application Factories
+어플리케이션 팩토리
 =====================
 
-If you are already using packages and blueprints for your application
-(:ref:`blueprints`) there are a couple of really nice ways to further improve
-the experience.  A common pattern is creating the application object when
-the blueprint is imported.  But if you move the creation of this object,
-into a function, you can then create multiple instances of this and later.
+여러분이 어플리케이션에 이미 패키지들과 청사진들을 사용한다면(:ref:`blueprints`) 
+그 경험들을 좀 더 개선할 몇 가지 정말 좋은 방법들이 있다.
+일반적인 패턴은 청사진을 임포트할 때 어플리케이션 객체를 생성하는 것이다.
+하지만 여러분이 이 객체의 생성을 함수로 옮긴다면, 
+나중에 이 객체에 대한 복수 개의 인스턴스를 생성할 수 있다.
 
-So why would you want to do this?
+그래서 여러분은 왜 이렇게 하고 싶은 것인가?
 
 1.  Testing.  You can have instances of the application with different
     settings to test every case.
