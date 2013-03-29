@@ -20,7 +20,7 @@
 
 작은 어플리케이션을 큰 어플리케이션 구조로 변환하기 위해, 단지 기존에 존재하던 폴더에
 새 폴더 `yourapplication` 를 생성하고 그 폴더로 모두 옯긴다.
-그리고 나서, `yourapplication.py`를 `__init__.py`으로 이름을 바꾼다. 
+그리고 나서, `yourapplication.py` 를 `__init__.py` 으로 이름을 바꾼다. 
 (먼저 모든 `.pyc` 을 삭제해야지, 그렇지 않으면 모든 파일이 깨질 가능성이 크다.)
 
 여러분은 아래와 같은 구조를 최종적으로 보게 될 것이다::
@@ -50,7 +50,7 @@ What did we gain from this?  Now we can restructure the application a bit
 into multiple modules.  The only thing you have to remember is the
 following quick checklist:
 
-1. `플라스크` 어플리케이션 객체 생성은 `__init__.py`파일에서 해야한다.  
+1. `플라스크` 어플리케이션 객체 생성은 `__init__.py` 파일에서 해야한다.  
    그런 방식으로 개별 모듈은 안전하게 포함되고 `__name__` 변수는 알맞은 패키지로 해석될 것이다.
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
    decorator on top) have to be imported in the `__init__.py` file.
