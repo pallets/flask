@@ -46,18 +46,17 @@
     from yourapplication import app
     app.run(debug=True)
 
-What did we gain from this?  Now we can restructure the application a bit
-into multiple modules.  The only thing you have to remember is the
-following quick checklist:
+이렇게해서 우리는 무엇을 얻었는가? 
+이제 우리는 이 어플리케이션을 복개의 모듈들로 재구조화할 수 있다.
+여러분이 기억해야할 유일한 것은 다음의 체크리스트이다::
 
 1. `플라스크` 어플리케이션 객체 생성은 `__init__.py` 파일에서 해야한다.  
    그런 방식으로 개별 모듈은 안전하게 포함되고 `__name__` 변수는 알맞은 패키지로 해석될 것이다.
-2. all the view functions (the ones with a :meth:`~flask.Flask.route`
-   decorator on top) have to be imported in the `__init__.py` file.
-   Not the object itself, but the module it is in. Import the view module
-   **after the application object is created**.
+2. 모든 뷰 함수들은(함수의 선언부 위에 :meth:`~flask.Flask.route` 데코레이터(decorator)를 가진 
+   함수)는 `__init__.py` 파일에 임포트되어야 하는데, 객체가 아닌 함수가 있는 모듈을 
+   임포트해야한다. **어플리케이션 객체를 생성한 후에** 뷰 모듈을 임포트해라.
 
-Here's an example `__init__.py`::
+여기에 `__init__.py` 파일의 예제가 있다::
 
     from flask import Flask
     app = Flask(__name__)
