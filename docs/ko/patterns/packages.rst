@@ -63,7 +63,7 @@
 
     import yourapplication.views
 
-And this is what `views.py` would look like::
+그리고 아래가 `views.py` 파일의 예제일 수 있다::
 
     from yourapplication import app
 
@@ -71,7 +71,7 @@ And this is what `views.py` would look like::
     def index():
         return 'Hello World!'
 
-You should then end up with something like that::
+여러분은 최종적으로 아래와 같은 구조를 얻을 것이다::
 
     /yourapplication
         /runserver.py
@@ -86,20 +86,20 @@ You should then end up with something like that::
                 login.html
                 ...
 
-.. admonition:: Circular Imports
+.. admonition:: 순환 임포트(Circular Imports)
 
-   Every Python programmer hates them, and yet we just added some:
-   circular imports (That's when two modules depend on each other.  In this
-   case `views.py` depends on `__init__.py`).  Be advised that this is a
-   bad idea in general but here it is actually fine.  The reason for this is
-   that we are not actually using the views in `__init__.py` and just
-   ensuring the module is imported and we are doing that at the bottom of
-   the file.
-
+   모든 파이썬 프로그래머는 순환 임포트를 싫어하지만, 우리는 일부 그것을 더했다:
+   순환 임포트는(두 모듈이 서로 의존 관계가 있는 경우이다. 위 경우 `views.py` 는 `__init__.py` 에 의존한다).
+   Be advised that this is a bad idea in general but here it is actually fine.
+   이런 방식은 일반적으로 나쁘지만, 이 경우는 실제로 괜찮다고 생각해도 된다.
+   왜냐하면 `__init__.py`에 있는 뷰들을 실제로 사용하지 않고 단지 모듈들이 임포트되었는지
+   보장하고 그 파일의 제일 하단에서 임포트하기 때문이다.
+   
    There are still some problems with that approach but if you want to use
    decorators there is no way around that.  Check out the
    :ref:`becomingbig` section for some inspiration how to deal with that.
-
+   이런 접근법에도 일부 문제가 남아있지만 여러분이 데코레이터(decoroator)를 사용하고 싶다면
+   문제를 피할 방도는 없다. 그것을 다루는 방법에 대한 몇 가지 영감을 위해 :ref:`becomingbig` 단락을 확인해라
 
 .. _working-with-modules:
 
