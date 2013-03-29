@@ -37,11 +37,11 @@
                 ...
 
 하지만 이 상황에서 여러분은 어떻게 어플리케이션을 실행하는가?
-``python yourapplication/__init__.py``와 같은 순진한 명령은 실행되지 않을 것이다.
+``python yourapplication/__init__.py`` 와 같은 순진한 명령은 실행되지 않을 것이다.
 
-Let's just say that Python does not want modules in packages to be the startup file.  
-But that is not a big problem, just add a new file called `runserver.py` next to the inner
-`yourapplication` folder with the following contents::
+파이썬은 패키지에 있는 모듈이 스타트업 파일이 되는 것을 원하지 않는다고 해보자.
+하지만, 그것은 큰 문제는 아니고, 아래와 같이 단지 `runserver.py` 라는 새 파일을 
+루트 폴더 바로 아래 있는 `yourapplication` 폴더 안에 추가하기만 하면 된다::
 
     from yourapplication import app
     app.run(debug=True)
