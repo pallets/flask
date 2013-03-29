@@ -50,9 +50,8 @@ What did we gain from this?  Now we can restructure the application a bit
 into multiple modules.  The only thing you have to remember is the
 following quick checklist:
 
-1. `플라스크` 어플리케이션 객체 생성은 has to be in the
-   `__init__.py` file.  That way each module can import it safely and the
-   `__name__` variable will resolve to the correct package.
+1. `플라스크` 어플리케이션 객체 생성은 `__init__.py`파일에서 해야한다.  
+   그런 방식으로 개별 모듈은 안전하게 포함되고 `__name__` 변수는 알맞은 패키지로 해석될 것이다.
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
    decorator on top) have to be imported in the `__init__.py` file.
    Not the object itself, but the module it is in. Import the view module
