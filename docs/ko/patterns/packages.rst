@@ -3,7 +3,7 @@
 더 큰 어플케이션들
 ===================
 
-더 큰 어플리케이션들의 경우, 모듈 대신 패키지를 사용하는게 좋다.패키지의 사용은 꽤 간단하다.작은 어플리케이션은 아래와 같은 구조로 되있다고 생각해보자.::
+더 큰 어플리케이션들의 경우, 모듈 대신 패키지를 사용하는게 좋다.패키지의 사용은 꽤 간단하다.작은 어플리케이션은 아래와 같은 구조로 되어있다고 생각해보자::
 
     /yourapplication
         /yourapplication.py
@@ -38,6 +38,7 @@
 
 하지만 이 상황에서 여러분은 어떻게 어플리케이션을 실행하는가?
 ``python yourapplication/__init__.py``와 같은 순진한 명령은 실행되지 않을 것이다.
+
 Let's just say that Python does not want modules in packages to be the startup file.  
 But that is not a big problem, just add a new file called `runserver.py` next to the inner
 `yourapplication` folder with the following contents::
@@ -49,7 +50,7 @@ What did we gain from this?  Now we can restructure the application a bit
 into multiple modules.  The only thing you have to remember is the
 following quick checklist:
 
-1. the `Flask` application object creation has to be in the
+1. the `플라스크` application object creation has to be in the
    `__init__.py` file.  That way each module can import it safely and the
    `__name__` variable will resolve to the correct package.
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
