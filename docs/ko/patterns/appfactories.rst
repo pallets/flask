@@ -11,20 +11,18 @@
 
 그래서 여러분은 왜 이렇게 하고 싶은 것인가?
 
-1.  Testing.  You can have instances of the application with different
-    settings to test every case.
-2.  Multiple instances.  Imagine you want to run different versions of the
-    same application.  Of course you could have multiple instances with
-    different configs set up in your webserver, but if you use factories,
-    you can have multiple instances of the same application running in the
-    same application process which can be handy.
+1.  테스팅.  여러분은 모든 케이스를 테스트하기 위해 여러 설정을 가진 어플리케이션 인스턴스들을 가질수 있다.
+2.  복수 개의 인스턴스.  여러분이 같은 어플리케이션의 여러 다른 버전을 실행하고 싶다고 가정하자.
+    물론 여러분은 여러분은 웹서버에 여러 다른 설정을 가진 복수 개의 인스턴스를 가질 수도 있지만, 
+    여러분이 팩토리를 사용한다면, 여러분은 간편하게 같은 어플리케이션 프로세스에서 동작하는 
+    복수 개의 인스턴스를 가질 수 있다.
 
-So how would you then actually implement that?
+그렇다면 어떻게 여러분은 실제로 그것을 구현할 것인가?
 
-Basic Factories
+기본 팩토리
 ---------------
 
-The idea is to set up the application in a function.  Like this::
+이 방식은 함수 안에 어플리케이션을 설정하는 방법이다::
 
     def create_app(config_filename):
         app = Flask(__name__)
@@ -37,10 +35,9 @@ The idea is to set up the application in a function.  Like this::
 
         return app
 
-The downside is that you cannot use the application object in the blueprints
-at import time.  You can however use it from within a request.  How do you
-get access to the application with the config?  Use
-:data:`~flask.current_app`::
+이 방식의 단점은 여러분은 임포트하는 시점에 청사진 안에 있는 어플리케이션 객체를 사용할 수 없다.
+그러나 여러분은 요청 안에서 어플리케이션 객체를 사용할 수 있다.
+어떻게 여러분이 설정을 갖고 있는 어플리케이션에 접근하는가? :data:`~flask.current_app` 을 사용하면 된다::
 
     from flask import current_app, Blueprint, render_template
     admin = Blueprint('admin', __name__, url_prefix='/admin')
@@ -49,27 +46,25 @@ get access to the application with the config?  Use
     def index():
         return render_template(current_app.config['INDEX_TEMPLATE'])
 
-Here we look up the name of a template in the config.
+여기에서 우리는 설정에 있는 템플릿 이름을 찾아낸다.
 
-Using Applications
+어플리케이션(Application) 사용하기
 ------------------
 
-So to use such an application you then have to create the application
-first.  Here an example `run.py` file that runs such an application::
+그렇다면 그런 어플리케이션을 사용하기 위해서 어려분은 먼저 어플리케이션을 생성해야한다.
+아래는 그런 어플리케이션을 실행하는 `run.py` 파일이다::
 
     from yourapplication import create_app
     app = create_app('/path/to/config.cfg')
     app.run()
 
-Factory Improvements
+팩토리 개선
 --------------------
 
-The factory function from above is not very clever so far, you can improve
-it.  The following changes are straightforward and possible:
+위에서 팩토리 함수는 지금까지는 그다지 똑똑하지 않았지만, 여러분은 개선할 수 있다.
+다음 변경들은 간단하고 가능성이 있다:
 
-1.  make it possible to pass in configuration values for unittests so that
-    you don't have to create config files on the filesystem
-2.  call a function from a blueprint when the application is setting up so
-    that you have a place to modify attributes of the application (like
-    hooking in before / after request handlers etc.)
-3.  Add in WSGI middlewares when the application is creating if necessary.
+1.  여러분이 파일시스템에 설정 파일을 만들지 않도록 유닛테스트를 위해 설정값을 전달하도록 만들어라.
+2.  여러분이 어플리케이션의 속성들을 변경할 곳을 갖기 위해 어플리케이션이 셋업될 때 청사진에서 함수를 호출해라.
+    (요청 핸들러의 앞/뒤로 가로채는 것 처럼)
+3.  필요하다면 어플리케이션이 생성될 때, WSGI 미들웨어에 추가해라.
