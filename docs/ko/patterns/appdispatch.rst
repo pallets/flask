@@ -76,17 +76,17 @@ URL 접두어(prefix)에 기반해서 디스패치되는 하나의 더 커다란
 그런 방식은 굉장히 구현하기 쉽다. 함수로 새 인스턴스를 생성을 지원하도록 어플리케이션을
 개발하기 위해서는 :ref:`app-factories` 패턴을 살펴보도록 해라.
 
-A very common example would be creating applications per subdomain.  For
-instance you configure your webserver to dispatch all requests for all
-subdomains to your application and you then use the subdomain information
-to create user-specific instances.  Once you have your server set up to
-listen on all subdomains you can use a very simple WSGI application to do
-the dynamic application creation.
+매우 일반적인 예제는 하위도메인 별로 어플리케이션을 생성하는 것이다.
+예를 들면, 여러분은 어플리케이션의 모든 하위도메인에 대한 모든 요청을
+디스패치 하도록 웹서버를 구성하고 사용자 지정 인스턴스를 생성하기 위해
+하위도메인 정보를 사용한다. 일단 여러분의 웹서버가 모든 하위도메인의 요청을
+받아들이도록(listen) 설정하면, 여러분은 동적인 어플리케이션 생성을 할 수있는
+매우 간단한 WSGI 어플리케이션을 사용할 수 있다.
 
-The perfect level for abstraction in that regard is the WSGI layer.  You
-write your own WSGI application that looks at the request that comes and
-delegates it to your Flask application.  If that application does not
-exist yet, it is dynamically created and remembered::
+이 관점에서 추상화의 최적의 레벨은 WSGI 계층이다. 여러분은 들어오는 요청을 
+보고 그것을 여러분의 플라스크 어플리케이션으로 위임하는 여러분 자신만의 
+WSGI 어플리케이션을 작성할 수 있다. 그 어플리케이션이 아직 존재하지 않는다면,
+그것은 동적으로 생성되고 기억된다::
 
     from threading import Lock
 
@@ -114,7 +114,7 @@ exist yet, it is dynamically created and remembered::
             return app(environ, start_response)
 
 
-This dispatcher can then be used like this::
+그리고나서 이 디스패쳐는 아래와 같이 사용될 수 있다::
 
     from myapplication import create_app, get_user_for_subdomain
     from werkzeug.exceptions import NotFound
@@ -135,12 +135,12 @@ This dispatcher can then be used like this::
     application = SubdomainDispatcher('example.com', make_app)
 
 
-Dispatch by Path
-----------------
+경로로 디스패치하기
+-------------------
 
-Dispatching by a path on the URL is very similar.  Instead of looking at
-the `Host` header to figure out the subdomain one simply looks at the
-request path up to the first slash::
+URL 경로로 디스패치하는 것도 하위도메인과 굉장히 유사하다. 하위도메인 헤더를
+확인하기 위해 `Host` 헤더를 보는 것 대신, 간단히 첫 번째 슬래쉬(/)까지의 
+요청 경로를 보는 것이다::
 
     from threading import Lock
     from werkzeug.wsgi import pop_path_info, peek_path_info
