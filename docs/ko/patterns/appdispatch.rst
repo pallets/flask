@@ -28,9 +28,10 @@
 :func:`run_simple <werkzeug.serving.run_simple>` 은 운영환경에서 사용을 의도하지 않는다.
 운영환경에 맞는 기능이 갖춰진 서버(:ref:`full-blown WSGI server <deployment>`)를 사용해라. 
 
-In order to use the interactive debuggger, debugging must be enabled both on
-the application and the simple server, here is the "hello world" example with
-debugging and :func:`run_simple <werkzeug.serving.run_simple>`::
+대화형(interactive) 디버거를 사용하기 위해서, 디버깅이 어플리케이션과 
+심플 서버(simple server) 양쪽에서 활성화되어 있어야한다.
+아래는 디버깅과  :func:`run_simple <werkzeug.serving.run_simple>` 를 사용한 
+"hellow world" 예제이다::
 
     from flask import Flask
     from werkzeug.serving import run_simple
@@ -47,18 +48,15 @@ debugging and :func:`run_simple <werkzeug.serving.run_simple>`::
                    use_reloader=True, use_debugger=True, use_evalex=True)
 
 
-Combining Applications
+어플리케이션 결합하기
 ----------------------
 
-If you have entirely separated applications and you want them to work next
-to each other in the same Python interpreter process you can take
-advantage of the :class:`werkzeug.wsgi.DispatcherMiddleware`.  The idea
-here is that each Flask application is a valid WSGI application and they
-are combined by the dispatcher middleware into a larger one that
-dispatched based on prefix.
+여러분이 완전하게 분리된 어플리케이션들을 갖고 있고 그것들이 동일한 파이썬 프로세스 위의
+바로 옆에서 동작하기를 원한다면, :class:`werkzeug.wsgi.DispatcherMiddleware` 를 이용할 수 있다.
+그 방식은 각 플라스크 어플리케이션이 유효한 WSGI 어플리케이션이고 디스패처 미들웨어에 의해
+URL 접두어(prefix)에 기반해서 디스패치되는 하나의 더 커다란 어플리케이션으로 결합되는 것이다.
 
-For example you could have your main application run on `/` and your
-backend interface on `/backend`::
+예를 들면, 여러분의 주(main) 어플리케이션을 '/'에 두고 백엔드 인터페이스는 `/backend`에 둘 수 있다::
 
     from werkzeug.wsgi import DispatcherMiddleware
     from frontend_app import application as frontend
@@ -69,15 +67,14 @@ backend interface on `/backend`::
     })
 
 
-Dispatch by Subdomain
----------------------
+하위도메인(subdomain)으로 디스패치하기
+--------------------------------------
 
-Sometimes you might want to use multiple instances of the same application
-with different configurations.  Assuming the application is created inside
-a function and you can call that function to instantiate it, that is
-really easy to implement.  In order to develop your application to support
-creating new instances in functions have a look at the
-:ref:`app-factories` pattern.
+여러분은 때때로 다른 구성으로 같은 어플리케이션에 대한 복수 개의 인스턴스를 
+사용하고 싶을 때가 있을 것이다. 그 어플리케이션이 어떤 함수 안에서 생성됐고
+여러분이 그 어플리케이션을 인스턴스화 하기위해 그 함수를 호출할 수 있다고 가정하면,
+그런 방식은 굉장히 구현하기 쉽다. 함수로 새 인스턴스를 생성을 지원하도록 어플리케이션을
+개발하기 위해서는 :ref:`app-factories` 패턴을 살펴보도록 해라.
 
 A very common example would be creating applications per subdomain.  For
 instance you configure your webserver to dispatch all requests for all
