@@ -95,7 +95,7 @@ URL 맵에 대한 :meth:`~werkzeug.routing.Map.is_endpoint_expecting` 메소드�
 모든 함수에 자동으로 그 값을 처리한다.  게다가, 청사진은 청사진 별로 
 :meth:`~flask.Flask.url_defaults` 함수에서 많은 로직을 제거하는 
 URL 프로세서를 가질 수 있는데, 왜냐하면 청사진은 더 이상 URL이 
-진짜 ``'lang_code'``에 관심이 있는지 확인하지 않아도 되기 때문이다::
+진짜 ``'lang_code'`` 에 관심이 있는지 확인하지 않아도 되기 때문이다::
 
     from flask import Blueprint, g
 
