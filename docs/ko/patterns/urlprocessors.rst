@@ -39,7 +39,7 @@ URL 프로세서 뿐만아니라 어플리케이션이 지정된 URL 프로세�
 후자의 경우, :func:`~flask.Flask.url_defaults` 가 관여하는 곳 이다.
 그것들은 자동으로 :func:`~flask.url_for` 호출에 대해 값을 주입한다.
 아래의 코드는 언어 코드가 URL 딕셔너리에는 아직 없는지와 끝점(endpoint)가 
-``'lang_code'` 라는 변수의 값을 원하는지를 확인한다::
+``'lang_code'`` 라는 변수의 값을 원하는지를 확인한다::
 
     @app.url_defaults
     def add_language_code(endpoint, values):
@@ -60,11 +60,10 @@ URL 맵에 대한 :meth:`~werkzeug.routing.Map.is_endpoint_expecting` 메소드�
         g.lang_code = values.pop('lang_code', None)
 
 이 방식으로 여러분은 더 이상 모든 함수에서 :data:`~flask.g` 에 `lang_code` 를 
-할당하지 않아도 된다. 여러분은 You can further improve that by
-writing your own decorator that prefixes URLs with the language code, but
-the more beautiful solution is using a blueprint.  Once the
-``'lang_code'`` is popped from the values dictionary and it will no longer
-be forwarded to the view function reducing the code to this::
+할당하지 않아도 된다. 여러분은 언어 코드를 URL의 접두어로 만드는 데코레이터를 작성하여
+좀 더 개선할 수 있지만, 더 아름다운 해결책은 청사진(blueprint)을 사용하는 것이다.
+일단 ``'lang_code'`` 가 URL 값의 딕셔너리에서 꺼내지면 그 값은 아래와 같이 코드가 줄어든
+뷰 함수로 더 이상 넘어가지 않는다::
 
     from flask import Flask, g
 
@@ -89,15 +88,14 @@ be forwarded to the view function reducing the code to this::
     def about():
         ...
 
-Internationalized Blueprint URLs
---------------------------------
+국제화된 청사진 URL
+-------------------
 
-Because blueprints can automatically prefix all URLs with a common string
-it's easy to automatically do that for every function.  Furthermore
-blueprints can have per-blueprint URL processors which removes a whole lot
-of logic from the :meth:`~flask.Flask.url_defaults` function because it no
-longer has to check if the URL is really interested in a ``'lang_code'``
-parameter::
+청사진은 자동으로 공통 문자열을 모든 URL에 접두어화 시킬 수 있기 때문에
+모든 함수에 자동으로 그 값을 처리한다.  게다가, 청사진은 청사진 별로 
+:meth:`~flask.Flask.url_defaults` 함수에서 많은 로직을 제거하는 
+URL 프로세서를 가질 수 있는데, 왜냐하면 청사진은 더 이상 URL이 
+진짜 ``'lang_code'``에 관심이 있는지 확인하지 않아도 되기 때문이다::
 
     from flask import Blueprint, g
 
