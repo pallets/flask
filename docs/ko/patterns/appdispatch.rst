@@ -1,34 +1,32 @@
 .. _app-dispatch:
 
-Application Dispatching
+어플리케이션 디스패칭
 =======================
 
-Application dispatching is the process of combining multiple Flask
-applications on the WSGI level.  You can not only combine Flask
-applications into something larger but any WSGI application.  This would
-even allow you to run a Django and a Flask application in the same
-interpreter side by side if you want.  The usefulness of this depends on
-how the applications work internally.
+어플리케이션 디스패칭은 WSGI 레벨에서 복수의 플라스크 어플리케이션들을 결합하는 과정이다.
+여러분은 플라스크 어플리케이션들을 더 큰 것으로 만들수 있을뿐 아니라
+어떤 WSGI 어플리케이션으로도 결합할 수 있다.
+이것은 여러분이 원하다면 심지어 같은 인터프리터에서 장고(Django) 와 플라스크 어플리케이션을
+바로 옆에서 실행할 수 있게해준다. 이 유용함 어플리케이션들이 내부적으로 동작하는 방식에 의존한다.
 
-The fundamental difference from the :ref:`module approach
-<larger-applications>` is that in this case you are running the same or
-different Flask applications that are entirely isolated from each other.
-They run different configurations and are dispatched on the WSGI level.
+:ref:`module approach <larger-applications>` 과 근본적인 차이점은 이 경우에 여러분은 
+서로 완전히 분리된 동일하거나 다른 플라스크 어플리케이션들을 실행한다는 것이다.
+그것들은 다른 설정에서 실행되고 WSGI 레벨에서 디스패치된다.
 
 
-Working with this Document
+이 문서를 가지고 작업하기
 --------------------------
 
-Each of the techniques and examples below results in an ``application`` object
-that can be run with any WSGI server.  For production, see :ref:`deployment`.
-For development, Werkzeug provides a builtin server for development available
-at :func:`werkzeug.serving.run_simple`::
+아래의 각 기법들과 예제들은 어떤 WSGI 서버에서 실행가능한 ``application`` 객체이다.
+운영 환경의 경우, :ref:`deployment` 를 살펴봐라.
+개발 환경의 경우, 베르크쭉(Werkzeug)은 :func:`werkzeug.serving.run_simple` 에 개발용 빌트인 서버를 제공한다::
 
     from werkzeug.serving import run_simple
     run_simple('localhost', 5000, application, use_reloader=True)
 
-Note that :func:`run_simple <werkzeug.serving.run_simple>` is not intended for
-use in production.  Use a :ref:`full-blown WSGI server <deployment>`.
+
+:func:`run_simple <werkzeug.serving.run_simple>` 은 운영환경에서 사용을 의도하지 않는다.
+운영환경에 맞는 기능이 갖춰진 서버(:ref:`full-blown WSGI server <deployment>`)를 사용해라. 
 
 In order to use the interactive debuggger, debugging must be enabled both on
 the application and the simple server, here is the "hello world" example with
