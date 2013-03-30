@@ -170,8 +170,8 @@ URL 경로로 디스패치하는 것도 하위도메인과 굉장히 유사하�
                 app = self.default_app
             return app(environ, start_response)
 
-The big difference between this and the subdomain one is that this one
-falls back to another application if the creator function returns `None`::
+경로와 하위도메인 디스패치의 큰 차이점은 경로 디스패치는 생성 함수가 `None`
+을 반환하면 다른 어플리케이션으로 넘어갈 수 있다는 것이다::
 
     from myapplication import create_app, default_app, get_user_for_prefix
 
