@@ -30,13 +30,13 @@ distribute, the older setuptools 또는 distutils 중 한 가지로 배포된다
 distribute를 가지고 배포하는 것은 좀 더 복잡하고 자동화된 배포 시나리오로 들어가는 첫 단계이다.
 만약 여러분이 배포 프로세스를 완전히 자동화하고 싶다면, :ref:`fabric-deployment` 장 또한 읽어야한다.
 
-Basic Setup Script
+기본 설치 스크립트
 ------------------
 
-Because you have Flask running, you either have setuptools or distribute
-available on your system anyways.  If you do not, fear not, there is a
-script to install it for you: `distribute_setup.py`_.  Just download and
-run with your Python interpreter.
+여러분은 플라스크를 실행시키고 있기 때문에, 어쨌든 여러분의 시스템에는
+setuptools나 distribute를 사용할 수 있을 것이다. 
+만약 사용할 수 없다면, 두려워하지 말기 바란다. 여러분을 위해 그런 설치도구를 설치해 줄 
+`distribute_setup.py`_ 이라는 스크립트가 있다.  단지 다운받아서 파이썬으로 실행하면 된다.
 
 Standard disclaimer applies: :ref:`you better use a virtualenv
 <virtualenv>`.
