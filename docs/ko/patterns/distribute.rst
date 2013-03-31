@@ -1,41 +1,34 @@
 .. _distribute-deployment:
 
-Deploying with Distribute
+Distribute으로 전개하기
 =========================
 
-`distribute`_, formerly setuptools, is an extension library that is
-commonly used to (like the name says) distribute Python libraries and
-extensions.  It extends distutils, a basic module installation system
-shipped with Python to also support various more complex constructs that
-make larger applications easier to distribute:
+예전에 설치툴(setuptool)이었던 `distribute`_ 가 지금은 파이썬 라이브러리와 
+확장(extentions)을 배포(툴의 이름처럼)하는데 일반적으로 사용되는 확장 라이브러리이다. 
+그것은 더 규모있는 어플리케이션의 배포를 쉽게 만드는 여러 더 복잡한 생성자 또한 
+지원하기 위해 파이썬과 같이 설치되는 disutils를 확장한 것이다::
 
-- **support for dependencies**: a library or application can declare a
-  list of other libraries it depends on which will be installed
-  automatically for you.
-- **package registry**: setuptools registers your package with your
-  Python installation.  This makes it possible to query information
-  provided by one package from another package.  The best known feature of
-  this system is the entry point support which allows one package to
-  declare an "entry point" another package can hook into to extend the
-  other package.
-- **installation manager**: `easy_install`, which comes with distribute
-  can install other libraries for you.  You can also use `pip`_ which
-  sooner or later will replace `easy_install` which does more than just
-  installing packages for you.
+- **의존성 지원(support for dependencies)**: 라이브러리나 어플리케이션은 여러분을 위해 자동으로 설치되어야 할
+  그것에 의존적인 다른 라이브러리들의 목록을 선언할 수 있다.
+- **패키지 레지스트리(package registry)**: 설치툴은 파이썬 설치와 함께 여러분의 패키지를 등록한다.
+  이것은 하나의 패키지에서 제공되는 정보를 다른 패키지에서 질의하는 것을 가능하게 한다.
+  이 시스템의 가장 잘 알려진 특징은 패키지가 다른 패키지를 확장하기 위해 끼어들 수 있는 
+   "진입점(entry point")을 선언할 수 있도록 하는 진입점을 지원하다는 것이다.
+- **설치 관리자(installation manager)**: distribute와 함께 설치되는 `easy_install` 은 여러분을 위해
+  다른 라이브러리를 설치해준다.  여러분은 또한 조만간 패키지 설치 이상의 기능을 제공하는 `easy_install`
+  을 대체할 `pip`_ 을 사용할 수 있다.
 
-Flask itself, and all the libraries you can find on the cheeseshop
-are distributed with either distribute, the older setuptools or distutils.
+플라스크 그 자체와 cheeseshop(파이썬 라이브러리 인덱스)에서 찾을 수 있는 모든 라이브러리들은
+distribute, the older setuptools 또는 distutils 중 한 가지로 배포된다.
 
-In this case we assume your application is called
-`yourapplication.py` and you are not using a module, but a :ref:`package
-<larger-applications>`.  Distributing resources with standard modules is
-not supported by `distribute`_ so we will not bother with it.  If you have
-not yet converted your application into a package, head over to the
-:ref:`larger-applications` pattern to see how this can be done.
+이 경우, 여러분은 여러분의 어플리케이션이 `yourapplication.py` 이고 모듈을 사용하지 않지만
+:ref:`package<larger-applications>` 를 사용한다고 가정하자.
+표준 모듈들을 가진 리소스들을 배포하는 것은 `distribute`_ 이 지원하지 않지만,
+우리는 그것을 신경쓰지 않을 것이다.  여러분이 아직 어플리케이션을 패키지로 변환하지 않았다면,
+어떻게 변환될 수 있는지 보기 위해 :ref:`larger-applications` 패턴으로 돌아가길 바란다.
 
-A working deployment with distribute is the first step into more complex
-and more automated deployment scenarios.  If you want to fully automate
-the process, also read the :ref:`fabric-deployment` chapter.
+distribute를 가지고 배포하는 것은 좀 더 복잡하고 자동화된 배포 시나리오로 들어가는 첫 단계이다.
+만약 여러분이 배포 프로세스를 완전히 자동화하고 싶다면, :ref:`fabric-deployment` 장 또한 읽어야한다.
 
 Basic Setup Script
 ------------------
