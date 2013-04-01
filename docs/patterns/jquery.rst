@@ -126,7 +126,7 @@ usually a better idea to have that in a separate script file:
 
 .. sourcecode:: html
 
-    <script type=text/javascript>
+    <script type="text/javascript">
       $(function() {
         $('a#calculate').bind('click', function() {
           $.getJSON($SCRIPT_ROOT + '/_add_numbers', {
@@ -140,10 +140,10 @@ usually a better idea to have that in a separate script file:
       });
     </script>
     <h1>jQuery Example</h1>
-    <p><input type=text size=5 name=a> +
-       <input type=text size=5 name=b> =
-       <span id=result>?</span>
-    <p><a href=# id=calculate>calculate server side</a>
+    <p><input type="text" size="5" name="a"> +
+       <input type="text" size="5" name="b"> =
+       <span id="result">?</span>
+    <p><a href="#" id="calculate">calculate server side</a>
 
 I won't got into detail here about how jQuery works, just a very quick
 explanation of the little bit of code above:
