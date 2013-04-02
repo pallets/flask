@@ -86,32 +86,29 @@ setuptools나 distribute를 사용할 수 있을 것이다.
 
 .. _distributing-resources:
 
-Distributing Resources
-----------------------
+리소스 배포하기
+---------------
 
-If you try to install the package you just created, you will notice that
-folders like `static` or `templates` are not installed for you.  The
-reason for this is that distribute does not know which files to add for
-you.  What you should do, is to create a `MANIFEST.in` file next to your
-`setup.py` file.  This file lists all the files that should be added to
-your tarball::
+여러분이 방금 생성한 패키지를 설치하려고 한다면, 여러분은 `static` 이나
+'templates' 같은 폴더들이 생성되어 있지 않다는 것을 알게될 것이다.
+왜냐하면 distribute 은 추가할 파일이 어떤 것인지 모르기 때문이다.
+여러분이 해야하는 것은 `setup.py' 파일 옆에 `MANIFEST.in` 파일을 생성하는 것이다.
+이 파일은 여러분의 타르볼(tarball)에 추가되어야 하는 모든 파일들을 나열한다::
 
     recursive-include yourapplication/templates *
     recursive-include yourapplication/static *
 
-Don't forget that even if you enlist them in your `MANIFEST.in` file, they
-won't be installed for you unless you set the `include_package_data`
-parameter of the `setup` function to `True`!
+여러분이 `MANIFEST.in` 파일에 그 목록들을 요청함에도 불구하고, `setup` 함수의 
+`include_package_data` 인자가 `True` 로 설정되지 않는다면, 그것들은 설치되지 
+않을 것이라는 것을 잊지 말도록 해라.
 
 
-Declaring Dependencies
-----------------------
+의존성 선언하기
+---------------
 
-Dependencies are declared in the `install_requires` parameter as list.
-Each item in that list is the name of a package that should be pulled from
-PyPI on installation.  By default it will always use the most recent
-version, but you can also provide minimum and maximum version
-requirements.  Here some examples::
+의존성은 `install_requires` 인자에 리스트로 선언된다. 그 리스트에 있는 각 항목은
+설치 시 PyPI로 부터 당겨져야 하는 패키지 명이다. 디폴트로 항상 최신 버전을 사용하지만, 
+여러분은 또한 최소 버전과 최대 버전에 대한 요구사항을 제공할 수 있다. 아래에 예가 있다::
 
     install_requires=[
         'Flask>=0.2',
@@ -119,10 +116,9 @@ requirements.  Here some examples::
         'BrokenPackage>=0.7,<=1.0'
     ]
 
-I mentioned earlier that dependencies are pulled from PyPI.  What if you
-want to depend on a package that cannot be found on PyPI and won't be
-because it is an internal package you don't want to share with anyone?
-Just still do as if there was a PyPI entry for it and provide a list of
+앞에서 의존성은 PyPI로부터 당겨진다고 언급했다. 다른 사람과 공유하고
+싶지 않은 내부 패키지기 때문에 PyPI에서 찾을 수 없고 찾지 못하는 
+패키지에 의존하고 싶다면 어떻게 되는가? Just still do as if there was a PyPI entry for it and provide a list of
 alternative locations where distribute should look for tarballs::
 
     dependency_links=['http://example.com/yourfiles']
