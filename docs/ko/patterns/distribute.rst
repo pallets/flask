@@ -40,15 +40,15 @@ setuptools나 distribute를 사용할 수 있을 것이다.
 
 표준적인 포기는 다음을 적용한다. :ref:`여러분은 virtualenv를 사용하는 것이 낫다.<virtualenv>`.
 
-Your setup code always goes into a file named `setup.py` next to your
-application.  The name of the file is only convention, but because
-everybody will look for a file with that name, you better not change it.
+여러분의 셋업 코드는 항상 `setup.py`이라는 파일명으로 여러분의 어플리케이션 옆에 놓인다.
+그 파일명은 단지 관례일뿐이지만, 모두가 그 이름으로 파일을 찾을 것이기 때문에
+다른 이름으로 바꾸지 않는게 좋을 것이다.
 
-Yes, even if you are using `distribute`, you are importing from a package
-called `setuptools`.  `distribute` is fully backwards compatible with
-`setuptools`, so it also uses the same import name.
+그렇다, 여러분은 `distribute`를 사용하고 있음에도 불구하고, 
+`setuptools`라 불리는 패키지를 입포트하고 있다.  `distribute` 은 `setuptools` 과 완전하게 하위버전이 
+호환되므로 임포트 명을 또한 사용한다.
 
-A basic `setup.py` file for a Flask application looks like this::
+플라스크 어플리케이션에 대한 기본적인 `setup.py` 파일은 아래와 같다::
 
     from setuptools import setup
 
@@ -62,9 +62,9 @@ A basic `setup.py` file for a Flask application looks like this::
         install_requires=['Flask']
     )
 
-Please keep in mind that you have to list subpackages explicitly.  If you
-want distribute to lookup the packages for you automatically, you can use
-the `find_packages` function::
+여러분은 명시적으로 하위 패키지들을 나열해야만 한다는 것을 명심해야한다.
+여러분이 자동적으로 distribute가 패키지명을 찾아보기를 원한다면,
+`find_packages` 함수를 사용할 수 있다::
 
     from setuptools import setup, find_packages
 
@@ -73,15 +73,15 @@ the `find_packages` function::
         packages=find_packages()
     )
 
-Most parameters to the `setup` function should be self explanatory,
-`include_package_data` and `zip_safe` might not be.
-`include_package_data` tells distribute to look for a `MANIFEST.in` file
-and install all the entries that match as package data.  We will use this
-to distribute the static files and templates along with the Python module
-(see :ref:`distributing-resources`).  The `zip_safe` flag can be used to
-force or prevent zip Archive creation.  In general you probably don't want
-your packages to be installed as zip files because some tools do not
-support them and they make debugging a lot harder.
+`include_package_data` 과 `zip_safe` 은 아닐수도 있지만, `setup` 함수의
+대부분 인자들은 스스로 설명이 가능해야 한다. 
+`include_package_data` 은 distribute 에게 `MANIFEST.in` 파일을 찾고 
+패키지 데이타로서 일치하는 모든 항목을 설치하도록 요청한다.
+우리들은 파이썬 모듈과 같이 정적 파일들과 템플릿들을 배포하기 위해 
+이것을 사용할 것이다.(see :ref:`distributing-resources`).
+`zip_safe` 플래그는 zip 아카이브의 생성을 강제하거나 막기위해 사용될 수 있다.
+일반적으로 여러분은 아마 여러분의 패키지들이 zip 파일로 설치되기를 원하지는 않을 것인데,
+왜냐하면 어떤 도구들은 그것들을 지원하지 않으며 디버깅을 훨씬 더 어렵게 한다.
 
 
 .. _distributing-resources:
