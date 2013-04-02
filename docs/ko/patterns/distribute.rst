@@ -13,7 +13,7 @@ Distribute으로 전개하기
 - **패키지 레지스트리(package registry)**: 설치툴은 파이썬 설치와 함께 여러분의 패키지를 등록한다.
   이것은 하나의 패키지에서 제공되는 정보를 다른 패키지에서 질의하는 것을 가능하게 한다.
   이 시스템의 가장 잘 알려진 특징은 패키지가 다른 패키지를 확장하기 위해 끼어들 수 있는 
-   "진입점(entry point")을 선언할 수 있도록 하는 진입점을 지원하다는 것이다.
+   "진입점(entry point)"을 선언할 수 있도록 하는 진입점을 지원하다는 것이다.
 - **설치 관리자(installation manager)**: distribute와 함께 설치되는 `easy_install` 은 여러분을 위해
   다른 라이브러리를 설치해준다.  여러분은 또한 조만간 패키지 설치 이상의 기능을 제공하는 `easy_install`
   을 대체할 `pip`_ 을 사용할 수 있다.
@@ -38,8 +38,7 @@ setuptools나 distribute를 사용할 수 있을 것이다.
 만약 사용할 수 없다면, 두려워하지 말기 바란다. 여러분을 위해 그런 설치도구를 설치해 줄 
 `distribute_setup.py`_ 이라는 스크립트가 있다.  단지 다운받아서 파이썬으로 실행하면 된다.
 
-Standard disclaimer applies: :ref:`you better use a virtualenv
-<virtualenv>`.
+표준적인 포기는 다음을 적용한다. :ref:`여러분은 virtualenv를 사용하는 것이 낫다.<virtualenv>`.
 
 Your setup code always goes into a file named `setup.py` next to your
 application.  The name of the file is only convention, but because
