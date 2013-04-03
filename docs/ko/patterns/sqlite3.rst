@@ -79,16 +79,15 @@
         cur.close()
         return (rv[0] if rv else None) if one else rv
 
-This handy little function in combination with a row factory makes working
-with the database much more pleasant than it is by just using the raw
-cursor and connection objects.
+이 유용한 작은 함수는 행 팩토리와 결합되어 데이타베이스와 작업을 단지 
+원형의 커서와 연결 객체를 사용하는 것 보다 훨씬 더 기분 좋게 만든다.
 
-Here is how you can use it::
+아래에 그것을 사용하는 방법이 있다::
 
     for user in query_db('select * from users'):
         print user['username'], 'has the id', user['user_id']
 
-Or if you just want a single result::
+또는 여러분이 단지 단일 결과를 원한다면::
 
     user = query_db('select * from users where username = ?',
                     [the_username], one=True)
@@ -97,19 +96,19 @@ Or if you just want a single result::
     else:
         print the_username, 'has the id', user['user_id']
 
-To pass variable parts to the SQL statement, use a question mark in the
-statement and pass in the arguments as a list.  Never directly add them to
-the SQL statement with string formatting because this makes it possible
-to attack the application using `SQL Injections
-<http://en.wikipedia.org/wiki/SQL_injection>`_.
+변수의 일부분을 SQL 구문으로 전달하기 위해, 구문 안에 물음표를 사용하고
+목록으로 인자안에 전달한다.  절대로 직접 인자들을 문자열 형태로 SQL 구문에
+추가하면 안되는데 왜냐하면 `SQL 인젝션(Injections)
+<http://en.wikipedia.org/wiki/SQL_injection>`_ 을 사용해서 그 어플리케이션을
+공격할 수 있기 때문이다.
 
-Initial Schemas
----------------
+초기 스키마
+-----------
 
-Relational databases need schemas, so applications often ship a
-`schema.sql` file that creates the database.  It's a good idea to provide
-a function that creates the database based on that schema.  This function
-can do that for you::
+관계형 데이타베이스들은 스키마를 필요로 하기 때문에, 어플리케이션들은 
+데이타베이스를 생성하는 `schema.sql` 파일을 종종 만들어낸다.  그 스키마에
+기반한 데이타베이스를 생성하는 함수를 제공하는 것은 괜찮은 생각이다.
+아래 함수는 여러분을 위해 그러한 작업을 할 수 있다::
 
     def init_db():
         with app.app_context():
@@ -118,7 +117,7 @@ can do that for you::
                 db.cursor().executescript(f.read())
             db.commit()
 
-You can then create such a database from the python shell:
+그리고 나면 여러분은 파이썬 쉘에서 그런 데이타베이스를 생성할 수 있다:
 
 >>> from yourapplication import init_db
 >>> init_db()
