@@ -19,7 +19,7 @@ SQLAlchemy는 공통 데이타베이스 추상 계층이고 설정하는데 약�
 확장(extension)이 있다.  여러분이 빨리 시작하기를 원한다면 이 방식을 추천한다.
 
 여러분은 `PyPI<http://pypi.python.org/pypi/Flask-SQLAlchemy>`_ 에서 
-`플라스크-SQLAlchemy`_ 를 받을 수 있다. 
+`Flask-SQLAlchemy`_ 를 받을 수 있다. 
 
 .. _Flask-SQLAlchemy: http://packages.python.org/Flask-SQLAlchemy/
 
