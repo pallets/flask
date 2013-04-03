@@ -1,39 +1,35 @@
 .. _fabric-deployment:
 
-Deploying with Fabric
-=====================
+Fabric으로 전개하기
+===================
 
-`Fabric`_ is a tool for Python similar to Makefiles but with the ability
-to execute commands on a remote server.  In combination with a properly
-set up Python package (:ref:`larger-applications`) and a good concept for
-configurations (:ref:`config`) it is very easy to deploy Flask
-applications to external servers.
+`Fabric`_ Makefiles과 유사하지만 원격 서버에 있는 명령을 실행할 수 있는
+기능도 갖고 있는 파이썬 도구이다.  적당한 파이썬 설치 패키지 
+(:ref:`larger-applications`) 와 설정 (:ref:`config`)에 대한 좋은 개념의 결합은 
+플라스크 어플리케이션을 외부 서버에 상당히 쉽게 전개하도록 해준다.
 
-Before we get started, here a quick checklist of things we have to ensure
-upfront:
+시작하기에 앞서, 우리가 사전에 빠르게 확인해야할 체크리스트가 있다::
 
--   Fabric 1.0 has to be installed locally.  This tutorial assumes the
-    latest version of Fabric.
--   The application already has to be a package and requires a working
-    `setup.py` file (:ref:`distribute-deployment`).
--   In the following example we are using `mod_wsgi` for the remote
-    servers.  You can of course use your own favourite server there, but
-    for this example we chose Apache + `mod_wsgi` because it's very easy
-    to setup and has a simple way to reload applications without root
-    access.
+-   Fabric 1.0 은 로컬에 설치되어 있어야한다.  이 문서는 Fabric의 
+    가장 최신버전을 가정한다.
+-   어플리케이션은 이미 패키지로 되어있고 동작하는 `setup.py` 파일을 
+    요구한다 (:ref:`distribute-deployment`).
+-   뒤따르는 예제에서 우리는 원격 서버에 `mod_wsgi` 를 사용할 것이다.
+    물론 여러분이 좋아하는 서버를 사용할 수 있겠지만, 이 예제에서는
+    Apache + `mod_wsgi` 를 사용하기로 했는데, 그 방식이 설치가 쉽고
+    root 권한 없이도 어플리케이션을 간단하게 리로드할 수 있기 때문이다.
 
-Creating the first Fabfile
---------------------------
+첫 번째 Fabfile 파일 생성하기
+-----------------------------
 
-A fabfile is what controls what Fabric executes.  It is named `fabfile.py`
-and executed by the `fab` command.  All the functions defined in that file
-will show up as `fab` subcommands.  They are executed on one or more
-hosts.  These hosts can be defined either in the fabfile or on the command
-line.  In this case we will add them to the fabfile.
+fabfile 은 Fabric이 실행할 대상을 제어하는 것이다.  fabfile은 `fabfile.py`
+라는 파일명을 갖고, `fab` 명령으로 실행된다.  그 파일에 정의된 모든 기능들은
+`fab` 하위명령(subcommands)가 보여준다.  그 명령들은 하나 이상의 호스트에서
+실행된다.  이 호스트들은 fabfile 파일이나 명령줄에서 정의될 수 있다.
+여기에서는 fabfile 파일에 호스트들을 추가할 것이다.
 
-This is a basic first example that has the ability to upload the current
-sourcecode to the server and install it into a pre-existing
-virtual environment::
+아래는 현재 소스코드를 서버로 업로드하고 사전에 만들어진 가상 환경에 
+설치하는 기능을 하는 기본적인 첫 번째 예제이다::
 
     from fabric.api import *
 
@@ -65,14 +61,15 @@ virtual environment::
         # a reload of the application
         run('touch /var/www/yourapplication.wsgi')
 
-The example above is well documented and should be straightforward.  Here
-a recap of the most common commands fabric provides:
+위의 예제는 문서화가 잘 되고 있고 직관적일 것이다.
+아래는 fabric이 제공하는 가장 일반적인 명령들을 요약했다::
 
--   `run` - executes a command on a remote server
--   `local` - executes a command on the local machine
--   `put` - uploads a file to the remote server
--   `cd` - changes the directory on the serverside.  This has to be used
-    in combination with the `with` statement.
+-   `run` - 원격 서버에서 명령을 수행함
+-   `local` - 로컬 서버에서 명령을 수행함
+-   `put` - 원격 서버로 파일을 업로드함
+-   `cd` - 서버에서 디렉토리를 변경함.
+
+이 명령은 `with` 절과 결합되어 사용되어야 한다.
 
 Running Fabfiles
 ----------------
