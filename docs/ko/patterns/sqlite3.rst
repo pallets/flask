@@ -1,13 +1,11 @@
 .. _sqlite3:
 
 Using SQLite 3 with Flask
-=========================
+플라스크에서 SQLite 3 사용하기
+==============================
 
-In Flask you can implement the opening of database connections on demand
-and closing it when the context dies (usually at the end of the request)
-easily.
-
-Here is a simple example of how you can use SQLite 3 with Flask::
+여러분은 플라스크에서 필요할 때 데이타베이스 연결을 열고 문맥이 끝났을 때 
+(보통 요청이 끝에서) 연결을 닫는 것을 쉽게 구현할 수 있다::
 
     import sqlite3
     from flask import _app_ctx_stack
@@ -26,14 +24,13 @@ Here is a simple example of how you can use SQLite 3 with Flask::
         if hasattr(top, 'sqlite_db'):
             top.sqlite_db.close()
 
-All the application needs to do in order to now use the database is having
-an active application context (which is always true if there is an request
-in flight) or to create an application context itself.  At that point the
-``get_db`` function can be used to get the current database connection.
-Whenever the context is destroyed the database connection will be
-terminated.
+데이타베이스를 지금 사용하기 위해서 어플리케이션에서 필요한 전부는 활성화된
+어플리케이션 문맥을 갖거나 (전달중인 요청이 있다면 항상 활성화 된 것이다)
+어플리케이션 문맥 자체를 생성하는 것이다.  그 시점에 ``get_db`` 함수는 현재
+데이타베이스 연결을 얻기위해 사용될 수 있다.  그 문맥이 소멸될 때마다
+그 데이타베이스 연결은 종료될 것이다.
 
-Example::
+예제::
 
     @app.route('/')
     def index():
@@ -43,32 +40,30 @@ Example::
 
 .. note::
 
-   Please keep in mind that the teardown request and appcontext functions
-   are always executed, even if a before-request handler failed or was
-   never executed.  Because of this we have to make sure here that the
-   database is there before we close it.
+   before-request 핸들러가 실패하거나 절대 실행되지 않더라도, teardown 요청과 
+   appcontext 함수는 항상 실행되다는 것을 명심하길 바란다. 그런 이유로 우리가 
+   데이타베이스를 닫기전에 거기에 데이타베이스가 있었다는 것을 여기서 보장해야한다.
 
-Connect on Demand
------------------
+필요할 때 연결하기
+------------------
 
-The upside of this approach (connecting on first use) is that this will
-only opening the connection if truly necessary.  If you want to use this
-code outside a request context you can use it in a Python shell by opening
-the application context by hand::
+이 접근법의 장점은 (첫 사용시 연결하는 것) 정말 필요할 때만 연결이 열린다는 것이다.
+여러분이 요청 문맥 밖에서 이 코드를 사용하고 싶다면 파이썬 쉘에서 수동으로 
+어플리케이션 문맥을 열고서 그 연결을 사용할 수 있다::
 
     with app.app_context():
         # now you can use get_db()
 
 .. _easy-querying:
 
-Easy Querying
+쉬운 질의하기
 -------------
 
-Now in each request handling function you can access `g.db` to get the
-current open database connection.  To simplify working with SQLite, a
-row factory function is useful.  It is executed for every result returned
-from the database to convert the result.  For instance in order to get
-dictionaries instead of tuples this can be used::
+이제 각 요청 핸들링 함수에서 현재 열린 데이타베이스 연결을 얻기 위해 
+여러분은 `g.db` 에 접근할 수 있다.  SQLite 로 작업을 간단하게 하기 위해,
+행(row) 팩토리 함수가 유용하다.  결과를 변환하기 위해 데이타베이스에서
+반환된 모든 결과에 대해 실행된다.  예를 들면 튜플 대신 딕셔너리를 얻기 위해
+아래와 같이 사용될 수 있다::
 
     def make_dicts(cursor, row):
         return dict((cur.description[idx][0], value)
