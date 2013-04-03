@@ -1,6 +1,5 @@
 .. _sqlite3:
 
-Using SQLite 3 with Flask
 플라스크에서 SQLite 3 사용하기
 ==============================
 
@@ -71,8 +70,8 @@ Using SQLite 3 with Flask
 
     db.row_factory = make_dicts
 
-Additionally it is a good idea to provide a query function that combines
-getting the cursor, executing and fetching the results::
+덧붙이자면 커서를 얻고, 결과를 실행하고 꺼내는 것을 결합한 질의 함수를 
+제공하는 것은 괜찮은 생각이다::
     
     def query_db(query, args=(), one=False):
         cur = get_db().execute(query, args)
