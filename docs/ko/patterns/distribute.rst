@@ -8,9 +8,6 @@ Distribute으로 전개하기
 그것은 더 규모있는 어플리케이션의 배포를 쉽게 만드는 여러 더 복잡한 생성자 또한 
 지원하기 위해 파이썬과 같이 설치되는 disutils를 확장한 것이다::
 
-- **support for dependencies**: a library or application can declare a
-  list of other libraries it depends on which will be installed
-  automatically for you.
 - **의존성 지원(support for dependencies)**: 라이브러리나 어플리케이션은 여러분을 위해 자동으로 설치되어야 할
   그것에 의존적인 다른 라이브러리들의 목록을 선언할 수 있다.
 - **패키지 레지스트리(package registry)**: 설치툴은 파이썬 설치와 함께 여러분의 패키지를 등록한다.
