@@ -1,39 +1,38 @@
 .. _sqlalchemy-pattern:
 
-SQLAlchemy in Flask
-===================
+플라스크에서 SQLAlchemy 사용하기
+================================
 
-Many people prefer `SQLAlchemy`_ for database access.  In this case it's
-encouraged to use a package instead of a module for your flask application
-and drop the models into a separate module (:ref:`larger-applications`).
-While that is not necessary, it makes a lot of sense.
+많은 사람들이 데이타베이스에 접근하기 위해 `SQLAlchemy`_ 선호한다.
+이런 경우 여러분의 플라스크 어플리케이션에 대해 모듈 보다는 패키지를 
+사용하고 모델들을 분리된 모듈로 만드는 것이 독려된다(:ref:`larger-applications`).
+그것이 필수는 아니지만, 많은 부분에서 이해가 될만하다.
 
-There are four very common ways to use SQLAlchemy.  I will outline each
-of them here:
+There are four very common ways to use SQLAlchemy를 사용하는 매우 일반적인
+네가지 방식이 있다.  여기서 그것들을 각각 간략하게 설명할 것이다:
 
-Flask-SQLAlchemy Extension
---------------------------
+플라스크-SQLAlchemy 확장
+------------------------
 
-Because SQLAlchemy is a common database abstraction layer and object
-relational mapper that requires a little bit of configuration effort,
-there is a Flask extension that handles that for you.  This is recommended
-if you want to get started quickly.
+SQLAlchemy는 공통 데이타베이스 추상 계층이고 설정하는데 약간의 노력을 요하는
+객체 관계형 맵퍼(mapper)이기 때문에, 여러분을 위해 그 역할을 해줄 플라스크 
+확장(extension)이 있다.  여러분이 빨리 시작하기를 원한다면 이 방식을 추천한다.
 
-You can download `Flask-SQLAlchemy`_ from `PyPI
-<http://pypi.python.org/pypi/Flask-SQLAlchemy>`_.
+여러분은 `PyPI<http://pypi.python.org/pypi/Flask-SQLAlchemy>`_ 에서 
+`플라스크-SQLAlchemy`_ 를 받을 수 있다. 
 
 .. _Flask-SQLAlchemy: http://packages.python.org/Flask-SQLAlchemy/
 
 
-Declarative
------------
+선언부(Declarative)
+-------------------
 
-The declarative extension in SQLAlchemy is the most recent method of using
-SQLAlchemy.  It allows you to define tables and models in one go, similar
-to how Django works.  In addition to the following text I recommend the
-official documentation on the `declarative`_ extension.
+SQLAlchemy에서 선언부(declarative) 확장은 SQLAlchemy를 사용하는 가장 최신
+방법이다.  그 방법은 여러분이 한꺼번에 테이블들과 모델들을 정의하도록 해주는데,
+그 방식은 Django(장고)가 동작하는 방식과 유사하다.  다음의 내용에 추가하여 
+`declarative`_ 확장에 대한 공식 문서를 권고한다.
 
-Here the example `database.py` module for your application::
+아래는 여러분의 어플리케이션을 위해 `database.py` 모듈의 예제이다::
 
     from sqlalchemy import create_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -53,10 +52,9 @@ Here the example `database.py` module for your application::
         import yourapplication.models
         Base.metadata.create_all(bind=engine)
 
-To define your models, just subclass the `Base` class that was created by
-the code above.  If you are wondering why we don't have to care about
-threads here (like we did in the SQLite3 example above with the
-:data:`~flask.g` object): that's because SQLAlchemy does that for us
+모델들을 정의하기 위해, 위의 코드로 생성된 `Base` 클래스를 상속하면 된다.
+여러분이 왜 우리가 여기서 쓰레드를 신경쓰지 않아도 되는지 궁금하다면
+(위의 SQLite3 예제에서 :data:`~flask.g` 객체를 가지고 한 것 처럼): that's because SQLAlchemy does that for us
 already with the :class:`~sqlalchemy.orm.scoped_session`.
 
 To use SQLAlchemy in a declarative way with your application, you just
