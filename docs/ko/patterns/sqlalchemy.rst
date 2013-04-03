@@ -54,12 +54,14 @@ SQLAlchemy에서 선언부(declarative) 확장은 SQLAlchemy를 사용하는 가
 
 모델들을 정의하기 위해, 위의 코드로 생성된 `Base` 클래스를 상속하면 된다.
 여러분이 왜 우리가 여기서 쓰레드를 신경쓰지 않아도 되는지 궁금하다면
-(위의 SQLite3 예제에서 :data:`~flask.g` 객체를 가지고 한 것 처럼): that's because SQLAlchemy does that for us
-already with the :class:`~sqlalchemy.orm.scoped_session`.
+(위의 SQLite3 예제에서 :data:`~flask.g` 객체를 가지고 한 것 처럼): 
+that's because SQLAlchemy does that for us already with the :class:`~sqlalchemy.orm.scoped_session`.
+그것은 SQLAlchemy가 :class:`~sqlalchemy.orm.scoped_session` 을 가지고
+여러분을 위해서 이미 그러한 작업을 했기 때문이다.
 
-To use SQLAlchemy in a declarative way with your application, you just
-have to put the following code into your application module.  Flask will
-automatically remove database sessions at the end of the request for you::
+여러분의 어플리케이션에서 선언적인 방식으로 SQLAlchemy를 사용하려면,
+여러분의 어플리케이션 모듈에 아래의 코드를 집어넣기만 하면 된다.
+플라스크는 여러분을 위해 요청의 끝에서 데이타베이스 세션을 제거할 것이다::
 
     from yourapplication.database import db_session
 
@@ -67,7 +69,7 @@ automatically remove database sessions at the end of the request for you::
     def shutdown_session(exception=None):
         db_session.remove()
 
-Here is an example model (put this into `models.py`, e.g.)::
+아래는 예제 모델이다  (이 코드를 `models.py` 에 넣어라, e.g.)::
 
     from sqlalchemy import Column, Integer, String
     from yourapplication.database import Base
@@ -85,12 +87,12 @@ Here is an example model (put this into `models.py`, e.g.)::
         def __repr__(self):
             return '<User %r>' % (self.name)
 
-To create the database you can use the `init_db` function:
+데이타베이스를 생성하기 위해서 여러분은 `init_db` 함수를 사용할 수 있다:
 
 >>> from yourapplication.database import init_db
 >>> init_db()
 
-You can insert entries into the database like this:
+여러분은 아래와 같이 항목들을 데이타베이스에 추가할 수 있다:
 
 >>> from yourapplication.database import db_session
 >>> from yourapplication.models import User
@@ -98,7 +100,7 @@ You can insert entries into the database like this:
 >>> db_session.add(u)
 >>> db_session.commit()
 
-Querying is simple as well:
+질의하는것 또한 간단하다::
 
 >>> User.query.all()
 [<User u'admin'>]
