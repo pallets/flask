@@ -117,36 +117,35 @@ setuptools나 distribute를 사용할 수 있을 것이다.
     ]
 
 앞에서 의존성은 PyPI로부터 당겨진다고 언급했다. 다른 사람과 공유하고
-싶지 않은 내부 패키지기 때문에 PyPI에서 찾을 수 없고 찾지 못하는 
-패키지에 의존하고 싶다면 어떻게 되는가? Just still do as if there was a PyPI entry for it and provide a list of
-alternative locations where distribute should look for tarballs::
+싶지 않은 내부 패키지기 때문에 PyPI에서 찾을 수 없고 찾지도 못하는 
+패키지에 의존하고 싶다면 어떻게 되는가? 여전히 PyPI 목록이 있는 것 처럼 
+처리하고 distribute 가 타르볼을 찾아야할 다른 장소의 목록을 제공하면 된다::
 
     dependency_links=['http://example.com/yourfiles']
 
-Make sure that page has a directory listing and the links on the page are
-pointing to the actual tarballs with their correct filenames as this is
-how distribute will find the files.  If you have an internal company
-server that contains the packages, provide the URL to that server there.
+페이지가 디렉토리 목록를 갖고 있고 그 페이지의 링크는 distribute가 파일들을 찾는
+방법처럼 실제 타르볼을 가리키도록 해야한다.  만약 여러분이 회사의 내부 서버에 
+패키지를 갖고 있다면, 그 서버에 대한 URL을 제공하도록 해라.
 
 
-Installing / Developing
------------------------
+설치하기/개발하기
+-----------------
 
-To install your application (ideally into a virtualenv) just run the
-`setup.py` script with the `install` parameter.  It will install your
-application into the virtualenv's site-packages folder and also download
-and install all dependencies::
+여러분의 어플리케이션을 설치하는 것은(이상적으로는 virtualenv를 이용해서)
+단지 `install` 인자로 `setup.py`를 실행하기만 하면 된다.  그것은 여러분의
+어플리케이션을 virtualenv의 사이트 패키지(site-packages) 폴더로 설치되고
+또한 모든 의존성을 갖고 받아지고 설치될 것이다::
 
     $ python setup.py install
 
-If you are developing on the package and also want the requirements to be
-installed, you can use the `develop` command instead::
+만약 어려분이 패키지 기반으로 개발하고 있고 또한 패키지 기반에 대한 필수 항목이
+설치되어야 한다면, `develop` 명령을 대신 사용할 수 있다::
 
     $ python setup.py develop
 
-This has the advantage of just installing a link to the site-packages
-folder instead of copying the data over.  You can then continue to work on
-the code without having to run `install` again after each change.
+이것의 이점은 데이타를 복사하는 것이 아니라 사이트 패키지 폴더에 대한 링크를 
+설치한다는 것이다.  그러면 여러분은 개별 변경 후에도 다시 `install` 을 실행할
+필요없이 계속해서 코드에 대한 작업을 할 수 있다.
 
 
 .. _distribute: http://pypi.python.org/pypi/distribute
