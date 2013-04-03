@@ -152,27 +152,25 @@ WSGI 파일은 어플리케이션이 설정파일을 어디서 찾아야 하는�
 첫 번째 전개
 ------------
 
-Now we can do our first deployment.  We have set up the servers so that
-they have their virtual environments and activated apache configs.  Now we
-can pack up the application and deploy it::
+이제 여러분은 첫 번째 전개를 할 수 있게 되었다.  우리는 서버가 가상환경과
+활성화된 apache 설정들을 갖게하기 위해 그 서버들을 설치한다.  우리는 
+아래의 명령을 이용해서 어플리케이션을 감싸서 전개할 수 있다::
 
     $ fab pack deploy
 
-Fabric will now connect to all servers and run the commands as written
-down in the fabfile.  First it will execute pack so that we have our
-tarball ready and then it will execute deploy and upload the source code
-to all servers and install it there.  Thanks to the `setup.py` file we
-will automatically pull in the required libraries into our virtual
-environment.
+Fabric은 이제 모든 서버에 연결될 것이고 fabfile에 적힌 명령들을 수행할 것이다.
+먼저 타르볼을 준비하기위해 pack을 실행할 것이고 그리고 나서 deploy를 실행해서
+모든 서버에 소스코드를 업로드하고 하고 거기에 그것을 설치할 것이다.  자동으로
+필수 라이브러리들과 받아서 우리의 가상 환경으로 넣어주는 `setup.py` 파일에 
+감사할 뿐이다.
 
-Next Steps
-----------
+다음 단계들
+-----------
 
-From that point onwards there is so much that can be done to make
-deployment actually fun:
+이 시점부터는 실제로 전개를 재밌게 만들 수 있는 많은 것들이 있다:
 
--   Create a `bootstrap` command that initializes new servers.  It could
-    initialize a new virtual environment, setup apache appropriately etc.
+-   신규 서버를 초기화하는 `bootstrap` 명령을 생성한다.  그것은 새로운 가상 환경을
+    초기화하고 알맞게 apache를 설치 등을 할 수 있다.
 -   Put configuration files into a separate version control repository
     and symlink the active configs into place.
 -   You could also put your application code into a repository and check
