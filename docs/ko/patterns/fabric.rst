@@ -71,90 +71,86 @@ fabfile 은 Fabric이 실행할 대상을 제어하는 것이다.  fabfile은 `f
 
 이 명령은 `with` 절과 결합되어 사용되어야 한다.
 
-Running Fabfiles
+Fabfile 실행하기
 ----------------
 
-Now how do you execute that fabfile?  You use the `fab` command.  To
-deploy the current version of the code on the remote server you would use
-this command::
+이제 여러분은 어떻게 그 fabfile을 실행할 것인가?  `fab` 명령을 사용한다.
+원격 서버에 있는 현재 버전의 코드를 전개하기 위해서 여러분은 아래 명령을 
+사용할 것이다::
 
     $ fab pack deploy
 
-However this requires that our server already has the
-``/var/www/yourapplication`` folder created and
-``/var/www/yourapplication/env`` to be a virtual environment.  Furthermore
-are we not creating the configuration or `.wsgi` file on the server.  So
-how do we bootstrap a new server into our infrastructure?
+하지만 이것은 서버에 이미 ``/var/www/yourapplication`` 폴더가 생성되어있고
+``/var/www/yourapplication/env`` 을 가상 환경으로 갖고 있는 것을 요구한다.
+더욱이 우리는 서버에 구성 파일이나 `.wsgi` 파일을 생성하지 않았다.  그렇다면
+우리는 어떻게 신규 서버에 우리의 기반구조를 만들 수 있을까?
 
-This now depends on the number of servers we want to set up.  If we just
-have one application server (which the majority of applications will
-have), creating a command in the fabfile for this is overkill.  But
-obviously you can do that.  In that case you would probably call it
-`setup` or `bootstrap` and then pass the servername explicitly on the
-command line::
+이것은 우리가 설치하고자 하는 서버의 개수에 달려있다.  우리가 단지
+한 개의 어플리케이션 서버를 갖고 있다면 (다수의 어플리케이션들이 포함된),
+fabfile 에서 명령을 생성하는 것은 과한 것이다.  그러나 명백하게 여러분은
+그것을 할 수 있다.  이 경우에 여러분은 아마 그것을 `setup` 이나 `bootstrap`
+으로 호출하고 그 다음에 명령줄에 명시적으로 서버명을 넣을 것이다::
 
     $ fab -H newserver.example.com bootstrap
 
-To setup a new server you would roughly do these steps:
+신규 서버를 설치하기 위해서 여러분은 대략 다음과 같은 단계를 수행할 것이다: 
 
-1.  Create the directory structure in ``/var/www``::
+1.  ``/var/www`` 에 디렉토리 구조를 생성한다::
 
         $ mkdir /var/www/yourapplication
         $ cd /var/www/yourapplication
         $ virtualenv --distribute env
 
-2.  Upload a new `application.wsgi` file to the server and the
-    configuration file for the application (eg: `application.cfg`)
+2.  새로운 `application.wsgi` 파일과 설정 파일 (eg: `application.cfg`) 을 
+    서버로 업로드한다.
 
-3.  Create a new Apache config for `yourapplication` and activate it.
-    Make sure to activate watching for changes of the `.wsgi` file so
-    that we can automatically reload the application by touching it.
-    (See :ref:`mod_wsgi-deployment` for more information)
+3.  `yourapplication` 에 대한 Apache 설정을 생성하고 설정을 활성화 한다.
+    `.wsgi` 파일을 변경(touch)하여 어플리케이션을 자동으로 리로드하기 위해
+    그 파일의 변경에 대한 감시를 활성화하는 것을 확인한다.
+    ( :ref:`mod_wsgi-deployment` 에 더 많은 정보가 있다)
 
-So now the question is, where do the `application.wsgi` and
-`application.cfg` files come from?
+자 그렇다면 `application.wsgi` 파일과 `application.cfg` 파일은 어디서 왔을까?
+라는 질문이 나온다.
 
-The WSGI File
--------------
+WSGI 파일
+---------
 
-The WSGI file has to import the application and also to set an environment
-variable so that the application knows where to look for the config.  This
-is a short example that does exactly that::
+WSGI 파일은 어플리케이션이 설정파일을 어디서 찾아야 하는지 알기 위해
+어플리케이션을 임포트해야하고 또한 환경 변수를 설정해야한다.  아래는 
+정확히 그 설정을 하는 짧은 예제이다::
 
     import os
     os.environ['YOURAPPLICATION_CONFIG'] = '/var/www/yourapplication/application.cfg'
     from yourapplication import app
 
-The application itself then has to initialize itself like this to look for
-the config at that environment variable::
+그리고 나서 어플리케이션 그 자체는 그 환경 변수에 대한 설정을 찾기 위해
+아래와 같은 방식으로 초기화 해야한다::
 
     app = Flask(__name__)
     app.config.from_object('yourapplication.default_config')
     app.config.from_envvar('YOURAPPLICATION_CONFIG')
 
-This approach is explained in detail in the :ref:`config` section of the
-documentation.
+이 접근법은 이 문서의 :ref:`config` 단락에 자세히 설명되어 있다.
 
-The Configuration File
-----------------------
+설정 파일
+---------
 
-Now as mentioned above, the application will find the correct
-configuration file by looking up the `YOURAPPLICATION_CONFIG` environment
-variable.  So we have to put the configuration in a place where the
-application will able to find it.  Configuration files have the unfriendly
-quality of being different on all computers, so you do not version them
-usually.
+위에서 언급한 것 처럼, 어플리케이션은 `YOURAPPLICATION_CONFIG` 환경 변수
+를 찾음으로서 올바른 설정 파일을 찾을 것이다.  그래서 우리들은 어플리케이션이
+그 변수를 찾을 수 있는 곳에 그 설정을 넣어야만 한다.  설정 파일들은 모든 
+컴퓨터에서 여러 다른 상태를 갖을수 있는 불친절한 특징을 갖기 때문에 보통은 
+설정 파일들을 버전화하지 않는다. 
 
-A popular approach is to store configuration files for different servers
-in a separate version control repository and check them out on all
-servers.  Then symlink the file that is active for the server into the
-location where it's expected (eg: ``/var/www/yourapplication``).
+많이 사용되는 접근법은 분리된 버전 관리 저장소에 여러 다른 서버에 대한
+설정 파일들을 보관하고 모든 서버에 그것들을 받아가는(check-out) 것이다.
+그리고 나서 어떤 서버에 대해 사용 중인 설정 파일은 그 파일이 심볼릭 링크로
+생성되도록 기대되는 곳으로 링크를 건다 (eg: ``/var/www/yourapplication``).
 
-Either way, in our case here we only expect one or two servers and we can
-upload them ahead of time by hand.
+다른 방법으로는, 여기에서 우리는 단지 하나 또는 두개의 서버만 가정했으므로
+수동으로 그것들은 생각보다 빨리 업로드할 수 있다.
 
-First Deployment
-----------------
+첫 번째 전개
+------------
 
 Now we can do our first deployment.  We have set up the servers so that
 they have their virtual environments and activated apache configs.  Now we
