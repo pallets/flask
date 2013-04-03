@@ -171,17 +171,15 @@ Fabric은 이제 모든 서버에 연결될 것이고 fabfile에 적힌 명령�
 
 -   신규 서버를 초기화하는 `bootstrap` 명령을 생성한다.  그것은 새로운 가상 환경을
     초기화하고 알맞게 apache를 설치 등을 할 수 있다.
--   Put configuration files into a separate version control repository
-    and symlink the active configs into place.
--   You could also put your application code into a repository and check
-    out the latest version on the server and then install.  That way you
-    can also easily go back to older versions.
--   hook in testing functionality so that you can deploy to an external
-    server and run the testsuite.  
+-   설정 파일들을 분리된 버전 관리 저장소에 넣고 활성화된 설정들에 대해 지정된 
+    위치로 심볼릭 링크를 생성한다.
+-   여러분의 어플리케이션 코드 또한 저장소에 넣을 수 있고 서버에 가장 최신 버전을
+    받아 설치할 수 있다.  그런 방식으로 이전 버전들로 쉽게 돌아갈 수도 있다.
+-   외부 서버에 전개하고 테스트묶음을 실행할 수 있도록 테스팅 기능을 끼워 넣는다.
 
-Working with Fabric is fun and you will notice that it's quite magical to
-type ``fab deploy`` and see your application being deployed automatically
-to one or more remote servers.
+Fabric을 가지고 작업하는 것이 재미있다면 여러분은 ``fab deploy`` 을 입력하는 것이 
+상당히 마법같다는 것을 알 것이고 하나 이상의 원격 서버에 자동으로 여러분의 
+어플리케이션이 전개되는 것을 볼 수 있을 것이다.
 
 
 .. _Fabric: http://fabfile.org/
