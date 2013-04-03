@@ -111,17 +111,17 @@ that's because SQLAlchemy does that for us already with the :class:`~sqlalchemy.
 .. _declarative:
    http://www.sqlalchemy.org/docs/orm/extensions/declarative.html
 
-Manual Object Relational Mapping
---------------------------------
+수동 객체 관계 매핑
+-------------------
 
-Manual object relational mapping has a few upsides and a few downsides
-versus the declarative approach from above.  The main difference is that
-you define tables and classes separately and map them together.  It's more
-flexible but a little more to type.  In general it works like the
-declarative approach, so make sure to also split up your application into
-multiple modules in a package.
+수동 객체 관계 매핑은 앞에서 나온 선언적 접근에 대비하여 몇 가지 
+장단점을 갖는다.  주요한 차이점은 여러분이 테이블들과 클래스들을
+분리해서 정의하고 그것들을 함께 매핑한다는 것이다.  그 방식은 
+더 유연하지만 입력할 것이 약간 더 있다.  일반적으로 선언적 접근처럼
+동작하기 때문에 어려분의 어플리케이션 또한 패키지안에 여러 모듈로
+분리되도록 보장해라.
 
-Here is an example `database.py` module for your application::
+여기 여러분의 어플리케이션에 대한 `database.py` 모듈의 예가 있다::
 
     from sqlalchemy import create_engine, MetaData
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -134,8 +134,8 @@ Here is an example `database.py` module for your application::
     def init_db():
         metadata.create_all(bind=engine)
 
-As for the declarative approach you need to close the session after
-each request.  Put this into your application module::
+선언적 접근법에 대하여 여러분은 각 요청 후에 세션을 닫을 필요가 있다.
+이것을 여러분의 어플리케이션 모듈에 넣어라::
 
     from yourapplication.database import db_session
 
@@ -143,7 +143,7 @@ each request.  Put this into your application module::
     def shutdown_session(exception=None):
         db_session.remove()
 
-Here is an example table and model (put this into `models.py`)::
+여기에 예제 테이블과 모델이 있다 (이것을 `models.py` 에 넣어라)::
 
     from sqlalchemy import Table, Column, Integer, String
     from sqlalchemy.orm import mapper
@@ -166,49 +166,50 @@ Here is an example table and model (put this into `models.py`)::
     )
     mapper(User, users)
 
-Querying and inserting works exactly the same as in the example above.
+질의하고 추가하는 것은 위의 예제에서와 정확히 같게 동작한다.
 
 
-SQL Abstraction Layer
----------------------
+SQL 추상 계층
+-------------
 
-If you just want to use the database system (and SQL) abstraction layer
-you basically only need the engine::
+여러분이 단지 데이타베이스 시스템 (그리고 SQL) 추상 계층을 사용하고 싶다면
+여러분은 기본적으로 단지 그 엔진만 필요한 것이다::
 
     from sqlalchemy import create_engine, MetaData
 
     engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     metadata = MetaData(bind=engine)
 
-Then you can either declare the tables in your code like in the examples
-above, or automatically load them::
+그러면 여러분은 위의 예제에서 처럼 여러분의 코드에 테이블을 선언할 수 있거나,
+자동으로 그것들을 적재할 수 있다::
 
     users = Table('users', metadata, autoload=True)
 
-To insert data you can use the `insert` method.  We have to get a
-connection first so that we can use a transaction:
+데이타를 추가하기 위해서 여러분은 `insert` 메소드를 사용할 수 있다.
+우리는 트랜젝션을 사용할 수 있도록 먼저 연결을 얻어야 한다:
 
 >>> con = engine.connect()
 >>> con.execute(users.insert(), name='admin', email='admin@localhost')
 
-SQLAlchemy will automatically commit for us.
+SQLAlchemy는 자동으로 커밋을 할 것이다.
 
-To query your database, you use the engine directly or use a connection:
+여러분의 데이타베이스에 질의하기 위해서, 여러분은 직접 엔진을 사용하거나
+트랜잭션을 사용한다.
 
 >>> users.select(users.c.id == 1).execute().first()
 (1, u'admin', u'admin@localhost')
 
-These results are also dict-like tuples:
+이런 결과들 또한 딕셔너리와 같은 튜플이다::
 
 >>> r = users.select(users.c.id == 1).execute().first()
 >>> r['name']
 u'admin'
 
-You can also pass strings of SQL statements to the
-:meth:`~sqlalchemy.engine.base.Connection.execute` method:
+여러분은 또한 :meth:`~sqlalchemy.engine.base.Connection.execute` 메소드에 
+SQL 구문의 문자열을 넘길 수 있다.:
 
 >>> engine.execute('select * from users where id = :1', [1]).first()
 (1, u'admin', u'admin@localhost')
 
-For more information about SQLAlchemy, head over to the
-`website <http://sqlalchemy.org/>`_.
+SQLAlchemy에 대해서 더 많은 정보는 `website <http://sqlalchemy.org/>`_ 로
+넘어가면 된다.
