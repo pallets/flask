@@ -8,15 +8,18 @@ Distribute으로 전개하기
 그것은 더 규모있는 어플리케이션의 배포를 쉽게 만드는 여러 더 복잡한 생성자 또한 
 지원하기 위해 파이썬과 같이 설치되는 disutils를 확장한 것이다::
 
+- **support for dependencies**: a library or application can declare a
+  list of other libraries it depends on which will be installed
+  automatically for you.
 - **의존성 지원(support for dependencies)**: 라이브러리나 어플리케이션은 여러분을 위해 자동으로 설치되어야 할
-그것에 의존적인 다른 라이브러리들의 목록을 선언할 수 있다.
+  그것에 의존적인 다른 라이브러리들의 목록을 선언할 수 있다.
 - **패키지 레지스트리(package registry)**: 설치툴은 파이썬 설치와 함께 여러분의 패키지를 등록한다.
-이것은 하나의 패키지에서 제공되는 정보를 다른 패키지에서 질의하는 것을 가능하게 한다.
-이 시스템의 가장 잘 알려진 특징은 패키지가 다른 패키지를 확장하기 위해 끼어들 수 있는 
-"진입점(entry point)"을 선언할 수 있도록 하는 진입점을 지원하다는 것이다.
+  이것은 하나의 패키지에서 제공되는 정보를 다른 패키지에서 질의하는 것을 가능하게 한다.
+  이 시스템의 가장 잘 알려진 특징은 패키지가 다른 패키지를 확장하기 위해 끼어들 수 있는 
+  "진입점(entry point)"을 선언할 수 있도록 하는 진입점을 지원하다는 것이다.
 - **설치 관리자(installation manager)**: distribute와 함께 설치되는 `easy_install` 은 여러분을 위해
-다른 라이브러리를 설치해준다.  여러분은 또한 조만간 패키지 설치 이상의 기능을 제공하는 `easy_install`
-을 대체할 `pip`_ 을 사용할 수 있다.
+  다른 라이브러리를 설치해준다.  여러분은 또한 조만간 패키지 설치 이상의 기능을 제공하는 `easy_install`
+  을 대체할 `pip`_ 을 사용할 수 있다.
 
 플라스크 그 자체와 cheeseshop(파이썬 라이브러리 인덱스)에서 찾을 수 있는 모든 라이브러리들은
 distribute, the older setuptools 또는 distutils 중 한 가지로 배포된다.
