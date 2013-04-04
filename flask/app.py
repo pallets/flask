@@ -1679,7 +1679,7 @@ class Flask(_PackageBoundObject):
         bp = ctx.request.blueprint
         funcs = ctx._after_request_functions
         if bp is not None and bp in self.after_request_funcs:
-            funcs = reversed(self.after_request_funcs[bp])
+            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
         if None in self.after_request_funcs:
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
