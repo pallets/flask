@@ -1066,6 +1066,11 @@ class Flask(_PackageBoundObject):
         handler should be application wide `None` shall be used.
 
         .. versionadded:: 0.7
+            Use :meth:`register_error_handler` instead of modifying
+            :attr:`error_handler_spec` directly, for application wide error
+            handlers.
+            
+        .. versionadded:: 0.7
            One can now additionally also register custom exception types
            that do not necessarily have to be a subclass of the
            :class:`~werkzeug.exceptions.HTTPException` class.
