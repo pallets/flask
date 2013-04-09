@@ -1,24 +1,23 @@
 .. _uploading-files:
 
-Uploading Files
+파일 업로드하기
 ===============
 
-Ah yes, the good old problem of file uploads.  The basic idea of file
-uploads is actually quite simple.  It basically works like this:
+오 그렇다, 그리운 파일 업로드이다.  파일 업로드의 기본 방식은
+실제로 굉장히 간단하다.  기본적으로 다음과 같이 동작한다:
 
-1. A ``<form>`` tag is marked with ``enctype=multipart/form-data``
-   and an ``<input type=file>`` is placed in that form.
-2. The application accesses the file from the :attr:`~flask.request.files`
-   dictionary on the request object.
-3. use the :meth:`~werkzeug.datastructures.FileStorage.save` method of the file to save
-   the file permanently somewhere on the filesystem.
+1. ``<form>`` 태그에 ``enctype=multipart/form-data`` 과 ``<input type=file>`` 
+   을 넣는다.
+2. 어플리케이션이 요청 객체에 :attr:`~flask.request.files` 딕셔너리로 부터 파일 객체에
+   접근한다.
+3. 파일시스템에 영구적으로 저장하기 위해 파일 객체의 
+   :meth:`~werkzeug.datastructures.FileStorage.save` 메소드를 사용한다.
 
-A Gentle Introduction
----------------------
+파일 업로드의 가벼운 소개
+-------------------------
 
-Let's start with a very basic application that uploads a file to a
-specific upload folder and displays a file to the user.  Let's look at the
-bootstrapping code for our application::
+지정된 업로드 폴더에 파일을 업로드하고 사용자에게 파일을 보여주는 매우
+간단한 어플리케이션으로 시작해보자::
 
     import os
     from flask import Flask, request, redirect, url_for
@@ -30,14 +29,13 @@ bootstrapping code for our application::
     app = Flask(__name__)
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-So first we need a couple of imports.  Most should be straightforward, the
-:func:`werkzeug.secure_filename` is explained a little bit later.  The
-`UPLOAD_FOLDER` is where we will store the uploaded files and the
-`ALLOWED_EXTENSIONS` is the set of allowed file extensions.  Then we add a
-URL rule by hand to the application.  Now usually we're not doing that, so
-why here?  The reasons is that we want the webserver (or our development
-server) to serve these files for us and so we only need a rule to generate
-the URL to these files.
+자 첫번째로 몇 가지 패키지를 임포트해야한다.  대부분 직관적이지만,
+:func:`werkzeug.secure_filename` 은 나중에 약간 설명이 더 필요하다.
+`UPLOAD_FOLDER` 는 업로드된 파일이 저장되는 것이고 `ALLOWED_EXTENSIONS` 은
+허용할 파일의 확장자들이다.  그리고 나면 보통은 어플리케이션에 직접 URL 
+규칙을 추가하는데 여기서는 그렇게 하지 않을 것이다.  왜 여기서는 하지 않는가?
+왜냐하면 우리가 사용하는 웹서버 (또는 개발 서버) 가 이런 파일을 업로드하는 
+역할도 하기 때문에 이 파일에 대한 URL을 생성하기 위한 규칙만 필요로 한다.
 
 Why do we limit the extensions that are allowed?  You probably don't want
 your users to be able to upload everything there if the server is directly
