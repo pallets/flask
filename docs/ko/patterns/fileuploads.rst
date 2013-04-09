@@ -37,15 +37,15 @@
 왜냐하면 우리가 사용하는 웹서버 (또는 개발 서버) 가 이런 파일을 업로드하는 
 역할도 하기 때문에 이 파일에 대한 URL을 생성하기 위한 규칙만 필요로 한다.
 
-Why do we limit the extensions that are allowed?  You probably don't want
-your users to be able to upload everything there if the server is directly
-sending out the data to the client.  That way you can make sure that users
-are not able to upload HTML files that would cause XSS problems (see
-:ref:`xss`).  Also make sure to disallow `.php` files if the server
-executes them, but who has PHP installed on his server, right?  :)
+왜 허용할 파일 확장자를 제한하는가?  서버가 클라이언트로 직접 데이타를 전송한다면
+여러분은 아마도 사용자가 그 서버에 뭐든지 올릴 수 있는 것을 원하지 않을 것이다.
+그런 방식으로 여러분은 사용자가 XSS 문제 (:ref:`xss`) 를 야기할 수도 있는
+HTML 파일을 업로드하지 못하도록 할 수 있다.  또한 서버가 `.php` 파일과 같은 
+스크립트를 실행할 수 있다면 그 파일 또한 허용하지 말아야 한다. 하지만, 누가
+이 서버에 PHP를 설치하겠는가, 그렇지 않은가?  :)
 
-Next the functions that check if an extension is valid and that uploads
-the file and redirects the user to the URL for the uploaded file::
+다음은 확장자가 유효한지 확인하고 파일을 업로드하고 업로드된 파일에 대한 URL로
+사용자를 리디렉션하는 함수들이다::
 
     def allowed_file(filename):
         return '.' in filename and \
