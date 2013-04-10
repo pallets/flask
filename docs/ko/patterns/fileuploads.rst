@@ -105,9 +105,9 @@ HTML 파일을 업로드하지 못하도록 할 수 있다.  또한 서버가 `.
         return send_from_directory(app.config['UPLOAD_FOLDER'],
                                    filename)
 
-Alternatively you can register `uploaded_file` as `build_only` rule and
-use the :class:`~werkzeug.wsgi.SharedDataMiddleware`.  This also works with
-older versions of Flask::
+다른방법으로 여러분은 `build_only` 로써 `uploaded_file` 을 등록하고 
+:class:`~werkzeug.wsgi.SharedDataMiddleware` 를 사용할 수 있다.  이것은
+또한 플라스크의 지난 과거 버전에서도 동작한다::
 
     from werkzeug import SharedDataMiddleware
     app.add_url_rule('/uploads/<filename>', 'uploaded_file',
@@ -116,21 +116,21 @@ older versions of Flask::
         '/uploads':  app.config['UPLOAD_FOLDER']
     })
 
-If you now run the application everything should work as expected.
+여러분 이제 이 어플리케이션을 실행하면 기대하는데로 모든 것이 동작해야
+할 것이다.
 
 
-Improving Uploads
------------------
+업로드 개선하기
+---------------
 
 .. versionadded:: 0.6
 
-So how exactly does Flask handle uploads?  Well it will store them in the
-webserver's memory if the files are reasonable small otherwise in a
-temporary location (as returned by :func:`tempfile.gettempdir`).  But how
-do you specify the maximum file size after which an upload is aborted?  By
-default Flask will happily accept file uploads to an unlimited amount of
-memory, but you can limit that by setting the ``MAX_CONTENT_LENGTH``
-config key::
+그렇다면 정확히 플라스크가 업로드를 어떻게 처리한다는 것인가?  플라스크는
+업로드된 파일이 적당히 작다면 웹서버의 메모리에 저장하고 그렇지 않다면
+웹서버의 임시 장소 (:func:`tempfile.gettempdir`) 저장할 것이다.  그러나
+여러분은 어떻게 업로드를 중단된 후에 최대 파일 크기를 지정할 수 있는가?
+기본으로 플라스크는 제한되지 않은 메모리까지 파일 업로드를 허용할 것이지만,
+여러분은 ``MAX_CONTENT_LENGTH`` 설정 키값을 설정하여 크기를 제한할 수 있다::
 
     from flask import Flask, Request
 
@@ -146,9 +146,11 @@ as well by subclassing the request object.  For more information on that
 consult the Werkzeug documentation on file handling.
 
 
-Upload Progress Bars
---------------------
+업로드 진행 상태바 
+------------------
 
+얼마전에 많은 개발자들이 작은 조각으로 유입되는 파일을 읽는 방식을 생각했었고
+업로드 진행 상태를 데이터베이스에 저장한다.
 A while ago many developers had the idea to read the incoming file in
 small chunks and store the upload progress in the database to be able to
 poll the progress with JavaScript from the client.  Long story short: the
