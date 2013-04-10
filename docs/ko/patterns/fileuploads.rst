@@ -77,28 +77,26 @@ HTML 파일을 업로드하지 못하도록 할 수 있다.  또한 서버가 `.
 파일시스템에 직접 파일을 저장하기 전에 파일명을 보호하기 위해 항상 이 함수를
 사용하자.
 
-.. admonition:: Information for the Pros
+.. admonition:: Information for the Pros 장점에 대한 정보
 
-   So you're interested in what that :func:`~werkzeug.utils.secure_filename`
-   function does and what the problem is if you're not using it?  So just
-   imagine someone would send the following information as `filename` to
-   your application::
+   그래서 여러분은 :func:`~werkzeug.utils.secure_filename` 함수가 하는 것에 
+   관심이 있고 그 함수를 사용하지 않는다면 무슨 문제가 있는가?  그렇다면 어떤 사람이
+   여러분의 어플리케이션에 `filename`으로 다음과 같은 정보를 보낸다고 생각해보자::
 
       filename = "../../../../home/username/.bashrc"
 
-   Assuming the number of ``../`` is correct and you would join this with
-   the `UPLOAD_FOLDER` the user might have the ability to modify a file on
-   the server's filesystem he or she should not modify.  This does require some
-   knowledge about how the application looks like, but trust me, hackers
-   are patient :)
+   ``../`` 의 개수가 맞게 되있고 이것과 `UPLOAD_FOLDER` 와 더한다고 가정하면
+   사용자는 수정하면 않아야하는 서버의 파일시스템에 있는 파일을 수정할 수 있게
+   된다.  이것은 어플리케이션이 어떻게 생겼는가에 대한 약간의 정보를 요구하지만,
+   나를 믿어라, 해커들은 참을성이 많다 :)
 
-   Now let's look how that function works:
+   이제 이 함수가 동작하는 것을 살펴보자:
 
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files.  As of
-Flask 0.5 we can use a function that does that for us::
+지금 한가지 마지막으로 놓친것이 있다: 업로드된 파일의 제공. 플라스크 0.5에
+관해서 우리는 업로드된 파일을 받을 수 있는 함수를 사용할 수 있다::
 
     from flask import send_from_directory
 
