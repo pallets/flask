@@ -70,12 +70,12 @@ HTML 파일을 업로드하지 못하도록 할 수 있다.  또한 서버가 `.
         </form>
         '''
 
-So what does that :func:`~werkzeug.utils.secure_filename` function actually do?
-Now the problem is that there is that principle called "never trust user
-input".  This is also true for the filename of an uploaded file.  All
-submitted form data can be forged, and filenames can be dangerous.  For
-the moment just remember: always use that function to secure a filename
-before storing it directly on the filesystem.
+그렇다면 이 :func:`~werkzeug.utils.secure_filename` 함수는 실제로 무엇을 하는건가?
+이제 문제는 "절대로 사용자의 입력을 믿지마라" 라고 불리우는 원칙에 있다.
+이것은 또한 업로드된 파일명에 대해서도 적용된다. 모든 전송된 폼 데이타는
+위조될 수 있고, 그래서 파일명이 위험할 수도 있다.  잠시동안 기억해보자:
+파일시스템에 직접 파일을 저장하기 전에 파일명을 보호하기 위해 항상 이 함수를
+사용하자.
 
 .. admonition:: Information for the Pros
 
