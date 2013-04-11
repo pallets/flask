@@ -137,10 +137,12 @@ HTML 파일을 업로드하지 못하도록 할 수 있다.  또한 서버가 `.
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-The code above will limited the maximum allowed payload to 16 megabytes.
-If a larger file is transmitted, Flask will raise an
-:exc:`~werkzeug.exceptions.RequestEntityTooLarge` exception.
+위의 코드는 허용되는 최대 파일 크기를 16메가바이트로 제한할 것이다.
+그 최대 크기보다 더 큰 파일이 업로드되면, 플라스크는
+:exc:`~werkzeug.exceptions.RequestEntityTooLarge` 예외를 발생시킬 것이다.
 
+이 기능은 플라스크 0.6에서 추가됐지만, 요청 객체를 상속받아서 이전 버전에서
+사용할 수도 있다.  
 This feature was added in Flask 0.6 but can be achieved in older versions
 as well by subclassing the request object.  For more information on that
 consult the Werkzeug documentation on file handling.
