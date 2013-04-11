@@ -142,40 +142,34 @@ HTML 파일을 업로드하지 못하도록 할 수 있다.  또한 서버가 `.
 :exc:`~werkzeug.exceptions.RequestEntityTooLarge` 예외를 발생시킬 것이다.
 
 이 기능은 플라스크 0.6에서 추가됐지만, 요청 객체를 상속받아서 이전 버전에서
-사용할 수도 있다.  
-This feature was added in Flask 0.6 but can be achieved in older versions
-as well by subclassing the request object.  For more information on that
-consult the Werkzeug documentation on file handling.
+사용할 수도 있다.  더 많은 정보는 벡자이크(Werkzeug) 문서의 파일 처리(file handling)
+을 검토해봐라.
 
 
 업로드 진행 상태바 
 ------------------
 
-얼마전에 많은 개발자들이 작은 조각으로 유입되는 파일을 읽는 방식을 생각했었고
-업로드 진행 상태를 데이터베이스에 저장한다.
-A while ago many developers had the idea to read the incoming file in
-small chunks and store the upload progress in the database to be able to
-poll the progress with JavaScript from the client.  Long story short: the
-client asks the server every 5 seconds how much it has transmitted
-already.  Do you realize the irony?  The client is asking for something it
-should already know.
+얼마전에 많은 개발자들이 클라이언트에서 자바스크립트로 업로드 진행 상태를 
+받아올 수 있도록 작은 단위로 유입되는 파일을 읽어서 데이터베이스에 진행 상태를 
+저장하는 방식을 생각했다.  짧게 얘기하자면: 클라이언트가 서버에 5초마다 얼마나
+전송됐는지 묻는다.  얼마나 아이러니인지 알겠는가?  클리언트는 이미 자신이 알고
+있는 사실을 묻고 있는 것이다.
 
-Now there are better solutions to that work faster and more reliable.  The
-web changed a lot lately and you can use HTML5, Java, Silverlight or Flash
-to get a nicer uploading experience on the client side.  Look at the
-following libraries for some nice examples how to do that:
+이제 더 빠르고 안정적으로 동작하는 더 좋은 해결책이 있다.  웹은 최근에 많은
+변화가 있었고 여러분은 HTML5, Java, Silverlight 나 Flash 을 사용해서 클라이언트에서
+더 좋은 업로드 경험을 얻을 수 있다.  다음 라이브러리들은 그런 작업을 할 수 있는
+몇 가지 좋은 예제들을 보여준다:
 
 -   `Plupload <http://www.plupload.com/>`_ - HTML5, Java, Flash
 -   `SWFUpload <http://www.swfupload.org/>`_ - Flash
 -   `JumpLoader <http://jumploader.com/>`_ - Java
 
 
-An Easier Solution
-------------------
+더 쉬운 해결책
+--------------
 
-Because the common pattern for file uploads exists almost unchanged in all
-applications dealing with uploads, there is a Flask extension called
-`Flask-Uploads`_ that implements a full fledged upload mechanism with
-white and blacklisting of extensions and more.
+업로드를 다루는 모든 어플리케이션에서 파일 업로드에 대한 일반적인 패턴은 
+거의 변화가 없었기 때문에, 파일 확장자에 대한 화이트/블랙리스트와 다른 많은 기능을
+제공하는 업로드 메커니즘을 구현한 `Flask-Uploads`_ 라는 플라스크 확장이 있다.
 
 .. _Flask-Uploads: http://packages.python.org/Flask-Uploads/
