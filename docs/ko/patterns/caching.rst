@@ -42,25 +42,21 @@
 캐시 사용하기
 -------------
 
-캐시는 어떻게 사용할 수 있을까?  두가지 굉장히 중요한 함수가 있다.
+캐시는 어떻게 사용할 수 있을까?  두가지 굉장히 중요한 함수가 있다:
+:meth:`~werkzeug.contrib.cache.BaseCache.get` 과 
+:meth:`~werkzeug.contrib.cache.BaseCache.set` 이다.  아래는 사용 방법이다:
 
-Now how can one use such a cache?  There are two very important
-operations: :meth:`~werkzeug.contrib.cache.BaseCache.get` and 
-:meth:`~werkzeug.contrib.cache.BaseCache.set`.  This is how to use them:
-
-To get an item from the cache call
-:meth:`~werkzeug.contrib.cache.BaseCache.get` with a string as key name.
-If something is in the cache, it is returned.  Otherwise that function
-will return `None`::
+캐시에서 항목을 얻기 위해서는 문자열로 된 키 명으로 
+:meth:`~werkzeug.contrib.cache.BaseCache.get` 를 호출하면 된다. 캐시에 그 키에
+값이 있따면, 그 값이 반환된다.  없다면 `None`이 반환될 것이다::
 
     rv = cache.get('my-item')
 
-To add items to the cache, use the :meth:`~werkzeug.contrib.cache.BaseCache.set`
-method instead.  The first argument is the key and the second the value
-that should be set.  Also a timeout can be provided after which the cache
-will automatically remove item.
+캐시에 항목을 넣기 위해서는, :meth:`~werkzeug.contrib.cache.BaseCache.set` 를
+사용하면 된다.  첫번째 인자는 키이고 두번째는 설정할 값이다.  타임아웃 또한 
+항목으로 넣을 수가 있는데 그 시간이 지나면 캐시에서 자동으로 그 항목은 삭제된다.
 
-Here a full example how this looks like normally::
+아래는 보통 정상적으로 사용되는 전체 예제이다::
 
     def get_my_item():
         rv = cache.get('my-item')
