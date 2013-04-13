@@ -42,6 +42,8 @@
 캐시 사용하기
 -------------
 
+캐시는 어떻게 사용할 수 있을까?  두가지 굉장히 중요한 함수가 있다.
+
 Now how can one use such a cache?  There are two very important
 operations: :meth:`~werkzeug.contrib.cache.BaseCache.get` and 
 :meth:`~werkzeug.contrib.cache.BaseCache.set`.  This is how to use them:
