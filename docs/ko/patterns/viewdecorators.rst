@@ -1,27 +1,26 @@
-View Decorators
-===============
+뷰 데코레이터(View Decorators)
+==============================
 
-Python has a really interesting feature called function decorators.  This
-allow some really neat things for web applications.  Because each view in
-Flask is a function decorators can be used to inject additional
-functionality to one or more functions.  The :meth:`~flask.Flask.route`
-decorator is the one you probably used already.  But there are use cases
-for implementing your own decorator.  For instance, imagine you have a
-view that should only be used by people that are logged in to.  If a user
-goes to the site and is not logged in, they should be redirected to the
-login page.  This is a good example of a use case where a decorator is an
-excellent solution.
+파이썬에는 함수 데코레이터라 불리는 꽤 흥미로운 기능이 있다.  이 기능은
+웹 어플리케이션에서 정말 깔끔한 기능을 허용한다.  플라스크 각 뷰는 한 개 
+이상의 함수에 추가적인 기능을 주입하는데 사용될 수 있는 함수 데코레이터
+이기 때문인다.  여러분은 이미 :meth:`~flask.Flask.route` 데코레이터를
+사용했을 것이다.  하지만 여러분 자신만의 데코레이터를 구현하는 몇가지
+사용법이 있다.  예를 들면, 로그인한 사람들에게만 사용되야하는 뷰가 있다고
+하자.  사용자가 해당 사이트로 가서 로그인 하지 않았다면, 그 사용자는 
+로그인 페이지로 리디렉션 되어야한다.  이런 상황이 데코레이터가 훌륭한
+해결책이 되는 사용법의 좋은 예이다.
 
-Login Required Decorator
-------------------------
+로그인이 필수적인 데코레이터
+----------------------------
 
-So let's implement such a decorator.  A decorator is a function that
-returns a function.  Pretty simple actually.  The only thing you have to
-keep in mind when implementing something like this is to update the
-`__name__`, `__module__` and some other attributes of a function.  This is
-often forgotten, but you don't have to do that by hand, there is a
-function for that that is used like a decorator (:func:`functools.wraps`).
+자 그렇다면 그런 데코레이터를 구현해보자.  데코레이터는 함수를 반환하는
+함수이다.  사실 꽤 간단한 개념이다.  이런것을 구현할 때 꼭 유념해야할
+것은 `__name__`, `__module__` 그리고 함수의 몇 가지 다른 속성들이다.
+이런 것을 자주 잊곤하는데, 수동으로 그것을 할 필요는 없고, 그것을 해주는
+데코레이터처럼 사용되는 함수가 있다 (:func:`functools.wraps`).
 
+이 예제는 
 This example assumes that the login page is called ``'login'`` and that
 the current user is stored as `g.user` and `None` if there is no-one
 logged in::
