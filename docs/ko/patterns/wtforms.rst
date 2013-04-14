@@ -1,11 +1,11 @@
-Form Validation with WTForms
-============================
+WTForms를 가지고 폼 유효성 확인하기
+===================================
 
-When you have to work with form data submitted by a browser view code
-quickly becomes very hard to read.  There are libraries out there designed
-to make this process easier to manage.  One of them is `WTForms`_ which we
-will handle here.  If you find yourself in the situation of having many
-forms, you might want to give it a try.
+여러분이 브라우저에서 전송되는 폼 데이타를 가지고 작업해야할 때
+곧 뷰 코드는 읽기가 매우 어려워진다.  이 과정을 더 쉽게 관리할 수 있도록
+설계된 라이브러리들이 있다.  그것들 중 하나가 우리가 여기서 다룰 예정인
+`WTForms`_  이다.  여러분이 많은 폼을 갖는 상황에 있다면, 이것을 한번
+시도해보길 원할지도 모른다.
 
 When you are working with WTForms you have to define your forms as classes
 first.  I recommend breaking up the application into multiple modules 
