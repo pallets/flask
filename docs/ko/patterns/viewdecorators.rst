@@ -61,10 +61,10 @@
 1. 현재 경로에 기반한 현재 요청에 대한 유일한 캐시 키를 얻는다.
 2. 캐시에서 그 키에 대한 값을 얻는다.  캐시가 어떤값을 반환하면
    우리는 그 값을 반환할 것이다.
-3. 그렇지 않으면 원본 함수가 호출되고 반환값은 주어진 타임아웃 (기본값 5분) 동안
-   캐시에 저장된다. 
+3. 그 밖에는 원본 함수가 호출되고 반환값은 주어진 타임아웃 
+   (기본값 5분) 동안 캐시에 저장된다. 
 
-Here the code::
+여기 코드가 있다::
 
     from functools import wraps
     from flask import request
@@ -83,18 +83,18 @@ Here the code::
             return decorated_function
         return decorator
 
-Notice that this assumes an instantiated `cache` object is available, see
-:ref:`caching-pattern` for more information.
+이 함수는 인스턴스화된 `cache` 객체가 사용 가능하다고 가정한다는 것에
+주목하고, 더 많은 정보는 :ref:`caching-pattern` 을 살펴봐라.
 
 
-Templating Decorator
---------------------
+데코레이터를 템플화하기 
+-----------------------
 
-A common pattern invented by the TurboGears guys a while back is a
-templating decorator.  The idea of that decorator is that you return a
-dictionary with the values passed to the template from the view function
-and the template is automatically rendered.  With that, the following
-three examples do exactly the same::
+일전에 터보기어스(TurboGears) 친구들이 고안한 공통 패턴이 데코레이터
+템플릿화이다.  그 데코레이터의 방식은 여러분은 뷰 함수로부터 템플릿에
+넘겨질 값들을 가진 딕셔너리를 반환하고 그 템플릿은 자동으로 값을 
+화면에 뿌려준다.  그 템플릿으로, 아래 세가지 예제는 정확히 같은 동작을
+한다::
 
     @app.route('/')
     def index():
@@ -110,6 +110,13 @@ three examples do exactly the same::
     def index():
         return dict(value=42)
 
+여러분이 볼 수 있는 것처럼, 템플릿 명이 없다면 URL 맵의 끝점의 점(dot)을
+슬래쉬(/)로 바꾸고 ``'.html'`` 을 더해서 사용할 것이다.  데코레이트된
+함수가 반환할 때, 반환된 딕셔너리는 템플릿 렌더링 함수에 넘겨진다.  
+`None` 이 반환된다면, 빈 딕셔너리를 가정한다면, 딕셔너리가 아닌 다른 것이
+반환된다면 우리는 변경되지 않는 함수에서 그것을 반환한다.  그 방식으로
+여러분은 여전히 리디렉트 함수를 사용하거나 간단한 문자열을 반환할 수 있다.
+
 As you can see, if no template name is provided it will use the endpoint
 of the URL map with dots converted to slashes + ``'.html'``.  Otherwise
 the provided template name is used.  When the decorated function returns,
@@ -118,7 +125,7 @@ the dictionary returned is passed to the template rendering function.  If
 a dictionary is returned we return it from the function unchanged.  That
 way you can still use the redirect function or return simple strings.
 
-Here the code for that decorator::
+여기 그 데코레이터에 대한 코드가 있다::
 
     from functools import wraps
     from flask import request
@@ -141,8 +148,8 @@ Here the code for that decorator::
         return decorator
 
 
-Endpoint Decorator
-------------------
+끝점(Endpoint) 데코레이터
+-------------------------
 
 When you want to use the werkzeug routing system for more flexibility you
 need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule` 
