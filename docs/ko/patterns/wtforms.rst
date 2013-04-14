@@ -7,24 +7,22 @@ WTForms를 가지고 폼 유효성 확인하기
 `WTForms`_  이다.  여러분이 많은 폼을 갖는 상황에 있다면, 이것을 한번
 시도해보길 원할지도 모른다.
 
-When you are working with WTForms you have to define your forms as classes
-first.  I recommend breaking up the application into multiple modules 
-(:ref:`larger-applications`) for that and adding a separate module for the
-forms.
+여러분이 WTForms로 작업하고 있을 때 여러분은 먼저 클래스로 그 폼들을
+정의해야한다.  어플리케이션을 여러 모듈로 쪼개고 (:ref:`larger-applications`)
+폼에 대한 분리된 모듈을 추가하는 것을 권고한다.
 
-.. admonition:: Getting most of WTForms with an Extension
+.. admonition:: 확장을 가지고 대부분의 WTForms 얻기
 
-   The `Flask-WTF`_ extension expands on this pattern and adds a few
-   handful little helpers that make working with forms and Flask more
-   fun.  You can get it from `PyPI
-   <http://pypi.python.org/pypi/Flask-WTF>`_.
+   `Flask-WTF`_ 확장은 이 패턴을 확대하고 폼과 작업하면서 플라스크를 더
+   재밌게 만드는 몇가지 유효한 작은 헬퍼들을 추가한다.  여러분은 `PyPI
+   <http://pypi.python.org/pypi/Flask-WTF>`_ 에서 그 확장을 얻을 수 있다.
 
 .. _Flask-WTF: http://packages.python.org/Flask-WTF/
 
-The Forms
+폼(Forms)
 ---------
 
-This is an example form for a typical registration page::
+이것은 전형적인 등록 페이지에 대한 예제 폼이다::
 
     from wtforms import Form, BooleanField, TextField, PasswordField, validators
 
@@ -38,7 +36,7 @@ This is an example form for a typical registration page::
         confirm = PasswordField('Repeat Password')
         accept_tos = BooleanField('I accept the TOS', [validators.Required()])
 
-In the View
+뷰에 있는 In the View
 -----------
 
 In the view function, the usage of this form looks like this::
