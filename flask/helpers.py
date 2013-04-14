@@ -206,12 +206,12 @@ def url_for(endpoint, **values):
     :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
     An example::
 
-        def external_url_handler(error, endpoint, **values):
+        def external_url_handler(error, endpoint, values):
             "Looks up an external URL when `url_for` cannot build a URL."
             # This is an example of hooking the build_error_handler.
             # Here, lookup_url is some utility function you've built
             # which looks up the endpoint in some external URL registry.
-            url = lookup_url(endpoint, **values)
+            url = lookup_url(endpoint, values)
             if url is None:
                 # External lookup did not have a URL.
                 # Re-raise the BuildError, in context of original traceback.
@@ -223,10 +223,10 @@ def url_for(endpoint, **values):
             # url_for will use this result, instead of raising BuildError.
             return url
 
-        app.build_error_handler = external_url_handler
+        app.handle_url_build_error = external_url_handler
 
     Here, `error` is the instance of :exc:`~werkzeug.routing.BuildError`, and
-    `endpoint` and `**values` are the arguments passed into `url_for`.  Note
+    `endpoint` and `values` are the arguments passed into `url_for`.  Note
     that this is for building URLs outside the current application, and not for
     handling 404 NotFound errors.
 
