@@ -113,17 +113,9 @@
 여러분이 볼 수 있는 것처럼, 템플릿 명이 없다면 URL 맵의 끝점의 점(dot)을
 슬래쉬(/)로 바꾸고 ``'.html'`` 을 더해서 사용할 것이다.  데코레이트된
 함수가 반환할 때, 반환된 딕셔너리는 템플릿 렌더링 함수에 넘겨진다.  
-`None` 이 반환된다면, 빈 딕셔너리를 가정한다면, 딕셔너리가 아닌 다른 것이
-반환된다면 우리는 변경되지 않는 함수에서 그것을 반환한다.  그 방식으로
+`None` 이 반환되고, 빈 딕셔너리를 가정한다면, 딕셔너리가 아닌 다른 것이 
+반환된다면 우리는 변경되지 않는 함수에서 그것을 반환한다. 그 방식으로 
 여러분은 여전히 리디렉트 함수를 사용하거나 간단한 문자열을 반환할 수 있다.
-
-As you can see, if no template name is provided it will use the endpoint
-of the URL map with dots converted to slashes + ``'.html'``.  Otherwise
-the provided template name is used.  When the decorated function returns,
-the dictionary returned is passed to the template rendering function.  If
-`None` is returned, an empty dictionary is assumed, if something else than
-a dictionary is returned we return it from the function unchanged.  That
-way you can still use the redirect function or return simple strings.
 
 여기 그 데코레이터에 대한 코드가 있다::
 
@@ -151,9 +143,10 @@ way you can still use the redirect function or return simple strings.
 끝점(Endpoint) 데코레이터
 -------------------------
 
-When you want to use the werkzeug routing system for more flexibility you
-need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule` 
-to a view function. This is possible with this decorator. For example:: 
+여러분이 더 유연함을 제공하는 벡자이크 라우팅 시스템을 사용하고 싶을 때
+여러분은 :class:`~werkzeug.routing.Rule` 에 정의된 것 처럼 끝점을 뷰 함수와
+맞출(map) 필요가 있다. 이것은 이 끝점 데코레이터와 함께 사용하여 가능하다.
+예를 들면::
 
     from flask import Flask
     from werkzeug.routing import Rule
