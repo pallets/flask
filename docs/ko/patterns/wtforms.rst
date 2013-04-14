@@ -36,10 +36,10 @@ WTForms를 가지고 폼 유효성 확인하기
         confirm = PasswordField('Repeat Password')
         accept_tos = BooleanField('I accept the TOS', [validators.Required()])
 
-뷰에 있는 In the View
------------
+뷰 안에서(In the View)
+----------------------
 
-In the view function, the usage of this form looks like this::
+뷰 함수에서, 이 폼의 사용은 이것 처럼 보인다::
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
@@ -51,6 +51,7 @@ In the view function, the usage of this form looks like this::
             flash('Thanks for registering')
             return redirect(url_for('login'))
         return render_template('register.html', form=form)
+
 
 Notice that we are implying that the view is using SQLAlchemy here
 (:ref:`sqlalchemy-pattern`) but this is no requirement of course.  Adapt
