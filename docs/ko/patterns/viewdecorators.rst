@@ -52,22 +52,17 @@
 만든다고 가정할 것이다.
 
 여기에 캐시 함수의 예제가 있다.  그 캐시 함수는 특정 접두어(형식이 있는 문자열)
-로부터 캐시 키와 요청에 대한 현재 경로를 생성한다. 
-Here an example cache function.  It generates the cache key from a
-specific prefix (actually a format string) and the current path of the
-request.  Notice that we are using a function that first creates the
-decorator that then decorates the function.  Sounds awful? Unfortunately
-it is a little bit more complex, but the code should still be
-straightforward to read.
+로부터 캐시 키와 요청에 대한 현재 경로를 생성한다.  먼저 함수 자체를 데코레이트하는
+데코레이터를 먼저 생성하는 함수를 사용하고 있다는 것에 주목해라.  끔찍하게 
+들리는가?  불행히도 약간 더 복잡하지만, 그 코드는 읽기엔 여전히 직관적일 것이다.
 
-The decorated function will then work as follows
+데코레이트된 함수는 다음과 같이 동작할 것이다
 
-1. get the unique cache key for the current request base on the current
-   path.
-2. get the value for that key from the cache. If the cache returned
-   something we will return that value.
-3. otherwise the original function is called and the return value is
-   stored in the cache for the timeout provided (by default 5 minutes).
+1. 현재 경로에 기반한 현재 요청에 대한 유일한 캐시 키를 얻는다.
+2. 캐시에서 그 키에 대한 값을 얻는다.  캐시가 어떤값을 반환하면
+   우리는 그 값을 반환할 것이다.
+3. 그렇지 않으면 원본 함수가 호출되고 반환값은 주어진 타임아웃 (기본값 5분) 동안
+   캐시에 저장된다. 
 
 Here the code::
 
