@@ -20,10 +20,8 @@
 이런 것을 자주 잊곤하는데, 수동으로 그것을 할 필요는 없고, 그것을 해주는
 데코레이터처럼 사용되는 함수가 있다 (:func:`functools.wraps`).
 
-이 예제는 
-This example assumes that the login page is called ``'login'`` and that
-the current user is stored as `g.user` and `None` if there is no-one
-logged in::
+이 예제는 로그인 페이지를 ``login`` 이라하고 현재 사용자는 `g.user` 로
+저장돼있으며 로그인되지 않았다면 `None` 이 저장된다고 가정한다::
 
     from functools import wraps
     from flask import g, request, redirect, url_for
@@ -36,23 +34,25 @@ logged in::
             return f(*args, **kwargs)
         return decorated_function
 
-So how would you use that decorator now?  Apply it as innermost decorator
-to a view function.  When applying further decorators, always remember
-that the :meth:`~flask.Flask.route` decorator is the outermost::
+그렇다면 여러분은 여기서 그 데코레이터를 어떻게 사용하겠는가?  뷰 함수의
+가장 안쪽에 있는 데코레이터로 사용하면 된다.  더 나아가서 적용할 때,
+:meth:`~flask.Flask.route` 데코레이터가 가장 바깥에 있다는 것을 기억해라::
 
     @app.route('/secret_page')
     @login_required
     def secret_page():
         pass
 
-Caching Decorator
------------------
+캐싱 데코레이터
+---------------
 
-Imagine you have a view function that does an expensive calculation and
-because of that you would like to cache the generated results for a
-certain amount of time.  A decorator would be nice for that.  We're
-assuming you have set up a cache like mentioned in :ref:`caching-pattern`.
+여러분이 시간이 많이 소요되는 계산을 하는 뷰 함수를 가지고 있고 그것 때문에
+일정 시간동안 계산된 결과를 캐시하고 싶다고 생각해보자.  이런 경우 데코레이터가
+멋지게 적용될 수 있다. 우리는 여러분이 :ref:`caching-pattern` 라 언급한 캐시를
+만든다고 가정할 것이다.
 
+여기에 캐시 함수의 예제가 있다.  그 캐시 함수는 특정 접두어(형식이 있는 문자열)
+로부터 캐시 키와 요청에 대한 현재 경로를 생성한다. 
 Here an example cache function.  It generates the cache key from a
 specific prefix (actually a format string) and the current path of the
 request.  Notice that we are using a function that first creates the
