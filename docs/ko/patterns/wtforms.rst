@@ -53,11 +53,10 @@ WTForms를 가지고 폼 유효성 확인하기
         return render_template('register.html', form=form)
 
 
-Notice that we are implying that the view is using SQLAlchemy here
-(:ref:`sqlalchemy-pattern`) but this is no requirement of course.  Adapt
-the code as necessary.
+뷰가 SQLAlchemy (:ref:`sqlalchemy-pattern`) 를 사용한다고 가정하지만, 
+물론 필수조건은 아니라는 사실을 염두해라. 필요에 따라 코드를 수정해라.
 
-Things to remember:
+기억할 것 :
 
 1. create the form from the request :attr:`~flask.request.form` value if
    the data is submitted via the HTTP `POST` method and
