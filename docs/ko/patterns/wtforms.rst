@@ -58,6 +58,8 @@ WTForms를 가지고 폼 유효성 확인하기
 
 기억할 것 :
 
+1. HTTP `POST` 메소드로 데이터가 전송됐다면 요청의 :attr:`~flask.request.form`
+   값으로 부터 폼을 생성하고 `GET` 으로 전송됐다면 
 1. create the form from the request :attr:`~flask.request.form` value if
    the data is submitted via the HTTP `POST` method and
    :attr:`~flask.request.args` if the data is submitted as `GET`.
