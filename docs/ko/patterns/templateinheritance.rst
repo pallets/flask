@@ -1,22 +1,21 @@
 .. _template-inheritance:
 
-Template Inheritance
-====================
+템플릿 상속
+===========
 
-The most powerful part of Jinja is template inheritance. Template inheritance
-allows you to build a base "skeleton" template that contains all the common
-elements of your site and defines **blocks** that child templates can override.
+진자(Jinja)의 가장 강력한 부분은 템플릿 상속 기능이다.  템플릿 상속은 여러분의 사이트에
+대한 모든 일반적인 요소들을 포함한 기본 "스켈레톤(skeleton)" 템플릿을 생성하도록 하고
+자식 템플릿은 기본 템플릿을 오버라이드(override)할 수 있는 **blocks** 을 정의한다.
 
-Sounds complicated but is very basic. It's easiest to understand it by starting
-with an example.
+복잡해 보이지만 꽤 간단하다.  예제로 시작하는게 이해하는데 가장 쉽다.
 
 
-Base Template
--------------
+기본 템플릿
+-----------
 
-This template, which we'll call ``layout.html``, defines a simple HTML skeleton
-document that you might use for a simple two-column page. It's the job of
-"child" templates to fill the empty blocks with content:
+우리가 ``layout.html`` 이라 부를 이 팀플릿은 간단한 두개의 칼럼을 가진 페이지로
+사용할 간단한 HTML 스켈레톤 문서를 정의한다.  내용의 빈 블럭을 채우것이 "자식"
+템플릿의 일이다:
 
 .. sourcecode:: html+jinja
 
@@ -37,14 +36,14 @@ document that you might use for a simple two-column page. It's the job of
       </div>
     </body>
 
-In this example, the ``{% block %}`` tags define four blocks that child templates
-can fill in. All the `block` tag does is tell the template engine that a
-child template may override those portions of the template.
+이 예제에서, ``{% block %}`` 태그는 자식 템플릿이 채울 수 있는 네개의 블럭을
+정의한다. `block` 태그가 하는 전부는 템플릿 엔진에 자식 템플릿이 템플릿의 `block`
+태그를 오버라이드할 수 도 있다라고 알려준다.
 
-Child Template
---------------
+자식 템플릿
+-----------
 
-A child template might look like this:
+자식 템플릿은 아래와 같이 보일 수도 있다:
 
 .. sourcecode:: html+jinja
 
@@ -62,8 +61,8 @@ A child template might look like this:
         Welcome on my awesome homepage.
     {% endblock %}
 
-The ``{% extends %}`` tag is the key here. It tells the template engine that
-this template "extends" another template.  When the template system evaluates
-this template, first it locates the parent.  The extends tag must be the
-first tag in the template.  To render the contents of a block defined in
-the parent template, use ``{{ super() }}``.
+``{% extends %}`` 태그가 여기서 핵심이다.  이 태그는 템플릿 엔진에게 이 템플릿이
+다른 템플릿을 "확장(extends)" 한다라고 알려준다.  템플릿 시스템이 이 템플릿을 
+검증할 때, 가장 먼저 부모 템플릿을 찾는다.  그 확장 태그가 템플릿에서 가장 먼저
+있어야 한다.  부모 템플릿에 정의된 블럭의 내용을 보여주려면 ``{{ super() }}`` 를
+사용하면 된다.
