@@ -1,37 +1,37 @@
 AJAX with jQuery
 ================
 
-`jQuery`_ is a small JavaScript library commonly used to simplify working
-with the DOM and JavaScript in general.  It is the perfect tool to make
-web applications more dynamic by exchanging JSON between server and
-client.
+`jQuery`_ 는 DOM과 자바스크립트에 공통으로 사용되어 작업을 간편하게 
+해주는데 사용되는 작은 자바스크립트 라이브러리이다.  jQuery는 또한 
+서버와 클라이언트 사이에 JSON으로 통신하며 더 동적인 웹 어플리케이션을 
+만들게 해주는 최상의 도구이다. 
 
-JSON itself is a very lightweight transport format, very similar to how
-Python primitives (numbers, strings, dicts and lists) look like which is
-widely supported and very easy to parse.  It became popular a few years
-ago and quickly replaced XML as transport format in web applications.
+JSON 그 자체는 매우 경량의 전송 포맷으로, 널리 지원되며 굉장히 파싱하기
+쉬운 파이썬 기본 타입(numbers,strings, dicts와 lists)과 유사하게 생겼다.
+그것은 수년전에 널리 사용되었고 웹 어플리케이션에서 전송포맷으로 XML을
+빠르게 대체하고 있다.
 
-If you have Python 2.6 JSON will work out of the box, in Python 2.5 you
-will have to install the `simplejson`_ library from PyPI.
+여러분이 파이썬 2.6을 갖고 있다면 JSON은 그 패키지에서 사용될 것이고,
+파이썬 2.5에서는 PyPI에서 `simplejson`_ 라이브러리를 설치해야할 것이다.
 
 .. _jQuery: http://jquery.com/
 .. _simplejson: http://pypi.python.org/pypi/simplejson
 
-Loading jQuery
---------------
+jQuery 로딩하기
+---------------
 
-In order to use jQuery, you have to download it first and place it in the
-static folder of your application and then ensure it's loaded.  Ideally
-you have a layout template that is used for all pages where you just have
-to add a script statement to the bottom of your `<body>` to load jQuery:
+jQuery를 사용하기 위해서, 먼저 그것을 다운로드받고 여러분 어플리케이션의
+static 폴더에 그 파일을 넣어야한다. 그리고 나서 그것이 로드되는지 확인한다.
+이상적으로 여러분은 모든 페이지에서 사용할 layout 템플릿을 갖고 거기에서 
+`<body>` 의 하단에 jQuery를 로드할 스크립트 문을 추가해야한다:
 
 .. sourcecode:: html
 
    <script type=text/javascript src="{{
      url_for('static', filename='jquery.js') }}"></script>
 
-Another method is using Google's `AJAX Libraries API
-<http://code.google.com/apis/ajaxlibs/documentation/>`_ to load jQuery:
+다른 방법은 구글의 `AJAX Libraries API
+<http://code.google.com/apis/ajaxlibs/documentation/>`_ 를 사용하는 것이다:
 
 .. sourcecode:: html
 
@@ -39,27 +39,26 @@ Another method is using Google's `AJAX Libraries API
     <script>window.jQuery || document.write('<script src="{{
       url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 
-In this case you have to put jQuery into your static folder as a fallback, but it will
-first try to load it directly from Google. This has the advantage that your
-website will probably load faster for users if they went to at least one
-other website before using the same jQuery version from Google because it
-will already be in the browser cache.
+이 경우에 여러분은 대비책으로 static 폴더에 jQuery를 넣어둬야 하지만, 우선
+구글로 부터 직접 그 라이브러리를 로딩하도록 할 것이다.  이것은 사용자들이
+구글에서 같은 jQuery 버전을 사용하는 다른 웹사이트를 적어도 한번 방문했다면
+여러분의 웹 사이트는 더 빠르게 로딩될 것이라는 점에서 장점이 있다. 왜냐하면
+그 라이브러리는 브라우저 캐쉬에 이미 있을 것이기 때문이다.
 
-Where is My Site?
------------------
+내 사이트는 어디에 있는가?
+--------------------------
 
-Do you know where your application is?  If you are developing the answer
-is quite simple: it's on localhost port something and directly on the root
-of that server.  But what if you later decide to move your application to
-a different location?  For example to ``http://example.com/myapp``?  On
-the server side this never was a problem because we were using the handy
-:func:`~flask.url_for` function that could answer that question for
-us, but if we are using jQuery we should not hardcode the path to
-the application but make that dynamic, so how can we do that?
+여러분의 어플리케이션이 어디에 있는지 알고 있는가?  여러분이 개발하고 있다면
+그 답은 굉장히 간단하다:  로컬호스트의 어떤 포트와 직접적으로 그 서버의 루트에
+있다.  그러나 여러분이 최근에 어플리케이션을 다른 위치로 이동하기로 결정했다면
+어떠한가?  예를 들면 ``http://example.com/myapp`` 과 같은 사이트로 말이다.
+서버 측면에서 이것은 어떤 문제도 되지 않는데 왜냐하면 우리는 그 질문에 
+답변할 수 있는 간편한 :func:`~flask.url_for` 함수를 사용하고 있기 때문이다.
+하지만, 우리는 jQuery를 사용하고 있고 어플리케이션에 경로를 하드코딩하지 
+않아야 하고 그것을 동적으로 만들어야 한다. 그렇다면 어떻게 해야겠는가?
 
-A simple method would be to add a script tag to our page that sets a
-global variable to the prefix to the root of the application.  Something
-like this:
+간단한 방법은 어플리케이션의 루트에 대한 접두어에 전역 변수를 설정한 페이지에
+스크립트 태그를 추가하는 것이다. 다음과 같다:
 
 .. sourcecode:: html+jinja
 
@@ -67,18 +66,17 @@ like this:
      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
    </script>
 
-The ``|safe`` is necessary so that Jinja does not escape the JSON encoded
-string with HTML rules.  Usually this would be necessary, but we are
-inside a `script` block here where different rules apply.
+``|safe`` 는 진자가 HTML 규칙을 가진 JSON 인코딩된 문자열을 이스케이핑하지
+못하게 하기 위해 필요하다.  보통은 이것이 필요하겠지만, 다른 규칙을 적용하는 
+`script` 블럭 안에 두겠다.
 
 .. admonition:: Information for Pros
 
-   In HTML the `script` tag is declared `CDATA` which means that entities
-   will not be parsed.  Everything until ``</script>`` is handled as script.
-   This also means that there must never be any ``</`` between the script
-   tags.  ``|tojson`` is kind enough to do the right thing here and
-   escape slashes for you (``{{ "</script>"|tojson|safe }}`` is rendered as
-   ``"<\/script>"``).
+   HTML에서 `script` 태그는 엔티티로 분석되지 않는 `CDATA` 로 선언된다.
+   ``</script>`` 까지 모든 것은 스크립트로 처리된다. 이것은 또한 ``</`` 와
+   script 태그 사이의 어떤것도 존재해서는 안된다는 것을 의미한다.  
+   ``|tojson`` 은 여기서 제대로 적용되어 이스케이핑 슬래쉬도 잘 처리된다
+   (``{{ "</script>"|tojson|safe }}`` 은 ``"<\/script>"`` 게 보인다).
 
 
 JSON View Functions
