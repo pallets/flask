@@ -100,8 +100,8 @@ WTForms는 표준 파이썬 유니코드 문자열을 반환하므로 우리는 
 `|safe` 필터를 가지고 이 데이터를 이미 HTML 이스케이프처리 하게 해야한다
 는 것에 주목해라.
 
-Here the `register.html` template for the function we used above which
-takes advantage of the `_formhelpers.html` template:
+아래는 `_formhelpers.html` 템플릿을 이용해서 위에서 사용된 함수로 만든
+`register.html` 템플릿이다:
 
 .. sourcecode:: html+jinja
 
@@ -117,8 +117,7 @@ takes advantage of the `_formhelpers.html` template:
       <p><input type=submit value=Register>
     </form>
 
-For more information about WTForms, head over to the `WTForms
-website`_.
+WTForms에 대한 더 많은 정보는, `WTForms website`_ 로 가서 살펴봐라.
 
 .. _WTForms: http://wtforms.simplecodes.com/
 .. _WTForms website: http://wtforms.simplecodes.com/
