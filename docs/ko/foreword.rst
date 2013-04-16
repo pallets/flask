@@ -1,57 +1,31 @@
-Foreword
+머리말
 ========
 
-Read this before you get started with Flask.  This hopefully answers some
-questions about the purpose and goals of the project, and when you
-should or should not be using it.
+Flask를 시작하기 전에 먼저 이글을 읽어주시기 바랍니다. 이 글이 여러분의 프로젝트에서 이것을 사용하여야 하거나 사용하지 말아야 할때에 해당 목적과 의도에 대한 일부 질문들에 대한 답변이 될 수 있기를 희망합니다. 
 
-What does "micro" mean?
+
+"마이크로(Micro)"는 무엇을 뜻하는가?
 -----------------------
 
-“Micro” does not mean that your whole web application has to fit into a single
-Python file, although it certainly can. Nor does it mean that Flask is lacking
-in functionality. The "micro" in microframework means Flask aims to keep the
-core simple but extensible. Flask won't make many decisions for you, such as
-what database to use. Those decisions that it does make, such as what
-templating engine to use, are easy to change.  Everything else is up to you, so
-that Flask can be everything you need and nothing you don't.
+“마이크로”는 여러분의 웹 어플리케이션이 하나의 파이썬 파일으로 개발되야한다는 걸 말하는게 아니다.(그렇게 해석될 수 도 있겠지만…) 또한, 기능적으로 부족하다는걸 의미하지도 않는다. 마이크로 프레임워크(Microframework)에서의 “마이크로”는 핵심기능만 간결하게 유지하지만, 확장가능한 것을 목적으로 한다. Flask는 여러분을 위해 데이타베이스를 선택해주지 않는다. Flask에서 제공하는 템플릿 엔진을 변경하는것은 쉽다. 그밖에 모든것은 여러분에게 달려있고, 그래서 Flask는 여러분이 필요한 모든것일 수 있고, 필요없는것은 하나도 없을것이다. 
 
-By default, Flask does not include a database abstraction layer, form
-validation or anything else where different libraries already exist that can
-handle that. Instead, Flask supports extensions to add such functionality to
-your application as if it was implemented in Flask itself. Numerous extensions
-provide database integration, form validation, upload handling, various open
-authentication technologies, and more. Flask may be "micro", but it's ready for
-production use on a variety of needs.
+“마이크로”는 여러분의 웹 어플리케이션이 하나의 파이썬 파일으로 개발되야한다는 걸 말하는게 아니다.(그렇게 해석될 수 도 있겠지만…) 또한, 기능적으로 부족하다는걸 의미하지도 않는다. 마이크로 프레임워크(Microframework)에서의 “마이크로”는 핵심기능만 간결하게 유지하지만, 확장가능한 것을 목적으로 한다. Flask는 여러분을 위해 데이타베이스를 선택해주지 않는다. Flask에서 제공하는 템플릿 엔진을 변경하는것은 쉽다. 그밖에 모든것은 여러분에게 달려있고, 그래서 Flask는 여러분이 필요한 모든것일 수 있고, 필요없는것은 하나도 없을것이다. 
 
-Configuration and Conventions
+
+설정과 관례
 -----------------------------
 
-Flask has many configuration values, with sensible defaults, and a few
-conventions when getting started.  By convention templates and static files are
-stored in subdirectories within the application's Python source tree, with the
-names `templates` and `static` respectively. While this can be changed you
-usually don't have to, especially when getting started.
+Flask로 시작할때, 여러분은 잘 정의된 기본값이 있는 많은 설정값들과 몇가지 관례를 볼 수 있다. 템플릿과 정적파일은 어플리케이션의 파이썬 소스 디렉토리의 하위 디렉토리에 templates과 statics에 저장된다. 이 방식은 변경할 수 있지만, 처음부터 반드시 그럴 필요는 없다. 
 
-Growing with Flask
-------------------
 
-Once you have Flask up and running, you'll find a variety of extensions
-available in the community to integrate your project for production. The Flask
-core team reviews extensions and ensures approved extensions do not break with
-future releases.
+Flask를 이용하여 성장시키기
+--------------------------
 
-As your codebase grows, you are free to make the design decisions appropriate
-for your project.  Flask will continue to provide a very simple glue layer to
-the best that Python has to offer.  You can implement advanced patterns in
-SQLAlchemy or another database tool, introduce non-relational data persistence
-as appropriate, and take advantage of framework-agnostic tools built for WSGI,
-the Python web interface.
+ 여러분이 Flask를 가지고 개발할때, 운영을 위해 여러분의 프로젝트와 통합할 여러 종류의 확장을 찾게된다. Flask 핵심 개발팀은 많은 확장을 검토했고 그것들이 앞으로의 배포판과 어긋나지 않는다는것을 보증한다.
 
-Flask includes many hooks to customize its behavior. Should you need more
-customization, the Flask class is built for subclassing. If you are interested
-in that, check out the :ref:`becomingbig` chapter.  If you are curious about
-the Flask design principles, head over to the section about :ref:`design`.
+여러분의 코드의 규모가 점점 커지면서, 여러분의 프로젝트에 설계에 적합한 선택을 할 기회가 온다 Flask는 계속적으로 파이썬이 제공하는 최고의 모듈에 간결한 연결층을 제공할 것이다. 여러분은 SQLAlchemy이나 다른 디비툴 또는 알맞게 비관계형 데이타 저장소로 고급 패턴을 만들수도 있고 파이썬 웹 인터페이스인 WSGI를 위한 프레임웍에 관계없이 사용할 수 있는 툴을 이용할 수 있다. 
 
-Continue to :ref:`installation`, the :ref:`quickstart`, or the
-:ref:`advanced_foreword`.
+Flask는 프레임웍의 기능을 변경하기 위한 많은 훅(hook)을 포함한다. 그것보다 더 많이 변경하고 싶다면 Flask class 자체를 상속하면 된다. 여러분이 subclassing에 관심이 있다면 :ref:`becomingbig` 챕터를 확인한다. 디자인 패턴이 궁금하다면 :ref:`design` 에 대한 섹션으로 넘어가라. 
+
+
+계속하기 :ref:`installation`,  :ref:`quickstart`, 혹은 :ref:`advanced_foreword`.
