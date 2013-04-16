@@ -59,25 +59,23 @@ WTForms를 가지고 폼 유효성 확인하기
 기억할 것 :
 
 1. HTTP `POST` 메소드로 데이터가 전송됐다면 요청의 :attr:`~flask.request.form`
-   값으로 부터 폼을 생성하고 `GET` 으로 전송됐다면 
-1. create the form from the request :attr:`~flask.request.form` value if
-   the data is submitted via the HTTP `POST` method and
-   :attr:`~flask.request.args` if the data is submitted as `GET`.
-2. to validate the data, call the :func:`~wtforms.form.Form.validate`
-   method which will return `True` if the data validates, `False`
-   otherwise.
-3. to access individual values from the form, access `form.<NAME>.data`.
+   값으로 부터 폼을 생성하고 `GET` 으로 전송됐다면 :attr:`~flask.request.args`
+   에서 폼을 생성한다.
+2. 데이터를 검증하기 위해서, :func:`~wtforms.form.Form.validate` 메소드
+   를 호출하고 데이터가 유효하면 `True`를 얻고 유효하지 않으면 `False`를
+   얻을 것이다.
+3. 폼에서 개별 값에 접근하기 위해서, `form.<NAME>.data` 으로 접근한다.
 
-Forms in Templates
-------------------
+템플릿에 있는 폼
+----------------
 
-Now to the template side.  When you pass the form to the templates you can
-easily render them there.  Look at the following example template to see
-how easy this is.  WTForms does half the form generation for us already.
-To make it even nicer, we can write a macro that renders a field with
-label and a list of errors if there are any.
+이제 템플릿 측면에서 살펴보자.  여러분이 템플릿에 폼을 넘겨주면 그 폼을
+템플릿에서 쉽게 뿌려줄 수 있다.  이런 방식이 얼마나 쉽게 되는지 보기 위해
+다음 템플릿 예제를 보자.  WTForms 가 이미 폼 생성의 반을 처리했다.  조금 더 
+멋지게 만들기 위해서, 우리는 레이블과 오류가 발생한다면 오류의 목록까지 가진
+필드를 그려줄 매크로(macro)를 작성할 수 있다.
 
-Here's an example `_formhelpers.html` template with such a macro:
+여기 그런 방식의 메크로를 가진 예제인 `_formhelpers.html` 템플릿이 있다:
 
 .. sourcecode:: html+jinja
 
