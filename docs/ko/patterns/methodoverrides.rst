@@ -1,15 +1,15 @@
-Adding HTTP Method Overrides
-============================
+HTTP 메소드 오버라이드 추가하기
+===============================
 
-Some HTTP proxies do not support arbitrary HTTP methods or newer HTTP
-methods (such as PATCH).  In that case it's possible to “proxy” HTTP
-methods through another HTTP method in total violation of the protocol.
+어떤 HTTP 프록시는 임시적인 HTTP 메소드나 새로운 HTTP 메소드 (PATCH 같은)
+를 지원하지 않는다.  그런 경우에 프로토콜 전체를 위반하는 방식으로 
+HTTP 메소드를 다른 HTTP 메소드로 "프록시" 하는 것이 가능하다.
 
-The way this works is by letting the client do an HTTP POST request and
-set the ``X-HTTP-Method-Override`` header and set the value to the
-intended HTTP method (such as ``PATCH``).
+이렇게 동작하는 방식은 클라이언트가 HTTP POST로 요청하고 
+``X-HTTP-Method-Override`` 헤더를 설정하고 그 값으로 의도하는 HTTP 메소드
+(``PATCH`` 와 같은)를 설정하면 된다.
 
-This can easily be accomplished with an HTTP middleware::
+이것은 HTTP 미들웨어로 쉽게 수행할 수 있다::
 
     class HTTPMethodOverrideMiddleware(object):
         allowed_methods = frozenset([
@@ -35,7 +35,7 @@ This can easily be accomplished with an HTTP middleware::
                 environ['CONTENT_LENGTH'] = '0'
             return self.app(environ, start_response)
 
-To use this with Flask this is all that is necessary::
+플라스크로 이것을 하려면 아래와 같이 하면 된다::
 
     from flask import Flask
 
