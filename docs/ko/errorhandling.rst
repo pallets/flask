@@ -5,49 +5,45 @@ Logging Application Errors
 
 .. versionadded:: 0.3
 
-Applications fail, servers fail.  Sooner or later you will see an exception
-in production.  Even if your code is 100% correct, you will still see
-exceptions from time to time.  Why?  Because everything else involved will
-fail.  Here some situations where perfectly fine code can lead to server
-errors:
+어플리케이션이 실패하면 서버도 실패한다. 조만간 여러분은 운영환경에서 예뢰를 보게 될 것이다.
+비록 여러분의 코드가 100%가 정확하다 하더라도 여러분은 여전히 가끔씩 예외를 볼 것이다. 왜? 
+왜냐하면 포함된 그 밖에 모든 것들이 실패할 것이기 때문이다. 여기에 완벽하게 좋은 코드가 서버 
+에러를 발생시킬 수 있는 상황이 있다: 
 
--   the client terminated the request early and the application was still
-    reading from the incoming data.
--   the database server was overloaded and could not handle the query.
--   a filesystem is full
--   a harddrive crashed
--   a backend server overloaded
--   a programming error in a library you are using
--   network connection of the server to another system failed.
+-   클라이언트가 request를 일찍 없애 버렸는데 여전히 어플리케이션이 입력되는 데이타를 읽고 있는 경우.
+-   데이타베이스 서버가 과부하로 인해 쿼리를 다룰 수 없는 경우.
+-   파일시스템이 꽉찬 경우
+-   하드 드라이브가 크래쉬된 경우
+-   백엔드 서버가 과부하 걸린 경우
+-   여러분이 사용하고 있는 라이브러에서 프로그래밍 에러가 발생하는 경우
+-   서버에서 다른 시스템으로의 네트워크 연결이 실패한 경우
 
-And that's just a small sample of issues you could be facing.  So how do we
-deal with that sort of problem?  By default if your application runs in
-production mode, Flask will display a very simple page for you and log the
-exception to the :attr:`~flask.Flask.logger`.
+위 상황은 여러분이 직면할 수 있는 이슈들의 작은 예일 뿐이다. 이러한 종류의 문제들을 어떻게 
+다루어야 할 까? 기본적으로 어플리케이션이 운영 모드에서 실행되고 있다면, Flask는 매우 
+간단한 페이지를 보여주고 :attr:`~flask.Flask.logger` 에 예외를 로깅할 것이다. 
 
-But there is more you can do, and we will cover some better setups to deal
-with errors.
+그러나 여러분이 할 수 있는 더 많은 것들이 있다. 우리는 에러를 다루기 위해 더 나은 셋업을 
+다룰 것이다. 
 
-Error Mails
+
+메일로 에러 발송하기
 -----------
 
-If the application runs in production mode (which it will do on your
-server) you won't see any log messages by default.  Why is that?  Flask
-tries to be a zero-configuration framework.  Where should it drop the logs
-for you if there is no configuration?  Guessing is not a good idea because
-chances are, the place it guessed is not the place where the user has
-permission to create a logfile.  Also, for most small applications nobody
-will look at the logs anyways.
+ 만약 어플리케이션이 운영 모드에서 실행되고 있다면(여러분의 서버에서) 여러분은 기본으로 
+ 어떠한 로그 메세지도 보지 못할 것이다. 그건 왜일까? Flask는 설정이 없는 프레임워크가 
+ 되려고 노력한다. 만약 어떠한 설정도 없다면 Flask는 어디에 로그를 떨어뜨려야 하나? 추측은 
+ 좋은 아이디어가 아닌다. 왜냐하면 추측되어진 위치는 사용자가 로그 파일을 생성할 권한을 
+ 가지고 있는 위치가 아니기 때문이다.(?) 또한 어쨌든 대부분의 작은 어플리케이션에서는 아무도 
+ 로그 파일을 보지 않을 것이다.
 
-In fact, I promise you right now that if you configure a logfile for the
-application errors you will never look at it except for debugging an issue
-when a user reported it for you.  What you want instead is a mail the
-second the exception happened.  Then you get an alert and you can do
-something about it.
+사실 어플리케이션 에러에 대한 로그 파일을 설정한다하더라도 사용자가 이슈를 보고 했을 때 
+디버깅을 할 때를 제외하고 결코 로그 파일을 보지 않을 것이라는 것을 확신한다. 대신 여러분이 
+원하는 것은 예외가 발생했을 때 메일을 받는 것이다. 그리고 나서 여러분은 경보를 받고 그것에 
+대한 무언가를 할 수 있다.
 
-Flask uses the Python builtin logging system, and it can actually send
-you mails for errors which is probably what you want.  Here is how you can
-configure the Flask logger to send you mails for exceptions::
+Flask는 파이썬에 빌트인된 로깅 시스템을 사용한다. 실제로 에러가 발생했을 때 아마도 
+여러분이 원하는 메일을 보낸다. 아래는 예외가 발생했을 때 Flask 로거가 메일을 보내는 것을 
+설정하는 방법을 보여준다::
 
     ADMINS = ['yourname@example.com']
     if not app.debug:
@@ -59,49 +55,40 @@ configure the Flask logger to send you mails for exceptions::
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
 
-So what just happened?  We created a new
-:class:`~logging.handlers.SMTPHandler` that will send mails with the mail
-server listening on ``127.0.0.1`` to all the `ADMINS` from the address
-*server-error@example.com* with the subject "YourApplication Failed".  If
-your mail server requires credentials, these can also be provided.  For
-that check out the documentation for the
-:class:`~logging.handlers.SMTPHandler`.
 
-We also tell the handler to only send errors and more critical messages.
-Because we certainly don't want to get a mail for warnings or other
-useless logs that might happen during request handling.
+무슨 일이 일어났는가? 우리는 ``127.0.0.1`` 에서 리스닝하고 있는 메일 서버를 가지고 
+“YourApplication Failed”란 제목으로 *server-error@example.com* 송신자로부터 모든 
+`관리자` 에게 메일을 보내는 새로운 :class:`~logging.handlers.SMTPHandler` 를 생성했다. 
+만약 여러분의 메일 서버가 자격을 
+ 요구한다면 그것들 또한 제공될 수 있다. 이를 위해 :class:`~logging.handlers.SMTPHandler` 를 위한 문서를 확인해라.
 
-Before you run that in production, please also look at :ref:`logformat` to
-put more information into that error mail.  That will save you from a lot
-of frustration.
+우리는 또한 단지 에러와 더 심각한 메세지를 보내라고 핸들러에게 말한다. 왜냐하면 우리는 주의 
+사항이나 요청을 핸들링하는 동안 발생할 수 있는 쓸데없는 로그들을에 대한 메일을 받는 것을 
+원하지 않는다
+
+여러분이 운영 환경에서 이것을 실행하기 전에, 에러 메일 안에 더 많은 정보를 넣기 위해  :ref:`logformat`  챕터를 보아라. 그것은 많은 불만으로부터 너를 구해줄 것이다. 
 
 
-Logging to a File
+
+파일에 로깅하기
 -----------------
 
-Even if you get mails, you probably also want to log warnings.  It's a
-good idea to keep as much information around that might be required to
-debug a problem.  Please note that Flask itself will not issue any
-warnings in the core system, so it's your responsibility to warn in the
-code if something seems odd.
+여러분이 메일을 받는다 하더라도, 여러분은 아마 주의사항을 로깅하기를 원할지도 모른다. 
+문제를 디버그하기 위해 요구되어질 수 있는 많은 정보를 많이 유지하는 것은 좋은 생각이다. 
+Flask는 자체적으로 코어 시스템에서 어떠한 주의사항도 발생하지 않는다는 것을 주목해라. 
+그러므로 무언가 이상해 보일 때 코드 안에 주의사항을 남기는 것은 여러분의 책임이다. 
 
-There are a couple of handlers provided by the logging system out of the
-box but not all of them are useful for basic error logging.  The most
-interesting are probably the following:
+로깅 시스템에 의해 제공되는 몇가지 핸들러가 있다. 그러나 기본 에러 로깅을 위해 그것들 모두가 
+유용한 것은 아니다. 가장 흥미로운 것은 아마 아래오 같은 것들일 것이다:
 
--   :class:`~logging.FileHandler` - logs messages to a file on the
-    filesystem.
--   :class:`~logging.handlers.RotatingFileHandler` - logs messages to a file
-    on the filesystem and will rotate after a certain number of messages.
--   :class:`~logging.handlers.NTEventLogHandler` - will log to the system
-    event log of a Windows system.  If you are deploying on a Windows box,
-    this is what you want to use.
--   :class:`~logging.handlers.SysLogHandler` - sends logs to a UNIX
-    syslog.
+-   :class:`~logging.FileHandler` - 파일 시스템 내 파일에 메세지를 남긴다.
+-   :class:`~logging.handlers.RotatingFileHandler` - 파일 시스템 내 파일에 메세지를 남기며 특정 횟수로 순환한다.
+-   :class:`~logging.handlers.NTEventLogHandler` - 윈도 시스템의 시스템 이벤트 로그에 로깅할 것이다. 만약 여러분이 윈도에 디플로이를 한다면 이 방법이 사용하기 원하는 방법일 것이다.
+-   :class:`~logging.handlers.SysLogHandler` -     유닉스 syslog에 로그를 보낸다.
 
-Once you picked your log handler, do like you did with the SMTP handler
-above, just make sure to use a lower setting (I would recommend
-`WARNING`)::
+
+일단 여러분이 로그 핸들러를 선택하면, 위에서 설명한 SMTP 핸들러를 가지고 여러분이 했던 더 낮은 레벨을 설정하는 것만 확인하라(필자는 WARNING을 추천한다.)::
+
 
     if not app.debug:
         import logging
@@ -112,22 +99,16 @@ above, just make sure to use a lower setting (I would recommend
 
 .. _logformat:
 
-Controlling the Log Format
+로그 포맷 다루기
 --------------------------
 
-By default a handler will only write the message string into a file or
-send you that message as mail.  A log record stores more information,
-and it makes a lot of sense to configure your logger to also contain that
-information so that you have a better idea of why that error happened, and
-more importantly, where it did.
+기본으로 해들러는 단지 파일 안에 메세지 문자열을 쓰거나 메일로 여러분에 메세지를 보내기만 할 것이다. 로그 기록은 더 많은 정보를 저장한다. 왜 에러가 발생했는니나 더 중요한 어디서 에러가 발생했는지 등의 더 많은 정보를 포함하도록 로거를 설정할 수 있다.
 
-A formatter can be instantiated with a format string.  Note that
-tracebacks are appended to the log entry automatically.  You don't have to
-do that in the log formatter format string.
+포매터는 포맷 문자열을 가지고 초기화될 수 있다. 자동으로 역추적이 로그 진입점에 추가되어진다는 것을 주목하라.(?) 여러분은 로그 포맷터 포맷 문자열안에 그걸 할 필요가 없다.
 
-Here some example setups:
+여기 몇가지 셋업 샘플들이 있다:
 
-Email
+이메일
 `````
 
 ::
@@ -145,7 +126,7 @@ Email
     %(message)s
     '''))
 
-File logging
+파일 로깅
 ````````````
 
 ::
@@ -157,77 +138,65 @@ File logging
     ))
 
 
-Complex Log Formatting
+복잡한 로그 포맷
 ``````````````````````
 
-Here is a list of useful formatting variables for the format string.  Note
-that this list is not complete, consult the official documentation of the
-:mod:`logging` package for a full list.
+여기에 포맷 문자열을 위한 유용한 포맷팅 변수 목록이 있다. 이 목록은 완전하지는 않으며 전체 리스트를 보려면 :mod:`logging`  의 공식 문서를 참조하라.
+
 
 .. tabularcolumns:: |p{3cm}|p{12cm}|
 
 +------------------+----------------------------------------------------+
 | Format           | Description                                        |
 +==================+====================================================+
-| ``%(levelname)s``| Text logging level for the message                 |
+| ``%(levelname)s``| 메시지를 위한 텍스트 로깅 레벨                 |
 |                  | (``'DEBUG'``, ``'INFO'``, ``'WARNING'``,           |
 |                  | ``'ERROR'``, ``'CRITICAL'``).                      |
 +------------------+----------------------------------------------------+
-| ``%(pathname)s`` | Full pathname of the source file where the         |
-|                  | logging call was issued (if available).            |
+| ``%(pathname)s`` | 로깅이 호출되는 소스 파일의 전체 경로(사용 가능하다면).            |
 +------------------+----------------------------------------------------+
-| ``%(filename)s`` | Filename portion of pathname.                      |
+| ``%(filename)s`` | 전체 경로 중 파일명.                      |
 +------------------+----------------------------------------------------+
-| ``%(module)s``   | Module (name portion of filename).                 |
+| ``%(module)s``   | 모듈(파일명 중 이름 부분).                 |
 +------------------+----------------------------------------------------+
-| ``%(funcName)s`` | Name of function containing the logging call.      |
+| ``%(funcName)s`` | 로깅 호출을 포함하는 함수명.      |
 +------------------+----------------------------------------------------+
-| ``%(lineno)d``   | Source line number where the logging call was      |
-|                  | issued (if available).                             |
+| ``%(lineno)d``   | 로깅이 호출되는 소스 라인 번호(사용 가능하다면)|
 +------------------+----------------------------------------------------+
-| ``%(asctime)s``  | Human-readable time when the LogRecord` was        |
-|                  | created.  By default this is of the form           |
-|                  | ``"2003-07-08 16:49:45,896"`` (the numbers after   |
-|                  | the comma are millisecond portion of the time).    |
-|                  | This can be changed by subclassing the formatter   |
-|                  | and overriding the                                 |
-|                  | :meth:`~logging.Formatter.formatTime` method.      |
+| ``%(asctime)s``  | 사람이 읽을 수 있는 형태의 시간 메시지        |
+|                  |   다음은 기본 포맷이다.           |
+|                  | ``"2003-07-08 16:49:45,896"`` (콤마 다음 숫자는 밀리세컨드이다)   |
+|                  | 이것은 formatter를 상속받고   |
+|                  |  :meth:`~logging.Formatter.formatTime` 메소드를 오버라이드하여 변경할 수 있다                                 |
 +------------------+----------------------------------------------------+
-| ``%(message)s``  | The logged message, computed as ``msg % args``     |
+| ``%(message)s``  | ``msg % args`` 에 의해 계산된 로그 메시지     |
 +------------------+----------------------------------------------------+
 
-If you want to further customize the formatting, you can subclass the
-formatter.  The formatter has three interesting methods:
+만약 여러분이 포맷티을 더 커스터마이징하기를 원한다면 포맷터를 상속받을 수 있다. 그 포매터는 세가지 흥미로운 메소드를 가지고 있다: 
 
 :meth:`~logging.Formatter.format`:
-    handles the actual formatting.  It is passed a
-    :class:`~logging.LogRecord` object and has to return the formatted
-    string.
+    실제 포매팅을 다룬다. :class:`~logging.LogRecord` 객체를 전달하면 포매팅된 문자열을 반환해야 한다.
 :meth:`~logging.Formatter.formatTime`:
-    called for `asctime` formatting.  If you want a different time format
-    you can override this method.
+    called for `asctime` 포매팅을 위해 호출된다. 만약 다른 시간 포맷을 원한다면 이 메소드를 오버라이드할 수 있다.
 :meth:`~logging.Formatter.formatException`
-    called for exception formatting.  It is passed an :attr:`~sys.exc_info`
-    tuple and has to return a string.  The default is usually fine, you
-    don't have to override it.
+    예외 포매팅을 위해 호출된다. :attr:`~sys.exc_info` 튜플을 전달하면 문자열을 반환해야 한다. 보통 기본으로 사용해도 괜찮으며, 굳이 오버라이드할 필요는 없다.
 
-For more information, head over to the official documentation.
+더 많은 정보를 위해서 공식 문서를 참조해라. 
 
 
-Other Libraries
+다른 라이브러리들
 ---------------
 
-So far we only configured the logger your application created itself.
-Other libraries might log themselves as well.  For example, SQLAlchemy uses
-logging heavily in its core.  While there is a method to configure all
-loggers at once in the :mod:`logging` package, I would not recommend using
-it.  There might be a situation in which you want to have multiple
-separate applications running side by side in the same Python interpreter
-and then it becomes impossible to have different logging setups for those.
+이제까지는 우리는 단지 여러분의 어플리케이션이 생성한 로거를 설정했다. 다른 라이브러리들 
+또한 로그를 남길 수 있다. 예를 들면 SQLAlchemy가 그것의 코어 안에서 무겁게 로깅을 사용한다.
+:mod:`logging` 패키지 안에 모든 로거들을 설정할 방법이 있지만 나는 그거을 사용하는 것을 
+추천하지 않는다. 여러분이 같은 파이썬 인터프리터에서 같이 실행되는 여러 개로 분리된 
+어플리케이션을 갖기를 원할 수도 있다. 이러한 상황을 위해 다른 로깅을 셋업하는 것은 
+불가능하다. 
 
-Instead, I would recommend figuring out which loggers you are interested
-in, getting the loggers with the :func:`~logging.getLogger` function and
-iterating over them to attach handlers::
+대신 :func:`~logging.getLogger` 함수를 가지고 로거들을 얻고 핸들러를 첨부하기 위해 얻은 
+로거들을 반복하여 여러분이 관심있어 하는 로거들을 만드는 것을 추천한다::
+
 
     from logging import getLogger
     loggers = [app.logger, getLogger('sqlalchemy'),
