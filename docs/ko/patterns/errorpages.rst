@@ -40,21 +40,21 @@
     (여기를 또한 살펴봐라: :ref:`application-errors`).
 
 
-Error Handlers
---------------
+오류 핸들러
+-----------
 
-An error handler is a function, just like a view function, but it is
-called when an error happens and is passed that error.  The error is most
-likely a :exc:`~werkzeug.exceptions.HTTPException`, but in one case it
-can be a different error: a handler for internal server errors will be
-passed other exception instances as well if they are uncaught.
+오류 핸들러는 뷰 함수와 같은 일종의 함수이지만, 그것은 오류가 발생하고
+그 오류를 전달했을 때 호출된다.  오류는 대부분 
+:exc:`~werkzeug.exceptions.HTTPException` 이지만, 어떤 경우에는 다른 
+오류일 수도 있다: 내부 서버 오류에 대한 핸들러는 그 요류들이 잡히지 않을지
+모르지만 다른 예외 인스턴스에 넘겨질 것이다.
 
-An error handler is registered with the :meth:`~flask.Flask.errorhandler`
-decorator and the error code of the exception.  Keep in mind that Flask
-will *not* set the error code for you, so make sure to also provide the
-HTTP status code when returning a response.
+오류 핸들러는 :meth:`~flask.Flask.errorhandler` 데코레이터와 예외에 대한 
+오류 코드를 가지고 등록된다.  플라스크는 오류 코드를 설정하지 *않을 것*
+이라는 것을 명심하고, 그렇기 때문에 응답을 반환할 때 HTTP 상태 코드를 
+제공하도록 해야한다.
 
-Here an example implementation for a "404 Page Not Found" exception::
+여기에 "404 Page Not Found" 예외에 대한 구현 예제가 있다::
 
     from flask import render_template
 
@@ -62,7 +62,7 @@ Here an example implementation for a "404 Page Not Found" exception::
     def page_not_found(e):
         return render_template('404.html'), 404
 
-An example template might be this:
+예제 템플릿은 다음과 같을 것이다:
 
 .. sourcecode:: html+jinja
 
