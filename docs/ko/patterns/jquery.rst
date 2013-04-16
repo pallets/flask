@@ -79,12 +79,11 @@ static 폴더에 그 파일을 넣어야한다. 그리고 나서 그것이 로�
    (``{{ "</script>"|tojson|safe }}`` 은 ``"<\/script>"`` 게 보인다).
 
 
-JSON View Functions
--------------------
+JSON 뷰 함수
+------------
 
-Now let's create a server side function that accepts two URL arguments of
-numbers which should be added together and then sent back to the
-application in a JSON object.  This is a really ridiculous example and is
+이제 두개의 URL 인자를 받아서 더하고 그 결과를 JSON 객체로 어플리케이션에
+되돌려주는 서버 측 함수를 생성하자.  This is a really ridiculous example and is
 something you usually would do on the client side alone, but a simple
 example that shows how you would use jQuery and Flask nonetheless::
 
