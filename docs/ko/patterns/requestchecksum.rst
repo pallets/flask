@@ -1,6 +1,7 @@
-Request Content Checksums
+요청한 내용에 대한 체크섬
 =========================
 
+코드의 여러 부분이 요청 데이터로 
 Various pieces of code can consume the request data and preprocess it.
 For instance JSON data ends up on the request object already read and
 processed, form data ends up there as well but goes through a different
