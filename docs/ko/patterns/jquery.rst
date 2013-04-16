@@ -83,9 +83,9 @@ JSON 뷰 함수
 ------------
 
 이제 두개의 URL 인자를 받아서 더하고 그 결과를 JSON 객체로 어플리케이션에
-되돌려주는 서버 측 함수를 생성하자.  This is a really ridiculous example and is
-something you usually would do on the client side alone, but a simple
-example that shows how you would use jQuery and Flask nonetheless::
+되돌려주는 서버 측 함수를 생성하자.  이것은 정말 우스운 예제이고 보통은
+클라이언트 측에서만 동작할 내용이지만, 그럼에도 불구하고  jQuery와 플라스크가 
+동작하는 방식을 보여주는 예제이다::
 
     from flask import Flask, jsonify, render_template, request
     app = Flask(__name__)
@@ -100,17 +100,16 @@ example that shows how you would use jQuery and Flask nonetheless::
     def index():
         return render_template('index.html')
 
-As you can see I also added an `index` method here that renders a
-template.  This template will load jQuery as above and have a little form
-we can add two numbers and a link to trigger the function on the server
-side.
+여러분이 볼 수 있는 것처럼 템플릿을 뿌려주는 `index` 메소드를 추가했다.
+이 템플릿은 위에서 처럼 jQuery를 로딩할 것이고 두 숫자를 더할 수 있는 
+작은 폼과 서버 측에서 호출될 함수에 대한 링크를 갖고 있다.
 
-Note that we are using the :meth:`~werkzeug.datastructures.MultiDict.get` method here
-which will never fail.  If the key is missing a default value (here ``0``)
-is returned.  Furthermore it can convert values to a specific type (like
-in our case `int`).  This is especially handy for code that is
-triggered by a script (APIs, JavaScript etc.) because you don't need
-special error reporting in that case.
+우리는 여기서 절대 실패하지 않을 :meth:`~werkzeug.datastructures.MultiDict.get`
+메소드를 사용하고 있다는 점에 주목하라.  키가 없다면 기본값 (여기서는 ``0``) 이
+반환된다는 것이다.  게다가 그것은 값을 특정 타입 (여기서는 `int`)으로 변환할
+수 있다.  이것은 특히나 스크립트 (APIs, 자바스크립트 등) 로 실행되는 코드에 특히나
+유용한데 왜냐하면 여러분은 키가 없을 때 발생하는 특별한 오류 보고가 필요없기 
+때문이다.
 
 The HTML
 --------
