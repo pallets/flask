@@ -92,13 +92,13 @@ WTForms를 가지고 폼 유효성 확인하기
       </dd>
     {% endmacro %}
 
-This macro accepts a couple of keyword arguments that are forwarded to
-WTForm's field function that renders the field for us.  The keyword
-arguments will be inserted as HTML attributes.  So for example you can
-call ``render_field(form.username, class='username')`` to add a class to
-the input element.  Note that WTForms returns standard Python unicode
-strings, so we have to tell Jinja2 that this data is already HTML escaped
-with the `|safe` filter.
+이 매크로는 필드를 뿌리는 WTForm의 필드 함수로 넘겨지는 몇가지 키워드 
+인자를 허용한다.  그 키워드 인자는 HTML 속성으로 추가될 것이다.  그래서
+예를 들면 여러분은 입력 요소에 클래스(class)를 추가하기 위해 
+``render_field(form.username, class='username')`` 를 호출할 수 있다.
+WTForms는 표준 파이썬 유니코드 문자열을 반환하므로 우리는 진자2(Jinja2)에
+`|safe` 필터를 가지고 이 데이터를 이미 HTML 이스케이프처리 하게 해야한다
+는 것에 주목해라.
 
 Here the `register.html` template for the function we used above which
 takes advantage of the `_formhelpers.html` template:
