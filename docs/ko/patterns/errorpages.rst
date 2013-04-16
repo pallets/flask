@@ -1,9 +1,9 @@
-Custom Error Pages
+커스텀 오류 페이지
 ==================
 
-Flask comes with a handy :func:`~flask.abort` function that aborts a
-request with an HTTP error code early.  It will also provide a plain black
-and white error page for you with a basic description, but nothing fancy.
+플라스크에는 앞에서 나온 HTTP 오류 코드를 가지고 요청을 중단하는 
+:func:`~flask.abort` 함수가 있다.  그것은 또한 정말 꾸미지 않은 기본적인 
+설명을 가진 단순한 흑백의 오류 페이지를 제공할 것이다.
 
 Depending on the error code it is less or more likely for the user to
 actually see such an error.
