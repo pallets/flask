@@ -5,41 +5,39 @@
 :func:`~flask.abort` 함수가 있다.  그것은 또한 정말 꾸미지 않은 기본적인 
 설명을 가진 단순한 흑백의 오류 페이지를 제공할 것이다.
 
-Depending on the error code it is less or more likely for the user to
-actually see such an error.
+오류 코드에 따라서 사용자가 실제로 그런 오류를 볼 가능성이 있다. 
 
-Common Error Codes
-------------------
+공통 오류 코드
+--------------
 
-The following error codes are some that are often displayed to the user,
-even if the application behaves correctly:
+다음의 오류 코드는 어플리케이션이 정상적으로 동작했음에도 불구하고 사용자에게 
+종종 보여지는 것이다:
 
 *404 Not Found*
-    The good old "chap, you made a mistake typing that URL" message.  So
-    common that even novices to the internet know that 404 means: damn,
-    the thing I was looking for is not there.  It's a very good idea to
-    make sure there is actually something useful on a 404 page, at least a
-    link back to the index.
+    즐겨쓰는 메시지에 "이봐 친구, 그 URL 입력에 실수가 있어" 가 있다.
+    인터넷 초보자 조차 그 404를 알고 있는 그렇게 일반적인 것은 다음을
+    의미한다 : 젠장, 내가 찾고 있는 것이 거기에 없네.  404 페이지에 
+    적어도 index 페이지로 돌아갈 수 있는 링크와 같은 유용한 것이 있도록
+    하는게 매우 좋은 방식이다.
 
 *403 Forbidden*
-    If you have some kind of access control on your website, you will have
-    to send a 403 code for disallowed resources.  So make sure the user
-    is not lost when they try to access a forbidden resource.
+    여러분의 웹사이트에 어떤 접근 제어가 있다면, 허용되지 않는 자원에 대해
+    403 코드를 보내야할 것이다.  그렇기 때문에 사용자가 금지된 자원에 대해 
+    접근하려할 때 사용자가 링크를 잃어버리지 않도록 해야한다. 
 
 *410 Gone*
-    Did you know that there the "404 Not Found" has a brother named "410
-    Gone"?  Few people actually implement that, but the idea is that
-    resources that previously existed and got deleted answer with 410
-    instead of 404.  If you are not deleting documents permanently from
-    the database but just mark them as deleted, do the user a favour and
-    use the 410 code instead and display a message that what they were
-    looking for was deleted for all eternity.
+    여러분은 "404 Not Found" 에게 "410 Gone" 이라는 형제가 있었다는 것을 
+    알았는가?  일부 사람들만 실제로 그것을 구현했지만, 그 방식은 전에
+    존재했지만 현재 삭제된 자원에 대해 404 대신에 401 로 응답하는 것이다.
+    여러분이 데이터베이스에서 영구적으로 문서를 지우지 않고 삭제됐다고 
+    표시만 한다면, 사용자에게 편의를 제공하며 410 코드를 대신 사용하고 
+    그들이 찾고 있는 것은 영구적으로 삭제됐다는 메시지를 보여줘라.
 
 *500 Internal Server Error*
-    Usually happens on programming errors or if the server is overloaded.
-    A terrible good idea to have a nice page there, because your
-    application *will* fail sooner or later (see also:
-    :ref:`application-errors`).
+    보통 프로그래밍 오류나 서버에 한계 부하를 넘었을 때 이 오류가 발생한다.
+    그 경우에 멋진 페이지를 보여주는 것이 굉장히 좋은 방식인데, 왜냐하면
+    여러분의 어플리케이션은 머지않아 다시 동작하지 않을 것이기 때문이다
+    (여기를 또한 살펴봐라: :ref:`application-errors`).
 
 
 Error Handlers
