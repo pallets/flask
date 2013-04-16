@@ -111,14 +111,14 @@ JSON 뷰 함수
 유용한데 왜냐하면 여러분은 키가 없을 때 발생하는 특별한 오류 보고가 필요없기 
 때문이다.
 
-The HTML
---------
+HTML
+----
 
-Your index.html template either has to extend a `layout.html` template with
-jQuery loaded and the `$SCRIPT_ROOT` variable set, or do that on the top.
-Here's the HTML code needed for our little application (`index.html`).
-Notice that we also drop the script directly into the HTML here.  It is
-usually a better idea to have that in a separate script file:
+위의 index.html 템플릿은 jQuery를 로딩하고 `$SCRIPT_ROOT` 변수를 설정하면서
+`layout.html` 템플릿을 확장하거나 제일 상위에 그것을 설정해야한다.
+여기에 우리의 작은 어플리케이션에 대해 필요한 HTML 코드가 있다 (`index.html`).
+우리는 또한 필요한 스크립트를 바로 HTML에 넣는다는 것에 주목해라. 분리된 
+스크립트 파일에 그 코드를 갖는게 일반적으로는 더 나은 방식이다:
 
 .. sourcecode:: html
 
@@ -141,23 +141,20 @@ usually a better idea to have that in a separate script file:
        <span id=result>?</span>
     <p><a href=# id=calculate>calculate server side</a>
 
-I won't got into detail here about how jQuery works, just a very quick
-explanation of the little bit of code above:
+여기서는 jQuery가 어떠헥 동작하는지 자세하게 들어가지는 않을 것이고,
+단지 위에 있는 일부 코드에 대한 간략한 설명만 있을 것이다:
 
-1. ``$(function() { ... })`` specifies code that should run once the
-   browser is done loading the basic parts of the page.
-2. ``$('selector')`` selects an element and lets you operate on it.
-3. ``element.bind('event', func)`` specifies a function that should run
-   when the user clicked on the element.  If that function returns
-   `false`, the default behavior will not kick in (in this case, navigate
-   to the `#` URL).
-4. ``$.getJSON(url, data, func)`` sends a `GET` request to `url` and will
-   send the contents of the `data` object as query parameters.  Once the
-   data arrived, it will call the given function with the return value as
-   argument.  Note that we can use the `$SCRIPT_ROOT` variable here that
-   we set earlier.
+1. ``$(function() { ... })`` 는 브라우저가 해당 페이지의 기본 구성들을 
+   로딩할 때 실행될 코드를 지정한다.
+2. ``$('selector')`` 는 요소를 선택하고 그 요소에서 실행하게 한다.
+3. ``element.bind('event', func)`` 는 사용자가 해당 요소에서 클릭했을 때
+   실행될 함수를 지정한다.  그 함수가 `false` 를 반환하면, 기본 동작은 
+   시작되지 않을 것이다 (이 경우, `#` URL로 이동).
+4. ``$.getJSON(url, data, func)`` 은 `url` 로 `GET` 요청을 보내고 쿼리 인자로
+   `data` 객체의 내요을 보낼 것이다.  일단 데이터가 도착하면, 인자로 반환 값을
+   가지고 주어진 함수를 호출할 것이다. 여기서는 앞에서 설정한 `$SCRIPT_ROOT` 
+   변수를 사용할 수 있다는 것에 주목해라.
 
-If you don't get the whole picture, download the `sourcecode
-for this example
-<http://github.com/mitsuhiko/flask/tree/master/examples/jqueryexample>`_
-from github.
+여러분이 전체적으로 이해가 안된다면, 깃허브(github)에서 이 예제에 대한 
+`소스 코드
+<http://github.com/mitsuhiko/flask/tree/master/examples/jqueryexample>`_.
