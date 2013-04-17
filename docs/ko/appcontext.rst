@@ -1,67 +1,59 @@
 .. _app-context:
 
-The Application Context
+
+어플리케이션 컨텍스트
 =======================
 
 .. versionadded:: 0.9
 
-One of the design ideas behind Flask is that there are two different
-“states” in which code is executed.  The application setup state in which
-the application implicitly is on the module level.  It starts when the
-:class:`Flask` object is instantiated, and it implicitly ends when the
-first request comes in.  While the application is in this state a few
-assumptions are true:
 
--   the programmer can modify the application object safely.
--   no request handling happened so far
--   you have to have a reference to the application object in order to
-    modify it, there is no magic proxy that can give you a reference to
-    the application object you're currently creating or modifying.
+Flask의 설계에 숨겨진 사상들 중 하나는 코드가 수행되는 두가지 다른 “상태”가 있다는 것이다.
+하나는 어플리케이션이 암묵적으로 모듈 레벨에 있는 어플리케이션 셋업 상태이다. 그 상태는 
+:class:`Flask` 객체가 초기화될 때때 시작되고, 첫 요청을 받았을 때 암묵적으로 종료된다. 
+어플리케이션이 이 상태에 있을 때, 아래와 같은 몇가지 가정이 성립한다: 
 
-In contrast, during request handling, a couple of other rules exist:
 
--   while a request is active, the context local objects
-    (:data:`flask.request` and others) point to the current request.
--   any code can get hold of these objects at any time.
+-   개발자는 어플리케이션 객체를 안전하게 수정할 수 있다.
+-   현재까지 어떤 요청도 처리되지 않았다.
+-   여러분이 어플리케이션 객체를 수정하려면 그 객체에 대한 참조를 가져야만한다.여러분이 현재 생성하고 수정하고 있는 어플리케이션 객체에 대한 참조를 줄 수 있는 어떠한 매직 프록시(magic proxy)는 존재하지 않는다.
 
-There is a third state which is sitting in between a little bit.
-Sometimes you are dealing with an application in a way that is similar to
-how you interact with applications during request handling just that there
-is no request active.  Consider for instance that you're sitting in an
-interactive Python shell and interacting with the application, or a
-command line application.
 
-The application context is what powers the :data:`~flask.current_app`
-context local.
+반대로, 요청을 처리하는 동안에는, 몇 가지 다른 룰이 존재한다: 
 
-Purpose of the Application Context
+-   요청이 살아있는 동안에는 컨텍스트 로컬 객체( :data:`flask.request` 와 몇가지 객체들)가 현재 요청을 가리킨다.
+-   어떤 코드도 언제든지 이 컨텍스트 로컬 객체를 가질 수 있다.
+
+
+이 상태의 작은 틈 사이에 있는 세번째 상태가 있다. 때때로 여러분은 요청처리 동안 요청이 
+활성화되지 않은 어플리케이션과 상호작용하는 방식과 유사하게 어플리케이션을 다룰 것이다. 예를 들면, 여러분이 대화형 파이썬 쉘에 있고 어플리케이션이나 명령행으로 어플리케이션을 실행하는
+상황을 고려할 수 있다. 
+
+어플리케이션 컨텍스트는 :data:`~flask.current_app` 라는 컨텍스트 로컬을 작동시킨다. 
+
+
+어플리케이션 컨텍스트의 목적
 ----------------------------------
 
-The main reason for the application's context existence is that in the
-past a bunch of functionality was attached to the request context in lack
-of a better solution.  Since one of the pillar's of Flask's design is that
-you can have more than one application in the same Python process.
+어플리케이션의 컨텍스트가 존재하는 주요한 이유는 과거에 다수의 기능이 더 나은 솔루션의 
+부족으로 요청 컨텍스트에 덧붙여있었다는 것이다. Flask의 기본 설계 중 하나는 여러분이 같은 
+파이썬 프로세스에 하나 이상의 어플리케이션을 갖을 수 있다는 것이다. 
 
-So how does the code find the “right” application?  In the past we
-recommended passing applications around explicitly, but that caused issues
-with libraries that were not designed with that in mind.
+그래서 코드는 어떻게 “적합한” 어플리케이션을 찾을 수 있는가? 과거에 우리는 명시적으로 
+어플리케이션을 제공했었지만, 그 방식은 명시적 전달을 염두하지 않은 라이브러리와 문제를 
+야기했다. 
 
-A common workaround for that problem was to use the
-:data:`~flask.current_app` proxy later on, which was bound to the current
-request's application reference.  Since however creating such a request
-context is an unnecessarily expensive operation in case there is no
-request around, the application context was introduced.
+ 그 문제의 일반적인 차선책은 현재 요청에 대한 어플리케이션 참조와 연결되있는 :data:`~flask.current_app`  프록시를 나중에 사용하는 것이었다. 그러나, 그런 요청 컨텍스트를 생성하는 것은 어떤 요청도 없는 경우에 불필요하게 고비용 동작이기 때문에, 그 어플리케이션 컨텍스트가 소개되었다.
 
-Creating an Application Context
+
+어플리케이션 컨텍스트 생성하기
 -------------------------------
 
-To make an application context there are two ways.  The first one is the
-implicit one: whenever a request context is pushed, an application context
-will be created alongside if this is necessary.  As a result of that, you
-can ignore the existence of the application context unless you need it.
+어플리케이션 컨텍스트를 만들기 위해서는 두 가지 방법이 있다. 첫번째는 임의적인 방식으로, 
+요청 컨텍스트가 들어올 때마다, 어플리케이션 컨텍스트가 필요한 경우 바로 옆에 생성될 것이다. 
+그 결과로 여러분은 어플리케이션 컨텍스트가 필요없다면 그 존재를 무시할 수 있다. 
 
-The second way is the explicit way using the
-:meth:`~flask.Flask.app_context` method::
+
+두 번째 방식은 :meth:`~flask.Flask.app_context` 메소드를 사용하는 명시적으로 방법이다::
 
     from flask import Flask, current_app
 
@@ -70,41 +62,42 @@ The second way is the explicit way using the
         # within this block, current_app points to app.
         print current_app.name
 
-The application context is also used by the :func:`~flask.url_for`
-function in case a ``SERVER_NAME`` was configured.  This allows you to
-generate URLs even in the absence of a request.
 
-Locality of the Context
+어플리케이션 문맥은 ``SERVER_NAME`` 이 설정된 경우 :func:`~flask.url_for` 함수에 
+의해서도 사용된다. 이것은 요청이 없는 경우에도 여러분이 URL을 생성할 수 있게 해준다. 
+
+
+컨텍스트의 지역성
 -----------------------
 
-The application context is created and destroyed as necessary.  It never
-moves between threads and it will not be shared between requests.  As such
-it is the perfect place to store database connection information and other
-things.  The internal stack object is called :data:`flask._app_ctx_stack`.
-Extensions are free to store additional information on the topmost level,
-assuming they pick a sufficiently unique name.
+어플리케이션 문맥은 필요에 따라 생성되고 소멸된다. 그것은 결코 쓰레드들 사이를 이동할 수 
+없고 요청 사이에서 공유되지 않을 것이다. 그와 같이, 어플리케이션 문맥은 데이타베이스 연결 
+정보와 다른 정보들을 저장하는 최적의 장소다. 내부 스택 객체는 :data:`flask._app_ctx_stack` 이다. 
+확장들은 충분히 구별되는 이름을 선택하다는 가정하에서 자유롭게 가장 상위에 추가적인 정보를 
+저장한다. 
 
-For more information about that, see :ref:`extension-dev`.
+더 많은 정보에 대해서는 :ref:`extension-dev` 을 살펴보라. 
 
-Context Usage
+
+컨텍스트 사용
 -------------
 
-The context is typically used to cache resources on there that need to be
-created on a per-request or usage case.  For instance database connects
-are destined to go there.  When storing things on the application context
-unique names should be chosen as this is a place that is shared between
-Flask applications and extensions.
+컨텍스트는 일반적으로 요청당 하나씩 생성되거나 직접 사용하는 경우에 캐시 리소스에 사용된다.
+예를 들어 데이터베이스 연결과 같은 경우다. 어플리케이션 컨텍스트에 저장할 때에는 반드시 
+고유한 이름을 선택하여야 한다. 
+이 영역은 Flask 어플리케이션들과 확장(플러그인 같은)들에서 공유되기 때문이다.
 
-The most common usage is to split resource management into two parts:
+가장 일반적인 사용법은 리소스 관리를 두개의 파트로 나누는 것이다:
 
-1.  an implicit resource caching on the context.
-2.  a context teardown based resource deallocation.
+1.  컨텍스트에서의 암시적인 자원 캐시
+2.  컨텍스트 분해를 통한 리소스 할당 해제
 
-Generally there would be a ``get_X()`` function that creates resource
-``X`` if it does not exist yet and otherwise returns the same resource,
-and a ``teardown_X()`` function that is registered as teardown handler.
+일반적으로 자원 ``X`` 를 생성하는 ``get_X()`` 함수가 있다고 하자.
+만약 그것이 아직 존재 하지 않고, 다른 방법으로 같은 자원을 반환하는 ``teardown_X()`` 함수가 
+teardown 핸들러에 등록되어 있다.
 
-This is an example that connects to a database::
+
+여기 데이터베이스에 연결하는 예제가 있다::
 
     import sqlite3
     from flask import _app_ctx_stack
@@ -121,11 +114,11 @@ This is an example that connects to a database::
         if hasattr(top, 'database'):
             top.database.close()
 
-The first time ``get_db()`` is called the connection will be established.
-To make this implicit a :class:`~werkzeug.local.LocalProxy` can be used::
+처음 ``get_db()`` 가 호출된 시점에 연결이 이루어진다.
+이 것을 암시적으로 만들기 위해서는 :class:`~werkzeug.local.LocalProxy` 를 사용할 수 있다::
 
     from werkzeug.local import LocalProxy
     db = LocalProxy(get_db)
 
-That way a user can directly access ``db`` which internally calls
-``get_db()``.
+이것은 사용자가 ``db``에 내부 호출인 ``get_db()``를 통해서 직접 접근 가능하게 해준다.
+
