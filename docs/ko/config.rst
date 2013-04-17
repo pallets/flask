@@ -108,23 +108,18 @@ Flask는 일반적인 경우 어플리케이션이 구동될때에 설정값들�
                                   이값은 세션 쿠키에서 경로 값으로 사용된다
                                   만약 도메인이 사용되는 경우 이 값은 
                                   ``None`` 이다.
-``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
-                                  reject incoming requests with a
-                                  content length greater than this by
-                                  returning a 413 status code.
-``SEND_FILE_MAX_AGE_DEFAULT``:    Default cache control max age to use with
-                                  :meth:`~flask.Flask.send_static_file` (the
-                                  default static file handler) and
-                                  :func:`~flask.send_file`, in
-                                  seconds. Override this value on a per-file
-                                  basis using the
-                                  :meth:`~flask.Flask.get_send_file_max_age`
-                                  hook on :class:`~flask.Flask` or
-                                  :class:`~flask.Blueprint`,
-                                  respectively. Defaults to 43200 (12 hours).
-``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
-                                  not execute the error handlers of HTTP
-                                  exceptions but instead treat the
+``MAX_CONTENT_LENGTH``            만약 이 변수 값이 바이트수로 설정되면, 들어오는 
+                                  요청에 대해서 이 값보다 더 큰 길이의 컨텐트일 경우 
+                                  413 상태 코드를 리턴한다.
+``SEND_FILE_MAX_AGE_DEFAULT``:    :meth:`~flask.Flask.send_static_file` (기본 정적파일 핸들러)
+                                  와 :func:`~flask.send_file` 에서 사용하는 캐시 제어에 대한 
+                                  최대 시간은 초단위로 정한다. 파일 단위로 사용되는 이 값을 
+                                  덮어쓰기 위해서는 :class:`~flask.Flask` 나 :class:`~flask.Blueprint` 를 
+                                  개별적으로 후킹하여 :meth:`~flask.Flask.get_send_file_max_age`를 사용한다.
+                                  기본값은 43200초 이다(12 시간).
+``TRAP_HTTP_EXCEPTIONS``          만약 이 값이 ``True`` 로 셋팅되어 있다면 Flask는 
+                                  HTTP 예외처리를 위한 에러 핸들러를 실행 하지 않는다.
+                                  but instead treat the
                                   exception like any other and bubble it
                                   through the exception stack.  This is
                                   helpful for hairy debugging situations
