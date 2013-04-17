@@ -1,6 +1,6 @@
 :orphan:
 
-플라스크(Flask)의 세계에 오신것을 환영합니다.
+Flask의 세계에 오신것을 환영합니다.
 ================
 
 .. image:: _static/logo-full.png
