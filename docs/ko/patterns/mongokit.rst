@@ -37,15 +37,14 @@ MongoKit의 기본 동작은 Django 나 SQLAlchemy의 선언적 확장의 공통
 
 
 여러분의 모델을 정의하기 위해, MongoKit에서 임포트한 `Document` 클래스는 상속해라.
-If you've seen the SQLAlchemy pattern you may wonder why we do
-not have a session and even do not define a `init_db` function here.  On the
-one hand, MongoKit does not have something like a session.  This sometimes
-makes it more to type but also makes it blazingly fast.  On the other hand,
-MongoDB is schemaless.  This means you can modify the data structure from one
-insert query to the next without any problem.  MongoKit is just schemaless
-too, but implements some validation to ensure data integrity.
+SQLAlchemy 패턴을 봤다면 여러분은 왜 우리가 세션을 갖고 있지 않고 심지어
+`init_db` 함수를 여기서 정의하지 않았는지 궁금해할 지도 모른다.  한편으로,
+MongoKit은 세션같은 것을 갖지 않는다.  이것은 때때로 더 많이 타이핑을 하지만
+엄청나게 빠르다. 다른 면으로, MongoDB는 스키마가 없다.  이것은 여러분이 
+하나의 입력 질의로부터 어떤 문제도 없이 다음 질의에서 데이터 구조를 변경할 수 있다.
+MongoKit 또한 스키마가 없지만, 데이터의 무결성을 보장하기 위해 어떤 검증을 구현한다.
 
-Here is an example document (put this also into `app.py`, e.g.)::
+여기서 예제 문서가 있다 (예를 들면 이것 또한 `app.py` 에 넣는다)::
 
     def max_length(length):
         def validate(value):
@@ -71,14 +70,14 @@ Here is an example document (put this also into `app.py`, e.g.)::
     connection.register([User])
 
 
-This example shows you how to define your schema (named structure), a
-validator for the maximum character length and uses a special MongoKit feature
-called `use_dot_notation`.  Per default MongoKit behaves like a python
-dictionary but with `use_dot_notation` set to `True` you can use your
-documents like you use models in nearly any other ORM by using dots to
-separate between attributes.
+이 예제는 여러분에게 스키마 (구조라 불리는) 를 정의하는 법, 최대 문자 길이에
+대한 검증자를 보여주고 `use_dot_notation` 이라 불리는 특별한 MongoKit 기능을
+사용한다.  기본 MongoKit 마다 파이썬 딕셔너리 같은 동작을 하지만 
+`use_dot_notation` 에 `True` 로 설정을 하면 여러분은 속성들 사이를 분리하기
+위해 점(dot)을 사용해서 어떤 다른 ORM과 근접한 모델을 사용하는 것 처럼 문서를
+사용할 수 있다.
 
-You can insert entries into the database like this:
+여러분은 아래 처럼 데이터베이스에 항목을 넣을 수 있다:
 
 >>> from yourapplication.database import connection
 >>> from yourapplication.models import User
@@ -88,9 +87,10 @@ You can insert entries into the database like this:
 >>> user['email'] = u'admin@localhost'
 >>> user.save()
 
-Note that MongoKit is kinda strict with used column types, you must not use a
-common `str` type for either `name` or `email` but unicode.
+MongoKit은 사용된 컬럼 타입에 다소 엄격하고, 여러분은 유니코드인 `name` 또는 `email` 에 
+대한 공통의 `str` 타입을 사용하지 않아야 한다. 
 
+질의하는것 또한 간단하다::
 Querying is simple as well:
 
 >>> list(collection.User.find())
@@ -101,7 +101,7 @@ Querying is simple as well:
 .. _MongoKit: http://bytebucket.org/namlook/mongokit/
 
 
-PyMongo Compatibility Layer
+PyMongo 호환성 계층
 ---------------------------
 
 If you just want to use PyMongo, you can do that with MongoKit as well.  You
