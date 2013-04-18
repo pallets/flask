@@ -90,8 +90,7 @@ MongoKit 또한 스키마가 없지만, 데이터의 무결성을 보장하기 �
 MongoKit은 사용된 컬럼 타입에 다소 엄격하고, 여러분은 유니코드인 `name` 또는 `email` 에 
 대한 공통의 `str` 타입을 사용하지 않아야 한다. 
 
-질의하는것 또한 간단하다::
-Querying is simple as well:
+질의하는것 또한 간단하다:
 
 >>> list(collection.User.find())
 [<User u'admin'>]
@@ -102,19 +101,18 @@ Querying is simple as well:
 
 
 PyMongo 호환성 계층
----------------------------
+-------------------
 
-If you just want to use PyMongo, you can do that with MongoKit as well.  You
-may use this process if you need the best performance to get.  Note that this
-example does not show how to couple it with Flask, see the above MongoKit code
-for examples::
+여러분이 PyMongo를 단지 사용하고 싶다면, MongoKit을 가지고 그것을 할 수 있다.
+여러분이 데이터를 얻는데 가장 좋은 성능이 필요하다면 이 프로세스를 사용하면 된다.
+이 예제는 플라스크와 그것을 연결하는 방법을 보여주는지 않고, 예를 들면
+위의 위의 MongoKit 코드를 봐라::
 
     from MongoKit import Connection
 
     connection = Connection()
-
-To insert data you can use the `insert` method.  We have to get a
-collection first, this is somewhat the same as a table in the SQL world.
+데이터를 입력하기 위해 여러분은 `insert` 메소드를 사용할 수있다.  우리는 첫번째로
+콜렉션을 얻어야하고, 이것은 SQL 세상에서 테이블과 약간 유사하다.
 
 >>> collection = connection['test'].users
 >>> user = {'name': u'admin', 'email': u'admin@localhost'}
