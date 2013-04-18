@@ -1,6 +1,6 @@
 .. _application-errors:
 
-Logging Application Errors
+어플리케이션 에러 로깅하기
 ==========================
 
 .. versionadded:: 0.3
