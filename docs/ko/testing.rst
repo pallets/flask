@@ -1,6 +1,6 @@
 .. _testing:
 
-플라스크 어플리케이션 테스트하기
+Flask 어플리케이션 테스트하기
 ==========================
 
    **Something that is untested is broken.**
