@@ -1,26 +1,24 @@
 .. mongokit-pattern:
 
-MongoKit in Flask
-=================
+플라스크에서 MongoKit 사용하기
+==============================
 
-Using a document database rather than a full DBMS gets more common these days.
-This pattern shows how to use MongoKit, a document mapper library, to
-integrate with MongoDB.
+기능을 갖춘 DBMS 보다 문서 기반 데이터베이스를 사용하는 것이 요즘은 더 일반적이다.
+이번 패턴은 MongoDB와 통합하기 위한 문서 매핑 라이브러리인 MongoKit의 사용법을 
+보여준다.
 
-This pattern requires a running MongoDB server and the MongoKit library
-installed.
+이 패턴은 동작하는 MongoDB 서버와 MongoKit 라이브러리가 설치되있는 것을 전제로 한다.
 
-There are two very common ways to use MongoKit.  I will outline each of them
-here:
+MongoKit을 사용하는 두가지 일반적인 방식이 있다.  여기서 각 방법을 요약할 것이다:
 
 
-Declarative
------------
+선언 부분
+---------
 
-The default behavior of MongoKit is the declarative one that is based on
-common ideas from Django or the SQLAlchemy declarative extension.
+MongoKit의 기본 동작은 Django 나 SQLAlchemy의 선언적 확장의 공통 방식에 
+기반을 둔 선언적 방식이다.
 
-Here an example `app.py` module for your application::
+아래는 `app.py` 모듈의 예제이다::
 
     from flask import Flask
     from mongokit import Connection, Document
@@ -38,8 +36,8 @@ Here an example `app.py` module for your application::
                             app.config['MONGODB_PORT'])
 
 
-To define your models, just subclass the `Document` class that is imported
-from MongoKit.  If you've seen the SQLAlchemy pattern you may wonder why we do
+여러분의 모델을 정의하기 위해, MongoKit에서 임포트한 `Document` 클래스는 상속해라.
+If you've seen the SQLAlchemy pattern you may wonder why we do
 not have a session and even do not define a `init_db` function here.  On the
 one hand, MongoKit does not have something like a session.  This sometimes
 makes it more to type but also makes it blazingly fast.  On the other hand,
