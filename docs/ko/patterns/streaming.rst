@@ -1,19 +1,18 @@
-Streaming Contents
-==================
+컨텐트 스트리밍하기
+=====================
 
-Sometimes you want to send an enormous amount of data to the client, much
-more than you want to keep in memory.  When you are generating the data on
-the fly though, how do you send that back to the client without the
-roundtrip to the filesystem?
+종종 여러분은 클라이언트로 메모리에 유지하고 싶은 양보다 훨씬 더 큰, 
+엄청난 양의 데이터를 전송하기를 원한다.  여러분이 그 데이터를 바로 생성하고 
+있을 때, 파일시스템으로 갔다오지 않고 어떻게 클라이언트로 그것을 전송하는가?
 
-The answer is by using generators and direct responses.
+답은 바로 생성기(generators)와 직접 응답이다.
 
-Basic Usage
+기본 사용법
 -----------
 
-This is a basic view function that generates a lot of CSV data on the fly.
-The trick is to have an inner function that uses a generator to generate
-data and to then invoke that function and pass it to a response object::
+이것은 많은 CSV 데이터를 즉각 생성하는 기초적인 뷰 함수이다.  데이터를 생성하는
+생성기를 사용하는 내부(inner) 함수를 갖고 그 함수를 호출하면서 응답 객체에
+그 함수를 넘기는것이 그 기법이다::
 
     from flask import Response
 
@@ -24,16 +23,16 @@ data and to then invoke that function and pass it to a response object::
                 yield ','.join(row) + '\n'
         return Response(generate(), mimetype='text/csv')
 
-Each ``yield`` expression is directly sent to the browser.  Note though
-that some WSGI middlewares might break streaming, so be careful there in
-debug environments with profilers and other things you might have enabled.
+각 ``yield`` 표현식은 브라우져에 직접 전송된다.  어떤 WSGI 미들웨어는 
+스트리밍을 깰수도 있지만, 프로파일러를 가진 디버그 환경과 여러분이 활성화
+시킨 다른 것들을 조심하도록 유의하라.
 
-Streaming from Templates
-------------------------
+템플릿에서 스트리밍
+-------------------
 
-The Jinja2 template engine also supports rendering templates piece by
-piece.  This functionality is not directly exposed by Flask because it is
-quite uncommon, but you can easily do it yourself::
+진자2 템플릿 엔진은 또한 부분 단위로 템플릿을 뿌려주는 것을 지원한다.  이 기능은
+꽤 일반적이지 않기 때문에 플라스크에 직접적으로 노출되지 않지만, 아래처럼 여러분이
+쉽게 직접 구현할 수 있다::
 
     from flask import Response
 
@@ -49,26 +48,24 @@ quite uncommon, but you can easily do it yourself::
         rows = iter_all_rows()
         return Response(stream_template('the_template.html', rows=rows))
 
-The trick here is to get the template object from the Jinja2 environment
-on the application and to call :meth:`~jinja2.Template.stream` instead of
-:meth:`~jinja2.Template.render` which returns a stream object instead of a
-string.  Since we're bypassing the Flask template render functions and
-using the template object itself we have to make sure to update the render
-context ourselves by calling :meth:`~flask.Flask.update_template_context`.
-The template is then evaluated as the stream is iterated over.  Since each
-time you do a yield the server will flush the content to the client you
-might want to buffer up a few items in the template which you can do with
-``rv.enable_buffering(size)``.  ``5`` is a sane default.
+여기서의 기법은 어플리케이션의 진자2 환경에서 템플릿 객체를 얻고 문자열 대신
+스트림 객체를 반환하는 :meth:`~jinja2.Template.render` 대신 
+:meth:`~jinja2.Template.stream` 를 호출하는 것이다.  플라스크 템플릿 렌더 함수를
+지나치고 템플릿 객체 자체를 사용하고 있기 때문에 
+:meth:`~flask.Flask.update_template_context` 를 호출하여 렌더 컨텍스트를 갱신하도록
+보장해야한다.  그리고 나서 스트림을 순환하면서 템플릿을 해석한다. 매번 여러분은 yield
+를 호출하기 때문에 서버는 클라이언트로 내용을 밀어내어 보낼 것이고 여러분은 
+``rv.enable_buffering(size)`` 을 가지고 템플릿 안에 몇가지 항목을 버퍼링하기를 원할지도
+모른다.  ``5`` 가 보통 기본값이다.
 
-Streaming with Context
-----------------------
+컨텍스트를 가진 스트리밍
+------------------------
 
 .. versionadded:: 0.9
 
-Note that when you stream data, the request context is already gone the
-moment the function executes.  Flask 0.9 provides you with a helper that
-can keep the request context around during the execution of the
-generator::
+여러분이 데이터를 스트리밍할 때, 요청 컨텍스트는 그 함수가 호출된 순간 이미
+종료된다는 것에 주목해라.  플라스크 0.9 는 생성기가 수행하는 동안 요청 컨텍스트를
+유지하게 해주는 조력자를 제공한다::
 
     from flask import stream_with_context, request, Response
 
@@ -80,5 +77,6 @@ generator::
             yield '!'
         return Response(stream_with_context(generate()))
 
-Without the :func:`~flask.stream_with_context` function you would get a
-:class:`RuntimeError` at that point.
+
+:func:`~flask.stream_with_context` 함수 없다면 여러분은 그 시점에 :class:`RuntimeError`
+를 얻을 것이다.
