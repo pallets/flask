@@ -37,13 +37,13 @@ before-request 함수에서 발생할 것이다.
         return f
 
 
-Calling the Deferred
---------------------
+지연된 함수의 호출
+------------------
 
-Now you can use the `after_this_request` decorator to mark a function to
-be called at the end of the request.  But we still need to call them.  For
-this the following function needs to be registered as
-:meth:`~flask.Flask.after_request` callback::
+이제 여러분은 요청의 마지막에서 호출될 함수를 표시하기 위해 `after_this_request`
+데코레이터를 사용할 수 있다.  하지만 우리는 여전히 그 함수를 호출할 수도 있다.
+이렇게 하기 위해 다음 함수가 :meth:`~flask.Flask.after_request` 콜백으로 등록될 
+필요가 있다::
 
     @app.after_request
     def call_after_request_callbacks(response):
@@ -52,12 +52,12 @@ this the following function needs to be registered as
         return response
 
 
-A Practical Example
--------------------
+실제적인 예제
+-------------
 
-Now we can easily at any point in time register a function to be called at
-the end of this particular request.  For example you can remember the
-current language of the user in a cookie in the before-request function::
+이제 우리는 이 특정 요청의 마지막에서 호출될 함수를 적절한 어느 시점에라도
+쉽게 등록할 수 있다.  예를 들면 여러분은 before-request 함수에서 쿠키에 사용자의 
+현재 언어를 기억하게 할 수 있다::
 
     from flask import request
 
