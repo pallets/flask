@@ -1,33 +1,32 @@
 .. _deferred-callbacks:
 
-Deferred Request Callbacks
+지연된(deferred) 요청 콜백
 ==========================
 
-One of the design principles of Flask is that response objects are created
-and passed down a chain of potential callbacks that can modify them or
-replace them.  When the request handling starts, there is no response
-object yet.  It is created as necessary either by a view function or by
-some other component in the system.
+플라스크의 설계 원칙 중 한가지는 응답 객체가 생성되고 그 객체를 수정하거나
+대체할 수 있는 잠재적인 콜백의 호출 사슬로 그 객체를 전달하는 것이다.
+요청 처리가 시작될 때, 아직은 응답 객체를 존재하지 않는다.  뷰 함수나
+시스템에 있는 어떤 다른 컴포넌트에 의해 필요할 때 생성된다.
 
-But what happens if you want to modify the response at a point where the
-response does not exist yet?  A common example for that would be a
-before-request function that wants to set a cookie on the response object.
+하지만 응답이 아직 존재하지 않는 시점에서 응답을 수정하려 하면 어떻게 되는가?
+그에 대한 일반적인 예제는 응답 객체에 있는 쿠키를 설정하기를 원하는
+before-request 함수에서 발생할 것이다.
 
-One way is to avoid the situation.  Very often that is possible.  For
-instance you can try to move that logic into an after-request callback
-instead.  Sometimes however moving that code there is just not a very
-pleasant experience or makes code look very awkward.
+한가지 방법은 그런 상황을 피하는 것이다. 꽤 자주 이렇게 하는게 가능하다.
+예를 들면 여러분은 그런 로직을 after-request 콜백으로 대신 옮기도록 
+시도할 수 있다.  하지만 때때로 거기에 있는 코드를 옮기는 것은 유쾌한 
+일이 아니거나 코드가 대단히 부자연스럽게 보이게 된다.
 
-As an alternative possibility you can attach a bunch of callback functions
-to the :data:`~flask.g` object and call then at the end of the request.
-This way you can defer code execution from anywhere in the application.
+다른 가능성으로서 여러분은 :data:`~flask.g` 객체에 여러 콜백 함수를
+추가하고 요청의 끝부분에서 그것을 호출할 수 있다.  이 방식으로 여러분은
+어플리케이션의 어느 위치로도 코드 실행을 지연시킬 수 있다.
 
 
-The Decorator
--------------
+데코레이터
+----------
 
-The following decorator is the key.  It registers a function on a list on
-the :data:`~flask.g` object::
+다음에 나올 데코레이터가 핵심이다. 그 데코레이터는 :data:`~flask.g` 객체에
+있는 리스트에 함수를 등록한다::
 
     from flask import g
 
