@@ -1019,6 +1019,30 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    def get(self, *args, **kwargs):
+        kwargs["methods"] = ["GET", "HEAD"]
+        return self.route(*args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        kwargs["methods"] = ["PUT"]
+        return self.route(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        kwargs["methods"] = ["POST"]
+        return self.route(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        kwargs["methods"] = ["DELETE"]
+        return self.route(*args, **kwargs)
+
+    def options(self, *args, **kwargs):
+        kwargs["methods"] = ["OPTIONS"]
+        return self.route(*args, **kwargs)
+
+    def trace(self, *args, **kwargs):
+        kwargs["methods"] = ["TRACE"]
+        return self.route(*args, **kwargs)
+
     @setupmethod
     def endpoint(self, endpoint):
         """A decorator to register a function as an endpoint.
