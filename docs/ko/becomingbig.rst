@@ -1,33 +1,32 @@
 .. _becomingbig:
 
-Becoming Big
-============
+크게 만들기
+===========
 
-Here are your options when growing your codebase or scaling your application.
+코드가 증가하고 어플리케이션의 규모가 커질 때 여러분에게 몇가지 선택사항이 있다.
 
-Read the Source.
-----------------
+소스 코드 읽기
+--------------
 
-Flask started in part to demonstrate how to build your own framework on top of
-existing well-used tools Werkzeug (WSGI) and Jinja (templating), and as it
-developed, it became useful to a wide audience.  As you grow your codebase,
-don't just use Flask -- understand it.  Read the source.  Flask's code is
-written to be read; it's documentation published so you can use its internal
-APIs.  Flask sticks to documented APIs in upstream libraries, and documents its
-internal utilities so that you can find the hook points needed for your
-project.
+플라스크는 이미 존재하고 잘 사용되는 도구인 벡자이크(WSGI)와 진자(템플릿 엔진)
+의 상위에서 여러분 자신의 프레임워크를 만들기 위한 방법을 설명하기 위해 부분적으로
+시작되었고, 개발되어오면서, 넓은 사용자층에게 유용해졌다. 여러분의 코드가 점점 
+커진다면, 플라스크를 사용하지 않아야 한다 -- 그 이유를 이해해라.  소스를 읽어라.
+플라스크의 소스는 읽혀지기 위해 쓰여진것이다; 그것은 공표된 문서이기에 여러분은
+그것의 내부 API를 사용할 수 있다.  플라스크는 여러분의 프로젝트에 필요한 훅 포인트
+(hook point)를 찾을 수 있도록 상위 라이브러리에 있는 문서화된 API를 고수하고 
+그것의 내부 유틸리티를 문서화한다. 
 
-Hook. Extend.
--------------
+훅(Hook). 확장하라.
+-------------------
 
-The :ref:`api` docs are full of available overrides, hook points, and
-:ref:`signals`. You can provide custom classes for things like the request and
-response objects.  Dig deeper on the APIs you use, and look for the
-customizations which are available out of the box in a Flask release.  Look for
-ways in which your project can be refactored into a collection of utilities and
-Flask extensions.  Explore the many `extensions
-<http://flask.pocoo.org/extensions/>`_ in the community, and look for patterns to
-build your own extensions if you do not find the tools you need.
+:ref:`api` 문서는 사용가능한 오버라이드, 훅 포인트, :ref:`signals` 로 가득 차 있다.
+여러분은 요청과 응답 객체와 같은 것에 대한 커스텀 클래스를 제공할 수 있다. 여러분이 
+사용하는 API에 대해 좀 더 깊게 파보고, 플라스크 릴리즈에 특별하게 사용가능한 
+커스터마이징된 것을 찾아봐라.  여러분의 프로젝트가 여러 유틸리티나 플라스크 확장으로
+리팩토링될 수 있는 방식을 찾아봐라.  커뮤니티에 있는 여러 
+`확장 <http://flask.pocoo.org/extensions/>`_ 을 살펴보고 , 여러분이 필요한 도구를
+찾을 수 없다면 여러분 자신의 확장을 만들기 위한 패턴을 찾아봐라.
 
 Subclass.
 ---------
