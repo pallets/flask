@@ -66,34 +66,32 @@
 더 나아가서 변경의 개수의 따라 상위 변경을 통합하는 것이 복합한 과정일 
 수 있다.  그런것 때문에 분기하는 것은 최후의 보루가 되어야 할 것이다.
 
-Scale like a pro.
------------------
+프로페셔널처럼 규모를 조절하기.
+-------------------------------
 
-For many web applications the complexity of the code is less an issue than
-the scaling for the number of users or data entries expected.  Flask by
-itself is only limited in terms of scaling by your application code, the
-data store you want to use and the Python implementation and webserver you
-are running on.
+많은 웹 어플리케이션에 대한 코드의 복잡도는 예상되는 사용자 수와 데이터
+항목에 대한 규모를 조절하는것에 비하면 큰 이슈는 아니다.  플라스크
+그 자체로는 여러분의 어플리케이션 코드, 사용하고자 하는 데이타 저장소 그리고
+실행되는 파이썬 구현과 웹서버에 의한 규모 조절이라는 측면에서만 제한된다.
 
-Scaling well means for example that if you double the amount of servers
-you get about twice the performance.  Scaling bad means that if you add a
-new server the application won't perform any better or would not even
-support a second server.
+예를 자면 규모를 잘 조절한다는 것은 만약 여러분이 서버의 양을 두배로 했을 때
+두배의 성능을 얻는다는 것을 의미한다.  규모 조절이 잘못됐다는 것은 여러분이
+새로운 서버를 추가했을 때 어플리케이션이 더 좋은 성능을 내지 못하거나 심지어
+대체되는 서버로 지원하지도 못하는 것을 의미한다. 
 
-There is only one limiting factor regarding scaling in Flask which are
-the context local proxies.  They depend on context which in Flask is
-defined as being either a thread, process or greenlet.  If your server
-uses some kind of concurrency that is not based on threads or greenlets,
-Flask will no longer be able to support these global proxies.  However the
-majority of servers are using either threads, greenlets or separate
-processes to achieve concurrency which are all methods well supported by
-the underlying Werkzeug library.
+문맥 로컬 프록시가 플라스크에서 규모 조절과 관련된 유일한 제한 요소이다.
+그것들은 플라스크에 있는 쓰레드, 프로세스 혹은 그린렛으로 정의되는 문맥에
+의존한다.  여러분의 서버가 쓰레드나 그린렛에 기반하지 않은 어떤 동시성의
+기능을 사용한다면, 플라스크는 이와 같은 전역적인 프록시를 더 이상 제공할
+수 없을 것이다.  하지만 서버의 다수는 기반에서 벡자이크 라이브러리에 의해
+잘 지원되는 모든 메소드인 동시성을 수행하기 위해 쓰레드, 그린렛 또는 분리된
+프로세스를 사용할 것이다.
 
-Discuss with the community.
----------------------------
+커뮤니티와 논의하기.
+--------------------
 
-The Flask developers keep the framework accessible to users with codebases big
-and small. If you find an obstacle in your way, caused by Flask, don't hesitate
-to contact the developers on the mailinglist or IRC channel.  The best way for
-the Flask and Flask extension developers to improve the tools for larger
-applications is getting feedback from users.
+플라스크 개발자들은 사용자들에게 크고 작은 코드를 가지고 그 프레임워크에 접근할
+수 있도록 유지한다. 여러분의 방식에서 플라스크로 인한 어떤 걸림돌을 만난다면
+메일링 리스트나 IRC 채널을 통해 플라스크 개발자들에게 연락하는 것에 망설이지 
+말도록 해라.  더 큰 어플리케이션에 대한 도구를 개선하기 위해 플라스크와 그 확장
+을 개발하는 개발자들에게 가장 좋은 방법은 사용자들에게 피드백을 얻는 것이다.
