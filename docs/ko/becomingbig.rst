@@ -28,44 +28,43 @@
 `확장 <http://flask.pocoo.org/extensions/>`_ 을 살펴보고 , 여러분이 필요한 도구를
 찾을 수 없다면 여러분 자신의 확장을 만들기 위한 패턴을 찾아봐라.
 
-Subclass.
----------
+서브클래스.
+-----------
 
-The :class:`~flask.Flask` class has many methods designed for subclassing. You
-can quickly add or customize behavior by subclassing :class:`~flask.Flask` (see
-the linked method docs) and using that subclass wherever you instantiate an
-application class. This works well with :ref:`app-factories`.
+:class:`~flask.Flask` 클래스는 서브클래싱에 대해 설계된 여러 메소드가 있다.
+여러분은 :class:`~flask.Flask` (연결된 메소드 문서를 살펴봐라) 를 
+서브클래싱하고 어플리케이션 클래스를 인스턴스화한 곳 어디서나 그 서브클래스를 
+사용하여 동작을 빠르게 추가하거나 커스터마이징할 수 있다.  이것은 
+:ref:`app-factories` 과 함께 잘 동작한다.
 
-Wrap with middleware.
+미들웨어로 감싸기.
 ---------------------
 
-The :ref:`app-dispatch` chapter shows in detail how to apply middleware. You
-can introduce WSGI middleware to wrap your Flask instances and introduce fixes
-and changes at the layer between your Flask application and your HTTP
-server. Werkzeug includes several `middlewares
-<http://werkzeug.pocoo.org/docs/middlewares/>`_.
+:ref:`app-dispatch` 장에서 미들웨어를 적용하는 방법에 대해 자세히 보여줬다.
+여러분의 플라스크 인스턴스를 감싸기 위해 WSGI 미들웨어와 여러분의 어플리케이션
+과 HTTP 서버 사이에 있는 계층에 수정과 변경을 소개할 수 있다. 벡자이크는 
+다수의 `미들웨어 <http://werkzeug.pocoo.org/docs/middlewares/>`_ 를 포함하고 있다.
 
-Fork.
------
+분기하기.
+---------
 
-If none of the above options work, fork Flask.  The majority of code of Flask
-is within Werkzeug and Jinja2.  These libraries do the majority of the work.
-Flask is just the paste that glues those together.  For every project there is
-the point where the underlying framework gets in the way (due to assumptions
-the original developers had).  This is natural because if this would not be the
-case, the framework would be a very complex system to begin with which causes a
-steep learning curve and a lot of user frustration.
+위에서 언급한 선택사항 중 어느 것에도 해당되지 않는다면, 플라스크를 분기해라.
+플라스크 코드의 다수는 벡자이크와 진자2 안에 있는 것이다.  이런 라이브러리가
+그 동작의 대다수를 수행한다.  플라스크는 단지 그런 라이브러리를 잘 붙여논
+풀같은 것이다.  모든 프로젝트에 대해 하부 프레임워크가 방해가 되는 점이 있다
+(왜냐하면 원 개발자들의 가진 가정들 때문에).  이것은 자연스러운 것인데 왜냐하면
+그런 경우가 아니라면, 그 프레임워크는 시작부터 굉장히 가파른 학습 곡선과 많은
+개발자의 좌절감을 유발하는 매우 복잡한 시스템이 될것이기 때문이다.
 
-This is not unique to Flask.  Many people use patched and modified
-versions of their framework to counter shortcomings.  This idea is also
-reflected in the license of Flask.  You don't have to contribute any
-changes back if you decide to modify the framework.
+이것은 플라스크에만 유일하게 적용되지 않는다.  많은 사람들이 그들이 사용하는
+프레임워크의 단점에 대응하기 위해 패치되고 변경된 버전의 프레임워크를 사용한다.
+이 방식 또한 플라스크의 라이선스에 반영돼있다.  여러분이 플라스크에 변경하기로 
+결정했더라도 그 어떤 변경에 대해서도 다시 기여하지 않아도 된다.
 
-The downside of forking is of course that Flask extensions will most
-likely break because the new framework has a different import name.
-Furthermore integrating upstream changes can be a complex process,
-depending on the number of changes.  Because of that, forking should be
-the very last resort.
+물론 분기하는 것에 단점은 플라스크 확장에 대부분 깨질것이라는 점인데
+왜냐하면 새로운 프레임워크는 다른 임포트 명을 가질 것이기 때문이다.
+더 나아가서 변경의 개수의 따라 상위 변경을 통합하는 것이 복합한 과정일 
+수 있다.  그런것 때문에 분기하는 것은 최후의 보루가 되어야 할 것이다.
 
 Scale like a pro.
 -----------------
