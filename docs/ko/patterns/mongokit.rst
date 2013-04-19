@@ -118,20 +118,20 @@ PyMongo 호환성 계층
 >>> user = {'name': u'admin', 'email': u'admin@localhost'}
 >>> collection.insert(user)
 
-MongoKit will automatically commit for us.
+MongoKit는 자동으로 커밋할 것이다.
 
-To query your database, you use the collection directly:
+데이터베이스에 질의하기 위해서, 여러분은 직접 컬렉션을 사용한다.
 
 >>> list(collection.find())
 [{u'_id': ObjectId('4c271729e13823182f000000'), u'name': u'admin', u'email': u'admin@localhost'}]
 >>> collection.find_one({'name': u'admin'})
 {u'_id': ObjectId('4c271729e13823182f000000'), u'name': u'admin', u'email': u'admin@localhost'}
 
-These results are also dict-like objects:
+이 결과 또한 딕셔너리 형태의 객체이다:
 
 >>> r = collection.find_one({'name': u'admin'})
 >>> r['email']
 u'admin@localhost'
 
-For more information about MongoKit, head over to the
-`website <https://github.com/namlook/mongokit>`_.
+MongoKit에 대한 더 많은 정보에 대해서, `website <https://github.com/namlook/mongokit>`_
+으로 가서 살펴봐라.
