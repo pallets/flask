@@ -1,32 +1,33 @@
 .. _shell:
 
-Working with the Shell
+쉘에서 작업하기
 ======================
 
 .. versionadded:: 0.3
 
-One of the reasons everybody loves Python is the interactive shell.  It
-basically allows you to execute Python commands in real time and
-immediately get results back.  Flask itself does not come with an
-interactive shell, because it does not require any specific setup upfront,
-just import your application and start playing around.
+많은 사람들이 파이썬을 좋아하는 이유 중 한가지는 바로 대화식 쉘이다.
+그것은 기본적으로 여러분이 실시간으로 파이썬 명령을 싱행하고 결과를 실시간으로 
+즉시 받아 볼 수 있다. Flask 자체는 대화식 쉘과 함께 제공되지 않는다. 왜냐하면 
+Flask는 특정한 선행 작업이 필요하지 않고, 단지 여러분의 어플리케이션에서 불러오기만 하면 
+시작할 수 있기 때문이다.
 
-There are however some handy helpers to make playing around in the shell a
-more pleasant experience.  The main issue with interactive console
-sessions is that you're not triggering a request like a browser does which
-means that :data:`~flask.g`, :data:`~flask.request` and others are not
-available.  But the code you want to test might depend on them, so what
-can you do?
 
-This is where some helper functions come in handy.  Keep in mind however
-that these functions are not only there for interactive shell usage, but
-also for unittesting and other situations that require a faked request
-context.
+하지만, 쉘에서 좀 더 많은 즐거운 경험을 얻을 수 있는 몇 가지 유용한 헬퍼들이 있다.
+대화식 콘솔 세션에서의 가장 중요한 문제는 여러분이 직접 브라우저에서 처럼 
+:data:`~flask.g`, :data:`~flask.request` 를 발생 시킬 수 없고,  
+ 그 밖의 다른 것들도 가능하지 않다. 하지만 테스트 해야 할 코드가 그것들에게
+종속관계에 있다면 여러분은 어떻게 할 것인가?
 
-Generally it's recommended that you read the :ref:`request-context`
-chapter of the documentation first.
 
-Creating a Request Context
+이 장에는 몇가지 도움이 되는 함수가 있다. 
+이 함수들은 대화식 쉘에서의 사용뿐만 아니라, 단위테스트와 같은 그리고 요청 컨텍스트를 
+위조해야 하는 상황에서 또한 유용하다는 것을 염두해 두자.
+
+
+일반적으로 여러분이 :ref:`request-context` 를 먼저 읽기를 권장한다.
+
+
+요청 컨텍스트 생성하기
 --------------------------
 
 The easiest way to create a proper request context from the shell is by
