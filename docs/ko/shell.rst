@@ -27,21 +27,19 @@ Flask는 특정한 선행 작업이 필요하지 않고, 단지 여러분의 어
 요청 컨텍스트 생성하기
 --------------------------
 
-The easiest way to create a proper request context from the shell is by
-using the :attr:`~flask.Flask.test_request_context` method which creates
-us a :class:`~flask.ctx.RequestContext`:
+쉘에서 적절한 요청 컨텍스트를 생성하는 가장 쉬운 방법은 :class:`~flask.ctx.RequestContext`: 를 우리에게 생성해주는 :attr:`~flask.Flask.test_request_context` 메소드를 사용하는 것이다.:
 
 >>> ctx = app.test_request_context()
 
-Normally you would use the `with` statement to make this request object
-active, but in the shell it's easier to use the
-:meth:`~flask.ctx.RequestContext.push` and
-:meth:`~flask.ctx.RequestContext.pop` methods by hand:
+일반적으로 여러분은 `with` 구문을 사용하여 이 요청 객체를 활성화 하겠지만, 
+쉘에서는 :meth:`~flask.ctx.RequestContext.push` 와 :meth:`~flask.ctx.RequestContext.pop` 를 
+직접 다루는 방법이 더 쉽다:
+
 
 >>> ctx.push()
 
-From that point onwards you can work with the request object until you
-call `pop`:
+여러분이 `pop` 을 호출하는 그 시점까지 request 객체를 사용하여 작업 할 수 있다.
+:
 
 >>> ctx.pop()
 
