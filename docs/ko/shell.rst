@@ -43,47 +43,45 @@ Flask는 특정한 선행 작업이 필요하지 않고, 단지 여러분의 어
 
 >>> ctx.pop()
 
-Firing Before/After Request
+
+
+요청하기 전/후에 발사하기(Firing)
 ---------------------------
 
-By just creating a request context, you still don't have run the code that
-is normally run before a request.  This might result in your database
-being unavailable if you are connecting to the database in a
-before-request callback or the current user not being stored on the
-:data:`~flask.g` object etc.
+단지 요청 컨텍스트를 생성만 하면, 일반적으로 요청전에 실행되는 코드를 실행할 필요가 없다.
+이것은 만약 여러분이 before-request 콜백에서 데이터베이스 연결을 하거나 , 혹은 현재 사용자가 :data:`~flask.g` 객체에 저장하지 않을 경우에 발생할 수 있다..
 
-This however can easily be done yourself.  Just call
-:meth:`~flask.Flask.preprocess_request`:
+그러나 이것은 단지 :meth:`~flask.Flask.preprocess_request` 를 호출하여 쉽게 수행 할 수 있다:
 
 >>> ctx = app.test_request_context()
 >>> ctx.push()
 >>> app.preprocess_request()
 
-Keep in mind that the :meth:`~flask.Flask.preprocess_request` function
-might return a response object, in that case just ignore it.
+다음을 염두 해 두어야 한다. 
+이 경우에 :meth:`~flask.Flask.preprocess_request` 함수는 응답(response) 객체를 리턴할 것이고, 이것은 그냥 무시해도 된다.
 
-To shutdown a request, you need to trick a bit before the after request
-functions (triggered by :meth:`~flask.Flask.process_response`) operate on
-a response object:
+
+요청을 종료시키기 위해서, 여러분은 사후 요청 함수 ( :meth:`~flask.Flask.process_response` 에 의해 트리거되는)가 응답 객체에서 사용 전에 약간의 트릭을 사용해야 한다:
 
 >>> app.process_response(app.response_class())
 <Response 0 bytes [200 OK]>
 >>> ctx.pop()
 
-The functions registered as :meth:`~flask.Flask.teardown_request` are
-automatically called when the context is popped.  So this is the perfect
-place to automatically tear down resources that were needed by the request
-context (such as database connections).
+컨텍스트가 열리게 되면 :meth:`~flask.Flask.teardown_request` 로 등록된 함수가 
+자동으로 호출된다. 그래서 이것은 자동으로 요청 컨텍스트 (데이터 베이스 연결과 같은)에 
+필요한 자원을 해제 할 수 있는 완벽한 장소이다..
 
 
-Further Improving the Shell Experience
+
+쉘 경험을 더욱 향상시키기
 --------------------------------------
 
-If you like the idea of experimenting in a shell, create yourself a module
-with stuff you want to star import into your interactive session.  There
-you could also define some more helper methods for common things such as
-initializing the database, dropping tables etc.
+여러분이 만약 쉘에서의 실험적인 아이디어를 실험하기 좋아한다면, 
+본인 스스로 여러분의 대화형 세션으로 불러올 모듈을 만들 수 있다.
+여기에 또한 여러분은 데이터베이스를 초기화 하거나 테이블을 삭제하는등의 좀 더 유용한 도우미 메소드등을 정의 할 수 있다.
 
-Just put them into a module (like `shelltools` and import from there):
+
+단지 모듈에 이렇게 삽입하면 된다 (`shelltools` 처럼 불러온다.) :
+
 
 >>> from shelltools import *
