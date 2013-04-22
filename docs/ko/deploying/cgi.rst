@@ -46,6 +46,6 @@ CGI는 거의 모든 주요 서버에 의해 제공되지만 보통 차선의 �
     RewriteCond %{REQUEST_FILENAME} !-f # Don't interfere with static files
     RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
 
-더 많으 정보를 위해 사용하는 웹서버의 문서를 참조하라.
+더 많은 정보를 위해 사용하는 웹서버의 문서를 참조하라.
 
 .. _App Engine: http://code.google.com/appengine/
