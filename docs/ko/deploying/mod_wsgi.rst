@@ -1,75 +1,67 @@
 .. _mod_wsgi-deployment:
 
-mod_wsgi (Apache)
+mod_wsgi (아파치)
 =================
 
-If you are using the `Apache`_ webserver, consider using `mod_wsgi`_.
+만약 `Apache`_ 웹서브를 사용하고 있다면, `mod_wsgi`_ 를 사용할 것을 고려하라.
 
-.. admonition:: Watch Out
+.. admonition:: 주의
 
-   Please make sure in advance that any ``app.run()`` calls you might
-   have in your application file are inside an ``if __name__ ==
-   '__main__':`` block or moved to a separate file.  Just make sure it's
-   not called because this will always start a local WSGI server which
-   we do not want if we deploy that application to mod_wsgi.
+   어플리케이션 파일에서 있을 수 있는 ``app.run()`` 호출이 ``if __name__ == '__main__':`` 블럭안에 있는지
+   아니면 다른 파일로 분리되어 있는지 미리 확인해야 한다. 이것은 만약 우리가 어플리케이션을 mod_wsgi로 배포한다면
+   원하지 않게 로컬 WSGI 서버를 항상 실행하기 때문에 호출되지 않음을 확인해야 한다.
 
 .. _Apache: http://httpd.apache.org/
 
-Installing `mod_wsgi`
+`mod_wsgi` 설치하기
 ---------------------
 
-If you don't have `mod_wsgi` installed yet you have to either install it
-using a package manager or compile it yourself.  The mod_wsgi
-`installation instructions`_ cover source installations on UNIX systems.
+`mod_wsgi` 가 아직 설치되지 않았다면, 패키지 관리자를 사용하여 설치하거나, 직접 컴파일해야 한다.
+mod_wsgi `installation instructions`_ 가 유닉스 시스템에서의 소스 설치를 다룬다.
 
-If you are using Ubuntu/Debian you can apt-get it and activate it as
-follows:
+만약 우분투/데비안을 사용하고 있다면 apt-get를 사용하여 다음과 같이 활성화할 수 있다:
 
 .. sourcecode:: text
 
     # apt-get install libapache2-mod-wsgi
 
-On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by
-using pkg_add:
+FreeBSD에에서는 `www/mod_wsgi` 포트를 컴파일하거나 pkg-add를 사용하여 `mod_wsgi` 를 설치하라:
 
 .. sourcecode:: text
 
     # pkg_add -r mod_wsgi
 
-If you are using pkgsrc you can install `mod_wsgi` by compiling the
-`www/ap2-wsgi` package.
+만약 pkgsrc를 사용하고 있다면, `www/ap2-wsgi` 패키지를 컴파일하여 `mod_wsgi` 를 설치할 수 있다.
 
-If you encounter segfaulting child processes after the first apache
-reload you can safely ignore them.  Just restart the server.
+만약 처음 아파치를 리로드한 후에 세그멘테이션폴트가 나는 자식 프로세스를 발견한다면,
+그것들을 무시할 수 있다. 단지 서버를 재시작하면 된다.
 
-Creating a `.wsgi` file
+`.wsgi` 파일 생성하기
 -----------------------
 
-To run your application you need a `yourapplication.wsgi` file.  This file
-contains the code `mod_wsgi` is executing on startup to get the application
-object.  The object called `application` in that file is then used as
-application.
+어플리케이션을 실행하기 위해서는 `yourapplication.wsgi` 파일이 필요하다.
+이 파일은 application 객체를 얻기 위해 시작 시점에 `mod_wsgi`가 실행할 코드를 포함하고 있다.
+그 객체는 그 파일에서 `application` 라고 불리며, application으로 사용된다.
 
-For most applications the following file should be sufficient::
+대부분의 어플리케이션에서 다음과 같은 파일이면 충분하다::
 
     from yourapplication import app as application
 
-If you don't have a factory function for application creation but a singleton
-instance you can directly import that one as `application`.
+만약 여러분이 application 객체 생성하는 팩토리 함수가 없다면, 
+'application'으로 하나를 직접 임포트하여 싱글톤 객체로 사용할 수 있다.
 
-Store that file somewhere that you will find it again (e.g.:
-`/var/www/yourapplication`) and make sure that `yourapplication` and all
-the libraries that are in use are on the python load path.  If you don't
-want to install it system wide consider using a `virtual python`_
-instance.  Keep in mind that you will have to actually install your
-application into the virtualenv as well.  Alternatively there is the
-option to just patch the path in the `.wsgi` file before the import::
+그 파일을 나중에 다시 찾을 수 있는 어딘가에 저장하고(예:`/var/www/yourapplication`) 
+`yourapplication`과 사용되는 모든 라이브러리가 파이썬 로그 경로에 있는지 확인하라.
+만약 파이썬을 설치하는 것을 원하지 않으면, 시스템 전반적으로 `virtual python`_ 객체를 사용하는 것을
+고려하라. 실제로 어플리케이션을 virtualenv에 설치해야 하는 것을 기억하라.
+다른 방법으로는 임포트 전에 `.wsgi` 파일 내 경로를 패치하기 위한 옵션이 있다::
 
     import sys
     sys.path.insert(0, '/path/to/the/application')
 
-Configuring Apache
+아파치 설정하기
 ------------------
+
 
 The last thing you have to do is to create an Apache configuration file
 for your application.  In this example we are telling `mod_wsgi` to
