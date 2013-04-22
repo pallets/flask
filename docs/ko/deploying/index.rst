@@ -1,20 +1,16 @@
 .. _deployment:
 
-Deployment Options
+배포 옵션
 ==================
 
-Depending on what you have available there are multiple ways to run
-Flask applications.  You can use the builtin server during development,
-but you should use a full deployment option for production applications.
-(Do not use the builtin development server in production.)  Several
-options are available and documented here.
+여러분이 어떤 것을 이용할 수 있는지에 따라서, 플라스크 어플리케이션을  실행할 수 있는 다양한 방법이 있다.
+개발 중에는 내장 서버를 사용할 수 있지만, 운영울 위해서는 모든 배포 옵션을 사용해야 한다.
+(운영 중에는 내장 개발 서버를 사용하지 마라.) 사용할 수 있는 몇가지 옵션이 있다.
 
-If you have a different WSGI server look up the server documentation
-about how to use a WSGI app with it.  Just remember that your
-:class:`Flask` application object is the actual WSGI application.
+만약 다른 WSGI 서버가 있다면, WSGI 어플리케이션을 사용하는 방법에 대한 서버 문서를 참조하라.
+단지 :class:`Flask` 어플리케이션 객체가 실제 WSGI 어플리케이션임을 기억하라.
 
-For hosted options to get up and running quickly, see
-:ref:`quickstart_deployment` in the Quickstart.
+빠르게 배포하고 실행하기 위한 옵션을 보려면, 퀵스타트의 :ref:`quickstart_deployment` 를 참조하라.
 
 .. toctree::
    :maxdepth: 2
