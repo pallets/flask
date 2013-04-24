@@ -8,7 +8,7 @@ intentions. And before you ask: It's BSD licensed!
 Flask is Fun
 ````````````
 
-::
+.. code:: python
 
     from flask import Flask
     app = Flask(__name__)
@@ -23,7 +23,7 @@ Flask is Fun
 And Easy to Setup
 `````````````````
 
-::
+.. code:: bash
 
     $ pip install Flask
     $ python hello.py
