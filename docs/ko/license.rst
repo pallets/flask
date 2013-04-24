@@ -15,7 +15,7 @@ documentation and artwork different licenses apply.
 Authors
 -------
 
-.. include:: ../AUTHORS
+.. include:: ../../AUTHORS
 
 General License Definitions
 ---------------------------
@@ -37,7 +37,7 @@ documentation.
 Flask License
 -------------
 
-.. include:: ../LICENSE
+.. include:: ../../LICENSE
 
 
 .. _artwork-license:
@@ -45,4 +45,4 @@ Flask License
 Flask Artwork License
 ---------------------
 
-.. include:: ../artwork/LICENSE
+.. include:: ../../artwork/LICENSE
