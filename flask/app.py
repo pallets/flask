@@ -35,7 +35,7 @@ from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
-    request_tearing_down, appcontext_tearing_down
+    request_tearing_down, appcontext_tearing_down, blueprint_registered
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -890,6 +890,7 @@ class Flask(_PackageBoundObject):
             self.blueprints[blueprint.name] = blueprint
             first_registration = True
         blueprint.register(self, options, first_registration)
+        blueprint_registered.send(self, blueprint=blueprint)
 
     @setupmethod
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
