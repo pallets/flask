@@ -113,21 +113,19 @@ API
 
 .. class:: request
 
-   To access incoming request data, you can use the global `request`
-   object.  Flask parses incoming request data for you and gives you
-   access to it through that global object.  Internally Flask makes
-   sure that you always get the correct data for the active thread if you
-   are in a multithreaded environment.
+   유입 요청 데이터에 접근하기 위해서, 여러분은 전역 `request` 객체를 사용할 수 있다.
+   플라스크는 유입 요청 데이터를 파싱해서 전역 객체로 그 데이터에 접근하게 해준다.
+   내부적으로 플라스크는 여러분이 다중 쓰레드 환경에 있더라도 활성화된 요청 쓰레드에
+   대해 올바른 데이터를 얻는 것을 보장한다.
 
-   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+   이것은 일종의 프록시다.  더 많은 정보는 :ref:`notes-on-proxies` 를 살펴봐라.
 
-   The request object is an instance of a :class:`~werkzeug.wrappers.Request`
-   subclass and provides all of the attributes Werkzeug defines.  This
-   just shows a quick overview of the most important ones.
+   이 요청 객체는 :class:`~werkzeug.wrappers.Request` 하위 클래스의 인스턴스이고 벡자이크가
+   정의한 모든 속성을 제공한다.  이 객체는 가장 중요한 객체에 대한 빠른 개요를 보여준다.
 
 
-Response Objects
-----------------
+응답 객체(Response Objects)
+---------------------------
 
 .. autoclass:: flask.Response
    :members: set_cookie, data, mimetype
