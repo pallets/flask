@@ -106,11 +106,10 @@ API
 
    .. attribute:: is_xhr
 
-      `True` if the request was triggered via a JavaScript
-      `XMLHttpRequest`. This only works with libraries that support the
-      ``X-Requested-With`` header and set it to `XMLHttpRequest`.
-      Libraries that do that are prototype, jQuery and Mochikit and
-      probably some more.
+      요청이 자바스크립트 `XMLHttpRequest` 으로 요청됐다면 `True` .
+      이 속성은 ``X-Requested-With`` 헤더를 지원하고 `XMLHttpRequest` 에
+      그것을 설정하는 라이브러리와만 동작한다. prototype, jQuery 그리고
+      Mochikit 등이 그런 라이브러리다.
 
 .. class:: request
 
