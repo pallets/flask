@@ -132,24 +132,23 @@ API
 
    .. attribute:: headers
 
-      A :class:`Headers` object representing the response headers.
+      응답 헤더를 나타내는 :class:`Headers` 객체.
 
    .. attribute:: status
 
-      A string with a response status.
+      응답 상태를 갖는 문자열.
 
    .. attribute:: status_code
 
-      The response status as integer.
+      정수형의 응답 상태코드.
 
 
-Sessions
---------
+세션(Sessions)
+--------------
 
-If you have the :attr:`Flask.secret_key` set you can use sessions in Flask
-applications.  A session basically makes it possible to remember
-information from one request to another.  The way Flask does this is by
-using a signed cookie.  So the user can look at the session contents, but
+여러분이 :attr:`Flask.secret_key` 속성을 설정한다면 플라스크 어플리케이션에
+있는 세션을 사용할 수 있다.  세션은 기본적으로 하나의 요청 정보를 다른 요청에서
+기억하게 해준다.  플라스크에서는 서명된 쿠기(singed cookie)를 이용한다.  So the user can look at the session contents, but
 not modify it unless they know the secret key, so make sure to set that
 to something complex and unguessable.
 
