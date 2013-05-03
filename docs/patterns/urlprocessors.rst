@@ -65,7 +65,7 @@ dictionary and put it somewhere else::
     def pull_lang_code(endpoint, values):
         g.lang_code = values.pop('lang_code', None)
 
-That way you no longer have to do the `lang_code` assigment to
+That way you no longer have to do the `lang_code` assignment to
 :data:`~flask.g` in every function.  You can further improve that by
 writing your own decorator that prefixes URLs with the language code, but
 the more beautiful solution is using a blueprint.  Once the
