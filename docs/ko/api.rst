@@ -66,20 +66,18 @@ API
 
    .. attribute:: files
 
-      A :class:`~werkzeug.datastructures.MultiDict` with files uploaded as part of a
-      `POST` or `PUT` request.  Each file is stored as
-      :class:`~werkzeug.datastructures.FileStorage` object.  It basically behaves like a
-      standard file object you know from Python, with the difference that
-      it also has a :meth:`~werkzeug.datastructures.FileStorage.save` function that can
-      store the file on the filesystem.
+      `POST` 또는 `PUT` 요청의 부분으로 파일 업로드를 갖는 :class:`~werkzeug.datastructures.MultiDict` .
+      각 파일은 :class:`~werkzeug.datastructures.FileStorage` 객체로 저장된다.  기본적으로 파이썬에서 
+      사용하는 표준 파일 객체처럼 동작하는데, 차이점은 이 객체는 파일 시스템에 파일을 저장할 수 있는
+      :meth:`~werkzeug.datastructures.FileStorage.save` 함수가 있다.
 
    .. attribute:: environ
 
-      The underlying WSGI environment.
+      기반이 되는 WSGI 환경.
 
    .. attribute:: method
 
-      The current request method (``POST``, ``GET`` etc.)
+      현재 요청에 대한 HTTP 메소드(``POST``, ``GET`` etc.)
 
    .. attribute:: path
    .. attribute:: script_root
@@ -87,17 +85,16 @@ API
    .. attribute:: base_url
    .. attribute:: url_root
 
-      Provides different ways to look at the current URL.  Imagine your
-      application is listening on the following URL::
+      현재 URL을 바라보는 여러 방식을 제공한다.  아래와 같은 URL을 제공하는
+      어플리케이션을 생각해보자::
 
           http://www.example.com/myapplication
 
-      And a user requests the following URL::
+      그리고 사용자는 아래와 같은 URL을 요청했다고 하자::
 
           http://www.example.com/myapplication/page.html?x=y
 
-      In this case the values of the above mentioned attributes would be
-      the following:
+      이 경우 위에서 언급한 속성값은 아래와 같이 될 것이다:
 
       ============= ======================================================
       `path`        ``/page.html``
