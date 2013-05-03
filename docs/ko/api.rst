@@ -5,68 +5,64 @@ API
 
 .. module:: flask
 
-This part of the documentation covers all the interfaces of Flask.  For
-parts where Flask depends on external libraries, we document the most
-important right here and provide links to the canonical documentation.
+전체 문서 중 여기서는 플라스크의 모든 인터페이스를 다룬다. 플라스크에서
+외부 라이브러리에 의존하는 부분에 대해서는 가장 중요한 것만 문서화했고
+공식적인 문서에 대한 링크를 제공한다.
 
 
-Application Object
-------------------
+어플리케이션 객체(Application Object)
+-------------------------------------
 
 .. autoclass:: Flask
    :members:
    :inherited-members:
 
 
-Blueprint Objects
------------------
+청사진 객체(Blueprint Objects)
+------------------------------
 
 .. autoclass:: Blueprint
    :members:
    :inherited-members:
 
-Incoming Request Data
----------------------
+유입되는 요청 데이터(Incoming Request Data)
+-------------------------------------------
 
 .. autoclass:: Request
    :members:
 
    .. attribute:: form
 
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from `POST`
-      or `PUT` requests.  Please keep in mind that file uploads will not
-      end up here,  but instead in the :attr:`files` attribute.
+      `POST` 또는 `PUT` 요청으로 부터 파싱된 폼 데이터를 갖는 A :class:`~werkzeug.datastructures.MultiDict`.
+      파일 업로드는 이 속성이 아닌 :attr:`files` 속성에서 처리되는 것을 명심해야한다.
 
    .. attribute:: args
 
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed contents of the query
-      string.  (The part in the URL after the question mark).
+      질의문의 파싱된 내용을 갖는 :class:`~werkzeug.datastructures.MultiDict` 
+      (URL에서 물음표 뒤에 있는 부분).
 
    .. attribute:: values
 
-      A :class:`~werkzeug.datastructures.CombinedMultiDict` with the contents of both
-      :attr:`form` and :attr:`args`.
+      :attr:`form` 과 :attr:`args` 의 내용을 갖는 :class:`~werkzeug.datastructures.CombinedMultiDict`.
 
    .. attribute:: cookies
 
-      A :class:`dict` with the contents of all cookies transmitted with
-      the request.
+      요청과 같이 전송되는 모든 쿠키의 내용을 갖는 :class:`dict`.
 
    .. attribute:: stream
 
-      If the incoming form data was not encoded with a known mimetype
-      the data is stored unmodified in this stream for consumption.  Most
-      of the time it is a better idea to use :attr:`data` which will give
-      you that data as a string.  The stream only returns the data once.
+      유입되는 폼 데이터가 알려진 마임타입(MimeType)으로 인코딩되지 않았다면
+      그 데이터는 변경되지 않은 상태로 이 스트림에 저장된다. 대부분의 경우
+      문자로 이 데이터를 제공하는 :attr:`data` 를 사용하는게 나은 방식이다.
+      스트림은 오직 한번 데이터를 반환한다.
 
    .. attribute:: headers
 
-      The incoming request headers as a dictionary like object.
+      딕셔너리 객체로 된 유입 요청 헤더.
 
    .. attribute:: data
 
-      Contains the incoming request data as string in case it came with
-      a mimetype Flask does not handle.
+      유입 요청 데이터가 플라스크가 다루지 않는 마임타입인 경우의 데이터.
 
    .. attribute:: files
 
