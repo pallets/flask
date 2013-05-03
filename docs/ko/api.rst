@@ -33,7 +33,7 @@ API
 
    .. attribute:: form
 
-      `POST` 또는 `PUT` 요청으로 부터 파싱된 폼 데이터를 갖는 A :class:`~werkzeug.datastructures.MultiDict`.
+      `POST` 또는 `PUT` 요청으로 부터 파싱된 폼 데이터를 갖는 A :class:`~werkzeug.datastructures.MultiDict` .
       파일 업로드는 이 속성이 아닌 :attr:`files` 속성에서 처리되는 것을 명심해야한다.
 
    .. attribute:: args
@@ -43,11 +43,11 @@ API
 
    .. attribute:: values
 
-      :attr:`form` 과 :attr:`args` 의 내용을 갖는 :class:`~werkzeug.datastructures.CombinedMultiDict`.
+      :attr:`form` 과 :attr:`args` 의 내용을 갖는 :class:`~werkzeug.datastructures.CombinedMultiDict` .
 
    .. attribute:: cookies
 
-      요청과 같이 전송되는 모든 쿠키의 내용을 갖는 :class:`dict`.
+      요청과 같이 전송되는 모든 쿠키의 내용을 갖는 :class:`dict` .
 
    .. attribute:: stream
 
