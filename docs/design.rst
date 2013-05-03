@@ -82,7 +82,7 @@ things (:ref:`app-factories`).
 The Routing System
 ------------------
 
-Flask uses the Werkzeug routing system which has was designed to
+Flask uses the Werkzeug routing system which was designed to
 automatically order routes by complexity.  This means that you can declare
 routes in arbitrary order and they will still work as expected.  This is a
 requirement if you want to properly implement decorator based routing
