@@ -188,7 +188,7 @@ you have a Python list in context called `mylist`::
 Context Processors
 ------------------
 
-To inject new variables automatically into the context of a template
+To inject new variables automatically into the context of a template,
 context processors exist in Flask.  Context processors run before the
 template is rendered and have the ability to inject new values into the
 template context.  A context processor is a function that returns a
