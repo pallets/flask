@@ -13,10 +13,10 @@
 실제로 어플리케이션은 아니다. 다만 어플리케이션을 생성하거나 확장하는 방식에 대한
 *청사진* 이다.
 
-Why Blueprints?
----------------
+왜 청사진인가?
+--------------
 
-Blueprints in Flask are intended for these cases:
+플라스크의 청사진은 다음 경우로 인해 만들어졌다:
 
 * Factor an application into a set of blueprints.  This is ideal for
   larger applications; a project could instantiate an application object,
