@@ -1,17 +1,17 @@
 .. _blueprints:
 
-Modular Applications with Blueprints
-====================================
+청사진을 가진 모듈화된 어플리케이션
+===================================
 
 .. versionadded:: 0.7
 
-Flask uses a concept of *blueprints* for making application components and
-supporting common patterns within an application or across applications.
-Blueprints can greatly simplify how large applications work and provide a
-central means for Flask extensions to register operations on applications.
-A :class:`Blueprint` object works similarly to a :class:`Flask`
-application object, but it is not actually an application.  Rather it is a
-*blueprint* of how to construct or extend an application.
+플라스크는 어플리케이션 컴포넌트를 만들고 어플리케이션 내부나 어플리케이션간에
+공통 패턴을 지원하기 위해 *청사진(blueprint)* 라는 개념을 사용한다.  청사진은
+보통 대형 어플리케이션이 동작하는 방식을 단순화하고 어플리케이션의 동작을
+등록하기 위한 플라스크 확장에 대한 중앙 집중된 수단을 제공할 수 있다.
+:class:`Blueprint` 객체는 :class:`Flask` 어플리케이션 객체와 유사하게 동작하지만
+실제로 어플리케이션은 아니다. 다만 어플리케이션을 생성하거나 확장하는 방식에 대한
+*청사진* 이다.
 
 Why Blueprints?
 ---------------
