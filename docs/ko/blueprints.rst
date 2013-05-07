@@ -23,17 +23,13 @@
   여러 확장을 초기화하고, 청사진의 묶음을 등록할 수 있다.
 * 어플리케이션 상에 URL 접두어와/또는 서브도메인으로 청사진을 등록한다.
   Register a blueprint on an application at a URL prefix and/or subdomain.
-  URL 접두어와/또는 서브도메인에 있는 파라메터는 청사진에 있는 모든 뷰 함수를
-  가로질러 공통 뷰 인자(기본값을 가진)가 된다.
-  Parameters in the URL prefix/subdomain become common view arguments
-  (with defaults) across all view functions in the blueprint.
-* Register a blueprint multiple times on an application with different URL
-  rules.
-* Provide template filters, static files, templates, and other utilities
-  through blueprints.  A blueprint does not have to implement applications
-  or view functions.
-* Register a blueprint on an application for any of these cases when
-  initializing a Flask extension.
+  URL 접두어와/또는 서브도메인에 있는 파라메터는 청사진에 있는 모든 뷰 함수에
+  걸쳐있는 공통 뷰 인자(기본값을 가진)가 된다.
+* 어플리케이션에 여러 URL 규칙을 가진 청사진을 여러번 등록한다.
+* 청사진을 통해 템플릿 필터, 정적 파일, 템플릿, 그리고 다른 유틸리티를 제공한다.
+  청사진은 어플리케이션이나 뷰 함수를 구현하지 않아도 된다.
+* 플라스크 확장을 초기화할 때 이런 경우 중 어떤 경우라도 어플리케이션에 청사진을 
+  등록한다.
 
 A blueprint in Flask is not a pluggable app because it is not actually an
 application -- it's a set of operations which can be registered on an
