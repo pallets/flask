@@ -44,16 +44,15 @@
 청사진의 개념
 -------------
 
-The basic concept of blueprints is that they record operations to execute
-when registered on an application.  Flask associates view functions with
-blueprints when dispatching requests and generating URLs from one endpoint
-to another.
+청사진의 기본 개념은 어플리케이션에 청사진이 등록될 때 실행할 동작을
+기록한다는 것이다.  플라스크는 요청을 보내고 하나의 끝점에서 다른 곳으로
+URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다. 
 
-My First Blueprint
-------------------
+첫번째 청사진
+-------------
 
-This is what a very basic blueprint looks like.  In this case we want to
-implement a blueprint that does simple rendering of static templates::
+아래는 가장 기본적인 청사진의 모습이다.  이 경우에 우리는 정적 템플릿을
+간단하게 그려주는 청사진을 구현하고 싶다::
 
     from flask import Blueprint, render_template, abort
     from jinja2 import TemplateNotFound
