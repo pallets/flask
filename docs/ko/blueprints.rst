@@ -36,14 +36,13 @@
 않는가?  여러분은 그렇게(:ref:`app-dispatch` 을 살펴봐라)할 수 있지만, 
 어플리케이션은 분리된 설정을 가질것 이고 WSGI 계층에서 관리될 것이다.
 
-Blueprints instead provide separation at the Flask level, share
-application config, and can change an application object as necessary with
-being registered. The downside is that you cannot unregister a blueprint
-once an application was created without having to destroy the whole
-application object.
+대신에 청사진은 플라스크 레벨에서 분리를 제공하고, 어플리케이션 설정을 공유하며
+, 그리고 등록된 것을 가지고 필요에 따라 어플리케이션 객체를 변경할 수 있다.
+이것의 단점은 일단 전체 어플리케이션 객체를 제거할 필요없이 어플리케이션이
+생성됐을 때 여러분은 청사진을 해지할 수 없다.
 
-The Concept of Blueprints
--------------------------
+청사진의 개념
+-------------
 
 The basic concept of blueprints is that they record operations to execute
 when registered on an application.  Flask associates view functions with
