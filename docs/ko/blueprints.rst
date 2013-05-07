@@ -18,10 +18,13 @@
 
 플라스크의 청사진은 다음 경우로 인해 만들어졌다:
 
-* Factor an application into a set of blueprints.  This is ideal for
-  larger applications; a project could instantiate an application object,
-  initialize several extensions, and register a collection of blueprints.
-* Register a blueprint on an application at a URL prefix and/or subdomain.
+* 어플리케이션을 청사진의 집합으로 고려한다.  이 방식은 대형 어플리케이션에 
+  있어서 이상적이다; 어떤 프로젝트는 어플리케이션 객체를 인스턴스화하고,
+  여러 확장을 초기화하고, 청사진의 묶음을 등록할 수 있다.
+* 어플리케이션 상에 URL 접두어와/또는 서브도메인으로 청사진을 등록한다.
+  Register a blueprint on an application at a URL prefix and/or subdomain.
+  URL 접두어와/또는 서브도메인에 있는 파라메터는 청사진에 있는 모든 뷰 함수를
+  가로질러 공통 뷰 인자(기본값을 가진)가 된다.
   Parameters in the URL prefix/subdomain become common view arguments
   (with defaults) across all view functions in the blueprint.
 * Register a blueprint multiple times on an application with different URL
