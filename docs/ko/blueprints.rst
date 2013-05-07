@@ -19,10 +19,9 @@
 플라스크의 청사진은 다음 경우로 인해 만들어졌다:
 
 * 어플리케이션을 청사진의 집합으로 고려한다.  이 방식은 대형 어플리케이션에 
-  있어서 이상적이다; 어떤 프로젝트는 어플리케이션 객체를 인스턴스화하고,
+  있어서 이상적이다; 프로젝트는 어플리케이션 객체를 인스턴스화하고,
   여러 확장을 초기화하고, 청사진의 묶음을 등록할 수 있다.
 * 어플리케이션 상에 URL 접두어와/또는 서브도메인으로 청사진을 등록한다.
-  Register a blueprint on an application at a URL prefix and/or subdomain.
   URL 접두어와/또는 서브도메인에 있는 파라메터는 청사진에 있는 모든 뷰 함수에
   걸쳐있는 공통 뷰 인자(기본값을 가진)가 된다.
 * 어플리케이션에 여러 URL 규칙을 가진 청사진을 여러번 등록한다.
@@ -31,11 +30,11 @@
 * 플라스크 확장을 초기화할 때 이런 경우 중 어떤 경우라도 어플리케이션에 청사진을 
   등록한다.
 
-A blueprint in Flask is not a pluggable app because it is not actually an
-application -- it's a set of operations which can be registered on an
-application, even multiple times.  Why not have multiple application
-objects?  You can do that (see :ref:`app-dispatch`), but your applications
-will have separate configs and will be managed at the WSGI layer.
+플라스크에 있는 청사진은 끼우고 뺄수 있는 앱이 아니다 왜냐하면 청사진은 실제
+어플리케이션이 아니기 때문이다 -- 그것은 어플리케이션에 등록될 수 있는 동작의
+집합인데 심지어 여러번 등록될 수 있다.  왜 복수의 어플리케이션 객체를 가지지 
+않는가?  여러분은 그렇게(:ref:`app-dispatch` 을 살펴봐라)할 수 있지만, 
+어플리케이션은 분리된 설정을 가질것 이고 WSGI 계층에서 관리될 것이다.
 
 Blueprints instead provide separation at the Flask level, share
 application config, and can change an application object as necessary with
