@@ -126,62 +126,60 @@ URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다.
 
 폴더는 보통 `__name__` 인 :class:`Blueprint` 에 두번째 인자로 생각된다.
 이 인자는 어떤 논리적인 파이썬 모듈이나 패키지가 청사진과 상응되는지 
-알려준다.  If it points to an actual
-Python package that package (which is a folder on the filesystem) is the
-resource folder.  If it's a module, the package the module is contained in
-will be the resource folder.  You can access the
-:attr:`Blueprint.root_path` property to see what the resource folder is::
+알려준다.  그것이 실제 파이썬 패키지를 가리킨다면 그 패키지 (파일 시스템의
+폴더인) 는 리소스 폴더다.  그것이 모듈이라면, 모듈이 포함되있는 패키지는
+리소스 폴더가 될 것이다.  리소스 폴더가 어떤것인지 보기 위해서는
+:attr:`Blueprint.root_path` 속성에 접근할 수 있다::
 
     >>> simple_page.root_path
     '/Users/username/TestProject/yourapplication'
 
-To quickly open sources from this folder you can use the
-:meth:`~Blueprint.open_resource` function::
+이 폴더에서 소스를 빨리 열기 위해서 여러분은 :meth:`~Blueprint.open_resource`
+함수를 사용할 수 있다::
 
     with simple_page.open_resource('static/style.css') as f:
         code = f.read()
 
-Static Files
-````````````
+정적 파일
+`````````
 
-A blueprint can expose a folder with static files by providing a path to a
-folder on the filesystem via the `static_folder` keyword argument.  It can
-either be an absolute path or one relative to the folder of the
-blueprint::
+청사진은 `static_folder` 키워드 인자를 통해서 파일시스템에 있는 폴더에 경로를
+제공하여 정적 파일을 가진 폴더를 노출할 수 있다.  그것은 절대 경로이거나 
+청사진 폴더에 대해 상대 경로일 수 있다::
 
     admin = Blueprint('admin', __name__, static_folder='static')
 
-By default the rightmost part of the path is where it is exposed on the
-web.  Because the folder is called ``static`` here it will be available at
-the location of the blueprint + ``/static``.  Say the blueprint is
-registered for ``/admin`` the static folder will be at ``/admin/static``.
+기본값으로 경로의 가장 오른쪽 부분이 웹에 노출되는 곳이다.  폴더는 여기서
+``static`` 이라고 불리기 때문에 청사진 위치 + ``static`` 으로 될 것이다.
+청사진이 ``/admin`` 으로 등록되있다고 하면 정적 폴더는 ``/admin/static``
+으로 될 것이다.
 
-The endpoint is named `blueprint_name.static` so you can generate URLs to
-it like you would do to the static folder of the application::
+끝점은 `bluepirnt_name.static` 으로 되고 여러분은 어플리케이션의 정적 폴더에
+한 것 처럼 그 끝점에 URL을 생성할 수 있다::
 
     url_for('admin.static', filename='style.css')
 
-Templates
-`````````
+템플릿
+``````
 
-If you want the blueprint to expose templates you can do that by providing
-the `template_folder` parameter to the :class:`Blueprint` constructor::
+여러분이 청사진이 템플릿을 노출하게 하고 싶다면 :class:`Blueprint` 생성자에
+`template_folder` 인자를 제공하여 노출할 수 있다::
 
     admin = Blueprint('admin', __name__, template_folder='templates')
 
-As for static files, the path can be absolute or relative to the blueprint
-resource folder.  The template folder is added to the searchpath of
-templates but with a lower priority than the actual application's template
-folder.  That way you can easily override templates that a blueprint
-provides in the actual application.
+정적 파일에 관해서, 그 경로는 절대 경로일 수 있고 청사진 리소스 폴더 대비
+상대적일 수 있다.  템플릿 폴더는 템플릿 검색경로에 추가되지만 실제 
+어플리케이션의 템플릿 폴더보다 낮은 우선순위를 갖는다.  그런 방식으로
+여러분은 청사진이 실제 어플리케이션에서 제공하는 템플릿을 쉽게 오버라이드
+할 수 있다.
 
-So if you have a blueprint in the folder ``yourapplication/admin`` and you
-want to render the template ``'admin/index.html'`` and you have provided
-``templates`` as a `template_folder` you will have to create a file like
-this: ``yourapplication/admin/templates/admin/index.html``.
+그러므로 ``yourapplication/admin`` 폴더에 청사진이 있고 ``'admin/index.html'``
+를 뿌려주고 `template_folder` 로 ``templates`` 를 제공한다면 여러분은 
+``yourapplication/admin/templates/admin/index.html`` 같이 파일을 생성해야
+할 것이다.
 
-Building URLs
--------------
+URL 만들기
+----------
 
 If you want to link from one page to another you can use the
 :func:`url_for` function just like you normally would do just that you
