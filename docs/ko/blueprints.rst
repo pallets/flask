@@ -52,7 +52,7 @@ URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다.
 -------------
 
 아래는 가장 기본적인 청사진의 모습이다.  이 경우에 우리는 정적 템플릿을
-간단하게 그려주는 청사진을 구현하고 싶다::
+간단하게 그려주는 청사진을 구현하기를 원할 것이다::
 
     from flask import Blueprint, render_template, abort
     from jinja2 import TemplateNotFound
@@ -68,17 +68,16 @@ URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다.
         except TemplateNotFound:
             abort(404)
 
-When you bind a function with the help of the ``@simple_page.route``
-decorator the blueprint will record the intention of registering the
-function `show` on the application when it's later registered.
-Additionally it will prefix the endpoint of the function with the
-name of the blueprint which was given to the :class:`Blueprint`
-constructor (in this case also ``simple_page``).
+``@simple_page.route`` 데코레이터와 함수를 연결할 때 청사진은 
+어플리케이션에 있는 그  함수를 등록하겠다는 의도를 기록할 것이다.
+게다가 청사진은 :class:`Blueprint` 생성자(위의 경우에는 ``simple_page``)
+에 들어가는 그 이름을 가지고 등록된 함수의 끝점 앞에 붙일 것이다.
 
-Registering Blueprints
-----------------------
 
-So how do you register that blueprint?  Like this::
+청사진 등록하기
+---------------
+
+그렇다면 청사진을 어떻게 등록할 것 인가? 아래와 같이 등록한다::
 
     from flask import Flask
     from yourapplication.simple_page import simple_page
@@ -86,19 +85,19 @@ So how do you register that blueprint?  Like this::
     app = Flask(__name__)
     app.register_blueprint(simple_page)
 
-If you check the rules registered on the application, you will find
-these::
+여러분이 어플리케이션에 등록된 규칙을 확인한다면, 여러분은 아래와
+같은 것을 찾을 것이다::
 
     [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
      <Rule '/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
      <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>]
 
-The first one is obviously from the application ifself for the static
-files.  The other two are for the `show` function of the ``simple_page``
-blueprint.  As you can see, they are also prefixed with the name of the
-blueprint and separated by a dot (``.``).
+첫 규칙은 명시적으로 어플리케이션에 있는 정적 파일에 대한 것이다.
+다른 두 규칙은 ``simple_page`` 청사진의 `show` 함수에 대한 것이다. 
+볼 수 있는 것 처럼, 청사진의 이름이 접두어로 붙어있고 점 (``.``)
+으로 구분되있다.
 
-Blueprints however can also be mounted at different locations::
+하지만 ㅊ어사진은 또한 다른 지점으로 마운트 될 수 있도 있다::
 
     app.register_blueprint(simple_page, url_prefix='/pages')
 
