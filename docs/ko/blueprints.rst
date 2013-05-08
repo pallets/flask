@@ -120,13 +120,13 @@ URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다.
 청사진 리소스 폴더
 ``````````````````
 
-Like for regular applications, blueprints are considered to be contained
-in a folder.  While multiple blueprints can originate from the same folder,
-it does not have to be the case and it's usually not recommended.
+보통 어플리케이션처럼, 청사진은 폴더안에 포함되도록 고려된다.  다수의
+청사진이 같은 폴더에서 제공될 수 있지만, 그런 경우가 될 필요도 없고
+보통 권고하지 않는다.
 
-The folder is inferred from the second argument to :class:`Blueprint` which
-is usually `__name__`.  This argument specifies what logical Python
-module or package corresponds to the blueprint.  If it points to an actual
+폴더는 보통 `__name__` 인 :class:`Blueprint` 에 두번째 인자로 생각된다.
+이 인자는 어떤 논리적인 파이썬 모듈이나 패키지가 청사진과 상응되는지 
+알려준다.  If it points to an actual
 Python package that package (which is a folder on the filesystem) is the
 resource folder.  If it's a module, the package the module is contained in
 will be the resource folder.  You can access the
