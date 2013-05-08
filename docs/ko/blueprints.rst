@@ -97,28 +97,28 @@ URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다.
 볼 수 있는 것 처럼, 청사진의 이름이 접두어로 붙어있고 점 (``.``)
 으로 구분되있다.
 
-하지만 ㅊ어사진은 또한 다른 지점으로 마운트 될 수 있도 있다::
+하지만 청사진은 또한 다른 지점으로 마운트 될 수 있도 있다::
 
     app.register_blueprint(simple_page, url_prefix='/pages')
 
-And sure enough, these are the generated rules::
+그리고 물론 말할 것도 없이, 아래와 같은 규칙이 생성된다::
 
     [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
      <Rule '/pages/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
      <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>]
 
-On top of that you can register blueprints multiple times though not every
-blueprint might respond properly to that.  In fact it depends on how the
-blueprint is implemented if it can be mounted more than once.
+무엇보다 모든 청사진이 복수로 적용되는 것에 적절한 응답을 주지는 않지만
+여러분은 청사진을 여러번 등록할 수 있다.  사실 한번 이상 청사진을 마운트할
+수 있다면 제대로 청사진이 동작하느냐는 청사진을 어떻게 구현했으냐에 달려있다.
 
-Blueprint Resources
--------------------
+청사진 리소스
+-------------
 
-Blueprints can provide resources as well.  Sometimes you might want to
-introduce a blueprint only for the resources it provides.
+청사진은 리소스 또한 제공할 수 있다.  때때로 여러분은 단지 리소스만을
+제공하기 위해 청사진을 사용하고 싶을 수도 있다.
 
-Blueprint Resource Folder
-`````````````````````````
+청사진 리소스 폴더
+``````````````````
 
 Like for regular applications, blueprints are considered to be contained
 in a folder.  While multiple blueprints can originate from the same folder,
