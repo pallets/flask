@@ -181,17 +181,17 @@ URL을 생성할 때 뷰 함수와 청사진의 연관을 맺는다.
 URL 만들기
 ----------
 
-If you want to link from one page to another you can use the
-:func:`url_for` function just like you normally would do just that you
-prefix the URL endpoint with the name of the blueprint and a dot (``.``)::
+하나의 페이지에서 다른 페이지로 링크하고 싶다면 보통 청사진명을 접두어로
+하고 점 (``.``) 으로 URL 끝점을 구분하는 것처럼 :func:`url_for` 함수를 
+사용할 수 있다::
 
     url_for('admin.index')
 
-Additionally if you are in a view function of a blueprint or a rendered
-template and you want to link to another endpoint of the same blueprint,
-you can use relative redirects by prefixing the endpoint with a dot only::
+추가적으로 여러분이 청사진의 뷰 함수에 있거나 뿌려진 템플릿에 있고 
+같은 청사진의 다른 끝점으로 링크를 걸고 싶다면, 점을 접두어로 하여 
+끝점에 붙여서 상대적인 리디렉션을 사용할 수 있다::
 
     url_for('.index')
 
-This will link to ``admin.index`` for instance in case the current request
-was dispatched to any other admin blueprint endpoint.
+예를 들면 현재 요청을 어떤 다른 청사진의 끝점으로 보내는 경우에 ``admin.index`` 
+로 링크할 것이다.
