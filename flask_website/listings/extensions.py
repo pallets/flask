@@ -509,6 +509,20 @@ extensions = [
         docs='http://packages.python.org/Flask-WeasyPrint/',
         github='SimonSapin/Flask-WeasyPrint',
     ),
+    Extension('Flask-Canvas', 'Demian Brecht',
+        description='''
+            <p>
+                A Flask extension for Facebook canvas-based applications
+            </p>
+        ''',
+        docs='http://flask-canvas.readthedocs.org/en/latest/',
+        github='demianbrecht/flask-canvas',
+        notes='''
+            Monkeypatches Flask, adding canvas_route to expose Facebook
+            canvas user data through canvas_user parameters in view
+            functions.
+        '''
+    ),
 ]
 
 
