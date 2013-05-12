@@ -18,7 +18,7 @@ API
    :inherited-members:
 
 
-청사진 객체(Blueprint Objects)
+블루프린트 객체(Blueprint Objects)
 ------------------------------
 
 .. autoclass:: Blueprint
