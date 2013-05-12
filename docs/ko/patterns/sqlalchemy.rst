@@ -1,21 +1,21 @@
 .. _sqlalchemy-pattern:
 
-플라스크에서 SQLAlchemy 사용하기
+Flask에서 SQLAlchemy 사용하기
 ================================
 
 많은 사람들이 데이타베이스에 접근하기 위해 `SQLAlchemy`_ 선호한다.
-이런 경우 여러분의 플라스크 어플리케이션에 대해 모듈 보다는 패키지를 
+이런 경우 여러분의 Flask 어플리케이션에 대해 모듈 보다는 패키지를 
 사용하고 모델들을 분리된 모듈로 만드는 것이 독려된다(:ref:`larger-applications`).
 그것이 필수는 아니지만, 많은 부분에서 이해가 될만하다.
 
 There are four very common ways to use SQLAlchemy를 사용하는 매우 일반적인
 네가지 방식이 있다.  여기서 그것들을 각각 간략하게 설명할 것이다:
 
-플라스크-SQLAlchemy 확장
+Flask-SQLAlchemy 확장
 ------------------------
 
 SQLAlchemy는 공통 데이타베이스 추상 계층이고 설정하는데 약간의 노력을 요하는
-객체 관계형 맵퍼(mapper)이기 때문에, 여러분을 위해 그 역할을 해줄 플라스크 
+객체 관계형 맵퍼(mapper)이기 때문에, 여러분을 위해 그 역할을 해줄 Flask 
 확장(extension)이 있다.  여러분이 빨리 시작하기를 원한다면 이 방식을 추천한다.
 
 여러분은 `PyPI<http://pypi.python.org/pypi/Flask-SQLAlchemy>`_ 에서 
@@ -61,7 +61,7 @@ that's because SQLAlchemy does that for us already with the :class:`~sqlalchemy.
 
 여러분의 어플리케이션에서 선언적인 방식으로 SQLAlchemy를 사용하려면,
 여러분의 어플리케이션 모듈에 아래의 코드를 집어넣기만 하면 된다.
-플라스크는 여러분을 위해 요청의 끝에서 데이타베이스 세션을 제거할 것이다::
+Flask는 여러분을 위해 요청의 끝에서 데이타베이스 세션을 제거할 것이다::
 
     from yourapplication.database import db_session
 
