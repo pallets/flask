@@ -1,19 +1,22 @@
 .. _signals:
 
-Signals
-=======
+시그널(Signals)
+===============
 
 .. versionadded:: 0.6
 
-Starting with Flask 0.6, there is integrated support for signalling in
-Flask.  This support is provided by the excellent `blinker`_ library and
-will gracefully fall back if it is not available.
+플라스크 0.6부터 시그널 지원 기능이 플라스크에 통합됐다.  이 기능은
+`blinker`_ 라는 훌륭한 라이브러리로 제공되며 사용할 수 없을 경우
+자연스럽게 지원하지 않는 상태로 돌아갈 것이다. 
 
-What are signals?  Signals help you decouple applications by sending
-notifications when actions occur elsewhere in the core framework or
-another Flask extensions.  In short, signals allow certain senders to
-notify subscribers that something happened.
+시그널이란 무엇인가?  시그널은 핵심 프레임워크나 다른 플라스크 확장의
+어느 곳에서 동작이 발생했을 때 공지를 보내어 어플리케이션을 동작하게 하여
+어플리케이션간의 의존성을 분리하도록 돕는다.  요약하자면 시그널은 
+특정 시그널 발신자가 어떤 일이 발생했다고 수신자에게 알려준다.
 
+플라스크에는 여러 시그널이 있고 플라스크 확장은 더 많은 시그널을 제공할
+수 도 있다.  또한 시그널은 수신자에게 공지하도록 의도한 것이지 수신자가 
+데이터를 변경하도록 권장하지 않아야 한다.
 Flask comes with a couple of signals and other extensions might provide
 more.  Also keep in mind that signals are intended to notify subscribers
 and should not encourage subscribers to modify data.  You will notice that
