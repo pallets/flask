@@ -197,18 +197,18 @@ def url_for(endpoint, **values):
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
     To integrate applications, :class:`Flask` has a hook to intercept URL build
-    errors through :attr:`Flask.build_error_handler`.  The `url_for` function
-    results in a :exc:`~werkzeug.routing.BuildError` when the current app does
-    not have a URL for the given endpoint and values.  When it does, the
-    :data:`~flask.current_app` calls its :attr:`~Flask.build_error_handler` if
-    it is not `None`, which can return a string to use as the result of
-    `url_for` (instead of `url_for`'s default to raise the
+    errors using handlers in :attr:`Flask.url_build_error_handlers`.  When the
+    current app does not have a URL for the given endpoint and values, the
+    `url_for` function results in a :exc:`~werkzeug.routing.BuildError`.  In
+    such a case :data:`~flask.current_app` calls the handlers from
+    :attr:`Flask.url_build_error_handlers` which can return a string to use as
+    the result of `url_for` (instead of `url_for`'s default to raise the
     :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
     An example::
 
-        def external_url_handler(error, endpoint, **values):
+        def external_url_handler(error, endpoint, values):
             "Looks up an external URL when `url_for` cannot build a URL."
-            # This is an example of hooking the build_error_handler.
+            # This is an example of hooking the url_build_error_handlers.
             # Here, lookup_url is some utility function you've built
             # which looks up the endpoint in some external URL registry.
             url = lookup_url(endpoint, **values)
@@ -223,7 +223,7 @@ def url_for(endpoint, **values):
             # url_for will use this result, instead of raising BuildError.
             return url
 
-        app.build_error_handler = external_url_handler
+        app.url_build_error_handlers += [external_url_handler]
 
     Here, `error` is the instance of :exc:`~werkzeug.routing.BuildError`, and
     `endpoint` and `**values` are the arguments passed into `url_for`.  Note
