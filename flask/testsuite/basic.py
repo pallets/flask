@@ -12,6 +12,7 @@
 from __future__ import with_statement
 
 import re
+import uuid
 import flask
 import pickle
 import unittest
@@ -319,10 +320,12 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         app.secret_key = 'development-key'
         app.testing = True
         now = datetime.utcnow().replace(microsecond=0)
+        the_uuid = uuid.uuid4()
 
         @app.after_request
         def modify_session(response):
             flask.session['m'] = flask.Markup('Hello!')
+            flask.session['u'] = the_uuid
             flask.session['dt'] = now
             flask.session['t'] = (1, 2, 3)
             return response
@@ -337,6 +340,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(rv['m'], flask.Markup('Hello!'))
         self.assert_equal(type(rv['m']), flask.Markup)
         self.assert_equal(rv['dt'], now)
+        self.assert_equal(rv['u'], the_uuid)
         self.assert_equal(rv['t'], (1, 2, 3))
 
     def test_flashes(self):

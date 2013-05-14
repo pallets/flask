@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import uuid
 import hashlib
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
@@ -58,6 +59,8 @@ class TaggedJSONSerializer(object):
         def _tag(value):
             if isinstance(value, tuple):
                 return {' t': [_tag(x) for x in value]}
+            elif isinstance(value, uuid.UUID):
+                return {' u': value.hex}
             elif callable(getattr(value, '__html__', None)):
                 return {' m': unicode(value.__html__())}
             elif isinstance(value, list):
@@ -84,6 +87,8 @@ class TaggedJSONSerializer(object):
             the_key, the_value = obj.iteritems().next()
             if the_key == ' t':
                 return tuple(the_value)
+            elif the_key == ' u':
+                return uuid.UUID(the_value)
             elif the_key == ' m':
                 return Markup(the_value)
             elif the_key == ' d':
