@@ -31,11 +31,11 @@ to add a script statement to the bottom of your `<body>` to load jQuery:
      url_for('static', filename='jquery.js') }}"></script>
 
 Another method is using Google's `AJAX Libraries API
-<http://code.google.com/apis/ajaxlibs/documentation/>`_ to load jQuery:
+<https://developers.google.com/speed/libraries/devguide>`_ to load jQuery:
 
 .. sourcecode:: html
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{
       url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 
