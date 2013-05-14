@@ -102,7 +102,7 @@ test method to our class, like this::
 
         def tearDown(self):
             os.close(self.db_fd)
-            os.unlink(flaskr.DATABASE)
+            os.unlink(flaskr.app.config['DATABASE'])
 
         def test_empty_db(self):
             rv = self.app.get('/')
