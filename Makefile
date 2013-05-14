@@ -1,9 +1,12 @@
-.PHONY: clean-pyc ext-test test upload-docs docs audit
+.PHONY: clean-pyc ext-test test test-with-mem upload-docs docs audit
 
 all: clean-pyc test
 
 test:
 	python run-tests.py
+
+test-with-mem:
+	RUN_FLASK_MEMORY_TESTS=1 python run-tests.py
 
 audit:
 	python setup.py audit

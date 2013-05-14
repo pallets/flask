@@ -11,12 +11,12 @@
 
 from __future__ import with_statement
 
+import os
 import gc
 import sys
 import flask
 import threading
 import unittest
-from werkzeug.test import run_wsgi_app, create_environ
 from werkzeug.exceptions import NotFound
 from flask.testsuite import FlaskTestCase
 
@@ -112,6 +112,7 @@ class ExceptionTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MemoryTestCase))
+    if os.environ.get('RUN_FLASK_MEMORY_TESTS') == '1':
+        suite.addTest(unittest.makeSuite(MemoryTestCase))
     suite.addTest(unittest.makeSuite(ExceptionTestCase))
     return suite
