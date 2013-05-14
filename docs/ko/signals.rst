@@ -15,42 +15,35 @@
 특정 시그널 발신자가 어떤 일이 발생했다고 수신자에게 알려준다.
 
 플라스크에는 여러 시그널이 있고 플라스크 확장은 더 많은 시그널을 제공할
-수 도 있다.  또한 시그널은 수신자에게 공지하도록 의도한 것이지 수신자가 
-데이터를 변경하도록 권장하지 않아야 한다.
-Flask comes with a couple of signals and other extensions might provide
-more.  Also keep in mind that signals are intended to notify subscribers
-and should not encourage subscribers to modify data.  You will notice that
-there are signals that appear to do the same thing like some of the
-builtin decorators do (eg: :data:`~flask.request_started` is very similar
-to :meth:`~flask.Flask.before_request`).  There are however difference in
-how they work.  The core :meth:`~flask.Flask.before_request` handler for
-example is executed in a specific order and is able to abort the request
-early by returning a response.  In contrast all signal handlers are
-executed in undefined order and do not modify any data.
+수 도 있다.  또한 시그널은 수신자에게 무엇인가를 알리도록 의도한 것이지
+수신자가 데이터를 변경하도록 권장하지 않아야 한다.  몇몇 빌트인 데코레이터의 
+동작과 같은 것을 하는 것 처럼 보이는 시그널이 있다는 것을 알게될 것이다.
+(예를 들면 :data:`~flask.request_started` 은 
+:meth:`~flask.Flask.before_request` 과 매우 유사하다) 하지만, 그 동작 방식에
+차이는 있다.  예제의 핵심 :meth:`~flask.Flask.before_request` 핸들러는 정해진
+순서에 의해 실행되고 응답이 반환됨에 의해 일찍 요청처리를 중단할 수 있다.  
+반면에 다른 모든 시그널은 정해진 순서 없이 실행되며 어떤 데이터도 수정하지 않는다.
 
-The big advantage of signals over handlers is that you can safely
-subscribe to them for the split of a second.  These temporary
-subscriptions are helpful for unittesting for example.  Say you want to
-know what templates were rendered as part of a request: signals allow you
-to do exactly that.
+핸들러 대비 시그널의 큰 장점은 짧은 순간 동안 그 시그널을 안전하게 수신할 수
+있다는 것이다.  예를 들면 이런 일시적인 수신은 단위테스팅에 도움이 된다.
+여러분이 요청의 일부분으로 어떤 템플릿을 보여줄지 알고 싶다고 해보자: 시그널이
+정확히 바로 그 작업을 하게 한다.
 
-Subscribing to Signals
-----------------------
+시그널을 수신하기
+-----------------
 
-To subscribe to a signal, you can use the
-:meth:`~blinker.base.Signal.connect` method of a signal.  The first
-argument is the function that should be called when the signal is emitted,
-the optional second argument specifies a sender.  To unsubscribe from a
-signal, you can use the :meth:`~blinker.base.Signal.disconnect` method.
+시그널은 수신하려면 시그널의 :meth:`~blinker.base.Signal.connect` 메소드를
+사용할 수 있다. 첫번째 인자는 시그널이 송신됐을 때 호출되는 함수고, 선택적인
+두번째 인자는 송신자를 지정한다.  해당 시그널의 송신을 중단하려면 
+:meth:`~blinker.base.Signal.disconnect` 메소드를 사용하면 된다.
 
-For all core Flask signals, the sender is the application that issued the
-signal.  When you subscribe to a signal, be sure to also provide a sender
-unless you really want to listen for signals of all applications.  This is
-especially true if you are developing an extension.
+모든 핵심 플라스크 시그널에 대해서 송신자는 시그널을 발생하는 어플리케이션이다.
+여러분이 시그널을 수신할 때, 모든 어플리케이션의 시그널을 수신하고 싶지 않다면
+받고자하는 시그널의 송신자 지정을 잊지 말도록 해라.  여러분이 확장을 개발하고 있다면
+특히나 주의해야한다.
 
-Here for example a helper context manager that can be used to figure out
-in a unittest which templates were rendered and what variables were passed
-to the template::
+예를 들면 여기에 단위테스팅에서 어떤 템플릿이 보여지고 어떤 변수가 템플릿으로 
+전달되는지 이해하기 위해 사용될 수 있는 헬퍼 컨택스트 매니저가 있다::
 
     from flask import template_rendered
     from contextlib import contextmanager
@@ -66,7 +59,7 @@ to the template::
         finally:
             template_rendered.disconnect(record, app)
 
-This can now easily be paired with a test client::
+위의 메소드는 테스트 클라이언트와 쉽게 묶일 수 있다::
 
     with captured_templates(app) as templates:
         rv = app.test_client().get('/')
@@ -76,13 +69,12 @@ This can now easily be paired with a test client::
         assert template.name == 'index.html'
         assert len(context['items']) == 10
 
-Make sure to subscribe with an extra ``**extra`` argument so that your
-calls don't fail if Flask introduces new arguments to the signals.
+플라스크가 시그널에 새 인자를 알려준다면 여러분이 호출한 메소드는
+실패하지 않을 것이므로 추가적인 ``**extra`` 인자로 수신하도록 해라.
 
-All the template rendering in the code issued by the application `app`
-in the body of the `with` block will now be recorded in the `templates`
-variable.  Whenever a template is rendered, the template object as well as
-context are appended to it.
+`with` 블럭의 내용에 있는 어플리케이션 `app`이 생성한 코드에서 보여주는
+모든 템플릿은 `templates` 변수에 기록될 것이다.  템플릿이 그려질 때마다
+컨텍스트 뿐만 아니라 템플릿 객체도 어플리케이션에 덧붙여진다.
 
 Additionally there is a convenient helper method
 (:meth:`~blinker.base.Signal.connected_to`).  that allows you to
