@@ -17,16 +17,13 @@ from werkzeug.http import http_date
 # depend anyways.
 from itsdangerous import simplejson as _json
 
-
 # figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
 _slash_escape = '\\/' not in _json.dumps('/')
 
-
 __all__ = ['dump', 'dumps', 'load', 'loads', 'htmlsafe_dump',
            'htmlsafe_dumps', 'JSONDecoder', 'JSONEncoder',
            'jsonify']
-
 
 class JSONEncoder(_json.JSONEncoder):
     """The default Flask JSON encoder.  This one extends the default simplejson
@@ -66,7 +63,6 @@ class JSONDecoder(_json.JSONDecoder):
     for more information.  This decoder is not only used for the load
     functions of this module but also :attr:`~flask.Request`.
     """
-
 
 def _dump_arg_defaults(kwargs):
     """Inject default arguments for dump functions."""

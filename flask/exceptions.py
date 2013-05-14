@@ -11,7 +11,6 @@
 from werkzeug.exceptions import HTTPException, BadRequest
 from . import json
 
-
 class JSONHTTPException(HTTPException):
     """A base class for HTTP exceptions with ``Content-Type:
     application/json``.

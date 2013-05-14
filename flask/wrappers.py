@@ -17,6 +17,14 @@ from .debughelpers import attach_enctype_error_multidict
 from . import json
 from .globals import _request_ctx_stack
 
+class JSONDict(dict):
+    """Like a default dict, but it raises :class:`JSONBadRequest` if you
+    try to access a non-existing property"""
+    def __getitem__(self, key):
+        try:
+            return super(JSONDict, self).__getitem__(key)
+        except KeyError:
+            raise JSONBadRequest()
 
 class Request(RequestBase):
     """The request object used by default in Flask.  Remembers the
@@ -91,7 +99,9 @@ class Request(RequestBase):
     @cached_property
     def json(self):
         """If the mimetype is `application/json` this will contain the
-        parsed JSON data.  Otherwise this will be `None`.
+        parsed JSON data, as :class:`JSONDict`, that raises
+        :class:`JSONBadRequest` if you try to access a non-existing key.
+        Otherwise this will be `None`.
 
         This requires Python 2.6 or an installed version of simplejson.
         """
@@ -99,11 +109,19 @@ class Request(RequestBase):
             request_charset = self.mimetype_params.get('charset')
             try:
                 if request_charset is not None:
-                    return json.loads(self.data, encoding=request_charset)
-                return json.loads(self.data)
+                    return self.build_json(
+                               json.loads(self.data,
+                                          encoding=request_charset)
+                           )
+                return self.build_json(json.loads(self.data))
             except ValueError, e:
                 return self.on_json_loading_failed(e)
-
+    
+    def build_json(self, obj):
+        if isinstance(obj, dict):
+            return JSONDict(obj)
+        return obj
+    
     def on_json_loading_failed(self, e):
         """Called if decoding of the JSON data failed.  The return value of
         this method is used by :attr:`json` when an error occurred.  The default
