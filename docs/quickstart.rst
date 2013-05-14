@@ -54,7 +54,7 @@ So what did that code do?
 5. Finally we use the :meth:`~flask.Flask.run` function to run the local server
    with our application.  The ``if __name__ == '__main__':`` makes sure the
    server only runs if the script is executed directly from the Python
-   interpreter and not used as imported module.
+   interpreter and not used as an imported module.
 
 To stop the server, hit control-C.
 
@@ -143,8 +143,8 @@ Variable Rules
 ``````````````
 
 To add variable parts to a URL you can mark these special sections as
-``<variable_name>``.  Such a part is then passed as keyword argument to your
-function.  Optionally a converter can be specified by specifying a rule with
+``<variable_name>``.  Such a part is then passed as a keyword argument to your
+function.  Optionally a converter can be used by specifying a rule with
 ``<converter:variable_name>``.  Here are some nice examples::
 
     @app.route('/user/<username>')
@@ -191,10 +191,10 @@ The following converters exist:
    rather like the pathname of a file on UNIX-like systems. Accessing the URL
    with a trailing slash will produce a 404 "Not Found" error.
 
-   This behavior allows relative URLs to continue working if users access the
-   page when they forget a trailing slash, consistent with how Apache
-   and other servers work.  Also, the URLs will stay unique, which helps search
-   engines avoid indexing the same page twice.
+   This behavior allows relative URLs to continue working even if the trailing
+   slash is ommited, consistent with how Apache and other servers work.  Also, 
+   the URLs will stay unique, which helps search engines avoid indexing the 
+   same page twice.
 
 
 .. _url-building:

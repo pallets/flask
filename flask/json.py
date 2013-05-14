@@ -141,6 +141,8 @@ def jsonify(*args, **kwargs):
     to this function are the same as to the :class:`dict` constructor.
 
     Example usage::
+    
+        from flask import jsonify
 
         @app.route('/_get_current_user')
         def get_current_user():
