@@ -8,6 +8,7 @@
     :copyright: (c) 2012 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import uuid
 from datetime import datetime
 from .globals import current_app, request
 
@@ -30,9 +31,9 @@ __all__ = ['dump', 'dumps', 'load', 'loads', 'htmlsafe_dump',
 
 class JSONEncoder(_json.JSONEncoder):
     """The default Flask JSON encoder.  This one extends the default simplejson
-    encoder by also supporting ``datetime`` objects as well as ``Markup``
-    objects which are serialized as RFC 822 datetime strings (same as the HTTP
-    date format).  In order to support more data types override the
+    encoder by also supporting ``datetime`` objects, ``UUID`` as well as
+    ``Markup`` objects which are serialized as RFC 822 datetime strings (same
+    as the HTTP date format).  In order to support more data types override the
     :meth:`default` method.
     """
 
@@ -55,6 +56,8 @@ class JSONEncoder(_json.JSONEncoder):
         """
         if isinstance(o, datetime):
             return http_date(o)
+        if isinstance(o, uuid.UUID):
+            return str(o)
         if hasattr(o, '__html__'):
             return unicode(o.__html__())
         return _json.JSONEncoder.default(self, o)
