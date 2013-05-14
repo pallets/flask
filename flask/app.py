@@ -1171,14 +1171,14 @@ class Flask(_PackageBoundObject):
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
 
-        @app.template_global()
-        def double(n):
-            return 2 * n
+            @app.template_global()
+            def double(n):
+                return 2 * n
 
         .. versionadded:: 0.10
 
         :param name: the optional name of the global function, otherwise the
-        function name will be used.
+                     function name will be used.
         """
         def decorator(f):
             self.add_template_global(f, name=name)
@@ -1193,7 +1193,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.10
 
         :param name: the optional name of the global function, otherwise the
-        function name will be used.
+                     function name will be used.
         """
         self.jinja_env.globals[name or f.__name__] = f
 
