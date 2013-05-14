@@ -1066,6 +1066,64 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_(flask._request_ctx_stack.top is None)
         self.assert_(flask._app_ctx_stack.top is None)
 
+    def test_restful_verb_helpers(self):
+        app = flask.Flask(__name__)
+
+        @app.get("/get")
+        def get():
+            return "get"
+
+        @app.put("/put")
+        def put():
+            return "put"
+
+        @app.post("/post")
+        def post():
+            return "post"
+
+        @app.delete("/delete")
+        def delete():
+            return "delete"
+
+        @app.options("/options")
+        def options():
+            return "options"
+
+        @app.trace("/trace")
+        def trace():
+            return "trace"
+
+        @app.get("/getpost")
+        def getpost_get():
+            return "getpost_get"
+
+        @app.post("/getpost")
+        def getpost_post():
+            return "getpost_post"
+
+        rv = app.test_client().open("/get", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
+
+        rv = app.test_client().open("/put", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), ['OPTIONS', 'PUT'])
+
+        rv = app.test_client().open("/post", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), ['OPTIONS', 'POST'])
+
+        rv = app.test_client().open("/delete", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), ['DELETE', 'OPTIONS'])
+
+        rv = app.test_client().open("/options", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), [])
+
+        rv = app.test_client().open("/trace", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), ['OPTIONS', 'TRACE'])
+
+        # They stack of course.
+        rv = app.test_client().open("/getpost", method="OPTIONS")
+        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS',
+                                             'POST'])
+
 
 class SubdomainTestCase(FlaskTestCase):
 
