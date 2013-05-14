@@ -26,7 +26,7 @@ from .helpers import url_for, flash, send_file, send_from_directory, \
 from .globals import current_app, g, request, session, _request_ctx_stack, \
      _app_ctx_stack
 from .ctx import has_request_context, has_app_context, \
-     after_this_request
+     after_this_request, copy_current_request_context
 from .module import Module
 from .blueprints import Blueprint
 from .templating import render_template, render_template_string

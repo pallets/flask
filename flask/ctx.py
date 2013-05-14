@@ -10,6 +10,7 @@
 """
 
 import sys
+from functools import update_wrapper
 
 from werkzeug.exceptions import HTTPException
 
@@ -19,7 +20,24 @@ from .module import blueprint_is_module
 
 class _AppCtxGlobals(object):
     """A plain object."""
-    pass
+
+    def __getitem__(self, name):
+        try:
+            return getattr(self, name)
+        except AttributeError:
+            return None
+
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
+
+    def __delitem__(self, name, value):
+        delattr(self, name, value)
+
+    def __repr__(self):
+        top = _app_ctx_stack.top
+        if top is not None:
+            return '<flask.g of %r>' % top.app.name
+        return object.__repr__(self)
 
 
 def after_this_request(f):
@@ -45,6 +63,41 @@ def after_this_request(f):
     """
     _request_ctx_stack.top._after_request_functions.append(f)
     return f
+
+
+def copy_current_request_context(f):
+    """A helper function that decorates a function to retain the current
+    request context.  This is useful when working with greenlets.  The moment
+    the function is decorated a copy of the request context is created and
+    then pushed when the function is called.
+
+    Example::
+
+        import gevent
+        from flask import copy_current_request_context
+
+        @app.route('/')
+        def index():
+            @copy_current_request_context
+            def do_some_work():
+                # do some work here, it can access flask.request like you
+                # would otherwise in the view function.
+                ...
+            gevent.spawn(do_some_work)
+            return 'Regular response'
+
+    .. versionadded:: 0.10
+    """
+    top = _request_ctx_stack.top
+    if top is None:
+        raise RuntimeError('This decorator can only be used at local scopes '
+            'when a request context is on the stack.  For instance within '
+            'view functions.')
+    reqctx = top.copy()
+    def wrapper(*args, **kwargs):
+        with reqctx:
+            return f(*args, **kwargs)
+    return update_wrapper(wrapper, f)
 
 
 def has_request_context():
@@ -161,9 +214,11 @@ class RequestContext(object):
     that situation, otherwise your unittests will leak memory.
     """
 
-    def __init__(self, app, environ):
+    def __init__(self, app, environ, request=None):
         self.app = app
-        self.request = app.request_class(environ)
+        if request is None:
+            request = app.request_class(environ)
+        self.request = request
         self.url_adapter = app.create_url_adapter(self.request)
         self.flashes = None
         self.session = None
@@ -201,6 +256,20 @@ class RequestContext(object):
         _app_ctx_stack.top.g = value
     g = property(_get_g, _set_g)
     del _get_g, _set_g
+
+    def copy(self):
+        """Creates a copy of this request context with the same request object.
+        This can be used to move a request context to a different greenlet.
+        Because the actual request object is the same this cannot be used to
+        move a request context to a different thread unless access to the
+        request object is locked.
+
+        .. versionadded:: 0.10
+        """
+        return self.__class__(self.app,
+            environ=self.request.environ,
+            request=self.request
+        )
 
     def match_request(self):
         """Can be overridden by a subclass to hook into the matching
@@ -299,5 +368,5 @@ class RequestContext(object):
             self.__class__.__name__,
             self.request.url,
             self.request.method,
-            self.app.name
+            self.app.name,
         )

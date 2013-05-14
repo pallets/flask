@@ -280,6 +280,8 @@ Useful Functions and Classes
 
 .. autofunction:: has_request_context
 
+.. autofunction:: copy_current_request_context
+
 .. autofunction:: has_app_context
 
 .. autofunction:: url_for

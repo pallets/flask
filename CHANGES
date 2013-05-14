@@ -52,6 +52,8 @@ Release date to be decided.
 - Changed logic for picking defaults for cookie values from sessions
   to work better with Google Chrome.
 - Added `message_flashed` signal that simplifies flashing testing.
+- Added support for copying of request contexts for better working with
+  greenlets.
 
 Version 0.9
 -----------
