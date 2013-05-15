@@ -186,7 +186,7 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
    `template` 으로 템플릿과 딕셔너리 형태인 `context` 로 컨텍스트를
    인스턴스로 하여 호출된다.
 
-   수신자 예제::
+   수신 예제::
 
         def log_template_renders(sender, template, context, **extra):
             sender.logger.debug('Rendering template "%s" with context %s',
@@ -203,7 +203,7 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
    송신된다.  요청 컨텍스트가 이미 연결됐기 때문에, 수신자는 표준 전역 프록시
    객체인 :class:`~flask.request` 으로 요청을 참조할 수 있다.
 
-   수신자 예제::
+   수신 예제::
 
         def log_request(sender, **extra):
             sender.logger.debug('Request context is set up')
@@ -214,10 +214,10 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
 .. data:: flask.request_finished
    :noindex:
 
-   This signal is sent right before the response is sent to the client.
-   It is passed the response to be sent named `response`.
+   이 시그널은 클라이언트로 응답이 가기 바로 전에 보내진다. `response` 인자로
+   응답 객체를 넘겨준다.
 
-   Example subscriber::
+   수신 예제::
 
         def log_response(sender, response, **extra):
             sender.logger.debug('Request context is about to close down.  '
@@ -229,12 +229,11 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
 .. data:: flask.got_request_exception
    :noindex:
 
-   This signal is sent when an exception happens during request processing.
-   It is sent *before* the standard exception handling kicks in and even
-   in debug mode, where no exception handling happens.  The exception
-   itself is passed to the subscriber as `exception`.
+   이 시그널은 요청 처리 동안 예외가 발생했을 때 보내진다.  표준 예외처리가
+   *시작되기 전에* 송신되고 예외 처리를 하지 않는 디버깅 환경에서도 보내진다.
+   `exception` 인자로 예외 자체가 수신자에게 넘어간다.
 
-   Example subscriber::
+   수신 예제::
 
         def log_exception(sender, exception, **extra):
             sender.logger.debug('Got exception during processing: %s', exception)
@@ -245,12 +244,11 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
 .. data:: flask.request_tearing_down
    :noindex:
 
-   This signal is sent when the request is tearing down.  This is always
-   called, even if an exception is caused.  Currently functions listening
-   to this signal are called after the regular teardown handlers, but this
-   is not something you can rely on.
+   이 시그널은 요청 객체가 제거될 때 보내진다.  요청 처리 과정에서 요류가
+   발생하더라도 항상 호출된다.  현재 시그널을 기다리고 있는 함수는 일반
+   teardown 핸들러 뒤에 호출되지만, 순서를 보장하지는 않는다.
 
-   Example subscriber::
+   수신 예제::
 
         def close_db_connection(sender, **extra):
             session.close()
@@ -258,19 +256,17 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
         from flask import request_tearing_down
         request_tearing_down.connect(close_db_connection, app)
 
-   As of Flask 0.9, this will also be passed an `exc` keyword argument
-   that has a reference to the exception that caused the teardown if
-   there was one.
+   플라스크 0.9에서, 예외가 있는 경우 이 시그널을 야기하는 예외에 대한
+   참조를 갖는 'exc' 키워드 인자를 또한 넘겨줄 것이다.
 
 .. data:: flask.appcontext_tearing_down
    :noindex:
 
-   This signal is sent when the app context is tearing down.  This is always
-   called, even if an exception is caused.  Currently functions listening
-   to this signal are called after the regular teardown handlers, but this
-   is not something you can rely on.
+   이 시그널은 어플리케이션 컨텍스트가 제거될 때 보내진다.  예외가 발생하더라도
+   이 시그널은 항상 호출되고, 일반 teardown 핸들러 뒤에 시그널에 대한 콜백 함수가
+   호출되지만, 순서는 보장하지 않는다.
 
-   Example subscriber::
+   수신 예제::
 
         def close_db_connection(sender, **extra):
             session.close()
@@ -278,7 +274,7 @@ Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.conn
         from flask import appcontext_tearing_down
         appcontext_tearing_down.connect(close_db_connection, app)
 
-   This will also be passed an `exc` keyword argument that has a reference
-   to the exception that caused the teardown if there was one.
+   'request_tearing_down' 과 마찬가지로 예외에 대한 참조를 `exc` 키워드 인자로
+   넘겨줄 것이다.
 
 .. _blinker: http://pypi.python.org/pypi/blinker
