@@ -76,11 +76,10 @@
 모든 템플릿은 `templates` 변수에 기록될 것이다.  템플릿이 그려질 때마다
 컨텍스트 뿐만 아니라 템플릿 객체도 어플리케이션에 덧붙여진다.
 
-Additionally there is a convenient helper method
-(:meth:`~blinker.base.Signal.connected_to`).  that allows you to
-temporarily subscribe a function to a signal with a context manager on
-its own.  Because the return value of the context manager cannot be
-specified that way one has to pass the list in as argument::
+부가적으로 편리한 헬퍼 메소드도 존재한다(:meth:`~blinker.base.Signal.connected_to`).
+그 메소드는 일시적으로 그 자체에 컨텍스트 메니저를 가진 시그널에 대한 함수를 수신한다.
+컨텍스트 매니저의 반환값을 그런 방식으로 지정할 수 없기 때문에 인자로 템플릿의 목록을 
+넘겨줘야 한다::
 
     from flask import template_rendered
 
@@ -89,47 +88,45 @@ specified that way one has to pass the list in as argument::
             recorded.append((template, context))
         return template_rendered.connected_to(record, app)
 
-The example above would then look like this::
+위의 예제는 아래처럼 보일 수 있다::
 
     templates = []
     with captured_templates(app, templates, **extra):
         ...
         template, context = templates[0]
 
-.. admonition:: Blinker API Changes
+.. admonition:: Blinker API 변경내용
 
-   The :meth:`~blinker.base.Signal.connected_to` method arrived in Blinker
-   with version 1.1.
+   :meth:`~blinker.base.Signal.connected_to` 메소드는 Blinker 
+   버전 1.1에 나왔다.
 
-Creating Signals
-----------------
+시그널 생성하기
+---------------
 
-If you want to use signals in your own application, you can use the
-blinker library directly.  The most common use case are named signals in a
-custom :class:`~blinker.base.Namespace`..  This is what is recommended
-most of the time::
+여러분이 어플리케이션에서 시그널을 사용하고 싶다면, 직접 blinker 라이브러리를
+사용할 수 있다.  가장 일반적인 사용예는 변경된 :class:`~blinker.base.Namespace`. 
+클래스에 시그널을 명명하는 것이다. 이것이 보통 권고되는 방식이다::
 
     from blinker import Namespace
     my_signals = Namespace()
 
-Now you can create new signals like this::
+이제 여러분은 아래와 같이 새 시그널을 생성할 수 있다::
 
     model_saved = my_signals.signal('model-saved')
 
-The name for the signal here makes it unique and also simplifies
-debugging.  You can access the name of the signal with the
-:attr:`~blinker.base.NamedSignal.name` attribute.
+여기에서 시그널에 이름을 준것은 시그널은 구분해주고 또한 디버깅을
+단순화한다.  :attr:`~blinker.base.NamedSignal.name` 속성으로 시그널에
+부여된 이름을 얻을 수 있다.
 
-.. admonition:: For Extension Developers
+.. admonition:: 플라스크 확장 개발자를 위해서
 
-   If you are writing a Flask extension and you want to gracefully degrade for
-   missing blinker installations, you can do so by using the
-   :class:`flask.signals.Namespace` class.
+   여러분이 플라스크 확장을 개발하고 있고 blinker 설치를 놓친것에 대해 부드럽게
+   대처하고 싶다면, :class:`flask.signals.Namespace` 클래스를 사용할 수 있다.
 
 .. _signals-sending:
 
-Sending Signals
----------------
+시그널 보내기
+-------------
 
 If you want to emit a signal, you can do so by calling the
 :meth:`~blinker.base.Signal.send` method.  It accepts a sender as first
