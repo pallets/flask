@@ -148,14 +148,16 @@ API
 
 여러분이 :attr:`Flask.secret_key` 속성을 설정한다면 플라스크 어플리케이션에
 있는 세션을 사용할 수 있다.  세션은 기본적으로 하나의 요청 정보를 다른 요청에서
-기억하게 해준다.  플라스크에서는 서명된 쿠기(singed cookie)를 이용한다.  So the user can look at the session contents, but
-not modify it unless they know the secret key, so make sure to set that
-to something complex and unguessable.
+기억하게 해준다.  플라스크에서는 서명된 쿠기(singed cookie)를 이용한다.  
+그래서 사용자가 세션 내용을 볼 수는 있으나 비밀키를 모른다면 그 내용을 수정할
+수 없기 때문에 그 키를 복잡하고 추측할 수 없게 설정해도록 해야한다.
 
-To access the current session you can use the :class:`session` object:
+현재 세션에 접근하기 위해서 :class:`session` 객체를 사용한다:
 
 .. class:: session
 
+   세션 객체는 보통 딕셔너리 객체와 상당히 비슷하게 동작하는데
+   차이점은 수정사항을 유지한다는 것이다.
    The session object works pretty much like an ordinary dict, with the
    difference that it keeps track on modifications.
 
