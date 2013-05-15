@@ -128,10 +128,9 @@
 시그널 보내기
 -------------
 
-If you want to emit a signal, you can do so by calling the
-:meth:`~blinker.base.Signal.send` method.  It accepts a sender as first
-argument and optionally some keyword arguments that are forwarded to the
-signal subscribers::
+시그널을 전송하고 싶다면, :meth:`~blinker.base.Signal.send` 메소드를 호출하면 된다.
+이 메소드는 첫번째 인자로 송신자를 넘겨주고 선택적으로 시그널 수신자에게 전달되는
+키워드 인자도 있다::
 
     class Model(object):
         ...
@@ -139,33 +138,33 @@ signal subscribers::
         def save(self):
             model_saved.send(self)
 
-Try to always pick a good sender.  If you have a class that is emitting a
-signal, pass `self` as sender.  If you emitting a signal from a random
-function, you can pass ``current_app._get_current_object()`` as sender.
+항상 좋은 송신자를 뽑도록 한다.  여러분이 시그널을 보내는 클래스를 갖는다면
+송신자로 `self` 를 넘겨준다.  여러분이 임의의 함수에서 시그널을 전송한다면,
+``current_app._get_current_object()`` 를 송신자로 전달할 수 있다.
 
-.. admonition:: Passing Proxies as Senders
+.. admonition:: 송신자로 프락시를 넘겨주기
 
-   Never pass :data:`~flask.current_app` as sender to a signal.  Use
-   ``current_app._get_current_object()`` instead.  The reason for this is
-   that :data:`~flask.current_app` is a proxy and not the real application
-   object.
-
-
-Signals and Flask's Request Context
------------------------------------
-
-Signals fully support :ref:`request-context` when receiving signals.
-Context-local variables are consistently available between
-:data:`~flask.request_started` and :data:`~flask.request_finished`, so you can
-rely on :class:`flask.g` and others as needed.  Note the limitations described
-in :ref:`signals-sending` and the :data:`~flask.request_tearing_down` signal.
+   시그널의 송신자로 절대 :data:`~flask.current_app` 를 넘겨주지 않도록 하고
+   대신 ``current_app._get_current_object()`` 를 사용한다.  왜냐하면
+   :data:`~flask.current_app` 는 실제 어플리케이션 객체가 아닌 프락시 객체이기
+   때문이다.
 
 
-Decorator Based Signal Subscriptions
-------------------------------------
+시그널과 플라스크 요청 컨텍스트
+-------------------------------
 
-With Blinker 1.1 you can also easily subscribe to signals by using the new
-:meth:`~blinker.base.NamedSignal.connect_via` decorator::
+시그널을 수신할 때 :ref:`request-context` 를 완전하게 지원한다. Context-local
+변수는 :data:`~flask.request_started` 과 :data:`~flask.request_finished` 사이에서
+일관성을 유지하므로 여러분은 필요에 따라 :class:`flask.g` 과 다른 변수를 참조할
+수 있다.  :ref:`signals-sending` 과 :data:`~flask.request_tearing_down` 시그널에서
+언급하는 제약에 대해 유의한다.
+
+
+시그널 수신 기반 데코레이터
+---------------------------
+
+Blinker 1.1 과 함께 여러분은 또한 :meth:`~blinker.base.NamedSignal.connect_via`
+데코레이터를 사용하여 시그널을 쉽게 수신할 수 있다::
 
     from flask import template_rendered
 
@@ -173,21 +172,21 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
     def when_template_rendered(sender, template, context, **extra):
         print 'Template %s is rendered with %s' % (template.name, context)
 
-Core Signals
-------------
+핵심 시그널
+-----------
 
-.. when modifying this list, also update the one in api.rst
+.. 이 목록이 수정될 때, api.rst에 있는 목록 또한 갱신되야 한다.
 
-The following signals exist in Flask:
+플라스크에는 다음과 같은 시그널이 존재한다:
 
 .. data:: flask.template_rendered
    :noindex:
 
-   This signal is sent when a template was successfully rendered.  The
-   signal is invoked with the instance of the template as `template`
-   and the context as dictionary (named `context`).
+   이 시그널은 템플릿이 성공적으로 뿌려졌을 때 송신된다.  이 시그널은
+   `template` 으로 템플릿과 딕셔너리 형태인 `context` 로 컨텍스트를
+   인스턴스로 하여 호출된다.
 
-   Example subscriber::
+   수신자 예제::
 
         def log_template_renders(sender, template, context, **extra):
             sender.logger.debug('Rendering template "%s" with context %s',
@@ -200,12 +199,11 @@ The following signals exist in Flask:
 .. data:: flask.request_started
    :noindex:
 
-   This signal is sent before any request processing started but when the
-   request context was set up.  Because the request context is already
-   bound, the subscriber can access the request with the standard global
-   proxies such as :class:`~flask.request`.
+   이 시그널은 요청 처리가 시작되기 전이지만 요청 컨텍스트는 만들어졌을 때
+   송신된다.  요청 컨텍스트가 이미 연결됐기 때문에, 수신자는 표준 전역 프록시
+   객체인 :class:`~flask.request` 으로 요청을 참조할 수 있다.
 
-   Example subscriber::
+   수신자 예제::
 
         def log_request(sender, **extra):
             sender.logger.debug('Request context is set up')
