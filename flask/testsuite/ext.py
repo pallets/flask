@@ -13,7 +13,7 @@ from __future__ import with_statement
 import sys
 import unittest
 from flask.testsuite import FlaskTestCase
-from six import reload_module
+from six.moves import reload_module
 
 class ExtImportHookTestCase(FlaskTestCase):
 
