@@ -17,6 +17,7 @@ from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
+import six
 
 
 def total_seconds(td):
@@ -68,7 +69,7 @@ class TaggedJSONSerializer(object):
             elif isinstance(value, datetime):
                 return {' d': http_date(value)}
             elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in value.iteritems())
+                return dict((k, _tag(v)) for k, v in six.iteritems(value))
             elif isinstance(value, str):
                 try:
                     return unicode(value)
