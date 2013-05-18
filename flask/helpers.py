@@ -26,6 +26,7 @@ from functools import update_wrapper
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
+import six
 
 # this was moved in 0.7
 try:
@@ -128,7 +129,7 @@ def stream_with_context(generator_or_function):
     # pushed.  This item is discarded.  Then when the iteration continues the
     # real generator is executed.
     wrapped_g = generator()
-    wrapped_g.next()
+    six.advance_iterator(wrapped_g)
     return wrapped_g
 
 

@@ -18,6 +18,7 @@ from logging import StreamHandler
 from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
+import six
 
 
 def has_encoding(name):
@@ -507,7 +508,7 @@ class StreamingTestCase(FlaskTestCase):
             def close(self):
                 called.append(42)
             def next(self):
-                return self._gen.next()
+                return six.advance_iterator(self._gen)
         @app.route('/')
         def index():
             def generate():

@@ -85,7 +85,7 @@ class TaggedJSONSerializer(object):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
-            the_key, the_value = obj.iteritems().next()
+            the_key, the_value = six.advance_iterator(obj.iteritems())
             if the_key == ' t':
                 return tuple(the_value)
             elif the_key == ' u':
