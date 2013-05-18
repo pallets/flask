@@ -14,6 +14,7 @@ from __future__ import with_statement
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
+import six
 
 
 class TestToolsTestCase(FlaskTestCase):
@@ -85,7 +86,7 @@ class TestToolsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            return unicode(flask.session['foo'])
+            return six.text_type(flask.session['foo'])
 
         with app.test_client() as c:
             with c.session_transaction() as sess:

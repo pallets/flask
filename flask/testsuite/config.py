@@ -113,7 +113,7 @@ class LimitedLoaderMockWrapper(object):
     def __getattr__(self, name):
         if name in ('archive', 'get_filename'):
             msg = 'Mocking a loader which does not have `%s.`' % name
-            raise AttributeError, msg
+            raise AttributeError(msg)
         return getattr(self.loader, name)
 
 

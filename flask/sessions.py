@@ -17,6 +17,7 @@ from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
+import six
 
 
 def total_seconds(td):
@@ -62,16 +63,16 @@ class TaggedJSONSerializer(object):
             elif isinstance(value, uuid.UUID):
                 return {' u': value.hex}
             elif callable(getattr(value, '__html__', None)):
-                return {' m': unicode(value.__html__())}
+                return {' m': six.text_type(value.__html__())}
             elif isinstance(value, list):
                 return [_tag(x) for x in value]
             elif isinstance(value, datetime):
                 return {' d': http_date(value)}
             elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in value.iteritems())
+                return dict((k, _tag(v)) for k, v in six.iteritems(value))
             elif isinstance(value, str):
                 try:
-                    return unicode(value)
+                    return six.text_type(value)
                 except UnicodeError:
                     raise UnexpectedUnicodeError(u'A byte string with '
                         u'non-ASCII data was passed to the session system '
@@ -84,7 +85,7 @@ class TaggedJSONSerializer(object):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
-            the_key, the_value = obj.iteritems().next()
+            the_key, the_value = six.advance_iterator(obj.iteritems())
             if the_key == ' t':
                 return tuple(the_value)
             elif the_key == ' u':

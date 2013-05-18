@@ -18,6 +18,7 @@ from logging import StreamHandler
 from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
+import six
 
 
 def has_encoding(name):
@@ -35,7 +36,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return unicode(flask.request.json)
+            return six.text_type(flask.request.json)
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -44,7 +45,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return unicode(flask.request.json)
+            return six.text_type(flask.request.json)
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -96,7 +97,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])
         def add():
-            return unicode(flask.request.json['a'] + flask.request.json['b'])
+            return six.text_type(flask.request.json['a'] + flask.request.json['b'])
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')
@@ -507,7 +508,7 @@ class StreamingTestCase(FlaskTestCase):
             def close(self):
                 called.append(42)
             def next(self):
-                return self._gen.next()
+                return six.advance_iterator(self._gen)
         @app.route('/')
         def index():
             def generate():

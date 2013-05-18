@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+from __future__ import print_function
 from __future__ import with_statement
 
 import os
@@ -221,4 +222,4 @@ def main():
     try:
         unittest.main(testLoader=BetterLoader(), defaultTest='suite')
     except Exception as e:
-        print 'Error: %s' % e
+        print('Error: %s' % e)
