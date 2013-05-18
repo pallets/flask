@@ -13,7 +13,7 @@ from __future__ import with_statement
 import sys
 import unittest
 from flask.testsuite import FlaskTestCase
-
+from six import reload_module
 
 class ExtImportHookTestCase(FlaskTestCase):
 
@@ -29,7 +29,7 @@ class ExtImportHookTestCase(FlaskTestCase):
                 entry == 'flaskext') and value is not None:
                 sys.modules.pop(entry, None)
         from flask import ext
-        reload(ext)
+        reload_module(ext)
 
         # reloading must not add more hooks
         import_hooks = 0
