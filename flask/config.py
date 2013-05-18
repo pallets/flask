@@ -127,7 +127,7 @@ class Config(dict):
         d.__file__ = filename
         try:
             execfile(filename, d.__dict__)
-        except IOError, e:
+        except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
             e.strerror = 'Unable to load configuration file (%s)' % e.strerror

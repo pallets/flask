@@ -99,7 +99,7 @@ class Request(RequestBase):
                 if request_charset is not None:
                     return json.loads(self.data, encoding=request_charset)
                 return json.loads(self.data)
-            except ValueError, e:
+            except ValueError as e:
                 return self.on_json_loading_failed(e)
 
     def on_json_loading_failed(self, e):

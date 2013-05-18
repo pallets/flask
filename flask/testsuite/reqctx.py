@@ -58,7 +58,7 @@ class RequestContextTestCase(FlaskTestCase):
         try:
             with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
                 pass
-        except Exception, e:
+        except Exception as e:
             self.assert_(isinstance(e, ValueError))
             self.assert_equal(str(e), "the server name provided " +
                     "('localhost.localdomain:5000') does not match the " + \
@@ -68,7 +68,7 @@ class RequestContextTestCase(FlaskTestCase):
             app.config.update(SERVER_NAME='localhost')
             with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost'}):
                 pass
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(
                 "No ValueError exception should have been raised \"%s\"" % e
             )
@@ -77,7 +77,7 @@ class RequestContextTestCase(FlaskTestCase):
             app.config.update(SERVER_NAME='localhost:80')
             with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
                 pass
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(
                 "No ValueError exception should have been raised \"%s\"" % e
             )

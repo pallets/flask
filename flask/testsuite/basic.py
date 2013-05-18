@@ -256,7 +256,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         def expect_exception(f, *args, **kwargs):
             try:
                 f(*args, **kwargs)
-            except RuntimeError, e:
+            except RuntimeError as e:
                 self.assert_(e.args and 'session is unavailable' in e.args[0])
             else:
                 self.assert_(False, 'expected exception')
@@ -629,7 +629,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         c = app.test_client()
         try:
             c.get('/fail')
-        except KeyError, e:
+        except KeyError as e:
             self.assert_(isinstance(e, BadRequest))
         else:
             self.fail('Expected exception')
@@ -645,7 +645,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         c = app.test_client()
         try:
             c.get('/fail')
-        except NotFound, e:
+        except NotFound as e:
             pass
         else:
             self.fail('Expected exception')
@@ -664,7 +664,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_client() as c:
             try:
                 c.post('/fail', data={'foo': 'index.txt'})
-            except DebugFilesKeyError, e:
+            except DebugFilesKeyError as e:
                 self.assert_('no file contents were transmitted' in str(e))
                 self.assert_('This was submitted: "index.txt"' in str(e))
             else:
@@ -755,7 +755,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             with app.test_request_context():
                 flask.url_for('spam')
-        except BuildError, error:
+        except BuildError as error:
             pass
         try:
             raise RuntimeError('Test case where BuildError is not current.')
@@ -802,7 +802,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return None
         try:
             app.test_client().get('/')
-        except ValueError, e:
+        except ValueError as e:
             self.assert_equal(str(e), 'View function did not return a response')
             pass
         else:
@@ -843,7 +843,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             rv = app.test_client().get('/', 'https://localhost.localdomain')
             # Werkzeug 0.8
             self.assert_equal(rv.status_code, 404)
-        except ValueError, e:
+        except ValueError as e:
             # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " +
                     "('localhost.localdomain:443') does not match the " + \
@@ -854,7 +854,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             rv = app.test_client().get('/', 'http://foo.localhost')
             # Werkzeug 0.8
             self.assert_equal(rv.status_code, 404)
-        except ValueError, e:
+        except ValueError as e:
             # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " + \
                     "('localhost.localdomain') does not match the " + \
@@ -975,7 +975,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             @app.route('/foo')
             def broken():
                 return 'Meh'
-        except AssertionError, e:
+        except AssertionError as e:
             self.assert_('A setup function was called' in str(e))
         else:
             self.fail('Expected exception')
@@ -1009,7 +1009,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_client() as c:
             try:
                 c.post('/foo', data={})
-            except AssertionError, e:
+            except AssertionError as e:
                 self.assert_('http://localhost/foo/' in str(e))
                 self.assert_('Make sure to directly send your POST-request '
                              'to this URL' in str(e))

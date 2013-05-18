@@ -106,7 +106,7 @@ class TestToolsTestCase(FlaskTestCase):
             try:
                 with c.session_transaction() as sess:
                     pass
-            except RuntimeError, e:
+            except RuntimeError as e:
                 self.assert_('Session backend did not open a session' in str(e))
             else:
                 self.fail('Expected runtime error')
@@ -130,7 +130,7 @@ class TestToolsTestCase(FlaskTestCase):
         try:
             with c.session_transaction() as s:
                 pass
-        except RuntimeError, e:
+        except RuntimeError as e:
             self.assert_('cookies' in str(e))
         else:
             self.fail('Expected runtime error')

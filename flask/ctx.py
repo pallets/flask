@@ -279,7 +279,7 @@ class RequestContext(object):
             url_rule, self.request.view_args = \
                 self.url_adapter.match(return_rule=True)
             self.request.url_rule = url_rule
-        except HTTPException, e:
+        except HTTPException as e:
             self.request.routing_exception = e
 
     def push(self):
