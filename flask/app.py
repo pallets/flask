@@ -590,7 +590,7 @@ class Flask(_PackageBoundObject):
         # Hack to support the init_jinja_globals method which is supported
         # until 1.0 but has an API deficiency.
         if getattr(self.init_jinja_globals, 'im_func', None) is not \
-           Flask.init_jinja_globals.im_func:
+           Flask.init_jinja_globals.__func__:
             from warnings import warn
             warn(DeprecationWarning('This flask class uses a customized '
                 'init_jinja_globals() method which is deprecated. '
