@@ -36,7 +36,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return unicode(flask.request.json)
+            return six.text_type(flask.request.json)
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -45,7 +45,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return unicode(flask.request.json)
+            return six.text_type(flask.request.json)
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -97,7 +97,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])
         def add():
-            return unicode(flask.request.json['a'] + flask.request.json['b'])
+            return six.text_type(flask.request.json['a'] + flask.request.json['b'])
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')

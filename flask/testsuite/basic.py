@@ -22,6 +22,7 @@ from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
+import six
 
 
 class BasicFunctionalityTestCase(FlaskTestCase):
@@ -277,7 +278,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         @app.route('/test')
         def test():
-            return unicode(flask.session.permanent)
+            return six.text_type(flask.session.permanent)
 
         client = app.test_client()
         rv = client.get('/')

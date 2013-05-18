@@ -17,6 +17,7 @@ from werkzeug.http import http_date
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
 from itsdangerous import simplejson as _json
+import six
 
 
 # figure out if simplejson escapes slashes.  This behavior was changed
@@ -59,7 +60,7 @@ class JSONEncoder(_json.JSONEncoder):
         if isinstance(o, uuid.UUID):
             return str(o)
         if hasattr(o, '__html__'):
-            return unicode(o.__html__())
+            return six.text_type(o.__html__())
         return _json.JSONEncoder.default(self, o)
 
 

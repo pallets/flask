@@ -18,6 +18,7 @@ from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_cache_control_header
 from jinja2 import TemplateNotFound
+import six
 
 
 # import moduleapp here because it uses deprecated features and we don't
@@ -304,7 +305,7 @@ class BlueprintTestCase(FlaskTestCase):
 
         @bp.route('/bar')
         def bar(bar):
-            return unicode(bar)
+            return six.text_type(bar)
 
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/1', url_defaults={'bar': 23})

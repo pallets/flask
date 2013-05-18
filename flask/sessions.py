@@ -63,7 +63,7 @@ class TaggedJSONSerializer(object):
             elif isinstance(value, uuid.UUID):
                 return {' u': value.hex}
             elif callable(getattr(value, '__html__', None)):
-                return {' m': unicode(value.__html__())}
+                return {' m': six.text_type(value.__html__())}
             elif isinstance(value, list):
                 return [_tag(x) for x in value]
             elif isinstance(value, datetime):
@@ -72,7 +72,7 @@ class TaggedJSONSerializer(object):
                 return dict((k, _tag(v)) for k, v in six.iteritems(value))
             elif isinstance(value, str):
                 try:
-                    return unicode(value)
+                    return six.text_type(value)
                 except UnicodeError:
                     raise UnexpectedUnicodeError(u'A byte string with '
                         u'non-ASCII data was passed to the session system '
