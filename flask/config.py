@@ -126,7 +126,7 @@ class Config(dict):
         d = imp.new_module('config')
         d.__file__ = filename
         try:
-            execfile(filename, d.__dict__)
+            exec(compile(open(filename).read(), filename, 'exec'), d.__dict__)
         except IOError, e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
