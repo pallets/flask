@@ -54,6 +54,8 @@ Release date to be decided.
 - Added `message_flashed` signal that simplifies flashing testing.
 - Added support for copying of request contexts for better working with
   greenlets.
+- Python requirements changed: requiring Python 2.6 or 2.7 now to prepare
+  for Python 3.3 port.
 
 Version 0.9
 -----------
