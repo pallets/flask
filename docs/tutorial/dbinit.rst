@@ -21,12 +21,9 @@ errors.  It's a good idea to add a function that initializes the database
 for you to the application.
 
 If you want to do that, you first have to import the
-:func:`contextlib.closing` function from the contextlib package.  If you
-want to use Python 2.5 it's also necessary to enable the `with` statement
-first (`__future__` imports must be the very first import). Accordingly,
-add the following lines to your existing imports in `flaskr.py`::
+:func:`contextlib.closing` function from the contextlib package.
+Accordingly, add the following lines to your existing imports in `flaskr.py`::
 
-    from __future__ import with_statement
     from contextlib import closing
 
 Next we can create a function called `init_db` that initializes the
