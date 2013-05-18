@@ -1478,7 +1478,7 @@ class Flask(_PackageBoundObject):
             rv = self.preprocess_request()
             if rv is None:
                 rv = self.dispatch_request()
-        except Exception, e:
+        except Exception as e:
             rv = self.handle_user_exception(e)
         response = self.make_response(rv)
         response = self.process_response(response)
@@ -1516,9 +1516,9 @@ class Flask(_PackageBoundObject):
             methods = []
             try:
                 adapter.match(method='--')
-            except MethodNotAllowed, e:
+            except MethodNotAllowed as e:
                 methods = e.valid_methods
-            except HTTPException, e:
+            except HTTPException as e:
                 pass
         rv = self.response_class()
         rv.allow.update(methods)
@@ -1626,7 +1626,7 @@ class Flask(_PackageBoundObject):
                 rv = handler(error, endpoint, values)
                 if rv is not None:
                     return rv
-            except BuildError, error:
+            except BuildError as error:
                 pass
 
         # At this point we want to reraise the exception.  If the error is
@@ -1807,7 +1807,7 @@ class Flask(_PackageBoundObject):
         with self.request_context(environ):
             try:
                 response = self.full_dispatch_request()
-            except Exception, e:
+            except Exception as e:
                 response = self.make_response(self.handle_exception(e))
             return response(environ, start_response)
 
