@@ -183,7 +183,7 @@ class ModuleTestCase(FlaskTestCase):
         with app.test_request_context():
             try:
                 flask.render_template('missing.html')
-            except TemplateNotFound, e:
+            except TemplateNotFound as e:
                 self.assert_equal(e.name, 'missing.html')
             else:
                 self.assert_(0, 'expected exception')
@@ -378,7 +378,7 @@ class BlueprintTestCase(FlaskTestCase):
         with app.test_request_context():
             try:
                 flask.render_template('missing.html')
-            except TemplateNotFound, e:
+            except TemplateNotFound as e:
                 self.assert_equal(e.name, 'missing.html')
             else:
                 self.assert_(0, 'expected exception')

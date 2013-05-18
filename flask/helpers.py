@@ -301,7 +301,7 @@ def url_for(endpoint, **values):
     try:
         rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
-    except BuildError, error:
+    except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
         values['_external'] = external
