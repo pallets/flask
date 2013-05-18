@@ -90,6 +90,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
+        'six>=1.3.0',
         'Werkzeug>=0.7',
         'Jinja2>=2.4',
         'itsdangerous>=0.17'
