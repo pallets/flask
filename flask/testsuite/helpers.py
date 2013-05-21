@@ -9,16 +9,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import os
 import flask
 import unittest
 from logging import StreamHandler
-from StringIO import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
 import six
+from flask._compat import StringIO
 
 
 def has_encoding(name):

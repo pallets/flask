@@ -11,17 +11,16 @@
 """
 
 from __future__ import print_function
-from __future__ import with_statement
 
 import os
 import sys
 import flask
 import warnings
 import unittest
-from StringIO import StringIO
 from functools import update_wrapper
 from contextlib import contextmanager
 from werkzeug.utils import import_string, find_modules
+from flask._compat import reraise, StringIO
 
 
 def add_to_path(path):
@@ -159,7 +158,7 @@ class _ExceptionCatcher(object):
             self.test_case.fail('Expected exception of type %r' %
                                 exception_name)
         elif not issubclass(exc_type, self.exc_type):
-            raise exc_type, exc_value, tb
+            reraise(exc_type, exc_value, tb)
         return True
 
 

@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import re
 import uuid
 import flask
@@ -1060,7 +1058,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             1/0
 
         c = app.test_client()
-        for x in xrange(3):
+        for x in range(3):
             with self.assert_raises(ZeroDivisionError):
                 c.get('/fail')
 

@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import os
 import sys
 from threading import Lock
@@ -36,6 +34,7 @@ from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
     request_tearing_down, appcontext_tearing_down
+from flask._compat import reraise, string_types, integer_types
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -585,21 +584,7 @@ class Flask(_PackageBoundObject):
     @locked_cached_property
     def jinja_env(self):
         """The Jinja2 environment used to load templates."""
-        rv = self.create_jinja_environment()
-
-        # Hack to support the init_jinja_globals method which is supported
-        # until 1.0 but has an API deficiency.
-        if getattr(self.init_jinja_globals, 'im_func', None) is not \
-           Flask.init_jinja_globals.__func__:
-            from warnings import warn
-            warn(DeprecationWarning('This flask class uses a customized '
-                'init_jinja_globals() method which is deprecated. '
-                'Move the code from that method into the '
-                'create_jinja_environment() method instead.'))
-            self.__dict__['jinja_env'] = rv
-            self.init_jinja_globals()
-
-        return rv
+        return self.create_jinja_environment()
 
     @property
     def got_first_request(self):
@@ -1090,7 +1075,7 @@ class Flask(_PackageBoundObject):
     def _register_error_handler(self, key, code_or_exception, f):
         if isinstance(code_or_exception, HTTPException):
             code_or_exception = code_or_exception.code
-        if isinstance(code_or_exception, (int, long)):
+        if isinstance(code_or_exception, integer_types):
             assert code_or_exception != 500 or key is None, \
                 'It is currently not possible to register a 500 internal ' \
                 'server error on a per-blueprint level.'
@@ -1137,7 +1122,7 @@ class Flask(_PackageBoundObject):
           def is_prime(n):
               if n == 2:
                   return True
-              for i in xrange(2, int(math.ceil(math.sqrt(n))) + 1):
+              for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
                   if n % i == 0:
                       return False
               return True
@@ -1383,7 +1368,7 @@ class Flask(_PackageBoundObject):
             if isinstance(e, typecheck):
                 return handler(e)
 
-        raise exc_type, exc_value, tb
+        reraise(exc_type, exc_value, tb)
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
@@ -1405,7 +1390,7 @@ class Flask(_PackageBoundObject):
             # (the function was actually called from the except part)
             # otherwise, we just raise the error again
             if exc_value is e:
-                raise exc_type, exc_value, tb
+                reraise(exc_type, exc_value, tb)
             else:
                 raise e
 
@@ -1565,14 +1550,14 @@ class Flask(_PackageBoundObject):
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
             # specific values (like defualt content type selection).
-            if isinstance(rv, basestring):
+            if isinstance(rv, string_types):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:
                 rv = self.response_class.force_type(rv, request.environ)
 
         if status is not None:
-            if isinstance(status, basestring):
+            if isinstance(status, string_types):
                 rv.status = status
             else:
                 rv.status_code = status
@@ -1633,7 +1618,7 @@ class Flask(_PackageBoundObject):
         # still the same one we can reraise it with the original traceback,
         # otherwise we raise it from here.
         if error is exc_value:
-            raise exc_type, exc_value, tb
+            reraise(exc_type, exc_value, tb)
         raise error
 
     def preprocess_request(self):

@@ -22,6 +22,7 @@ if not PY2:
     range_type = range
     text_type = str
     string_types = (str,)
+    integer_types = (int, )
 
     iterkeys = lambda d: iter(d.keys())
     itervalues = lambda d: iter(d.values())
@@ -46,11 +47,14 @@ if not PY2:
     encode_filename = _identity
     get_next = lambda x: x.__next__
 
+    from urllib.parse import urlparse
+
 else:
     unichr = unichr
     text_type = unicode
     range_type = xrange
     string_types = (str, unicode)
+    integer_types = (int, long)
 
     iterkeys = lambda d: d.iterkeys()
     itervalues = lambda d: d.itervalues()
@@ -81,6 +85,8 @@ else:
         if isinstance(filename, unicode):
             return filename.encode('utf-8')
         return filename
+
+    from urlparse import urlparse
 
 
 def with_metaclass(meta, *bases):

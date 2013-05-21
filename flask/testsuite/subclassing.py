@@ -11,9 +11,9 @@
 """
 import flask
 import unittest
-from StringIO import StringIO
 from logging import StreamHandler
 from flask.testsuite import FlaskTestCase
+from flask._compat import StringIO
 
 
 class FlaskSubclassingTestCase(FlaskTestCase):
