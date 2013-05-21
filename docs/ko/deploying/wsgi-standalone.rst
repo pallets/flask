@@ -30,11 +30,9 @@ Gunicorn
 Tornado
 --------
 
-`Tornado`_ is an open source version of the scalable, non-blocking web
-server and tools that power `FriendFeed`_.  Because it is non-blocking and
-uses epoll, it can handle thousands of simultaneous standing connections,
-which means it is ideal for real-time web services.  Integrating this
-service with Flask is straightforward::
+`Tornado`_는 `FriendFeed`_를 강화한 확장성있는 넌블러킹 웹서버의 오픈소스 버전이다.
+넌블러킹이며 epoll을 사용하기 때문에 수천개의 동시 연결을 처리할 수 있다.
+이것은 이상적인 실시간 웹서비스를 의미한다. 플라스크를 이 서비스로 통합하는 것은 복잡하지 않다::
 
     from tornado.wsgi import WSGIContainer
     from tornado.httpserver import HTTPServer
@@ -52,9 +50,8 @@ service with Flask is straightforward::
 Gevent
 -------
 
-`Gevent`_ is a coroutine-based Python networking library that uses
-`greenlet`_ to provide a high-level synchronous API on top of `libevent`_
-event loop::
+`Gevent`_는 `libevent`_ 이벤트 루프 위에서 고수준 동기화 API를 제공하기 위해 `greenlet`_를 사용하는 
+coroutine기반 파이썬 네트워킹 라이브러리이다::
 
     from gevent.wsgi import WSGIServer
     from yourapplication import app
@@ -69,20 +66,16 @@ event loop::
 Twisted Web
 -----------
 
-`Twisted Web`_ is the web server shipped with `Twisted`_, a mature,
-non-blocking event-driven networking library. Twisted Web comes with a
-standard WSGI container which can be controlled from the command line using
-the ``twistd`` utility::
+`Twisted Web`_은 `Twisted`_에 포함되어 있는 웹서버이며, 성숙된 넌블러킹 이벤트 드리븐 네트워킹 라이브러리이다.
+Twisted Web은 ``twistd`` 유틸리티를 사용하여 커맨드라인을 통해 컨트롤할 수 있는 표준 WSGI 컨테이너이다::
 
     twistd web --wsgi myproject.app
 
-This example will run a Flask application called ``app`` from a module named
-``myproject``.
+이 예제는 ``myproject`` 모듈로부터 ``app``을 호출하는 Flask application를 실행할 것이다.
 
-Twisted Web supports many flags and options, and the ``twistd`` utility does
-as well; see ``twistd -h`` and ``twistd web -h`` for more information. For
-example, to run a Twisted Web server in the foreground, on port 8080, with an
-application from ``myproject``::
+Twisted Web은 많은 플래그와 옵션을 지원하며, ``twistd`` 유틸리티 또한 많은 것을 제공한다;
+더 많은 정보를 위해 ``twistd -h`` 와 ``twistd web -h``를 참조하라.
+예를 들어, ``myproject`` 어플리케이션을 8080포트로  Twisted 웹서버로 서비스하려면 아래와 같이 하면 된다::
 
     twistd -n web --port 8080 --wsgi myproject.app
 
