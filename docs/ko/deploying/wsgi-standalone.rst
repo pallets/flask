@@ -84,19 +84,17 @@ Twisted Web은 많은 플래그와 옵션을 지원하며, ``twistd`` 유틸리�
 
 .. _deploying-proxy-setups:
 
-Proxy Setups
-------------
+프록시 설정
+-----------
 
-If you deploy your application using one of these servers behind an HTTP proxy
-you will need to rewrite a few headers in order for the application to work.
-The two problematic values in the WSGI environment usually are `REMOTE_ADDR`
-and `HTTP_HOST`.  You can configure your httpd to pass these headers, or you
-can fix them in middleware.  Werkzeug ships a fixer that will solve some common
-setups, but you might want to write your own WSGI middleware for specific
-setups.
+어플리케이션을 HTTP 프록시 뒤에 있는 서버들 중 하나를 사용하여 배포한다면
+어플리케이션을 실행하기 위해 몇가지 헤더를 rewrite할 필요가 있을 것이다.
+WSGI 환경에서 문제가 있는 두가지 값을 `REMOTE_ADDR` 와 `HTTP_HOST` 이다.
+이 헤더들은 httpd에 전달하기 위한 설정을 할 수 있다. 또는 미들웨어에서 그 헤더들을 수정할 수 있다.
+Werkzeug는 몇가지 설정으로 해결할 수 있는 픽서(fixer)을 포함한다. 그러나 특정한 설정을 위해 WSGI 미들웨어를
+사용하기를 원할지도 모른다.
 
-Here's a simple nginx configuration which proxies to an application served on
-localhost at port 8000, setting appropriate headers:
+아래는 적절한 헤더를 설정하여 로컬포스트 8000번 포트로 서비스되는 어플리케이션으로 프록시하는 간단한 nginx 설정이다::
 
 .. sourcecode:: nginx
 
@@ -118,21 +116,18 @@ localhost at port 8000, setting appropriate headers:
         }
     }
 
-If your httpd is not providing these headers, the most common setup invokes the
-host being set from `X-Forwarded-Host` and the remote address from
-`X-Forwarded-For`::
+만약 httpd가 이 헤더들을 제공하지 않는다면 가장 일반적인 설정은 `X-Forwarded-Host`로부터 호스트를 
+`X-Forwarded-For`로부터 원격 어드레스를 가져오는 것이다::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-.. admonition:: Trusting Headers
+.. admonition:: 헤더 신뢰
 
-   Please keep in mind that it is a security issue to use such a middleware in
-   a non-proxy setup because it will blindly trust the incoming headers which
-   might be forged by malicious clients.
-
-If you want to rewrite the headers from another header, you might want to
-use a fixer like this::
+   악의저인 클라이언트에 의해 위조될 수 있는 헤더를 무조건 신뢰할 것이기 때문에 non-proxy 설정에서 
+   이런 미들웨어를 사용하는 것은 보안적인 문제가 있다는 것을 기억하라.
+   
+만약 다른 헤더로부터 헤더들은 rewrite하려면, 아래와 같이 픽서를 사용할 수 있다::
 
     class CustomProxyFix(object):
 
