@@ -14,7 +14,7 @@ mod_wsgi (아파치)
 .. _Apache: http://httpd.apache.org/
 
 `mod_wsgi` 설치하기
----------------------
+-------------------
 
 `mod_wsgi` 가 아직 설치되지 않았다면, 패키지 관리자를 사용하여 설치하거나, 직접 컴파일해야 한다.
 mod_wsgi `installation instructions`_ 가 유닉스 시스템에서의 소스 설치를 다룬다.
@@ -60,7 +60,7 @@ FreeBSD에에서는 `www/mod_wsgi` 포트를 컴파일하거나 pkg-add를 사�
     sys.path.insert(0, '/path/to/the/application')
 
 아파치 설정하기
-------------------
+---------------
 
 
 여러분이 해야할 마지막 일은 어플리케이션을 위한 아파치 설정 파일을 생성하는 것이다. 이 예제에서 보안적인 이유로
@@ -82,10 +82,10 @@ FreeBSD에에서는 `www/mod_wsgi` 포트를 컴파일하거나 pkg-add를 사�
         </Directory>
     </VirtualHost>
 
-Note: WSGIDaemonProcess isn't implemented in Windows and Apache will 
-refuse to run with the above configuration. On a Windows system, eliminate those lines:
+Note: WSGIDaemonProcess는 윈도우에서 구현되어 있지 않으며 아파치는 위와 같은 설정을 허용하지 않을 것이다.
+윈도우 시스템에서는 해당 라인들을 제거하라:
 
-.. sourcecode:: apache
+.. sourcecode:: 아파치
 
 	<VirtualHost *>
 		ServerName example.com
@@ -95,44 +95,37 @@ refuse to run with the above configuration. On a Windows system, eliminate those
 			Allow from all
 		</Directory>
 	</VirtualHost>
-
-For more information consult the `mod_wsgi wiki`_.
+	
+더 많은 정보를 위해 `mod_wsgi wiki`_를 참조하라.
 
 .. _mod_wsgi: http://code.google.com/p/modwsgi/
 .. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
 .. _virtual python: http://pypi.python.org/pypi/virtualenv
 .. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
 
-Troubleshooting
----------------
+문제해결
+--------
 
-If your application does not run, follow this guide to troubleshoot:
+만약 어플리케이션이 실행되지 않는다면 아래 문제해결 가이드를 참조하라:
 
-**Problem:** application does not run, errorlog shows SystemExit ignored
-    You have a ``app.run()`` call in your application file that is not
-    guarded by an ``if __name__ == '__main__':`` condition.  Either
-    remove that :meth:`~flask.Flask.run` call from the file and move it
-    into a separate `run.py` file or put it into such an if block.
+**문제:** 어플리케이션이 실행되지 않으며, 에러로그는 SystemExit ignored를 보여준다
+    ``if __name__ == '__main__':`` 조건에 의해 보호되지 않는 어플리케이션 파일에서 ``app.run()`` 를 호출한다.
+    파일에서 :meth:`~flask.Flask.run` 호출을 제거하고 `run.py` 파일로 옮기거나, if 블럭 안에 넣어라.
 
-**Problem:** application gives permission errors
-    Probably caused by your application running as the wrong user.  Make
-    sure the folders the application needs access to have the proper
-    privileges set and the application runs as the correct user
-    (``user`` and ``group`` parameter to the `WSGIDaemonProcess`
-    directive)
+**문제:** 어플리케이션이 퍼미션 에러를 준다.
+    아마 잘못된 사용자에 의해 어플리케이션이 실행되었을 것이다.
+    어플리케이션이 접근이 필요한 폴더가 적절한 권한이 설정되어 있는지 어플리케이션이 올바른 사용자로 실행되는지 확인하라
+    (`WSGIDaemonProcess` 지시어에 ``user`` 와 ``group`` 파라미터)
 
-**Problem:** application dies with an error on print
-    Keep in mind that mod_wsgi disallows doing anything with
-    :data:`sys.stdout` and :data:`sys.stderr`.  You can disable this
-    protection from the config by setting the `WSGIRestrictStdout` to
-    ``off``:
+**문제:** 어플리케이션이 에러를 출력하며 죽는다
+    mod_wsgi는 :data:`sys.stdout` 와 :data:`sys.stderr`로 어떤 것을 하는 것을 허용하지 않는다는 것을 기억라라.
+    `WSGIRestrictStdout` 를 ``off``로 설정하여 이 보호를 해지할 수 있다:
 
-    .. sourcecode:: apache
+    .. sourcecode:: 아파치
 
         WSGIRestrictStdout Off
 
-    Alternatively you can also replace the standard out in the .wsgi file
-    with a different stream::
+    다른 대안으로 .wsgi 파일에서의 표준 출력을 다른 스트림으로 변환할 수 있다::
 
         import sys
         sys.stdout = sys.stderr
