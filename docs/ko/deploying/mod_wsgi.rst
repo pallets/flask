@@ -130,41 +130,34 @@ Note: WSGIDaemonProcess는 윈도우에서 구현되어 있지 않으며 아파�
         import sys
         sys.stdout = sys.stderr
 
-**Problem:** accessing resources gives IO errors
-    Your application probably is a single .py file you symlinked into
-    the site-packages folder.  Please be aware that this does not work,
-    instead you either have to put the folder into the pythonpath the
-    file is stored in, or convert your application into a package.
+**문제:** IO 에러가 나는 자원에 접근하기
+    아마 어플리케이션이 site-packages 폴더안에 심볼링링크되어 있는 싱글 .py file일 것이다.
+    이것은 작동하지 않으며 대신 파일이 저장되어 있는 폴더를 pythonpath를 넣거나 어플리케이션을 패키지로 바꿔라.
 
-    The reason for this is that for non-installed packages, the module
-    filename is used to locate the resources and for symlinks the wrong
-    filename is picked up.
+    이러한 이유는 패키지로 설치되지 않은 경우, 모듈 파일명이 자원을 찾기 위해 사용되어 지며, 심볼링링크를 위해
+    잘못된 파일명이 선택되어 지기 때문이다.
 
-Support for Automatic Reloading
--------------------------------
+자동 리로딩 지원
+----------------
 
-To help deployment tools you can activate support for automatic
-reloading.  Whenever something changes the `.wsgi` file, `mod_wsgi` will
-reload all the daemon processes for us.
+배포 도구를 돕기 위애 여러분은 자동 리로딩 지원을 활성화할 수 있다.
+`.wsgi` 파일이 변경되면, `mod_wsgi`는 모든 데몬 프로세스를 리로드할 것이다.
 
-For that, just add the following directive to your `Directory` section:
+이를 위해 `Directory` 섹션에 다음과 같은 지시어만 추가하면 된다:
 
-.. sourcecode:: apache
+.. sourcecode:: 아파치
 
    WSGIScriptReloading On
 
-Working with Virtual Environments
----------------------------------
+가상 환경에서 실행하기
+----------------------
 
-Virtual environments have the advantage that they never install the
-required dependencies system wide so you have a better control over what
-is used where.  If you want to use a virtual environment with mod_wsgi
-you have to modify your `.wsgi` file slightly.
+가상환경은 필요한 의존적인 것들을 시스템 전반적으로 설치할 필요가 없어서 사용되는 것을 더 잘 컨트롤 할 수 있는 잇점이 있다.
+만약 가상환경에서 mod_wsgi를 사용하고 싶다면, `.wsgi` 파일을 조금 변경할 필요가 있다.
 
-Add the following lines to the top of your `.wsgi` file::
+`.wsgi` 파일 위에 아래와 같은 내용을 추가하라::
 
     activate_this = '/path/to/env/bin/activate_this.py'
     execfile(activate_this, dict(__file__=activate_this))
 
-This sets up the load paths according to the settings of the virtual
-environment.  Keep in mind that the path has to be absolute.
+이것은 가상환경 설정에 따라서 로드할 경로를 설정한다. 경로가 절대 경로임을 명심하라.
