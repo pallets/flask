@@ -63,11 +63,10 @@ FreeBSD에에서는 `www/mod_wsgi` 포트를 컴파일하거나 pkg-add를 사�
 ------------------
 
 
-The last thing you have to do is to create an Apache configuration file
-for your application.  In this example we are telling `mod_wsgi` to
-execute the application under a different user for security reasons:
+여러분이 해야할 마지막 일은 어플리케이션을 위한 아파치 설정 파일을 생성하는 것이다. 이 예제에서 보안적인 이유로
+다른 사용자 하에서 어플리케이션을 실행하라고 'mod_wsgi'에게 말할 것이다:
 
-.. sourcecode:: apache
+.. sourcecode:: 아파치
 
     <VirtualHost *>
         ServerName example.com
