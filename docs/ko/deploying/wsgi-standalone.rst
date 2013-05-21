@@ -1,25 +1,25 @@
 .. _deploying-wsgi-standalone:
 
-Standalone WSGI Containers
-==========================
+독립적인 WSGI 컨테이너
+======================
 
-There are popular servers written in Python that contain WSGI applications and
-serve HTTP.  These servers stand alone when they run; you can proxy to them
-from your web server.  Note the section on :ref:`deploying-proxy-setups` if you
-run into issues.
+WSGI 어플리케이션을 포함하고 HTTP를 서비스하는 파이썬으로 개발된 인기있는 서버가 있다.
+이 서버들은 실행될 때 독립적이다; 여러분은 그것들을 웹서버를 통해 프록시할 수 있다.
+이와 같이 하려면 :ref:`deploying-proxy-setups` 단락을 참조하라.
 
 Gunicorn
 --------
 
-`Gunicorn`_ 'Green Unicorn' is a WSGI HTTP Server for UNIX. It's a pre-fork
-worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
-and `greenlet`_. Running a Flask application on this server is quite simple::
+`Gunicorn`_ 'Green Unicorn'은 UNIX를 위한 WSGI HTTP 서버이다.
+이것은 루비의 Unicorn 프로젝트에서 포팅된 pre-fork worker 모델이다.
+이것은 `eventlet`_와 `greenlet`_을 모두 지원한다. 
+이 서버에서 플라스크 어플리케이션을 실행하는 것은 매우 간단하다::
 
     gunicorn myproject:app
 
-`Gunicorn`_ provides many command-line options -- see ``gunicorn -h``.
-For example, to run a Flask application with 4 worker processes (``-w
-4``) binding to localhost port 4000 (``-b 127.0.0.1:4000``)::
+`Gunicorn`_은 많은 커맨드라인 옵션을 제공한다 -- ``gunicorn -h`` 를 참조하라.
+예를 들면 로컬호스트 4000포트로 바인딩하면서(``-b 127.0.0.1:4000``) 
+4개의 worker 프로세스로 실행하기 위해서는 (``-w 4``) 아래와 같이 하면 된다::
 
     gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
 
