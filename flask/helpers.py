@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import os
 import sys
 import pkgutil
@@ -27,6 +25,7 @@ from functools import update_wrapper
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
 import six
+from flask._compat import string_types, text_type
 
 # this was moved in 0.7
 try:
@@ -467,7 +466,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           :data:`~flask.current_app`.
     """
     mtime = None
-    if isinstance(filename_or_fp, basestring):
+    if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
         file = None
     else:
@@ -478,7 +477,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
-           and isinstance(filename, basestring):
+           and isinstance(filename, string_types):
             warn(DeprecationWarning('The filename support for file objects '
                 'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
@@ -540,7 +539,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             os.path.getmtime(filename),
             os.path.getsize(filename),
             adler32(
-                filename.encode('utf-8') if isinstance(filename, unicode)
+                filename.encode('utf-8') if isinstance(filename, text_type)
                 else filename
             ) & 0xffffffff
         ))

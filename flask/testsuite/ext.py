@@ -8,7 +8,6 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
 
 import sys
 import unittest
@@ -22,7 +21,7 @@ class ExtImportHookTestCase(FlaskTestCase):
         # that a real flaskext could be in there which would disable our
         # fake package.  Secondly we want to make sure that the flaskext
         # import hook does not break on reloading.
-        for entry, value in sys.modules.items():
+        for entry, value in list(sys.modules.items()):
             if (entry.startswith('flask.ext.') or
                 entry.startswith('flask_') or
                 entry.startswith('flaskext.') or
@@ -100,7 +99,7 @@ class ExtImportHookTestCase(FlaskTestCase):
         self.assert_equal(test_function(), 42)
 
     def test_flaskext_broken_package_no_module_caching(self):
-        for x in xrange(2):
+        for x in range(2):
             with self.assert_raises(ImportError):
                 import flask.ext.broken
 
