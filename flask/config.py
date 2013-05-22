@@ -9,13 +9,12 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import imp
 import os
 import errno
 
 from werkzeug.utils import import_string
+from flask._compat import string_types
 
 
 class ConfigAttribute(object):
@@ -158,7 +157,7 @@ class Config(dict):
 
         :param obj: an import name or object
         """
-        if isinstance(obj, basestring):
+        if isinstance(obj, string_types):
             obj = import_string(obj)
         for key in dir(obj):
             if key.isupper():

@@ -8,7 +8,6 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
 
 import flask
 import unittest
