@@ -66,7 +66,7 @@ class MemoryTestCase(FlaskTestCase):
             with app.test_client() as c:
                 rv = c.get('/')
                 self.assert_equal(rv.status_code, 200)
-                self.assert_equal(rv.data, '<h1>42</h1>')
+                self.assert_equal(rv.data, b'<h1>42</h1>')
 
         # Trigger caches
         fire()
@@ -105,7 +105,7 @@ class ExceptionTestCase(FlaskTestCase):
             rv = c.get('/')
             self.assertEqual(rv.headers['Location'], 'http://localhost/test')
             rv = c.get('/test')
-            self.assertEqual(rv.data, '42')
+            self.assertEqual(rv.data, b'42')
 
 
 def suite():

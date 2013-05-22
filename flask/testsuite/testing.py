@@ -30,7 +30,7 @@ class TestToolsTestCase(FlaskTestCase):
         self.assert_equal(ctx.request.url, 'http://example.com:1234/foo/')
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.data, 'http://example.com:1234/foo/')
+            self.assert_equal(rv.data, b'http://example.com:1234/foo/')
 
     def test_environ_defaults(self):
         app = flask.Flask(__name__)
@@ -43,7 +43,7 @@ class TestToolsTestCase(FlaskTestCase):
         self.assert_equal(ctx.request.url, 'http://localhost/')
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.data, 'http://localhost/')
+            self.assert_equal(rv.data, b'http://localhost/')
 
     def test_redirect_keep_session(self):
         app = flask.Flask(__name__)
@@ -92,7 +92,7 @@ class TestToolsTestCase(FlaskTestCase):
                 sess['foo'] = [42]
                 self.assert_equal(len(sess), 1)
             rv = c.get('/')
-            self.assert_equal(rv.data, '[42]')
+            self.assert_equal(rv.data, b'[42]')
             with c.session_transaction() as sess:
                 self.assert_equal(len(sess), 1)
                 self.assert_equal(sess['foo'], [42])
@@ -148,7 +148,7 @@ class TestToolsTestCase(FlaskTestCase):
         with app.test_client() as c:
             resp = c.get('/')
             self.assert_equal(flask.g.value, 42)
-            self.assert_equal(resp.data, 'Hello World!')
+            self.assert_equal(resp.data, b'Hello World!')
             self.assert_equal(resp.status_code, 200)
 
             resp = c.get('/other')

@@ -25,7 +25,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('context_template.html', value=23)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '<p>23|42')
+        self.assert_equal(rv.data, b'<p>23|42')
 
     def test_original_win(self):
         app = flask.Flask(__name__)
@@ -33,7 +33,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template_string('{{ config }}', config=42)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '42')
+        self.assert_equal(rv.data, b'42')
 
     def test_request_less_rendering(self):
         app = flask.Flask(__name__)
@@ -139,7 +139,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_add_template_filter_with_template(self):
         app = flask.Flask(__name__)
@@ -150,7 +150,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -161,7 +161,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_add_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -172,7 +172,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_template_test(self):
         app = flask.Flask(__name__)
@@ -277,7 +277,7 @@ class TemplatingTestCase(FlaskTestCase):
             return flask.render_template('index.html')
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.data, 'Hello Custom World!')
+        self.assert_equal(rv.data, b'Hello Custom World!')
 
     def test_iterable_loader(self):
         app = flask.Flask(__name__)
@@ -293,7 +293,7 @@ class TemplatingTestCase(FlaskTestCase):
                 value=23)
 
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '<h1>Jameson</h1>')
+        self.assert_equal(rv.data, b'<h1>Jameson</h1>')
 
 
 def suite():

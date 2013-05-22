@@ -145,7 +145,7 @@ class RequestContextTestCase(FlaskTestCase):
             return 'Hello World!'
 
         rv = app.test_client().get('/?foo=bar')
-        self.assert_equal(rv.data, 'Hello World!')
+        self.assert_equal(rv.data, b'Hello World!')
 
         result = greenlets[0].run()
         self.assert_equal(result, 42)
@@ -168,7 +168,7 @@ class RequestContextTestCase(FlaskTestCase):
             return 'Hello World!'
 
         rv = app.test_client().get('/?foo=bar')
-        self.assert_equal(rv.data, 'Hello World!')
+        self.assert_equal(rv.data, b'Hello World!')
 
         result = greenlets[0].run()
         self.assert_equal(result, 42)
