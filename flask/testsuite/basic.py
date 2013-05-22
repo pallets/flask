@@ -753,8 +753,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             with app.test_request_context():
                 flask.url_for('spam')
-        except BuildError as error:
-            pass
+        except BuildError as err:
+            error = err
         try:
             raise RuntimeError('Test case where BuildError is not current.')
         except RuntimeError:
