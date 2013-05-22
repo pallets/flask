@@ -28,7 +28,7 @@ class ConfigTestCase(FlaskTestCase):
     def common_object_test(self, app):
         self.assert_equal(app.secret_key, 'devkey')
         self.assert_equal(app.config['TEST_KEY'], 'foo')
-        self.assert_true('ConfigTestCase' not in app.config)
+        self.assert_not_in('ConfigTestCase', app.config)
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
@@ -141,7 +141,7 @@ class InstanceTestCase(FlaskTestCase):
         try:
             flask.Flask(__name__, instance_path='instance')
         except ValueError as e:
-            self.assert_true('must be absolute' in str(e))
+            self.assert_in('must be absolute', str(e))
         else:
             self.fail('Expected value error')
 

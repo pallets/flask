@@ -42,7 +42,7 @@ class ExtImportHookTestCase(FlaskTestCase):
     def teardown(self):
         from flask import ext
         for key in ext.__dict__:
-            self.assert_true('.' not in key)
+            self.assert_not_in('.', key)
 
     def test_flaskext_new_simple_import_normal(self):
         from flask.ext.newext_simple import ext_id
@@ -113,7 +113,7 @@ class ExtImportHookTestCase(FlaskTestCase):
             self.assert_true(tb.tb_frame.f_globals is globals())
 
             next = tb.tb_next
-            self.assert_true('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
+            self.assert_in('flask_broken/__init__.py', next.tb_frame.f_code.co_filename)
 
 
 def suite():

@@ -103,7 +103,7 @@ def emits_module_deprecation_warning(f):
             f(self, *args, **kwargs)
             self.assert_true(log, 'expected deprecation warning')
             for entry in log:
-                self.assert_true('Modules are deprecated' in str(entry['message']))
+                self.assert_in('Modules are deprecated', str(entry['message']))
     return update_wrapper(new_f, f)
 
 
@@ -144,6 +144,12 @@ class FlaskTestCase(unittest.TestCase):
 
     def assert_true(self, x, msg=None):
         self.assertTrue(x, msg)
+
+    def assert_in(self, x, y):
+        self.assertIn(x, y)
+
+    def assert_not_in(self, x, y):
+        self.assertNotIn(x, y)
 
 
 class _ExceptionCatcher(object):

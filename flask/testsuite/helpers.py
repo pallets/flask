@@ -48,8 +48,8 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
         self.assert_equal(rv.mimetype, 'application/json')
-        self.assert_true('description' in flask.json.loads(rv.data))
-        self.assert_true('<p>' not in flask.json.loads(rv.data)['description'])
+        self.assert_in('description', flask.json.loads(rv.data))
+        self.assert_not_in('<p>', flask.json.loads(rv.data)['description'])
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
@@ -178,7 +178,7 @@ class SendfileTestCase(FlaskTestCase):
         with app.test_request_context():
             rv = flask.send_file('static/index.html')
             self.assert_true(rv.direct_passthrough)
-            self.assert_true('x-sendfile' in rv.headers)
+            self.assert_in('x-sendfile', rv.headers)
             self.assert_equal(rv.headers['x-sendfile'],
                 os.path.join(app.root_path, 'static/index.html'))
             self.assert_equal(rv.mimetype, 'text/html')
@@ -201,7 +201,7 @@ class SendfileTestCase(FlaskTestCase):
                 f = open(os.path.join(app.root_path, 'static/index.html'))
                 rv = flask.send_file(f)
                 self.assert_equal(rv.mimetype, 'text/html')
-                self.assert_true('x-sendfile' in rv.headers)
+                self.assert_in('x-sendfile', rv.headers)
                 self.assert_equal(rv.headers['x-sendfile'],
                     os.path.join(app.root_path, 'static/index.html'))
             # mimetypes + etag
@@ -229,7 +229,7 @@ class SendfileTestCase(FlaskTestCase):
             with app.test_request_context():
                 f = StringIO('Test')
                 rv = flask.send_file(f)
-                self.assert_true('x-sendfile' not in rv.headers)
+                self.assert_not_in('x-sendfile', rv.headers)
             # etags
             self.assert_equal(len(captured), 1)
 
@@ -325,10 +325,10 @@ class LoggingTestCase(FlaskTestCase):
             with catch_stderr() as err:
                 c.get('/')
                 out = err.getvalue()
-                self.assert_true('WARNING in helpers [' in out)
-                self.assert_true(os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in out)
-                self.assert_true('the standard library is dead' in out)
-                self.assert_true('this is a debug statement' in out)
+                self.assert_in('WARNING in helpers [', out)
+                self.assert_in(os.path.basename(__file__.rsplit('.', 1)[0] + '.py'), out)
+                self.assert_in('the standard library is dead', out)
+                self.assert_in('this is a debug statement', out)
 
             with catch_stderr() as err:
                 try:
@@ -357,13 +357,13 @@ class LoggingTestCase(FlaskTestCase):
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_true(b'Internal Server Error' in rv.data)
+        self.assert_in(b'Internal Server Error', rv.data)
 
         err = out.getvalue()
-        self.assert_true('Exception on / [GET]' in err)
-        self.assert_true('Traceback (most recent call last):' in err)
-        self.assert_true('1/0' in err)
-        self.assert_true('ZeroDivisionError:' in err)
+        self.assert_in('Exception on / [GET]', err)
+        self.assert_in('Traceback (most recent call last):', err)
+        self.assert_in('1/0', err)
+        self.assert_in('ZeroDivisionError:', err)
 
     def test_processor_exceptions(self):
         app = flask.Flask(__name__)
