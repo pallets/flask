@@ -106,7 +106,7 @@ class TestToolsTestCase(FlaskTestCase):
                 with c.session_transaction() as sess:
                     pass
             except RuntimeError as e:
-                self.assert_('Session backend did not open a session' in str(e))
+                self.assert_true('Session backend did not open a session' in str(e))
             else:
                 self.fail('Expected runtime error')
 
@@ -118,9 +118,9 @@ class TestToolsTestCase(FlaskTestCase):
         with app.test_client() as c:
             rv = c.get('/')
             req = flask.request._get_current_object()
-            self.assert_(req is not None)
+            self.assert_true(req is not None)
             with c.session_transaction():
-                self.assert_(req is flask.request._get_current_object())
+                self.assert_true(req is flask.request._get_current_object())
 
     def test_session_transaction_needs_cookies(self):
         app = flask.Flask(__name__)
@@ -130,7 +130,7 @@ class TestToolsTestCase(FlaskTestCase):
             with c.session_transaction() as s:
                 pass
         except RuntimeError as e:
-            self.assert_('cookies' in str(e))
+            self.assert_true('cookies' in str(e))
         else:
             self.fail('Expected runtime error')
 
@@ -152,8 +152,8 @@ class TestToolsTestCase(FlaskTestCase):
             self.assert_equal(resp.status_code, 200)
 
             resp = c.get('/other')
-            self.assert_(not hasattr(flask.g, 'value'))
-            self.assert_(b'Internal Server Error' in resp.data)
+            self.assert_true(not hasattr(flask.g, 'value'))
+            self.assert_true(b'Internal Server Error' in resp.data)
             self.assert_equal(resp.status_code, 500)
             flask.g.value = 23
 

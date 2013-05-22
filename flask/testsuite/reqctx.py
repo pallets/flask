@@ -57,7 +57,7 @@ class RequestContextTestCase(FlaskTestCase):
             with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
                 pass
         except Exception as e:
-            self.assert_(isinstance(e, ValueError))
+            self.assert_true(isinstance(e, ValueError))
             self.assert_equal(str(e), "the server name provided " +
                     "('localhost.localdomain:5000') does not match the " + \
                     "server name from the WSGI environment ('localhost')")
@@ -93,17 +93,17 @@ class RequestContextTestCase(FlaskTestCase):
             self.assert_equal(index(), 'Hello World!')
         with app.test_request_context('/meh'):
             self.assert_equal(meh(), 'http://localhost/meh')
-        self.assert_(flask._request_ctx_stack.top is None)
+        self.assert_true(flask._request_ctx_stack.top is None)
 
     def test_context_test(self):
         app = flask.Flask(__name__)
-        self.assert_(not flask.request)
-        self.assert_(not flask.has_request_context())
+        self.assert_true(not flask.request)
+        self.assert_true(not flask.has_request_context())
         ctx = app.test_request_context()
         ctx.push()
         try:
-            self.assert_(flask.request)
-            self.assert_(flask.has_request_context())
+            self.assert_true(flask.request)
+            self.assert_true(flask.has_request_context())
         finally:
             ctx.pop()
 
@@ -122,7 +122,7 @@ class RequestContextTestCase(FlaskTestCase):
         except RuntimeError:
             pass
         else:
-            self.assert_(0, 'expected runtime error')
+            self.assert_true(0, 'expected runtime error')
 
     def test_greenlet_context_copying(self):
         app = flask.Flask(__name__)
@@ -132,14 +132,14 @@ class RequestContextTestCase(FlaskTestCase):
         def index():
             reqctx = flask._request_ctx_stack.top.copy()
             def g():
-                self.assert_(not flask.request)
-                self.assert_(not flask.current_app)
+                self.assert_true(not flask.request)
+                self.assert_true(not flask.current_app)
                 with reqctx:
-                    self.assert_(flask.request)
+                    self.assert_true(flask.request)
                     self.assert_equal(flask.current_app, app)
                     self.assert_equal(flask.request.path, '/')
                     self.assert_equal(flask.request.args['foo'], 'bar')
-                self.assert_(not flask.request)
+                self.assert_true(not flask.request)
                 return 42
             greenlets.append(greenlet(g))
             return 'Hello World!'
@@ -159,7 +159,7 @@ class RequestContextTestCase(FlaskTestCase):
             reqctx = flask._request_ctx_stack.top.copy()
             @flask.copy_current_request_context
             def g():
-                self.assert_(flask.request)
+                self.assert_true(flask.request)
                 self.assert_equal(flask.current_app, app)
                 self.assert_equal(flask.request.path, '/')
                 self.assert_equal(flask.request.args['foo'], 'bar')
