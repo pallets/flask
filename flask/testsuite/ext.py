@@ -12,6 +12,7 @@
 import sys
 import unittest
 from flask.testsuite import FlaskTestCase
+from flask._compat import PY2
 from six.moves import reload_module
 
 class ExtImportHookTestCase(FlaskTestCase):
@@ -109,7 +110,11 @@ class ExtImportHookTestCase(FlaskTestCase):
         except ImportError:
             exc_type, exc_value, tb = sys.exc_info()
             self.assert_true(exc_type is ImportError)
-            self.assert_equal(str(exc_value), 'No module named missing_module')
+            if PY2:
+                message = 'No module named missing_module'
+            else:
+                message = 'No module named \'missing_module\''
+            self.assert_equal(str(exc_value), message)
             self.assert_true(tb.tb_frame.f_globals is globals())
 
             next = tb.tb_next
