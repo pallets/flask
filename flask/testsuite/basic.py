@@ -78,7 +78,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
         rv = c.head('/')
         self.assert_equal(rv.status_code, 200)
-        self.assert_true(not rv.data) # head truncates
+        self.assert_false(rv.data) # head truncates
         self.assert_equal(c.post('/more').data, b'POST')
         self.assert_equal(c.get('/more').data, b'GET')
         rv = c.delete('/more')
@@ -102,7 +102,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
         rv = c.head('/')
         self.assert_equal(rv.status_code, 200)
-        self.assert_true(not rv.data) # head truncates
+        self.assert_false(rv.data) # head truncates
         self.assert_equal(c.post('/more').data, b'POST')
         self.assert_equal(c.get('/more').data, b'GET')
         rv = c.delete('/more')
@@ -347,7 +347,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         app.secret_key = 'testkey'
 
         with app.test_request_context():
-            self.assert_true(not flask.session.modified)
+            self.assert_false(flask.session.modified)
             flask.flash('Zap')
             flask.session.modified = False
             flask.flash('Zip')
@@ -967,7 +967,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         @app.route('/')
         def index():
             return 'Awesome'
-        self.assert_true(not app.got_first_request)
+        self.assert_false(app.got_first_request)
         self.assert_equal(app.test_client().get('/').data, b'Awesome')
         try:
             @app.route('/foo')

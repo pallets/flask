@@ -60,7 +60,7 @@ class ConfigTestCase(FlaskTestCase):
                 self.assert_true("'FOO_SETTINGS' is not set" in str(e))
             else:
                 self.assert_true(0, 'expected exception')
-            self.assert_true(not app.config.from_envvar('FOO_SETTINGS', silent=True))
+            self.assert_false(app.config.from_envvar('FOO_SETTINGS', silent=True))
 
             os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
             self.assert_true(app.config.from_envvar('FOO_SETTINGS'))
@@ -97,7 +97,7 @@ class ConfigTestCase(FlaskTestCase):
             self.assert_true(msg.endswith("missing.cfg'"))
         else:
             self.assert_true(0, 'expected config')
-        self.assert_true(not app.config.from_pyfile('missing.cfg', silent=True))
+        self.assert_false(app.config.from_pyfile('missing.cfg', silent=True))
 
     def test_session_lifetime(self):
         app = flask.Flask(__name__)

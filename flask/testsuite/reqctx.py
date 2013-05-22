@@ -97,8 +97,8 @@ class RequestContextTestCase(FlaskTestCase):
 
     def test_context_test(self):
         app = flask.Flask(__name__)
-        self.assert_true(not flask.request)
-        self.assert_true(not flask.has_request_context())
+        self.assert_false(flask.request)
+        self.assert_false(flask.has_request_context())
         ctx = app.test_request_context()
         ctx.push()
         try:
@@ -132,14 +132,14 @@ class RequestContextTestCase(FlaskTestCase):
         def index():
             reqctx = flask._request_ctx_stack.top.copy()
             def g():
-                self.assert_true(not flask.request)
-                self.assert_true(not flask.current_app)
+                self.assert_false(flask.request)
+                self.assert_false(flask.current_app)
                 with reqctx:
                     self.assert_true(flask.request)
                     self.assert_equal(flask.current_app, app)
                     self.assert_equal(flask.request.path, '/')
                     self.assert_equal(flask.request.args['foo'], 'bar')
-                self.assert_true(not flask.request)
+                self.assert_false(flask.request)
                 return 42
             greenlets.append(greenlet(g))
             return 'Hello World!'

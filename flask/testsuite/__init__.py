@@ -145,6 +145,9 @@ class FlaskTestCase(unittest.TestCase):
     def assert_true(self, x, msg=None):
         self.assertTrue(x, msg)
 
+    def assert_false(self, x, msg=None):
+        self.assertFalse(x, msg)
+
     def assert_in(self, x, y):
         self.assertIn(x, y)
 
