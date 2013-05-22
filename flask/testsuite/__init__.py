@@ -142,8 +142,8 @@ class FlaskTestCase(unittest.TestCase):
         with catcher:
             callable(*args, **kwargs)
 
-    def assert_true(self, x):
-        self.assertTrue(x)
+    def assert_true(self, x, msg=None):
+        self.assertTrue(x, msg)
 
 
 class _ExceptionCatcher(object):
