@@ -116,7 +116,10 @@ class FlaskTestCase(unittest.TestCase):
     def ensure_clean_request_context(self):
         # make sure we're not leaking a request context since we are
         # testing flask internally in debug mode in a few cases
-        self.assert_equal(flask._request_ctx_stack.top, None)
+        leaks = []
+        while flask._request_ctx_stack.top is not None:
+            leaks.append(flask._request_ctx_stack.pop())
+        self.assert_equal(leaks, [])
 
     def setup(self):
         pass
