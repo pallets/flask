@@ -45,7 +45,7 @@ class SignalsTestCase(FlaskTestCase):
             calls.append('before-signal')
 
         def after_request_signal(sender, response):
-            self.assert_equal(response.data, 'stuff')
+            self.assert_equal(response.data, b'stuff')
             calls.append('after-signal')
 
         @app.before_request
@@ -68,7 +68,7 @@ class SignalsTestCase(FlaskTestCase):
 
         try:
             rv = app.test_client().get('/')
-            self.assert_equal(rv.data, 'stuff')
+            self.assert_equal(rv.data, b'stuff')
 
             self.assert_equal(calls, ['before-signal', 'before-handler',
                              'handler', 'after-handler',
