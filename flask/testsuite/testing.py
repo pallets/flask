@@ -12,7 +12,7 @@
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
-import six
+from flask._compat import text_type
 
 
 class TestToolsTestCase(FlaskTestCase):
@@ -84,7 +84,7 @@ class TestToolsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            return six.text_type(flask.session['foo'])
+            return text_type(flask.session['foo'])
 
         with app.test_client() as c:
             with c.session_transaction() as sess:

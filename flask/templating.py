@@ -15,7 +15,7 @@ from jinja2 import BaseLoader, Environment as BaseEnvironment, \
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered
 from .module import blueprint_is_module
-import six
+from ._compat import itervalues, iteritems
 
 
 def _default_template_ctx_processor():
@@ -80,7 +80,7 @@ class DispatchingJinjaLoader(BaseLoader):
         except (ValueError, KeyError):
             pass
 
-        for blueprint in six.itervalues(self.app.blueprints):
+        for blueprint in itervalues(self.app.blueprints):
             if blueprint_is_module(blueprint):
                 continue
             loader = blueprint.jinja_loader
@@ -93,7 +93,7 @@ class DispatchingJinjaLoader(BaseLoader):
         if loader is not None:
             result.update(loader.list_templates())
 
-        for name, blueprint in six.iteritems(self.app.blueprints):
+        for name, blueprint in iteritems(self.app.blueprints):
             loader = blueprint.jinja_loader
             if loader is not None:
                 for template in loader.list_templates():

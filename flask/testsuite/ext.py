@@ -11,9 +11,12 @@
 
 import sys
 import unittest
+try:
+    from imp import reload as reload_module
+except ImportError:
+    reload_module = reload
 from flask.testsuite import FlaskTestCase
 from flask._compat import PY2
-from six.moves import reload_module
 
 class ExtImportHookTestCase(FlaskTestCase):
 
