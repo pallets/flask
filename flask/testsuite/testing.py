@@ -219,8 +219,8 @@ class SubdomainTestCase(FlaskTestCase):
         url = flask.url_for('view', company_id='xxx')
         response = self.client.get(url)
 
-        self.assertEquals(200, response.status_code)
-        self.assertEquals(b'xxx', response.data)
+        self.assert_equal(200, response.status_code)
+        self.assert_equal(b'xxx', response.data)
 
 
     def test_nosubdomain(self):
@@ -231,8 +231,8 @@ class SubdomainTestCase(FlaskTestCase):
         url = flask.url_for('view', company_id='xxx')
         response = self.client.get(url)
 
-        self.assertEquals(200, response.status_code)
-        self.assertEquals(b'xxx', response.data)
+        self.assert_equal(200, response.status_code)
+        self.assert_equal(b'xxx', response.data)
 
 
 def suite():
