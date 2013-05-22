@@ -157,7 +157,7 @@ class ModuleTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'not found')
         rv = c.get('/error')
         self.assert_equal(rv.status_code, 500)
-        self.assert_equal('internal server error', rv.data)
+        self.assert_equal(b'internal server error', rv.data)
 
     def test_templates_and_static(self):
         app = moduleapp
@@ -171,9 +171,9 @@ class ModuleTestCase(FlaskTestCase):
         rv = c.get('/admin/index2')
         self.assert_equal(rv.data, b'Hello from the Admin')
         rv = c.get('/admin/static/test.txt')
-        self.assert_equal(rv.data.strip(), 'Admin File')
+        self.assert_equal(rv.data.strip(), b'Admin File')
         rv = c.get('/admin/static/css/test.css')
-        self.assert_equal(rv.data.strip(), '/* nested file */')
+        self.assert_equal(rv.data.strip(), b'/* nested file */')
 
         with app.test_request_context():
             self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
@@ -310,10 +310,10 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(bp, url_prefix='/2', url_defaults={'bar': 19})
 
         c = app.test_client()
-        self.assert_equal(c.get('/1/foo').data, u'23/42')
-        self.assert_equal(c.get('/2/foo').data, u'19/42')
-        self.assert_equal(c.get('/1/bar').data, u'23')
-        self.assert_equal(c.get('/2/bar').data, u'19')
+        self.assert_equal(c.get('/1/foo').data, b'23/42')
+        self.assert_equal(c.get('/2/foo').data, b'19/42')
+        self.assert_equal(c.get('/1/bar').data, b'23')
+        self.assert_equal(c.get('/2/bar').data, b'19')
 
     def test_blueprint_url_processors(self):
         bp = flask.Blueprint('frontend', __name__, url_prefix='/<lang_code>')
@@ -353,9 +353,9 @@ class BlueprintTestCase(FlaskTestCase):
         rv = c.get('/admin/index2')
         self.assert_equal(rv.data, b'Hello from the Admin')
         rv = c.get('/admin/static/test.txt')
-        self.assert_equal(rv.data.strip(), 'Admin File')
+        self.assert_equal(rv.data.strip(), b'Admin File')
         rv = c.get('/admin/static/css/test.css')
-        self.assert_equal(rv.data.strip(), '/* nested file */')
+        self.assert_equal(rv.data.strip(), b'/* nested file */')
 
         # try/finally, in case other tests use this app for Blueprint tests.
         max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
@@ -435,9 +435,9 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(backend)
 
         c = app.test_client()
-        self.assert_equal(c.get('/fe').data.strip(), '/be')
-        self.assert_equal(c.get('/fe2').data.strip(), '/fe')
-        self.assert_equal(c.get('/be').data.strip(), '/fe')
+        self.assert_equal(c.get('/fe').data.strip(), b'/be')
+        self.assert_equal(c.get('/fe2').data.strip(), b'/fe')
+        self.assert_equal(c.get('/be').data.strip(), b'/fe')
 
     def test_empty_url_defaults(self):
         bp = flask.Blueprint('bp', __name__)
@@ -704,7 +704,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_template_test_after_route_with_template(self):
         app = flask.Flask(__name__)
@@ -717,7 +717,7 @@ class BlueprintTestCase(FlaskTestCase):
             return isinstance(value, bool)
         app.register_blueprint(bp, url_prefix='/py')
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -730,7 +730,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_template_test_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -743,7 +743,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -756,7 +756,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
 def suite():
     suite = unittest.TestSuite()

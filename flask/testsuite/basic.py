@@ -453,7 +453,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return 'request'
         self.assert_('after' not in evts)
         rv = app.test_client().get('/').data
-        self.assert_('after' in evts)
+        self.assert_(b'after' in evts)
         self.assert_equal(rv, b'request|after')
 
     def test_after_request_processing(self):
@@ -937,10 +937,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(c.get('/de/').data, b'/de/about')
         self.assert_equal(c.get('/de/about').data, b'/foo')
         self.assert_equal(c.get('/foo').data, b'/en/about')
-        
+
     def test_inject_blueprint_url_defaults(self):
         app = flask.Flask(__name__)
-        bp = flask.Blueprint('foo.bar.baz', __name__, 
+        bp = flask.Blueprint('foo.bar.baz', __name__,
                        template_folder='template')
 
         @bp.url_defaults
@@ -1096,7 +1096,7 @@ class SubdomainTestCase(FlaskTestCase):
         app.register_module(mod)
         c = app.test_client()
         rv = c.get('/static/hello.txt', 'http://foo.example.com/')
-        self.assert_equal(rv.data.strip(), 'Hello Subdomain')
+        self.assert_equal(rv.data.strip(), b'Hello Subdomain')
 
     def test_subdomain_matching(self):
         app = flask.Flask(__name__)

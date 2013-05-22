@@ -62,20 +62,20 @@ class TestToolsTestCase(FlaskTestCase):
 
         with app.test_client() as c:
             rv = c.get('/getsession')
-            assert rv.data == '<missing>'
+            assert rv.data == b'<missing>'
 
             rv = c.get('/')
-            assert rv.data == 'index'
+            assert rv.data == b'index'
             assert flask.session.get('data') == 'foo'
             rv = c.post('/', data={}, follow_redirects=True)
-            assert rv.data == 'foo'
+            assert rv.data == b'foo'
 
             # This support requires a new Werkzeug version
             if not hasattr(c, 'redirect_client'):
                 assert flask.session.get('data') == 'foo'
 
             rv = c.get('/getsession')
-            assert rv.data == 'foo'
+            assert rv.data == b'foo'
 
     def test_session_transactions(self):
         app = flask.Flask(__name__)
@@ -153,7 +153,7 @@ class TestToolsTestCase(FlaskTestCase):
 
             resp = c.get('/other')
             self.assert_(not hasattr(flask.g, 'value'))
-            self.assert_('Internal Server Error' in resp.data)
+            self.assert_(b'Internal Server Error' in resp.data)
             self.assert_equal(resp.status_code, 500)
             flask.g.value = 23
 
@@ -220,7 +220,7 @@ class SubdomainTestCase(FlaskTestCase):
         response = self.client.get(url)
 
         self.assertEquals(200, response.status_code)
-        self.assertEquals('xxx', response.data)
+        self.assertEquals(b'xxx', response.data)
 
 
     def test_nosubdomain(self):
@@ -232,7 +232,7 @@ class SubdomainTestCase(FlaskTestCase):
         response = self.client.get(url)
 
         self.assertEquals(200, response.status_code)
-        self.assertEquals('xxx', response.data)
+        self.assertEquals(b'xxx', response.data)
 
 
 def suite():

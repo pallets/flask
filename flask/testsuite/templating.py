@@ -61,7 +61,7 @@ class TemplatingTestCase(FlaskTestCase):
                 {{ session.test }}
             ''')
         rv = app.test_client().get('/?foo=42')
-        self.assert_equal(rv.data.split(), ['42', '23', 'False', 'aha'])
+        self.assert_equal(rv.data.split(), [b'42', b'23', b'False', b'aha'])
 
     def test_escaping(self):
         text = '<p>Hello World!'
@@ -72,12 +72,12 @@ class TemplatingTestCase(FlaskTestCase):
                                          html=flask.Markup(text))
         lines = app.test_client().get('/').data.splitlines()
         self.assert_equal(lines, [
-            '&lt;p&gt;Hello World!',
-            '<p>Hello World!',
-            '<p>Hello World!',
-            '<p>Hello World!',
-            '&lt;p&gt;Hello World!',
-            '<p>Hello World!'
+            b'&lt;p&gt;Hello World!',
+            b'<p>Hello World!',
+            b'<p>Hello World!',
+            b'<p>Hello World!',
+            b'&lt;p&gt;Hello World!',
+            b'<p>Hello World!'
         ])
 
     def test_no_escaping(self):
@@ -219,7 +219,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_template(self):
         app = flask.Flask(__name__)
@@ -230,7 +230,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -241,7 +241,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -252,7 +252,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_global(self):
         app = flask.Flask(__name__)

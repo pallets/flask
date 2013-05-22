@@ -34,7 +34,7 @@ class FlaskSubclassingTestCase(FlaskTestCase):
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_('Internal Server Error' in rv.data)
+        self.assert_(b'Internal Server Error' in rv.data)
 
         err = out.getvalue()
         self.assert_equal(err, '')
