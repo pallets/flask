@@ -120,7 +120,8 @@ class ExtImportHookTestCase(FlaskTestCase):
             self.assert_equal(str(exc_value), message)
             self.assert_true(tb.tb_frame.f_globals is globals())
 
-            next = tb.tb_next
+            # reraise() adds a second frame so we need to skip that one too.
+            next = tb.tb_next.tb_next
             self.assert_in('flask_broken/__init__.py', next.tb_frame.f_code.co_filename)
 
 
