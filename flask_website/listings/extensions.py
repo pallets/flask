@@ -509,6 +509,14 @@ extensions = [
         docs='http://packages.python.org/Flask-WeasyPrint/',
         github='SimonSapin/Flask-WeasyPrint',
     ),
+    Extension('Flask-Classy', 'Freedom Dumlao',
+        description='''
+            <p>Class based views for Flask.
+        ''',
+        github='apiguy/flask-classy',
+        docs='http://pythonhosted.org/Flask-Classy/',
+        approved=False
+    )
 ]
 
 
