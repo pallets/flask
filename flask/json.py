@@ -15,8 +15,11 @@ from .globals import current_app, request
 from werkzeug.http import http_date
 
 # Use the same json implementation as itsdangerous on which we
-# depend anyways.
-from itsdangerous import simplejson as _json
+# depend anyways.  This name changed at one point so support both.
+try:
+    from itsdangerous import simplejson as _json
+except ImportError:
+    from itsdangerous import json as _json
 
 
 # figure out if simplejson escapes slashes.  This behavior was changed
