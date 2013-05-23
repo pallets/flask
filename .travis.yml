@@ -5,7 +5,7 @@ python:
   - 2.7
   - pypy
 
-script: python setup.py test
+script: make test
 
 branches:
   except:
