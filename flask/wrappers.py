@@ -11,8 +11,8 @@
 
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.utils import cached_property
+from werkzeug.exceptions import BadRequest
 
-from .exceptions import JSONBadRequest
 from .debughelpers import attach_enctype_error_multidict
 from . import json
 from .globals import _request_ctx_stack
@@ -105,21 +105,16 @@ class Request(RequestBase):
     def on_json_loading_failed(self, e):
         """Called if decoding of the JSON data failed.  The return value of
         this method is used by :attr:`json` when an error occurred.  The default
-        implementation raises a :class:`JSONBadRequest`, which is a subclass of
-        :class:`~werkzeug.exceptions.BadRequest` which sets the
-        ``Content-Type`` to ``application/json`` and provides a JSON-formatted
-        error description::
+        implementation just raises a :class:`BadRequest` exception.
 
-            {"description": "The browser (or proxy) sent a request that \
-                             this server could not understand."}
-
-        .. versionchanged:: 0.9
-           Return a :class:`JSONBadRequest` instead of a
-           :class:`~werkzeug.exceptions.BadRequest` by default.
+        .. versionchanged:: 0.10
+           Removed buggy previous behavior of generating a random JSON
+           response.  If you want that behavior back you can trivially
+           add it by subclassing.
 
         .. versionadded:: 0.8
         """
-        raise JSONBadRequest()
+        raise BadRequest()
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)

@@ -17,7 +17,10 @@ from werkzeug.http import http_date
 
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
-from itsdangerous import json as _json
+try:
+    from itsdangerous import simplejson as _json
+except ImportError:
+    from itsdangerous import json as _json
 
 
 # figure out if simplejson escapes slashes.  This behavior was changed

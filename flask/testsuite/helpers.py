@@ -33,22 +33,10 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return text_type(flask.request.json)
+            return flask.jsonify(foo=text_type(flask.request.json))
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
-
-    def test_json_bad_requests_content_type(self):
-        app = flask.Flask(__name__)
-        @app.route('/json', methods=['POST'])
-        def return_json():
-            return text_type(flask.request.json)
-        c = app.test_client()
-        rv = c.post('/json', data='malformed', content_type='application/json')
-        self.assert_equal(rv.status_code, 400)
-        self.assert_equal(rv.mimetype, 'application/json')
-        self.assert_in('description', flask.json.loads(rv.data))
-        self.assert_not_in('<p>', flask.json.loads(rv.data)['description'])
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
