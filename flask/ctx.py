@@ -286,7 +286,7 @@ class RequestContext(object):
 
     def push(self):
         """Binds the request context to the current context."""
-        # If an exception ocurrs in debug mode or if context preservation is
+        # If an exception occurs in debug mode or if context preservation is
         # activated under exception situations exactly one context stays
         # on the stack.  The rationale is that you want to access that
         # information under debug situations.  However if someone forgets to
