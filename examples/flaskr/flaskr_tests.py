@@ -42,21 +42,21 @@ class FlaskrTestCase(unittest.TestCase):
     def test_empty_db(self):
         """Start with a blank database."""
         rv = self.app.get('/')
-        assert 'No entries here so far' in rv.data
+        assert b'No entries here so far' in rv.data
 
     def test_login_logout(self):
         """Make sure login and logout works"""
         rv = self.login(flaskr.app.config['USERNAME'],
                         flaskr.app.config['PASSWORD'])
-        assert 'You were logged in' in rv.data
+        assert b'You were logged in' in rv.data
         rv = self.logout()
-        assert 'You were logged out' in rv.data
+        assert b'You were logged out' in rv.data
         rv = self.login(flaskr.app.config['USERNAME'] + 'x',
                         flaskr.app.config['PASSWORD'])
-        assert 'Invalid username' in rv.data
+        assert b'Invalid username' in rv.data
         rv = self.login(flaskr.app.config['USERNAME'],
                         flaskr.app.config['PASSWORD'] + 'x')
-        assert 'Invalid password' in rv.data
+        assert b'Invalid password' in rv.data
 
     def test_messages(self):
         """Test that messages work"""
@@ -66,9 +66,9 @@ class FlaskrTestCase(unittest.TestCase):
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
-        assert 'No entries here so far' not in rv.data
-        assert '&lt;Hello&gt;' in rv.data
-        assert '<strong>HTML</strong> allowed here' in rv.data
+        assert b'No entries here so far' not in rv.data
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
 
 
 if __name__ == '__main__':
