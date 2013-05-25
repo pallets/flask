@@ -8,7 +8,7 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from flask._compat import implements_to_string
+from ._compat import implements_to_string
 
 
 class UnexpectedUnicodeError(AssertionError, UnicodeError):

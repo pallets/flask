@@ -13,7 +13,7 @@
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
-from flask._compat import urlparse
+from ._compat import urlparse
 
 
 def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
