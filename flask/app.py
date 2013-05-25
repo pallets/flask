@@ -452,7 +452,7 @@ class Flask(_PackageBoundObject):
             None: [_default_template_ctx_processor]
         }
 
-        #: all the attached blueprints in a directory by name.  Blueprints
+        #: all the attached blueprints in a dictionary by name.  Blueprints
         #: can be attached multiple times so this dictionary does not tell
         #: you how often they got attached.
         #:
