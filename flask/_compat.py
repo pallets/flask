@@ -91,7 +91,7 @@ else:
 
 def with_metaclass(meta, *bases):
     # This requires a bit of explanation: the basic idea is to make a
-    # dummy metaclass for one level of class instanciation that replaces
+    # dummy metaclass for one level of class instantiation that replaces
     # itself with the actual metaclass.  Because of internal type checks
     # we also need to make sure that we downgrade the custom metaclass
     # for one level to something closer to type (that's why __call__ and
