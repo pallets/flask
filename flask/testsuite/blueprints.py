@@ -105,7 +105,7 @@ class ModuleTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         admin = flask.Module(__name__, 'admin', url_prefix='/admin')
         @app.context_processor
-        def inject_all_regualr():
+        def inject_all_regular():
             return {'a': 1}
         @admin.context_processor
         def inject_admin():
@@ -534,7 +534,7 @@ class BlueprintTestCase(FlaskTestCase):
 
         c = app.test_client()
         self.assertEqual(c.get('/py/foo').data, b'bp.foo')
-        # The rule's din't actually made it through
+        # The rule's didn't actually made it through
         rv = c.get('/py/bar')
         assert rv.status_code == 404
         rv = c.get('/py/bar/123')

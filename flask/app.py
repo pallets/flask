@@ -177,7 +177,7 @@ class Flask(_PackageBoundObject):
 
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
-    #: exception ocurrs and the integrated server will automatically reload
+    #: exception occurs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
     #:
     #: This attribute can also be configured from the config with the `DEBUG`
@@ -522,7 +522,7 @@ class Flask(_PackageBoundObject):
         """The name of the application.  This is usually the import name
         with the difference that it's guessed from the run file if the
         import name is main.  This name is used as a display name when
-        Flask needs the name of the application.  It can be set and overriden
+        Flask needs the name of the application.  It can be set and overridden
         to change the value.
 
         .. versionadded:: 0.8
@@ -697,7 +697,7 @@ class Flask(_PackageBoundObject):
         This injects request, session, config and g into the template
         context as well as everything template context processors want
         to inject.  Note that the as of Flask 0.6, the original values
-        in the context will not be overriden if a context processor
+        in the context will not be overridden if a context processor
         decides to return a value with the same key.
 
         :param context: the context as a dictionary that is updated in place
@@ -1045,7 +1045,7 @@ class Flask(_PackageBoundObject):
             app.error_handler_spec[None][404] = page_not_found
 
         Setting error handlers via assignments to :attr:`error_handler_spec`
-        however is discouraged as it requires fidling with nested dictionaries
+        however is discouraged as it requires fiddling with nested dictionaries
         and the special case for arbitrary exception types.
 
         The first `None` refers to the active blueprint.  If the error
@@ -1550,7 +1550,7 @@ class Flask(_PackageBoundObject):
             # When we create a response object directly, we let the constructor
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
-            # specific values (like defualt content type selection).
+            # specific values (like default content type selection).
             if isinstance(rv, string_types):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
