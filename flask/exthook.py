@@ -21,7 +21,7 @@
 """
 import sys
 import os
-from flask._compat import reraise
+from ._compat import reraise
 
 
 class ExtensionImporter(object):

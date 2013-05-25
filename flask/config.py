@@ -14,7 +14,7 @@ import os
 import errno
 
 from werkzeug.utils import import_string
-from flask._compat import string_types
+from ._compat import string_types
 
 
 class ConfigAttribute(object):
