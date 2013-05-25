@@ -443,7 +443,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             evts.append('before')
         @app.after_request
         def after_request(response):
-            response.data += '|after'
+            response.data += b'|after'
             evts.append('after')
             return response
         @app.route('/')
@@ -453,7 +453,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return 'request'
         self.assert_not_in('after', evts)
         rv = app.test_client().get('/').data
-        self.assert_in(b'after', evts)
+        self.assert_in('after', evts)
         self.assert_equal(rv, b'request|after')
 
     def test_after_request_processing(self):
