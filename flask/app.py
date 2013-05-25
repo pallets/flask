@@ -630,6 +630,7 @@ class Flask(_PackageBoundObject):
 
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
+        :param mode: resource file opening mode, default is 'rb'.
         """
         return open(os.path.join(self.instance_path, resource), mode)
 

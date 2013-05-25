@@ -838,6 +838,7 @@ class _PackageBoundObject(object):
 
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
+        :param mode: resource file opening mode, default is 'rb'.
         """
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
