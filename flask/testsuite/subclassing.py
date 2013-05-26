@@ -30,7 +30,7 @@ class FlaskSubclassingTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)

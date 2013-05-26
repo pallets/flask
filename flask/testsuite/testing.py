@@ -143,7 +143,7 @@ class TestToolsTestCase(FlaskTestCase):
 
         @app.route('/other')
         def other():
-            1/0
+            1 // 0
 
         with app.test_client() as c:
             resp = c.get('/')
