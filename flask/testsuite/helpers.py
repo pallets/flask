@@ -306,7 +306,7 @@ class LoggingTestCase(FlaskTestCase):
 
         @app.route('/exc')
         def exc():
-            1/0
+            1 // 0
 
         with app.test_client() as c:
             with catch_stderr() as err:
@@ -340,7 +340,7 @@ class LoggingTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
@@ -349,7 +349,7 @@ class LoggingTestCase(FlaskTestCase):
         err = out.getvalue()
         self.assert_in('Exception on / [GET]', err)
         self.assert_in('Traceback (most recent call last):', err)
-        self.assert_in('1/0', err)
+        self.assert_in('1 // 0', err)
         self.assert_in('ZeroDivisionError:', err)
 
     def test_processor_exceptions(self):
@@ -357,11 +357,11 @@ class LoggingTestCase(FlaskTestCase):
         @app.before_request
         def before_request():
             if trigger == 'before':
-                1/0
+                1 // 0
         @app.after_request
         def after_request(response):
             if trigger == 'after':
-                1/0
+                1 // 0
             return response
         @app.route('/')
         def index():
