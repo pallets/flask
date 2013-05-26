@@ -398,7 +398,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
         _request_ctx_stack.top.flashes = flashes = session.pop('_flashes') \
             if '_flashes' in session else []
     if category_filter:
-        flashes = filter(lambda f: f[0] in category_filter, flashes)
+        flashes = list(filter(lambda f: f[0] in category_filter, flashes))
     if not with_categories:
         return [x[1] for x in flashes]
     return flashes
