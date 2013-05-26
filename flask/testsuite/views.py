@@ -55,9 +55,9 @@ class ViewTestCase(FlaskTestCase):
 
         class Index(flask.views.MethodView):
             def get(self):
-                1/0
+                1 // 0
             def post(self):
-                1/0
+                1 // 0
 
         class Other(Index):
             def get(self):

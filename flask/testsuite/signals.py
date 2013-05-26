@@ -83,7 +83,7 @@ class SignalsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         def record(sender, exception):
             recorded.append(exception)

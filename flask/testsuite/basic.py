@@ -529,7 +529,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
                 pass
         @app.route('/')
         def fails():
-            1/0
+            1 // 0
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
         self.assert_in(b'Internal Server Error', rv.data)
@@ -866,7 +866,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             app = flask.Flask(__name__)
             @app.route('/')
             def index():
-                1/0
+                1 // 0
             c = app.test_client()
             if config_key is not None:
                 app.config[config_key] = True
@@ -1054,7 +1054,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         @app.route('/fail')
         def fail_func():
-            1/0
+            1 // 0
 
         c = app.test_client()
         for x in range(3):
