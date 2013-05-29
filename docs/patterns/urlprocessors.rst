@@ -1,3 +1,5 @@
+.. _url-processors:
+
 Using URL Processors
 ====================
 

@@ -26,6 +26,7 @@ Blueprints in Flask are intended for these cases:
   (with defaults) across all view functions in the blueprint.
 * Register a blueprint multiple times on an application with different URL
   rules.
+* Register a blueprint on another blueprint combining the URL prefixes.
 * Provide template filters, static files, templates, and other utilities
   through blueprints.  A blueprint does not have to implement applications
   or view functions.
@@ -48,9 +49,9 @@ The Concept of Blueprints
 -------------------------
 
 The basic concept of blueprints is that they record operations to execute
-when registered on an application.  Flask associates view functions with
-blueprints when dispatching requests and generating URLs from one endpoint
-to another.
+when registered on an application or another blueprint.  Flask associates
+view functions with blueprints when dispatching requests and generating
+URLs from one endpoint to another.
 
 My First Blueprint
 ------------------
@@ -202,3 +203,38 @@ you can use relative redirects by prefixing the endpoint with a dot only::
 
 This will link to ``admin.index`` for instance in case the current request
 was dispatched to any other admin blueprint endpoint.
+
+Nested Blueprints
+-----------------
+
+When you have a large application is might make sense to use nested
+blueprints in certain situations. If you consider an URL like
+``/users/123/edit`` it would make sense to have one blueprint dealing
+with the list of users and another blueprint dealing with one specific
+user. With nested blueprints this would roughly look like this::
+
+    from flask import Blueprint, render_template
+
+    user = Blueprint('user', __name__)
+
+    @user.route('/')
+    def details(user_id):
+        return render_template('users/details.html', user_id=user_id)
+
+    @user.route('/edit')
+    def edit(user_id):
+        return render_template('users/edit.html', user_id=user_id)
+
+    users = Blueprint('users', __name__)
+    users.register_blueprint(user, url_prefix='/<int:user_id>')
+
+    @users.route('/')
+    def list():
+        return render_template('users/list.html')
+
+When you register a nested blueprint with e.g. ``users.register_blueprint()``
+the blueprint will record the intention of registering the nested blueprint
+on the application too, when it is later registered itself. If you want to
+avoid the ``user_id`` parameter in all methods of the nested blueprint you
+can use URL processors to extract it from the parameter list (see
+:ref:`url-processors`).
