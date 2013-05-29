@@ -295,6 +295,27 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(c.get('/backend-no').data, 'backend says no')
         self.assert_equal(c.get('/what-is-a-sideend').data, 'application itself says no')
 
+    def test_blueprint_with_nested_blueprint(self):
+        nbp = flask.Blueprint('foo', __name__)
+
+        @nbp.route('/')
+        def foo():
+            return 'foo'
+
+        bp = flask.Blueprint('test', __name__)
+        bp.register_blueprint(nbp, url_prefix='/foo')
+
+        @bp.route('/')
+        def test():
+            return 'test'
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(bp, url_prefix='/test')
+
+        c = app.test_client()
+        self.assert_equal(c.get('/test/').data, u'test')
+        self.assert_equal(c.get('/test/foo/').data, u'foo')
+
     def test_blueprint_url_definitions(self):
         bp = flask.Blueprint('test', __name__)
 
