@@ -1551,7 +1551,7 @@ class Flask(_PackageBoundObject):
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
             # specific values (like default content type selection).
-            if isinstance(rv, string_types):
+            if isinstance(rv, string_types + (bytes, )):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:
