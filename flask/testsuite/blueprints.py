@@ -172,8 +172,10 @@ class ModuleTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'Hello from the Admin')
         rv = c.get('/admin/static/test.txt')
         self.assert_equal(rv.data.strip(), b'Admin File')
+        rv.close()
         rv = c.get('/admin/static/css/test.css')
         self.assert_equal(rv.data.strip(), b'/* nested file */')
+        rv.close()
 
         with app.test_request_context():
             self.assert_equal(flask.url_for('admin.static', filename='test.txt'),
@@ -354,8 +356,10 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'Hello from the Admin')
         rv = c.get('/admin/static/test.txt')
         self.assert_equal(rv.data.strip(), b'Admin File')
+        rv.close()
         rv = c.get('/admin/static/css/test.css')
         self.assert_equal(rv.data.strip(), b'/* nested file */')
+        rv.close()
 
         # try/finally, in case other tests use this app for Blueprint tests.
         max_age_default = app.config['SEND_FILE_MAX_AGE_DEFAULT']
@@ -405,6 +409,7 @@ class BlueprintTestCase(FlaskTestCase):
                 rv = blueprint.send_static_file('index.html')
                 cc = parse_cache_control_header(rv.headers['Cache-Control'])
                 self.assert_equal(cc.max_age, 100)
+                rv.close()
         finally:
             app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 

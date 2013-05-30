@@ -793,6 +793,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_request_context():
             self.assert_equal(flask.url_for('static', filename='index.html'),
                               '/static/index.html')
+        rv.close()
 
     def test_none_response(self):
         app = flask.Flask(__name__)

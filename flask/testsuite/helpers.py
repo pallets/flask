@@ -159,6 +159,7 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_equal(rv.mimetype, 'text/html')
             with app.open_resource('static/index.html') as f:
                 self.assert_equal(rv.data, f.read())
+            rv.close()
 
     def test_send_file_xsendfile(self):
         app = flask.Flask(__name__)
@@ -170,6 +171,7 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_equal(rv.headers['x-sendfile'],
                 os.path.join(app.root_path, 'static/index.html'))
             self.assert_equal(rv.mimetype, 'text/html')
+            rv.close()
 
     def test_send_file_object(self):
         app = flask.Flask(__name__)
@@ -180,6 +182,7 @@ class SendfileTestCase(FlaskTestCase):
                 with app.open_resource('static/index.html') as f:
                     self.assert_equal(rv.data, f.read())
                 self.assert_equal(rv.mimetype, 'text/html')
+                rv.close()
             # mimetypes + etag
             self.assert_equal(len(captured), 2)
 
@@ -192,6 +195,7 @@ class SendfileTestCase(FlaskTestCase):
                 self.assert_in('x-sendfile', rv.headers)
                 self.assert_equal(rv.headers['x-sendfile'],
                     os.path.join(app.root_path, 'static/index.html'))
+                rv.close()
             # mimetypes + etag
             self.assert_equal(len(captured), 2)
 
@@ -202,6 +206,7 @@ class SendfileTestCase(FlaskTestCase):
                 rv = flask.send_file(f)
                 self.assert_equal(rv.data, b'Test')
                 self.assert_equal(rv.mimetype, 'application/octet-stream')
+                rv.close()
             # etags
             self.assert_equal(len(captured), 1)
             with catch_warnings() as captured:
@@ -209,6 +214,7 @@ class SendfileTestCase(FlaskTestCase):
                 rv = flask.send_file(f, mimetype='text/plain')
                 self.assert_equal(rv.data, b'Test')
                 self.assert_equal(rv.mimetype, 'text/plain')
+                rv.close()
             # etags
             self.assert_equal(len(captured), 1)
 
@@ -218,6 +224,7 @@ class SendfileTestCase(FlaskTestCase):
                 f = StringIO('Test')
                 rv = flask.send_file(f)
                 self.assert_not_in('x-sendfile', rv.headers)
+                rv.close()
             # etags
             self.assert_equal(len(captured), 1)
 
@@ -229,6 +236,7 @@ class SendfileTestCase(FlaskTestCase):
                 rv = flask.send_file(f, as_attachment=True)
                 value, options = parse_options_header(rv.headers['Content-Disposition'])
                 self.assert_equal(value, 'attachment')
+                rv.close()
             # mimetypes + etag
             self.assert_equal(len(captured), 2)
 
@@ -238,6 +246,7 @@ class SendfileTestCase(FlaskTestCase):
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             self.assert_equal(value, 'attachment')
             self.assert_equal(options['filename'], 'index.html')
+            rv.close()
 
         with app.test_request_context():
             rv = flask.send_file(StringIO('Test'), as_attachment=True,
@@ -247,6 +256,7 @@ class SendfileTestCase(FlaskTestCase):
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             self.assert_equal(value, 'attachment')
             self.assert_equal(options['filename'], 'index.txt')
+            rv.close()
 
     def test_static_file(self):
         app = flask.Flask(__name__)
@@ -256,20 +266,24 @@ class SendfileTestCase(FlaskTestCase):
             rv = app.send_static_file('index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 12 * 60 * 60)
+            rv.close()
             # Test again with direct use of send_file utility.
             rv = flask.send_file('static/index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 12 * 60 * 60)
+            rv.close()
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
         with app.test_request_context():
             # Test with static file handler.
             rv = app.send_static_file('index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 3600)
+            rv.close()
             # Test again with direct use of send_file utility.
             rv = flask.send_file('static/index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 3600)
+            rv.close()
         class StaticFileApp(flask.Flask):
             def get_send_file_max_age(self, filename):
                 return 10
@@ -279,10 +293,12 @@ class SendfileTestCase(FlaskTestCase):
             rv = app.send_static_file('index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 10)
+            rv.close()
             # Test again with direct use of send_file utility.
             rv = flask.send_file('static/index.html')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, 10)
+            rv.close()
 
 
 class LoggingTestCase(FlaskTestCase):
