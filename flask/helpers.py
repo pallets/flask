@@ -516,7 +516,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if file is None:
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
-        headers['Content-Length'] = os.path.getsize(filename)
+            headers['Content-Length'] = os.path.getsize(filename)
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
