@@ -513,7 +513,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             # test that all teardown_requests get passed the same original
             # exception.
             try:
-                raise TypeError
+                raise TypeError()
             except:
                 pass
         @app.teardown_request
@@ -524,7 +524,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             # test that all teardown_requests get passed the same original
             # exception.
             try:
-                raise TypeError
+                raise TypeError()
             except:
                 pass
         @app.route('/')
@@ -1098,7 +1098,9 @@ class SubdomainTestCase(FlaskTestCase):
         app.register_module(mod)
         c = app.test_client()
         rv = c.get('/static/hello.txt', 'http://foo.example.com/')
+        rv.direct_passthrough = False
         self.assert_equal(rv.data.strip(), b'Hello Subdomain')
+        rv.close()
 
     def test_subdomain_matching(self):
         app = flask.Flask(__name__)

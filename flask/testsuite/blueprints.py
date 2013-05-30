@@ -371,6 +371,7 @@ class BlueprintTestCase(FlaskTestCase):
             rv = c.get('/admin/static/css/test.css')
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             self.assert_equal(cc.max_age, expected_max_age)
+            rv.close()
         finally:
             app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 

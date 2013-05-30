@@ -206,6 +206,7 @@ class SendfileTestCase(FlaskTestCase):
             with catch_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f)
+                rv.direct_passthrough = False
                 self.assert_equal(rv.data, b'Test')
                 self.assert_equal(rv.mimetype, 'application/octet-stream')
                 rv.close()
@@ -214,6 +215,7 @@ class SendfileTestCase(FlaskTestCase):
             with catch_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f, mimetype='text/plain')
+                rv.direct_passthrough = False
                 self.assert_equal(rv.data, b'Test')
                 self.assert_equal(rv.mimetype, 'text/plain')
                 rv.close()
