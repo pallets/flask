@@ -17,7 +17,11 @@ branches:
     - website
 
 notifications:
-  # Disable travis notifications until they figured out how to hide
-  # their own builder failure from us.  Travis currently fails way
-  # too many times by itself.
   email: false
+  irc:
+    channels:
+      - "chat.freenode.net#pocoo"
+    on_success: change
+    on_failure: always
+    use_notice: true
+    skip_join: true
