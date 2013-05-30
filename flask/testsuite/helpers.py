@@ -133,6 +133,7 @@ class JSONTestCase(FlaskTestCase):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
         app = flask.Flask(__name__)
+        app.testing = True
         app.request_class = ModifiedRequest
         app.url_map.charset = 'euc-kr'
 
