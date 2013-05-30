@@ -158,6 +158,7 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_true(rv.direct_passthrough)
             self.assert_equal(rv.mimetype, 'text/html')
             with app.open_resource('static/index.html') as f:
+                rv.direct_passthrough = False
                 self.assert_equal(rv.data, f.read())
             rv.close()
 
@@ -179,6 +180,7 @@ class SendfileTestCase(FlaskTestCase):
             with app.test_request_context():
                 f = open(os.path.join(app.root_path, 'static/index.html'))
                 rv = flask.send_file(f)
+                rv.direct_passthrough = False
                 with app.open_resource('static/index.html') as f:
                     self.assert_equal(rv.data, f.read())
                 self.assert_equal(rv.mimetype, 'text/html')
