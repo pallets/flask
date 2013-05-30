@@ -1510,6 +1510,16 @@ class Flask(_PackageBoundObject):
         rv.allow.update(methods)
         return rv
 
+    def should_ignore_error(self, error):
+        """This is called to figure out if an error should be ignored
+        or not as far as the teardown system is concerned.  If this
+        function returns `True` then the teardown handlers will not be
+        passed the error.
+
+        .. versionadded:: 0.10
+        """
+        return False
+
     def make_response(self, rv):
         """Converts the return value from a view function to a real
         response object that is an instance of :attr:`response_class`.
@@ -1790,12 +1800,20 @@ class Flask(_PackageBoundObject):
                                a list of headers and an optional
                                exception context to start the response
         """
-        with self.request_context(environ):
+        ctx = self.request_context(environ)
+        ctx.push()
+        error = None
+        try:
             try:
                 response = self.full_dispatch_request()
             except Exception as e:
+                error = e
                 response = self.make_response(self.handle_exception(e))
             return response(environ, start_response)
+        finally:
+            if self.should_ignore_error(error):
+                error = None
+            ctx.auto_pop(error)
 
     @property
     def modules(self):

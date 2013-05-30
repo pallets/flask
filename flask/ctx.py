@@ -352,6 +352,13 @@ class RequestContext(object):
         if app_ctx is not None:
             app_ctx.pop(exc)
 
+    def auto_pop(self, exc):
+        if self.request.environ.get('flask._preserve_context') or \
+           (exc is not None and self.app.preserve_context_on_exception):
+            self.preserved = True
+        else:
+            self.pop(exc)
+
     def __enter__(self):
         self.push()
         return self
@@ -362,11 +369,7 @@ class RequestContext(object):
         # access the request object in the interactive shell.  Furthermore
         # the context can be force kept alive for the test client.
         # See flask.testing for how this works.
-        if self.request.environ.get('flask._preserve_context') or \
-           (tb is not None and self.app.preserve_context_on_exception):
-            self.preserved = True
-        else:
-            self.pop(exc_value)
+        self.auto_pop(exc_value)
 
     def __repr__(self):
         return '<%s \'%s\' [%s] of %s>' % (
