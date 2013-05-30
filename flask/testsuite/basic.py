@@ -786,6 +786,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
     def test_static_files(self):
         app = flask.Flask(__name__)
+        app.testing = True
         rv = app.test_client().get('/static/index.html')
         self.assert_equal(rv.status_code, 200)
         self.assert_equal(rv.data.strip(), b'<h1>Hello World!</h1>')
