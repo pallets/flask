@@ -6,7 +6,9 @@ python:
   - pypy
   - 3.3
 
-install: pip install --editable .
+install:
+  - pip install git+git://github.com/mitsuhiko/werkzeug.git#egg=Werkzeug
+  - pip install --editable .
 
 script: make test
 
