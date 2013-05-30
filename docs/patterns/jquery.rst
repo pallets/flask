@@ -11,11 +11,7 @@ Python primitives (numbers, strings, dicts and lists) look like which is
 widely supported and very easy to parse.  It became popular a few years
 ago and quickly replaced XML as transport format in web applications.
 
-If you have Python 2.6 JSON will work out of the box, in Python 2.5 you
-will have to install the `simplejson`_ library from PyPI.
-
 .. _jQuery: http://jquery.com/
-.. _simplejson: http://pypi.python.org/pypi/simplejson
 
 Loading jQuery
 --------------

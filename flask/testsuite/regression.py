@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import os
 import gc
 import sys
@@ -68,7 +66,7 @@ class MemoryTestCase(FlaskTestCase):
             with app.test_client() as c:
                 rv = c.get('/')
                 self.assert_equal(rv.status_code, 200)
-                self.assert_equal(rv.data, '<h1>42</h1>')
+                self.assert_equal(rv.data, b'<h1>42</h1>')
 
         # Trigger caches
         fire()
@@ -77,7 +75,7 @@ class MemoryTestCase(FlaskTestCase):
         if sys.version_info >= (2, 7) and \
                 not hasattr(sys, 'pypy_translation_info'):
             with self.assert_no_leak():
-                for x in xrange(10):
+                for x in range(10):
                     fire()
 
     def test_safe_join_toplevel_pardir(self):
@@ -107,7 +105,7 @@ class ExceptionTestCase(FlaskTestCase):
             rv = c.get('/')
             self.assertEqual(rv.headers['Location'], 'http://localhost/test')
             rv = c.get('/test')
-            self.assertEqual(rv.data, '42')
+            self.assertEqual(rv.data, b'42')
 
 
 def suite():

@@ -8,12 +8,15 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
 
 import sys
 import unittest
+try:
+    from imp import reload as reload_module
+except ImportError:
+    reload_module = reload
 from flask.testsuite import FlaskTestCase
-
+from flask._compat import PY2
 
 class ExtImportHookTestCase(FlaskTestCase):
 
@@ -22,14 +25,14 @@ class ExtImportHookTestCase(FlaskTestCase):
         # that a real flaskext could be in there which would disable our
         # fake package.  Secondly we want to make sure that the flaskext
         # import hook does not break on reloading.
-        for entry, value in sys.modules.items():
+        for entry, value in list(sys.modules.items()):
             if (entry.startswith('flask.ext.') or
                 entry.startswith('flask_') or
                 entry.startswith('flaskext.') or
                 entry == 'flaskext') and value is not None:
                 sys.modules.pop(entry, None)
         from flask import ext
-        reload(ext)
+        reload_module(ext)
 
         # reloading must not add more hooks
         import_hooks = 0
@@ -43,7 +46,7 @@ class ExtImportHookTestCase(FlaskTestCase):
     def teardown(self):
         from flask import ext
         for key in ext.__dict__:
-            self.assert_('.' not in key)
+            self.assert_not_in('.', key)
 
     def test_flaskext_new_simple_import_normal(self):
         from flask.ext.newext_simple import ext_id
@@ -100,7 +103,7 @@ class ExtImportHookTestCase(FlaskTestCase):
         self.assert_equal(test_function(), 42)
 
     def test_flaskext_broken_package_no_module_caching(self):
-        for x in xrange(2):
+        for x in range(2):
             with self.assert_raises(ImportError):
                 import flask.ext.broken
 
@@ -109,12 +112,20 @@ class ExtImportHookTestCase(FlaskTestCase):
             import flask.ext.broken
         except ImportError:
             exc_type, exc_value, tb = sys.exc_info()
-            self.assert_(exc_type is ImportError)
-            self.assert_equal(str(exc_value), 'No module named missing_module')
-            self.assert_(tb.tb_frame.f_globals is globals())
+            self.assert_true(exc_type is ImportError)
+            if PY2:
+                message = 'No module named missing_module'
+            else:
+                message = 'No module named \'missing_module\''
+            self.assert_equal(str(exc_value), message)
+            self.assert_true(tb.tb_frame.f_globals is globals())
 
-            next = tb.tb_next
-            self.assert_('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
+            # reraise() adds a second frame so we need to skip that one too.
+            # On PY3 we even have another one :(
+            next = tb.tb_next.tb_next
+            if not PY2:
+                next = next.tb_next
+            self.assert_in('flask_broken/__init__.py', next.tb_frame.f_code.co_filename)
 
 
 def suite():

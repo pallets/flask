@@ -8,14 +8,16 @@
     :copyright: (c) 2012 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import io
 import uuid
 from datetime import datetime
 from .globals import current_app, request
+from ._compat import text_type, PY2
 
 from werkzeug.http import http_date
 
 # Use the same json implementation as itsdangerous on which we
-# depend anyways.  This name changed at one point so support both.
+# depend anyways.
 try:
     from itsdangerous import simplejson as _json
 except ImportError:
@@ -30,6 +32,20 @@ _slash_escape = '\\/' not in _json.dumps('/')
 __all__ = ['dump', 'dumps', 'load', 'loads', 'htmlsafe_dump',
            'htmlsafe_dumps', 'JSONDecoder', 'JSONEncoder',
            'jsonify']
+
+
+def _wrap_reader_for_text(fp, encoding):
+    if isinstance(fp.read(0), bytes):
+        fp = io.TextIOWrapper(io.BufferedReader(fp), encoding)
+    return fp
+
+
+def _wrap_writer_for_text(fp, encoding):
+    try:
+        fp.write('')
+    except TypeError:
+        fp = io.TextIOWrapper(fp, encoding)
+    return fp
 
 
 class JSONEncoder(_json.JSONEncoder):
@@ -62,7 +78,7 @@ class JSONEncoder(_json.JSONEncoder):
         if isinstance(o, uuid.UUID):
             return str(o)
         if hasattr(o, '__html__'):
-            return unicode(o.__html__())
+            return text_type(o.__html__())
         return _json.JSONEncoder.default(self, o)
 
 
@@ -99,13 +115,20 @@ def dumps(obj, **kwargs):
     and can be overriden by the simplejson ``ensure_ascii`` parameter.
     """
     _dump_arg_defaults(kwargs)
-    return _json.dumps(obj, **kwargs)
+    encoding = kwargs.pop('encoding', None)
+    rv = _json.dumps(obj, **kwargs)
+    if encoding is not None and isinstance(rv, text_type):
+        rv = rv.encode(encoding)
+    return rv
 
 
 def dump(obj, fp, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
     _dump_arg_defaults(kwargs)
-    return _json.dump(obj, fp, **kwargs)
+    encoding = kwargs.pop('encoding', None)
+    if encoding is not None:
+        fp = _wrap_writer_for_text(fp, encoding)
+    _json.dump(obj, fp, **kwargs)
 
 
 def loads(s, **kwargs):
@@ -114,6 +137,8 @@ def loads(s, **kwargs):
     application on the stack.
     """
     _load_arg_defaults(kwargs)
+    if isinstance(s, bytes):
+        s = s.decode(kwargs.pop('encoding', None) or 'utf-8')
     return _json.loads(s, **kwargs)
 
 
@@ -121,6 +146,8 @@ def load(fp, **kwargs):
     """Like :func:`loads` but reads from a file object.
     """
     _load_arg_defaults(kwargs)
+    if not PY2:
+        fp = _wrap_reader_for_text(fp, kwargs.pop('encoding', None) or 'utf-8')
     return _json.load(fp, **kwargs)
 
 
@@ -147,7 +174,7 @@ def jsonify(*args, **kwargs):
     to this function are the same as to the :class:`dict` constructor.
 
     Example usage::
-    
+
         from flask import jsonify
 
         @app.route('/_get_current_user')
@@ -164,8 +191,7 @@ def jsonify(*args, **kwargs):
             "id": 42
         }
 
-    This requires Python 2.6 or an installed version of simplejson.  For
-    security reasons only objects are supported toplevel.  For more
+    For security reasons only objects are supported toplevel.  For more
     information about this, have a look at :ref:`json-security`.
 
     .. versionadded:: 0.2

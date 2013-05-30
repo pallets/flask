@@ -57,6 +57,11 @@ Release date to be decided.
 - Removed custom JSON HTTP exception subclasses.  If you were relying on them
   you can reintroduce them again yourself trivially.  Using them however is
   strongly discouraged as the interface was flawed.
+- Python requirements changed: requiring Python 2.6 or 2.7 now to prepare
+  for Python 3.3 port.
+- Changed how the teardown system is informed about exceptions.  This is now
+  more reliable in case something handles an exception halfway through
+  the error handling process.
 
 Version 0.9
 -----------

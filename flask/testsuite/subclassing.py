@@ -11,9 +11,9 @@
 """
 import flask
 import unittest
-from StringIO import StringIO
 from logging import StreamHandler
 from flask.testsuite import FlaskTestCase
+from flask._compat import StringIO
 
 
 class FlaskSubclassingTestCase(FlaskTestCase):
@@ -30,11 +30,11 @@ class FlaskSubclassingTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_('Internal Server Error' in rv.data)
+        self.assert_in(b'Internal Server Error', rv.data)
 
         err = out.getvalue()
         self.assert_equal(err, '')

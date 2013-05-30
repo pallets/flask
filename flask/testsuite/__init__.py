@@ -10,17 +10,17 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+from __future__ import print_function
 
 import os
 import sys
 import flask
 import warnings
 import unittest
-from StringIO import StringIO
 from functools import update_wrapper
 from contextlib import contextmanager
 from werkzeug.utils import import_string, find_modules
+from flask._compat import reraise, StringIO
 
 
 def add_to_path(path):
@@ -101,9 +101,9 @@ def emits_module_deprecation_warning(f):
     def new_f(self, *args, **kwargs):
         with catch_warnings() as log:
             f(self, *args, **kwargs)
-            self.assert_(log, 'expected deprecation warning')
+            self.assert_true(log, 'expected deprecation warning')
             for entry in log:
-                self.assert_('Modules are deprecated' in str(entry['message']))
+                self.assert_in('Modules are deprecated', str(entry['message']))
     return update_wrapper(new_f, f)
 
 
@@ -116,7 +116,10 @@ class FlaskTestCase(unittest.TestCase):
     def ensure_clean_request_context(self):
         # make sure we're not leaking a request context since we are
         # testing flask internally in debug mode in a few cases
-        self.assert_equal(flask._request_ctx_stack.top, None)
+        leaks = []
+        while flask._request_ctx_stack.top is not None:
+            leaks.append(flask._request_ctx_stack.pop())
+        self.assert_equal(leaks, [])
 
     def setup(self):
         pass
@@ -142,6 +145,25 @@ class FlaskTestCase(unittest.TestCase):
         with catcher:
             callable(*args, **kwargs)
 
+    def assert_true(self, x, msg=None):
+        self.assertTrue(x, msg)
+
+    def assert_false(self, x, msg=None):
+        self.assertFalse(x, msg)
+
+    def assert_in(self, x, y):
+        self.assertIn(x, y)
+
+    def assert_not_in(self, x, y):
+        self.assertNotIn(x, y)
+
+    if sys.version_info[:2] == (2, 6):
+        def assertIn(self, x, y):
+            assert x in y, "%r unexpectedly not in %r" % (x, y)
+
+        def assertNotIn(self, x, y):
+            assert x not in y, "%r unexpectedly in %r" % (x, y)
+
 
 class _ExceptionCatcher(object):
 
@@ -158,7 +180,7 @@ class _ExceptionCatcher(object):
             self.test_case.fail('Expected exception of type %r' %
                                 exception_name)
         elif not issubclass(exc_type, self.exc_type):
-            raise exc_type, exc_value, tb
+            reraise(exc_type, exc_value, tb)
         return True
 
 
@@ -220,5 +242,5 @@ def main():
     """Runs the testsuite as command line application."""
     try:
         unittest.main(testLoader=BetterLoader(), defaultTest='suite')
-    except Exception, e:
-        print 'Error: %s' % e
+    except Exception as e:
+        print('Error: %s' % e)

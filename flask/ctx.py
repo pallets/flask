@@ -281,12 +281,12 @@ class RequestContext(object):
             url_rule, self.request.view_args = \
                 self.url_adapter.match(return_rule=True)
             self.request.url_rule = url_rule
-        except HTTPException, e:
+        except HTTPException as e:
             self.request.routing_exception = e
 
     def push(self):
         """Binds the request context to the current context."""
-        # If an exception ocurrs in debug mode or if context preservation is
+        # If an exception occurs in debug mode or if context preservation is
         # activated under exception situations exactly one context stays
         # on the stack.  The rationale is that you want to access that
         # information under debug situations.  However if someone forgets to
@@ -334,6 +334,9 @@ class RequestContext(object):
             if exc is None:
                 exc = sys.exc_info()[1]
             self.app.do_teardown_request(exc)
+            request_close = getattr(self.request, 'close', None)
+            if request_close is not None:
+                request_close()
             clear_request = True
 
         rv = _request_ctx_stack.pop()
@@ -349,6 +352,13 @@ class RequestContext(object):
         if app_ctx is not None:
             app_ctx.pop(exc)
 
+    def auto_pop(self, exc):
+        if self.request.environ.get('flask._preserve_context') or \
+           (exc is not None and self.app.preserve_context_on_exception):
+            self.preserved = True
+        else:
+            self.pop(exc)
+
     def __enter__(self):
         self.push()
         return self
@@ -359,11 +369,7 @@ class RequestContext(object):
         # access the request object in the interactive shell.  Furthermore
         # the context can be force kept alive for the test client.
         # See flask.testing for how this works.
-        if self.request.environ.get('flask._preserve_context') or \
-           (tb is not None and self.app.preserve_context_on_exception):
-            self.preserved = True
-        else:
-            self.pop(exc_value)
+        self.auto_pop(exc_value)
 
     def __repr__(self):
         return '<%s \'%s\' [%s] of %s>' % (

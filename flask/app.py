@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import os
 import sys
 from threading import Lock
@@ -36,6 +34,7 @@ from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
     request_tearing_down, appcontext_tearing_down
+from ._compat import reraise, string_types, integer_types
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -178,7 +177,7 @@ class Flask(_PackageBoundObject):
 
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
-    #: exception ocurrs and the integrated server will automatically reload
+    #: exception occurs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
     #:
     #: This attribute can also be configured from the config with the `DEBUG`
@@ -523,7 +522,7 @@ class Flask(_PackageBoundObject):
         """The name of the application.  This is usually the import name
         with the difference that it's guessed from the run file if the
         import name is main.  This name is used as a display name when
-        Flask needs the name of the application.  It can be set and overriden
+        Flask needs the name of the application.  It can be set and overridden
         to change the value.
 
         .. versionadded:: 0.8
@@ -585,21 +584,7 @@ class Flask(_PackageBoundObject):
     @locked_cached_property
     def jinja_env(self):
         """The Jinja2 environment used to load templates."""
-        rv = self.create_jinja_environment()
-
-        # Hack to support the init_jinja_globals method which is supported
-        # until 1.0 but has an API deficiency.
-        if getattr(self.init_jinja_globals, 'im_func', None) is not \
-           Flask.init_jinja_globals.im_func:
-            from warnings import warn
-            warn(DeprecationWarning('This flask class uses a customized '
-                'init_jinja_globals() method which is deprecated. '
-                'Move the code from that method into the '
-                'create_jinja_environment() method instead.'))
-            self.__dict__['jinja_env'] = rv
-            self.init_jinja_globals()
-
-        return rv
+        return self.create_jinja_environment()
 
     @property
     def got_first_request(self):
@@ -645,6 +630,7 @@ class Flask(_PackageBoundObject):
 
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
+        :param mode: resource file opening mode, default is 'rb'.
         """
         return open(os.path.join(self.instance_path, resource), mode)
 
@@ -711,7 +697,7 @@ class Flask(_PackageBoundObject):
         This injects request, session, config and g into the template
         context as well as everything template context processors want
         to inject.  Note that the as of Flask 0.6, the original values
-        in the context will not be overriden if a context processor
+        in the context will not be overridden if a context processor
         decides to return a value with the same key.
 
         :param context: the context as a dictionary that is updated in place
@@ -1059,7 +1045,7 @@ class Flask(_PackageBoundObject):
             app.error_handler_spec[None][404] = page_not_found
 
         Setting error handlers via assignments to :attr:`error_handler_spec`
-        however is discouraged as it requires fidling with nested dictionaries
+        however is discouraged as it requires fiddling with nested dictionaries
         and the special case for arbitrary exception types.
 
         The first `None` refers to the active blueprint.  If the error
@@ -1090,7 +1076,7 @@ class Flask(_PackageBoundObject):
     def _register_error_handler(self, key, code_or_exception, f):
         if isinstance(code_or_exception, HTTPException):
             code_or_exception = code_or_exception.code
-        if isinstance(code_or_exception, (int, long)):
+        if isinstance(code_or_exception, integer_types):
             assert code_or_exception != 500 or key is None, \
                 'It is currently not possible to register a 500 internal ' \
                 'server error on a per-blueprint level.'
@@ -1137,7 +1123,7 @@ class Flask(_PackageBoundObject):
           def is_prime(n):
               if n == 2:
                   return True
-              for i in xrange(2, int(math.ceil(math.sqrt(n))) + 1):
+              for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
                   if n % i == 0:
                       return False
               return True
@@ -1383,7 +1369,7 @@ class Flask(_PackageBoundObject):
             if isinstance(e, typecheck):
                 return handler(e)
 
-        raise exc_type, exc_value, tb
+        reraise(exc_type, exc_value, tb)
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
@@ -1405,7 +1391,7 @@ class Flask(_PackageBoundObject):
             # (the function was actually called from the except part)
             # otherwise, we just raise the error again
             if exc_value is e:
-                raise exc_type, exc_value, tb
+                reraise(exc_type, exc_value, tb)
             else:
                 raise e
 
@@ -1478,7 +1464,7 @@ class Flask(_PackageBoundObject):
             rv = self.preprocess_request()
             if rv is None:
                 rv = self.dispatch_request()
-        except Exception, e:
+        except Exception as e:
             rv = self.handle_user_exception(e)
         response = self.make_response(rv)
         response = self.process_response(response)
@@ -1516,13 +1502,23 @@ class Flask(_PackageBoundObject):
             methods = []
             try:
                 adapter.match(method='--')
-            except MethodNotAllowed, e:
+            except MethodNotAllowed as e:
                 methods = e.valid_methods
-            except HTTPException, e:
+            except HTTPException as e:
                 pass
         rv = self.response_class()
         rv.allow.update(methods)
         return rv
+
+    def should_ignore_error(self, error):
+        """This is called to figure out if an error should be ignored
+        or not as far as the teardown system is concerned.  If this
+        function returns `True` then the teardown handlers will not be
+        passed the error.
+
+        .. versionadded:: 0.10
+        """
+        return False
 
     def make_response(self, rv):
         """Converts the return value from a view function to a real
@@ -1564,15 +1560,15 @@ class Flask(_PackageBoundObject):
             # When we create a response object directly, we let the constructor
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
-            # specific values (like defualt content type selection).
-            if isinstance(rv, basestring):
+            # specific values (like default content type selection).
+            if isinstance(rv, string_types + (bytes, )):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:
                 rv = self.response_class.force_type(rv, request.environ)
 
         if status is not None:
-            if isinstance(status, basestring):
+            if isinstance(status, string_types):
                 rv.status = status
             else:
                 rv.status_code = status
@@ -1626,14 +1622,14 @@ class Flask(_PackageBoundObject):
                 rv = handler(error, endpoint, values)
                 if rv is not None:
                     return rv
-            except BuildError, error:
+            except BuildError as error:
                 pass
 
         # At this point we want to reraise the exception.  If the error is
         # still the same one we can reraise it with the original traceback,
         # otherwise we raise it from here.
         if error is exc_value:
-            raise exc_type, exc_value, tb
+            reraise(exc_type, exc_value, tb)
         raise error
 
     def preprocess_request(self):
@@ -1804,12 +1800,20 @@ class Flask(_PackageBoundObject):
                                a list of headers and an optional
                                exception context to start the response
         """
-        with self.request_context(environ):
+        ctx = self.request_context(environ)
+        ctx.push()
+        error = None
+        try:
             try:
                 response = self.full_dispatch_request()
-            except Exception, e:
+            except Exception as e:
+                error = e
                 response = self.make_response(self.handle_exception(e))
             return response(environ, start_response)
+        finally:
+            if self.should_ignore_error(error):
+                error = None
+            ctx.auto_pop(error)
 
     @property
     def modules(self):
