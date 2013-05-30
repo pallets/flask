@@ -334,6 +334,9 @@ class RequestContext(object):
             if exc is None:
                 exc = sys.exc_info()[1]
             self.app.do_teardown_request(exc)
+            request_close = getattr(self.request, 'close', None)
+            if request_close is not None:
+                request_close()
             clear_request = True
 
         rv = _request_ctx_stack.pop()
