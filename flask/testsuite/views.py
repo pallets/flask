@@ -66,7 +66,7 @@ class ViewTestCase(FlaskTestCase):
                 return 'POST'
 
         view = Index.as_view('index')
-        view.view_class = Other
+        view.instance = Other()
         app.add_url_rule('/', view_func=view)
         self.common_test(app)
 
