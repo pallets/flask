@@ -80,8 +80,7 @@ class View(object):
         constructor of the class.
         """
         def view(*args, **kwargs):
-            self = view.view_class(*class_args, **class_kwargs)
-            return self.dispatch_request(*args, **kwargs)
+            return view.instance.dispatch_request(*args, **kwargs)
 
         if cls.decorators:
             view.__name__ = name
@@ -94,7 +93,7 @@ class View(object):
         # view this thing came from, secondly it's also used for instantiating
         # the view class so you can actually replace it with something else
         # for testing purposes and debugging.
-        view.view_class = cls
+        view.instance = cls(*class_args, **class_kwargs)
         view.__name__ = name
         view.__doc__ = cls.__doc__
         view.__module__ = cls.__module__
