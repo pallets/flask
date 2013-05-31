@@ -194,8 +194,16 @@ def jsonify(*args, **kwargs):
     For security reasons only objects are supported toplevel.  For more
     information about this, have a look at :ref:`json-security`.
 
+    This function's response will be pretty printed if it was not requested
+    with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
+    the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
+
     .. versionadded:: 0.2
     """
+    indent = None
+    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
+        and not request.is_xhr:
+        indent = 2
     return current_app.response_class(dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2),
+        indent=indent),
         mimetype='application/json')

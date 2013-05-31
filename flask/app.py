@@ -290,7 +290,8 @@ class Flask(_PackageBoundObject):
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
         'PREFERRED_URL_SCHEME':                 'http',
-        'JSON_AS_ASCII':                        True
+        'JSON_AS_ASCII':                        True,
+        'JSONIFY_PRETTYPRINT_REGULAR':          True,
     })
 
     #: The rule object to use for URL rules created.  This is used by

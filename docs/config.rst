@@ -149,6 +149,11 @@ The following configuration values are used internally by Flask:
                                   unicode strings.  ``jsonfiy`` will
                                   automatically encode it in ``utf-8``
                                   then for transport for instance.
+``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
+                                  jsonify responses will be pretty printed
+                                  if they are not requested by an
+                                  XMLHttpRequest object (controlled by
+                                  the ``X-Requested-With`` header)
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -192,7 +197,7 @@ The following configuration values are used internally by Flask:
    ``PREFERRED_URL_SCHEME``
 
 .. versionadded:: 0.10
-   ``JSON_AS_ASCII``
+   ``JSON_AS_ASCII``, ``JSONIFY_PRETTYPRINT_REGULAR``
 
 Configuring from Files
 ----------------------
