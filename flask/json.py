@@ -92,10 +92,12 @@ class JSONDecoder(_json.JSONDecoder):
 
 def _dump_arg_defaults(kwargs):
     """Inject default arguments for dump functions."""
+    kwargs.setdefault('sort_keys', True)
     if current_app:
         kwargs.setdefault('cls', current_app.json_encoder)
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
+        kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
 
 
 def _load_arg_defaults(kwargs):

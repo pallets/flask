@@ -63,6 +63,8 @@ Release date to be decided.
   more reliable in case something handles an exception halfway through
   the error handling process.
 - Added the ``JSONIFY_PRETTYPRINT_REGULAR`` configuration variable.
+- Flask now orders JSON keys by default to not trash HTTP caches due to
+  different hash seeds between different workers.
 
 Version 0.9
 -----------

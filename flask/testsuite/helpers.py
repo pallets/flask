@@ -148,6 +148,46 @@ class JSONTestCase(FlaskTestCase):
     if not has_encoding('euc-kr'):
         test_modified_url_encoding = None
 
+    def test_json_key_sorting(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        self.assert_equal(app.config['JSON_SORT_KEYS'], True)
+        d = dict.fromkeys(range(20), 'foo')
+
+        @app.route('/')
+        def index():
+            return flask.jsonify(values=d)
+
+        c = app.test_client()
+        rv = c.get('/')
+        lines = [x.strip() for x in rv.data.strip().decode('utf-8').splitlines()]
+        self.assert_equal(lines, [
+            '{',
+            '"values": {',
+            '"0": "foo",',
+            '"1": "foo",',
+            '"2": "foo",',
+            '"3": "foo",',
+            '"4": "foo",',
+            '"5": "foo",',
+            '"6": "foo",',
+            '"7": "foo",',
+            '"8": "foo",',
+            '"9": "foo",',
+            '"10": "foo",',
+            '"11": "foo",',
+            '"12": "foo",',
+            '"13": "foo",',
+            '"14": "foo",',
+            '"15": "foo",',
+            '"16": "foo",',
+            '"17": "foo",',
+            '"18": "foo",',
+            '"19": "foo"',
+            '}',
+            '}'
+        ])
+
 
 class SendfileTestCase(FlaskTestCase):
 
