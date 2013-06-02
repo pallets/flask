@@ -963,6 +963,18 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         expected = '/login'
         self.assert_equal(url, expected)
 
+    def test_nonascii_pathinfo(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        @app.route(u'/киртест')
+        def index():
+            return 'Hello World!'
+
+        c = app.test_client()
+        rv = c.get(u'/киртест')
+        self.assert_equal(rv.data, b'Hello World!')
+
     def test_debug_mode_complains_after_first_request(self):
         app = flask.Flask(__name__)
         app.debug = True
