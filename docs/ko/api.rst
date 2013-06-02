@@ -1,7 +1,7 @@
 .. _api:
 
 API
-===
+====
 
 .. module:: flask
 
@@ -11,7 +11,7 @@ API
 
 
 어플리케이션 객체(Application Object)
--------------------------------------
+-------------------------------------------
 
 .. autoclass:: Flask
    :members:
@@ -19,14 +19,14 @@ API
 
 
 블루프린트 객체(Blueprint Objects)
-------------------------------
+----------------------------------------
 
 .. autoclass:: Blueprint
    :members:
    :inherited-members:
 
 유입되는 요청 데이터(Incoming Request Data)
--------------------------------------------
+-------------------------------------------------
 
 .. autoclass:: Request
    :members:
@@ -125,7 +125,7 @@ API
 
 
 응답 객체(Response Objects)
----------------------------
+--------------------------------
 
 .. autoclass:: flask.Response
    :members: set_cookie, data, mimetype
@@ -144,7 +144,7 @@ API
 
 
 세션(Sessions)
---------------
+-----------------
 
 여러분이 :attr:`Flask.secret_key` 속성을 설정한다면 플라스크 어플리케이션에
 있는 세션을 사용할 수 있다.  세션은 기본적으로 하나의 요청 정보를 다른 요청에서
@@ -191,7 +191,7 @@ API
 
 
 Session Interface
------------------
+----------------------
 
 .. versionadded:: 0.8
 
@@ -224,7 +224,7 @@ implementation that Flask is using.
 
 
 Test Client
------------
+---------------
 
 .. currentmodule:: flask.testing
 
@@ -233,7 +233,7 @@ Test Client
 
 
 Application Globals
--------------------
+------------------------
 
 .. currentmodule:: flask
 
@@ -253,7 +253,7 @@ thing, like it does for :class:`request` and :class:`session`.
 
 
 Useful Functions and Classes
-----------------------------
+-----------------------------------
 
 .. data:: current_app
 
@@ -297,14 +297,14 @@ Useful Functions and Classes
    :members: escape, unescape, striptags
 
 Message Flashing
-----------------
+--------------------
 
 .. autofunction:: flash
 
 .. autofunction:: get_flashed_messages
 
 JSON Support
-------------
+---------------
 
 .. module:: flask.json
 
@@ -364,7 +364,7 @@ Note that the ``|tojson`` filter escapes forward slashes properly.
    :members:
 
 Template Rendering
-------------------
+----------------------
 
 .. currentmodule:: flask
 
@@ -375,13 +375,13 @@ Template Rendering
 .. autofunction:: get_template_attribute
 
 Configuration
--------------
+----------------
 
 .. autoclass:: Config
    :members:
 
 Extensions
-----------
+-------------
 
 .. data:: flask.ext
 
@@ -398,12 +398,12 @@ Extensions
    .. versionadded:: 0.8
 
 Stream Helpers
---------------
+-----------------
 
 .. autofunction:: stream_with_context
 
 Useful Internals
-----------------
+-------------------
 
 .. autoclass:: flask.ctx.RequestContext
    :members:
@@ -459,7 +459,7 @@ Useful Internals
    :members:
 
 Signals
--------
+---------
 
 .. when modifying this list, also update the one in signals.rst
 
@@ -530,7 +530,7 @@ Signals
 .. _blinker: http://pypi.python.org/pypi/blinker
 
 Class-Based Views
------------------
+---------------------
 
 .. versionadded:: 0.7
 
@@ -545,7 +545,7 @@ Class-Based Views
 .. _url-route-registrations:
 
 URL Route Registrations
------------------------
+----------------------------
 
 Generally there are three ways to define rules for the routing system:
 
@@ -642,7 +642,7 @@ instead of the `view_func` parameter.
 .. _view-func-options:
 
 View Function Options
----------------------
+-------------------------
 
 For internal usage the view functions can have some attributes attached to
 customize behavior the view function would normally not have control over.
