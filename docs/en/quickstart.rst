@@ -38,15 +38,14 @@ should see your hello world greeting.
 So what did that code do?
 
 1. First we imported the :class:`~flask.Flask` class.  An instance of this
-   class will be our WSGI application.  The first argument is the name of
-   the application's module.  If you are using a single module (as in this
-   example), you should use `__name__` because depending on if it's started as
-   application or imported as module the name will be different (``'__main__'``
-   versus the actual import name).  For more information, have a look at the
-   :class:`~flask.Flask` documentation.
-2. Next we create an instance of this class.  We pass it the name of the module
-   or package.  This is needed so that Flask knows where to look for templates,
-   static files, and so on.
+   class will be our WSGI application.  
+2. Next we create an instance of this class. The first argument is the name of
+   the application's module or package.  If you are using a single module (as
+   in this example), you should use `__name__` because depending on if it's
+   started as application or imported as module the name will be different
+   (``'__main__'`` versus the actual import name). This is needed so that
+   Flask knows where to look for templates, static files, and so on. For more
+   information have a look at the :class:`~flask.Flask` documentation.
 3. We then use the :meth:`~flask.Flask.route` decorator to tell Flask what URL
    should trigger our function.
 4. The function is given a name which is also used to generate URLs for that
@@ -55,7 +54,7 @@ So what did that code do?
 5. Finally we use the :meth:`~flask.Flask.run` function to run the local server
    with our application.  The ``if __name__ == '__main__':`` makes sure the
    server only runs if the script is executed directly from the Python
-   interpreter and not used as imported module.
+   interpreter and not used as an imported module.
 
 To stop the server, hit control-C.
 
@@ -144,8 +143,8 @@ Variable Rules
 ``````````````
 
 To add variable parts to a URL you can mark these special sections as
-``<variable_name>``.  Such a part is then passed as keyword argument to your
-function.  Optionally a converter can be specified by specifying a rule with
+``<variable_name>``.  Such a part is then passed as a keyword argument to your
+function.  Optionally a converter can be used by specifying a rule with
 ``<converter:variable_name>``.  Here are some nice examples::
 
     @app.route('/user/<username>')
@@ -192,10 +191,10 @@ The following converters exist:
    rather like the pathname of a file on UNIX-like systems. Accessing the URL
    with a trailing slash will produce a 404 "Not Found" error.
 
-   This behavior allows relative URLs to continue working if users access the
-   page when they forget a trailing slash, consistent with how Apache
-   and other servers work.  Also, the URLs will stay unique, which helps search
-   engines avoid indexing the same page twice.
+   This behavior allows relative URLs to continue working even if the trailing
+   slash is ommited, consistent with how Apache and other servers work.  Also, 
+   the URLs will stay unique, which helps search engines avoid indexing the 
+   same page twice.
 
 
 .. _url-building:
@@ -514,7 +513,7 @@ attributes mentioned above::
                 return log_the_user_in(request.form['username'])
             else:
                 error = 'Invalid username/password'
-        # the code below this is executed if the request method
+        # the code below is executed if the request method
         # was GET or the credentials were invalid
         return render_template('login.html', error=error)
 
@@ -695,7 +694,7 @@ Imagine you have a view like this:
         return render_template('error.html'), 404
 
 You just need to wrap the return expression with
-:func:`~flask.make_response` and get the result object to modify it, then
+:func:`~flask.make_response` and get the response object to modify it, then
 return it:
 
 .. sourcecode:: python

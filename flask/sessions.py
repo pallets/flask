@@ -9,11 +9,13 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import uuid
 import hashlib
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
 from . import Markup, json
+from ._compat import iteritems, text_type
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
@@ -58,17 +60,19 @@ class TaggedJSONSerializer(object):
         def _tag(value):
             if isinstance(value, tuple):
                 return {' t': [_tag(x) for x in value]}
+            elif isinstance(value, uuid.UUID):
+                return {' u': value.hex}
             elif callable(getattr(value, '__html__', None)):
-                return {' m': unicode(value.__html__())}
+                return {' m': text_type(value.__html__())}
             elif isinstance(value, list):
                 return [_tag(x) for x in value]
             elif isinstance(value, datetime):
                 return {' d': http_date(value)}
             elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in value.iteritems())
+                return dict((k, _tag(v)) for k, v in iteritems(value))
             elif isinstance(value, str):
                 try:
-                    return unicode(value)
+                    return text_type(value)
                 except UnicodeError:
                     raise UnexpectedUnicodeError(u'A byte string with '
                         u'non-ASCII data was passed to the session system '
@@ -81,9 +85,11 @@ class TaggedJSONSerializer(object):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
-            the_key, the_value = obj.iteritems().next()
+            the_key, the_value = next(iteritems(obj))
             if the_key == ' t':
                 return tuple(the_value)
+            elif the_key == ' u':
+                return uuid.UUID(the_value)
             elif the_key == ' m':
                 return Markup(the_value)
             elif the_key == ' d':
@@ -192,7 +198,23 @@ class SessionInterface(object):
             return app.config['SESSION_COOKIE_DOMAIN']
         if app.config['SERVER_NAME'] is not None:
             # chop of the port which is usually not supported by browsers
-            return '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
+            rv = '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
+
+            # Google chrome does not like cookies set to .localhost, so
+            # we just go with no domain then.  Flask documents anyways that
+            # cross domain cookies need a fully qualified domain name
+            if rv == '.localhost':
+                rv = None
+
+            # If we infer the cookie domain from the server name we need
+            # to check if we are in a subpath.  In that case we can't
+            # set a cross domain cookie.
+            if rv is not None:
+                path = self.get_cookie_path(app)
+                if path != '/':
+                    rv = rv.lstrip('.')
+
+            return rv
 
     def get_cookie_path(self, app):
         """Returns the path for which the cookie should be valid.  The

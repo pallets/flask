@@ -8,6 +8,7 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
@@ -44,7 +45,7 @@ class SignalsTestCase(FlaskTestCase):
             calls.append('before-signal')
 
         def after_request_signal(sender, response):
-            self.assert_equal(response.data, 'stuff')
+            self.assert_equal(response.data, b'stuff')
             calls.append('after-signal')
 
         @app.before_request
@@ -67,7 +68,7 @@ class SignalsTestCase(FlaskTestCase):
 
         try:
             rv = app.test_client().get('/')
-            self.assert_equal(rv.data, 'stuff')
+            self.assert_equal(rv.data, b'stuff')
 
             self.assert_equal(calls, ['before-signal', 'before-handler',
                              'handler', 'after-handler',
@@ -82,7 +83,7 @@ class SignalsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         def record(sender, exception):
             recorded.append(exception)
@@ -91,9 +92,34 @@ class SignalsTestCase(FlaskTestCase):
         try:
             self.assert_equal(app.test_client().get('/').status_code, 500)
             self.assert_equal(len(recorded), 1)
-            self.assert_(isinstance(recorded[0], ZeroDivisionError))
+            self.assert_true(isinstance(recorded[0], ZeroDivisionError))
         finally:
             flask.got_request_exception.disconnect(record, app)
+
+    def test_flash_signal(self):
+        app = flask.Flask(__name__)
+        app.config['SECRET_KEY'] = 'secret'
+
+        @app.route('/')
+        def index():
+            flask.flash('This is a flash message', category='notice')
+            return flask.redirect('/other')
+
+        recorded = []
+        def record(sender, message, category):
+            recorded.append((message, category))
+
+        flask.message_flashed.connect(record, app)
+        try:
+            client = app.test_client()
+            with client.session_transaction():
+                client.get('/')
+                self.assert_equal(len(recorded), 1)
+                message, category = recorded[0]
+                self.assert_equal(message, 'This is a flash message')
+                self.assert_equal(category, 'notice')
+        finally:
+            flask.message_flashed.disconnect(record, app)
 
 
 def suite():

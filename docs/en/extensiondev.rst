@@ -165,6 +165,7 @@ The Extension Code
 Here's the contents of the `flask_sqlite3.py` for copy/paste::
 
     import sqlite3
+    from flask import current_app
 
     # Find the stack on which we want to store the database connection.
     # Starting with Flask 0.9, the _app_ctx_stack is the correct one,
@@ -178,11 +179,9 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
     class SQLite3(object):
 
         def __init__(self, app=None):
+            self.app = app
             if app is not None:
-                self.app = app
-                self.init_app(self.app)
-            else:
-                self.app = None
+                self.init_app(app)
 
         def init_app(self, app):
             app.config.setdefault('SQLITE3_DATABASE', ':memory:')
@@ -194,7 +193,7 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
                 app.teardown_request(self.teardown)
 
         def connect(self):
-            return sqlite3.connect(self.app.config['SQLITE3_DATABASE'])
+            return sqlite3.connect(current_app.config['SQLITE3_DATABASE'])
 
         def teardown(self, exception):
             ctx = stack.top
@@ -391,7 +390,7 @@ extension to be approved you have to follow these guidelines:
     (``PackageName==dev``).
 9.  The ``zip_safe`` flag in the setup script must be set to ``False``,
     even if the extension would be safe for zipping.
-10. An extension currently has to support Python 2.5, 2.6 as well as
+10. An extension currently has to support Python 2.6 as well as
     Python 2.7
 
 

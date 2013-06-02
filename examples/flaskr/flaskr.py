@@ -9,7 +9,7 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
+
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, _app_ctx_stack
@@ -31,7 +31,7 @@ def init_db():
     """Creates the database tables."""
     with app.app_context():
         db = get_db()
-        with app.open_resource('schema.sql') as f:
+        with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
 
@@ -42,7 +42,10 @@ def get_db():
     """
     top = _app_ctx_stack.top
     if not hasattr(top, 'sqlite_db'):
-        top.sqlite_db = sqlite3.connect(app.config['DATABASE'])
+        sqlite_db = sqlite3.connect(app.config['DATABASE'])
+        sqlite_db.row_factory = sqlite3.Row
+        top.sqlite_db = sqlite_db
+
     return top.sqlite_db
 
 
@@ -58,7 +61,7 @@ def close_db_connection(exception):
 def show_entries():
     db = get_db()
     cur = db.execute('select title, text from entries order by id desc')
-    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
 

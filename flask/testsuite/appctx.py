@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import flask
 import unittest
 from flask.testsuite import FlaskTestCase
@@ -65,13 +63,13 @@ class AppContextTestCase(FlaskTestCase):
 
         self.assert_equal(cleanup_stuff, [None])
 
-    def test_custom_request_globals_class(self):
+    def test_custom_app_ctx_globals_class(self):
         class CustomRequestGlobals(object):
             def __init__(self):
                 self.spam = 'eggs'
         app = flask.Flask(__name__)
-        app.request_globals_class = CustomRequestGlobals
-        with app.test_request_context():
+        app.app_ctx_globals_class = CustomRequestGlobals
+        with app.app_context():
             self.assert_equal(
                 flask.render_template_string('{{ g.spam }}'), 'eggs')
 
@@ -89,8 +87,9 @@ class AppContextTestCase(FlaskTestCase):
             with flask._app_ctx_stack.top:
                 with flask._request_ctx_stack.top:
                     pass
-            self.assert_(flask._request_ctx_stack.request.environ
+            self.assert_true(flask._request_ctx_stack.top.request.environ
                 ['werkzeug.request'] is not None)
+            return u''
         c = app.test_client()
         c.get('/')
         self.assertEqual(called, ['request', 'app'])

@@ -13,8 +13,8 @@ the just created `flaskr` folder:
     drop table if exists entries;
     create table entries (
       id integer primary key autoincrement,
-      title string not null,
-      text string not null
+      title text not null,
+      text text not null
     );
 
 This schema consists of a single table called `entries` and each row in

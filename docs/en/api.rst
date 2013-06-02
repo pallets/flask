@@ -224,6 +224,18 @@ implementation that Flask is using.
 .. autoclass:: SessionMixin
    :members:
 
+.. autodata:: session_json_serializer
+
+   This object provides dumping and loading methods similar to simplejson
+   but it also tags certain builtin Python objects that commonly appear in
+   sessions.  Currently the following extended values are supported in
+   the JSON it dumps:
+
+   -    :class:`~markupsafe.Markup` objects
+   -    :class:`~uuid.UUID` objects
+   -    :class:`~datetime.datetime` objects
+   -   :class:`tuple`\s
+
 .. admonition:: Notice
 
    The ``PERMANENT_SESSION_LIFETIME`` config key can also be an integer
@@ -258,6 +270,10 @@ thing, like it does for :class:`request` and :class:`session`.
    Just store on this whatever you want.  For example a database
    connection or the user that is currently logged in.
 
+   Starting with Flask 0.10 this is stored on the application context and
+   no longer on the request context which means it becomes available if
+   only the application context is bound and not yet a request.
+
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 
@@ -275,6 +291,8 @@ Useful Functions and Classes
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: has_request_context
+
+.. autofunction:: copy_current_request_context
 
 .. autofunction:: has_app_context
 
@@ -519,6 +537,14 @@ Signals
    application context.  This is always called, even if an error happened.
    An `exc` keyword argument is passed with the exception that caused the
    teardown.
+
+.. data:: message_flashed
+
+   This signal is sent when the application is flashing a message.  The
+   messages is sent as `message` keyword argument and the category as
+   `category`.
+
+   .. versionadded:: 0.10
 
 .. currentmodule:: None
 

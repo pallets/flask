@@ -1,27 +1,27 @@
 language: python
 
 python:
-  - 2.5
   - 2.6
   - 2.7
   - pypy
+  - 3.3
 
-before_install: pip install simplejson
+install:
+  - pip install git+git://github.com/mitsuhiko/werkzeug.git#egg=Werkzeug
+  - pip install --editable .
 
-script: python setup.py test
+script: make test
 
 branches:
   except:
     - website
 
 notifications:
-  # Disable travis notifications until they figured out how to hide
-  # their own builder failure from us.  Travis currently fails way
-  # too many times by itself.
   email: false
-
   irc:
     channels:
-      - "irc.freenode.org#pocoo"
+      - "chat.freenode.net#pocoo"
+    on_success: change
+    on_failure: always
     use_notice: true
     skip_join: true

@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import os
 import sys
 import pkgutil
@@ -35,8 +33,10 @@ except ImportError:
 
 from jinja2 import FileSystemLoader
 
+from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
+from ._compat import string_types, text_type
 
 
 # sentinel
@@ -127,7 +127,7 @@ def stream_with_context(generator_or_function):
     # pushed.  This item is discarded.  Then when the iteration continues the
     # real generator is executed.
     wrapped_g = generator()
-    wrapped_g.next()
+    next(wrapped_g)
     return wrapped_g
 
 
@@ -229,6 +229,9 @@ def url_for(endpoint, **values):
     that this is for building URLs outside the current application, and not for
     handling 404 NotFound errors.
 
+    .. versionadded:: 0.10
+       The `_scheme` parameter was added.
+
     .. versionadded:: 0.9
        The `_anchor` and `_method` parameters were added.
 
@@ -241,14 +244,17 @@ def url_for(endpoint, **values):
     :param _external: if set to `True`, an absolute URL is generated. Server
       address can be changed via `SERVER_NAME` configuration variable which
       defaults to `localhost`.
+    :param _scheme: a string specifying the desired URL scheme. The `_external`
+      parameter must be set to `True` or a `ValueError` is raised.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
     appctx = _app_ctx_stack.top
     reqctx = _request_ctx_stack.top
     if appctx is None:
-        raise RuntimeError('Attempted to generate a URL with the application '
-                           'context being pushed.  This has to be executed ')
+        raise RuntimeError('Attempted to generate a URL without the '
+                           'application context being pushed. This has to be '
+                           'executed when application context is available.')
 
     # If request specific information is available we have some extra
     # features that support "relative" urls.
@@ -283,11 +289,18 @@ def url_for(endpoint, **values):
 
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
+    scheme = values.pop('_scheme', None)
     appctx.app.inject_url_defaults(endpoint, values)
+
+    if scheme is not None:
+        if not external:
+            raise ValueError('When specifying _scheme, _external must be True')
+        url_adapter.url_scheme = scheme
+
     try:
         rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
-    except BuildError, error:
+    except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
         values['_external'] = external
@@ -317,7 +330,7 @@ def get_template_attribute(template_name, attribute):
     .. versionadded:: 0.2
 
     :param template_name: the name of the template
-    :param attribute: the name of the variable of macro to acccess
+    :param attribute: the name of the variable of macro to access
     """
     return getattr(current_app.jinja_env.get_template(template_name).module,
                    attribute)
@@ -348,6 +361,8 @@ def flash(message, category='message'):
     flashes = session.get('_flashes', [])
     flashes.append((category, message))
     session['_flashes'] = flashes
+    message_flashed.send(current_app._get_current_object(),
+                         message=message, category=category)
 
 
 def get_flashed_messages(with_categories=False, category_filter=[]):
@@ -383,7 +398,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
         _request_ctx_stack.top.flashes = flashes = session.pop('_flashes') \
             if '_flashes' in session else []
     if category_filter:
-        flashes = filter(lambda f: f[0] in category_filter, flashes)
+        flashes = list(filter(lambda f: f[0] in category_filter, flashes))
     if not with_categories:
         return [x[1] for x in flashes]
     return flashes
@@ -450,7 +465,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           :data:`~flask.current_app`.
     """
     mtime = None
-    if isinstance(filename_or_fp, basestring):
+    if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
         file = None
     else:
@@ -461,7 +476,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
-           and isinstance(filename, basestring):
+           and isinstance(filename, string_types):
             warn(DeprecationWarning('The filename support for file objects '
                 'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
@@ -501,6 +516,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if file is None:
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
+            headers['Content-Length'] = os.path.getsize(filename)
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
@@ -523,7 +539,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             os.path.getmtime(filename),
             os.path.getsize(filename),
             adler32(
-                filename.encode('utf-8') if isinstance(filename, unicode)
+                filename.encode('utf-8') if isinstance(filename, text_type)
                 else filename
             ) & 0xffffffff
         ))
@@ -823,6 +839,7 @@ class _PackageBoundObject(object):
 
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
+        :param mode: resource file opening mode, default is 'rb'.
         """
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')

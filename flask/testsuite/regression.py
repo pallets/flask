@@ -9,14 +9,12 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
+import os
 import gc
 import sys
 import flask
 import threading
 import unittest
-from werkzeug.test import run_wsgi_app, create_environ
 from werkzeug.exceptions import NotFound
 from flask.testsuite import FlaskTestCase
 
@@ -68,7 +66,7 @@ class MemoryTestCase(FlaskTestCase):
             with app.test_client() as c:
                 rv = c.get('/')
                 self.assert_equal(rv.status_code, 200)
-                self.assert_equal(rv.data, '<h1>42</h1>')
+                self.assert_equal(rv.data, b'<h1>42</h1>')
 
         # Trigger caches
         fire()
@@ -77,7 +75,7 @@ class MemoryTestCase(FlaskTestCase):
         if sys.version_info >= (2, 7) and \
                 not hasattr(sys, 'pypy_translation_info'):
             with self.assert_no_leak():
-                for x in xrange(10):
+                for x in range(10):
                     fire()
 
     def test_safe_join_toplevel_pardir(self):
@@ -86,7 +84,33 @@ class MemoryTestCase(FlaskTestCase):
             safe_join('/foo', '..')
 
 
+class ExceptionTestCase(FlaskTestCase):
+
+    def test_aborting(self):
+        class Foo(Exception):
+            whatever = 42
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.errorhandler(Foo)
+        def handle_foo(e):
+            return str(e.whatever)
+        @app.route('/')
+        def index():
+            raise flask.abort(flask.redirect(flask.url_for('test')))
+        @app.route('/test')
+        def test():
+            raise Foo()
+
+        with app.test_client() as c:
+            rv = c.get('/')
+            self.assertEqual(rv.headers['Location'], 'http://localhost/test')
+            rv = c.get('/test')
+            self.assertEqual(rv.data, b'42')
+
+
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MemoryTestCase))
+    if os.environ.get('RUN_FLASK_MEMORY_TESTS') == '1':
+        suite.addTest(unittest.makeSuite(MemoryTestCase))
+    suite.addTest(unittest.makeSuite(ExceptionTestCase))
     return suite
