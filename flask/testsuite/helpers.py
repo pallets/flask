@@ -15,7 +15,7 @@ import unittest
 from logging import StreamHandler
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
-from flask._compat import StringIO, text_type, implements_iterator
+from flask._compat import StringIO, text_type
 
 
 def has_encoding(name):
@@ -546,7 +546,6 @@ class StreamingTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         app.testing = True
         called = []
-        @implements_iterator
         class Wrapper(object):
             def __init__(self, gen):
                 self._gen = gen
@@ -556,6 +555,7 @@ class StreamingTestCase(FlaskTestCase):
                 called.append(42)
             def __next__(self):
                 return next(self._gen)
+            next = __next__
         @app.route('/')
         def index():
             def generate():

@@ -18,9 +18,12 @@ from time import time
 from zlib import adler32
 from threading import RLock
 from werkzeug.routing import BuildError
-from werkzeug.urls import url_quote
 from functools import update_wrapper
 
+try:
+    from werkzeug.urls import url_quote
+except ImportError:
+    from urlparse import quote as url_quote
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
