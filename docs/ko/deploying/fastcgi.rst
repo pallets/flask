@@ -133,7 +133,7 @@ nginx 설정하기
 
 nginx에 FastCGI 어플리케이션 설치는 기본적으로 어떠한 FastCGI 파라미터가 전달되지 않기 때문에 조금 다르다.
 
-nginx를 위한 기본적인 플라스크 FastCGI 설정은 아래와ㅏ 같다:: 
+nginx를 위한 기본적인 플라스크 FastCGI 설정은 아래와 같다:: 
 
     location = /yourapplication { rewrite ^ /yourapplication/ last; }
     location /yourapplication { try_files $uri @yourapplication; }
@@ -146,7 +146,7 @@ nginx를 위한 기본적인 플라스크 FastCGI 설정은 아래와ㅏ 같다:
     }
 
 이 설정은 어플리케이션을 `/yourapplication`에 바인드한다.
-URL 루트에 어플리케이션을 두길 원한다면, `PATH_INFO` and `SCRIPT_NAME`를 계산하는 방법을
+URL 루트에 어플리케이션을 두길 원한다면, `PATH_INFO` 와 `SCRIPT_NAME`를 계산하는 방법을
 이해할 필요가 없기 때문에 조금 더 간단하다::
 
     location / { try_files $uri @yourapplication; }
