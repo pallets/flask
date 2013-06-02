@@ -1707,6 +1707,13 @@ class Flask(_PackageBoundObject):
             rv = func(exc)
         request_tearing_down.send(self, exc=exc)
 
+        # If this interpreter supports clearing the exception information
+        # we do that now.  This will only go into effect on Python 2.x,
+        # on 3.x it disappears automatically at the end of the exception
+        # stack.
+        if hasattr(sys, 'exc_clear'):
+            sys.exc_clear()
+
     def do_teardown_appcontext(self, exc=None):
         """Called when an application context is popped.  This works pretty
         much the same as :meth:`do_teardown_request` but for the application

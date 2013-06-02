@@ -1070,6 +1070,40 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_true(flask._request_ctx_stack.top is None)
         self.assert_true(flask._app_ctx_stack.top is None)
 
+    def test_preserve_remembers_exception(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        errors = []
+
+        @app.route('/fail')
+        def fail_func():
+            1 // 0
+
+        @app.route('/success')
+        def success_func():
+            return 'Okay'
+
+        @app.teardown_request
+        def teardown_handler(exc):
+            errors.append(exc)
+
+        c = app.test_client()
+
+        # After this failure we did not yet call the teardown handler
+        with self.assert_raises(ZeroDivisionError):
+            c.get('/fail')
+        self.assert_equal(errors, [])
+
+        # But this request triggers it, and it's an error
+        c.get('/success')
+        self.assert_equal(len(errors), 2)
+        self.assert_true(isinstance(errors[0], ZeroDivisionError))
+
+        # At this point another request does nothing.
+        c.get('/success')
+        self.assert_equal(len(errors), 3)
+        self.assert_equal(errors[1], None)
+
 
 class SubdomainTestCase(FlaskTestCase):
 

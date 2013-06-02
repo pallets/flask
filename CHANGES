@@ -62,6 +62,9 @@ Release date to be decided.
 - Changed how the teardown system is informed about exceptions.  This is now
   more reliable in case something handles an exception halfway through
   the error handling process.
+- Request context preservation in debug mode now keeps the exception
+  information around which means that teardown handlers are able to
+  distinguish error from success cases.
 - Added the ``JSONIFY_PRETTYPRINT_REGULAR`` configuration variable.
 - Flask now orders JSON keys by default to not trash HTTP caches due to
   different hash seeds between different workers.
