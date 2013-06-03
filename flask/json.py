@@ -15,6 +15,7 @@ from .globals import current_app, request
 from ._compat import text_type, PY2
 
 from werkzeug.http import http_date
+from jinja2 import Markup
 
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
@@ -160,18 +161,26 @@ def load(fp, **kwargs):
 def htmlsafe_dumps(obj, **kwargs):
     """Works exactly like :func:`dumps` but is safe for use in ``<script>``
     tags.  It accepts the same arguments and returns a JSON string.  Note that
-    this is available in templates through the ``|tojson`` filter but it will
-    have to be wrapped in ``|safe`` unless **true** XHTML is being used.
+    this is available in templates through the ``|tojson`` filter which will
+    also mark the result as safe.  Due to how this function escapes certain
+    characters this is safe even if used outside of ``<script>`` tags.
+
+    .. versionchanged:: 0.10
+       This function's return value is now always safe for HTML usage, even
+       if outside of script tags or if used in XHTML.
     """
-    rv = dumps(obj, **kwargs)
-    if _slash_escape:
-        rv = rv.replace('/', '\\/')
-    return rv.replace('<!', '<\\u0021')
+    rv = dumps(obj, **kwargs) \
+        .replace(u'<', u'\\u003c') \
+        .replace(u'>', u'\\u003e') \
+        .replace(u'&', u'\\u0026')
+    if not _slash_escape:
+        rv = rv.replace('\\/', '/')
+    return rv
 
 
 def htmlsafe_dump(obj, fp, **kwargs):
     """Like :func:`htmlsafe_dumps` but writes into a file object."""
-    fp.write(htmlsafe_dumps(obj, **kwargs))
+    fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
 
 
 def jsonify(*args, **kwargs):
@@ -213,3 +222,7 @@ def jsonify(*args, **kwargs):
     return current_app.response_class(dumps(dict(*args, **kwargs),
         indent=indent),
         mimetype='application/json')
+
+
+def tojson_filter(obj, **kwargs):
+    return Markup(htmlsafe_dumps(obj, **kwargs))

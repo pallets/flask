@@ -92,12 +92,17 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         render = flask.render_template_string
         with app.test_request_context():
-            rv = render('{{ "</script>"|tojson|safe }}')
-            self.assert_equal(rv, '"<\\/script>"')
-            rv = render('{{ "<\0/script>"|tojson|safe }}')
-            self.assert_equal(rv, '"<\\u0000\\/script>"')
-            rv = render('{{ "<!--<script>"|tojson|safe }}')
-            self.assert_equal(rv, '"<\\u0021--<script>"')
+            rv = flask.json.htmlsafe_dumps('</script>')
+            self.assert_equal(rv, u'"\\u003c/script\\u003e"')
+            self.assert_equal(type(rv), text_type)
+            rv = render('{{ "</script>"|tojson }}')
+            self.assert_equal(rv, '"\\u003c/script\\u003e"')
+            rv = render('{{ "<\0/script>"|tojson }}')
+            self.assert_equal(rv, '"\\u003c\\u0000/script\\u003e"')
+            rv = render('{{ "<!--<script>"|tojson }}')
+            self.assert_equal(rv, '"\\u003c!--\\u003cscript\\u003e"')
+            rv = render('{{ "&"|tojson }}')
+            self.assert_equal(rv, '"\\u0026"')
 
     def test_json_customization(self):
         class X(object):
