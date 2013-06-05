@@ -18,6 +18,7 @@ from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .module import blueprint_is_module
+from .signals import appcontext_pushed, appcontext_popped
 
 
 class _AppCtxGlobals(object):
@@ -166,6 +167,7 @@ class AppContext(object):
         """Binds the app context to the current context."""
         self._refcnt += 1
         _app_ctx_stack.push(self)
+        appcontext_pushed.send(self.app)
 
     def pop(self, exc=None):
         """Pops the app context."""
@@ -177,6 +179,7 @@ class AppContext(object):
         rv = _app_ctx_stack.pop()
         assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
             % (rv, self)
+        appcontext_popped.send(self.app)
 
     def __enter__(self):
         self.push()

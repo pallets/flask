@@ -535,7 +535,22 @@ Signals
    This signal is sent when the application is tearing down the
    application context.  This is always called, even if an error happened.
    An `exc` keyword argument is passed with the exception that caused the
-   teardown.
+   teardown.  The sender is the application.
+
+.. data:: appcontext_pushed
+
+   This signal is sent when an application context is pushed.  The sender
+   is the application.
+
+   .. versionadded:: 0.10
+
+.. data:: appcontext_popped
+
+   This signal is sent when an application context is popped.  The sender
+   is the application.  This usually falls in line with the
+   :data:`appcontext_tearing_down` signal.
+
+   .. versionadded:: 0.10
 
 .. data:: message_flashed
 
