@@ -1116,6 +1116,19 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(len(errors), 3)
         self.assert_equal(errors[1], None)
 
+    def test_subscript_syntax_on_g(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        with app.app_context():
+            self.assert_equal(flask.g['x'], None)
+            flask.g.x = 42
+            self.assert_equal(flask.g['x'], 42)
+            self.assert_equal(flask.g.x, 42)
+            flask.g['x'] = 23
+            self.assert_equal(flask.g['x'], 23)
+            self.assert_equal(flask.g.x, 23)
+
 
 class SubdomainTestCase(FlaskTestCase):
 

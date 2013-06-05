@@ -250,6 +250,7 @@ requires that you pass it a response object::
 This in general is less useful because at that point you can directly
 start using the test client.
 
+.. _faking-resources:
 
 Faking Resources and Context
 ----------------------------

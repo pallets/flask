@@ -272,7 +272,16 @@ thing, like it does for :class:`request` and :class:`session`.
 
    Starting with Flask 0.10 this is stored on the application context and
    no longer on the request context which means it becomes available if
-   only the application context is bound and not yet a request.
+   only the application context is bound and not yet a request.  This
+   is especially useful when combined with the :ref:`faking-resources`
+   pattern for testing.
+
+   Additionally as of 0.10 you can use the subscription operator syntax to
+   get an attribute or `None` if it's not set.  These two usages are now
+   equivalent::
+
+        user = getattr(flask.g, 'user', None)
+        user = flask.g['user']
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
