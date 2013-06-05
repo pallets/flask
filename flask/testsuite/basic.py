@@ -246,7 +246,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         rv = app.test_client().get('/', 'http://www.example.com:8080/test/')
         cookie = rv.headers['set-cookie'].lower()
         self.assert_in('domain=.example.com', cookie)
-        self.assert_in('path=/;', cookie)
+        self.assert_in('path=/', cookie)
         self.assert_in('secure', cookie)
         self.assert_not_in('httponly', cookie)
 
@@ -281,7 +281,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         client = app.test_client()
         rv = client.get('/')
         self.assert_in('set-cookie', rv.headers)
-        match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
+        match = re.search(r'\bexpires=([^;]+)(?i)', rv.headers['set-cookie'])
         expires = parse_date(match.group())
         expected = datetime.utcnow() + app.permanent_session_lifetime
         self.assert_equal(expires.year, expected.year)
