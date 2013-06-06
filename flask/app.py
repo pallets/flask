@@ -34,7 +34,7 @@ from .templating import DispatchingJinjaLoader, Environment, \
      _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
      request_tearing_down, appcontext_tearing_down
-from ._compat import reraise, string_types, integer_types
+from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -1572,7 +1572,7 @@ class Flask(_PackageBoundObject):
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
             # specific values (like default content type selection).
-            if isinstance(rv, string_types + (bytes, )):
+            if isinstance(rv, (text_type, bytes, bytearray)):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:
