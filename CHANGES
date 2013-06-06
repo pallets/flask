@@ -71,6 +71,8 @@ Release date to be decided.
 - Flask now orders JSON keys by default to not trash HTTP caches due to
   different hash seeds between different workers.
 - Added `appcontext_pushed` and `appcontext_popped` signals.
+- The builtin run method now takes the ``SERVER_NAME`` into account when
+  picking the default port to run on.
 
 Version 0.9
 -----------

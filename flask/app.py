@@ -739,10 +739,15 @@ class Flask(_PackageBoundObject):
            won't catch any exceptions because there won't be any to
            catch.
 
+        .. versionchanged:: 0.10
+           The default port is now picked from the ``SEVER_NAME`` variable.
+
         :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
                      have the server available externally as well. Defaults to
                      ``'127.0.0.1'``.
-        :param port: the port of the webserver. Defaults to ``5000``.
+        :param port: the port of the webserver. Defaults to ``5000`` or the
+                     port defined in the ``SERVER_NAME`` config variable if
+                     present.
         :param debug: if given, enable or disable debug mode.
                       See :attr:`debug`.
         :param options: the options to be forwarded to the underlying
@@ -754,7 +759,11 @@ class Flask(_PackageBoundObject):
         if host is None:
             host = '127.0.0.1'
         if port is None:
-            port = 5000
+            server_name = self.config['SERVER_NAME']
+            if server_name and ':' in server_name:
+                port = int(server_name.rsplit(':', 1)[1])
+            else:
+                port = 5000
         if debug is not None:
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
