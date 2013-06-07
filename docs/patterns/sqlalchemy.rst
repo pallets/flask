@@ -61,11 +61,12 @@ already with the :class:`~sqlalchemy.orm.scoped_session`.
 
 To use SQLAlchemy in a declarative way with your application, you just
 have to put the following code into your application module.  Flask will
-automatically remove database sessions at the end of the request for you::
+automatically remove database sessions at the end of the request or
+when the application shuts down::
 
     from yourapplication.database import db_session
 
-    @app.teardown_request
+    @app.teardown_appcontext
     def shutdown_session(exception=None):
         db_session.remove()
 
@@ -135,11 +136,12 @@ Here is an example `database.py` module for your application::
         metadata.create_all(bind=engine)
 
 As for the declarative approach you need to close the session after
-each request.  Put this into your application module::
+each request or application context shutdown.  Put this into your
+application module::
 
     from yourapplication.database import db_session
 
-    @app.teardown_request
+    @app.teardown_appcontext
     def shutdown_session(exception=None):
         db_session.remove()
 
