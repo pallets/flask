@@ -445,6 +445,25 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(c.get('/fe2').data.strip(), b'/fe')
         self.assert_equal(c.get('/be').data.strip(), b'/fe')
 
+    def test_dotted_names_from_app(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        test = flask.Blueprint('test', __name__)
+
+        @app.route('/')
+        def app_index():
+            return flask.url_for('test.index')
+
+        @test.route('/test/')
+        def index():
+            return flask.url_for('app_index')
+
+        app.register_blueprint(test)
+
+        with app.test_client() as c:
+            rv = c.get('/')
+            self.assert_equal(rv.data, b'/test/')
+
     def test_empty_url_defaults(self):
         bp = flask.Blueprint('bp', __name__)
 
