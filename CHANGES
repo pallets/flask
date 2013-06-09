@@ -40,6 +40,10 @@ Release date to be decided.
   ``flask.json.dumps`` to return bytestrings by default.
 - ``flask.g`` is now stored on the app context instead of the request
   context.
+- ``flask.g`` now gained a ``get()`` method for not erroring out on non
+  existing items.
+- ``flask.g`` now can be used with the ``in`` operator to see what's defined
+  and it now is iterable and will yield all attributes stored.
 - ``flask.Flask.request_globals_class`` got renamed to
   ``flask.Flask.app_ctx_globals_class`` which is a better name to what it
   does since 0.10.

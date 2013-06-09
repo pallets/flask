@@ -1116,18 +1116,27 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(len(errors), 3)
         self.assert_equal(errors[1], None)
 
-    def test_subscript_syntax_on_g(self):
+    def test_get_method_on_g(self):
         app = flask.Flask(__name__)
         app.testing = True
 
         with app.app_context():
-            self.assert_equal(flask.g['x'], None)
+            self.assert_equal(flask.g.get('x'), None)
+            self.assert_equal(flask.g.get('x', 11), 11)
             flask.g.x = 42
-            self.assert_equal(flask.g['x'], 42)
+            self.assert_equal(flask.g.get('x'), 42)
             self.assert_equal(flask.g.x, 42)
-            flask.g['x'] = 23
-            self.assert_equal(flask.g['x'], 23)
-            self.assert_equal(flask.g.x, 23)
+
+    def test_g_iteration_protocol(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        with app.app_context():
+            flask.g.foo = 23
+            flask.g.bar = 42
+            self.assert_equal('foo' in flask.g, True)
+            self.assert_equal('foos' in flask.g, False)
+            self.assert_equal(sorted(flask.g), ['bar', 'foo'])
 
 
 class SubdomainTestCase(FlaskTestCase):

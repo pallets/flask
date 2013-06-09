@@ -276,12 +276,12 @@ thing, like it does for :class:`request` and :class:`session`.
    is especially useful when combined with the :ref:`faking-resources`
    pattern for testing.
 
-   Additionally as of 0.10 you can use the subscription operator syntax to
-   get an attribute or `None` if it's not set.  These two usages are now
-   equivalent::
+   Additionally as of 0.10 you can use the :meth:`get` method to
+   get an attribute or `None` (or the second argument) if it's not set.
+   These two usages are now equivalent::
 
         user = getattr(flask.g, 'user', None)
-        user = flask.g['user']
+        user = flask.g.get('user', None)
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 

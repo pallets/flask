@@ -24,17 +24,14 @@ from .signals import appcontext_pushed, appcontext_popped
 class _AppCtxGlobals(object):
     """A plain object."""
 
-    def __getitem__(self, name):
-        try:
-            return getattr(self, name)
-        except AttributeError:
-            return None
+    def get(self, name, default=None):
+        return self.__dict__.get(name, default)
 
-    def __setitem__(self, name, value):
-        setattr(self, name, value)
+    def __contains__(self, item):
+        return item in self.__dict__
 
-    def __delitem__(self, name, value):
-        delattr(self, name, value)
+    def __iter__(self):
+        return iter(self.__dict__)
 
     def __repr__(self):
         top = _app_ctx_stack.top
