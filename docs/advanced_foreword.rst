@@ -52,17 +52,18 @@ The Status of Python 3
 Currently the Python community is in the process of improving libraries to
 support the new iteration of the Python programming language.  While the
 situation is greatly improving there are still some issues that make it
-hard for us to switch over to Python 3 just now.  These problems are
+hard for users to switch over to Python 3 just now.  These problems are
 partially caused by changes in the language that went unreviewed for too
 long, partially also because we have not quite worked out how the lower-
 level API should change to account for the Unicode differences in Python 3.
 
-Werkzeug and Flask will be ported to Python 3 as soon as a solution for
-the changes is found, and we will provide helpful tips how to upgrade
-existing applications to Python 3.  Until then, we strongly recommend
-using Python 2.6 and 2.7 with activated Python 3 warnings during
-development.  If you plan on upgrading to Python 3 in the near future we
-strongly recommend that you read `How to write forwards compatible
-Python code <http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
+We strongly recommend using Python 2.6 and 2.7 with activated Python 3
+warnings during development.  If you plan on upgrading to Python 3 in the
+near future we strongly recommend that you read `How to write forwards
+compatible Python code
+<http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
+
+If you do want to dive into Python 3 already have a look at the
+:ref:`python3_support` page.
 
 Continue to :ref:`installation` or the :ref:`quickstart`.

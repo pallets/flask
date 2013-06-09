@@ -14,7 +14,8 @@ could do that, but the most kick-ass method is virtualenv, so let's have a look
 at that first.
 
 You will need Python 2.6 or higher to get started, so be sure to have an
-up-to-date Python 2.x installation.  Python 3.x is not supported.
+up-to-date Python 2.x installation.  For using Flask with Python 3 have a
+look at :ref:`python3-support`.
 
 .. _virtualenv:
 
