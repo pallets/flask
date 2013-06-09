@@ -7,6 +7,15 @@ Flask and all of its dependencies support Python 3 so you can in theory
 start working on it already.  There are however a few things you should be
 aware of before you start using Python 3 for your next project.
 
+Requirements
+------------
+
+If you want to use Flask with Python 3 you will need to use Python 3.3 or
+higher.  3.2 and older are *not* supported.
+
+In addition to that you need to use the latest and greatest versions of
+`itsdangerous`, `Jinja2` and `Werkzeug`.
+
 API Stability
 -------------
 
