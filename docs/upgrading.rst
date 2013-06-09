@@ -34,7 +34,7 @@ by design much more restricted to only allow JSON with a few small
 extensions for tuples and strings with HTML markup.
 
 In order to not break people's sessions it is possible to continue using
-the old session system by using the `Flask-OldSessions_` extension.
+the old session system by using the `Flask-OldSessions`_ extension.
 
 Flask also started storing the :data:`flask.g` object on the application
 context instead of the request context.  This change should be transparent
