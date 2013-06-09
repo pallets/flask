@@ -283,6 +283,9 @@ thing, like it does for :class:`request` and :class:`session`.
         user = getattr(flask.g, 'user', None)
         user = flask.g.get('user', None)
 
+   It's now also possible to use the ``in`` operator on it to see if an
+   attribute is defined and it yields all keys on iteration.
+
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 
