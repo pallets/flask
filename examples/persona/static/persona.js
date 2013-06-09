@@ -2,7 +2,9 @@ $(function() {
   /* convert the links into clickable buttons that go to the
      persona service */
   $('a.signin').on('click', function() {
-    navigator.id.request();
+    navigator.id.request({
+      siteName: 'Flask Persona Example'
+    });
     return false;
   });
 
