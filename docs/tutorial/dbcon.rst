@@ -40,7 +40,7 @@ things on other objects because this would not work with threaded
 environments.  That special :data:`~flask.g` object does some magic behind
 the scenes to ensure it does the right thing.
 
-For an even better way to handle such resources see the :ref:`slite3`
+For an even better way to handle such resources see the :ref:`sqlite3`
 documentation.
 
 Continue to :ref:`tutorial-views`.
