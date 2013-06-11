@@ -19,7 +19,7 @@ payload to give more context for the error.
 
 This is a simple example::
 
-    from flask import jsonfiy
+    from flask import jsonify
 
     class InvalidUsage(Exception):
         status_code = 400
