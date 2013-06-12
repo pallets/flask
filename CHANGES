@@ -77,6 +77,8 @@ Release date to be decided.
 - Added `appcontext_pushed` and `appcontext_popped` signals.
 - The builtin run method now takes the ``SERVER_NAME`` into account when
   picking the default port to run on.
+- Added `flask.request.get_json()` as a replacement for the old
+  `flask.request.json` property.
 
 Version 0.9
 -----------

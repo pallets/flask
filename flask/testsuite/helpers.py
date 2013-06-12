@@ -33,7 +33,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return flask.jsonify(foo=text_type(flask.request.json))
+            return flask.jsonify(foo=text_type(flask.request.get_json()))
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -43,7 +43,7 @@ class JSONTestCase(FlaskTestCase):
         app.testing = True
         @app.route('/')
         def index():
-            return flask.request.json
+            return flask.request.get_json()
 
         c = app.test_client()
         resp = c.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
@@ -82,7 +82,8 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])
         def add():
-            return text_type(flask.request.json['a'] + flask.request.json['b'])
+            json = flask.request.get_json()
+            return text_type(json['a'] + json['b'])
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')
@@ -127,7 +128,7 @@ class JSONTestCase(FlaskTestCase):
         app.json_decoder = MyDecoder
         @app.route('/', methods=['POST'])
         def index():
-            return flask.json.dumps(flask.request.json['x'])
+            return flask.json.dumps(flask.request.get_json()['x'])
         c = app.test_client()
         rv = c.post('/', data=flask.json.dumps({
             'x': {'_foo': 42}

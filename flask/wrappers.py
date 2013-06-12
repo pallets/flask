@@ -10,12 +10,21 @@
 """
 
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
-from werkzeug.utils import cached_property
 from werkzeug.exceptions import BadRequest
 
 from .debughelpers import attach_enctype_error_multidict
 from . import json
 from .globals import _request_ctx_stack
+
+
+_missing = object()
+
+
+def _get_data(req, cache):
+    getter = getattr(req, 'get_data', None)
+    if getter is not None:
+        return getter(cache=cache)
+    return req.data
 
 
 class Request(RequestBase):
@@ -88,24 +97,60 @@ class Request(RequestBase):
         if self.url_rule and '.' in self.url_rule.endpoint:
             return self.url_rule.endpoint.rsplit('.', 1)[0]
 
-    @cached_property
+    @property
     def json(self):
         """If the mimetype is `application/json` this will contain the
         parsed JSON data.  Otherwise this will be `None`.
+
+        The :meth:`get_json` method should be used instead.
         """
-        if self.mimetype == 'application/json':
-            request_charset = self.mimetype_params.get('charset')
-            try:
-                if request_charset is not None:
-                    return json.loads(self.data, encoding=request_charset)
-                return json.loads(self.data)
-            except ValueError as e:
-                return self.on_json_loading_failed(e)
+        # XXX: deprecate property
+        return self.get_json()
+
+    def get_json(self, force=False, silent=False, cache=True):
+        """Parses the incoming JSON request data and returns it.  If
+        parsing fails the :meth:`on_json_loading_failed` method on the
+        request object will be invoked.  By default this function will
+        only load the json data if the mimetype is ``application/json``
+        but this can be overriden by the `force` parameter.
+
+        :param force: if set to `True` the mimetype is ignored.
+        :param silent: if set to `False` this method will fail silently
+                       and return `False`.
+        :param cache: if set to `True` the parsed JSON data is remembered
+                      on the request.
+        """
+        rv = getattr(self, '_cached_json', _missing)
+        if rv is not _missing:
+            return rv
+
+        if self.mimetype != 'application/json' and not force:
+            return None
+
+        # We accept a request charset against the specification as
+        # certain clients have been using this in the past.  This
+        # fits our general approach of being nice in what we accept
+        # and strict in what we send out.
+        request_charset = self.mimetype_params.get('charset')
+        try:
+            data = _get_data(self, cache)
+            if request_charset is not None:
+                rv = json.loads(data, encoding=request_charset)
+            else:
+                rv = json.loads(data)
+        except ValueError as e:
+            if silent:
+                rv = None
+            else:
+                rv = self.on_json_loading_failed(e)
+        if cache:
+            self._cached_json = rv
+        return rv
 
     def on_json_loading_failed(self, e):
         """Called if decoding of the JSON data failed.  The return value of
-        this method is used by :attr:`json` when an error occurred.  The default
-        implementation just raises a :class:`BadRequest` exception.
+        this method is used by :meth:`get_json` when an error occurred.  The
+        default implementation just raises a :class:`BadRequest` exception.
 
         .. versionchanged:: 0.10
            Removed buggy previous behavior of generating a random JSON
