@@ -740,7 +740,7 @@ class Flask(_PackageBoundObject):
            catch.
 
         .. versionchanged:: 0.10
-           The default port is now picked from the ``SEVER_NAME`` variable.
+           The default port is now picked from the ``SERVER_NAME`` variable.
 
         :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
                      have the server available externally as well. Defaults to
