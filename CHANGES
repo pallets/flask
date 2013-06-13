@@ -12,6 +12,9 @@ Pending bugfix release.
   made the filter not work properly in HTML attributes.  Now it's
   possible to use that filter in single quoted attributes.  This should
   make using that filter with angular.js easier.
+- Added support for byte strings back to the session system.  This broke
+  compatibility with the common case of people putting binary data for
+  token verification into the session.
 
 Version 0.10
 ------------
