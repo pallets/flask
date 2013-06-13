@@ -165,14 +165,29 @@ def htmlsafe_dumps(obj, **kwargs):
     also mark the result as safe.  Due to how this function escapes certain
     characters this is safe even if used outside of ``<script>`` tags.
 
+    The following characters are escaped in strings:
+
+    -   ``<``
+    -   ``>``
+    -   ``&``
+    -   ``'``
+
+    This makes it safe to embed such strings in any place in HTML with the
+    notable exception of double quoted attributes.  In that case single
+    quote your attributes or HTML escape it in addition.
+
     .. versionchanged:: 0.10
        This function's return value is now always safe for HTML usage, even
-       if outside of script tags or if used in XHTML.
+       if outside of script tags or if used in XHTML.  This rule does not
+       hold true when using this function in HTML attributes that are double
+       quoted.  Always single quote attributes if you use the ``|tojson``
+       filter.  Alternatively use ``|tojson|forceescape``.
     """
     rv = dumps(obj, **kwargs) \
         .replace(u'<', u'\\u003c') \
         .replace(u'>', u'\\u003e') \
-        .replace(u'&', u'\\u0026')
+        .replace(u'&', u'\\u0026') \
+        .replace(u"'", u'\\u0027')
     if not _slash_escape:
         rv = rv.replace('\\/', '/')
     return rv

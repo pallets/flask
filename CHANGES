@@ -8,6 +8,11 @@ Version 0.10.1
 
 Pending bugfix release.
 
+- Fixed an issue where ``|tojson`` was not quoting single quotes which
+  made the filter not work properly in HTML attributes.  Now it's
+  possible to use that filter in single quoted attributes.  This should
+  make using that filter with angular.js easier.
+
 Version 0.10
 ------------
 

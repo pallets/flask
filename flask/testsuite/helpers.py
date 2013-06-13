@@ -104,6 +104,12 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv, '"\\u003c!--\\u003cscript\\u003e"')
             rv = render('{{ "&"|tojson }}')
             self.assert_equal(rv, '"\\u0026"')
+            rv = render('{{ "\'"|tojson }}')
+            self.assert_equal(rv, '"\\u0027"')
+            rv = render("<a ng-data='{{ data|tojson }}'></a>",
+                data={'x': ["foo", "bar", "baz'"]})
+            self.assert_equal(rv,
+                '<a ng-data=\'{"x": ["foo", "bar", "baz\\u0027"]}\'></a>')
 
     def test_json_customization(self):
         class X(object):
