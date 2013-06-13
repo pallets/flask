@@ -8,11 +8,14 @@ python:
 
 env:
   - REQUIREMENTS=lowest
+  - REQUIREMENTS=release
   - REQUIREMENTS=devel
 
 matrix:
   exclude:
-    # Python 3 support currently does not work with lowest requirements
+    # Python 3 support currently does not work with lowest/release requirements
+    - python: "3.3"
+      env: REQUIREMENTS=release
     - python: "3.3"
       env: REQUIREMENTS=lowest
 
