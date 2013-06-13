@@ -326,6 +326,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             flask.session['m'] = flask.Markup('Hello!')
             flask.session['u'] = the_uuid
             flask.session['dt'] = now
+            flask.session['b'] = b'\xff'
             flask.session['t'] = (1, 2, 3)
             return response
 
@@ -340,6 +341,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(type(rv['m']), flask.Markup)
         self.assert_equal(rv['dt'], now)
         self.assert_equal(rv['u'], the_uuid)
+        self.assert_equal(rv['b'], b'\xff')
+        self.assert_equal(type(rv['b']), bytes)
         self.assert_equal(rv['t'], (1, 2, 3))
 
     def test_flashes(self):
