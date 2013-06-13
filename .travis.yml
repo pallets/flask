@@ -1,10 +1,10 @@
 language: python
 
 python:
-  - 2.6
-  - 2.7
-  - pypy
-  - 3.3
+  - "2.6"
+  - "2.7"
+  - "pypy"
+  - "3.3"
 
 env:
   - REQUIREMENTS=lowest
