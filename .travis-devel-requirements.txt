@@ -1,0 +1,3 @@
+git+git://github.com/mitsuhiko/werkzeug.git#egg=Werkzeug
+git+git://github.com/mitsuhiko/jinja2.git#egg=Jinja2
+git+git://github.com/mitsuhiko/itsdangerous.git#egg=itsdangerous
