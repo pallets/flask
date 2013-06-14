@@ -15,7 +15,7 @@ Version 0.10.1
 - Added support for byte strings back to the session system.  This broke
   compatibility with the common case of people putting binary data for
   token verification into the session.
-- Fixed an issue were registering the same method twice for the same endpoint
+- Fixed an issue where registering the same method twice for the same endpoint
   would trigger an exception incorrectly.
 
 Version 0.10
