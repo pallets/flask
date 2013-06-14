@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.10.1
 --------------
 
-Pending bugfix release.
+(bugfix release, released on June 14th 2013)
 
 - Fixed an issue where ``|tojson`` was not quoting single quotes which
   made the filter not work properly in HTML attributes.  Now it's
