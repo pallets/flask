@@ -979,7 +979,7 @@ class Flask(_PackageBoundObject):
         self.url_map.add(rule)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
-            if old_func is not None and old_func is not view_func:
+            if old_func is not None and old_func != view_func:
                 raise AssertionError('View function mapping is overwriting an '
                                      'existing endpoint function: %s' % endpoint)
             self.view_functions[endpoint] = view_func
