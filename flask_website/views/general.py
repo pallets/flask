@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from flaskext.openid import COMMON_PROVIDERS
+from flask.ext.openid import COMMON_PROVIDERS
 from flask_website import oid
 from flask_website.search import search as perform_search
 from flask_website.twitter import flask_tweets

@@ -42,7 +42,7 @@ extensions = [
             <p>Adds <a href="http://oauth.net/">OAuth</a> support to Flask.
         ''',
         github='mitsuhiko/flask-oauth',
-        docs='http://packages.python.org/Flask-OAuth/',
+        docs='http://pythonhosted.org/Flask-OAuth/',
         notes='''
             Short long description, missing tests.
         '''
@@ -52,7 +52,7 @@ extensions = [
             <p>Adds <a href="http://openid.net/">OpenID</a> support to Flask.
         ''',
         github='mitsuhiko/flask-openid',
-        docs='http://packages.python.org/Flask-OpenID/',
+        docs='http://pythonhosted.org/Flask-OpenID/',
         notes='''
             Short long description, missing tests.
         '''
@@ -64,7 +64,7 @@ extensions = [
             <a href=http://pytz.sourceforge.net/>pytz</a>.
         ''',
         github='mitsuhiko/flask-babel',
-        docs='http://packages.python.org/Flask-Babel/',
+        docs='http://pythonhosted.org/Flask-Babel/',
         approved=True,
         notes='''
             How to improve: add a better long description to the next release.
@@ -75,7 +75,7 @@ extensions = [
             <p>Adds SQLAlchemy support to Flask.  Quick and easy.
         ''',
         github='mitsuhiko/flask-sqlalchemy',
-        docs='http://packages.python.org/Flask-SQLAlchemy/',
+        docs='http://pythonhosted.org/Flask-SQLAlchemy/',
         approved=True,
         notes='''
             How to improve: add a better long description to the next release.
@@ -86,7 +86,7 @@ extensions = [
             <p>Adds <a href="http://www.xmlrpc.com/">XML-RPC</a> support to Flask.
         ''',
         bitbucket='leafstorm/flask-xml-rpc',
-        docs='http://packages.python.org/Flask-XML-RPC/',
+        docs='http://pythonhosted.org/Flask-XML-RPC/',
         approved=True
     ),
     Extension('Flask-CouchDB', 'Matthew Frazier',
@@ -94,7 +94,7 @@ extensions = [
             <p>Adds <a href="http://couchdb.apache.org/">CouchDB</a> support to Flask.
         ''',
         bitbucket='leafstorm/flask-couchdb',
-        docs='http://packages.python.org/Flask-CouchDB/',
+        docs='http://pythonhosted.org/Flask-CouchDB/',
         approved=True,
         notes='''
             There is also Flask-CouchDBKit.  Both are fine because they are
@@ -109,7 +109,7 @@ extensions = [
             attachments, one for photos, etc.
         ''',
         bitbucket='leafstorm/flask-uploads',
-        docs='http://packages.python.org/Flask-Uploads/',
+        docs='http://pythonhosted.org/Flask-Uploads/',
         approved=True
     ),
     Extension('Flask-Themes', 'Matthew Frazier',
@@ -118,7 +118,7 @@ extensions = [
             a wide range of appearances.
         ''',
         bitbucket='leafstorm/flask-themes',
-        docs='http://packages.python.org/Flask-Themes/',
+        docs='http://pythonhosted.org/Flask-Themes/',
         approved=True
     ),
     Extension('Flask-CouchDBKit', 'Kridsada Thanabulpong',
@@ -126,7 +126,7 @@ extensions = [
             <p>Adds <a href="http://www.couchdbkit.org/">CouchDBKit</a> support to Flask.
         ''',
         github='sirn/flask-couchdbkit',
-        docs='http://packages.python.org/Flask-CouchDBKit/'
+        docs='http://pythonhosted.org/Flask-CouchDBKit/'
     ),
     Extension('Flask-Genshi', 'Dag Odenhall',
         description='''
@@ -134,7 +134,7 @@ extensions = [
             templating language to Flask applications.
         ''',
         github='dag/flask-genshi',
-        docs='http://packages.python.org/Flask-Genshi/',
+        docs='http://pythonhosted.org/Flask-Genshi/',
         approved=True,
         notes='''
             This is the first template engine extension.  When others come
@@ -147,7 +147,7 @@ extensions = [
             has also support for unittesting.
         ''',
         github='mattupstate/flask-mail',
-        docs='http://packages.python.org/Flask-Mail/',
+        docs='http://pythonhosted.org/Flask-Mail/',
         approved=True
     ),
     Extension('Flask-WTF', 'Anthony Ford (created by Dan Jacob)',
@@ -156,7 +156,7 @@ extensions = [
             integration includes optional CSRF handling for greater security.
         ''',
         github='ajford/flask-wtf',
-        docs='http://packages.python.org/Flask-WTF/',
+        docs='http://pythonhosted.org/Flask-WTF/',
         approved=True
     ),
     Extension('Flask-Testing', u'Christoph Heer (created by Dan Jacob)',
@@ -164,7 +164,7 @@ extensions = [
             <p>The Flask-Testing extension provides unit testing utilities for Flask.
         ''',
         github='jarus/flask-testing',
-        docs='http://packages.python.org/Flask-Testing/',
+        docs='http://pythonhosted.org/Flask-Testing/',
         approved=True
     ),
     Extension('Flask-Script', 'Sean Lynch (created by Dan Jacob)',
@@ -173,7 +173,7 @@ extensions = [
             scripts in Flask. It uses argparse to parse command line arguments.
         ''',
         github='techniq/flask-script',
-        docs='http://packages.python.org/Flask-Script/',
+        docs='http://pythonhosted.org/Flask-Script/',
         approved=True,
         notes='''
             Flask-Actions has some overlap.  Consider that when approving
@@ -202,7 +202,7 @@ extensions = [
         description='''
             <p>Creole parser filters for Flask.
         ''',
-        docs='http://packages.python.org/Flask-Creole',
+        docs='http://pythonhosted.org/Flask-Creole',
         bitbucket='aafshar/flask-creole-main',
         approved=True,
         notes='''
@@ -214,14 +214,14 @@ extensions = [
         description='''
             <p>Adds cache support to your Flask application.
         ''',
-        docs='http://packages.python.org/Flask-Cache',
+        docs='http://pythonhosted.org/Flask-Cache',
         github='thadeusb/flask-cache',
     ),
     Extension('Flask-Principal', 'Ali Afshar',
         description='''
             <p>Identity management for Flask.
         ''',
-        docs='http://packages.python.org/Flask-Principal',
+        docs='http://pythonhosted.org/Flask-Principal',
         github='mattupstate/flask-principal',
         approved=False
     ),
@@ -229,7 +229,7 @@ extensions = [
         description='''
             <p>Flask-Zen allows you to use PyZen via Flask-Script commands.
         ''',
-        docs='http://packages.python.org/Flask-Zen/',
+        docs='http://pythonhosted.org/Flask-Zen/',
         github='coderanger/flask-zen',
         approved=False
     ),
@@ -249,7 +249,7 @@ extensions = [
               An extension that generates an index page for your Flask
               application automatically
         ''',
-        docs='http://packages.python.org/Flask-AutoIndex/',
+        docs='http://pythonhosted.org/Flask-AutoIndex/',
         github='sublee/flask-autoindex',
         approved=False
     ),
@@ -269,7 +269,7 @@ extensions = [
               The result can be hosted without any server-side software
               other than a traditional web server.
         ''',
-        docs='http://packages.python.org/Frozen-Flask/',
+        docs='http://pythonhosted.org/Frozen-Flask/',
         github='SimonSapin/Frozen-Flask',
         approved=True
     ),
@@ -279,7 +279,7 @@ extensions = [
               Provides flat static pages to a Flask application, based on text
               files as opposed to a relational database.
         ''',
-        docs='http://packages.python.org/Flask-FlatPages/',
+        docs='http://pythonhosted.org/Flask-FlatPages/',
         github='SimonSapin/Flask-FlatPages',
         approved=True
     ),
@@ -288,7 +288,7 @@ extensions = [
             <p>
               FluidDB access for Flask.
         ''',
-        docs='http://packages.python.org/Flask-FluidDB/',
+        docs='http://pythonhosted.org/Flask-FluidDB/',
         bitbucket='aafshar/flask-fluiddb-main',
         approved=False
     ),
@@ -297,14 +297,14 @@ extensions = [
             <p>The Flask-fillin extension provides simple utilities for testing your forms in Flask application..
         ''',
         github='jarus/flask-fillin',
-        docs='http://packages.python.org/Flask-fillin/',
+        docs='http://pythonhosted.org/Flask-fillin/',
     ),
     Extension('Flask-Gravatar', 'Zelenyak Aleksandr',
         description='''
             <p>
               Small extension for Flask to make using Gravatar easy.
         ''',
-        docs='http://packages.python.org/Flask-Gravatar/',
+        docs='http://pythonhosted.org/Flask-Gravatar/',
         github='zzzsochi/Flask-Gravatar',
         approved=False
     ),
@@ -324,7 +324,7 @@ extensions = [
             <p>
               Add Flask support for MongoDB using MongoAlchemy.
         ''',
-        docs='http://packages.python.org/Flask-MongoAlchemy/',
+        docs='http://pythonhosted.org/Flask-MongoAlchemy/',
         github='cobrateam/flask-mongoalchemy',
         approved=False
     ),
@@ -345,7 +345,7 @@ extensions = [
               remembering your users' sessions over extended periods of time.
         ''',
         github='maxcountryman/flask-login',
-        docs='http://packages.python.org/Flask-Login/',
+        docs='http://pythonhosted.org/Flask-Login/',
         approved=True
     ),
     Extension('Flask-Exceptional', 'Jonathan Zempel',
@@ -353,7 +353,7 @@ extensions = [
             <p>
               Adds Exceptional support to Flask applications
         ''',
-        docs='http://packages.python.org/Flask-Exceptional/',
+        docs='http://pythonhosted.org/Flask-Exceptional/',
         github='jzempel/flask-exceptional',
         approved=True,
     ),
@@ -362,7 +362,7 @@ extensions = [
             <p>
               Bcrypt support for hashing passwords
         ''',
-        docs='http://packages.python.org/Flask-Bcrypt/',
+        docs='http://pythonhosted.org/Flask-Bcrypt/',
         github='maxcountryman/flask-bcrypt',
         approved=True,
     ),
@@ -371,7 +371,7 @@ extensions = [
             <p>
               Flask extension to better integrate MongoKit into Flask
         ''',
-        docs='http://packages.python.org/Flask-MongoKit/',
+        docs='http://pythonhosted.org/Flask-MongoKit/',
         github='jarus/flask-mongokit'
     ),
     Extension('Flask-GAE-Mini-Profiler', 'Pascal Hartig',
@@ -379,7 +379,7 @@ extensions = [
             <p>
               Flask integration of gae_mini_profiler for Google App Engine.
         ''',
-        docs='http://packages.python.org/Flask-GAE-Mini-Profiler',
+        docs='http://pythonhosted.org/Flask-GAE-Mini-Profiler',
         github='passy/flask-gae-mini-profiler'
     ),
     Extension('Flask-Admin', 'Serge Koval',
@@ -395,7 +395,7 @@ extensions = [
             <p>
               Use the ZODB with Flask
         ''',
-        docs='http://packages.python.org/Flask-ZODB/',
+        docs='http://pythonhosted.org/Flask-ZODB/',
         github='dag/flask-zodb',
         approved=True
     ),
@@ -413,7 +413,7 @@ extensions = [
             <p>
               Add Lettuce support for Flask
         ''',
-        # docs='http://packages.python.org/Flask-Lettuce/',
+        # docs='http://pythonhosted.org/Flask-Lettuce/',
         github='dqminh/flask-lettuce',
         approved=False
     ),
@@ -423,7 +423,7 @@ extensions = [
               Flask integration for Sijax,
               a Python/jQuery library that makes AJAX easy to use
         ''',
-        docs='http://packages.python.org/Flask-Sijax/',
+        docs='http://pythonhosted.org/Flask-Sijax/',
         github='spantaleev/flask-sijax',
         approved=False
     ),
@@ -443,7 +443,7 @@ extensions = [
               SeaSurf is a Flask extension for preventing
               cross-site request forgery (CSRF).
         ''',
-        docs='http://packages.python.org/Flask-SeaSurf/',
+        docs='http://pythonhosted.org/Flask-SeaSurf/',
         github='maxcountryman/flask-seasurf',
         approved=True,
     ),
@@ -461,7 +461,7 @@ extensions = [
               Flask-Raptor provides support for adding raptors
               to Flask instances.
         ''',
-        docs='http://packages.python.org/Flask-Raptor/',
+        docs='http://pythonhosted.org/Flask-Raptor/',
         github='dplepage/flask-raptor',
     ),
     Extension('Flask-Shelve', 'James Saryerwinnie',
@@ -471,7 +471,7 @@ extensions = [
               `shelve` module, for very simple (slow) no-dependency key-value
               storage.
         ''',
-        docs='http://packages.python.org/Flask-Shelve/',
+        docs='http://pythonhosted.org/Flask-Shelve/',
         github='jamesls/flask-shelve',
     ),
     Extension('Flask-Restless', 'Jeffrey Finkelstein',
@@ -498,7 +498,7 @@ extensions = [
             to be used instead of Jinja2
         ''',
         github='benselme/flask-mako',
-        docs='http://packages.python.org/Flask-Mako/',
+        docs='http://pythonhosted.org/Flask-Mako/',
         approved=False
     ),
     Extension('Flask-WeasyPrint', 'Simon Sapin',
@@ -506,7 +506,7 @@ extensions = [
             <p>Make PDF with <a href="http://weasyprint.org/">WeasyPrint</a>
                in your Flask app.
         ''',
-        docs='http://packages.python.org/Flask-WeasyPrint/',
+        docs='http://pythonhosted.org/Flask-WeasyPrint/',
         github='SimonSapin/Flask-WeasyPrint',
     ),
     Extension('Flask-Classy', 'Freedom Dumlao',
@@ -530,7 +530,7 @@ unlisted = [
               Flask-actions provide some management comands for flask based
               project.
         ''',
-        docs='http://packages.python.org/Flask-Actions/',
+        docs='http://pythonhosted.org/Flask-Actions/',
         bitbucket='youngking/flask-actions',
         approved=False,
         notes='''
@@ -565,7 +565,7 @@ unlisted = [
               This is a small module to a markdown processing filter into your
               flask.
         ''',
-        docs='http://packages.python.org/Flask-Markdown/',
+        docs='http://pythonhosted.org/Flask-Markdown/',
         github='dcolish/flask-markdown',
         approved=False,
         notes='''
