@@ -1,5 +1,5 @@
 from flask import Flask, session, g, render_template
-from flaskext.openid import OpenID
+from flask.ext.openid import OpenID
 
 app = Flask(__name__)
 app.config.from_object('websiteconfig')
