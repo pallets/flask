@@ -370,7 +370,7 @@ JSON module:
 
 1.  ``datetime`` objects are serialized as :rfc:`822` strings.
 2.  Any object with an ``__html__`` method (like :class:`~flask.Markup`)
-    will ahve that method called and then the return value is serialized
+    will have that method called and then the return value is serialized
     as string.
 
 The :func:`~htmlsafe_dumps` function of this json module is also available
