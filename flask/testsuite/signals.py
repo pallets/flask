@@ -102,7 +102,7 @@ class SignalsTestCase(FlaskTestCase):
         def record_push(sender, **kwargs):
             recorded.append('push')
         def record_pop(sender, **kwargs):
-            recorded.append('push')
+            recorded.append('pop')
 
         @app.route('/')
         def index():

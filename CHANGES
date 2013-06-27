@@ -3,6 +3,13 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.10.2
+--------------
+
+(bugfix release, release date to be announced)
+
+- Fixed broken `test_appcontext_signals()` test case.
+
 Version 0.10.1
 --------------
 
