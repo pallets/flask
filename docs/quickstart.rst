@@ -318,7 +318,7 @@ Now the interesting part is that in HTML4 and XHTML1, the only methods a
 form can submit to the server are `GET` and `POST`.  But with JavaScript
 and future HTML standards you can use the other methods as well.  Furthermore
 HTTP has become quite popular lately and browsers are no longer the only
-clients that are using HTTP. For instance, many revision control system
+clients that are using HTTP. For instance, many revision control systems
 use it.
 
 .. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
