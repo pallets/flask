@@ -3,6 +3,4 @@ git+git://github.com/mitsuhiko/jinja2.git#egg=Jinja2
 git+git://github.com/mitsuhiko/itsdangerous.git#egg=itsdangerous
 
 # extra dependencies
-# Python 3.x support in the development version of blinker is broken, see:
-# https://bitbucket.org/jek/blinker/issue/8/python-3-compatiblity-broken-in-tip
-# hg+http://bitbucket.org/jek/blinker#egg=blinker
+hg+http://bitbucket.org/jek/blinker#egg=blinker
