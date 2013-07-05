@@ -198,7 +198,7 @@ def htmlsafe_dump(obj, fp, **kwargs):
     fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
 
 
-def jsonify(*args, **kwargs):
+def jsonify(__dumps_params__=None, *args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
     the given arguments with an `application/json` mimetype.  The arguments
     to this function are the same as to the :class:`dict` constructor.
@@ -230,13 +230,65 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.2
     """
-    indent = None
+    if __dumps_params__ and not args and not kwargs:
+        # Handles the case of a single object as first parameter without __dumps_params__
+        kwargs = __dumps_params__
+        __dumps_params__ = None
+
+    if __dumps_params__ is None:
+        __dumps_params__ = dict()
+
     if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
-        and not request.is_xhr:
-        indent = 2
-    return current_app.response_class(dumps(dict(*args, **kwargs),
-        indent=indent),
-        mimetype='application/json')
+        and not request.is_xhr \
+        and not __dumps_params__.get('indent'):
+            __dumps_params__['indent'] = 2
+
+    if len(args) == 1 and not kwargs:
+        # Handles the case of a single object as first parameter with __dumps_params__
+        json_encoded = dumps(args[0], **__dumps_params__)
+    else:
+        json_encoded = dumps(dict(*args, **kwargs), **__dumps_params__)
+
+    if json_encoded and str(json_encoded[0]) == "[":
+        raise ValueError("json security error. root object cannot be an instance of list")
+
+    return current_app.response_class(json_encoded, mimetype='application/json')
+
+
+def json_encode(response, **kwargs):
+    """Creates a :class:`~flask.Response` with the JSON representation of
+    the given `response` argument with an `application/json` mimetype.
+    It takes the same parameters of json.dumps, including custom encoders.
+
+    Example usage::
+
+        from flask import json_encode
+
+        @app.route('/_get_current_user')
+        def get_current_user():
+            response = dict(username=g.user.username,
+                           email=g.user.email,
+                           id=g.user.id)
+            return json_encode(response, default=default_encoder)
+
+    This will send a JSON response like this to the browser::
+
+        {
+            "username": "admin",
+            "email": "admin@localhost",
+            "id": 42
+        }
+
+    For security reasons only objects are supported toplevel.  For more
+    information about this, have a look at :ref:`json-security`.
+
+    This function's response will be pretty printed if it was not requested
+    with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
+    the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
+
+    .. versionadded:: 0.11
+    """
+    return jsonify(*[kwargs, response])
 
 
 def tojson_filter(obj, **kwargs):

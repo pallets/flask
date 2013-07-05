@@ -65,6 +65,65 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv.mimetype, 'application/json')
             self.assert_equal(flask.json.loads(rv.data), d)
 
+    def test_json_encode(self):
+        d = dict(a=23, b=42, c=[1, 2, 3])
+
+        class CustomObject(object):
+            def __init__(self):
+                self.name = "Custom name"
+                self.value = d
+
+            def __json__(self):
+                return self.__dict__
+
+        def encoder(obj):
+            if isinstance(obj, CustomObject):
+                return obj.__json__()
+            raise TypeError(repr(obj) + " is not JSON serializable")
+
+        obj = CustomObject()
+        app = flask.Flask(__name__)
+        @app.route('/native')
+        def return_native():
+            return flask.json_encode(d)
+        @app.route('/custom')
+        def return_custom():
+            return flask.json_encode(obj, default=encoder)
+        c = app.test_client()
+        rv = c.get('/native')
+        self.assert_equal(rv.mimetype, 'application/json')
+        self.assert_equal(flask.json.loads(rv.data), d)
+        rv = c.get('/custom')
+        self.assert_equal(rv.mimetype, 'application/json')
+        self.assert_equal(flask.json.loads(rv.data), obj.__json__())
+
+    def test_json_security(self):
+        list = [{"test": "test"}]
+
+        class CustomObject(object):
+            def __init__(self):
+                self.list = list
+
+            def __json__(self):
+                return self.list
+
+        def encoder(obj):
+            if isinstance(obj, CustomObject):
+                return obj.__json__()
+            raise TypeError(repr(obj) + " is not JSON serializable")
+
+        app = flask.Flask(__name__)
+        @app.route('/jsonify')
+        def securuty_jsonify():
+            return flask.jsonify(list)
+        @app.route('/jsonencode')
+        def securuty_jsonencode():
+            return flask.json_encode(CustomObject(), default=encoder)
+        c = app.test_client()
+        for url in '/jsonify', '/jsonencode':
+            rv = c.get(url)
+            self.assert_equal(rv.status_code, 500)
+
     def test_json_as_unicode(self):
         app = flask.Flask(__name__)
 
