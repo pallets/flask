@@ -198,7 +198,7 @@ def htmlsafe_dump(obj, fp, **kwargs):
     fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
 
 
-def jsonify(__dumps_params__=None, *args, **kwargs):
+def jsonify(*args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
     the given arguments with an `application/json` mimetype.  The arguments
     to this function are the same as to the :class:`dict` constructor.
@@ -230,29 +230,15 @@ def jsonify(__dumps_params__=None, *args, **kwargs):
 
     .. versionadded:: 0.2
     """
-    if __dumps_params__ and not args and not kwargs:
-        # Handles the case of a single object as first parameter without __dumps_params__
-        kwargs = __dumps_params__
-        __dumps_params__ = None
-
-    if __dumps_params__ is None:
-        __dumps_params__ = dict()
+    indent = None
 
     if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
-        and not request.is_xhr \
-        and not __dumps_params__.get('indent'):
-            __dumps_params__['indent'] = 2
+        and not request.is_xhr:
+            indent = 2
 
-    if len(args) == 1 and not kwargs:
-        # Handles the case of a single object as first parameter with __dumps_params__
-        json_encoded = dumps(args[0], **__dumps_params__)
-    else:
-        json_encoded = dumps(dict(*args, **kwargs), **__dumps_params__)
-
-    if json_encoded and str(json_encoded[0]) == "[":
-        raise ValueError("json security error. root object cannot be an instance of list")
-
-    return current_app.response_class(json_encoded, mimetype='application/json')
+    return current_app.response_class(dumps(dict(*args, **kwargs),
+                                            indent=indent),
+                                      mimetype='application/json')
 
 
 def json_encode(response, **kwargs):
@@ -288,7 +274,15 @@ def json_encode(response, **kwargs):
 
     .. versionadded:: 0.11
     """
-    return jsonify(*[kwargs, response])
+    if not kwargs.get('indent') \
+        and current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
+        and not request.is_xhr:
+            kwargs['indent'] = 2
+    json_encoded = dumps(response, **kwargs)
+    if json_encoded and str(json_encoded[0]) == '[':
+        raise ValueError('JSON security issue')
+    return current_app.response_class(json_encoded,
+                                      mimetype='application/json')
 
 
 def tojson_filter(obj, **kwargs):
