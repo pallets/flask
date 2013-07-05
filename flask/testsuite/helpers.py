@@ -15,7 +15,7 @@ import unittest
 from logging import StreamHandler
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
-from flask._compat import StringIO, text_type, implements_iterator
+from flask._compat import StringIO, text_type
 
 
 def has_encoding(name):
@@ -33,7 +33,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return flask.jsonify(foo=text_type(flask.request.json))
+            return flask.jsonify(foo=text_type(flask.request.get_json()))
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -43,7 +43,7 @@ class JSONTestCase(FlaskTestCase):
         app.testing = True
         @app.route('/')
         def index():
-            return flask.request.json
+            return flask.request.get_json()
 
         c = app.test_client()
         resp = c.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
@@ -82,7 +82,8 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])
         def add():
-            return text_type(flask.request.json['a'] + flask.request.json['b'])
+            json = flask.request.get_json()
+            return text_type(json['a'] + json['b'])
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')
@@ -92,12 +93,23 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         render = flask.render_template_string
         with app.test_request_context():
-            rv = render('{{ "</script>"|tojson|safe }}')
-            self.assert_equal(rv, '"<\\/script>"')
-            rv = render('{{ "<\0/script>"|tojson|safe }}')
-            self.assert_equal(rv, '"<\\u0000\\/script>"')
-            rv = render('{{ "<!--<script>"|tojson|safe }}')
-            self.assert_equal(rv, '"<\\u0021--<script>"')
+            rv = flask.json.htmlsafe_dumps('</script>')
+            self.assert_equal(rv, u'"\\u003c/script\\u003e"')
+            self.assert_equal(type(rv), text_type)
+            rv = render('{{ "</script>"|tojson }}')
+            self.assert_equal(rv, '"\\u003c/script\\u003e"')
+            rv = render('{{ "<\0/script>"|tojson }}')
+            self.assert_equal(rv, '"\\u003c\\u0000/script\\u003e"')
+            rv = render('{{ "<!--<script>"|tojson }}')
+            self.assert_equal(rv, '"\\u003c!--\\u003cscript\\u003e"')
+            rv = render('{{ "&"|tojson }}')
+            self.assert_equal(rv, '"\\u0026"')
+            rv = render('{{ "\'"|tojson }}')
+            self.assert_equal(rv, '"\\u0027"')
+            rv = render("<a ng-data='{{ data|tojson }}'></a>",
+                data={'x': ["foo", "bar", "baz'"]})
+            self.assert_equal(rv,
+                '<a ng-data=\'{"x": ["foo", "bar", "baz\\u0027"]}\'></a>')
 
     def test_json_customization(self):
         class X(object):
@@ -122,7 +134,7 @@ class JSONTestCase(FlaskTestCase):
         app.json_decoder = MyDecoder
         @app.route('/', methods=['POST'])
         def index():
-            return flask.json.dumps(flask.request.json['x'])
+            return flask.json.dumps(flask.request.get_json()['x'])
         c = app.test_client()
         rv = c.post('/', data=flask.json.dumps({
             'x': {'_foo': 42}
@@ -546,7 +558,6 @@ class StreamingTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         app.testing = True
         called = []
-        @implements_iterator
         class Wrapper(object):
             def __init__(self, gen):
                 self._gen = gen
@@ -556,6 +567,7 @@ class StreamingTestCase(FlaskTestCase):
                 called.append(42)
             def __next__(self):
                 return next(self._gen)
+            next = __next__
         @app.route('/')
         def index():
             def generate():

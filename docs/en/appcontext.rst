@@ -82,7 +82,9 @@ moves between threads and it will not be shared between requests.  As such
 it is the perfect place to store database connection information and other
 things.  The internal stack object is called :data:`flask._app_ctx_stack`.
 Extensions are free to store additional information on the topmost level,
-assuming they pick a sufficiently unique name.
+assuming they pick a sufficiently unique name and should put there
+information there, instead on the :data:`flask.g` object which is reserved
+for user code.
 
 For more information about that, see :ref:`extension-dev`.
 
@@ -107,19 +109,19 @@ and a ``teardown_X()`` function that is registered as teardown handler.
 This is an example that connects to a database::
 
     import sqlite3
-    from flask import _app_ctx_stack
+    from flask import g
 
     def get_db():
-        top = _app_ctx_stack.top
-        if not hasattr(top, 'database'):
-            top.database = connect_to_database()
-        return top.database
+        db = getattr(g, '_database', None)
+        if db is None:
+            db = g._database = connect_to_database()
+        return db
 
     @app.teardown_appcontext
     def teardown_db(exception):
-        top = _app_ctx_stack.top
-        if hasattr(top, 'database'):
-            top.database.close()
+        db = getattr(g, '_database', None)
+        if db is not None:
+            db.close()
 
 The first time ``get_db()`` is called the connection will be established.
 To make this implicit a :class:`~werkzeug.local.LocalProxy` can be used::

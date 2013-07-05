@@ -18,7 +18,9 @@ decorators::
 
     @app.teardown_request
     def teardown_request(exception):
-        g.db.close()
+        db = getattr(g, 'db', None)
+        if db is not None:
+            db.close()
 
 Functions marked with :meth:`~flask.Flask.before_request` are called before
 a request and passed no arguments.  Functions marked with
@@ -37,6 +39,9 @@ request only and is available from within each function.  Never store such
 things on other objects because this would not work with threaded
 environments.  That special :data:`~flask.g` object does some magic behind
 the scenes to ensure it does the right thing.
+
+For an even better way to handle such resources see the :ref:`sqlite3`
+documentation.
 
 Continue to :ref:`tutorial-views`.
 

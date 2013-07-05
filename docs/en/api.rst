@@ -272,7 +272,19 @@ thing, like it does for :class:`request` and :class:`session`.
 
    Starting with Flask 0.10 this is stored on the application context and
    no longer on the request context which means it becomes available if
-   only the application context is bound and not yet a request.
+   only the application context is bound and not yet a request.  This
+   is especially useful when combined with the :ref:`faking-resources`
+   pattern for testing.
+
+   Additionally as of 0.10 you can use the :meth:`get` method to
+   get an attribute or `None` (or the second argument) if it's not set.
+   These two usages are now equivalent::
+
+        user = getattr(flask.g, 'user', None)
+        user = flask.g.get('user', None)
+
+   It's now also possible to use the ``in`` operator on it to see if an
+   attribute is defined and it yields all keys on iteration.
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
@@ -358,21 +370,20 @@ JSON module:
 
 1.  ``datetime`` objects are serialized as :rfc:`822` strings.
 2.  Any object with an ``__html__`` method (like :class:`~flask.Markup`)
-    will ahve that method called and then the return value is serialized
+    will have that method called and then the return value is serialized
     as string.
 
 The :func:`~htmlsafe_dumps` function of this json module is also available
 as filter called ``|tojson`` in Jinja2.  Note that inside `script`
 tags no escaping must take place, so make sure to disable escaping
-with ``|safe`` if you intend to use it inside `script` tags:
+with ``|safe`` if you intend to use it inside `script` tags unless
+you are using Flask 0.10 which implies that:
 
 .. sourcecode:: html+jinja
 
     <script type=text/javascript>
         doSomethingWith({{ user.username|tojson|safe }});
     </script>
-
-Note that the ``|tojson`` filter escapes forward slashes properly.
 
 .. autofunction:: jsonify
 
@@ -536,7 +547,22 @@ Signals
    This signal is sent when the application is tearing down the
    application context.  This is always called, even if an error happened.
    An `exc` keyword argument is passed with the exception that caused the
-   teardown.
+   teardown.  The sender is the application.
+
+.. data:: appcontext_pushed
+
+   This signal is sent when an application context is pushed.  The sender
+   is the application.
+
+   .. versionadded:: 0.10
+
+.. data:: appcontext_popped
+
+   This signal is sent when an application context is popped.  The sender
+   is the application.  This usually falls in line with the
+   :data:`appcontext_tearing_down` signal.
+
+   .. versionadded:: 0.10
 
 .. data:: message_flashed
 

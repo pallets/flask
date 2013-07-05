@@ -96,6 +96,30 @@ class SignalsTestCase(FlaskTestCase):
         finally:
             flask.got_request_exception.disconnect(record, app)
 
+    def test_appcontext_signals(self):
+        app = flask.Flask(__name__)
+        recorded = []
+        def record_push(sender, **kwargs):
+            recorded.append('push')
+        def record_pop(sender, **kwargs):
+            recorded.append('pop')
+
+        @app.route('/')
+        def index():
+            return 'Hello'
+
+        flask.appcontext_pushed.connect(record_push, app)
+        flask.appcontext_popped.connect(record_pop, app)
+        try:
+            with app.test_client() as c:
+                rv = c.get('/')
+                self.assert_equal(rv.data, b'Hello')
+                self.assert_equal(recorded, ['push'])
+            self.assert_equal(recorded, ['push', 'pop'])
+        finally:
+            flask.appcontext_pushed.disconnect(record_push, app)
+            flask.appcontext_popped.disconnect(record_pop, app)
+
     def test_flash_signal(self):
         app = flask.Flask(__name__)
         app.config['SECRET_KEY'] = 'secret'

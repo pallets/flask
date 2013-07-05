@@ -3,10 +3,32 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.10.2
+--------------
+
+(bugfix release, release date to be announced)
+
+- Fixed broken `test_appcontext_signals()` test case.
+
+Version 0.10.1
+--------------
+
+(bugfix release, released on June 14th 2013)
+
+- Fixed an issue where ``|tojson`` was not quoting single quotes which
+  made the filter not work properly in HTML attributes.  Now it's
+  possible to use that filter in single quoted attributes.  This should
+  make using that filter with angular.js easier.
+- Added support for byte strings back to the session system.  This broke
+  compatibility with the common case of people putting binary data for
+  token verification into the session.
+- Fixed an issue where registering the same method twice for the same endpoint
+  would trigger an exception incorrectly.
+
 Version 0.10
 ------------
 
-Release date to be decided.
+Released on June 13nd 2013, codename Limoncello.
 
 - Changed default cookie serialization format from pickle to JSON to
   limit the impact an attacker can do if the secret key leaks.  See
@@ -17,6 +39,8 @@ Release date to be decided.
   ``template_filter`` method family.
 - Set the content-length header for x-sendfile.
 - ``tojson`` filter now does not escape script blocks in HTML5 parsers.
+- ``tojson`` used in templates is now safe by default due.  This was
+  allowed due to the different escaping behavior.
 - Flask will now raise an error if you attempt to register a new function
   on an already used endpoint.
 - Added wrapper module around simplejson and added default serialization
@@ -38,6 +62,10 @@ Release date to be decided.
   ``flask.json.dumps`` to return bytestrings by default.
 - ``flask.g`` is now stored on the app context instead of the request
   context.
+- ``flask.g`` now gained a ``get()`` method for not erroring out on non
+  existing items.
+- ``flask.g`` now can be used with the ``in`` operator to see what's defined
+  and it now is iterable and will yield all attributes stored.
 - ``flask.Flask.request_globals_class`` got renamed to
   ``flask.Flask.app_ctx_globals_class`` which is a better name to what it
   does since 0.10.
@@ -62,9 +90,17 @@ Release date to be decided.
 - Changed how the teardown system is informed about exceptions.  This is now
   more reliable in case something handles an exception halfway through
   the error handling process.
+- Request context preservation in debug mode now keeps the exception
+  information around which means that teardown handlers are able to
+  distinguish error from success cases.
 - Added the ``JSONIFY_PRETTYPRINT_REGULAR`` configuration variable.
 - Flask now orders JSON keys by default to not trash HTTP caches due to
   different hash seeds between different workers.
+- Added `appcontext_pushed` and `appcontext_popped` signals.
+- The builtin run method now takes the ``SERVER_NAME`` into account when
+  picking the default port to run on.
+- Added `flask.request.get_json()` as a replacement for the old
+  `flask.request.json` property.
 
 Version 0.9
 -----------

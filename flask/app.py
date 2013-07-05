@@ -22,7 +22,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-    locked_cached_property, _endpoint_from_view_func, find_package
+     locked_cached_property, _endpoint_from_view_func, find_package
 from . import json
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
@@ -31,10 +31,10 @@ from .globals import _request_ctx_stack, request, session, g
 from .sessions import SecureCookieSessionInterface
 from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
-    _default_template_ctx_processor
+     _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
-    request_tearing_down, appcontext_tearing_down
-from ._compat import reraise, string_types, integer_types
+     request_tearing_down, appcontext_tearing_down
+from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -659,7 +659,7 @@ class Flask(_PackageBoundObject):
             session=session,
             g=g
         )
-        rv.filters['tojson'] = json.htmlsafe_dumps
+        rv.filters['tojson'] = json.tojson_filter
         return rv
 
     def create_global_jinja_loader(self):
@@ -739,10 +739,15 @@ class Flask(_PackageBoundObject):
            won't catch any exceptions because there won't be any to
            catch.
 
+        .. versionchanged:: 0.10
+           The default port is now picked from the ``SERVER_NAME`` variable.
+
         :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
                      have the server available externally as well. Defaults to
                      ``'127.0.0.1'``.
-        :param port: the port of the webserver. Defaults to ``5000``.
+        :param port: the port of the webserver. Defaults to ``5000`` or the
+                     port defined in the ``SERVER_NAME`` config variable if
+                     present.
         :param debug: if given, enable or disable debug mode.
                       See :attr:`debug`.
         :param options: the options to be forwarded to the underlying
@@ -754,7 +759,11 @@ class Flask(_PackageBoundObject):
         if host is None:
             host = '127.0.0.1'
         if port is None:
-            port = 5000
+            server_name = self.config['SERVER_NAME']
+            if server_name and ':' in server_name:
+                port = int(server_name.rsplit(':', 1)[1])
+            else:
+                port = 5000
         if debug is not None:
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
@@ -970,7 +979,7 @@ class Flask(_PackageBoundObject):
         self.url_map.add(rule)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
-            if old_func is not None and old_func is not view_func:
+            if old_func is not None and old_func != view_func:
                 raise AssertionError('View function mapping is overwriting an '
                                      'existing endpoint function: %s' % endpoint)
             self.view_functions[endpoint] = view_func
@@ -990,8 +999,6 @@ class Flask(_PackageBoundObject):
         :param endpoint: the endpoint for the registered URL rule.  Flask
                          itself assumes the name of the view function as
                          endpoint
-        :param view_func: the function to call when serving a request to the
-                          provided endpoint
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object.  A change
                         to Werkzeug is handling of method options.  methods
@@ -1563,7 +1570,7 @@ class Flask(_PackageBoundObject):
             # set the headers and status.  We do this because there can be
             # some extra logic involved when creating these objects with
             # specific values (like default content type selection).
-            if isinstance(rv, string_types + (bytes, )):
+            if isinstance(rv, (text_type, bytes, bytearray)):
                 rv = self.response_class(rv, headers=headers, status=status)
                 headers = status = None
             else:

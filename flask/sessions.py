@@ -11,6 +11,7 @@
 
 import uuid
 import hashlib
+from base64 import b64encode, b64decode
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
@@ -62,6 +63,8 @@ class TaggedJSONSerializer(object):
                 return {' t': [_tag(x) for x in value]}
             elif isinstance(value, uuid.UUID):
                 return {' u': value.hex}
+            elif isinstance(value, bytes):
+                return {' b': b64encode(value).decode('ascii')}
             elif callable(getattr(value, '__html__', None)):
                 return {' m': text_type(value.__html__())}
             elif isinstance(value, list):
@@ -90,6 +93,8 @@ class TaggedJSONSerializer(object):
                 return tuple(the_value)
             elif the_key == ' u':
                 return uuid.UUID(the_value)
+            elif the_key == ' b':
+                return b64decode(the_value)
             elif the_key == ' m':
                 return Markup(the_value)
             elif the_key == ' d':

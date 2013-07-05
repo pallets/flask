@@ -246,7 +246,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         rv = app.test_client().get('/', 'http://www.example.com:8080/test/')
         cookie = rv.headers['set-cookie'].lower()
         self.assert_in('domain=.example.com', cookie)
-        self.assert_in('path=/;', cookie)
+        self.assert_in('path=/', cookie)
         self.assert_in('secure', cookie)
         self.assert_not_in('httponly', cookie)
 
@@ -281,7 +281,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         client = app.test_client()
         rv = client.get('/')
         self.assert_in('set-cookie', rv.headers)
-        match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
+        match = re.search(r'\bexpires=([^;]+)(?i)', rv.headers['set-cookie'])
         expires = parse_date(match.group())
         expected = datetime.utcnow() + app.permanent_session_lifetime
         self.assert_equal(expires.year, expected.year)
@@ -326,6 +326,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             flask.session['m'] = flask.Markup('Hello!')
             flask.session['u'] = the_uuid
             flask.session['dt'] = now
+            flask.session['b'] = b'\xff'
             flask.session['t'] = (1, 2, 3)
             return response
 
@@ -340,6 +341,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(type(rv['m']), flask.Markup)
         self.assert_equal(rv['dt'], now)
         self.assert_equal(rv['u'], the_uuid)
+        self.assert_equal(rv['b'], b'\xff')
+        self.assert_equal(type(rv['b']), bytes)
         self.assert_equal(rv['t'], (1, 2, 3))
 
     def test_flashes(self):
@@ -963,6 +966,18 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         expected = '/login'
         self.assert_equal(url, expected)
 
+    def test_nonascii_pathinfo(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        @app.route(u'/киртест')
+        def index():
+            return 'Hello World!'
+
+        c = app.test_client()
+        rv = c.get(u'/киртест')
+        self.assert_equal(rv.data, b'Hello World!')
+
     def test_debug_mode_complains_after_first_request(self):
         app = flask.Flask(__name__)
         app.debug = True
@@ -1070,6 +1085,62 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_true(flask._request_ctx_stack.top is None)
         self.assert_true(flask._app_ctx_stack.top is None)
 
+    def test_preserve_remembers_exception(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+        errors = []
+
+        @app.route('/fail')
+        def fail_func():
+            1 // 0
+
+        @app.route('/success')
+        def success_func():
+            return 'Okay'
+
+        @app.teardown_request
+        def teardown_handler(exc):
+            errors.append(exc)
+
+        c = app.test_client()
+
+        # After this failure we did not yet call the teardown handler
+        with self.assert_raises(ZeroDivisionError):
+            c.get('/fail')
+        self.assert_equal(errors, [])
+
+        # But this request triggers it, and it's an error
+        c.get('/success')
+        self.assert_equal(len(errors), 2)
+        self.assert_true(isinstance(errors[0], ZeroDivisionError))
+
+        # At this point another request does nothing.
+        c.get('/success')
+        self.assert_equal(len(errors), 3)
+        self.assert_equal(errors[1], None)
+
+    def test_get_method_on_g(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        with app.app_context():
+            self.assert_equal(flask.g.get('x'), None)
+            self.assert_equal(flask.g.get('x', 11), 11)
+            flask.g.x = 42
+            self.assert_equal(flask.g.get('x'), 42)
+            self.assert_equal(flask.g.x, 42)
+
+    def test_g_iteration_protocol(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        with app.app_context():
+            flask.g.foo = 23
+            flask.g.bar = 42
+            self.assert_equal('foo' in flask.g, True)
+            self.assert_equal('foos' in flask.g, False)
+            self.assert_equal(sorted(flask.g), ['bar', 'foo'])
+
 
 class SubdomainTestCase(FlaskTestCase):
 
@@ -1145,6 +1216,35 @@ class SubdomainTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'Test')
         rv = c.get('/outside', 'http://xtesting.localhost/')
         self.assert_equal(rv.data, b'Outside')
+
+    def test_multi_route_rules(self):
+        app = flask.Flask(__name__)
+
+        @app.route('/')
+        @app.route('/<test>/')
+        def index(test='a'):
+            return test
+
+        rv = app.test_client().open('/')
+        self.assert_equal(rv.data, b'a')
+        rv = app.test_client().open('/b/')
+        self.assert_equal(rv.data, b'b')
+
+    def test_multi_route_class_views(self):
+        class View(object):
+            def __init__(self, app):
+                app.add_url_rule('/', 'index', self.index)
+                app.add_url_rule('/<test>/', 'index', self.index)
+
+            def index(self, test='a'):
+                return test
+
+        app = flask.Flask(__name__)
+        _ = View(app)
+        rv = app.test_client().open('/')
+        self.assert_equal(rv.data, b'a')
+        rv = app.test_client().open('/b/')
+        self.assert_equal(rv.data, b'b')
 
 
 def suite():

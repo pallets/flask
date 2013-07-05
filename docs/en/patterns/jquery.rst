@@ -63,9 +63,10 @@ like this:
      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
    </script>
 
-The ``|safe`` is necessary so that Jinja does not escape the JSON encoded
-string with HTML rules.  Usually this would be necessary, but we are
-inside a `script` block here where different rules apply.
+The ``|safe`` is necessary in Flask before 0.10 so that Jinja does not
+escape the JSON encoded string with HTML rules.  Usually this would be
+necessary, but we are inside a `script` block here where different rules
+apply.
 
 .. admonition:: Information for Pros
 
@@ -75,6 +76,10 @@ inside a `script` block here where different rules apply.
    tags.  ``|tojson`` is kind enough to do the right thing here and
    escape slashes for you (``{{ "</script>"|tojson|safe }}`` is rendered as
    ``"<\/script>"``).
+
+   In Flask 0.10 it goes a step further and escapes all HTML tags with
+   unicode escapes.  This makes it possible for Flask to automatically
+   mark the result as HTML safe.
 
 
 JSON View Functions

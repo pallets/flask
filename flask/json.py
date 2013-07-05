@@ -15,6 +15,7 @@ from .globals import current_app, request
 from ._compat import text_type, PY2
 
 from werkzeug.http import http_date
+from jinja2 import Markup
 
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
@@ -92,18 +93,22 @@ class JSONDecoder(_json.JSONDecoder):
 
 def _dump_arg_defaults(kwargs):
     """Inject default arguments for dump functions."""
-    kwargs.setdefault('sort_keys', True)
     if current_app:
         kwargs.setdefault('cls', current_app.json_encoder)
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
         kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
+    else:
+        kwargs.setdefault('sort_keys', True)
+        kwargs.setdefault('cls', JSONEncoder)
 
 
 def _load_arg_defaults(kwargs):
     """Inject default arguments for load functions."""
     if current_app:
         kwargs.setdefault('cls', current_app.json_decoder)
+    else:
+        kwargs.setdefault('cls', JSONDecoder)
 
 
 def dumps(obj, **kwargs):
@@ -156,18 +161,41 @@ def load(fp, **kwargs):
 def htmlsafe_dumps(obj, **kwargs):
     """Works exactly like :func:`dumps` but is safe for use in ``<script>``
     tags.  It accepts the same arguments and returns a JSON string.  Note that
-    this is available in templates through the ``|tojson`` filter but it will
-    have to be wrapped in ``|safe`` unless **true** XHTML is being used.
+    this is available in templates through the ``|tojson`` filter which will
+    also mark the result as safe.  Due to how this function escapes certain
+    characters this is safe even if used outside of ``<script>`` tags.
+
+    The following characters are escaped in strings:
+
+    -   ``<``
+    -   ``>``
+    -   ``&``
+    -   ``'``
+
+    This makes it safe to embed such strings in any place in HTML with the
+    notable exception of double quoted attributes.  In that case single
+    quote your attributes or HTML escape it in addition.
+
+    .. versionchanged:: 0.10
+       This function's return value is now always safe for HTML usage, even
+       if outside of script tags or if used in XHTML.  This rule does not
+       hold true when using this function in HTML attributes that are double
+       quoted.  Always single quote attributes if you use the ``|tojson``
+       filter.  Alternatively use ``|tojson|forceescape``.
     """
-    rv = dumps(obj, **kwargs)
-    if _slash_escape:
-        rv = rv.replace('/', '\\/')
-    return rv.replace('<!', '<\\u0021')
+    rv = dumps(obj, **kwargs) \
+        .replace(u'<', u'\\u003c') \
+        .replace(u'>', u'\\u003e') \
+        .replace(u'&', u'\\u0026') \
+        .replace(u"'", u'\\u0027')
+    if not _slash_escape:
+        rv = rv.replace('\\/', '/')
+    return rv
 
 
 def htmlsafe_dump(obj, fp, **kwargs):
     """Like :func:`htmlsafe_dumps` but writes into a file object."""
-    fp.write(htmlsafe_dumps(obj, **kwargs))
+    fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
 
 
 def jsonify(*args, **kwargs):
@@ -209,3 +237,7 @@ def jsonify(*args, **kwargs):
     return current_app.response_class(dumps(dict(*args, **kwargs),
         indent=indent),
         mimetype='application/json')
+
+
+def tojson_filter(obj, **kwargs):
+    return Markup(htmlsafe_dumps(obj, **kwargs))

@@ -18,22 +18,20 @@ from werkzeug.exceptions import HTTPException
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .module import blueprint_is_module
+from .signals import appcontext_pushed, appcontext_popped
 
 
 class _AppCtxGlobals(object):
     """A plain object."""
 
-    def __getitem__(self, name):
-        try:
-            return getattr(self, name)
-        except AttributeError:
-            return None
+    def get(self, name, default=None):
+        return self.__dict__.get(name, default)
 
-    def __setitem__(self, name, value):
-        setattr(self, name, value)
+    def __contains__(self, item):
+        return item in self.__dict__
 
-    def __delitem__(self, name, value):
-        delattr(self, name, value)
+    def __iter__(self):
+        return iter(self.__dict__)
 
     def __repr__(self):
         top = _app_ctx_stack.top
@@ -166,6 +164,7 @@ class AppContext(object):
         """Binds the app context to the current context."""
         self._refcnt += 1
         _app_ctx_stack.push(self)
+        appcontext_pushed.send(self.app)
 
     def pop(self, exc=None):
         """Pops the app context."""
@@ -177,6 +176,7 @@ class AppContext(object):
         rv = _app_ctx_stack.pop()
         assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
             % (rv, self)
+        appcontext_popped.send(self.app)
 
     def __enter__(self):
         self.push()
@@ -234,6 +234,10 @@ class RequestContext(object):
         # indicator if the context was preserved.  Next time another context
         # is pushed the preserved context is popped.
         self.preserved = False
+
+        # remembers the exception for pop if there is one in case the context
+        # preservation kicks in.
+        self._preserved_exc = None
 
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
@@ -296,7 +300,7 @@ class RequestContext(object):
         # functionality is not active in production environments.
         top = _request_ctx_stack.top
         if top is not None and top.preserved:
-            top.pop()
+            top.pop(top._preserved_exc)
 
         # Before we push the request context we have to ensure that there
         # is an application context.
@@ -331,9 +335,18 @@ class RequestContext(object):
         clear_request = False
         if not self._implicit_app_ctx_stack:
             self.preserved = False
+            self._preserved_exc = None
             if exc is None:
                 exc = sys.exc_info()[1]
             self.app.do_teardown_request(exc)
+
+            # If this interpreter supports clearing the exception information
+            # we do that now.  This will only go into effect on Python 2.x,
+            # on 3.x it disappears automatically at the end of the exception
+            # stack.
+            if hasattr(sys, 'exc_clear'):
+                sys.exc_clear()
+
             request_close = getattr(self.request, 'close', None)
             if request_close is not None:
                 request_close()
@@ -356,6 +369,7 @@ class RequestContext(object):
         if self.request.environ.get('flask._preserve_context') or \
            (exc is not None and self.app.preserve_context_on_exception):
             self.preserved = True
+            self._preserved_exc = exc
         else:
             self.pop(exc)
 

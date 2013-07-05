@@ -10,7 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = '0.10-dev'
+__version__ = '0.11-dev'
 
 # utilities we import from Werkzeug and Jinja2 that are unused
 # in the module but are exported as public interface.
@@ -34,7 +34,8 @@ from .templating import render_template, render_template_string
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
      request_finished, got_request_exception, request_tearing_down, \
-     appcontext_tearing_down, message_flashed
+     appcontext_tearing_down, appcontext_pushed, \
+     appcontext_popped, message_flashed
 
 # We're not exposing the actual json module but a convenient wrapper around
 # it.
