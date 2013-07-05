@@ -3,4 +3,4 @@ git+git://github.com/mitsuhiko/jinja2.git#egg=Jinja2
 git+git://github.com/mitsuhiko/itsdangerous.git#egg=itsdangerous
 
 # extra dependencies
-hg+http://bitbucket.org/jek/blinker#egg=blinker
+git+git://github.com/jek/blinker.git#egg=blinker
