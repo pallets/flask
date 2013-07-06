@@ -508,6 +508,10 @@ class Flask(_PackageBoundObject):
             from urllib import pathname2url
 
             class FilePathConverter(PathConverter):
+                """
+                FilePathConverter is a custom Werkzeug url converter that converts
+                Windows-like and unix-like file pathes to urls.
+                """
                 def to_url(self, value):
                     return super(FilePathConverter, self).to_url(pathname2url(value))
 
