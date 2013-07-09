@@ -796,7 +796,9 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(rv.data.strip(), b'<h1>Hello World!</h1>')
         with app.test_request_context():
             self.assert_equal(flask.url_for('static', filename='index.html'),
-                              path.normpath('/static/index.html'))
+                              '/static/index.html')
+            self.assert_equal(flask.url_for('static', filename=path.normpath('css/style.css')),
+                              '/static/css/style.css')
         rv.close()
 
     def test_none_response(self):
