@@ -313,12 +313,13 @@ class SecureCookieSessionInterface(SessionInterface):
             return self.session_class()
 
     def save_session(self, app, session, response):
+        if not session.modified:
+            return
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
         if not session:
-            if session.modified:
-                response.delete_cookie(app.session_cookie_name,
-                                       domain=domain, path=path)
+            response.delete_cookie(app.session_cookie_name,
+                                   domain=domain, path=path)
             return
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
