@@ -37,15 +37,15 @@ string it will import it) and then look for all uppercase variables
 defined there.  In our case, the configuration we just wrote a few lines
 of code above.  You can also move that into a separate file.
 
-Usually, it is a good idea to load a configuration from a configurable
-file. This is what :meth:`~flask.Config.from_envvar` can do, replacing the
-:meth:`~flask.Config.from_object` line above::
-
+Usually, it is a good idea to load a separate, environment specific
+configuration file.  Flask allows you to import multiple configurations and it 
+will use the setting defined in the last import. This enables robust 
+configuration setups.  :meth:`~flask.Config.from_envvar` can help achieve this. 
+    
     app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-That way someone can set an environment variable called
-:envvar:`FLASKR_SETTINGS` to specify a config file to be loaded which will then
-override the default values. The silent switch just tells Flask to not complain
+Simply define the environment variable :envvar:`FLASKR_SETTINGS` that points to 
+a config file to be loaded.  The silent switch just tells Flask to not complain 
 if no such environment key is set.
 
 The `secret_key` is needed to keep the client-side sessions secure.
