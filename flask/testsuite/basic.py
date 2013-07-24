@@ -788,6 +788,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(c.get('/1,2,3').data, b'1|2|3')
 
     def test_static_files(self):
+        from os import path
         app = flask.Flask(__name__)
         app.testing = True
         rv = app.test_client().get('/static/index.html')
@@ -796,6 +797,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_request_context():
             self.assert_equal(flask.url_for('static', filename='index.html'),
                               '/static/index.html')
+            self.assert_equal(flask.url_for('static', filename=path.normpath('css/style.css')),
+                              '/static/css/style.css')
         rv.close()
 
     def test_none_response(self):

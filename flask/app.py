@@ -504,7 +504,19 @@ class Flask(_PackageBoundObject):
         # but also because google appengine stores static files somewhere
         # else when mapped with the .yml file.
         if self.has_static_folder:
-            self.add_url_rule(self.static_url_path + '/<path:filename>',
+            from werkzeug.routing import PathConverter
+            from urllib import pathname2url
+
+            class FilePathConverter(PathConverter):
+                """
+                FilePathConverter is a custom Werkzeug url converter that converts
+                Windows-like and unix-like file pathes to urls.
+                """
+                def to_url(self, value):
+                    return super(FilePathConverter, self).to_url(pathname2url(value))
+
+            self.url_map.converters['filepath'] = FilePathConverter
+            self.add_url_rule(self.static_url_path + '/<filepath:filename>',
                               endpoint='static',
                               view_func=self.send_static_file)
 
