@@ -365,12 +365,12 @@ You can instead just do this::
     from flask import json
 
 For usage examples, read the :mod:`json` documentation in the standard
-lirbary.  The following extensions are by default applied to the stdlib's
+library.  The following extensions are by default applied to the stdlib's
 JSON module:
 
 1.  ``datetime`` objects are serialized as :rfc:`822` strings.
 2.  Any object with an ``__html__`` method (like :class:`~flask.Markup`)
-    will ahve that method called and then the return value is serialized
+    will have that method called and then the return value is serialized
     as string.
 
 The :func:`~htmlsafe_dumps` function of this json module is also available
@@ -505,7 +505,7 @@ Signals
 
 .. data:: signals_available
 
-   `True` if the signalling system is available.  This is the case
+   `True` if the signaling system is available.  This is the case
    when `blinker`_ is installed.
 
 .. data:: template_rendered
@@ -728,7 +728,7 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
 
 -   `required_methods`: if this attribute is set, Flask will always add
     these methods when registering a URL rule even if the methods were
-    explicitly overriden in the ``route()`` call.
+    explicitly overridden in the ``route()`` call.
 
 Full example::
 

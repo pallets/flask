@@ -318,7 +318,7 @@ Now the interesting part is that in HTML4 and XHTML1, the only methods a
 form can submit to the server are `GET` and `POST`.  But with JavaScript
 and future HTML standards you can use the other methods as well.  Furthermore
 HTTP has become quite popular lately and browsers are no longer the only
-clients that are using HTTP. For instance, many revision control system
+clients that are using HTTP. For instance, many revision control systems
 use it.
 
 .. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
@@ -666,8 +666,8 @@ About Responses
 
 The return value from a view function is automatically converted into a
 response object for you.  If the return value is a string it's converted
-into a response object with the string as response body, an ``200 OK``
-error code and a ``text/html`` mimetype.  The logic that Flask applies to
+into a response object with the string as response body, a ``200 OK``
+status code and a ``text/html`` mimetype.  The logic that Flask applies to
 converting return values into response objects is as follows:
 
 1.  If a response object of the correct type is returned it's directly
