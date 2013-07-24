@@ -321,7 +321,7 @@ The following signals exist in Flask:
 
    .. versionadded:: 0.10
 
-.. data:: appcontext_popped
+.. data:: flask.appcontext_popped
 
    This signal is sent when an application context is popped.  The sender
    is the application.  This usually falls in line with the
