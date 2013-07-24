@@ -231,12 +231,58 @@ def jsonify(*args, **kwargs):
     .. versionadded:: 0.2
     """
     indent = None
+
     if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
         and not request.is_xhr:
-        indent = 2
+            indent = 2
+
     return current_app.response_class(dumps(dict(*args, **kwargs),
-        indent=indent),
-        mimetype='application/json')
+                                            indent=indent),
+                                      mimetype='application/json')
+
+
+def json_encode(response, **kwargs):
+    """Creates a :class:`~flask.Response` with the JSON representation of
+    the given `response` argument with an `application/json` mimetype.
+    It takes the same parameters of json.dumps, including custom encoders.
+
+    Example usage::
+
+        from flask import json_encode
+
+        @app.route('/_get_current_user')
+        def get_current_user():
+            response = dict(username=g.user.username,
+                           email=g.user.email,
+                           id=g.user.id)
+            return json_encode(response, default=default_encoder)
+
+    This will send a JSON response like this to the browser::
+
+        {
+            "username": "admin",
+            "email": "admin@localhost",
+            "id": 42
+        }
+
+    For security reasons only objects are supported toplevel.  For more
+    information about this, have a look at :ref:`json-security`.
+
+    This function's response will be pretty printed if it was not requested
+    with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
+    the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
+
+    .. versionadded:: 0.11
+    """
+    if not kwargs.get('indent') \
+        and current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
+        and not request.is_xhr:
+            kwargs['indent'] = 2
+    json_encoded = dumps(response, **kwargs)
+    if json_encoded and str(json_encoded[0]) == '[':
+        raise ValueError('JSON security issue')
+    return current_app.response_class(json_encoded,
+                                      mimetype='application/json')
 
 
 def tojson_filter(obj, **kwargs):
