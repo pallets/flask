@@ -61,7 +61,7 @@ application so that yourapplication.fcgi does not appear in the URL. A
 preferable way is to use the ScriptAlias and SetHandler configuration directives
 to route requests to the FastCGI server. The following example uses
 FastCgiServer to start 5 instances of the application which will handle all
-incomming requests:
+incoming requests:
 
     LoadModule fastcgi_module /usr/lib64/httpd/modules/mod_fastcgi.so
 
