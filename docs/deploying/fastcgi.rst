@@ -55,15 +55,36 @@ Configuring Apache
 ------------------
 
 The example above is good enough for a basic Apache deployment but your `.fcgi`
-file will appear in your application URL
-e.g. example.com/yourapplication.fcgi/news/. There are few ways to configure
-your application so that yourapplication.fcgi does not appear in the URL. A
-preferable way is to use the ScriptAlias configuration directive::
+file will appear in your application URL e.g.
+example.com/yourapplication.fcgi/news/. There are few ways to configure your
+application so that yourapplication.fcgi does not appear in the URL. A
+preferable way is to use the ScriptAlias and SetHandler configuration directives
+to route requests to the FastCGI server. The following example uses
+FastCgiServer to start 5 instances of the application which will handle all
+incomming requests:
+
+    LoadModule fastcgi_module /usr/lib64/httpd/modules/mod_fastcgi.so
+
+    FastCgiServer /var/www/html/yourapplication/app.fcgi -idle-timeout 300 -processes 5
 
     <VirtualHost *>
-        ServerName example.com
-        ScriptAlias / /path/to/yourapplication.fcgi/
+        ServerName webapp1.mydomain.com
+        DocumentRoot /var/www/html/yourapplication
+
+        AddHandler fastcgi-script fcgi
+        ScriptAlias / /var/www/html/yourapplication/app.fcgi/
+
+        <Location />
+            SetHandler fastcgi-script
+        </Location>
     </VirtualHost>
+
+These processes will be managed by Apache. If you're using an standalone FastCGI
+server, you can use the FastCgiExternalServer directive instead. Note that in
+the following the path is not real, it's simply used as an identifier to other
+directives such as AliasMatch:
+
+    FastCgiServer /var/www/html/yourapplication -host 127.0.0.1:3000
 
 If you cannot set ScriptAlias, for example on an shared web host, you can use
 WSGI middleware to remove yourapplication.fcgi from the URLs. Set .htaccess::
