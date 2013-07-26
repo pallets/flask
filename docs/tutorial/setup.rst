@@ -25,6 +25,12 @@ In `flaskr.py`::
     USERNAME = 'admin'
     PASSWORD = 'default'
 
+.. admonition:: Windows
+
+    If you are on Windows, replace `/tmp/flaskr.db` with a different writeable
+    path of your choice, in the configuration and for the rest of this
+    tutorial.
+
 Next we can create our actual application and initialize it with the
 config from the same file, in `flaskr.py`::
 
