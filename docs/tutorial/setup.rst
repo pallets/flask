@@ -37,11 +37,8 @@ string it will import it) and then look for all uppercase variables
 defined there.  In our case, the configuration we just wrote a few lines
 of code above.  You can also move that into a separate file.
 
-Usually, it is a good idea to load a configuration from a configurable
-file. This is what :meth:`~flask.Config.from_envvar` can do, replacing the
-:meth:`~flask.Config.from_object` line above::
-
-    app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+.. tip::
+    For more advanced configuration patterns, see :ref:`config`.
 
 That way someone can set an environment variable called
 :envvar:`FLASKR_SETTINGS` to specify a config file to be loaded which will then
