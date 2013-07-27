@@ -87,8 +87,7 @@ class TestToolsTestCase(FlaskTestCase):
 
         @app.route('/getsession')
         def get_session():
-            if 'data' not in flask.session:
-                flask.session['data'] = 'testing'
+            flask.session['data'] = 'testing'
             return 'getsession'
 
         with app.test_client() as c:
@@ -100,6 +99,9 @@ class TestToolsTestCase(FlaskTestCase):
 
             rv = c.get('/')
             assert 'Set-Cookie' not in rv.headers
+
+            rv = c.get('/getsession')
+            assert 'Set-Cookie' in rv.headers
 
     def test_session_transactions(self):
         app = flask.Flask(__name__)
