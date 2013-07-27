@@ -77,6 +77,30 @@ class TestToolsTestCase(FlaskTestCase):
             rv = c.get('/getsession')
             assert rv.data == b'foo'
 
+    def test_session_cookie(self):
+        app = flask.Flask(__name__)
+        app.secret_key = 'testing'
+
+        @app.route('/')
+        def index():
+            return 'index'
+
+        @app.route('/getsession')
+        def get_session():
+            if 'data' not in flask.session:
+                flask.session['data'] = 'testing'
+            return 'getsession'
+
+        with app.test_client() as c:
+            rv = c.get('/')
+            assert 'Set-Cookie' not in rv.headers
+
+            rv = c.get('/getsession')
+            assert 'Set-Cookie' in rv.headers
+
+            rv = c.get('/')
+            assert 'Set-Cookie' not in rv.headers
+
     def test_session_transactions(self):
         app = flask.Flask(__name__)
         app.testing = True
