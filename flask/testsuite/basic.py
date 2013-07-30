@@ -363,14 +363,14 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         def run_test(expect_header):
             with app.test_client() as c:
-                self.assert_equal(c.get('/bump').data, '1')
-                self.assert_equal(c.get('/bump').data, '2')
-                self.assert_equal(c.get('/bump').data, '3')
+                self.assert_equal(c.get('/bump').data, b'1')
+                self.assert_equal(c.get('/bump').data, b'2')
+                self.assert_equal(c.get('/bump').data, b'3')
 
                 rv = c.get('/read')
                 set_cookie = rv.headers.get('set-cookie')
                 self.assert_equal(set_cookie is not None, expect_header)
-                self.assert_equal(rv.data, '3')
+                self.assert_equal(rv.data, b'3')
 
         is_permanent = True
         app.config['SESSION_REFRESH_EACH_REQUEST'] = True
