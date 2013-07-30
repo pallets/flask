@@ -345,6 +345,49 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(type(rv['b']), bytes)
         self.assert_equal(rv['t'], (1, 2, 3))
 
+    def test_session_cookie_setting(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.secret_key = 'dev key'
+        is_permanent = True
+
+        @app.route('/bump')
+        def bump():
+            rv = flask.session['foo'] = flask.session.get('foo', 0) + 1
+            flask.session.permanent = is_permanent
+            return str(rv)
+
+        @app.route('/read')
+        def read():
+            return str(flask.session.get('foo', 0))
+
+        def run_test(expect_header):
+            with app.test_client() as c:
+                self.assert_equal(c.get('/bump').data, '1')
+                self.assert_equal(c.get('/bump').data, '2')
+                self.assert_equal(c.get('/bump').data, '3')
+
+                rv = c.get('/read')
+                set_cookie = rv.headers.get('set-cookie')
+                self.assert_equal(set_cookie is not None, expect_header)
+                self.assert_equal(rv.data, '3')
+
+        is_permanent = True
+        app.config['SESSION_REFRESH_EACH_REQUEST'] = True
+        run_test(expect_header=True)
+
+        is_permanent = True
+        app.config['SESSION_REFRESH_EACH_REQUEST'] = False
+        run_test(expect_header=False)
+
+        is_permanent = False
+        app.config['SESSION_REFRESH_EACH_REQUEST'] = True
+        run_test(expect_header=False)
+
+        is_permanent = False
+        app.config['SESSION_REFRESH_EACH_REQUEST'] = False
+        run_test(expect_header=False)
+
     def test_flashes(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'

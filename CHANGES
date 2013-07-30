@@ -8,6 +8,13 @@ Version 1.0
 
 (release date to be announced, codename to be selected)
 
+- Added ``SESSION_REFRESH_EACH_REQUEST`` config key that controls the
+  set-cookie behavior.  If set to `True` a permanent session will be
+  refreshed each request and get their lifetime extended, if set to
+  `False` it will only be modified if the session actually modifies.
+  Non permanent sessions are not affected by this and will always
+  expire if the browser window closes.
+
 Version 0.10.2
 --------------
 

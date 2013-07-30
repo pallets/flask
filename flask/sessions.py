@@ -252,6 +252,24 @@ class SessionInterface(object):
         if session.permanent:
             return datetime.utcnow() + app.permanent_session_lifetime
 
+    def should_set_cookie(self, app, session):
+        """Indicates weather a cookie should be set now or not.  This is
+        used by session backends to figure out if they should emit a
+        set-cookie header or not.  The default behavior is controlled by
+        the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
+        it's set to `False` then a cookie is only set if the session is
+        modified, if set to `True` it's always set if the session is
+        permanent.
+
+        This check is usually skipped if sessions get deleted.
+
+        .. versionadded:: 1.0
+        """
+        if session.modified:
+            return True
+        save_each = app.config['SESSION_REFRESH_EACH_REQUEST']
+        return save_each and session.permanent
+
     def open_session(self, app, request):
         """This method has to be implemented and must either return `None`
         in case the loading failed because of a configuration error or an
@@ -315,11 +333,26 @@ class SecureCookieSessionInterface(SessionInterface):
     def save_session(self, app, session, response):
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
+
+        # Delete case.  If there is no session we bail early.
+        # If the session was modified to be empty we remove the
+        # whole cookie.
         if not session:
             if session.modified:
                 response.delete_cookie(app.session_cookie_name,
                                        domain=domain, path=path)
             return
+
+        # Modification case.  There are upsides and downsides to
+        # emitting a set-cookie header each request.  The behavior
+        # is controlled by the :meth:`should_set_cookie` method
+        # which performs a quick check to figure out if the cookie
+        # should be set or not.  This is controlled by the
+        # SESSION_REFRESH_EACH_REQUEST config flag as well as
+        # the permanent flag on the session itself.
+        if not self.should_set_cookie(app, session):
+            return
+
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
