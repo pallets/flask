@@ -85,6 +85,13 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(rv.status_code, 405)
         self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
 
+    def test_disallow_string_for_allowed_methods(self):
+        app = flask.Flask(__name__)
+        with self.assert_raises(TypeError):
+            @app.route('/', methods='GET POST')
+            def index():
+                return "Hey"
+
     def test_url_mapping(self):
         app = flask.Flask(__name__)
         def index():
