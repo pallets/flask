@@ -72,10 +72,10 @@ Now in each request handling function you can access `g.db` to get the
 current open database connection.  To simplify working with SQLite, a
 row factory function is useful.  It is executed for every result returned
 from the database to convert the result.  For instance in order to get
-dictionaries instead of tuples this can be used::
+dictionaries instead of tuples this could be inserted into ``get_db``::
 
     def make_dicts(cursor, row):
-        return dict((cur.description[idx][0], value)
+        return dict((cursor.description[idx][0], value)
                     for idx, value in enumerate(row))
 
     db.row_factory = make_dicts
