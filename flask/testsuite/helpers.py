@@ -173,7 +173,33 @@ class JSONTestCase(FlaskTestCase):
         c = app.test_client()
         rv = c.get('/')
         lines = [x.strip() for x in rv.data.strip().decode('utf-8').splitlines()]
-        self.assert_equal(lines, [
+        sorted_by_str = [
+            '{',
+            '"values": {',
+            '"0": "foo",',
+            '"1": "foo",',
+            '"10": "foo",',
+            '"11": "foo",',
+            '"12": "foo",',
+            '"13": "foo",',
+            '"14": "foo",',
+            '"15": "foo",',
+            '"16": "foo",',
+            '"17": "foo",',
+            '"18": "foo",',
+            '"19": "foo",',
+            '"2": "foo",',
+            '"3": "foo",',
+            '"4": "foo",',
+            '"5": "foo",',
+            '"6": "foo",',
+            '"7": "foo",',
+            '"8": "foo",',
+            '"9": "foo"',
+            '}',
+            '}'
+        ]
+        sorted_by_int = [
             '{',
             '"values": {',
             '"0": "foo",',
@@ -198,8 +224,12 @@ class JSONTestCase(FlaskTestCase):
             '"19": "foo"',
             '}',
             '}'
-        ])
+        ]
 
+        try:
+            self.assert_equal(lines, sorted_by_int)
+        except AssertionError:
+            self.assert_equal(lines, sorted_by_str)
 
 class SendfileTestCase(FlaskTestCase):
 
