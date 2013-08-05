@@ -1773,7 +1773,7 @@ class Flask(_PackageBoundObject):
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
-        :func:`werkzeug.test.EnvironBuilder` for more information, this
+        :class:`werkzeug.test.EnvironBuilder` for more information, this
         function accepts the same arguments).
         """
         from flask.testing import make_test_environ_builder
