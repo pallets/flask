@@ -67,7 +67,7 @@ Python shell or a script.  This will come in handy later.
 ::
 
     def connect_db():
-        return sqlite3.connect(app.config['DATABASE'])
+        return sqlite3.connect(app.config[DATABASE])
 
 Finally we just add a line to the bottom of the file that fires up the
 server if we want to run that file as a standalone application::
