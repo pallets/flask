@@ -21,11 +21,10 @@ from werkzeug.routing import BuildError
 from functools import update_wrapper
 from warnings import warn
 
-from werkzeug.urls import url_parse
 try:
-    from werkzeug.urls import url_quote
+    from werkzeug.urls import url_quote, url_parse
 except ImportError:
-    from urlparse import quote as url_quote
+    from urlparse import quote as url_quote, urlparse as url_parse
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
