@@ -19,6 +19,7 @@ from zlib import adler32
 from threading import RLock
 from werkzeug.routing import BuildError
 from functools import update_wrapper
+from warnings import warn
 
 from werkzeug.urls import url_parse
 try:
@@ -28,7 +29,7 @@ except ImportError:
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound, abort
-from werkzeug.utils import redirect
+from werkzeug.utils import redirect as _redirect
 
 # this was moved in 0.7
 try:
@@ -851,14 +852,21 @@ class _PackageBoundObject(object):
         return open(os.path.join(self.root_path, resource), mode)
 
 
-def safe_redirect(location, code=302):
+def redirect(location, code=302):
     """
-    Like :func:`flask.redirect` but aborts with a 400 Bad Request, if a
-    `location` with a different host than the current is passed.
+    Return a response object (a WSGI application) that, if called, redirects
+    the client to the target location. Supported codes are 301, 302, 303, 305,
+    and 307. 300 is not supported because it’s not a real redirect and 304
+    because it’s the answer for a request with a request with defined
+    If-Modified-Since headers.
 
-    .. versionadded:: 1.0
+    Since Werkzeug 0.6 the location can be a unicode string that is encoded
+    using the :func:`~werkzeug.urls.iri_to_uri` function.
+
+    .. versionchanged:: 1.0
+       Deprecated redirecting to 3rd party hosts.
     """
     location_host = url_parse(location).netloc
     if location_host and location_host != request.host:
-        abort(400)
-    return redirect(location, code)
+        warn(DeprecationWarning('redirecting to 3rd party hosts is deprecated'))
+    return _redirect(location, code)

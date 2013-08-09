@@ -613,18 +613,18 @@ class StreamingTestCase(FlaskTestCase):
 
 
 class RedirectTestCase(FlaskTestCase):
-    def test_safe_redirect(self):
+    def test_redirect(self):
         app = flask.Flask(__name__)
         app.testing = True
         @app.route('/good_redirect')
         def good_redirect():
-            return flask.safe_redirect('foo')
+            return flask.redirect('foo')
         @app.route('/good_redirect_with_host')
         def good_redirect_with_host():
-            return flask.safe_redirect('http://localhost/foo')
+            return flask.redirect('http://localhost/foo')
         @app.route('/bad_redirect')
         def bad_redirect():
-            return flask.safe_redirect('http://example.com')
+            return flask.redirect('http://example.com')
         @app.route('/foo')
         def foo():
             return u'foo'
@@ -633,8 +633,9 @@ class RedirectTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'foo')
         rv = c.get('/good_redirect_with_host', follow_redirects=True)
         self.assert_equal(rv.data, b'foo')
-        rv = c.get('/bad_redirect', follow_redirects=True)
-        self.assert_equal(rv.status_code, 400)
+        with catch_warnings() as captured:
+            c.get('/bad_redirect')
+        self.assert_equal(len(captured), 1)
 
 
 def suite():

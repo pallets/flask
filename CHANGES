@@ -14,8 +14,7 @@ Version 1.0
   `False` it will only be modified if the session actually modifies.
   Non permanent sessions are not affected by this and will always
   expire if the browser window closes.
-- Added :func:`flask.safe_redirect` which does not allow redirects to
-  foreign hosts.
+- Deprecated redirecting to 3rd party locations using :func:`~flask.redirect`
 
 Version 0.10.2
 --------------
