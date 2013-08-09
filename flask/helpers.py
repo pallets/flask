@@ -20,13 +20,15 @@ from threading import RLock
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
+from werkzeug.urls import url_parse
 try:
     from werkzeug.urls import url_quote
 except ImportError:
     from urlparse import quote as url_quote
 
 from werkzeug.datastructures import Headers
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, abort
+from werkzeug.utils import redirect
 
 # this was moved in 0.7
 try:
@@ -847,3 +849,16 @@ class _PackageBoundObject(object):
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
         return open(os.path.join(self.root_path, resource), mode)
+
+
+def safe_redirect(location, code=302):
+    """
+    Like :func:`flask.redirect` but aborts with a 400 Bad Request, if a
+    `location` with a different host than the current is passed.
+
+    .. versionadded:: 1.0
+    """
+    location_host = url_parse(location).netloc
+    if location_host and location_host != request.host:
+        abort(400)
+    return redirect(location, code)

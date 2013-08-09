@@ -22,7 +22,7 @@ from .app import Flask, Request, Response
 from .config import Config
 from .helpers import url_for, flash, send_file, send_from_directory, \
     get_flashed_messages, get_template_attribute, make_response, safe_join, \
-    stream_with_context
+    stream_with_context, safe_redirect
 from .globals import current_app, g, request, session, _request_ctx_stack, \
      _app_ctx_stack
 from .ctx import has_request_context, has_app_context, \
