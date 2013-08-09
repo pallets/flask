@@ -320,8 +320,6 @@ Useful Functions and Classes
 
 .. autofunction:: redirect
 
-.. autofunction:: safe_redirect
-
 .. autofunction:: make_response
 
 .. autofunction:: after_this_request

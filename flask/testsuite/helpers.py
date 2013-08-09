@@ -622,6 +622,10 @@ class RedirectTestCase(FlaskTestCase):
         @app.route('/good_redirect_with_host')
         def good_redirect_with_host():
             return flask.redirect('http://localhost/foo')
+        @app.route('/good_redirect_to_3rd_party')
+        def good_redirect_to_3rd_party():
+            return flask.redirect('http://example.com',
+                                  safe_hosts=['example.com'])
         @app.route('/bad_redirect')
         def bad_redirect():
             return flask.redirect('http://example.com')
@@ -633,6 +637,11 @@ class RedirectTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'foo')
         rv = c.get('/good_redirect_with_host', follow_redirects=True)
         self.assert_equal(rv.data, b'foo')
+        with catch_warnings() as captured:
+            rv = c.get('/good_redirect_to_3rd_party')
+            self.assert_equal(rv.status_code, 302)
+            self.assert_equal(rv.location, 'http://example.com')
+        self.assert_equal(len(captured), 0)
         with catch_warnings() as captured:
             c.get('/bad_redirect')
         self.assert_equal(len(captured), 1)
