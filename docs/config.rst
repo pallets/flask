@@ -88,6 +88,15 @@ The following configuration values are used internally by Flask:
                                   :class:`datetime.timedelta` object.
                                   Starting with Flask 0.8 this can also be
                                   an integer representing seconds.
+``SESSION_REFRESH_EACH_REQUEST``  this flag controls how permanent
+                                  sessions are refresh.  If set to `True`
+                                  (which is the default) then the cookie
+                                  is refreshed each request which
+                                  automatically bumps the lifetime.  If
+                                  set to `False` a `set-cookie` header is
+                                  only sent if the session is modified.
+                                  Non permanent sessions are not affected
+                                  by this.
 ``USE_X_SENDFILE``                enable/disable x-sendfile
 ``LOGGER_NAME``                   the name of the logger
 ``SERVER_NAME``                   the name and port number of the server.
@@ -149,6 +158,22 @@ The following configuration values are used internally by Flask:
                                   unicode strings.  ``jsonfiy`` will
                                   automatically encode it in ``utf-8``
                                   then for transport for instance.
+``JSON_SORT_KEYS``                By default Flask will serialize JSON
+                                  objects in a way that the keys are
+                                  ordered.  This is done in order to
+                                  ensure that independent of the hash seed
+                                  of the dictionary the return value will
+                                  be consistent to not trash external HTTP
+                                  caches.  You can override the default
+                                  behavior by changing this variable.
+                                  This is not recommended but might give
+                                  you a performance improvement on the
+                                  cost of cachability.
+``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
+                                  jsonify responses will be pretty printed
+                                  if they are not requested by an
+                                  XMLHttpRequest object (controlled by
+                                  the ``X-Requested-With`` header)
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -192,7 +217,10 @@ The following configuration values are used internally by Flask:
    ``PREFERRED_URL_SCHEME``
 
 .. versionadded:: 0.10
-   ``JSON_AS_ASCII``
+   ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``, ``JSONIFY_PRETTYPRINT_REGULAR``
+
+.. versionadded:: 1.0
+   ``SESSION_REFRESH_EACH_REQUEST``
 
 Configuring from Files
 ----------------------

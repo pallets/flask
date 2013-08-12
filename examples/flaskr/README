@@ -1,4 +1,3 @@
-
                          / Flaskr /
 
                  a minimal blog application
@@ -14,11 +13,7 @@
          export an FLASKR_SETTINGS environment variable
          pointing to a configuration file.
 
-      2. fire up a python shell and run this:
-
-         >>> from flaskr import init_db; init_db()
-
-      3. now you can run the flaskr.py file with your
+      2. now you can run the flaskr.py file with your
          python interpreter and the application will
          greet you on http://localhost:5000/
 	

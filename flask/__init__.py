@@ -10,7 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = '0.10-dev'
+__version__ = '0.11-dev'
 
 # utilities we import from Werkzeug and Jinja2 that are unused
 # in the module but are exported as public interface.
@@ -26,7 +26,7 @@ from .helpers import url_for, flash, send_file, send_from_directory, \
 from .globals import current_app, g, request, session, _request_ctx_stack, \
      _app_ctx_stack
 from .ctx import has_request_context, has_app_context, \
-     after_this_request
+     after_this_request, copy_current_request_context
 from .module import Module
 from .blueprints import Blueprint
 from .templating import render_template, render_template_string
@@ -34,7 +34,8 @@ from .templating import render_template, render_template_string
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
      request_finished, got_request_exception, request_tearing_down, \
-     appcontext_tearing_down, message_flashed
+     appcontext_tearing_down, appcontext_pushed, \
+     appcontext_popped, message_flashed
 
 # We're not exposing the actual json module but a convenient wrapper around
 # it.

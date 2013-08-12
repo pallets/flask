@@ -8,7 +8,6 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
 
 import flask
 import unittest
@@ -46,7 +45,7 @@ class SignalsTestCase(FlaskTestCase):
             calls.append('before-signal')
 
         def after_request_signal(sender, response):
-            self.assert_equal(response.data, 'stuff')
+            self.assert_equal(response.data, b'stuff')
             calls.append('after-signal')
 
         @app.before_request
@@ -69,7 +68,7 @@ class SignalsTestCase(FlaskTestCase):
 
         try:
             rv = app.test_client().get('/')
-            self.assert_equal(rv.data, 'stuff')
+            self.assert_equal(rv.data, b'stuff')
 
             self.assert_equal(calls, ['before-signal', 'before-handler',
                              'handler', 'after-handler',
@@ -84,7 +83,7 @@ class SignalsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         def record(sender, exception):
             recorded.append(exception)
@@ -93,9 +92,33 @@ class SignalsTestCase(FlaskTestCase):
         try:
             self.assert_equal(app.test_client().get('/').status_code, 500)
             self.assert_equal(len(recorded), 1)
-            self.assert_(isinstance(recorded[0], ZeroDivisionError))
+            self.assert_true(isinstance(recorded[0], ZeroDivisionError))
         finally:
             flask.got_request_exception.disconnect(record, app)
+
+    def test_appcontext_signals(self):
+        app = flask.Flask(__name__)
+        recorded = []
+        def record_push(sender, **kwargs):
+            recorded.append('push')
+        def record_pop(sender, **kwargs):
+            recorded.append('pop')
+
+        @app.route('/')
+        def index():
+            return 'Hello'
+
+        flask.appcontext_pushed.connect(record_push, app)
+        flask.appcontext_popped.connect(record_pop, app)
+        try:
+            with app.test_client() as c:
+                rv = c.get('/')
+                self.assert_equal(rv.data, b'Hello')
+                self.assert_equal(recorded, ['push'])
+            self.assert_equal(recorded, ['push', 'pop'])
+        finally:
+            flask.appcontext_pushed.disconnect(record_push, app)
+            flask.appcontext_popped.disconnect(record_pop, app)
 
     def test_flash_signal(self):
         app = flask.Flask(__name__)

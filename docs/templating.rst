@@ -106,16 +106,14 @@ by Jinja2 itself:
    fly.
 
    Note that inside `script` tags no escaping must take place, so make
-   sure to disable escaping with ``|safe`` if you intend to use it inside
-   `script` tags:
+   sure to disable escaping with ``|safe`` before Flask 0.10 if you intend
+   to use it inside `script` tags:
 
    .. sourcecode:: html+jinja
 
        <script type=text/javascript>
            doSomethingWith({{ user.username|tojson|safe }});
        </script>
-
-   That the ``|tojson`` filter escapes forward slashes properly for you.
 
 Controlling Autoescaping
 ------------------------
@@ -188,7 +186,7 @@ you have a Python list in context called `mylist`::
 Context Processors
 ------------------
 
-To inject new variables automatically into the context of a template
+To inject new variables automatically into the context of a template,
 context processors exist in Flask.  Context processors run before the
 template is rendered and have the ability to inject new values into the
 template context.  A context processor is a function that returns a

@@ -1,0 +1,6 @@
+Werkzeug==0.7
+Jinja2==2.4
+itsdangerous==0.21
+
+# extra dependencies
+blinker==1.0

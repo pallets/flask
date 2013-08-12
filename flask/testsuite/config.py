@@ -8,7 +8,6 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
 
 import os
 import sys
@@ -29,7 +28,7 @@ class ConfigTestCase(FlaskTestCase):
     def common_object_test(self, app):
         self.assert_equal(app.secret_key, 'devkey')
         self.assert_equal(app.config['TEST_KEY'], 'foo')
-        self.assert_('ConfigTestCase' not in app.config)
+        self.assert_not_in('ConfigTestCase', app.config)
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
@@ -57,14 +56,14 @@ class ConfigTestCase(FlaskTestCase):
             app = flask.Flask(__name__)
             try:
                 app.config.from_envvar('FOO_SETTINGS')
-            except RuntimeError, e:
-                self.assert_("'FOO_SETTINGS' is not set" in str(e))
+            except RuntimeError as e:
+                self.assert_true("'FOO_SETTINGS' is not set" in str(e))
             else:
-                self.assert_(0, 'expected exception')
-            self.assert_(not app.config.from_envvar('FOO_SETTINGS', silent=True))
+                self.assert_true(0, 'expected exception')
+            self.assert_false(app.config.from_envvar('FOO_SETTINGS', silent=True))
 
             os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
-            self.assert_(app.config.from_envvar('FOO_SETTINGS'))
+            self.assert_true(app.config.from_envvar('FOO_SETTINGS'))
             self.common_object_test(app)
         finally:
             os.environ = env
@@ -76,11 +75,11 @@ class ConfigTestCase(FlaskTestCase):
             try:
                 app = flask.Flask(__name__)
                 app.config.from_envvar('FOO_SETTINGS')
-            except IOError, e:
+            except IOError as e:
                 msg = str(e)
-                self.assert_(msg.startswith('[Errno 2] Unable to load configuration '
+                self.assert_true(msg.startswith('[Errno 2] Unable to load configuration '
                                             'file (No such file or directory):'))
-                self.assert_(msg.endswith("missing.cfg'"))
+                self.assert_true(msg.endswith("missing.cfg'"))
             else:
                 self.fail('expected IOError')
             self.assertFalse(app.config.from_envvar('FOO_SETTINGS', silent=True))
@@ -91,14 +90,14 @@ class ConfigTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         try:
             app.config.from_pyfile('missing.cfg')
-        except IOError, e:
+        except IOError as e:
             msg = str(e)
-            self.assert_(msg.startswith('[Errno 2] Unable to load configuration '
+            self.assert_true(msg.startswith('[Errno 2] Unable to load configuration '
                                         'file (No such file or directory):'))
-            self.assert_(msg.endswith("missing.cfg'"))
+            self.assert_true(msg.endswith("missing.cfg'"))
         else:
-            self.assert_(0, 'expected config')
-        self.assert_(not app.config.from_pyfile('missing.cfg', silent=True))
+            self.assert_true(0, 'expected config')
+        self.assert_false(app.config.from_pyfile('missing.cfg', silent=True))
 
     def test_session_lifetime(self):
         app = flask.Flask(__name__)
@@ -113,7 +112,7 @@ class LimitedLoaderMockWrapper(object):
     def __getattr__(self, name):
         if name in ('archive', 'get_filename'):
             msg = 'Mocking a loader which does not have `%s.`' % name
-            raise AttributeError, msg
+            raise AttributeError(msg)
         return getattr(self.loader, name)
 
 
@@ -141,8 +140,8 @@ class InstanceTestCase(FlaskTestCase):
         here = os.path.abspath(os.path.dirname(__file__))
         try:
             flask.Flask(__name__, instance_path='instance')
-        except ValueError, e:
-            self.assert_('must be absolute' in str(e))
+        except ValueError as e:
+            self.assert_in('must be absolute', str(e))
         else:
             self.fail('Expected value error')
 

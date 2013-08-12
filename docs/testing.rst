@@ -102,7 +102,7 @@ test method to our class, like this::
 
         def tearDown(self):
             os.close(self.db_fd)
-            os.unlink(flaskr.DATABASE)
+            os.unlink(flaskr.app.config['DATABASE'])
 
         def test_empty_db(self):
             rv = self.app.get('/')
@@ -250,6 +250,54 @@ requires that you pass it a response object::
 This in general is less useful because at that point you can directly
 start using the test client.
 
+.. _faking-resources:
+
+Faking Resources and Context
+----------------------------
+
+.. versionadded:: 0.10
+
+A very common pattern is to store user authorization information and
+database connections on the application context or the :attr:`flask.g`
+object.  The general pattern for this is to put the object on there on
+first usage and then to remove it on a teardown.  Imagine for instance
+this code to get the current user::
+
+    def get_user():
+        user = getattr(g, 'user', None)
+        if user is None:
+            user = fetch_current_user_from_database()
+            g.user = user
+        return user
+
+For a test it would be nice to override this user from the outside without
+having to change some code.  This can trivially be accomplished with
+hooking the :data:`flask.appcontext_pushed` signal::
+
+    from contextlib import contextmanager
+    from flask import appcontext_pushed
+
+    @contextmanager
+    def user_set(app, user):
+        def handler(sender, **kwargs):
+            g.user = user
+        with appcontext_pushed.connected_to(handler, app):
+            yield
+
+And then to use it::
+
+    from flask import json, jsonify
+
+    @app.route('/users/me')
+    def users_me():
+        return jsonify(username=g.user.username)
+
+    with user_set(app, my_user):
+        with app.test_client() as c:
+            resp = c.get('/users/me')
+            data = json.loads(resp.data)
+            self.assert_equal(data['username'], my_user.username)
+
 
 Keeping the Context Around
 --------------------------
@@ -270,6 +318,7 @@ happen.  With Flask 0.4 this is possible by using the
 If you were to use just the :meth:`~flask.Flask.test_client` without
 the `with` block, the `assert` would fail with an error because `request`
 is no longer available (because you are trying to use it outside of the actual request).
+
 
 Accessing and Modifying Sessions
 --------------------------------
