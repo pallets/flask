@@ -21,6 +21,9 @@ Version 0.10.2
 (bugfix release, release date to be announced)
 
 - Fixed broken `test_appcontext_signals()` test case.
+- Raise an :exc:`AttributeError` in :func:`flask.helpers.find_package` with a
+  useful message explaining why it is raised when a PEP 302 import hook is used
+  without an `is_package()` method.
 
 Version 0.10.1
 --------------

@@ -16,6 +16,7 @@ import pkgutil
 import unittest
 from contextlib import contextmanager
 from flask.testsuite import FlaskTestCase
+from flask._compat import PY2
 
 
 # config keys used for the ConfigTestCase
@@ -290,6 +291,18 @@ class InstanceTestCase(FlaskTestCase):
             sys.path.remove(egg_path)
             if 'site_egg' in sys.modules:
                 del sys.modules['site_egg']
+
+    if PY2:
+        def test_meta_path_loader_without_is_package(self):
+            class Loader(object):
+                def find_module(self, name):
+                    return self
+            sys.meta_path.append(Loader())
+            try:
+                with self.assert_raises(AttributeError):
+                    flask.Flask(__name__)
+            finally:
+                sys.meta_path.pop()
 
 
 def suite():
