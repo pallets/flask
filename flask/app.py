@@ -1547,7 +1547,7 @@ class Flask(_PackageBoundObject):
         :class:`tuple`          A tuple in the form ``(response, status,
                                 headers)`` where `response` is any of the
                                 types defined here, `status` is a string
-                                or an integer and `headers` is a list of
+                                or an integer and `headers` is a list or
                                 a dictionary with header values.
         ======================= ===========================================
 
