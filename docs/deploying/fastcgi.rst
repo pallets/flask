@@ -149,6 +149,7 @@ A basic FastCGI configuration for lighttpd looks like that::
     url.rewrite-once = (
         "^(/static($|/.*))$" => "$1",
         "^(/.*)$" => "/yourapplication.fcgi$1"
+    )
 
 Remember to enable the FastCGI, alias and rewrite modules. This configuration
 binds the application to `/yourapplication`.  If you want the application to
