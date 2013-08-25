@@ -53,6 +53,7 @@ class BlueprintSetupState(object):
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
         self.url_prefix = url_prefix
+        self.blueprint.url_prefix = url_prefix
 
         #: A dictionary with URL defaults that is added to each and every
         #: URL that was defined with the blueprint.
