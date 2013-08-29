@@ -524,7 +524,17 @@ extensions = [
         github='aromanovich/flask-webtest',
         docs='http://flask-webtest.readthedocs.org/',
         approved=False
-    )
+    ),
+    Extension('Flask-Misaka', 'David Baumgold',
+        description='''
+            A simple extension to integrate the
+            <a href="http://misaka.61924.nl/">Misaka</a> module for efficiently
+            parsing Markdown.
+        ''',
+        docs='https://flask-misaka.readthedocs.org/en/latest/',
+        github='singingwolfboy/flask-misaka',
+        approved=True,
+    ),
 ]
 
 
