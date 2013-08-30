@@ -11,7 +11,7 @@
 """
 
 from sqlite3 import dbapi2 as sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, \
+from flask import Flask, request, session, redirect, url_for, abort, \
      render_template, flash, _app_ctx_stack
 
 # configuration
