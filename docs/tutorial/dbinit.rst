@@ -1,6 +1,6 @@
 .. _tutorial-dbinit:
 
-Step 3: Creating The Database
+Step 4: Creating The Database
 =============================
 
 Flaskr is a database powered application as outlined earlier, and more
@@ -20,36 +20,39 @@ to provide the path to the database there which leaves some place for
 errors.  It's a good idea to add a function that initializes the database
 for you to the application.
 
-If you want to do that, you first have to import the
-:func:`contextlib.closing` function from the contextlib package.
-Accordingly, add the following lines to your existing imports in `flaskr.py`::
-
-    from contextlib import closing
-
-Next we can create a function called `init_db` that initializes the
-database.  For this we can use the `connect_db` function we defined
-earlier.  Just add that function below the `connect_db` function in
-`flaskr.py`::
+To do this we can create a function called `init_db` that initializes the
+database.  Let me show you the code first.  Just add that function below
+the `connect_db` function in `flaskr.py`::
 
     def init_db():
-        with closing(connect_db()) as db:
+        app app.app_context():
+            db = get_db()
             with app.open_resource('schema.sql', mode='r') as f:
                 db.cursor().executescript(f.read())
             db.commit()
 
-The :func:`~contextlib.closing` helper function allows us to keep a
-connection open for the duration of the `with` block.  The
-:func:`~flask.Flask.open_resource` method of the application object
-supports that functionality out of the box, so it can be used in the
-`with` block directly.  This function opens a file from the resource
+So what's happening here?  Remember how we learned last chapter that the
+application context is created every time a request comes in?  Here we
+don't have a request yet, so we need to create the application context by
+hand.  Without an application context the :data:`~flask.g` object does not
+know yet to which application it becomes as there could be more than one!
+
+The ``with app.app_context()`` statement establishes the application
+context for us.  In the body of the with statement the :flask:`~flask.g`
+object will be associated with ``app``.  At the end of the with statement
+the association is released and all teardown functions are executed.  This
+means that our database connection is disconnected after the commit.
+
+The :func:`~flask.Flask.open_resource` method of the application object
+is a convenient helper function that will open a resource that the
+application provides.  This function opens a file from the resource
 location (your `flaskr` folder) and allows you to read from it.  We are
 using this here to execute a script on the database connection.
 
-When we connect to a database we get a connection object (here called
-`db`) that can give us a cursor.  On that cursor there is a method to
-execute a complete script.  Finally we only have to commit the changes.
-SQLite 3 and other transactional databases will not commit unless you
-explicitly tell it to.
+The connection object provided by SQLite can give us a cursor object.
+On that cursor there is a method to execute a complete script.  Finally we
+only have to commit the changes.  SQLite 3 and other transactional
+databases will not commit unless you explicitly tell it to.
 
 Now it is possible to create a database by starting up a Python shell and
 importing and calling that function::
@@ -63,4 +66,4 @@ importing and calling that function::
    you did call the `init_db` function and that your table names are
    correct (singular vs. plural for example).
 
-Continue with :ref:`tutorial-dbcon`
+Continue with :ref:`tutorial-views`

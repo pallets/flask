@@ -24,8 +24,8 @@ the `example source`_.
    folders
    schema
    setup
-   dbinit
    dbcon
+   dbinit
    views
    templates
    css

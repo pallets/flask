@@ -12,18 +12,17 @@ Show Entries
 This view shows all the entries stored in the database.  It listens on the
 root of the application and will select title and text from the database.
 The one with the highest id (the newest entry) will be on top.  The rows
-returned from the cursor are tuples with the columns ordered like specified
-in the select statement.  This is good enough for small applications like
-here, but you might want to convert them into a dict.  If you are
-interested in how to do that, check out the :ref:`easy-querying` example.
+returned from the cursor look a bit like tuples because we are using
+the :class:`sqlite3.Row` row factory.
 
 The view function will pass the entries as dicts to the
 `show_entries.html` template and return the rendered one::
 
     @app.route('/')
     def show_entries():
-        cur = g.db.execute('select title, text from entries order by id desc')
-        entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+        db = get_db()
+        cur = db.execute('select title, text from entries order by id desc')
+        entries = cur.fetchall()
         return render_template('show_entries.html', entries=entries)
 
 Add New Entry
@@ -39,9 +38,10 @@ redirect back to the `show_entries` page::
     def add_entry():
         if not session.get('logged_in'):
             abort(401)
-        g.db.execute('insert into entries (title, text) values (?, ?)',
+        db = get_db()
+        db.execute('insert into entries (title, text) values (?, ?)',
                      [request.form['title'], request.form['text']])
-        g.db.commit()
+        db.commit()
         flash('New entry was successfully posted')
         return redirect(url_for('show_entries'))
 
