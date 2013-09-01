@@ -1158,7 +1158,6 @@ class Flask(_PackageBoundObject):
         """
         self.jinja_env.tests[name or f.__name__] = f
 
-
     @setupmethod
     def template_global(self, name=None):
         """A decorator that is used to register a custom template global function.
@@ -1710,7 +1709,7 @@ class Flask(_PackageBoundObject):
         if bp is not None and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         for func in funcs:
-            rv = func(exc)
+            func(exc)
         request_tearing_down.send(self, exc=exc)
 
     def do_teardown_appcontext(self, exc=None):

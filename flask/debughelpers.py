@@ -78,7 +78,7 @@ def attach_enctype_error_multidict(request):
         def __getitem__(self, key):
             try:
                 return oldcls.__getitem__(self, key)
-            except KeyError as e:
+            except KeyError:
                 if key not in request.form:
                     raise
                 raise DebugFilesKeyError(request, key)

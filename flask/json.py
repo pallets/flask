@@ -232,7 +232,7 @@ def jsonify(*args, **kwargs):
     """
     indent = None
     if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
-        and not request.is_xhr:
+       and not request.is_xhr:
         indent = 2
     return current_app.response_class(dumps(dict(*args, **kwargs),
         indent=indent),
