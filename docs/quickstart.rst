@@ -192,8 +192,8 @@ The following converters exist:
    with a trailing slash will produce a 404 "Not Found" error.
 
    This behavior allows relative URLs to continue working even if the trailing
-   slash is ommited, consistent with how Apache and other servers work.  Also, 
-   the URLs will stay unique, which helps search engines avoid indexing the 
+   slash is omitted, consistent with how Apache and other servers work.  Also,
+   the URLs will stay unique, which helps search engines avoid indexing the
    same page twice.
 
 
