@@ -115,8 +115,8 @@ class Request(RequestBase):
         but this can be overriden by the `force` parameter.
 
         :param force: if set to `True` the mimetype is ignored.
-        :param silent: if set to `False` this method will fail silently
-                       and return `False`.
+        :param silent: if set to `True` this method will fail silently
+                       and return `None`.
         :param cache: if set to `True` the parsed JSON data is remembered
                       on the request.
         """
