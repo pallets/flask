@@ -296,6 +296,39 @@ class BlueprintTestCase(FlaskTestCase):
         self.assert_equal(c.get('/backend-no').data, b'backend says no')
         self.assert_equal(c.get('/what-is-a-sideend').data, b'application itself says no')
 
+    def test_blueprint_specific_user_error_handling(self):
+        class MyDecoratorException(Exception):
+            pass
+        class MyFunctionException(Exception):
+            pass
+
+        blue = flask.Blueprint('blue', __name__)
+
+        @blue.errorhandler(MyDecoratorException)
+        def my_decorator_exception_handler(e):
+            self.assert_true(isinstance(e, MyDecoratorException))
+            return 'boom'
+
+        def my_function_exception_handler(e):
+            self.assert_true(isinstance(e, MyFunctionException))
+            return 'bam'
+        blue.register_error_handler(MyFunctionException, my_function_exception_handler)
+
+        @blue.route('/decorator')
+        def blue_deco_test():
+            raise MyDecoratorException()
+        @blue.route('/function')
+        def blue_func_test():
+            raise MyFunctionException()
+
+        app = flask.Flask(__name__)
+        app.register_blueprint(blue)
+
+        c = app.test_client()
+
+        self.assert_equal(c.get('/decorator').data, b'boom')
+        self.assert_equal(c.get('/function').data, b'bam')
+
     def test_blueprint_url_definitions(self):
         bp = flask.Blueprint('test', __name__)
 
