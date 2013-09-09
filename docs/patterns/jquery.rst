@@ -146,7 +146,7 @@ usually a better idea to have that in a separate script file:
        <span id=result>?</span>
     <p><a href=# id=calculate>calculate server side</a>
 
-I won't got into detail here about how jQuery works, just a very quick
+I won't go into detail here about how jQuery works, just a very quick
 explanation of the little bit of code above:
 
 1. ``$(function() { ... })`` specifies code that should run once the
