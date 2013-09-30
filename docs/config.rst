@@ -174,6 +174,12 @@ The following configuration values are used internally by Flask:
                                   if they are not requested by an
                                   XMLHttpRequest object (controlled by
                                   the ``X-Requested-With`` header)
+``TEMPLATES_AUTO_RELOAD``         Flask checks if template was modified each
+                                  time it is requested and reloads it if
+                                  necessary. But disk I/O is costly and it may
+                                  be viable to disable this feature by setting
+                                  this key to ``False``. This option does not
+                                  affect debug mode.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -221,6 +227,9 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 1.0
    ``SESSION_REFRESH_EACH_REQUEST``
+
+.. versionadded:: 1.0
+   ``TEMPLATES_AUTO_RELOAD``
 
 Configuring from Files
 ----------------------

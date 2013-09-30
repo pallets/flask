@@ -15,6 +15,10 @@ Version 1.0
   Non permanent sessions are not affected by this and will always
   expire if the browser window closes.
 
+- Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the 
+  templates will be reloaded only if the application is running in 
+  debug mode. For higher performance it’s possible to disable that.
+
 Version 0.10.2
 --------------
 
