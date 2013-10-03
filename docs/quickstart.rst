@@ -257,6 +257,8 @@ accessing URLs.  By default, a route only answers to `GET` requests, but that
 can be changed by providing the `methods` argument to the
 :meth:`~flask.Flask.route` decorator.  Here are some examples::
 
+    from flask import request
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
