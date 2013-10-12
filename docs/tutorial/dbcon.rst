@@ -4,7 +4,7 @@ Step 3: Database Connections
 ----------------------------
 
 We have created a function for establishing a database connection with
-`create_db` but by itself that's not particularly useful.  Creating and
+`connect_db` but by itself that's not particularly useful.  Creating and
 closing database connections all the time is very inefficient, so we want
 to keep it around for longer.  Because database connections encapsulate a
 transaction we also need to make sure that only one request at the time
@@ -22,7 +22,7 @@ variable associated with the current application context.  We will go into
 the details of this a bit later.
 
 For the time being all you have to know is that you can store information
-savely on the :data:`~flask.g` object.
+safely on the :data:`~flask.g` object.
 
 So when do you put it on there?  To do that you can make a helper
 function.  The first time the function is called it will create a database
@@ -67,7 +67,7 @@ Continue to :ref:`tutorial-dbinit`.
    where to put the code from this step and the next.  A logical place is to
    group these module-level functions together, and put your new
    ``get_db`` and ``close_db`` functions below your existing
-   ``init_db`` function (following the tutorial line-by-line).
+   ``connect_db`` function (following the tutorial line-by-line).
 
    If you need a moment to find your bearings, take a look at how the `example
    source`_ is organized.  In Flask, you can put all of your application code
