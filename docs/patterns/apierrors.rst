@@ -47,7 +47,7 @@ At that point views can raise that error, but it would immediately result
 in an internal server error.  The reason for this is that there is no
 handler registered for this error class.  That however is easy to add::
 
-    @app.errorhandler(InvalidAPIUsage)
+    @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
