@@ -163,6 +163,8 @@ class AppContext(object):
     def push(self):
         """Binds the app context to the current context."""
         self._refcnt += 1
+        if hasattr(sys, 'exc_clear'):
+            sys.exc_clear()
         _app_ctx_stack.push(self)
         appcontext_pushed.send(self.app)
 
@@ -311,6 +313,9 @@ class RequestContext(object):
             self._implicit_app_ctx_stack.append(app_ctx)
         else:
             self._implicit_app_ctx_stack.append(None)
+
+        if hasattr(sys, 'exc_clear'):
+            sys.exc_clear()
 
         _request_ctx_stack.push(self)
 

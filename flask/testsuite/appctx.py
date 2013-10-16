@@ -63,6 +63,23 @@ class AppContextTestCase(FlaskTestCase):
 
         self.assert_equal(cleanup_stuff, [None])
 
+    def test_app_tearing_down_with_previous_exception(self):
+        cleanup_stuff = []
+        app = flask.Flask(__name__)
+        @app.teardown_appcontext
+        def cleanup(exception):
+            cleanup_stuff.append(exception)
+
+        try:
+            raise Exception('dummy')
+        except Exception:
+            pass
+
+        with app.app_context():
+            pass
+
+        self.assert_equal(cleanup_stuff, [None])
+
     def test_custom_app_ctx_globals_class(self):
         class CustomRequestGlobals(object):
             def __init__(self):
