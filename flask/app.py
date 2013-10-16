@@ -470,8 +470,8 @@ class Flask(_PackageBoundObject):
         #:          app.extensions = {}
         #:      app.extensions['extensionname'] = SomeObject()
         #:
-        #: The key must match the name of the `flaskext` module.  For example in
-        #: case of a "Flask-Foo" extension in `flaskext.foo`, the key would be
+        #: The key must match the name of the extension module. For example in
+        #: case of a "Flask-Foo" extension in `flask_foo`, the key would be
         #: ``'foo'``.
         #:
         #: .. versionadded:: 0.7
