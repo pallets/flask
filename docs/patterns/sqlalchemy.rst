@@ -177,7 +177,7 @@ SQL Abstraction Layer
 If you just want to use the database system (and SQL) abstraction layer
 you basically only need the engine::
 
-    from sqlalchemy import create_engine, MetaData, Table
+    from sqlalchemy import create_engine, MetaData
 
     engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     metadata = MetaData(bind=engine)
@@ -185,6 +185,8 @@ you basically only need the engine::
 Then you can either declare the tables in your code like in the examples
 above, or automatically load them::
 
+    from sqlalchemy import Table
+    
     users = Table('users', metadata, autoload=True)
 
 To insert data you can use the `insert` method.  We have to get a
