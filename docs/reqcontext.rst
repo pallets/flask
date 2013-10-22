@@ -137,7 +137,7 @@ Teardown Callbacks
 ------------------
 
 The teardown callbacks are special callbacks in that they are executed at
-at different point.  Strictly speaking they are independent of the actual
+a different point.  Strictly speaking they are independent of the actual
 request handling as they are bound to the lifecycle of the
 :class:`~flask.ctx.RequestContext` object.  When the request context is
 popped, the :meth:`~flask.Flask.teardown_request` functions are called.
