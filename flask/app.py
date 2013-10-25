@@ -361,7 +361,7 @@ class Flask(_PackageBoundObject):
         #: A dictionary of all registered error handlers.  The key is `None`
         #: for error handlers active on the application, otherwise the key is
         #: the name of the blueprint.  Each key points to another dictionary
-        #: where they key is the status code of the http exception.  The
+        #: where the key is the status code of the http exception.  The
         #: special key `None` points to a list of tuples where the first item
         #: is the class for the instance check and the second the error handler
         #: function.
