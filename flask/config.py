@@ -174,9 +174,10 @@ class Config(dict):
     
         :param d: a dictionary
         """
-        for key, value in d.items():
-            if key.isupper():
-                self[key] = value
+        if isinstance(d, dict):
+            for key, value in d.items():
+                if key.isupper():
+                    self[key] = value
 
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
