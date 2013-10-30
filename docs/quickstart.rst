@@ -236,8 +236,9 @@ below.  It tells Flask to behave as though it is handling a request, even
 though we are interacting with it through a Python shell.  Have a look at the
 explanation below. :ref:`context-locals`).
 
-Why would you want to build URLs instead of hard-coding them into your
-templates?  There are three good reasons for this:
+Why would you want to build URLs using the URL reversing function :func:`~flask.url_for` 
+instead of hard-coding them into your templates?  There are three good reasons 
+for this:
 
 1. Reversing is often more descriptive than hard-coding the URLs.  More
    importantly, it allows you to change URLs in one go, without having to
