@@ -488,7 +488,7 @@ extensions = [
         description='''
             <p>Sets Flask configuration defaults for Heroku-esque environment variables
         ''',
-        github='kennethreitz/flask-heroku',
+        github='singingwolfboy/flask-heroku',
         approved=False
     ),
 
