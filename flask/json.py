@@ -10,6 +10,7 @@
 """
 import io
 import uuid
+import decimal
 from datetime import datetime
 from .globals import current_app, request
 from ._compat import text_type, PY2
@@ -76,7 +77,7 @@ class JSONEncoder(_json.JSONEncoder):
         """
         if isinstance(o, datetime):
             return http_date(o)
-        if isinstance(o, uuid.UUID):
+        if isinstance(o, uuid.UUID) or isinstance(o, decimal.Decimal):
             return str(o)
         if hasattr(o, '__html__'):
             return text_type(o.__html__())
