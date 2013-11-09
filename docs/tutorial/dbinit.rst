@@ -15,7 +15,9 @@ Such a schema can be created by piping the `schema.sql` file into the
     sqlite3 /tmp/flaskr.db < schema.sql
 
 The downside of this is that it requires the sqlite3 command to be
-installed which is not necessarily the case on every system.  This also require that we provide the path to the database  which can introduce errors.  It's a good idea to add a function that initializes the database
+installed which is not necessarily the case on every system.  This also
+require that we provide the path to the database  which can introduce
+errors.  It's a good idea to add a function that initializes the database
 for you to the application.
 
 To do this we can create a function called `init_db` that initializes the

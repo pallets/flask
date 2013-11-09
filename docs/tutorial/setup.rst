@@ -4,11 +4,12 @@ Step 2: Application Setup Code
 ==============================
 
 Now that we have the schema in place we can create the application module.
-Let's call it flaskr.py. We will place this file inside the flask folder. 
-We will begin by adding the imports we need and by adding the config section.
-For small applications, it is possible to drop the configuration directly into 
-the module, and this is what we will be doing here. However a cleaner solution would be to create a separate `.ini` or `.py` file and load that or import the
-values from there.
+Let's call it flaskr.py. We will place this file inside the flask folder.
+We will begin by adding the imports we need and by adding the config
+section.  For small applications, it is possible to drop the configuration
+directly into the module, and this is what we will be doing here. However
+a cleaner solution would be to create a separate `.ini` or `.py` file and
+load that or import the values from there.
 
 First we add the imports in `flaskr.py`::
 
@@ -65,10 +66,13 @@ debug flag enables or disables the interactive debugger.  *Never leave
 debug mode activated in a production system*, because it will allow users to
 execute code on the server!
 
-We will also add a method that allows for  easily connecting to the specified database.  This can be used to open a connection on request and also from the interactive Python shell or a script.  This will come in handy later.  We create a
-simple database connection through SQLite and then tell it to use the
-:class:`sqlite3.Row` object to represent rows.  This allows us to treat
-the rows as if they were dictionaries instead of tuples.
+We will also add a method that allows for  easily connecting to the
+specified database.  This can be used to open a connection on request and
+also from the interactive Python shell or a script.  This will come in
+handy later.  We create a simple database connection through SQLite and
+then tell it to use the :class:`sqlite3.Row` object to represent rows.
+This allows us to treat the rows as if they were dictionaries instead of
+tuples.
 
 ::
 
