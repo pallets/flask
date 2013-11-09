@@ -3,8 +3,8 @@
 Step 4: Creating The Database
 =============================
 
-Flaskr is a database powered application as outlined earlier, and more
-precisely, an application powered by a relational database system.  Such
+As outlined earlier, Flaskr is a database powered application, and more
+precisely, it is an application powered by a relational database system.  Such
 systems need a schema that tells them how to store that information. So
 before starting the server for the first time it's important to create
 that schema.
@@ -15,13 +15,11 @@ Such a schema can be created by piping the `schema.sql` file into the
     sqlite3 /tmp/flaskr.db < schema.sql
 
 The downside of this is that it requires the sqlite3 command to be
-installed which is not necessarily the case on every system.  Also one has
-to provide the path to the database there which leaves some place for
-errors.  It's a good idea to add a function that initializes the database
+installed which is not necessarily the case on every system.  This also require that we provide the path to the database  which can introduce errors.  It's a good idea to add a function that initializes the database
 for you to the application.
 
 To do this we can create a function called `init_db` that initializes the
-database.  Let me show you the code first.  Just add that function below
+database.  Let me show you the code first.  Just add this function below
 the `connect_db` function in `flaskr.py`::
 
     def init_db():
