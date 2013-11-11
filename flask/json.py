@@ -77,8 +77,10 @@ class JSONEncoder(_json.JSONEncoder):
         """
         if isinstance(o, datetime):
             return http_date(o)
-        if isinstance(o, uuid.UUID) or isinstance(o, decimal.Decimal):
+        if isinstance(o, uuid.UUID):
             return str(o)
+        if isinstance(o, decimal.Decimal):
+            return float(o)
         if hasattr(o, '__html__'):
             return text_type(o.__html__())
         return _json.JSONEncoder.default(self, o)
