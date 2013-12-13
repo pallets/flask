@@ -36,6 +36,11 @@ class ConfigTestCase(FlaskTestCase):
         app.config.from_pyfile(__file__.rsplit('.', 1)[0] + '.py')
         self.common_object_test(app)
 
+    def test_config_from_jsonfile(self):
+        app = flask.Flask(__name__)
+        app.config.from_jsonfile(__file__.rsplit('.', 1)[0] + '.json')
+        self.common_object_test(app)
+
     def test_config_from_object(self):
         app = flask.Flask(__name__)
         app.config.from_object(__name__)
