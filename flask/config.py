@@ -15,6 +15,7 @@ import errno
 
 from werkzeug.utils import import_string
 from ._compat import string_types
+from .json import load as json_load
 
 
 class ConfigAttribute(object):
@@ -133,6 +134,27 @@ class Config(dict):
             e.strerror = 'Unable to load configuration file (%s)' % e.strerror
             raise
         self.from_object(d)
+        return True
+
+    def from_jsonfile(self, filename, silent=False):
+        """Updates the values in the config from a JSON file.
+
+        :param filename: the filename of the config.  This can either be an
+                         absolute filename or a filename relative to the
+                         root path.
+        :param silent: set to `True` if you want silent failure for missing
+                       files.
+        """
+        filename = os.path.join(self.root_path, filename)
+        try:
+            with open(filename) as config_file:
+                d = json_load(config_file)
+        except IOError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
+            raise
+        self.update(d)
         return True
 
     def from_object(self, obj):
