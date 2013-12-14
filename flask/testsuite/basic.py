@@ -256,6 +256,22 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_in('path=/', cookie)
         self.assert_in('secure', cookie)
         self.assert_not_in('httponly', cookie)
+        self.assert_not_in('expires', cookie)
+
+    def test_session_using_session_permanent_settings(self):
+        app = flask.Flask(__name__)
+        app.config.update(
+            SECRET_KEY='foo',
+            SERVER_NAME='www.example.com:8080',
+            SESSION_COOKIE_PERMANENT=True,
+        )
+        @app.route('/')
+        def index():
+            flask.session['testing'] = 42
+            return 'Hello World'
+        rv = app.test_client().get('/', 'http://www.example.com:8080/test/')
+        cookie = rv.headers['set-cookie'].lower()
+        self.assert_in('expires', cookie)
 
     def test_missing_session(self):
         app = flask.Flask(__name__)
