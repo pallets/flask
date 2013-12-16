@@ -509,7 +509,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         headers.add('Content-Disposition', 'attachment',
                     filename=attachment_filename)
 
-    if current_app.use_x_sendfile and filename and os.path.exists(filename):
+    if current_app.use_x_sendfile and filename:
         if file is not None:
             file.close()
         headers['X-Sendfile'] = filename
@@ -537,15 +537,20 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
 
-    if add_etags and filename is not None and os.path.exists(filename):
-        rv.set_etag('flask-%s-%s-%s' % (
-            os.path.getmtime(filename),
-            os.path.getsize(filename),
-            adler32(
-                filename.encode('utf-8') if isinstance(filename, text_type)
-                else filename
-            ) & 0xffffffff
-        ))
+    if add_etags and filename is not None:
+        try:
+            rv.set_etag('flask-%s-%s-%s' % (
+                os.path.getmtime(filename),
+                os.path.getsize(filename),
+                adler32(
+                    filename.encode('utf-8') if isinstance(filename, text_type)
+                    else filename
+                ) & 0xffffffff
+            ))
+        except OSError:
+            warn('Access %s failed, maybe it does not exist, so ignore etags in '
+                 'headers' % filename, stacklevel=2)
+
         if conditional:
             rv = rv.make_conditional(request)
             # make sure we don't send x-sendfile for servers that
