@@ -1544,7 +1544,8 @@ class Flask(_PackageBoundObject):
         a WSGI function         the function is called as WSGI application
                                 and buffered as response object
         :class:`tuple`          A tuple in the form ``(response, status,
-                                headers)`` where `response` is any of the
+                                headers)`` or ``(response, headers)``
+                                where `response` is any of the
                                 types defined here, `status` is a string
                                 or an integer and `headers` is a list or
                                 a dictionary with header values.
@@ -1556,12 +1557,15 @@ class Flask(_PackageBoundObject):
            Previously a tuple was interpreted as the arguments for the
            response object.
         """
-        status = headers = None
+        status_or_headers = headers = None
         if isinstance(rv, tuple):
-            rv, status, headers = rv + (None,) * (3 - len(rv))
+            rv, status_or_headers, headers = rv + (None,) * (3 - len(rv))
 
         if rv is None:
             raise ValueError('View function did not return a response')
+
+        if isinstance(status_or_headers, (dict, list)):
+            headers, status_or_headers = status_or_headers, None
 
         if not isinstance(rv, self.response_class):
             # When we create a response object directly, we let the constructor
@@ -1569,20 +1573,21 @@ class Flask(_PackageBoundObject):
             # some extra logic involved when creating these objects with
             # specific values (like default content type selection).
             if isinstance(rv, (text_type, bytes, bytearray)):
-                rv = self.response_class(rv, headers=headers, status=status)
-                headers = status = None
+                rv = self.response_class(rv, headers=headers, status=status_or_headers)
+                headers = status_or_headers = None
             else:
                 rv = self.response_class.force_type(rv, request.environ)
 
-        if status is not None:
-            if isinstance(status, string_types):
-                rv.status = status
+        if status_or_headers is not None:
+            if isinstance(status_or_headers, string_types):
+                rv.status = status_or_headers
             else:
-                rv.status_code = status
+                rv.status_code = status_or_headers
         if headers:
             rv.headers.extend(headers)
 
         return rv
+
 
     def create_url_adapter(self, request):
         """Creates a URL adapter for the given request.  The URL adapter
