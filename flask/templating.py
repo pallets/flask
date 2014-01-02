@@ -5,7 +5,7 @@
 
     Implements the bridge to Jinja2.
 
-    :copyright: (c) 2011 by Armin Ronacher.
+    :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 import posixpath

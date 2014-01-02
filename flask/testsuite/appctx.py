@@ -5,7 +5,7 @@
 
     Tests the application context.
 
-    :copyright: (c) 2012 by Armin Ronacher.
+    :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 

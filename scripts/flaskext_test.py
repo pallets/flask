@@ -5,7 +5,7 @@
 
     Tests the Flask extensions.
 
-    :copyright: (c) 2010 by Ali Afshar.
+    :copyright: (c) 2014 by Ali Afshar.
     :license: BSD, see LICENSE for more details.
 """
 
