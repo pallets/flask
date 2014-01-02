@@ -1490,9 +1490,9 @@ class Flask(_PackageBoundObject):
         with self._before_request_lock:
             if self._got_first_request:
                 return
-            self._got_first_request = True
             for func in self.before_first_request_funcs:
                 func()
+            self._got_first_request = True
 
     def make_default_options_response(self):
         """This method is called to create the default `OPTIONS` response.
