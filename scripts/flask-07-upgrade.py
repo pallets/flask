@@ -16,7 +16,7 @@
     the most common patterns at least.  The diff it generates should be
     hand reviewed and not applied blindly without making backups.
 
-    :copyright: (c) Copyright 2011 by Armin Ronacher.
+    :copyright: (c) Copyright 2014 by Armin Ronacher.
     :license: see LICENSE for more details.
 """
 import re

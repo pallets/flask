@@ -6,7 +6,7 @@
     Tests Flask itself.  The majority of Flask is already tested
     as part of Werkzeug.
 
-    :copyright: (c) 2011 by Armin Ronacher.
+    :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 
