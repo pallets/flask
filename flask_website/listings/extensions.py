@@ -627,6 +627,20 @@ unlisted = [
             Unlisted because duplicates the Flask-SeaSurf extension.
         '''
     ),
+    Extension('flask-canvas', 'Demian Brecht',
+        description='''
+            <p>
+                A Flask extension for Facebook canvas-based applications
+            </p>
+        ''',
+        docs=None,
+        github='demianbrecht/flask-canvas',
+        notes='''
+            Monkeypatches Flask, adding canvas_route to expose Facebook
+            canvas user data through canvas_user parameters in view
+            functions.
+        '''
+    ),
 ]
 
 
