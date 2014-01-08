@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import datetime
 import os
 import flask
 import unittest
@@ -37,6 +38,22 @@ class JSONTestCase(FlaskTestCase):
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
+
+    def test_json_date_serialization(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        # respond with the same JSON that appeared in the body of the request
+        @app.route('/mirror', methods=['POST'])
+        def index():
+            return flask.jsonify(flask.request.get_json())
+        c = app.test_client()
+        today = datetime.date.today()
+        data = flask.json.dumps(dict(date=today))
+        resp = c.post('/mirror', data=data, content_type='application/json')
+        print(resp, type(resp))
+        print(resp.data, type(resp.data))
+        data = flask.json.loads(resp.data)
+        self.assert_equal(data['date'], today.isoformat())
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
