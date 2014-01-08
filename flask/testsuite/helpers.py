@@ -50,8 +50,6 @@ class JSONTestCase(FlaskTestCase):
         today = datetime.date.today()
         data = flask.json.dumps(dict(date=today))
         resp = c.post('/mirror', data=data, content_type='application/json')
-        print(resp, type(resp))
-        print(resp.data, type(resp.data))
         data = flask.json.loads(resp.data)
         self.assert_equal(data['date'], today.isoformat())
 
