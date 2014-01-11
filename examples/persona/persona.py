@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, json, abort, g
+from flask import Flask, render_template, session, request, abort, g
 
 import requests
 
