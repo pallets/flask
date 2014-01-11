@@ -38,7 +38,7 @@ def login_handler():
         'audience': request.host_url,
     }, verify=True)
     if resp.ok:
-        verification_data = json.loads(resp.content)
+        verification_data = resp.json()
         if verification_data['status'] == 'okay':
             session['email'] = verification_data['email']
             return 'OK'
