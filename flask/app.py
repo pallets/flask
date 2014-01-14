@@ -230,6 +230,15 @@ class Flask(_PackageBoundObject):
     #: `USE_X_SENDFILE` configuration key.  Defaults to `False`.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
+    #: The use_x_sendfile feature uses this to determine which header to set
+    #: to allow the server to serve the referenced file. This is useful if
+    #: your webserver uses a nonstandard name for this header. For instance,
+    #: Lighttpd 1.4.x uses "X-LIGHTTPD-Sendfile".
+    #:
+    #: This attribute can also be configured from the config with the
+    #: `X_SENDFILE_HEADER` configuration key. Defaults to `X-Sendfile`.
+    x_sendfile_header = ConfigAttribute('X_SENDFILE_HEADER')
+
     #: The name of the logger to use.  By default the logger name is the
     #: package name passed to the constructor.
     #:
@@ -277,6 +286,7 @@ class Flask(_PackageBoundObject):
         'SECRET_KEY':                           None,
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
+        'X_SENDFILE_HEADER':                    "X-Sendfile",
         'LOGGER_NAME':                          None,
         'SERVER_NAME':                          None,
         'APPLICATION_ROOT':                     None,

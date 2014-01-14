@@ -256,6 +256,20 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_equal(rv.mimetype, 'text/html')
             rv.close()
 
+    def test_send_file_xsendfile_nonstandard_header(self):
+        app = flask.Flask(__name__)
+        app.use_x_sendfile = True
+        app.x_sendfile_header = "x-sendfile-testing"
+        with app.test_request_context():
+            rv = flask.send_file('static/index.html')
+            self.assert_true(rv.direct_passthrough)
+            self.assert_not_in('x-sendfile', rv.headers)
+            self.assert_in('x-sendfile-testing', rv.headers)
+            self.assert_equal(rv.headers['x-sendfile-testing'],
+                os.path.join(app.root_path, 'static/index.html'))
+            self.assert_equal(rv.mimetype, 'text/html')
+            rv.close()
+
     def test_send_file_object(self):
         app = flask.Flask(__name__)
         with catch_warnings() as captured:
