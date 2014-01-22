@@ -693,7 +693,7 @@ class Flask(_PackageBoundObject):
         """
         if filename is None:
             return False
-        return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
+        return filename.endswith(('.html', '.htm', '.xml', '.xhtml','.jinja'))
 
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.
