@@ -27,6 +27,7 @@ except ImportError:
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
+from werkzeug.utils import redirect
 
 # this was moved in 0.7
 try:
@@ -181,6 +182,12 @@ def make_response(*args):
     if len(args) == 1:
         args = args[0]
     return current_app.make_response(args)
+
+
+def redirect_url_for(endpoint, **values):
+    """Return a response object (a WSGI application) that, if called,
+    redirects the client to the given endpoit."""
+    return redirect(url_for(endpoint, **values))
 
 
 def url_for(endpoint, **values):
