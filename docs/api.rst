@@ -385,6 +385,12 @@ you are using Flask 0.10 which implies that:
         doSomethingWith({{ user.username|tojson|safe }});
     </script>
 
+.. admonition:: Auto-Sort JSON Keys
+
+    The configuration variable ``JSON_SORT_KEYS`` (:ref:`config`) can be set to false to 
+    stop Flask from auto-sorting keys.  By default sorting is enabled and
+    outside of the app context sorting is turned on.
+
 .. autofunction:: jsonify
 
 .. autofunction:: dumps
