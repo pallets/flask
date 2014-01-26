@@ -19,7 +19,7 @@ from werkzeug.exceptions import HTTPException
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .module import blueprint_is_module
 from .signals import appcontext_pushed, appcontext_popped
-from ._compat import BROKEN_PYPY_CTXMGR_EXIT
+from ._compat import BROKEN_PYPY_CTXMGR_EXIT, reraise
 
 
 class _AppCtxGlobals(object):
