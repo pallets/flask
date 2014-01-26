@@ -189,7 +189,7 @@ class AppContext(object):
         self.pop(exc_value)
 
         if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
-            raise exc_type, exc_value, tb
+            reraise(exc_type, exc_value, tb)
 
 
 class RequestContext(object):
@@ -395,7 +395,7 @@ class RequestContext(object):
         self.auto_pop(exc_value)
 
         if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
-            raise exc_type, exc_value, tb
+            reraise(exc_type, exc_value, tb)
 
     def __repr__(self):
         return '<%s \'%s\' [%s] of %s>' % (
