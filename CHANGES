@@ -14,6 +14,12 @@ Version 1.0
   `False` it will only be modified if the session actually modifies.
   Non permanent sessions are not affected by this and will always
   expire if the browser window closes.
+- Error handlers that match specific classes are now checked first,
+  thereby allowing catching exceptions that are subclasses of HTTP
+  exceptions (in ``werkzeug.execptions``).  This makes it possible
+  for an extension author to create exceptions that will by default
+  result in the HTTP error of their choosing, but may be caught with
+  a custom error handler if desired.
 
 Version 0.10.2
 --------------

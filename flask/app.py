@@ -1364,8 +1364,6 @@ class Flask(_PackageBoundObject):
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
-        if isinstance(e, HTTPException) and not self.trap_http_exception(e):
-            return self.handle_http_exception(e)
 
         blueprint_handlers = ()
         handlers = self.error_handler_spec.get(request.blueprint)
@@ -1375,6 +1373,9 @@ class Flask(_PackageBoundObject):
         for typecheck, handler in chain(blueprint_handlers, app_handlers):
             if isinstance(e, typecheck):
                 return handler(e)
+
+        if isinstance(e, HTTPException) and not self.trap_http_exception(e):
+            return self.handle_http_exception(e)
 
         reraise(exc_type, exc_value, tb)
 
