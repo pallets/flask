@@ -10,7 +10,7 @@
 """
 import io
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from .globals import current_app, request
 from ._compat import text_type, PY2
 
@@ -74,6 +74,11 @@ class JSONEncoder(_json.JSONEncoder):
                     return list(iterable)
                 return JSONEncoder.default(self, o)
         """
+        # Werkzeug's http_date() function, as used in the next "if" statement,
+        # is not designed to handle `date` objects, so we make a special case
+        # to encode them as strings of the form 'YYYY-MM-DD'.
+        if isinstance(o, date):
+            return o.isoformat()
         if isinstance(o, datetime):
             return http_date(o)
         if isinstance(o, uuid.UUID):
