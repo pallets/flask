@@ -19,14 +19,20 @@ from zlib import adler32
 from threading import RLock
 from werkzeug.routing import BuildError
 from functools import update_wrapper
+from warnings import warn
 
 try:
     from werkzeug.urls import url_quote
 except ImportError:
     from urlparse import quote as url_quote
+try:
+    from werkzeug.urls import url_parse
+except ImportError:
+    from urlparse import urlparse as url_parse
 
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
+from werkzeug.utils import redirect as _redirect
 
 # this was moved in 0.7
 try:
@@ -472,7 +478,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         filename = filename_or_fp
         file = None
     else:
-        from warnings import warn
         file = filename_or_fp
         filename = getattr(file, 'name', None)
 
@@ -852,3 +857,28 @@ class _PackageBoundObject(object):
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
         return open(os.path.join(self.root_path, resource), mode)
+
+
+def redirect(location, code=302, safe_hosts=None):
+    """
+    Return a response object (a WSGI application) that, if called, redirects
+    the client to the target location. Supported codes are 301, 302, 303, 305,
+    and 307. 300 is not supported because it’s not a real redirect and 304
+    because it’s the answer for a request with a request with defined
+    If-Modified-Since headers.
+
+    Since Werkzeug 0.6 the location can be a unicode string that is encoded
+    using the :func:`~werkzeug.urls.iri_to_uri` function.
+
+    :param safe_hosts: A container of hosts which are safe to redirect to.
+
+    .. versionchanged:: 1.0
+       Deprecated redirecting to 3rd party hosts not whitelisted with
+       `safe_hosts`.
+    """
+    safe_hosts = set([request.host]).union(safe_hosts or [])
+    location_host = url_parse(location).netloc
+    if location_host and location_host not in safe_hosts:
+        warn(DeprecationWarning('redirecting to 3rd party hosts is deprecated '
+                                'use safe_hosts if the redirect is intended'))
+    return _redirect(location, code)

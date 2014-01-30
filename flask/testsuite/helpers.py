@@ -612,6 +612,41 @@ class StreamingTestCase(FlaskTestCase):
         self.assertEqual(called, [42])
 
 
+class RedirectTestCase(FlaskTestCase):
+    def test_redirect(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/good_redirect')
+        def good_redirect():
+            return flask.redirect('foo')
+        @app.route('/good_redirect_with_host')
+        def good_redirect_with_host():
+            return flask.redirect('http://localhost/foo')
+        @app.route('/good_redirect_to_3rd_party')
+        def good_redirect_to_3rd_party():
+            return flask.redirect('http://example.com',
+                                  safe_hosts=['example.com'])
+        @app.route('/bad_redirect')
+        def bad_redirect():
+            return flask.redirect('http://example.com')
+        @app.route('/foo')
+        def foo():
+            return u'foo'
+        c = app.test_client()
+        rv = c.get('/good_redirect', follow_redirects=True)
+        self.assert_equal(rv.data, b'foo')
+        rv = c.get('/good_redirect_with_host', follow_redirects=True)
+        self.assert_equal(rv.data, b'foo')
+        with catch_warnings() as captured:
+            rv = c.get('/good_redirect_to_3rd_party')
+            self.assert_equal(rv.status_code, 302)
+            self.assert_equal(rv.location, 'http://example.com')
+        self.assert_equal(len(captured), 0)
+        with catch_warnings() as captured:
+            c.get('/bad_redirect')
+        self.assert_equal(len(captured), 1)
+
+
 def suite():
     suite = unittest.TestSuite()
     if flask.json_available:
@@ -620,4 +655,5 @@ def suite():
     suite.addTest(unittest.makeSuite(LoggingTestCase))
     suite.addTest(unittest.makeSuite(NoImportsTestCase))
     suite.addTest(unittest.makeSuite(StreamingTestCase))
+    suite.addTest(unittest.makeSuite(RedirectTestCase))
     return suite
