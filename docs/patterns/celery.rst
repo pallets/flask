@@ -86,7 +86,7 @@ disappointed to learn that your ``.wait()`` will never actually return.
 That's because you also need to run celery.  You can do that by running
 celery as a worker::
 
-    $ celery -A your_application worker
+    $ celery -A your_application.celery worker
 
 The ``your_application`` string has to point to your application's package
 or module that creates the `celery` object.
