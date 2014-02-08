@@ -89,7 +89,7 @@ The following configuration values are used internally by Flask:
                                   Starting with Flask 0.8 this can also be
                                   an integer representing seconds.
 ``SESSION_REFRESH_EACH_REQUEST``  this flag controls how permanent
-                                  sessions are refresh.  If set to `True`
+                                  sessions are refreshed.  If set to `True`
                                   (which is the default) then the cookie
                                   is refreshed each request which
                                   automatically bumps the lifetime.  If
