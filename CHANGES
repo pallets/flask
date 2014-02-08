@@ -17,7 +17,7 @@ Version 0.10.2
 - Fixed an issue with query parameters getting removed from requests in
   the test client when absolute URLs were requested.
 - Made `@before_first_request` into a decorator as intended.
-- Fixed an etags bug when sending a file without a name.
+- Fixed an etags bug when sending a file streams with a name.
 
 Version 0.10.1
 --------------
