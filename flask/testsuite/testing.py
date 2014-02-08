@@ -208,7 +208,7 @@ class TestToolsTestCase(FlaskTestCase):
             rv = c.post('http://domain.com/action?vodka=42', data={'gin': 43})
             self.assert_equal(rv.status_code, 200)
             self.assert_('gin' in flask.request.form)
-            self.ssert_('vodka' in flask.request.args)
+            self.assert_('vodka' in flask.request.args)
 
 
 class SubdomainTestCase(FlaskTestCase):
