@@ -538,14 +538,19 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.expires = int(time() + cache_timeout)
 
     if add_etags and filename is not None:
-        rv.set_etag('flask-%s-%s-%s' % (
-            os.path.getmtime(filename),
-            os.path.getsize(filename),
-            adler32(
-                filename.encode('utf-8') if isinstance(filename, text_type)
-                else filename
-            ) & 0xffffffff
-        ))
+        try:
+            rv.set_etag('flask-%s-%s-%s' % (
+                os.path.getmtime(filename),
+                os.path.getsize(filename),
+                adler32(
+                    filename.encode('utf-8') if isinstance(filename, text_type)
+                    else filename
+                ) & 0xffffffff
+            ))
+        except OSError:
+            warn('Access %s failed, maybe it does not exist, so ignore etags in '
+                 'headers' % filename, stacklevel=2)
+
         if conditional:
             rv = rv.make_conditional(request)
             # make sure we don't send x-sendfile for servers that
