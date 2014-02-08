@@ -1159,7 +1159,6 @@ class Flask(_PackageBoundObject):
         """
         self.jinja_env.tests[name or f.__name__] = f
 
-
     @setupmethod
     def template_global(self, name=None):
         """A decorator that is used to register a custom template global function.
