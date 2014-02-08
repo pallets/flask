@@ -543,6 +543,17 @@ class LoggingTestCase(FlaskTestCase):
             self.assert_equal(flask.url_for('myview', _method='POST'),
                               '/myview/create')
 
+    def test_redirect_url_for(self):
+        app = flask.Flask(__name__)
+        @app.route('/')
+        def index():
+            return '42'
+        with app.test_request_context():
+            redir = flask.redirect_url_for("index")
+            self.assert_equal("/", redir.location)
+            self.assert_equal(302, redir.status_code)
+
+
 
 class NoImportsTestCase(FlaskTestCase):
     """Test Flasks are created without import.
