@@ -512,7 +512,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     if current_app.use_x_sendfile and filename:
         if file is not None:
             file.close()
-        headers['X-Sendfile'] = filename
+        headers[current_app.x_sendfile_header] = filename
         headers['Content-Length'] = os.path.getsize(filename)
         data = None
     else:
