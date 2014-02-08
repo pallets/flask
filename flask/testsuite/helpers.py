@@ -38,6 +38,15 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
 
+    def test_json_custom_mimetypes(self):
+        app = flask.Flask(__name__)
+        @app.route('/json', methods=['POST'])
+        def return_json():
+            return flask.request.get_json()
+        c = app.test_client()
+        rv = c.post('/json', data='"foo"', content_type='application/x+json')
+        self.assert_equal(rv.data, b'foo')
+
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
         app.testing = True
