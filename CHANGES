@@ -16,6 +16,7 @@ Version 0.10.2
   context to be passed to teardown handlers.
 - Fixed an issue with query parameters getting removed from requests in
   the test client when absolute URLs were requested.
+- Made `@before_first_request` into a decorator as intended.
 
 Version 0.10.1
 --------------

@@ -1205,6 +1205,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.8
         """
         self.before_first_request_funcs.append(f)
+        return f
 
     @setupmethod
     def after_request(self, f):
