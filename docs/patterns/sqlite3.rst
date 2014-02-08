@@ -17,7 +17,7 @@ Here is a simple example of how you can use SQLite 3 with Flask::
     def get_db():
         db = getattr(g, '_database', None)
         if db is None:
-            db = g._database = connect_to_database()
+            db = g._database = sqlite3.connect(DATABASE)
         return db
 
     @app.teardown_appcontext
