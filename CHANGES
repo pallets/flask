@@ -14,6 +14,8 @@ Version 0.10.2
   without an `is_package()` method.
 - Fixed an issue causing exceptions raised before entering a request or app
   context to be passed to teardown handlers.
+- Fixed an issue with query parameters getting removed from requests in
+  the test client when absolute URLs were requested.
 
 Version 0.10.1
 --------------

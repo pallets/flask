@@ -31,6 +31,8 @@ def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
             base_url += app_root.lstrip('/')
         if url.netloc:
             path = url.path
+            if url.query:
+                path += '?' + url.query
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
 
