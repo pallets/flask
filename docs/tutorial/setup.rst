@@ -27,7 +27,7 @@ config from the same file, in `flaskr.py`::
 
     # Load default config and override config from an environment variable
     app.config.update(dict(
-        DATABASE='/tmp/flaskr.db',
+        DATABASE=os.path.join(app.root_path, 'flaskr.db'),
         DEBUG=True,
         SECRET_KEY='development key',
         USERNAME='admin',
@@ -38,11 +38,20 @@ config from the same file, in `flaskr.py`::
 The :class:`~flask.Config` object works similar to a dictionary so we
 can update it with new values.
 
-.. admonition:: Windows
+.. admonition:: Database Path
 
-    If you are on Windows, replace `/tmp/flaskr.db` with a different writeable
-    path of your choice, in the configuration and for the rest of this
-    tutorial.
+    Operating systems know the concept of a current working directory for
+    each process.  Unfortunately you cannot depend on this in web
+    applications because you might have more than one application in the
+    same process.
+
+    For this reason the ``app.root_path`` attribute can be used to
+    get the path to the application.  Together with the ``os.path`` module
+    files can then easily be found.  In this example we place the
+    database right next to it.
+
+    For a real-work application it's recommended to use
+    :ref:`instance-folders` instead.
 
 Usually, it is a good idea to load a separate, environment specific
 configuration file.  Flask allows you to import multiple configurations and it 
