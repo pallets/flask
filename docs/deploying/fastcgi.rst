@@ -54,14 +54,14 @@ can execute it:
 Configuring Apache
 ------------------
 
-The example above is good enough for a basic Apache deployment but your `.fcgi`
-file will appear in your application URL e.g.
-example.com/yourapplication.fcgi/news/. There are few ways to configure your
-application so that yourapplication.fcgi does not appear in the URL. A
-preferable way is to use the ScriptAlias and SetHandler configuration directives
-to route requests to the FastCGI server. The following example uses
-FastCgiServer to start 5 instances of the application which will handle all
-incoming requests:
+The example above is good enough for a basic Apache deployment but your
+`.fcgi` file will appear in your application URL e.g.
+example.com/yourapplication.fcgi/news/. There are few ways to configure
+your application so that yourapplication.fcgi does not appear in the URL.
+A preferable way is to use the ScriptAlias and SetHandler configuration
+directives to route requests to the FastCGI server. The following example
+uses FastCgiServer to start 5 instances of the application which will
+handle all incoming requests::
 
     LoadModule fastcgi_module /usr/lib64/httpd/modules/mod_fastcgi.so
 
@@ -79,10 +79,11 @@ incoming requests:
         </Location>
     </VirtualHost>
 
-These processes will be managed by Apache. If you're using an standalone FastCGI
-server, you can use the FastCgiExternalServer directive instead. Note that in
-the following the path is not real, it's simply used as an identifier to other
-directives such as AliasMatch:
+These processes will be managed by Apache. If you're using an standalone
+FastCGI server, you can use the FastCgiExternalServer directive instead.
+Note that in the following the path is not real, it's simply used as an
+identifier to other
+directives such as AliasMatch::
 
     FastCgiServer /var/www/html/yourapplication -host 127.0.0.1:3000
 
