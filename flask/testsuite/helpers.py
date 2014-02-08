@@ -265,6 +265,17 @@ class SendfileTestCase(FlaskTestCase):
             # etags
             self.assert_equal(len(captured), 1)
             with catch_warnings() as captured:
+                from StringIO import StringIO as PYStringIO
+                f = PYStringIO('Test')
+                f.name = 'test.txt'
+                rv = flask.send_file(f)
+                rv.direct_passthrough = False
+                self.assert_equal(rv.data, b'Test')
+                self.assert_equal(rv.mimetype, 'text/plain')
+                rv.close()
+            # attachment_filename and etags
+            self.assert_equal(len(captured), 3)
+            with catch_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f, mimetype='text/plain')
                 rv.direct_passthrough = False
