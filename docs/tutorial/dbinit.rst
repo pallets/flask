@@ -38,7 +38,7 @@ hand.  Without an application context the :data:`~flask.g` object does not
 know yet to which application it becomes as there could be more than one!
 
 The ``with app.app_context()`` statement establishes the application
-context for us.  In the body of the with statement the :flask:`~flask.g`
+context for us.  In the body of the with statement the :data:`~flask.g`
 object will be associated with ``app``.  At the end of the with statement
 the association is released and all teardown functions are executed.  This
 means that our database connection is disconnected after the commit.
