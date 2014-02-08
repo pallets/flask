@@ -735,7 +735,23 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return 'Meh', 400, {
                 'X-Foo': 'Testing',
                 'Content-Type': 'text/plain; charset=utf-8'
+            } 
+        @app.route('/two_args')
+        def from_two_args_tuple():
+            return 'Hello', {
+                'X-Foo': 'Test',
+                'Content-Type': 'text/plain; charset=utf-8'
             }
+        @app.route('/args_status')
+        def from_status_tuple():
+            return 'Hi, status!', 400
+        @app.route('/args_header')
+        def from_response_instance_status_tuple():
+            return flask.Response('Hello world', 404), {
+                "X-Foo": "Bar",
+                "X-Bar": "Foo"
+            }
+
         c = app.test_client()
         self.assert_equal(c.get('/unicode').data, u'Hällo Wörld'.encode('utf-8'))
         self.assert_equal(c.get('/string').data, u'Hällo Wörld'.encode('utf-8'))
@@ -744,6 +760,20 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(rv.headers['X-Foo'], 'Testing')
         self.assert_equal(rv.status_code, 400)
         self.assert_equal(rv.mimetype, 'text/plain')
+        rv2 = c.get('/two_args')
+        self.assert_equal(rv2.data, b'Hello')
+        self.assert_equal(rv2.headers['X-Foo'], 'Test')
+        self.assert_equal(rv2.status_code, 200)
+        self.assert_equal(rv2.mimetype, 'text/plain')
+        rv3 = c.get('/args_status')
+        self.assert_equal(rv3.data, b'Hi, status!')
+        self.assert_equal(rv3.status_code, 400)
+        self.assert_equal(rv3.mimetype, 'text/html')
+        rv4 = c.get('/args_header')
+        self.assert_equal(rv4.data, b'Hello world')
+        self.assert_equal(rv4.headers['X-Foo'], 'Bar')
+        self.assert_equal(rv4.headers['X-Bar'], 'Foo')
+        self.assert_equal(rv4.status_code, 404)
 
     def test_make_response(self):
         app = flask.Flask(__name__)
