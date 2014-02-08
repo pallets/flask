@@ -387,9 +387,12 @@ you are using Flask 0.10 which implies that:
 
 .. admonition:: Auto-Sort JSON Keys
 
-    The configuration variable ``JSON_SORT_KEYS`` (:ref:`config`) can be set to false to 
-    stop Flask from auto-sorting keys.  By default sorting is enabled and
-    outside of the app context sorting is turned on.
+    The configuration variable ``JSON_SORT_KEYS`` (:ref:`config`) can be
+    set to false to stop Flask from auto-sorting keys.  By default sorting
+    is enabled and outside of the app context sorting is turned on.
+
+    Notice that disabling key sorting can cause issues when using content
+    based HTTP caches and Python's hash randomization feature.
 
 .. autofunction:: jsonify
 
