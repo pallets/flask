@@ -84,6 +84,9 @@ The following configuration values are used internally by Flask:
 ``SESSION_COOKIE_SECURE``         controls if the cookie should be set
                                   with the secure flag.  Defaults to
                                   `False`.
+``SESSION_COOKIE_PERMANENT``      controls if the signed cookie based 
+                                  session will be initialized to be 
+                                  permanent or not. Defaults to `False`.
 ``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
                                   :class:`datetime.timedelta` object.
                                   Starting with Flask 0.8 this can also be
@@ -218,6 +221,9 @@ The following configuration values are used internally by Flask:
 
 .. versionadded:: 0.10
    ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``, ``JSONIFY_PRETTYPRINT_REGULAR``
+
+.. versionadded:: 0.11
+   ``SESSION_COOKIE_PERMANENT`` 
 
 .. versionadded:: 1.0
    ``SESSION_REFRESH_EACH_REQUEST``

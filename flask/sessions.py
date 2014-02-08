@@ -243,6 +243,12 @@ class SessionInterface(object):
         """
         return app.config['SESSION_COOKIE_SECURE']
 
+    def get_cookie_permanent(self, app):
+        """Returns True if the cookie should be permanent.  This currently
+        just returns the value of the ``SESSION_COOKIE_PERMANENT`` setting.
+        """
+        return app.config['SESSION_COOKIE_PERMANENT']
+
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
         or `None` if the session is linked to the browser session.  The
@@ -322,7 +328,12 @@ class SecureCookieSessionInterface(SessionInterface):
             return None
         val = request.cookies.get(app.session_cookie_name)
         if not val:
-            return self.session_class()
+            session_object = self.session_class()
+            if self.get_cookie_permanent(app):
+                session_object.permanent = True
+                session_object.modified = False
+            return session_object
+
         max_age = total_seconds(app.permanent_session_lifetime)
         try:
             data = s.loads(val, max_age=max_age)

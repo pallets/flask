@@ -285,6 +285,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_PATH':                  None,
         'SESSION_COOKIE_HTTPONLY':              True,
         'SESSION_COOKIE_SECURE':                False,
+        'SESSION_COOKIE_PERMANENT':             False,
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
         'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
