@@ -265,8 +265,9 @@ class SendfileTestCase(FlaskTestCase):
             # etags
             self.assert_equal(len(captured), 1)
             with catch_warnings() as captured:
-                from StringIO import StringIO as PYStringIO
-                f = PYStringIO('Test')
+                class PyStringIO(StringIO):
+                    pass
+                f = PyStringIO('Test')
                 f.name = 'test.txt'
                 rv = flask.send_file(f)
                 rv.direct_passthrough = False
