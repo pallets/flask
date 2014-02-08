@@ -196,6 +196,20 @@ class TestToolsTestCase(FlaskTestCase):
             self.assert_equal(called, [None])
         self.assert_equal(called, [None, None])
 
+    def test_full_url_request(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+
+        @app.route('/action', methods=['POST'])
+        def action():
+            return 'x'
+
+        with app.test_client() as c:
+            rv = c.post('http://domain.com/action?vodka=42', data={'gin': 43})
+            self.assert_equal(rv.status_code, 200)
+            self.assert_('gin' in flask.request.form)
+            self.ssert_('vodka' in flask.request.args)
+
 
 class SubdomainTestCase(FlaskTestCase):
 
