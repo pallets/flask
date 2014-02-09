@@ -368,6 +368,16 @@ class SendfileTestCase(FlaskTestCase):
             self.assert_equal(cc.max_age, 10)
             rv.close()
 
+    def test_send_from_directory(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.root_path = os.path.join(os.path.dirname(__file__),
+                                     'test_apps', 'subdomaintestmodule')
+        with app.test_request_context():
+            rv = flask.send_from_directory('static', 'hello.txt')
+            rv.direct_passthrough = False
+            self.assert_equal(rv.get_data().strip(), b'Hello Subdomain')
+
 
 class LoggingTestCase(FlaskTestCase):
 
