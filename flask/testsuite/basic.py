@@ -15,8 +15,7 @@ import flask
 import pickle
 import unittest
 from datetime import datetime
-from threading import Thread
-from time import sleep
+from threading import Thread, Condition
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from flask._compat import text_type
 from werkzeug.exceptions import BadRequest, NotFound
@@ -1019,12 +1018,16 @@ class BasicFunctionalityTestCase(FlaskTestCase):
     def test_before_first_request_functions_concurrent(self):
         got = []
         app = flask.Flask(__name__)
+        cv = Condition()
         @app.before_first_request
         def foo():
-            sleep(1)
+            with cv:
+                cv.wait()
             got.append(42)
         c = app.test_client()
         def get_and_assert():
+            with cv:
+                cv.notify()
             c.get("/")
             self.assert_equal(got, [42])
         t = Thread(target=get_and_assert)
