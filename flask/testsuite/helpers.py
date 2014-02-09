@@ -380,6 +380,7 @@ class SendfileTestCase(FlaskTestCase):
             rv = flask.send_from_directory('static', 'hello.txt')
             rv.direct_passthrough = False
             self.assert_equal(rv.get_data().strip(), b'Hello Subdomain')
+            rv.close()
 
 
 class LoggingTestCase(FlaskTestCase):
