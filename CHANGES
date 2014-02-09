@@ -35,6 +35,9 @@ Version 0.10.2
 - Fixed an etags bug when sending a file streams with a name.
 - Fixed `send_from_directory` not expanding to the application root path
   correctly.
+- Changed logic of before first request handlers to flip the flag after
+  invoking.  This will allow some uses that are potentially dangerous but
+  should probably be permitted.
 
 Version 0.10.1
 --------------

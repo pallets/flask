@@ -15,7 +15,7 @@ import flask
 import pickle
 import unittest
 from datetime import datetime
-from threading import Thread
+from threading import Thread, Condition
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from flask._compat import text_type
 from werkzeug.exceptions import BadRequest, NotFound
@@ -1093,6 +1093,27 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         self.assert_equal(got, [42])
         c.get('/')
         self.assert_equal(got, [42])
+        self.assert_true(app.got_first_request)
+
+    def test_before_first_request_functions_concurrent(self):
+        got = []
+        app = flask.Flask(__name__)
+        cv = Condition()
+        @app.before_first_request
+        def foo():
+            with cv:
+                cv.wait()
+            got.append(42)
+        c = app.test_client()
+        def get_and_assert():
+            with cv:
+                cv.notify()
+            c.get("/")
+            self.assert_equal(got, [42])
+        t = Thread(target=get_and_assert)
+        t.start()
+        get_and_assert()
+        t.join()
         self.assert_true(app.got_first_request)
 
     def test_routing_redirect_debugging(self):
