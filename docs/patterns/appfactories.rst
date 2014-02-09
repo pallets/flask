@@ -61,7 +61,7 @@ It's preferable to create your extensions and app factories so that the
 extension object does not initially get bound to the application.
 
 Using `Flask-SQLAlchemy <http://pythonhosted.org/Flask-SQLAlchemy/>`_, 
-as an example, you should **not** do::
+as an example, you should not do something along those lines::
     
     def create_app(config_filename):
         app = Flask(__name__)
@@ -81,7 +81,6 @@ and in your application.py (or equivalent)::
 
         from yourapplication.model import db
         db.init_app(app)
-
 
 Using this design pattern, no application-specific state is stored on the
 extension object, so one extension object can be used for multiple apps. 
