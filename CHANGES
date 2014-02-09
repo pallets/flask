@@ -18,6 +18,8 @@ Version 0.10.2
   the test client when absolute URLs were requested.
 - Made `@before_first_request` into a decorator as intended.
 - Fixed an etags bug when sending a file streams with a name.
+- Fixed `send_from_directory` not expanding to the application root path
+  correctly.
 
 Version 0.10.1
 --------------

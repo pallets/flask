@@ -615,6 +615,8 @@ def send_from_directory(directory, filename, **options):
                     forwarded to :func:`send_file`.
     """
     filename = safe_join(directory, filename)
+    if not os.path.isabs(filename):
+        filename = os.path.join(current_app.root_path, filename)
     if not os.path.isfile(filename):
         raise NotFound()
     options.setdefault('conditional', True)
