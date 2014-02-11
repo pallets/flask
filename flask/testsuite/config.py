@@ -41,6 +41,12 @@ class ConfigTestCase(FlaskTestCase):
         app.config.from_object(__name__)
         self.common_object_test(app)
 
+    def test_config_from_json(self):
+        app = flask.Flask(__name__)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        app.config.from_json(os.path.join(current_dir, 'static', 'config.json'))
+        self.common_object_test(app)
+
     def test_config_from_class(self):
         class Base(object):
             TEST_KEY = 'foo'
@@ -99,6 +105,19 @@ class ConfigTestCase(FlaskTestCase):
         else:
             self.assert_true(0, 'expected config')
         self.assert_false(app.config.from_pyfile('missing.cfg', silent=True))
+
+    def test_config_missing_json(self):
+        app = flask.Flask(__name__)
+        try:
+            app.config.from_json('missing.json')
+        except IOError as e:
+            msg = str(e)
+            self.assert_true(msg.startswith('[Errno 2] Unable to load configuration '
+                                            'file (No such file or directory):'))
+            self.assert_true(msg.endswith("missing.json'"))
+        else:
+            self.assert_true(0, 'expected config')
+        self.assert_false(app.config.from_json('missing.json', silent=True))
 
     def test_session_lifetime(self):
         app = flask.Flask(__name__)
