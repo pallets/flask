@@ -15,6 +15,7 @@ import errno
 
 from werkzeug.utils import import_string
 from ._compat import string_types
+from . import json
 
 
 class ConfigAttribute(object):
@@ -163,6 +164,32 @@ class Config(dict):
         for key in dir(obj):
             if key.isupper():
                 self[key] = getattr(obj, key)
+
+    def from_json(self, filename, silent=False):
+        """Updates the values in the config from a JSON file. This function
+        behaves as if the JSON object was a dictionary and passed ot the
+        :meth:`from_object` function.
+
+        :param filename: the filename of the JSON file.  This can either be an
+                         absolute filename or a filename relative to the
+                         root path.
+        :param silent: set to `True` if you want silent failure for missing
+                       files.
+        """
+        filename = os.path.join(self.root_path, filename)
+
+        try:
+            with open(filename) as json_file:
+                obj = json.loads(json_file.read())
+        except IOError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
+            raise
+        for key in obj.keys():
+            if key.isupper():
+                self[key] = obj[key]
+        return True
 
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
