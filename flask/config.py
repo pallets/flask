@@ -175,6 +175,8 @@ class Config(dict):
                          root path.
         :param silent: set to `True` if you want silent failure for missing
                        files.
+
+        .. versionadded:: 1.0
         """
         filename = os.path.join(self.root_path, filename)
 
