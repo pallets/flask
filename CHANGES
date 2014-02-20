@@ -18,6 +18,7 @@ Version 1.0
 - Added support for returning tuples in the form ``(response, headers)``
   from a view function.
 - Added :meth:`flask.Config.from_json`.
+- Added :attr:`flask.Flask.config_class`.
 
 Version 0.10.2
 --------------
