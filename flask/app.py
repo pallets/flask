@@ -182,6 +182,8 @@ class Flask(_PackageBoundObject):
     #:
     #: 1. Default values for certain config options.
     #: 2. Access to config values through attributes in addition to keys.
+    #:
+    #: .. versionadded:: 1.0
     config_class = Config
 
     #: The debug flag.  Set this to `True` to enable debugging of the
