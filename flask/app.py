@@ -175,6 +175,15 @@ class Flask(_PackageBoundObject):
                                      _set_request_globals_class)
     del _get_request_globals_class, _set_request_globals_class
 
+    #: The class that is used for the ``config`` attribute of this app.
+    #: Defaults to :class:`~flask.Config`.
+    #:
+    #: Example use cases for a custom class:
+    #:
+    #: 1. Default values for certain config options.
+    #: 2. Access to config values through attributes in addition to keys.
+    config_class = Config
+
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
     #: exception occurs and the integrated server will automatically reload
@@ -610,7 +619,7 @@ class Flask(_PackageBoundObject):
         root_path = self.root_path
         if instance_relative:
             root_path = self.instance_path
-        return Config(root_path, self.default_config)
+        return self.config_class(root_path, self.default_config)
 
     def auto_find_instance_path(self):
         """Tries to locate the instance path if it was not provided to the
