@@ -183,6 +183,18 @@ def make_response(*args):
     return current_app.make_response(args)
 
 
+def not_modified():
+    """One shortcut for making `304 Not Modified` response.
+    
+    You can not do something like this::
+
+        def index():
+            # your logic here
+            return not_modified()
+    """
+    return current_app.response_class(status=304)
+
+
 def url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
 

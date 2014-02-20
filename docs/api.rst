@@ -322,6 +322,8 @@ Useful Functions and Classes
 
 .. autofunction:: make_response
 
+.. autofunction:: not_modified
+
 .. autofunction:: after_this_request
 
 .. autofunction:: send_file

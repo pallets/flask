@@ -815,6 +815,12 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assertEqual(rv.status_code, 400)
             self.assertEqual(rv.headers['Content-Type'], 'text/html')
             self.assertEqual(rv.headers['X-Foo'], 'bar')
+    
+    def test_not_modified(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.not_modified()
+            self.assert_equal(rv.status_code, 304)
 
     def test_url_generation(self):
         app = flask.Flask(__name__)
