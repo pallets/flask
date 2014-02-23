@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+  <form action="{{ url_for('edit_entry') }}" method=post class=edit-entry>
+    <dl>
+      <dt>Title:
+      <dd><input type=text size=30 name=title value={{ entry.title }}>
+      <dt>Text:
+      <dd><textarea name=text rows=5 cols=40>{{ entry.text|safe }}</textarea>
+      <dd><input type=hidden name=id value={{ entry.id }}>
+      <dd><input type=submit value=Share>
+    </dl>
+  </form>
+{% endblock %}
