@@ -65,7 +65,7 @@ def close_db(error):
 @app.route('/')
 def show_entries():
     db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
+    cur = db.execute('select id, title, text from entries order by id desc')
     entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
@@ -79,6 +79,34 @@ def add_entry():
                  [request.form['title'], request.form['text']])
     db.commit()
     flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
+
+
+@app.route('/edit', methods=['GET', 'POST'])
+def edit_entry():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    if request.method == 'POST':
+        db.execute('update entries set title=?, text=? where id = ?', 
+                [request.form['title'], request.form['text'], request.form['id']])
+        db.commit()
+        flash('Entry was successfully edited')
+        return redirect(url_for('show_entries'))
+    cur = db.execute('select id, title, text from entries where id = ?', request.args.get('id'))
+    entry = cur.fetchone()
+    print(entry)
+    return render_template('edit_entries.html', entry=entry)
+
+
+@app.route('/delete')
+def delete_entry():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('delete from entries where id = ?', request.args.get('id'))
+    db.commit()
+    flash('Entry was successfully deleted')
     return redirect(url_for('show_entries'))
 
 
