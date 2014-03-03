@@ -14,7 +14,7 @@ load that or import the values from there.
 First we add the imports in `flaskr.py`::
 
     # all the imports
-    import sqlite3
+    import sqlite3, os
     from flask import Flask, request, session, g, redirect, url_for, abort, \
          render_template, flash
 
