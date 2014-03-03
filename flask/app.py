@@ -788,7 +788,7 @@ class Flask(_PackageBoundObject):
             # without reloader and that stuff from an interactive shell.
             self._got_first_request = False
 
-    def test_client(self, use_cookies=True):
+    def test_client(self, use_cookies=True, **kwargs):
         """Creates a test client for this application.  For information
         about unit testing head over to :ref:`testing`.
 
@@ -824,7 +824,7 @@ class Flask(_PackageBoundObject):
         cls = self.test_client_class
         if cls is None:
             from flask.testing import FlaskClient as cls
-        return cls(self, self.response_class, use_cookies=use_cookies)
+        return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
