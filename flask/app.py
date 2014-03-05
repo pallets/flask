@@ -1219,9 +1219,11 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def after_request(self, f):
-        """Register a function to be run after each request.  Your function
-        must take one parameter, a :attr:`response_class` object and return
-        a new response object or the same (see :meth:`process_response`).
+        """Register a function to be run after each request.
+
+        Your function must take one parameter, an instance of
+        :attr:`response_class` and return a new response object or the
+        same (see :meth:`process_response`).
 
         As of Flask 0.7 this function might not be executed at the end of the
         request in case an unhandled exception occurred.
