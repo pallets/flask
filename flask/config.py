@@ -216,6 +216,8 @@ class Config(dict):
         :param namespace: a configuration namespace
         :param lowercase: a flag indicating if the keys of the resulting
                           dictionary should be lowercase
+
+        .. versionadded:: 1.0
         """
         rv = {}
         for k, v in iteritems(self):
