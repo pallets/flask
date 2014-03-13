@@ -14,7 +14,7 @@ import os
 import errno
 
 from werkzeug.utils import import_string
-from ._compat import string_types
+from ._compat import string_types, iteritems
 from . import json
 
 
@@ -218,7 +218,7 @@ class Config(dict):
                           dictionary should be lowercase
         """
         rv = {}
-        for k, v in self.iteritems():
+        for k, v in iteritems(self):
             if not k.startswith(namespace):
                 continue
             key = k[len(namespace):]
