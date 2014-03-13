@@ -155,7 +155,7 @@ The following configuration values are used internally by Flask:
                                   ascii-encoded JSON.  If this is set to
                                   ``False`` Flask will not encode to ASCII
                                   and output strings as-is and return
-                                  unicode strings.  ``jsonfiy`` will
+                                  unicode strings.  ``jsonify`` will
                                   automatically encode it in ``utf-8``
                                   then for transport for instance.
 ``JSON_SORT_KEYS``                By default Flask will serialize JSON
