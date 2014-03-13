@@ -844,6 +844,20 @@ class Flask(_PackageBoundObject):
                 rv = c.get('/?vodka=42')
                 assert request.args['vodka'] == '42'
 
+        Additionally, you may pass optional keyword arguments that will then
+        be passed to the application's :attr:`test_client_class` constructor.
+        For example::
+
+            from flask.testing import FlaskClient
+
+            class CustomClient(FlaskClient):
+                def __init__(self, authentication=None, *args, **kwargs):
+                    FlaskClient.__init__(*args, **kwargs)
+                    self._authentication = authentication
+
+            app.test_client_class = CustomClient
+            client = app.test_client(authentication='Basic ....')
+
         See :class:`~flask.testing.FlaskClient` for more information.
 
         .. versionchanged:: 0.4
