@@ -40,25 +40,25 @@ class Request(RequestBase):
     specific ones.
     """
 
-    #: the internal URL rule that matched the request.  This can be
+    #: The internal URL rule that matched the request.  This can be
     #: useful to inspect which methods are allowed for the URL from
     #: a before/after handler (``request.url_rule.methods``) etc.
     #:
     #: .. versionadded:: 0.6
     url_rule = None
 
-    #: a dict of view arguments that matched the request.  If an exception
+    #: A dict of view arguments that matched the request.  If an exception
     #: happened when matching, this will be `None`.
     view_args = None
 
-    #: if matching the URL failed, this is the exception that will be
+    #: If matching the URL failed, this is the exception that will be
     #: raised / was raised as part of the request handling.  This is
     #: usually a :exc:`~werkzeug.exceptions.NotFound` exception or
     #: something similar.
     routing_exception = None
 
-    # switched by the request context until 1.0 to opt in deprecated
-    # module functionality
+    # Switched by the request context until 1.0 to opt in deprecated
+    # module functionality.
     _is_old_module = False
 
     @property
@@ -179,7 +179,7 @@ class Request(RequestBase):
     def _load_form_data(self):
         RequestBase._load_form_data(self)
 
-        # in debug mode we're replacing the files multidict with an ad-hoc
+        # In debug mode we're replacing the files multidict with an ad-hoc
         # subclass that raises a different error for key errors.
         ctx = _request_ctx_stack.top
         if ctx is not None and ctx.app.debug and \
