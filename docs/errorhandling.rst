@@ -269,7 +269,7 @@ of the box (see :ref:`debug-mode`).  If you would like to use another Python
 debugger, note that debuggers interfere with each other.  You have to set some
 options in order to use your favorite debugger:
 
-* ``debug``        - whether to enable debug mode and catch exceptinos
+* ``debug``        - whether to enable debug mode and catch exceptions
 * ``use_debugger`` - whether to use the internal Flask debugger
 * ``use_reloader`` - whether to reload and fork the process on exception
 

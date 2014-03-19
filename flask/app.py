@@ -175,6 +175,17 @@ class Flask(_PackageBoundObject):
                                      _set_request_globals_class)
     del _get_request_globals_class, _set_request_globals_class
 
+    #: The class that is used for the ``config`` attribute of this app.
+    #: Defaults to :class:`~flask.Config`.
+    #:
+    #: Example use cases for a custom class:
+    #:
+    #: 1. Default values for certain config options.
+    #: 2. Access to config values through attributes in addition to keys.
+    #:
+    #: .. versionadded:: 1.0
+    config_class = Config
+
     #: The debug flag.  Set this to `True` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
     #: exception occurs and the integrated server will automatically reload
@@ -610,7 +621,7 @@ class Flask(_PackageBoundObject):
         root_path = self.root_path
         if instance_relative:
             root_path = self.instance_path
-        return Config(root_path, self.default_config)
+        return self.config_class(root_path, self.default_config)
 
     def auto_find_instance_path(self):
         """Tries to locate the instance path if it was not provided to the
@@ -1208,9 +1219,11 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def after_request(self, f):
-        """Register a function to be run after each request.  Your function
-        must take one parameter, a :attr:`response_class` object and return
-        a new response object or the same (see :meth:`process_response`).
+        """Register a function to be run after each request.
+
+        Your function must take one parameter, an instance of
+        :attr:`response_class` and return a new response object or the
+        same (see :meth:`process_response`).
 
         As of Flask 0.7 this function might not be executed at the end of the
         request in case an unhandled exception occurred.

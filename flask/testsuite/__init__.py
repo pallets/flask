@@ -157,12 +157,18 @@ class FlaskTestCase(unittest.TestCase):
     def assert_not_in(self, x, y):
         self.assertNotIn(x, y)
 
+    def assert_isinstance(self, obj, cls):
+        self.assertIsInstance(obj, cls)
+
     if sys.version_info[:2] == (2, 6):
         def assertIn(self, x, y):
             assert x in y, "%r unexpectedly not in %r" % (x, y)
 
         def assertNotIn(self, x, y):
             assert x not in y, "%r unexpectedly in %r" % (x, y)
+
+        def assertIsInstance(self, x, y):
+            assert isinstance(x, y), "not isinstance(%r, %r)" % (x, y)
 
 
 class _ExceptionCatcher(object):
