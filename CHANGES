@@ -17,6 +17,9 @@ Version 1.0
 - Made Flask support custom JSON mimetypes for incoming data.
 - Added support for returning tuples in the form ``(response, headers)``
   from a view function.
+- Added :meth:`flask.Config.from_json`.
+- Added :attr:`flask.Flask.config_class`.
+- Added :meth:`flask.config.Config.get_namespace`.
 
 Version 0.10.2
 --------------

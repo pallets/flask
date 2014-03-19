@@ -79,7 +79,7 @@ class BlueprintSetupState(object):
 class Blueprint(_PackageBoundObject):
     """Represents a blueprint.  A blueprint is an object that records
     functions that will be called with the
-    :class:`~flask.blueprint.BlueprintSetupState` later to register functions
+    :class:`~flask.blueprints.BlueprintSetupState` later to register functions
     or other things on the main application.  See :ref:`blueprints` for more
     information.
 
