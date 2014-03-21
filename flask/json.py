@@ -25,7 +25,7 @@ except ImportError:
     from itsdangerous import json as _json
 
 
-# figure out if simplejson escapes slashes.  This behavior was changed
+# Figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
 _slash_escape = '\\/' not in _json.dumps('/')
 

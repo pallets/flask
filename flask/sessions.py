@@ -223,7 +223,7 @@ class SessionInterface(object):
 
     def get_cookie_path(self, app):
         """Returns the path for which the cookie should be valid.  The
-        default implementation uses the value from the SESSION_COOKIE_PATH``
+        default implementation uses the value from the ``SESSION_COOKIE_PATH``
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's `None`.
         """
