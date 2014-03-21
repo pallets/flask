@@ -19,7 +19,7 @@ from datetime import datetime
 from threading import Thread
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from flask._compat import text_type
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, HTTPException
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
 
@@ -640,6 +640,24 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         rv = c.get('/error')
         self.assert_equal(rv.status_code, 500)
         self.assert_equal(b'internal server error', rv.data)
+
+    def test_http_error_handling(self):
+        app = flask.Flask(__name__)
+        @app.errorhandler(HTTPException)
+        def error(e):
+            if type(e) is NotFound:
+                return 'not here', 404
+            raise AssertionError(str(e))
+
+        @app.route('/explicit')
+        def explicit():
+            return flask.abort(404)
+
+        c = app.test_client()
+        for rv in (c.get('/not_existing'), c.get('/explicit')):
+            self.assert_equal(rv.data, b'not here')
+            self.assert_equal(rv.status_code, 404)
+
 
     def test_before_request_and_routing_errors(self):
         app = flask.Flask(__name__)
