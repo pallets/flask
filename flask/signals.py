@@ -37,12 +37,12 @@ except ImportError:
             temporarily_connected_to = connected_to = _fail
         del _fail
 
-# the namespace for code signals.  If you are not flask code, do
+# The namespace for code signals.  If you are not flask code, do
 # not put signals in here.  Create your own namespace instead.
 _signals = Namespace()
 
 
-# core signals.  For usage examples grep the sourcecode or consult
+# Core signals.  For usage examples grep the sourcecode or consult
 # the API documentation in docs/api.rst as well as docs/signals.rst
 template_rendered = _signals.signal('template-rendered')
 request_started = _signals.signal('request-started')
