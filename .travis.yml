@@ -8,8 +8,11 @@ python:
 
 env:
   - REQUIREMENTS=lowest
+  - REQUIREMENTS=lowest RUN_FLASK_MEMORY_TESTS=1
   - REQUIREMENTS=release
+  - REQUIREMENTS=release RUN_FLASK_MEMORY_TESTS=1
   - REQUIREMENTS=devel
+  - REQUIREMENTS=devel RUN_FLASK_MEMORY_TESTS=1
 
 matrix:
   exclude:
