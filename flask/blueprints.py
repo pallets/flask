@@ -152,6 +152,19 @@ class Blueprint(_PackageBoundObject):
         for deferred in self.deferred_functions:
             deferred(state)
 
+    def register_blueprint(self, blueprint, **options):
+        """Registers another nested blueprint on the blueprint.
+
+        .. versionadded:: 0.10
+        """
+        def deferred(state):
+            url_prefix = (state.url_prefix or u"") + (options.get('url_prefix', blueprint.url_prefix) or u"")
+            if 'url_prefix' in options:
+                del options['url_prefix']
+
+            state.app.register_blueprint(blueprint, url_prefix=url_prefix, **options)
+        self.record(deferred)
+
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
         :func:`url_for` function is prefixed with the name of the blueprint.
