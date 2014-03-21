@@ -60,7 +60,7 @@ class View(object):
     #: view function is created the result is automatically decorated.
     #:
     #: .. versionadded:: 0.8
-    decorators = []
+    decorators = ()
 
     def dispatch_request(self):
         """Subclasses have to override this method to implement the
