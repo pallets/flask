@@ -427,8 +427,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     checking them first.  Something like this is usually sufficient to
     avoid security problems::
 
-        if '..' in filename or filename.startswith('/'):
-            abort(404)
+        filename = os.path.abspath(filename)
+        if not filename.startswith(STATIC_FILE_SERVING_DIR):
 
     .. versionadded:: 0.2
 
