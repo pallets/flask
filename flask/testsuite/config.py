@@ -40,6 +40,14 @@ class ConfigTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         app.config.from_object(__name__)
         self.common_object_test(app)
+        
+    def test_config_from_dict(self):
+        app = flask.Flask(__name__)
+        app.config.from_dict({
+            'TEST_KEY': 'foo',
+            'SECRET_KEY': 'devkey'
+        })
+        self.common_object_test(app)
 
     def test_config_from_json(self):
         app = flask.Flask(__name__)

@@ -164,6 +164,21 @@ class Config(dict):
         for key in dir(obj):
             if key.isupper():
                 self[key] = getattr(obj, key)
+                
+    def from_dict(self, d):
+        """Updates the values from the given dictionary.
+    
+        Just the uppercase variables in that object are stored in the config.
+        Example usage::
+    
+            app.config.from_dict(dict(DEBUG=True))
+    
+        :param d: a dictionary
+        """
+        if isinstance(d, dict):
+            for key, value in d.items():
+                if key.isupper():
+                    self[key] = value
 
     def from_json(self, filename, silent=False):
         """Updates the values in the config from a JSON file. This function
