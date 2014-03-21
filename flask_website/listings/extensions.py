@@ -491,7 +491,6 @@ extensions = [
         github='kennethreitz/flask-heroku',
         approved=False
     ),
-
     Extension('Flask-Mako', 'Beranger Enselme, Frank Murphy',
         description='''
             <p>Allows for <a href="http://www.makotemplates.org/">Mako templates</a>
@@ -515,6 +514,15 @@ extensions = [
         ''',
         github='apiguy/flask-classy',
         docs='http://pythonhosted.org/Flask-Classy/',
+        approved=False
+    ),
+    Extension('Flask-WebTest', 'Anton Romanovich',
+        description='''
+            <p>Utilities for testing Flask applications with
+               <a href="http://webtest.readthedocs.org/en/latest/">WebTest</a>.
+        ''',
+        github='aromanovich/flask-webtest',
+        docs='http://flask-webtest.readthedocs.org/',
         approved=False
     )
 ]
