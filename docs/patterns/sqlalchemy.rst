@@ -185,6 +185,8 @@ you basically only need the engine::
 Then you can either declare the tables in your code like in the examples
 above, or automatically load them::
 
+    from sqlalchemy import Table
+    
     users = Table('users', metadata, autoload=True)
 
 To insert data you can use the `insert` method.  We have to get a
