@@ -127,7 +127,7 @@ way you can still use the redirect function or return simple strings.
 Here the code for that decorator::
 
     from functools import wraps
-    from flask import request
+    from flask import request, render_template
 
     def templated(template=None):
         def decorator(f):
