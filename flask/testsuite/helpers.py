@@ -269,7 +269,7 @@ class SendfileTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         with catch_warnings() as captured:
             with app.test_request_context():
-                f = open(os.path.join(app.root_path, 'static/index.html'))
+                f = open(os.path.join(app.root_path, 'static/index.html'), mode='rb')
                 rv = flask.send_file(f)
                 rv.direct_passthrough = False
                 with app.open_resource('static/index.html') as f:

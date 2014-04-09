@@ -60,7 +60,7 @@ class View(object):
     #: view function is created the result is automatically decorated.
     #:
     #: .. versionadded:: 0.8
-    decorators = []
+    decorators = ()
 
     def dispatch_request(self):
         """Subclasses have to override this method to implement the
@@ -89,7 +89,7 @@ class View(object):
             for decorator in cls.decorators:
                 view = decorator(view)
 
-        # we attach the view class to the view function for two reasons:
+        # We attach the view class to the view function for two reasons:
         # first of all it allows us to easily figure out what class-based
         # view this thing came from, secondly it's also used for instantiating
         # the view class so you can actually replace it with something else
@@ -111,7 +111,7 @@ class MethodViewType(type):
             for key in d:
                 if key in http_method_funcs:
                     methods.add(key.upper())
-            # if we have no method at all in there we don't want to
+            # If we have no method at all in there we don't want to
             # add a method list.  (This is for instance the case for
             # the baseclass or another subclass of a base method view
             # that does not introduce new methods).
@@ -141,8 +141,8 @@ class MethodView(with_metaclass(MethodViewType, View)):
     """
     def dispatch_request(self, *args, **kwargs):
         meth = getattr(self, request.method.lower(), None)
-        # if the request method is HEAD and we don't have a handler for it
-        # retry with GET
+        # If the request method is HEAD and we don't have a handler for it
+        # retry with GET.
         if meth is None and request.method == 'HEAD':
             meth = getattr(self, 'get', None)
         assert meth is not None, 'Unimplemented method %r' % request.method
