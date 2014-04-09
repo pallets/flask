@@ -1,7 +1,7 @@
 Unicode in Flask
 ================
 
-Flask like Jinja2 and Werkzeug is totally Unicode based when it comes to
+Flask, like Jinja2 and Werkzeug, is totally Unicode based when it comes to
 text.  Not only these libraries, also the majority of web related Python
 libraries that deal with text.  If you don't know Unicode so far, you
 should probably read `The Absolute Minimum Every Software Developer

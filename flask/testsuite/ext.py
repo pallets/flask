@@ -125,7 +125,9 @@ class ExtImportHookTestCase(FlaskTestCase):
             next = tb.tb_next.tb_next
             if not PY2:
                 next = next.tb_next
-            self.assert_in('flask_broken/__init__.py', next.tb_frame.f_code.co_filename)
+            
+            import os.path
+            self.assert_in(os.path.join('flask_broken', '__init__.py'), next.tb_frame.f_code.co_filename)
 
 
 def suite():
