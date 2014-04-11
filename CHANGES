@@ -20,7 +20,6 @@ Version 1.0
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
 - Added :meth:`flask.config.Config.get_namespace`.
-
 - Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the 
   templates will be reloaded only if the application is running in 
   debug mode. For higher performance it’s possible to disable that.
