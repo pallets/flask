@@ -137,6 +137,8 @@ class Flask(_PackageBoundObject):
                                      for loading the config are assumed to
                                      be relative to the instance path instead
                                      of the application root.
+    :param jinja_options: Options for the jinja environment initializer.
+                          
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
@@ -274,11 +276,6 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.10
     json_decoder = json.JSONDecoder
 
-    #: Options that are passed directly to the Jinja2 environment.
-    jinja_options = ImmutableDict(
-        extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
-    )
-
     #: Default configuration parameters.
     default_config = ImmutableDict({
         'DEBUG':                                False,
@@ -327,7 +324,7 @@ class Flask(_PackageBoundObject):
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
                  static_folder='static', template_folder='templates',
-                 instance_path=None, instance_relative_config=False):
+                 instance_path=None, instance_relative_config=False, jinja_options=ImmutableDict(extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'])):
         _PackageBoundObject.__init__(self, import_name,
                                      template_folder=template_folder)
         if static_path is not None:
@@ -345,6 +342,9 @@ class Flask(_PackageBoundObject):
         elif not os.path.isabs(instance_path):
             raise ValueError('If an instance path is provided it must be '
                              'absolute.  A relative path was given instead.')
+
+        #: Options that are passed directly to the Jinja2 environment.
+        self.jinja_options = jinja_options
 
         #: Holds the path to the instance folder.
         #:
@@ -659,6 +659,7 @@ class Flask(_PackageBoundObject):
         .. versionchanged:: 1.0
            ``Environment.auto_reload`` set in accordance with
            ``TEMPLATES_AUTO_RELOAD`` configuration option.
+
         """
         options = dict(self.jinja_options)
         if 'autoescape' not in options:
@@ -666,6 +667,7 @@ class Flask(_PackageBoundObject):
         if 'auto_reload' not in options:
             options['auto_reload'] = self.debug \
                 or self.config['TEMPLATES_AUTO_RELOAD']
+          
         rv = Environment(self, **options)
         rv.globals.update(
             url_for=url_for,
