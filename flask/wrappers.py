@@ -127,7 +127,7 @@ class Request(RequestBase):
         parsing fails the :meth:`on_json_loading_failed` method on the
         request object will be invoked.  By default this function will
         only load the json data if the mimetype is ``application/json``
-        but this can be overriden by the `force` parameter.
+        but this can be overridden by the `force` parameter.
 
         :param force: if set to `True` the mimetype is ignored.
         :param silent: if set to `True` this method will fail silently
