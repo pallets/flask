@@ -118,6 +118,9 @@ class Flask(_PackageBoundObject):
        The `instance_path` and `instance_relative_config` parameters were
        added.
 
+    .. versionadded:: 1.0
+       The `root_path` parameter was added.
+
     :param import_name: the name of the application package
     :param static_url_path: can be used to specify a different path for the
                             static files on the web.  Defaults to the name
@@ -137,6 +140,11 @@ class Flask(_PackageBoundObject):
                                      for loading the config are assumed to
                                      be relative to the instance path instead
                                      of the application root.
+    :param root_path: Flask by default will automatically calculate the path
+                      to the root of the application.  In certain situations
+                      this cannot be achieved (for instance if the package
+                      is a Python 3 namespace package) and needs to be
+                      manually defined.
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
@@ -327,9 +335,11 @@ class Flask(_PackageBoundObject):
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
                  static_folder='static', template_folder='templates',
-                 instance_path=None, instance_relative_config=False):
+                 instance_path=None, instance_relative_config=False,
+                 root_path=None):
         _PackageBoundObject.__init__(self, import_name,
-                                     template_folder=template_folder)
+                                     template_folder=template_folder,
+                                     root_path=root_path)
         if static_path is not None:
             from warnings import warn
             warn(DeprecationWarning('static_path is now called '

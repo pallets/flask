@@ -24,6 +24,8 @@ Version 1.0
   templates will be reloaded only if the application is running in 
   debug mode. For higher performance it’s possible to disable that.
 - Added a workaround for a limitation in Python 3.3's namespace loader.
+- Added support for explicit root paths when using Python 3.3's namespace
+  packages.
 
 Version 0.10.2
 --------------
