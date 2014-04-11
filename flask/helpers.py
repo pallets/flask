@@ -667,8 +667,8 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     # importlib's namespace loaders do not have this functionality but
     # all the modules it loads are packages, so we can take advantage of
     # this information.
-    elif (loader.__module__ == '_frozen_importlib' and
-          loader.__name__ == 'NamespaceLoader'):
+    elif (loader.__class__.__module__ == '_frozen_importlib' and
+          loader.__class__.__name__ == 'NamespaceLoader'):
         return True
     # Otherwise we need to fail with an error that explains what went
     # wrong.
