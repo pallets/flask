@@ -650,7 +650,20 @@ def get_root_path(import_name):
     else:
         # Fall back to imports.
         __import__(import_name)
-        filepath = sys.modules[import_name].__file__
+        mod = sys.modules[import_name]
+        filepath = getattr(mod, '__file__', None)
+
+        # If we don't have a filepath it might be because we are a
+        # namespace package.  In this case we pick the root path from the
+        # first module that is contained in our package.
+        if filepath is None:
+            raise RuntimeError('No root path can be found for the provided '
+                               'module "%s".  This can happen because the '
+                               'module came from an import hook that does '
+                               'not provide file name information or because '
+                               'it\'s a namespace package.  In this case '
+                               'the root path needs to be explictly '
+                               'provided.' % import_name)
 
     # filepath is import_name.py for a module, or __init__.py for a package.
     return os.path.dirname(os.path.abspath(filepath))
@@ -762,7 +775,7 @@ class locked_cached_property(object):
 
 class _PackageBoundObject(object):
 
-    def __init__(self, import_name, template_folder=None):
+    def __init__(self, import_name, template_folder=None, root_path=None):
         #: The name of the package or module.  Do not change this once
         #: it was set by the constructor.
         self.import_name = import_name
@@ -771,8 +784,11 @@ class _PackageBoundObject(object):
         #: exposed.
         self.template_folder = template_folder
 
+        if root_path is None:
+            root_path = get_root_path(self.import_name)
+
         #: Where is the app root located?
-        self.root_path = get_root_path(self.import_name)
+        self.root_path = root_path
 
         self._static_folder = None
         self._static_url_path = None
