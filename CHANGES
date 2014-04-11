@@ -23,6 +23,7 @@ Version 1.0
 - Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the 
   templates will be reloaded only if the application is running in 
   debug mode. For higher performance it’s possible to disable that.
+- Added a workaround for a limitation in Python 3.3's namespace loader.
 
 Version 0.10.2
 --------------

@@ -656,6 +656,29 @@ def get_root_path(import_name):
     return os.path.dirname(os.path.abspath(filepath))
 
 
+def _matching_loader_thinks_module_is_package(loader, mod_name):
+    """Given the loader that loaded a module and the module this function
+    attempts to figure out if the given module is actually a package.
+    """
+    # If the loader can tell us if something is a package, we can
+    # directly ask the loader.
+    if hasattr(loader, 'is_package'):
+        return loader.is_package(mod_name)
+    # importlib's namespace loaders do not have this functionality but
+    # all the modules it loads are packages, so we can take advantage of
+    # this information.
+    elif (loader.__module__ == '_frozen_importlib' and
+          loader.__name__ == 'NamespaceLoader'):
+        return True
+    # Otherwise we need to fail with an error that explains what went
+    # wrong.
+    raise AttributeError(
+        ('%s.is_package() method is missing but is required by Flask of '
+         'PEP 302 import hooks.  If you do not use import hooks and '
+         'you encounter this error please file a bug against Flask.') %
+        loader.__class__.__name__)
+
+
 def find_package(import_name):
     """Finds a package and returns the prefix (or None if the package is
     not installed) as well as the folder that contains the package or
@@ -685,14 +708,13 @@ def find_package(import_name):
             __import__(import_name)
             filename = sys.modules[import_name].__file__
         package_path = os.path.abspath(os.path.dirname(filename))
-        # package_path ends with __init__.py for a package
-        if hasattr(loader, 'is_package'):
-            if loader.is_package(root_mod_name):
-                package_path = os.path.dirname(package_path)
-        else:
-            raise AttributeError(
-                ('%s.is_package() method is missing but is '
-                 'required by Flask of PEP 302 import hooks') % loader.__class__.__name__)
+
+        # In case the root module is a pcakage we need to chop of the
+        # rightmost part.  This needs to go through a helper function
+        # because of python 3.3 namespace packages.
+        if _matching_loader_thinks_module_is_package(
+                loader, root_mod_name):
+            package_path = os.path.dirname(package_path)
 
     site_parent, site_folder = os.path.split(package_path)
     py_prefix = os.path.abspath(sys.prefix)
