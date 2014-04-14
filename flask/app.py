@@ -874,7 +874,7 @@ class Flask(_PackageBoundObject):
         return self.session_interface.make_null_session(self)
 
     def register_module(self, module, **options):
-        """Registers a module with this application.  The keyword argument
+        """Registers a module with this application.  The keyword arguments
         of this function are the same as the ones for the constructor of the
         :class:`Module` class and will override the values of the module if
         provided.
