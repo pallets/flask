@@ -64,8 +64,8 @@ If you maintain an extension that was using :data:`~flask._request_ctx_stack`
 before, please consider changing to :data:`~flask._app_ctx_stack` if it makes
 sense for your extension.  For instance, the app context stack makes sense for
 extensions which connect to databases.  Using the app context stack instead of
-the request stack will make extensions more readily handle use cases outside of
-requests.
+the request context stack will make extensions more readily handle use cases 
+outside of requests.
 
 Version 0.8
 -----------
