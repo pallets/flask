@@ -30,7 +30,7 @@ def find_best_app(module):
     if app is not None and callable(app):
         return app
 
-    # Otherwise find the first object named Flask
+    # Otherwise find exactly one Flask instance, or fail.
     matches = []
     for key, value in iteritems(module.__dict__):
         if isinstance(value, Flask):
@@ -52,7 +52,7 @@ def find_best_app(module):
 def prepare_exec_for_file(filename):
     module = []
 
-    # Chop off file extensions or package markers
+    # Chop off file extensions or package markers.
     if filename.endswith('.py'):
         filename = filename[:-3]
     elif os.path.split(filename)[1] == '__init__.py':
@@ -93,10 +93,10 @@ def locate_app(app_id, debug=None):
 
 
 class DispatchingApp(object):
-    """Special applicationt that dispatches to a flask application which
+    """Special application that dispatches to a flask application which
     is imported by name on first request.  This is safer than importing
-    the application upfront because it means that we can forward all
-    errors for import problems into the browser as error.
+    the application up front because it means that we can forward all
+    errors for import problems into the browser as errors.
     """
 
     def __init__(self, app_id, debug=None, use_eager_loading=False):
@@ -127,7 +127,7 @@ def run_application(app_id, host='127.0.0.1', port=5000, debug=None,
                     use_eager_loading=None, magic_app_id=True,
                     **options):
     """Useful function to start a Werkzeug server for an application that
-    is known by it's import name.  By default the app ID can also be a
+    is known by its import name.  By default the app ID can also be a
     full file name in which case Flask attempts to reconstruct the import
     name from it and do the right thing.
 
@@ -159,7 +159,7 @@ def run_application(app_id, host='127.0.0.1', port=5000, debug=None,
     if use_eager_loading is None:
         use_eager_loading = not use_reloader
 
-    # Extra startup messages.  This depends a but on Werkzeug internals to
+    # Extra startup messages.  This depends a bit on Werkzeug internals to
     # not double execute when the reloader kicks in.
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
         print ' * Serving Flask app "%s"' % app_id
