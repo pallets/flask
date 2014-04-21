@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.run
+    ~~~~~~~~~
+
+    A simple command line application to run flask apps.
+
+    :copyright: (c) 2014 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 import os
 import sys
 from threading import Lock
@@ -164,7 +175,10 @@ def main(as_module=False):
     this_module = __package__ + '.run'
 
     if as_module:
-        name = 'python -m ' + this_module
+        if sys.version_info >= (2, 7):
+            name = 'python -m ' + this_module.rsplit('.', 1)[0]
+        else:
+            name = 'python -m ' + this_module
     else:
         name = 'flask-run'
 
