@@ -106,6 +106,10 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
+    entry_points='''
+        [console_scripts]
+        flask-run=flask.run:main
+    ''',
     cmdclass={'audit': run_audit},
     test_suite='flask.testsuite.suite'
 )
