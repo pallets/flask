@@ -26,6 +26,9 @@ Version 1.0
 - Added a workaround for a limitation in Python 3.3's namespace loader.
 - Added support for explicit root paths when using Python 3.3's namespace
   packages.
+- Added ``flask-run`` and the ``flask.run`` module to start the local
+  debug server.  This is recommended over the old ``flask.run()`` method
+  as it works faster and more reliable due to a different design.
 
 Version 0.10.2
 --------------
