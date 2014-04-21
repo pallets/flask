@@ -1,3 +1,5 @@
+.. _errorpages:
+
 Custom Error Pages
 ==================
 
