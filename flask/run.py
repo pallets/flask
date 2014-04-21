@@ -113,7 +113,8 @@ class DispatchingApp(object):
 
 def run_application(app_id, host='127.0.0.1', port=5000, debug=None,
                     use_reloader=False, use_debugger=False,
-                    use_eager_loading=None, magic_app_id=True):
+                    use_eager_loading=None, magic_app_id=True,
+                    **options):
     """Useful function to start a Werkzeug server for an application that
     is known by it's import name.  By default the app ID can also be a
     full file name in which case Flask attempts to reconstruct the import
@@ -134,6 +135,10 @@ def run_application(app_id, host='127.0.0.1', port=5000, debug=None,
     :param magic_app_id: if this is enabled then the app id can also be a
                          filename instead of an import module and Flask
                          will attempt to reconstruct the import name.
+    :param options: the options to be forwarded to the underlying
+                    Werkzeug server.  See
+                    :func:`werkzeug.serving.run_simple` for more
+                    information.
     """
     if magic_app_id:
         if os.path.isfile(app_id) or os.sep in app_id or \
@@ -152,7 +157,7 @@ def run_application(app_id, host='127.0.0.1', port=5000, debug=None,
 
     app = DispatchingApp(app_id, debug, use_eager_loading)
     run_simple(host, port, app, use_reloader=use_reloader,
-               use_debugger=use_debugger)
+               use_debugger=use_debugger, **options)
 
 
 def main(as_module=False):
@@ -195,6 +200,13 @@ def main(as_module=False):
     parser.add_option('--without-eager-loading', action='store_false',
                       dest='with_eager_loading',
                       help='Disable the eager-loading.')
+    parser.add_option('--with-threads', action='store_true',
+                      dest='with_threads',
+                      help='Enable multi-threading to handle multiple '
+                      'requests concurrently.')
+    parser.add_option('--without-threads', action='store_false',
+                      dest='with_threads',
+                      help='Disables multi-threading. (default)')
     opts, args = parser.parse_args()
     if len(args) != 1:
         parser.error('Expected exactly one argument which is the import '
@@ -213,7 +225,8 @@ def main(as_module=False):
     run_application(args[0], opts.host, opts.port, debug=opts.debug,
                     use_reloader=opts.with_reloader,
                     use_debugger=opts.with_debugger,
-                    use_eager_loading=opts.with_eager_loading)
+                    use_eager_loading=opts.with_eager_loading,
+                    threaded=opts.with_threads)
 
 
 if __name__ == '__main__':
