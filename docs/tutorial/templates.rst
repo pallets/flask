@@ -16,7 +16,7 @@ the layout of the website in all pages.
 
 Put the following templates into the `templates` folder:
 
-.. _Jinja2: http://jinja.pocoo.org/2/documentation/templates
+.. _Jinja2: http://jinja.pocoo.org/docs/templates
 
 layout.html
 -----------
