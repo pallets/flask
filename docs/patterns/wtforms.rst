@@ -8,7 +8,7 @@ will handle here.  If you find yourself in the situation of having many
 forms, you might want to give it a try.
 
 When you are working with WTForms you have to define your forms as classes
-first.  I recommend breaking up the application into multiple modules 
+first.  I recommend breaking up the application into multiple modules
 (:ref:`larger-applications`) for that and adding a separate module for the
 forms.
 
@@ -19,7 +19,7 @@ forms.
    fun.  You can get it from `PyPI
    <https://pypi.python.org/pypi/Flask-WTF>`_.
 
-.. _Flask-WTF: http://packages.python.org/Flask-WTF/
+.. _Flask-WTF: http://pythonhosted.org/Flask-WTF/
 
 The Forms
 ---------
