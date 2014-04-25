@@ -818,7 +818,7 @@ Here are some example log calls::
 
 The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official `logging
-documentation <http://docs.python.org/library/logging.html>`_ for more
+documentation <https://docs.python.org/library/logging.html>`_ for more
 information.
 
 Hooking in WSGI Middlewares
