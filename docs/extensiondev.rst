@@ -415,6 +415,6 @@ instead of ``flask_foo`` or ``flaskext_foo`` so that extensions can
 transition to the new package name without affecting users.
 
 
-.. _OAuth extension: http://packages.python.org/Flask-OAuth/
+.. _OAuth extension: http://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
