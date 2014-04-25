@@ -17,7 +17,7 @@ forms.
    The `Flask-WTF`_ extension expands on this pattern and adds a few
    handful little helpers that make working with forms and Flask more
    fun.  You can get it from `PyPI
-   <http://pypi.python.org/pypi/Flask-WTF>`_.
+   <https://pypi.python.org/pypi/Flask-WTF>`_.
 
 .. _Flask-WTF: http://packages.python.org/Flask-WTF/
 

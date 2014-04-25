@@ -349,4 +349,4 @@ The following signals exist in Flask:
 
    .. versionadded:: 0.10
 
-.. _blinker: http://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.python.org/pypi/blinker
