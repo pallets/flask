@@ -375,7 +375,7 @@ extension to be approved you have to follow these guidelines:
    -   it must be possible to use the factory pattern for creating
        applications.
 
-4. The license must be BSD/MIT/WTFPL licensed.
+4. The extension must be BSD/MIT/WTFPL licensed.
 5. The naming scheme for official extensions is *Flask-ExtensionName* or
    *ExtensionName-Flask*.
 6. Approved extensions must define all their dependencies in the
