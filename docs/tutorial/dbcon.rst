@@ -53,7 +53,7 @@ every time the app context tears down.  So what does this mean?
 Essentially the app context is created before the request comes in and is
 destroyed (teared down) whenever the request finishes.  A teardown can
 happen because of two reasons: either everything went well (the error
-parameter will be `None`) or an exception happend in which case the error
+parameter will be `None`) or an exception happened in which case the error
 is passed to the teardown function.
 
 Curious about what these contexts mean?  Have a look at the
