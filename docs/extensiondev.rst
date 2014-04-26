@@ -355,43 +355,39 @@ new releases.  These approved extensions are listed on the `Flask
 Extension Registry`_ and marked appropriately.  If you want your own
 extension to be approved you have to follow these guidelines:
 
-0.  An approved Flask extension requires a maintainer. In the event an
-    extension author would like to move beyond the project, the project should
-    find a new maintainer including full source hosting transition and PyPI
-    access.  If no maintainer is available, give access to the Flask core team.
-1.  An approved Flask extension must provide exactly one package or module
-    named ``flask_extensionname``.  They might also reside inside a
-    ``flaskext`` namespace packages though this is discouraged now.
-2.  It must ship a testing suite that can either be invoked with ``make test``
-    or ``python setup.py test``.  For test suites invoked with ``make
-    test`` the extension has to ensure that all dependencies for the test
-    are installed automatically.  If tests are invoked with ``python setup.py
-    test``, test dependencies can be specified in the :file:`setup.py` file.  The
-    test suite also has to be part of the distribution.
-3.  APIs of approved extensions will be checked for the following
-    characteristics:
+0. An approved Flask extension requires a maintainer. In the event an
+   extension author would like to move beyond the project, the project should
+   find a new maintainer including full source hosting transition and PyPI
+   access.  If no maintainer is available, give access to the Flask core team.
+1. An approved Flask extension must provide exactly one package or module
+   named ``flask_extensionname``.  They might also reside inside a
+   ``flaskext`` namespace packages though this is discouraged now.
+2. It must ship a testing suite that can either be invoked with ``make test``
+   or ``python setup.py test``.  For test suites invoked with ``make
+   test`` the extension has to ensure that all dependencies for the test
+   are installed automatically.  If tests are invoked with ``python setup.py
+   test``, test dependencies can be specified in the `setup.py` file.  The
+   test suite also has to be part of the distribution.
+3. APIs of approved extensions will be checked for the following
+   characteristics:
 
-    -   an approved extension has to support multiple applications
-        running in the same Python process.
-    -   it must be possible to use the factory pattern for creating
-        applications.
+   -   an approved extension has to support multiple applications
+       running in the same Python process.
+   -   it must be possible to use the factory pattern for creating
+       applications.
 
-4.  The license must be BSD/MIT/WTFPL licensed.
-5.  The naming scheme for official extensions is *Flask-ExtensionName* or
-    *ExtensionName-Flask*.
-6.  Approved extensions must define all their dependencies in the
-    :file:`setup.py` file unless a dependency cannot be met because it is not
-    available on PyPI.
-7.  The extension must have documentation that uses one of the two Flask
-    themes for Sphinx documentation.
-8.  The setup.py description (and thus the PyPI description) has to
-    link to the documentation, website (if there is one) and there
-    must be a link to automatically install the development version
-    (``PackageName==dev``).
-9.  The ``zip_safe`` flag in the setup script must be set to ``False``,
-    even if the extension would be safe for zipping.
-10. An extension currently has to support Python 2.6 as well as
-    Python 2.7
+4. The license must be BSD/MIT/WTFPL licensed.
+5. The naming scheme for official extensions is *Flask-ExtensionName* or
+   *ExtensionName-Flask*.
+6. Approved extensions must define all their dependencies in the
+   `setup.py` file unless a dependency cannot be met because it is not
+   available on PyPI.
+7. The extension must have documentation that uses one of the two Flask
+   themes for Sphinx documentation.
+8. The ``zip_safe`` flag in the setup script must be set to ``False``,
+   even if the extension would be safe for zipping.
+9. An extension currently has to support Python 2.6 as well as
+   Python 2.7
 
 
 .. _ext-import-transition:
