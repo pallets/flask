@@ -386,8 +386,7 @@ extension to be approved you have to follow these guidelines:
    themes for Sphinx documentation.
 8. The ``zip_safe`` flag in the setup script must be set to ``False``,
    even if the extension would be safe for zipping.
-9. An extension currently has to support Python 2.6 as well as
-   Python 2.7
+9. An extension currently has to support Python 2.7.
 
 
 .. _ext-import-transition:
