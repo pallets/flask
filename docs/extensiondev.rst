@@ -360,8 +360,7 @@ extension to be approved you have to follow these guidelines:
    find a new maintainer including full source hosting transition and PyPI
    access.  If no maintainer is available, give access to the Flask core team.
 1. An approved Flask extension must provide exactly one package or module
-   named ``flask_extensionname``.  They might also reside inside a
-   ``flaskext`` namespace packages though this is discouraged now.
+   named ``flask_extensionname``.
 2. It must ship a testing suite that can either be invoked with ``make test``
    or ``python setup.py test``.  For test suites invoked with ``make
    test`` the extension has to ensure that all dependencies for the test
