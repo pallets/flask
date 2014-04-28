@@ -23,6 +23,8 @@ instructions for web development with Flask.
    reqcontext
    blueprints
    extensions
+   cli
+   server
    shell
    patterns/index
    deploying/index
