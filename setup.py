@@ -41,6 +41,7 @@ Links
 from __future__ import print_function
 from setuptools import Command, setup
 
+
 class run_audit(Command):
     """Audits source code using PyFlakes for following issues:
         - Names which are used but not defined or used before they are defined.
@@ -56,7 +57,8 @@ class run_audit(Command):
         pass
 
     def run(self):
-        import os, sys
+        import os
+        import sys
         try:
             import pyflakes.scripts.pyflakes as flakes
         except ImportError:
@@ -69,7 +71,7 @@ class run_audit(Command):
         for dir in dirs:
             for root, _, files in os.walk(dir):
                 for file in files:
-                    if file != '__init__.py' and file.endswith('.py') :
+                    if file != '__init__.py' and file.endswith('.py'):
                         warns += flakes.checkPath(os.path.join(root, file))
         if warns > 0:
             print("Audit finished with total %d warnings." % warns)
@@ -93,7 +95,8 @@ setup(
     install_requires=[
         'Werkzeug>=0.7',
         'Jinja2>=2.4',
-        'itsdangerous>=0.21'
+        'itsdangerous>=0.21',
+        'click',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -108,7 +111,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        flask-run=flask.run:main
+        flask=flask.cli:main
     ''',
     cmdclass={'audit': run_audit},
     test_suite='flask.testsuite.suite'
