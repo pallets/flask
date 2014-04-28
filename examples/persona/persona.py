@@ -53,7 +53,3 @@ def logout_handler():
     """
     session.clear()
     return 'OK'
-
-
-if __name__ == '__main__':
-    app.run()
