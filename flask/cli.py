@@ -53,6 +53,9 @@ def find_best_app(module):
 
 
 def prepare_exec_for_file(filename):
+    """Given a filename this will try to calculate the python path, add it
+    to the search path and return the actual module name that is expected.
+    """
     module = []
 
     # Chop off file extensions or package markers
@@ -187,8 +190,7 @@ class FlaskClickGroup(click.Group):
     def __init__(self, help=None):
         def set_app_id(ctx, value):
             if value is not None:
-                if os.path.isfile(value) or os.sep in value or \
-                   os.altsep is not None and os.altsep in value:
+                if os.path.isfile(value):
                     value = prepare_exec_for_file(value)
             ctx.obj.app_import_path = value
         def set_debug(ctx, value):
