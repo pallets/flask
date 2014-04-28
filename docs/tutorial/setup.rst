@@ -29,7 +29,6 @@ config from the same file, in `flaskr.py`::
     # Load default config and override config from an environment variable
     app.config.update(dict(
         DATABASE=os.path.join(app.root_path, 'flaskr.db'),
-        DEBUG=True,
         SECRET_KEY='development key',
         USERNAME='admin',
         PASSWORD='default'
@@ -71,10 +70,7 @@ module.  Flask will the initialize the variable from that module.  Note
 that in all cases only variable names that are uppercase are considered.
 
 The ``SECRET_KEY`` is needed to keep the client-side sessions secure.
-Choose that key wisely and as hard to guess and complex as possible.  The
-debug flag enables or disables the interactive debugger.  *Never leave
-debug mode activated in a production system*, because it will allow users to
-execute code on the server!
+Choose that key wisely and as hard to guess and complex as possible.
 
 We will also add a method that allows for  easily connecting to the
 specified database.  This can be used to open a connection on request and
@@ -92,16 +88,14 @@ tuples.
         rv.row_factory = sqlite3.Row
         return rv
 
-Finally we just add a line to the bottom of the file that fires up the
-server if we want to run that file as a standalone application::
-
-    if __name__ == '__main__':
-        app.run()
-
 With that out of the way you should be able to start up the application
 without problems.  Do this with the following command::
 
-   python flaskr.py
+    flask --app=flaskr --debug run
+
+The ``--debug`` flag enables or disables the interactive debugger.  *Never
+leave debug mode activated in a production system*, because it will allow
+users to execute code on the server!
 
 You will see a message telling you that server has started along with
 the address at which you can access it.
