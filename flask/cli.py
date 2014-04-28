@@ -99,7 +99,7 @@ def locate_app(app_id, debug=None):
 
 
 class DispatchingApp(object):
-    """Special applicationt that dispatches to a flask application which
+    """Special application that dispatches to a flask application which
     is imported by name on first request.  This is safer than importing
     the application upfront because it means that we can forward all
     errors for import problems into the browser as error.
