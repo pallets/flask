@@ -384,7 +384,7 @@ Rendering Templates
 Generating HTML from within Python is not fun, and actually pretty
 cumbersome because you have to do the HTML escaping on your own to keep
 the application secure.  Because of that Flask configures the `Jinja2
-<http://jinja.pocoo.org/2/>`_ template engine for you automatically.
+<http://jinja.pocoo.org/>`_ template engine for you automatically.
 
 To render a template you can use the :func:`~flask.render_template`
 method.  All you have to do is provide the name of the template and the
@@ -417,7 +417,7 @@ package it's actually inside your package:
 
 For templates you can use the full power of Jinja2 templates.  Head over
 to the official `Jinja2 Template Documentation
-<http://jinja.pocoo.org/2/documentation/templates>`_ for more information.
+<http://jinja.pocoo.org/docs/templates>`_ for more information.
 
 Here is an example template:
 
@@ -855,7 +855,7 @@ Here are some example log calls::
 
 The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official `logging
-documentation <http://docs.python.org/library/logging.html>`_ for more
+documentation <https://docs.python.org/library/logging.html>`_ for more
 information.
 
 Hooking in WSGI Middlewares
@@ -878,7 +878,7 @@ Ready to deploy your new Flask app?  To wrap up the quickstart, you can
 immediately deploy to a hosted platform, all of which offer a free plan for
 small projects:
 
-- `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
+- `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/python>`_
 - `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
   with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
 
