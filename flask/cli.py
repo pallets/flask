@@ -192,6 +192,8 @@ class FlaskClickGroup(click.Group):
             if value is not None:
                 if os.path.isfile(value):
                     value = prepare_exec_for_file(value)
+                elif '.' not in sys.path:
+                    sys.path.insert(0, '.')
             ctx.obj.app_import_path = value
         def set_debug(ctx, value):
             ctx.obj.debug = value
