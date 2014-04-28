@@ -63,6 +63,11 @@ def prepare_exec_for_file(filename):
         filename = filename[:-3]
     elif os.path.split(filename)[1] == '__init__.py':
         filename = os.path.dirname(filename)
+    else:
+        raise NoAppException('The file provided (%s) does exist but is not a '
+                             'valid Python file.  This means that it cannot '
+                             'be used as application.  Please change the '
+                             'extension to .py' % filename)
     filename = os.path.realpath(filename)
 
     dirpath = filename

@@ -90,11 +90,16 @@ Using Applications
 ------------------
 
 So to use such an application you then have to create the application
-first.  Here an example `run.py` file that runs such an application::
+first in a separate file otherwise the ``flask`` command won't be able
+to find it.  Here an example `exampleapp.py` file that creates such
+an application::
 
     from yourapplication import create_app
     app = create_app('/path/to/config.cfg')
-    app.run()
+
+It can then be used with the ``flask`` command::
+
+    flask --app=exampleapp run
 
 Factory Improvements
 --------------------
