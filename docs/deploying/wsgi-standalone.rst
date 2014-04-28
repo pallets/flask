@@ -64,7 +64,7 @@ event loop::
 
 .. _Gevent: http://www.gevent.org/
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
-.. _libevent: http://monkey.org/~provos/libevent/
+.. _libevent: http://libevent.org/
 
 Twisted Web
 -----------
