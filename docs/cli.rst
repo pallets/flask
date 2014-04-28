@@ -99,3 +99,32 @@ The command will then show up on the command line::
 
     $ flask -a hello.py initdb
     Init the db
+
+Factory Functions
+-----------------
+
+In case you are using factory functions to create your application (see
+:ref:`app-factories`) you will discover that the ``flask`` command cannot
+work with them directly.  Flask won't be able to figure out how to
+instanciate your application properly by itself.  Because of this reason
+the recommendation is to create a separate file that instanciates
+applications.
+
+For instance if you have a factory function that creates an application
+from a filename you could make a separate file that creates such an
+application from an environment variable.
+
+For instance this could be a file named ``autoapp.py`` with these
+contents::
+
+    import os
+    from yourapplication import create_app
+    app = create_app(os.environ['YOURAPPLICATION_CONFIG'])
+
+Once this has happened you can make the flask command automatically pick
+it up::
+
+    export YOURAPPLICATION_CONFIG=/path/to/config.cfg
+    export FLASK_APP=/path/to/autoapp.py
+
+From this point onwards ``flask`` will find your application.
