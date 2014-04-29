@@ -8,14 +8,17 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import sys
+import logging
 import posixpath
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
-     TemplateNotFound
+    TemplateNotFound, Undefined
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered
 from .module import blueprint_is_module
-from ._compat import itervalues, iteritems
+from ._compat import itervalues, iteritems, implements_to_string, string_types
+from jinja2.utils import missing, object_type_repr
 
 
 def _default_template_ctx_processor():
@@ -33,6 +36,43 @@ def _default_template_ctx_processor():
     return rv
 
 
+@implements_to_string
+class LoggingUndefined(Undefined):
+    """
+    An undefined type that logs to stdout when trying to write out the variable
+    in a jinja template.
+    """
+
+    __slots__ = ()
+    logger = logging.getLogger(__name__)
+
+    def __init__(self, *args, **kwargs):
+        ch = logging.StreamHandler(sys.stdout)
+        self.logger.addHandler(ch)
+        Undefined.__init__(self, *args, **kwargs)
+
+    def __str__(self):
+        # Takes aim from jinja2.runtime.DebugUndefined
+        if self._undefined_hint is None:
+            if self._undefined_obj is missing:
+                hint = '{variable} is undefined'.format(
+                    variable=self._undefined_name)
+            elif not isinstance(self._undefined_name, string_types):
+                hint = '{object} has no element {element}'.format(
+                    object=object_type_repr(self._undefined_obj),
+                    element=self._undefined_name)
+            else:
+                hint = '{object} has no attribute {attribute}'.format(
+                    object=object_type_repr(self._undefined_obj),
+                    attribute=self._undefined_name)
+        else:
+            hint = self._undefined_hint
+        self.logger.error('Template error: {hint}'.format(hint=hint))
+        # Return a empty string so that the variable in the template is empty
+        # on render.
+        return u''
+
+
 class Environment(BaseEnvironment):
     """Works like a regular Jinja2 environment but has some additional
     knowledge of how Flask's blueprint works so that it can prepend the
@@ -42,6 +82,8 @@ class Environment(BaseEnvironment):
     def __init__(self, app, **options):
         if 'loader' not in options:
             options['loader'] = app.create_global_jinja_loader()
+        if 'undefined' not in options:
+            options['undefined'] = LoggingUndefined if app.debug else Undefined
         BaseEnvironment.__init__(self, **options)
         self.app = app
 
@@ -124,8 +166,9 @@ def render_template(template_name_or_list, **context):
     """
     ctx = _app_ctx_stack.top
     ctx.app.update_template_context(context)
-    return _render(ctx.app.jinja_env.get_or_select_template(template_name_or_list),
-                   context, ctx.app)
+    return _render(
+        ctx.app.jinja_env.get_or_select_template(template_name_or_list),
+        context, ctx.app)
 
 
 def render_template_string(source, **context):
