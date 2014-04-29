@@ -290,7 +290,7 @@ Example usage:
               help='The port to bind to.')
 @click.option('--reload/--no-reload', default=None,
               help='Enable or disable the reloader.  By default the reloader '
-              'is active is debug is enabled.')
+              'is active if debug is enabled.')
 @click.option('--debugger/--no-debugger', default=None,
               help='Enable or disable the debugger.  By default the debugger '
               'is active if debug is enabled.')
