@@ -77,7 +77,7 @@ def with_metaclass(meta, *bases):
 # breaks the __exit__ function in a very peculiar way.  This is currently
 # true for pypy 2.2.1 for instance.  The second level of exception blocks
 # is necessary because pypy seems to forget to check if an exception
-# happend until the next bytecode instruction?
+# happened until the next bytecode instruction?
 BROKEN_PYPY_CTXMGR_EXIT = False
 if hasattr(sys, 'pypy_version_info'):
     class _Mgr(object):

@@ -178,4 +178,4 @@ applications dealing with uploads, there is a Flask extension called
 `Flask-Uploads`_ that implements a full fledged upload mechanism with
 white and blacklisting of extensions and more.
 
-.. _Flask-Uploads: http://packages.python.org/Flask-Uploads/
+.. _Flask-Uploads: http://pythonhosted.org/Flask-Uploads/

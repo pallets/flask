@@ -37,13 +37,14 @@ def connect_db():
     return rv
 
 
-def init_db():
+@app.cli.command()
+def initdb():
     """Creates the database tables."""
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+    db = get_db()
+    with app.open_resource('schema.sql', mode='r') as f:
+        db.cursor().executescript(f.read())
+    db.commit()
+    print('Initialized the database.')
 
 
 def get_db():
@@ -76,7 +77,7 @@ def add_entry():
         abort(401)
     db = get_db()
     db.execute('insert into entries (title, text) values (?, ?)',
-                 [request.form['title'], request.form['text']])
+               [request.form['title'], request.form['text']])
     db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
@@ -102,8 +103,3 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
-
-
-if __name__ == '__main__':
-    init_db()
-    app.run()

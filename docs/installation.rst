@@ -4,7 +4,7 @@ Installation
 ============
 
 Flask depends on some external libraries, like `Werkzeug
-<http://werkzeug.pocoo.org/>`_ and `Jinja2 <http://jinja.pocoo.org/2/>`_.
+<http://werkzeug.pocoo.org/>`_ and `Jinja2 <http://jinja.pocoo.org/>`_.
 Werkzeug is a toolkit for WSGI, the standard Python interface between web
 applications and a variety of servers for both development and deployment.
 Jinja2 renders templates.

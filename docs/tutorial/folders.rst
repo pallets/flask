@@ -20,4 +20,4 @@ templates you create later in the tutorial will go in this directory.
 
 Continue with :ref:`tutorial-schema`.
 
-.. _Jinja2: http://jinja.pocoo.org/2/
+.. _Jinja2: http://jinja.pocoo.org/

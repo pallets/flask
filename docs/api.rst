@@ -597,7 +597,7 @@ Signals
       do nothing but will fail with a :exc:`RuntimeError` for all other
       operations, including connecting.
 
-.. _blinker: http://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.python.org/pypi/blinker
 
 Class-Based Views
 -----------------

@@ -20,16 +20,19 @@ A minimal Flask application looks something like this::
     def hello_world():
         return 'Hello World!'
 
-    if __name__ == '__main__':
-        app.run()
-
 Just save it as `hello.py` (or something similar) and run it with your Python
 interpreter.  Make sure to not call your application `flask.py` because this
 would conflict with Flask itself.
 
-::
+To run the application you can either use the ``flask`` command or
+python's ``-m`` switch with Flask::
 
-    $ python hello.py
+    $ flask -a hello run
+     * Running on http://127.0.0.1:5000/
+
+or alternatively::
+
+    $ python -m flask -a hello run
      * Running on http://127.0.0.1:5000/
 
 Now head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, and you
@@ -51,10 +54,8 @@ So what did that code do?
 4. The function is given a name which is also used to generate URLs for that
    particular function, and returns the message we want to display in the
    user's browser.
-5. Finally we use the :meth:`~flask.Flask.run` function to run the local server
-   with our application.  The ``if __name__ == '__main__':`` makes sure the
-   server only runs if the script is executed directly from the Python
-   interpreter and not used as an imported module.
+5. Finally we use the Flask development server to run the local server
+   with our application.
 
 To stop the server, hit control-C.
 
@@ -67,37 +68,73 @@ To stop the server, hit control-C.
    default because in debugging mode a user of the application can execute
    arbitrary Python code on your computer.
 
-   If you have `debug` disabled or trust the users on your network, you can
-   make the server publicly available simply by changing the call of the
-   :meth:`~flask.Flask.run` method to look like this::
+   If you have the debugger disabled or trust the users on your network,
+   you can make the server publicly available simply by adding
+   ``--host=0.0.0.0`` to the command line::
 
-       app.run(host='0.0.0.0')
+       flask -a hello run --host=0.0.0.0
 
    This tells your operating system to listen on all public IPs.
 
+What to do if the Server does not Start
+---------------------------------------
+
+In case the ``python -m flask`` fails or ``flask`` does not exist,
+there are multiple reasons this might be the case.  First of all you need
+to look at the error message.
+
+Old Version of Flask
+````````````````````
+
+Versions of Flask older than 1.0 use to have different ways to start the
+application.  In short, the ``flask`` command did not exist, and
+neither did ``python -m flask``.  In that case you have two options:
+either upgrade to newer Flask versions or have a look at the :ref:`server`
+docs to see the alternative method for running a server.
+
+Python older 2.7
+````````````````
+
+In case you have a version of Python older than 2.7 ``python -m flask``
+does not work.  You can either use ``flask`` or ``python -m
+flask.cli`` as an alternative.  This is because Python before 2.7 does no
+permit packages to act as executable modules.  For more information see
+:ref:`cli`.
+
+Invalid Import Name
+```````````````````
+
+The ``-a`` argument to ``flask`` is the name of the module to import.  In
+case that module is incorrectly named you will get an import error upon
+start (or if debug is enabled when you navigate to the application).  It
+will tell you what it tried to import and why it failed.
+
+The most common reason is a typo or because you did not actually create an
+``app`` object.
 
 .. _debug-mode:
 
 Debug Mode
 ----------
 
-The :meth:`~flask.Flask.run` method is nice to start a local
-development server, but you would have to restart it manually after each
-change to your code.  That is not very nice and Flask can do better.  If
-you enable debug support the server will reload itself on code changes,
-and it will also provide you with a helpful debugger if things go wrong.
+The ``flask`` script is nice to start a local development server, but
+you would have to restart it manually after each change to your code.
+That is not very nice and Flask can do better.  If you enable debug
+support the server will reload itself on code changes, and it will also
+provide you with a helpful debugger if things go wrong.
 
-There are two ways to enable debugging.  Either set that flag on the
-application object::
+There are different ways to enable the debug mode.  The most obvious one
+is the ``--debug`` parameter to the ``flask`` command::
 
-    app.debug = True
-    app.run()
+    flask --debug -a hello run
 
-Or pass it as a parameter to run::
+This does the following things:
 
-    app.run(debug=True)
+1.  it activates the debugger
+2.  it activates the automatic reloader
+3.  it enables the debug mode on the Flask application.
 
-Both methods have the exact same effect.
+There are more parameters that are explained in the :ref:`server` docs.
 
 .. admonition:: Attention
 
@@ -236,9 +273,9 @@ below.  It tells Flask to behave as though it is handling a request, even
 though we are interacting with it through a Python shell.  Have a look at the
 explanation below. :ref:`context-locals`).
 
-Why would you want to build URLs using the URL reversing function :func:`~flask.url_for` 
-instead of hard-coding them into your templates?  There are three good reasons 
-for this:
+Why would you want to build URLs using the URL reversing function
+:func:`~flask.url_for` instead of hard-coding them into your templates?
+There are three good reasons for this:
 
 1. Reversing is often more descriptive than hard-coding the URLs.  More
    importantly, it allows you to change URLs in one go, without having to
@@ -347,7 +384,7 @@ Rendering Templates
 Generating HTML from within Python is not fun, and actually pretty
 cumbersome because you have to do the HTML escaping on your own to keep
 the application secure.  Because of that Flask configures the `Jinja2
-<http://jinja.pocoo.org/2/>`_ template engine for you automatically.
+<http://jinja.pocoo.org/>`_ template engine for you automatically.
 
 To render a template you can use the :func:`~flask.render_template`
 method.  All you have to do is provide the name of the template and the
@@ -380,7 +417,7 @@ package it's actually inside your package:
 
 For templates you can use the full power of Jinja2 templates.  Head over
 to the official `Jinja2 Template Documentation
-<http://jinja.pocoo.org/2/documentation/templates>`_ for more information.
+<http://jinja.pocoo.org/docs/templates>`_ for more information.
 
 Here is an example template:
 
@@ -818,7 +855,7 @@ Here are some example log calls::
 
 The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official `logging
-documentation <http://docs.python.org/library/logging.html>`_ for more
+documentation <https://docs.python.org/library/logging.html>`_ for more
 information.
 
 Hooking in WSGI Middlewares
@@ -841,7 +878,7 @@ Ready to deploy your new Flask app?  To wrap up the quickstart, you can
 immediately deploy to a hosted platform, all of which offer a free plan for
 small projects:
 
-- `Deploying Flask on Heroku <http://devcenter.heroku.com/articles/python>`_
+- `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/python>`_
 - `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
   with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
 

@@ -21,11 +21,11 @@ engine and the `Werkzeug`_ WSGI toolkit.  These libraries are not documented
 here.  If you want to dive into their documentation, check out the
 following links:
 
--   `Jinja2 Documentation <http://jinja.pocoo.org/2/documentation/>`_
--   `Werkzeug Documentation <http://werkzeug.pocoo.org/documentation/>`_
+-   `Jinja2 Documentation <http://jinja.pocoo.org/docs>`_
+-   `Werkzeug Documentation <http://werkzeug.pocoo.org/docs>`_
 
 
-.. _Jinja2: http://jinja.pocoo.org/2/
+.. _Jinja2: http://jinja.pocoo.org/
 .. _Werkzeug: http://werkzeug.pocoo.org/
 
 .. include:: contents.rst.inc

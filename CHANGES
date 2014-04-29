@@ -26,6 +26,10 @@ Version 1.0
 - Added a workaround for a limitation in Python 3.3's namespace loader.
 - Added support for explicit root paths when using Python 3.3's namespace
   packages.
+- Added ``flask`` and the ``flask.cli`` module to start the local
+  debug server through the click CLI system.  This is recommended over the old
+  ``flask.run()`` method as it works faster and more reliable due to a
+  different design and also replaces ``Flask-Script``.
 
 Version 0.10.2
 --------------
@@ -397,7 +401,7 @@ Released on July 27th 2010, codename Whisky
   prefix.  This makes it possible to bind a whole module to a
   configurable subdomain.
 
-.. _blinker: http://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.python.org/pypi/blinker
 
 Version 0.5.2
 -------------
