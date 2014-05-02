@@ -199,9 +199,9 @@ class FlaskGroup(click.Group):
                     value = prepare_exec_for_file(value)
                 elif '.' not in sys.path:
                     sys.path.insert(0, '.')
-            ctx.obj.app_import_path = value
+            ctx.ensure_object(ScriptInfo).app_import_path = value
         def set_debug(ctx, value):
-            ctx.obj.debug = value
+            ctx.ensure_object(ScriptInfo).debug = value
 
         click.Group.__init__(self, help=help, params=[
             click.Option(['-a', '--app'],
