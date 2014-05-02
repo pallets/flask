@@ -24,13 +24,16 @@ To do this we can create a function and hook it into the ``flask`` command
 that initializes the database.  Let me show you the code first.  Just add
 this function below the `connect_db` function in `flaskr.py`::
 
-    @app.cli.command()
-    def initdb():
-        """Initializes the database."""
+    def init_db():
         db = get_db()
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
+
+    @app.cli.command('initdb')
+    def initdb_command():
+        """Initializes the database."""
+        init_db()
         print 'Initialized the database.'
 
 The ``app.cli.command()`` decorator registers a new command with the
@@ -39,6 +42,10 @@ create a application context for us bound to the right application.
 Within the function we can then access :attr:`flask.g` and other things as
 we would expect.  When the script ends, the application context tears down
 and the database connection is released.
+
+We want to keep an actual functions around that initializes the database
+though so that we can easily create databases in unittests later.  (For
+more information see :ref:`testing`.)
 
 The :func:`~flask.Flask.open_resource` method of the application object
 is a convenient helper function that will open a resource that the

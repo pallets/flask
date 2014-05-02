@@ -139,9 +139,9 @@ class ScriptInfo(object):
     to click.
     """
 
-    def __init__(self):
-        self.app_import_path = None
-        self.debug = None
+    def __init__(self, app_import_path=None, debug=None):
+        self.app_import_path = app_import_path
+        self.debug = debug
         self._loaded_app = None
 
     def get_app_import_path(self):
@@ -187,7 +187,7 @@ def without_appcontext(f):
     return f
 
 
-class FlaskClickGroup(click.Group):
+class FlaskGroup(click.Group):
     """Special subclass of the a regular click group that supports
     loading more commands from the configured Flask app.
     """
@@ -199,9 +199,9 @@ class FlaskClickGroup(click.Group):
                     value = prepare_exec_for_file(value)
                 elif '.' not in sys.path:
                     sys.path.insert(0, '.')
-            ctx.obj.app_import_path = value
+            ctx.ensure_object(ScriptInfo).app_import_path = value
         def set_debug(ctx, value):
-            ctx.obj.debug = value
+            ctx.ensure_object(ScriptInfo).debug = value
 
         click.Group.__init__(self, help=help, params=[
             click.Option(['-a', '--app'],
@@ -244,7 +244,7 @@ class FlaskClickGroup(click.Group):
                 self, ctx, cmd, cmd_name, args)
 
 
-cli = FlaskClickGroup(help='''\
+cli = FlaskGroup(help='''\
 This shell command acts as general utility script for Flask applications.
 
 It loads the application configured (either through the FLASK_APP environment
@@ -346,7 +346,7 @@ def main(as_module=False):
         # the reloader can properly operate.
         sys.argv = ['-m', this_module] + sys.argv[1:]
     else:
-        name = 'flask'
+        name = None
 
     cli.main(args=args, prog_name=name, obj=ScriptInfo(),
              auto_envvar_prefix='FLASK')
