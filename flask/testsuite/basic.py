@@ -19,7 +19,7 @@ from datetime import datetime
 from threading import Thread
 from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
 from flask._compat import text_type
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
 
@@ -627,12 +627,18 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         @app.errorhandler(500)
         def internal_server_error(e):
             return 'internal server error', 500
+        @app.errorhandler(Forbidden)
+        def forbidden(e):
+            return 'forbidden', 403
         @app.route('/')
         def index():
             flask.abort(404)
         @app.route('/error')
         def error():
             1 // 0
+        @app.route('/forbidden')
+        def error2():
+            flask.abort(403)
         c = app.test_client()
         rv = c.get('/')
         self.assert_equal(rv.status_code, 404)
@@ -640,6 +646,9 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         rv = c.get('/error')
         self.assert_equal(rv.status_code, 500)
         self.assert_equal(b'internal server error', rv.data)
+        rv = c.get('/forbidden')
+        self.assert_equal(rv.status_code, 403)
+        self.assert_equal(b'forbidden', rv.data)
 
     def test_before_request_and_routing_errors(self):
         app = flask.Flask(__name__)
@@ -668,6 +677,36 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         c = app.test_client()
         self.assert_equal(c.get('/').data, b'42')
+
+    def test_http_error_subclass_handling(self):
+        class ForbiddenSubclass(Forbidden):
+            pass
+
+        app = flask.Flask(__name__)
+        @app.errorhandler(ForbiddenSubclass)
+        def handle_forbidden_subclass(e):
+            self.assert_true(isinstance(e, ForbiddenSubclass))
+            return 'banana'
+        @app.errorhandler(403)
+        def handle_forbidden_subclass(e):
+            self.assert_false(isinstance(e, ForbiddenSubclass))
+            self.assert_true(isinstance(e, Forbidden))
+            return 'apple'
+
+        @app.route('/1')
+        def index1():
+            raise ForbiddenSubclass()
+        @app.route('/2')
+        def index2():
+            flask.abort(403)
+        @app.route('/3')
+        def index3():
+            raise Forbidden()
+
+        c = app.test_client()
+        self.assert_equal(c.get('/1').data, b'banana')
+        self.assert_equal(c.get('/2').data, b'apple')
+        self.assert_equal(c.get('/3').data, b'apple')
 
     def test_trapping_of_bad_request_key_errors(self):
         app = flask.Flask(__name__)
