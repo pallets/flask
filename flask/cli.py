@@ -208,7 +208,41 @@ def without_appcontext(f):
     return f
 
 
-class FlaskGroup(click.Group):
+class ContextGroupMixin(object):
+
+    def get_command(self, ctx, name):
+        info = ctx.find_object(ScriptInfo)
+        # Find the command in the application first, if we can find it.
+        # If the app is not available, we just ignore this silently.
+        try:
+            rv = info.load_app().cli.get_command(ctx, name)
+            if rv is not None:
+                return rv
+        except NoAppException:
+            pass
+        return super(ContextGroupMixin, self).get_command(ctx, name)
+
+    def list_commands(self, ctx):
+        # The commands available is the list of both the application (if
+        # available) plus the builtin commands.
+        rv = set(super(ContextGroupMixin, self).list_commands(ctx))
+        info = ctx.find_object(ScriptInfo)
+        try:
+            rv.update(info.load_app().cli.list_commands(ctx))
+        except NoAppException:
+            pass
+        return sorted(rv)
+
+    def invoke_subcommand(self, ctx, cmd, cmd_name, args):
+        with_context = cmd.callback is None or \
+           not getattr(cmd.callback, '__flask_without_appcontext__', False)
+
+        with ctx.find_object(ScriptInfo).conditional_context(with_context):
+            return super(ContextGroupMixin, self).invoke_subcommand(
+                ctx, cmd, cmd_name, args)
+
+
+class FlaskGroup(ContextGroupMixin, click.Group):
     """Special subclass of the a regular click group that supports
     loading more commands from the configured Flask app.
     """
@@ -232,37 +266,6 @@ class FlaskGroup(click.Group):
                          help='Enable or disable debug mode.',
                          default=None, callback=set_debug)
         ])
-
-    def get_command(self, ctx, name):
-        info = ctx.find_object(ScriptInfo)
-        # Find the command in the application first, if we can find it.
-        # If the app is not available, we just ignore this silently.
-        try:
-            rv = info.load_app().cli.get_command(ctx, name)
-            if rv is not None:
-                return rv
-        except NoAppException:
-            pass
-        return click.Group.get_command(self, ctx, name)
-
-    def list_commands(self, ctx):
-        # The commands available is the list of both the application (if
-        # available) plus the builtin commands.
-        rv = set(click.Group.list_commands(self, ctx))
-        info = ctx.find_object(ScriptInfo)
-        try:
-            rv.update(info.load_app().cli.list_commands(ctx))
-        except NoAppException:
-            pass
-        return sorted(rv)
-
-    def invoke_subcommand(self, ctx, cmd, cmd_name, args):
-        with_context = cmd.callback is None or \
-           not getattr(cmd.callback, '__flask_without_appcontext__', False)
-
-        with ctx.find_object(ScriptInfo).conditional_context(with_context):
-            return click.Group.invoke_subcommand(
-                self, ctx, cmd, cmd_name, args)
 
 
 cli = FlaskGroup(help='''\
