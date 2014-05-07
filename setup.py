@@ -8,6 +8,7 @@ intentions. And before you ask: It's BSD licensed!
 Flask is Fun
 ````````````
 
+Copy this into a file called hello.py:
 .. code:: python
 
     from flask import Flask
