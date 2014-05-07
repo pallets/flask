@@ -144,57 +144,62 @@ class ScriptInfo(object):
     to click.
     """
 
-    def __init__(self, app_import_path=None, debug=None, load_callback=None):
+    def __init__(self, app_import_path=None, debug=None, create_app=None):
         self.app_import_path = app_import_path
         self.debug = debug
-        self.load_callback = load_callback
+        self.create_app = create_app
         self._loaded_app = None
 
-    def get_app_import_path(self):
-        """Return the actual application import path or fails if it is
-        not yet set.
-        """
-        if self.app_import_path is not None:
-            return self.app_import_path
-        _no_such_app()
-
     def load_app(self):
-        """Loads the app (if not yet loaded) and returns it."""
+        """Loads the Flask app (if not yet loaded) and returns it."""
         if self._loaded_app is not None:
             return self._loaded_app
-        if self.load_callback is not None:
-            rv = self.load_callback()
+        if self.create_app is not None:
+            rv = self.create_app(self)
         else:
-            rv = locate_app(self.get_app_import_path(), self.debug)
+            if self.app_import_path is None:
+                _no_such_app()
+            rv = locate_app(self.app_import_path, self.debug)
         self._loaded_app = rv
         return rv
 
     def make_wsgi_app(self, use_eager_loading=False):
-        """Returns a WSGI app that loads the actual application at a
-        later stage.
+        """Returns a WSGI app that loads the actual application at a later
+        stage (on first request).  This has the advantage over
+        :meth:`load_app` that if used with a WSGI server, it will allow
+        the server to intercept errors later during request handling
+        instead of dying a horrible death.
+
+        If eager loading is disabled the loading will happen immediately.
         """
         if self.app_import_path is not None:
             def loader():
                 return locate_app(self.app_import_path, self.debug)
         else:
-            if self.load_callback is None:
+            if self.create_app is None:
                 _no_such_app()
             def loader():
-                return self.load_callback()
+                return self.create_app(self)
         return DispatchingApp(loader, use_eager_loading=use_eager_loading)
 
     @contextmanager
     def conditional_context(self, with_context=True):
-        """Creates an application context or not, depending on the
-        given parameter but always works as context manager.
+        """Creates an application context or not, depending on the given
+        parameter but always works as context manager.  This is just a
+        shortcut for a common operation.
         """
         if with_context:
-            with self.load_app().app_context() as ctx:
+            with self.load_app(self).app_context() as ctx:
                 yield ctx
         else:
             yield None
 
 
+#: A special decorator that informs a click callback to be passed the
+#: script info object as first argument.  This is normally not useful
+#: unless you implement very special commands like the run command which
+#: does not want the application to be loaded yet.  This can be combined
+#: with the :func:`without_appcontext` decorator.
 pass_script_info = click.make_pass_decorator(ScriptInfo)
 
 
@@ -208,10 +213,56 @@ def without_appcontext(f):
     return f
 
 
-class ContextGroupMixin(object):
+class FlaskGroup(click.Group):
+    """Special subclass of the a regular click group that supports
+    loading more commands from the configured Flask app.  Normally a
+    developer does not have to interface with this class but there are
+    some very advanced usecases for which it makes sense to create an
+    instance of this.
+
+    :param add_default_options: if this is True the app and debug option
+                                is automatically added.
+    """
+
+    def __init__(self, add_default_options=True,
+                 add_default_commands=True,
+                 create_app=None, **extra):
+        click.Group.__init__(self, **extra)
+        self.create_app = create_app
+        if add_default_options:
+            self.add_app_option()
+            self.add_debug_option()
+        if add_default_commands:
+            self.add_command(run_command)
+            self.add_command(shell_command)
+
+    def add_app_option(self):
+        """Adds an option to the default command that defines an import
+        path that points to an application.
+        """
+        def set_app_id(ctx, value):
+            if value is not None:
+                if os.path.isfile(value):
+                    value = prepare_exec_for_file(value)
+                elif '.' not in sys.path:
+                    sys.path.insert(0, '.')
+            ctx.ensure_object(ScriptInfo).app_import_path = value
+
+        self.params.append(click.Option(['-a', '--app'],
+            help='The application to run',
+            callback=set_app_id, is_eager=True))
+
+    def add_debug_option(self):
+        """Adds an option that controls the debug flag."""
+        def set_debug(ctx, value):
+            ctx.ensure_object(ScriptInfo).debug = value
+
+        self.params.append(click.Option(['--debug/--no-debug'],
+            help='Enable or disable debug mode.',
+            default=None, callback=set_debug))
 
     def get_command(self, ctx, name):
-        info = ctx.find_object(ScriptInfo)
+        info = ctx.ensure_object(ScriptInfo)
         # Find the command in the application first, if we can find it.
         # If the app is not available, we just ignore this silently.
         try:
@@ -220,13 +271,13 @@ class ContextGroupMixin(object):
                 return rv
         except NoAppException:
             pass
-        return super(ContextGroupMixin, self).get_command(ctx, name)
+        return click.Group.get_command(self, ctx, name)
 
     def list_commands(self, ctx):
         # The commands available is the list of both the application (if
         # available) plus the builtin commands.
-        rv = set(super(ContextGroupMixin, self).list_commands(ctx))
-        info = ctx.find_object(ScriptInfo)
+        rv = set(click.Group.list_commands(self, ctx))
+        info = ctx.ensure_object(ScriptInfo)
         try:
             rv.update(info.load_app().cli.list_commands(ctx))
         except NoAppException:
@@ -238,52 +289,19 @@ class ContextGroupMixin(object):
            not getattr(cmd.callback, '__flask_without_appcontext__', False)
 
         with ctx.find_object(ScriptInfo).conditional_context(with_context):
-            return super(ContextGroupMixin, self).invoke_subcommand(
-                ctx, cmd, cmd_name, args)
+            return click.Group.invoke_subcommand(
+                self, ctx, cmd, cmd_name, args)
+
+    def main(self, *args, **kwargs):
+        obj = kwargs.get('obj')
+        if obj is None:
+            obj = ScriptInfo(create_app=self.create_app)
+        kwargs['obj'] = obj
+        kwargs.setdefault('auto_envvar_prefix', 'FLASK')
+        return click.Group.main(self, *args, **kwargs)
 
 
-class FlaskGroup(ContextGroupMixin, click.Group):
-    """Special subclass of the a regular click group that supports
-    loading more commands from the configured Flask app.
-    """
-
-    def __init__(self, help=None):
-        def set_app_id(ctx, value):
-            if value is not None:
-                if os.path.isfile(value):
-                    value = prepare_exec_for_file(value)
-                elif '.' not in sys.path:
-                    sys.path.insert(0, '.')
-            ctx.ensure_object(ScriptInfo).app_import_path = value
-        def set_debug(ctx, value):
-            ctx.ensure_object(ScriptInfo).debug = value
-
-        click.Group.__init__(self, help=help, params=[
-            click.Option(['-a', '--app'],
-                         help='The application to run',
-                         callback=set_app_id, is_eager=True),
-            click.Option(['--debug/--no-debug'],
-                         help='Enable or disable debug mode.',
-                         default=None, callback=set_debug)
-        ])
-
-
-cli = FlaskGroup(help='''\
-This shell command acts as general utility script for Flask applications.
-
-It loads the application configured (either through the FLASK_APP environment
-variable or the --app parameter) and then provides commands either provided
-by the application or Flask itself.
-
-The most useful commands are the "run" and "shell" command.
-
-Example usage:
-
-  flask --app=hello --debug run
-''')
-
-
-@cli.command('run', short_help='Runs a development server.')
+@click.command('run', short_help='Runs a development server.')
 @click.option('--host', '-h', default='127.0.0.1',
               help='The interface to bind to.')
 @click.option('--port', '-p', default=5000,
@@ -303,7 +321,17 @@ Example usage:
 @pass_script_info
 def run_command(info, host, port, reload, debugger, eager_loading,
                 with_threads):
-    """Runs a local development server for the Flask application."""
+    """Runs a local development server for the Flask application.
+
+    This local server is recommended for development purposes only but it
+    can also be used for simple intranet deployments.  By default it will
+    not support any sort of concurrency at all to simplify debugging.  This
+    can be changed with the --with-threads option which will enable basic
+    multithreading.
+
+    The reloader and debugger are by default enabled if the debug flag of
+    Flask is enabled and disabled otherwise.
+    """
     from werkzeug.serving import run_simple
     if reload is None:
         reload = info.debug
@@ -330,7 +358,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
                use_debugger=debugger, threaded=with_threads)
 
 
-@cli.command('shell', short_help='Runs a shell in the app context.')
+@click.command('shell', short_help='Runs a shell in the app context.')
 def shell_command():
     """Runs an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
@@ -360,6 +388,21 @@ def make_default_cli(app):
     return click.Group()
 
 
+cli = FlaskGroup(help='''\
+This shell command acts as general utility script for Flask applications.
+
+It loads the application configured (either through the FLASK_APP environment
+variable or the --app parameter) and then provides commands either provided
+by the application or Flask itself.
+
+The most useful commands are the "run" and "shell" command.
+
+Example usage:
+
+  flask --app=hello --debug run
+''')
+
+
 def main(as_module=False):
     this_module = __package__ + '.cli'
     args = sys.argv[1:]
@@ -377,8 +420,7 @@ def main(as_module=False):
     else:
         name = None
 
-    cli.main(args=args, prog_name=name, obj=ScriptInfo(),
-             auto_envvar_prefix='FLASK')
+    cli.main(args=args, prog_name=name)
 
 
 if __name__ == '__main__':
