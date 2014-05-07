@@ -30,6 +30,10 @@ Version 1.0
   debug server through the click CLI system.  This is recommended over the old
   ``flask.run()`` method as it works faster and more reliable due to a
   different design and also replaces ``Flask-Script``.
+- Configuration settings for the ``DEBUG`` and ``TESTING`` config keys
+  default to None, not False. This should not affect any well-written code,
+  but allows to distinguish between "DEBUG has not been set" and
+  "DEBUG is turned off".
 
 Version 0.10.2
 --------------
