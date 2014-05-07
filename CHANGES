@@ -30,6 +30,12 @@ Version 1.0
   debug server through the click CLI system.  This is recommended over the old
   ``flask.run()`` method as it works faster and more reliable due to a
   different design and also replaces ``Flask-Script``.
+- Error handlers that match specific classes are now checked first,
+  thereby allowing catching exceptions that are subclasses of HTTP
+  exceptions (in ``werkzeug.execptions``).  This makes it possible
+  for an extension author to create exceptions that will by default
+  result in the HTTP error of their choosing, but may be caught with
+  a custom error handler if desired.
 
 Version 0.10.2
 --------------
