@@ -8,6 +8,8 @@ intentions. And before you ask: It's BSD licensed!
 Flask is Fun
 ````````````
 
+Save in a hello.py:
+
 .. code:: python
 
     from flask import Flask
@@ -22,6 +24,8 @@ Flask is Fun
 
 And Easy to Setup
 `````````````````
+
+And run it:
 
 .. code:: bash
 
