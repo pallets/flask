@@ -753,3 +753,30 @@ Full example::
 
 .. versionadded:: 0.8
    The `provide_automatic_options` functionality was added.
+
+Command Line Interface
+----------------------
+
+.. currentmodule:: flask.cli
+
+.. autoclass:: FlaskGroup
+   :members:
+
+.. autoclass:: ScriptInfo
+   :members:
+
+.. autofunction:: pass_script_info
+
+.. autofunction:: without_appcontext
+
+.. autofunction:: script_info_option
+
+   A special decorator that informs a click callback to be passed the
+   script info object as first argument.  This is normally not useful
+   unless you implement very special commands like the run command which
+   does not want the application to be loaded yet.  This can be combined
+   with the :func:`without_appcontext` decorator.
+
+.. autodata:: run_command
+
+.. autodata:: shell_command
