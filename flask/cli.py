@@ -110,27 +110,32 @@ class DispatchingApp(object):
     errors for import problems into the browser as error.
     """
 
-    def __init__(self, app_id, debug=None, use_eager_loading=False):
-        self.app_id = app_id
-        self.app = None
-        self.debug = debug
+    def __init__(self, loader, use_eager_loading=False):
+        self.loader = loader
+        self._app = None
         self._lock = Lock()
         if use_eager_loading:
             self._load_unlocked()
 
     def _load_unlocked(self):
-        self.app = rv = locate_app(self.app_id, self.debug)
+        self._app = rv = self.loader()
         return rv
 
     def __call__(self, environ, start_response):
-        if self.app is not None:
-            return self.app(environ, start_response)
+        if self._app is not None:
+            return self._app(environ, start_response)
         with self._lock:
-            if self.app is not None:
-                rv = self.app
+            if self._app is not None:
+                rv = self._app
             else:
                 rv = self._load_unlocked()
             return rv(environ, start_response)
+
+
+def _no_such_app():
+    raise NoAppException('Could not locate Flask application. '
+                         'You did not provide FLASK_APP or the '
+                         '--app parameter.')
 
 
 class ScriptInfo(object):
@@ -139,9 +144,10 @@ class ScriptInfo(object):
     to click.
     """
 
-    def __init__(self, app_import_path=None, debug=None):
+    def __init__(self, app_import_path=None, debug=None, load_callback=None):
         self.app_import_path = app_import_path
         self.debug = debug
+        self.load_callback = load_callback
         self._loaded_app = None
 
     def get_app_import_path(self):
@@ -150,17 +156,32 @@ class ScriptInfo(object):
         """
         if self.app_import_path is not None:
             return self.app_import_path
-        raise NoAppException('Could not locate application. '
-                             'You did not provide FLASK_APP or the '
-                             '--app parameter.')
+        _no_such_app()
 
     def load_app(self):
         """Loads the app (if not yet loaded) and returns it."""
         if self._loaded_app is not None:
             return self._loaded_app
-        rv = locate_app(self.get_app_import_path(), self.debug)
+        if self.load_callback is not None:
+            rv = self.load_callback()
+        else:
+            rv = locate_app(self.get_app_import_path(), self.debug)
         self._loaded_app = rv
         return rv
+
+    def make_wsgi_app(self, use_eager_loading=False):
+        """Returns a WSGI app that loads the actual application at a
+        later stage.
+        """
+        if self.app_import_path is not None:
+            def loader():
+                return locate_app(self.app_import_path, self.debug)
+        else:
+            if self.load_callback is None:
+                _no_such_app()
+            def loader():
+                return self.load_callback()
+        return DispatchingApp(loader, use_eager_loading=use_eager_loading)
 
     @contextmanager
     def conditional_context(self, with_context=True):
@@ -281,7 +302,6 @@ def run_command(info, host, port, reload, debugger, eager_loading,
                 with_threads):
     """Runs a local development server for the Flask application."""
     from werkzeug.serving import run_simple
-    app_id = info.get_app_import_path()
     if reload is None:
         reload = info.debug
     if debugger is None:
@@ -289,14 +309,20 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     if eager_loading is None:
         eager_loading = not reload
 
+    app = info.make_wsgi_app(use_eager_loading=eager_loading)
+
     # Extra startup messages.  This depends a but on Werkzeug internals to
     # not double execute when the reloader kicks in.
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
-        print(' * Serving Flask app "%s"' % app_id)
+        # If we have an import path we can print it out now which can help
+        # people understand what's being served.  If we do not have an
+        # import path because the app was loaded through a callback then
+        # we won't print anything.
+        if info.app_import_path is not None:
+            print(' * Serving Flask app "%s"' % info.app_import_path)
         if info.debug is not None:
             print(' * Forcing debug %s' % (info.debug and 'on' or 'off'))
 
-    app = DispatchingApp(app_id, info.debug, eager_loading)
     run_simple(host, port, app, use_reloader=reload,
                use_debugger=debugger, threaded=with_threads)
 
