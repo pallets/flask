@@ -108,7 +108,8 @@ In case you are using factory functions to create your application (see
 work with them directly.  Flask won't be able to figure out how to
 instanciate your application properly by itself.  Because of this reason
 the recommendation is to create a separate file that instanciates
-applications.
+applications.  This is by far not the only way to make this work.  Another
+is the :ref:`custom-scripts` support.
 
 For instance if you have a factory function that creates an application
 from a filename you could make a separate file that creates such an
@@ -128,3 +129,114 @@ it up::
     export FLASK_APP=/path/to/autoapp.py
 
 From this point onwards ``flask`` will find your application.
+
+.. _custom-scripts:
+
+Custom Scripts
+--------------
+
+While the most common way is to use the ``flask`` command, you can also
+make your own "driver scripts".  Since Flask uses click for the scripts
+there is no reason you cannot hook these scripts into any click
+application.  There is one big caveat and that is, that commands
+registered to :attr:`Flask.cli` will expect to be (indirectly at least)
+launched from a :class:`flask.cli.FlaskGroup` click group.  This is
+necessary so that the commands know which Flask application they have to
+work with.
+
+To understand why you might want custom scripts you need to understand how
+click finds and executes the Flask application.  If you use the ``flask``
+script you specify the application to work with on the command line or
+environment variable as an import name.  This is simple but it has some
+limitations.  Primarily it does not work with application factory
+functions (see :ref:`app-factories`).
+
+With a custom script you don't have this problem as you can fully
+customize how the application will be created.  This is very useful if you
+write reusable applications that you want to ship to users and they should
+be presented with a custom management script.
+
+If you are used to writing click applications this will look familiar but
+at the same time, slightly different because of how commands are loaded.
+We won't go into detail now about the differences but if you are curious
+you can have a look at the :ref:`script-info-object` section to learn all
+about it.
+
+To explain all of this here an example ``manage.py`` script that manages a
+hypothetical wiki application.  We will go through the details
+afterwards::
+
+    import click
+    from flask.cli import FlaskGroup, script_info_option
+
+    def create_wiki_app(info):
+        from yourwiki import create_app
+        config = info.data.get('config') or 'wikiconfig.py'
+        return create_app(config=config)
+
+    @click.group(cls=FlaskGroup, create_app=create_wiki_app)
+    @script_info_option('--config', script_info_key='config')
+    def cli(**params):
+        """This is a management script for the wiki application."""
+
+    if __name__ == '__main__':
+        cli()
+
+That's a lot of code for not much, so let's go through all parts step by
+step.
+
+1.  At first we import regular ``click`` as well as the click extensions
+    from the ``flask.cli`` package.  Primarily we are here interested
+    in the :class:`~flask.cli.FlaskGroup` click group and the
+    :func:`~flask.cli.script_info_option` decorator.
+2.  The next thing we do is defining a function that is invoked with the
+    script info object (:ref:`script-info-object`) from flask and it's
+    purpose is to fully import and create the application.  This can
+    either directly import an application object or create it (see
+    :ref:`app-factories`).
+
+    What is ``data.info``?  It's a dictionary of arbitrary data on the
+    script info that can be filled by options or through other means.  We
+    will come back to this later.
+3.  Next step is to create a :class:`FlaskGroup`.  In this case we just
+    make an empty function with a help doc string that just does nothing
+    and then pass the ``create_wiki_app`` function as factory function.
+
+    Whenever click now needs to operate on a flask application it will
+    call that function with the script info and ask for it to be created.
+4.  In step 2 you could see that the config is passed to the actual
+    creation function.  This config comes from the :func:`script_info_option`
+    decorator for the main script.  It accepts a ``--config`` option and
+    then stores it in the script info so we can use it to create the
+    application.
+5.  All is rounded up by invoking the script.
+
+.. _script-info-object:
+
+The Script Info
+---------------
+
+The Flask script integration might be confusing at first, but it has good
+rasons it's done this way.  The reason for this is that Flask wants to
+both provide custom commands to click as well as not loading your
+application unless it has to.  The reason for this is added flexibility.
+
+This way an application can provide custom commands, but even in the
+absence of an application the ``flask`` script is still operational on a
+basic level.  In addition to that does it mean that the individual
+commands have the option to not create an instance of the Flask
+application unless required.  This is very useful as it allows the server
+command for instance, the load the application on first request instead of
+immediately to give a better debug experience.
+
+All of this is provided through the :class:`flask.cli.ScriptInfo` object
+and some helper utilities around.  The basic way it operates is that when
+the :class:`flask.cli.FlaskGroup` executes as a script it creates a script
+info and keeps it around.  From that point onwards modifications on the
+script info can be done through click options.  To simplify this pattern
+the :func:`flask.cli.script_info_option` decorator was added.
+
+One Flask actually needs the individual Flask application it will invoke
+the :meth:`flask.cli.ScriptInfo.load_app` method.  This happens when the
+server starts, when the shell is launched or when the script looks for an
+application provided click command.
