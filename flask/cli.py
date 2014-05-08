@@ -261,16 +261,24 @@ class FlaskGroup(click.Group):
             self.add_command(shell_command)
 
     def get_command(self, ctx, name):
+        # We load built-in commands first as these should always be the
+        # same no matter what the app does.  If the app does want to
+        # override this it needs to make a custom instance of this group
+        # and not attach the default commands.
+        #
+        # This also means that the script stays functional in case the
+        # application completely fails.
+        rv = click.Group.get_command(self, ctx, name)
+        if rv is not None:
+            return rv
+
         info = ctx.ensure_object(ScriptInfo)
-        # Find the command in the application first, if we can find it.
-        # If the app is not available, we just ignore this silently.
         try:
             rv = info.load_app().cli.get_command(ctx, name)
             if rv is not None:
                 return rv
         except NoAppException:
             pass
-        return click.Group.get_command(self, ctx, name)
 
     def list_commands(self, ctx):
         # The commands available is the list of both the application (if
@@ -279,7 +287,11 @@ class FlaskGroup(click.Group):
         info = ctx.ensure_object(ScriptInfo)
         try:
             rv.update(info.load_app().cli.list_commands(ctx))
-        except NoAppException:
+        except Exception:
+            # Here we intentionally swallow all exceptions as we don't
+            # want the help page to break if the app does not exist.
+            # If someone attempts to use the command we try to create
+            # the app again and this will give us the error.
             pass
         return sorted(rv)
 
