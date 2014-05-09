@@ -23,7 +23,7 @@ the same.
 The way this script works is by providing access to all the commands on
 your Flask application's :attr:`Flask.cli` instance as well as some
 built-in commands that are always there.  Flask extensions can also
-register more commands there if they so desire.
+register more commands there if they desire so.
 
 For the ``flask`` script to work, an application needs to be discovered.
 The two most common ways are either an environment variable
@@ -106,8 +106,8 @@ Factory Functions
 In case you are using factory functions to create your application (see
 :ref:`app-factories`) you will discover that the ``flask`` command cannot
 work with them directly.  Flask won't be able to figure out how to
-instanciate your application properly by itself.  Because of this reason
-the recommendation is to create a separate file that instanciates
+instantiate your application properly by itself.  Because of this reason
+the recommendation is to create a separate file that instantiates
 applications.  This is by far not the only way to make this work.  Another
 is the :ref:`custom-scripts` support.
 
@@ -115,8 +115,7 @@ For instance if you have a factory function that creates an application
 from a filename you could make a separate file that creates such an
 application from an environment variable.
 
-For instance this could be a file named ``autoapp.py`` with these
-contents::
+This could be a file named ``autoapp.py`` with these contents::
 
     import os
     from yourapplication import create_app
@@ -162,8 +161,8 @@ We won't go into detail now about the differences but if you are curious
 you can have a look at the :ref:`script-info-object` section to learn all
 about it.
 
-To explain all of this here an example ``manage.py`` script that manages a
-hypothetical wiki application.  We will go through the details
+To explain all of this, here is an example ``manage.py`` script that
+manages a hypothetical wiki application.  We will go through the details
 afterwards::
 
     import click
@@ -185,12 +184,12 @@ afterwards::
 That's a lot of code for not much, so let's go through all parts step by
 step.
 
-1.  At first we import regular ``click`` as well as the click extensions
+1.  First we import the ``click`` library as well as the click extensions
     from the ``flask.cli`` package.  Primarily we are here interested
     in the :class:`~flask.cli.FlaskGroup` click group and the
     :func:`~flask.cli.script_info_option` decorator.
 2.  The next thing we do is defining a function that is invoked with the
-    script info object (:ref:`script-info-object`) from flask and it's
+    script info object (:ref:`script-info-object`) from Flask and its
     purpose is to fully import and create the application.  This can
     either directly import an application object or create it (see
     :ref:`app-factories`).
@@ -200,9 +199,9 @@ step.
     will come back to this later.
 3.  Next step is to create a :class:`FlaskGroup`.  In this case we just
     make an empty function with a help doc string that just does nothing
-    and then pass the ``create_wiki_app`` function as factory function.
+    and then pass the ``create_wiki_app`` function as a factory function.
 
-    Whenever click now needs to operate on a flask application it will
+    Whenever click now needs to operate on a Flask application it will
     call that function with the script info and ask for it to be created.
 4.  In step 2 you could see that the config is passed to the actual
     creation function.  This config comes from the :func:`script_info_option`
@@ -223,11 +222,11 @@ application unless it has to.  The reason for this is added flexibility.
 
 This way an application can provide custom commands, but even in the
 absence of an application the ``flask`` script is still operational on a
-basic level.  In addition to that does it mean that the individual
-commands have the option to not create an instance of the Flask
-application unless required.  This is very useful as it allows the server
-command for instance, the load the application on first request instead of
-immediately to give a better debug experience.
+basic level.  In addition to that it means that the individual commands
+have the option to avoid creating an instance of the Flask application
+unless required.  This is very useful as it allows the server commands for
+instance to load the application on a first request instead of
+immediately, therefore giving a better debug experience.
 
 All of this is provided through the :class:`flask.cli.ScriptInfo` object
 and some helper utilities around.  The basic way it operates is that when
@@ -239,4 +238,4 @@ the :func:`flask.cli.script_info_option` decorator was added.
 One Flask actually needs the individual Flask application it will invoke
 the :meth:`flask.cli.ScriptInfo.load_app` method.  This happens when the
 server starts, when the shell is launched or when the script looks for an
-application provided click command.
+application-provided click command.
