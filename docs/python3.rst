@@ -19,7 +19,7 @@ In addition to that you need to use the latest and greatest versions of
 API Stability
 -------------
 
-Some of the decisions made in regards to unicode and byte untilization on
+Some of the decisions made in regards to unicode and byte utilization on
 Python 3 make it hard to write low level code.  This mainly affects WSGI
 middlewares and interacting with the WSGI provided information.  Werkzeug
 wraps all that information in high-level helpers but some of those were
