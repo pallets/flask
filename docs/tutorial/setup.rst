@@ -66,7 +66,7 @@ if no such environment key is set.
 
 In addition to that you can use the :meth:`~flask.Config.from_object`
 method on the config object and provide it with an import name of a
-module.  Flask will the initialize the variable from that module.  Note
+module.  Flask will then initialize the variable from that module.  Note
 that in all cases only variable names that are uppercase are considered.
 
 The ``SECRET_KEY`` is needed to keep the client-side sessions secure.
