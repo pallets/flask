@@ -39,13 +39,8 @@ def find_best_app(module):
     matches = [v for k, v in iteritems(module.__dict__)
                if isinstance(v, Flask)]
 
-    if matches:
-        if len(matches) > 1:
-            raise NoAppException('More than one possible Flask application '
-                                 'found in module "%s", none of which are called '
-                                 '"app".  Be explicit!' % module.__name__)
+    if len(matches) == 1:
         return matches[0]
-
     raise NoAppException('Failed to find application in module "%s".  Are '
                          'you sure it contains a Flask application?  Maybe '
                          'you wrapped it in a WSGI middleware or you are '
