@@ -4,7 +4,7 @@ Step 2: Application Setup Code
 ==============================
 
 Now that we have the schema in place we can create the application module.
-Let's call it flaskr.py. We will place this file inside the flask folder.
+Let's call it flaskr.py. We will place this file inside the flaskr folder.
 We will begin by adding the imports we need and by adding the config
 section.  For small applications, it is possible to drop the configuration
 directly into the module, and this is what we will be doing here. However
@@ -66,7 +66,7 @@ if no such environment key is set.
 
 In addition to that you can use the :meth:`~flask.Config.from_object`
 method on the config object and provide it with an import name of a
-module.  Flask will the initialize the variable from that module.  Note
+module.  Flask will then initialize the variable from that module.  Note
 that in all cases only variable names that are uppercase are considered.
 
 The ``SECRET_KEY`` is needed to keep the client-side sessions secure.
