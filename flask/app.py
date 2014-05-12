@@ -11,6 +11,7 @@
 
 import os
 import sys
+import click
 from threading import Lock
 from datetime import timedelta
 from itertools import chain
@@ -34,7 +35,6 @@ from .templating import DispatchingJinjaLoader, Environment, \
      _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
      request_tearing_down, appcontext_tearing_down
-from .cli import make_default_cli
 from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
@@ -544,7 +544,7 @@ class Flask(_PackageBoundObject):
         #: provided by Flask itself and can be overridden.
         #:
         #: This is an instance of a :class:`click.Group` object.
-        self.cli = make_default_cli(self)
+        self.cli = click.Group(self)
 
     def _get_error_handlers(self):
         from warnings import warn

@@ -131,12 +131,6 @@ class DispatchingApp(object):
             return rv(environ, start_response)
 
 
-def _no_such_app():
-    raise NoAppException('Could not locate Flask application. '
-                         'You did not provide FLASK_APP or the '
-                         '--app parameter.')
-
-
 class ScriptInfo(object):
     """Help object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
@@ -168,7 +162,9 @@ class ScriptInfo(object):
             rv = self.create_app(self)
         else:
             if self.app_import_path is None:
-                _no_such_app()
+                raise NoAppException('Could not locate Flask application. '
+                                     'You did not provide FLASK_APP or the '
+                                     '--app parameter.')
             rv = locate_app(self.app_import_path)
         if self.debug is not None:
             rv.debug = self.debug
@@ -418,29 +414,19 @@ def shell_command():
     code.interact(banner=banner, local=app.make_shell_context())
 
 
-def make_default_cli(app):
-    """Creates the default click object for the app itself.  Currently
-    there are no default commands registered because all builtin commands
-    are registered on the actual cmd object here.
-    """
-    return click.Group()
+cli = FlaskGroup(help="""\
+This shell command acts as general utility script for Flask applications.
 
+It loads the application configured (either through the FLASK_APP environment
+variable or the --app parameter) and then provides commands either provided
+by the application or Flask itself.
 
-@click.group(cls=FlaskGroup)
-def cli(**params):
-    """
-    This shell command acts as general utility script for Flask applications.
+The most useful commands are the "run" and "shell" command.
 
-    It loads the application configured (either through the FLASK_APP environment
-    variable or the --app parameter) and then provides commands either provided
-    by the application or Flask itself.
+Example usage:
 
-    The most useful commands are the "run" and "shell" command.
-
-    Example usage:
-
-      flask --app=hello --debug run
-    """
+  flask --app=hello --debug run
+""")
 
 
 def main(as_module=False):
