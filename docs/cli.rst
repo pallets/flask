@@ -17,7 +17,7 @@ Basic Usage
 
 After installation of Flask you will now find a ``flask`` script installed
 into your virtualenv.  If you don't want to install Flask or you have a
-special use-case you can also use ``python -mflask`` to accomplish exactly
+special use-case you can also use ``python -m flask`` to accomplish exactly
 the same.
 
 The way this script works is by providing access to all the commands on
@@ -215,8 +215,8 @@ step.
 The Script Info
 ---------------
 
-The Flask script integration might be confusing at first, but it has good
-rasons it's done this way.  The reason for this is that Flask wants to
+The Flask script integration might be confusing at first, but there is a reason
+why it's done this way.  The reason for this is that Flask wants to
 both provide custom commands to click as well as not loading your
 application unless it has to.  The reason for this is added flexibility.
 
