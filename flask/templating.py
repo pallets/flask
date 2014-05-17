@@ -55,13 +55,23 @@ class DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
-        # if current request is in Blueprint, we
-        # only use the loader of Blueprint
         blueprint_name = request.blueprint
-        if blueprint_name is not None:
+        # find the template in the loader of itself first,
+        # ignore TemplateNotFound for backward compatible
+        if blueprint_name is None:
+            # app request
+            try:
+                return self.app.jinja_loader.get_source(environment, template)
+            except TemplateNotFound:
+                pass
+        else:
             blueprint = self.app.blueprints[blueprint_name]
-            return blueprint.jinja_loader.get_source(environment, template)
-
+            try:
+                return blueprint.jinja_loader.get_source(environment, template)
+            except TemplateNotFound:
+                pass
+        
+        # find template in app and all blueprint for backward compatible
         for loader, local_name in self._iter_loaders(template):
             try:
                 return loader.get_source(environment, local_name)
