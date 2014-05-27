@@ -97,7 +97,7 @@ these::
      <Rule '/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
      <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>]
 
-The first one is obviously from the application ifself for the static
+The first one is obviously from the application itself for the static
 files.  The other two are for the `show` function of the ``simple_page``
 blueprint.  As you can see, they are also prefixed with the name of the
 blueprint and separated by a dot (``.``).
