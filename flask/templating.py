@@ -64,7 +64,7 @@ class DispatchingJinjaLoader(BaseLoader):
         except TemplateNotFound:
             pass
         
-        # find template in app and all blueprint for backward compatible
+        # find template in app and all blueprint
         for loader, local_name in self._iter_loaders(template):
             try:
                 return loader.get_source(environment, local_name)
