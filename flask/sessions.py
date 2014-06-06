@@ -52,36 +52,38 @@ class SessionMixin(object):
     modified = True
 
 
+def _tag(value):
+    if isinstance(value, tuple):
+        return {' t': [_tag(x) for x in value]}
+    elif isinstance(value, uuid.UUID):
+        return {' u': value.hex}
+    elif isinstance(value, bytes):
+        return {' b': b64encode(value).decode('ascii')}
+    elif callable(getattr(value, '__html__', None)):
+        return {' m': text_type(value.__html__())}
+    elif isinstance(value, list):
+        return [_tag(x) for x in value]
+    elif isinstance(value, datetime):
+        return {' d': http_date(value)}
+    elif isinstance(value, dict):
+        return dict((k, _tag(v)) for k, v in iteritems(value))
+    elif isinstance(value, str):
+        try:
+            return text_type(value)
+        except UnicodeError:
+            raise UnexpectedUnicodeError(u'A byte string with '
+                u'non-ASCII data was passed to the session system '
+                u'which can only store unicode strings.  Consider '
+                u'base64 encoding your string (String was %r)' % value)
+    return value
+
+
 class TaggedJSONSerializer(object):
     """A customized JSON serializer that supports a few extra types that
     we take for granted when serializing (tuples, markup objects, datetime).
     """
 
     def dumps(self, value):
-        def _tag(value):
-            if isinstance(value, tuple):
-                return {' t': [_tag(x) for x in value]}
-            elif isinstance(value, uuid.UUID):
-                return {' u': value.hex}
-            elif isinstance(value, bytes):
-                return {' b': b64encode(value).decode('ascii')}
-            elif callable(getattr(value, '__html__', None)):
-                return {' m': text_type(value.__html__())}
-            elif isinstance(value, list):
-                return [_tag(x) for x in value]
-            elif isinstance(value, datetime):
-                return {' d': http_date(value)}
-            elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in iteritems(value))
-            elif isinstance(value, str):
-                try:
-                    return text_type(value)
-                except UnicodeError:
-                    raise UnexpectedUnicodeError(u'A byte string with '
-                        u'non-ASCII data was passed to the session system '
-                        u'which can only store unicode strings.  Consider '
-                        u'base64 encoding your string (String was %r)' % value)
-            return value
         return json.dumps(_tag(value), separators=(',', ':'))
 
     def loads(self, value):
