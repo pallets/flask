@@ -12,7 +12,7 @@ import posixpath
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
-from .globals import _request_ctx_stack, _app_ctx_stack
+from .globals import _request_ctx_stack, _app_ctx_stack, request
 from .signals import template_rendered
 from .module import blueprint_is_module
 from ._compat import itervalues, iteritems
@@ -55,6 +55,16 @@ class DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
+        # find the template in the loader of itself first
+        blueprint_name = request.blueprint
+        app = self.app if blueprint_name is None else self.app.blueprints[blueprint_name]
+
+        try:
+            return app.jinja_loader.get_source(environment, template)
+        except TemplateNotFound:
+            pass
+        
+        # find template in app and all blueprint
         for loader, local_name in self._iter_loaders(template):
             try:
                 return loader.get_source(environment, local_name)
