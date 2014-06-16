@@ -81,6 +81,12 @@ If you are a Windows user, the following command is for you::
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
 
+And if you want to go back to the real world, use the following command::
+
+    $ deactivate
+
+After doing this, the prompt of your shell should be as familar as before.
+
 Now you can just enter the following command to get Flask activated in your
 virtualenv::
 
