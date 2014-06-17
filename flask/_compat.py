@@ -19,7 +19,7 @@ _identity = lambda x: x
 if not PY2:
     text_type = str
     string_types = (str,)
-    integer_types = (int, )
+    integer_types = (int,)
 
     iterkeys = lambda d: iter(d.keys())
     itervalues = lambda d: iter(d.values())
