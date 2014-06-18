@@ -540,10 +540,8 @@ class LoggingTestCase(FlaskTestCase):
         with app.test_request_context():
             runtime_params = dict()
             runtime_params['param1'] = 'value1'
-            runtime_params['param2'] = 'value2'
-            runtime_params['param3'] = 'value3'
             self.assert_equal(flask.url_for('index', _runtime=runtime_params),
-                              '/index?param3=value3&param2=value2&param1=value1')
+                              '/index?param1=value1')
 
     def test_url_for_with_scheme_not_external(self):
         app = flask.Flask(__name__)
