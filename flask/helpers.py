@@ -251,6 +251,7 @@ def url_for(endpoint, **values):
       parameter must be set to `True` or a `ValueError` is raised.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
+    :param _params: if provided this dictionary is used to add additional parameters at runtime
     """
     appctx = _app_ctx_stack.top
     reqctx = _request_ctx_stack.top
@@ -293,6 +294,11 @@ def url_for(endpoint, **values):
     anchor = values.pop('_anchor', None)
     method = values.pop('_method', None)
     scheme = values.pop('_scheme', None)
+    runtime_parameters = values.pop('_params', None)
+    if runtime_parameters:
+        for k, v in runtime_parameters:
+            values[k] = v
+
     appctx.app.inject_url_defaults(endpoint, values)
 
     if scheme is not None:
