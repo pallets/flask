@@ -296,7 +296,7 @@ def url_for(endpoint, **values):
     scheme = values.pop('_scheme', None)
     runtime_parameters = values.pop('_runtime', None)
     if runtime_parameters:
-        for k, v in runtime_parameters.iteritems():
+        for k, v in runtime_parameters.items():
             values[k] = v
 
     appctx.app.inject_url_defaults(endpoint, values)
