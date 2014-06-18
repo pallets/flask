@@ -532,6 +532,17 @@ class LoggingTestCase(FlaskTestCase):
                                             _scheme='https'),
                               'https://localhost/')
 
+    def test_url_for_with_runtime_parameters(self):
+        app = flask.Flask(__name__)
+        @app.route('/index')
+        def index():
+            return '42'
+        with app.test_request_context():
+            runtime_params = dict()
+            runtime_params['param1'] = 'value1'
+            self.assert_equal(flask.url_for('index', _runtime=runtime_params),
+                              '/index?param1=value1')
+
     def test_url_for_with_scheme_not_external(self):
         app = flask.Flask(__name__)
         @app.route('/')
