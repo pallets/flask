@@ -84,7 +84,7 @@ class run_audit(Command):
 
 setup(
     name='Flask',
-    version='0.10.2',
+    version='0.10.2-dev',
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
