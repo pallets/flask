@@ -166,8 +166,8 @@ class AppContext(object):
         self._refcnt += 1
         if hasattr(sys, 'exc_clear'):
             sys.exc_clear()
-        self.app.do_setup_appcontext(sys.exc_info()[1])    
         _app_ctx_stack.push(self)
+        self.app.do_setup_appcontext(sys.exc_info()[1])        
         appcontext_pushed.send(self.app)
 
     def pop(self, exc=None):
