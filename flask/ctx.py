@@ -166,6 +166,7 @@ class AppContext(object):
         self._refcnt += 1
         if hasattr(sys, 'exc_clear'):
             sys.exc_clear()
+        self.app.do_setup_appcontext(exc)    
         _app_ctx_stack.push(self)
         appcontext_pushed.send(self.app)
 
