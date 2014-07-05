@@ -194,7 +194,7 @@ step.
     either directly import an application object or create it (see
     :ref:`app-factories`).
 
-    What is ``data.info``?  It's a dictionary of arbitrary data on the
+    What is ``info.data``?  It's a dictionary of arbitrary data on the
     script info that can be filled by options or through other means.  We
     will come back to this later.
 3.  Next step is to create a :class:`FlaskGroup`.  In this case we just
