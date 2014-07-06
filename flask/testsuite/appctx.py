@@ -51,6 +51,35 @@ class AppContextTestCase(FlaskTestCase):
             self.assert_equal(flask.current_app._get_current_object(), app)
         self.assert_equal(flask._app_ctx_stack.top, None)
 
+    def test_app_setting_up(self):
+        setup_stuff = []
+        app = flask.Flask(__name__)
+        @app.setup_appcontext
+        def setup(exception):
+            setup_stuff.append(exception)
+
+        with app.app_context():
+            pass
+
+        self.assert_equal(setup_stuff, [None])
+
+    def test_app_setting_up_with_previous_exception(self):
+        setup_stuff = []
+        app = flask.Flask(__name__)
+        @app.setup_appcontext
+        def setup(exception):
+            setup_stuff.append(exception)
+
+        try:
+            raise Exception('dummy')
+        except Exception:
+            pass
+
+        with app.app_context():
+            pass
+
+        self.assert_equal(setup_stuff, [None])
+
     def test_app_tearing_down(self):
         cleanup_stuff = []
         app = flask.Flask(__name__)
