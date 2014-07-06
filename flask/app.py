@@ -34,7 +34,7 @@ from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
      _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
-     request_tearing_down, appcontext_tearing_down
+     request_tearing_down, appcontext_setting_up, appcontext_tearing_down
 from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
@@ -436,6 +436,13 @@ class Flask(_PackageBoundObject):
         #:
         #: .. versionadded:: 0.7
         self.teardown_request_funcs = {}
+
+        #: A list of functions that are called when the application context
+        #: is setup.  This is the place to store code to be executed after
+        #: application content is pushed on active stack.
+        #:
+        #: .. versionadded:: 0.11
+        self.setup_appcontext_funcs = []
 
         #: A list of functions that are called when the application context
         #: is destroyed.  Since the application context is also torn down
@@ -1323,6 +1330,33 @@ class Flask(_PackageBoundObject):
         return f
 
     @setupmethod
+    def setup_appcontext(self, f):
+        """Registers a function to be called when the application context
+        is setup.  These functions are called just after the application
+        context is pushed.
+
+        Example::
+
+            ctx = app.app_context()
+            ctx.push()
+            <<your functions here>>            
+
+        When ``ctx.push()`` is executed in the above example, the setup
+        functions are called just after the app context is pushed onto the
+        stack of active contexts.
+
+        Since a request context typically also manages an application
+        context it would also be called when you push a request context.
+
+        When a setup function was called because of an exception it will
+        be passed an error object.
+
+        .. versionadded:: 0.11
+        """
+        self.setup_appcontext_funcs.append(f)
+        return f
+
+    @setupmethod
     def teardown_appcontext(self, f):
         """Registers a function to be called when the application context
         ends.  These functions are typically also called when the request
@@ -1852,6 +1886,17 @@ class Flask(_PackageBoundObject):
         :param environ: a WSGI environment
         """
         return RequestContext(self, environ)
+
+    def do_setup_appcontext(self, exc=None):
+        """Called when an application context is pushed. 
+
+        .. versionadded:: 0.11
+        """
+        if exc is None:
+            exc = sys.exc_info()[1]
+        for func in reversed(self.setup_appcontext_funcs):
+            func(exc)
+        appcontext_setting_up.send(self, exc=exc)        
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
