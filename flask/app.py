@@ -438,7 +438,8 @@ class Flask(_PackageBoundObject):
         self.teardown_request_funcs = {}
 
         #: A list of functions that are called when the application context
-        #: is setup.  This is the place to store code that sets up databases.
+        #: is setup.  This is the place to store code to be executed after
+        #: application content is pushed on active stack.
         #:
         #: .. versionadded:: 0.10.2
         self.setup_appcontext_funcs = []
@@ -1331,17 +1332,17 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def setup_appcontext(self, f):
         """Registers a function to be called when the application context
-        is setup.  These functions are called just before the request
+        is setup.  These functions are called just after the application
         context is pushed.
 
         Example::
 
             ctx = app.app_context()
-            <<your functions here>>
             ctx.push()
+            <<your functions here>>            
 
         When ``ctx.push()`` is executed in the above example, the setup
-        functions are called just before the app context is pushed onto the
+        functions are called just after the app context is pushed onto the
         stack of active contexts.
 
         Since a request context typically also manages an application
