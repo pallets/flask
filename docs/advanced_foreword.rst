@@ -57,7 +57,7 @@ partially caused by changes in the language that went unreviewed for too
 long, partially also because we have not quite worked out how the lower-
 level API should change to account for the Unicode differences in Python 3.
 
-We strongly recommend using Python 2.6 and 2.7 with activated Python 3
+We strongly recommend using Python 2.7 with activated Python 3
 warnings during development.  If you plan on upgrading to Python 3 in the
 near future we strongly recommend that you read `How to write forwards
 compatible Python code
