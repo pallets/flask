@@ -7,7 +7,7 @@ Configuration Handling
 
 Applications need some kind of configuration.  There are different settings
 you might want to change depending on the application environment like
-toggling the debug mode, setting the secret key, and other such
+toggling the debug mode, setting the secret key, and other such as
 environment-specific things.
 
 The way Flask is designed usually requires the configuration to be
