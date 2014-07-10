@@ -40,12 +40,11 @@ probably hard to search for on the internet if they are Python 3 specific.
 Small Ecosystem
 ---------------
 
-The majority of the Flask extensions, all of the documentation and the
-vast majority of the PyPI provided libraries do not support Python 3 yet.
-Even if you start your project with knowing that all you will need is
-supported by Python 3 you don't know what happens six months from now.  If
-you are adventurous you can start porting libraries on your own, but that
-is nothing for the faint of heart.
+Some Flask extensions, documentation and PyPI provided libraries do not
+support Python 3 yet.  Even if you start your project with knowing that
+all you will need is supported by Python 3 you don't know what happens six
+months from now.  If you are adventurous you can start porting libraries
+on your own, but that is nothing for the faint of heart.
 
 Recommendations
 ---------------
