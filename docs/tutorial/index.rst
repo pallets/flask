@@ -12,10 +12,15 @@ as database which comes out of the box with Python, so there is nothing
 else you need.
 
 If you want the full sourcecode in advance or for comparison, check out
-the `example source`_.
+the `example source`_.  If you are using the latest stable release of
+Flask (0.10.1), the above source will not work, and you should instead use
+the `source from that release`_.
 
 .. _example source:
    http://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
+   
+.. _source from that release:
+   http://github.com/mitsuhiko/flask/tree/298334fffc8288b5a9a45ef4150e3c4292e45318/examples/flaskr
 
 .. toctree::
    :maxdepth: 2
