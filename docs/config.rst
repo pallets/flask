@@ -10,7 +10,7 @@ you might want to change depending on the application environment like
 toggling the debug mode, setting the secret key, and other such as
 environment-specific things.
 
-The way Flask is designed usually requires the configuration to be
+The way Flask designed usually requires the configuration to be
 available when the application starts up.  You can hardcode the
 configuration in the code, which for many small applications is not
 actually that bad, but there are better ways.
@@ -194,7 +194,7 @@ The following configuration values are used internally by Flask:
    browsers will not allow cross-subdomain cookies to be set on a
    server name without dots in it.  So if your server name is
    ``'localhost'`` you will not be able to set a cookie for
-   ``'localhost'`` and every subdomain of it.  Please chose a different
+   ``'localhost'`` and every subdomain of it.  Please choose a different
    server name in that case, like ``'myapplication.local'`` and add
    this name + the subdomains you want to use into your host config
    or setup a local `bind`_.
@@ -249,7 +249,7 @@ So a common pattern is this::
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
 with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
-environment variable points to.  This environment variable can be set on
+environment variable pointing to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::
 
@@ -287,7 +287,7 @@ a little harder.  There is no single 100% solution for this problem in
 general, but there are a couple of things you can keep in mind to improve
 that experience:
 
-1.  create your application in a function and register blueprints on it.
+1.  Create your application in a function and register blueprints on it.
     That way you can create multiple instances of your application with
     different configurations attached which makes unittesting a lot
     easier.  You can use this to pass in configuration as needed.
@@ -348,10 +348,10 @@ To enable such a config you just have to call into
 There are many different ways and it's up to you how you want to manage
 your configuration files.  However here a list of good recommendations:
 
--   keep a default configuration in version control.  Either populate the
+-   Keep a default configuration in version control.  Either populate the
     config with this default configuration or import it in your own
     configuration files before overriding values.
--   use an environment variable to switch between the configurations.
+-   Use an environment variable to switch between the configurations.
     This can be done from outside the Python interpreter and makes
     development and deployment much easier because you can quickly and
     easily switch between different configs without having to touch the
