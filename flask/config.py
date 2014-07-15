@@ -167,8 +167,8 @@ class Config(dict):
 
     def from_json(self, filename, silent=False):
         """Updates the values in the config from a JSON file. This function
-        behaves as if the JSON object was a dictionary and passed ot the
-        :meth:`from_object` function.
+        behaves as if the JSON object was a dictionary and updated into
+        the config.
 
         :param filename: the filename of the JSON file.  This can either be an
                          absolute filename or a filename relative to the
