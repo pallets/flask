@@ -266,7 +266,7 @@ some examples:
 /
 /login
 /login?next=/
-/user/John%20Doe
+/user/?username=John+Doe
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method, explained
 below.  It tells Flask to behave as though it is handling a request, even
