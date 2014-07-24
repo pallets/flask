@@ -98,7 +98,7 @@ execute the application under a different user for security reasons:
         </Directory>
     </VirtualHost>
 
-Note: WSGIDaemonProcess isn't implemented in Windows and Apache will 
+Note: WSGIDaemonProcess isn't implemented in Windows and Apache will
 refuse to run with the above configuration. On a Windows system, eliminate those lines:
 
 .. sourcecode:: apache
@@ -121,7 +121,7 @@ For more information consult the `mod_wsgi wiki`_.
 .. _mod_wsgi: http://code.google.com/p/modwsgi/
 .. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
 .. _virtual python: https://pypi.python.org/pypi/virtualenv
-.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
+.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/w/list
 
 Troubleshooting
 ---------------
