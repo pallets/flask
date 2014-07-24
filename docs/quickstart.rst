@@ -41,7 +41,7 @@ should see your hello world greeting.
 So what did that code do?
 
 1. First we imported the :class:`~flask.Flask` class.  An instance of this
-   class will be our WSGI application.  
+   class will be our WSGI application.
 2. Next we create an instance of this class. The first argument is the name of
    the application's module or package.  If you are using a single module (as
    in this example), you should use `__name__` because depending on if it's
@@ -878,7 +878,7 @@ Ready to deploy your new Flask app?  To wrap up the quickstart, you can
 immediately deploy to a hosted platform, all of which offer a free plan for
 small projects:
 
-- `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/python>`_
+- `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/getting-started-with-python>`_
 - `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
   with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
 

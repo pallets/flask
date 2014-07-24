@@ -75,4 +75,4 @@ Continue to :ref:`tutorial-dbinit`.
    larger <larger-applications>`, it's a good idea not to.
 
 .. _example source:
-   http://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
+   https://github.com/mitsuhiko/flask/tree/master/examples/flaskr/

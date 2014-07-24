@@ -51,11 +51,11 @@ your app to be available, works too but the `ScriptAlias` directive won't
 work in that case:
 
 .. sourcecode:: apache
-    
+
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f # Don't interfere with static files
     RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
 
 For more information consult the documentation of your webserver.
 
-.. _App Engine: http://code.google.com/appengine/
+.. _App Engine: https://developers.google.com/appengine/

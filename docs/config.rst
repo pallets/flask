@@ -199,7 +199,7 @@ The following configuration values are used internally by Flask:
    this name + the subdomains you want to use into your host config
    or setup a local `bind`_.
 
-.. _bind: https://www.isc.org/software/bind
+.. _bind: https://www.isc.org/downloads/bind/
 
 .. versionadded:: 0.4
    ``LOGGER_NAME``
@@ -363,7 +363,7 @@ your configuration files.  However here a list of good recommendations:
     details about how to do that, head over to the
     :ref:`fabric-deployment` pattern.
 
-.. _fabric: http://fabfile.org/
+.. _fabric: http://www.fabfile.org/
 
 
 .. _instance-folders:
