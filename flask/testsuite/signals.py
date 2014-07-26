@@ -120,6 +120,29 @@ class SignalsTestCase(FlaskTestCase):
             flask.appcontext_pushed.disconnect(record_push, app)
             flask.appcontext_popped.disconnect(record_pop, app)
 
+    def test_appcontext_setup_teardown_signals(self):
+        app = flask.Flask(__name__)
+        recorded = []
+        def record_setup(sender, **kwargs):
+            recorded.append('setup')
+        def record_teardown(sender, **kwargs):
+            recorded.append('teardown')
+
+        @app.route('/')
+        def index():
+            return 'Hello'
+
+        flask.appcontext_setting_up.connect(record_setup, app)
+        flask.appcontext_tearing_down.connect(record_teardown, app)
+        try:
+            with app.test_client() as c:
+                rv = c.get('/')
+                self.assert_equal(rv.data, b'Hello')
+            self.assert_equal(recorded, ['setup', 'teardown'])
+        finally:
+            flask.appcontext_setting_up.disconnect(record_setup, app)
+            flask.appcontext_tearing_down.disconnect(record_teardown, app)            
+
     def test_flash_signal(self):
         app = flask.Flask(__name__)
         app.config['SECRET_KEY'] = 'secret'
