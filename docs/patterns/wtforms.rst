@@ -122,5 +122,5 @@ takes advantage of the `_formhelpers.html` template:
 For more information about WTForms, head over to the `WTForms
 website`_.
 
-.. _WTForms: http://wtforms.simplecodes.com/
-.. _WTForms website: http://wtforms.simplecodes.com/
+.. _WTForms: http://wtforms.readthedocs.org/
+.. _WTForms website: http://wtforms.readthedocs.org/

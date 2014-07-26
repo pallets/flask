@@ -159,7 +159,7 @@ work in the URL root you have to work around a lighttpd bug with the
 
 Make sure to apply it only if you are mounting the application the URL
 root. Also, see the Lighty docs for more information on `FastCGI and Python
-<http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModFastCGI>`_ (note that
+<http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModFastCGI>`_ (note that
 explicitly passing a socket to run() is no longer necessary).
 
 Configuring nginx
@@ -236,5 +236,5 @@ python path.  Common problems are:
 
 .. _nginx: http://nginx.org/
 .. _lighttpd: http://www.lighttpd.net/
-.. _cherokee: http://www.cherokee-project.com/
-.. _flup: http://trac.saddi.com/flup
+.. _cherokee: http://cherokee-project.com/
+.. _flup: https://pypi.python.org/pypi/flup

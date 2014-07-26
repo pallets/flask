@@ -64,7 +64,7 @@ If you maintain an extension that was using :data:`~flask._request_ctx_stack`
 before, please consider changing to :data:`~flask._app_ctx_stack` if it makes
 sense for your extension.  For instance, the app context stack makes sense for
 extensions which connect to databases.  Using the app context stack instead of
-the request context stack will make extensions more readily handle use cases 
+the request context stack will make extensions more readily handle use cases
 outside of requests.
 
 Version 0.8
@@ -115,7 +115,7 @@ good.
 To apply the upgrade script do the following:
 
 1.  Download the script: `flask-07-upgrade.py
-    <https://raw.github.com/mitsuhiko/flask/master/scripts/flask-07-upgrade.py>`_
+    <https://raw.githubusercontent.com/mitsuhiko/flask/master/scripts/flask-07-upgrade.py>`_
 2.  Run it in the directory of your application::
 
         python flask-07-upgrade.py > patchfile.diff

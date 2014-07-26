@@ -110,7 +110,7 @@ Querying is simple as well:
 
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _declarative:
-   http://www.sqlalchemy.org/docs/orm/extensions/declarative.html
+   http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative.html
 
 Manual Object Relational Mapping
 --------------------------------
@@ -186,7 +186,7 @@ Then you can either declare the tables in your code like in the examples
 above, or automatically load them::
 
     from sqlalchemy import Table
-    
+
     users = Table('users', metadata, autoload=True)
 
 To insert data you can use the `insert` method.  We have to get a
@@ -215,4 +215,4 @@ You can also pass strings of SQL statements to the
 (1, u'admin', u'admin@localhost')
 
 For more information about SQLAlchemy, head over to the
-`website <http://sqlalchemy.org/>`_.
+`website <http://www.sqlalchemy.org/>`_.
