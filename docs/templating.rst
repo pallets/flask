@@ -119,7 +119,7 @@ Controlling Autoescaping
 ------------------------
 
 Autoescaping is the concept of automatically escaping special characters
-of you.  Special characters in the sense of HTML (or XML, and thus XHTML)
+for you.  Special characters in the sense of HTML (or XML, and thus XHTML)
 are ``&``, ``>``, ``<``, ``"`` as well as ``'``.  Because these characters
 carry specific meanings in documents on their own you have to replace them
 by so called "entities" if you want to use them for text.  Not doing so

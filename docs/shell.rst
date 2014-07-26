@@ -98,6 +98,6 @@ with stuff you want to star import into your interactive session.  There
 you could also define some more helper methods for common things such as
 initializing the database, dropping tables etc.
 
-Just put them into a module (like `shelltools` and import from there):
+Just put them into a module (like `shelltools`) and import from there:
 
 >>> from shelltools import *
