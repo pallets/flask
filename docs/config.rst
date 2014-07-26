@@ -7,10 +7,10 @@ Configuration Handling
 
 Applications need some kind of configuration.  There are different settings
 you might want to change depending on the application environment like
-toggling the debug mode, setting the secret key, and other such as
+toggling the debug mode, setting the secret key, and other such
 environment-specific things.
 
-The way Flask designed usually requires the configuration to be
+The way Flask is designed usually requires the configuration to be
 available when the application starts up.  You can hardcode the
 configuration in the code, which for many small applications is not
 actually that bad, but there are better ways.
@@ -249,7 +249,7 @@ So a common pattern is this::
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
 with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
-environment variable pointing to.  This environment variable can be set on
+environment variable points to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::
 
