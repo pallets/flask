@@ -148,7 +148,7 @@ signal subscribers::
             model_saved.send(self)
 
 Try to always pick a good sender.  If you have a class that is emitting a
-signal, pass `self` as sender.  If you emitting a signal from a random
+signal, pass `self` as sender.  If you are emitting a signal from a random
 function, you can pass ``current_app._get_current_object()`` as sender.
 
 .. admonition:: Passing Proxies as Senders
