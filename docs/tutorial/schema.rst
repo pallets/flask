@@ -14,7 +14,7 @@ named `schema.sql` in the just created `flaskr` folder:
     create table entries (
       id integer primary key autoincrement,
       title text not null,
-      text text not null
+      'text' text not null
     );
 
 This schema consists of a single table called `entries` and each row in
