@@ -36,6 +36,7 @@ Version 1.0
   for an extension author to create exceptions that will by default
   result in the HTTP error of their choosing, but may be caught with
   a custom error handler if desired.
+- Added :meth:`flask.Config.from_mapping`.
 
 Version 0.10.2
 --------------
