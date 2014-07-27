@@ -47,6 +47,34 @@ class ConfigTestCase(FlaskTestCase):
         app.config.from_json(os.path.join(current_dir, 'static', 'config.json'))
         self.common_object_test(app)
 
+    def test_config_from_mapping(self):
+        app = flask.Flask(__name__)
+        app.config.from_mapping({
+            'SECRET_KEY': 'devkey',
+            'TEST_KEY': 'foo'
+        })
+        self.common_object_test(app)
+
+        app = flask.Flask(__name__)
+        app.config.from_mapping([
+            ('SECRET_KEY', 'devkey'),
+            ('TEST_KEY', 'foo')
+        ])
+        self.common_object_test(app)
+
+        app = flask.Flask(__name__)
+        app.config.from_mapping(
+            SECRET_KEY='devkey',
+            TEST_KEY='foo'
+        )
+        self.common_object_test(app)
+
+        app = flask.Flask(__name__)
+        with self.assert_raises(TypeError):
+            app.config.from_mapping(
+                {}, {}
+            )
+
     def test_config_from_class(self):
         class Base(object):
             TEST_KEY = 'foo'
