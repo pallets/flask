@@ -12,15 +12,15 @@
   var $CURRENT_USER = {{ g.user|tojson }};
 </script>
 <script src="{{ url_for('static', filename='persona.js') }}"></script>
-<link rel=stylesheet href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <header>
   <h1>Mozilla Persona Example</h1>
-  <div class=authbar>
+  <div class="authbar">
     {% if g.user %}
       Signed in as <em>{{ g.user }}</em>
-      (<a href="#" class=signout>Sign out</a>)
+      (<a href="#" class="signout">Sign out</a>)
     {% else %}
-      Not signed in. <a href="#" class=signin>Sign in</a>
+      Not signed in. <a href="#" class="signin">Sign in</a>
     {% endif %}
   </div>
 </header>
