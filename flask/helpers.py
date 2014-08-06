@@ -295,6 +295,9 @@ def url_for(endpoint, **values):
     scheme = values.pop('_scheme', None)
     appctx.app.inject_url_defaults(endpoint, values)
 
+    if external and scheme is None:
+        scheme = appctx.app.config.get('PREFERRED_URL_SCHEME')
+
     if scheme is not None:
         if not external:
             raise ValueError('When specifying _scheme, _external must be True')

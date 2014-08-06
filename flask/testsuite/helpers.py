@@ -543,6 +543,26 @@ class LoggingTestCase(FlaskTestCase):
                                'index',
                                _scheme='https')
 
+    def test_url_for_with_preferred_url_scheme(self):
+        app = flask.Flask(__name__)
+        app.config['PREFERRED_URL_SCHEME'] = 'https'
+        @app.route('/')
+        def index():
+            return '42'
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('index', _external=True),
+                              'https://localhost/')
+
+    def test_url_for_with_preferred_url_scheme_not_external(self):
+        app = flask.Flask(__name__)
+        app.config['PREFERRED_URL_SCHEME'] = 'https'
+        @app.route('/')
+        def index():
+            return '42'
+        with app.test_request_context():
+            self.assert_equal(flask.url_for('index'), '/')
+
+
     def test_url_with_method(self):
         from flask.views import MethodView
         app = flask.Flask(__name__)
