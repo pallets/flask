@@ -100,7 +100,7 @@ setup(
         'Werkzeug>=0.7',
         'Jinja2>=2.4',
         'itsdangerous>=0.21',
-        'click>=0.6',
+        'click>=2.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
