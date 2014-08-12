@@ -192,11 +192,11 @@ def without_appcontext(f):
     return f
 
 
-def set_debug_value(ctx, value):
+def set_debug_value(ctx, param, value):
     ctx.ensure_object(ScriptInfo).debug = value
 
 
-def set_app_value(ctx, value):
+def set_app_value(ctx, param, value):
     if value is not None:
         if os.path.isfile(value):
             value = prepare_exec_for_file(value)
