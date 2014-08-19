@@ -152,8 +152,8 @@ Implementation
 --------------------------------------------------------------------------------
 
 Flask implements context locals via two objects from Werkzeug: ``LocalStack``
-and ``LocalProxy``. The best way to gain an intuition for how context locals
-work is by following a simple example::
+and ``LocalProxy``. The best way to gain an intuition for these work is by
+following a simple example::
 
     >>> from werkzeug.local import LocalProxy, LocalStack
     >>> mydata = LocalStack()
@@ -169,8 +169,8 @@ work is by following a simple example::
     >>> number
     42
 
-There are two important things to know about context locals. First, if we access
-data in a different context we get different data::
+There are two important things to know about ``LocalStack`` and ``LocalProxy``.
+First, if we access them in a different context we get different data::
 
     >>> log = []
     >>> def f():
@@ -185,7 +185,7 @@ data in a different context we get different data::
     >>> log
     [None, 11]
 
-Second, changes made in one context don't affect data in another::
+Second, changing their data in one context doesn't affect data in another::
 
     >>> number
     42
