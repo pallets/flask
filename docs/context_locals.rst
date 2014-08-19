@@ -19,11 +19,11 @@ parameter and many will only pass it through to other calls. [2]_
 
 One common solution to this problem is to make the request context globally
 available. In fact, Django does this in several modules.  For example, Django's
-internalization module inspects the current respects to figure out what the
-current language is. [2]_ And the database often keeps data around depending on
-the current transaction. [2]_ However, globals introduce two new problems.
-First, they risk making large applications unmaintainable. Second, they aren't
-thread safe.
+internalization module inspects the current request to determine the current
+language is. [2]_ And the database often keeps data around depending on the
+current transaction. [2]_ However, globals introduce two new problems.  First,
+they risk making large applications unmaintainable. Second, they aren't thread
+safe.
 
 Flask aims to make it quick and easy to write a traditional web application.
 [1]_ So, while globals can make a large application hard to maintain, Flask
@@ -40,7 +40,7 @@ reuse threads for requests, which could pollute the thread local object and leak
 memory. Second, some popular web servers, like Gunicorn, handle concurrency
 without threads. Flask solves both of these problems by taking advantage of
 context local objects from Werkzeug; global objects that manage data specific to
-the current greenlet or thread ("the context").
+the current request.
 
 The request runtime state
 --------------------------------------------------------------------------------
