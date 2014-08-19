@@ -36,11 +36,11 @@ The typical solution to thread-safe globals is thread local storage, which
 Python has supported via ``threading.local()`` since 2.4. However, thread-locals
 are not viable in web applications for two reasons. First, WSGI does not
 guarantee that every request will get its own thread; web servers may reuse
-threads for requests, which could pollute the thread local object.  Second, some
-popular web servers handle concurrency without threads. For example, Gunicorn_
-uses greenlets. Flask solves both of these problems by introducing the *request
-context* object that manages data specific to the current request in the current
-thread or greenlet ("context").
+threads for requests, which could pollute the thread local object and leak
+memory. Second, some popular web servers handle concurrency without threads. For
+example, Gunicorn_ uses greenlets. Flask solves both of these problems by
+introducing the *request context* object that manages data specific to the
+current request in the current thread or greenlet ("context").
 
 The request context
 --------------------------------------------------------------------------------
