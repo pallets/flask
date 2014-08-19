@@ -99,8 +99,8 @@ which every context local is bound::
     <Flask 'app1'>
     <flask.g of 'app1'>
 
-Finally, when the request is handled, Flask transitions back to the application
-state::
+Finally, when the request is processed, Flask transitions back to the
+application setup state::
 
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
