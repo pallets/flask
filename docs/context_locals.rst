@@ -89,15 +89,15 @@ When a request comes in, Flask transitions to the *runtime state* in which
 every context local is bound::
 
     >>> with app.test_request_context():
-    ...   current_app
-    ...   g
     ...   request
     ...   session
+    ...   current_app
+    ...   g
     ...
-    <Flask 'app1'>
-    <flask.g of 'app1'>
     <Request 'http://localhost/' [GET]>
     <NullSession {}>
+    <Flask 'app1'>
+    <flask.g of 'app1'>
 
 Finally, when the request is handled, Flask transitions back to the application
 state::
@@ -126,16 +126,16 @@ information related to the current app, like ``current_app``, ``g``, and
     >>> app.config['SERVER_NAME'] = 'myapp.dev:5000'
     >>> app.add_url_rule("/x", endpoint="x")
     >>> with app.app_context():
-    ...   current_app
-    ...   g
     ...   request
     ...   session
+    ...   current_app
+    ...   g
     ...   url_for('x')
     ...
+    <LocalProxy unbound>
+    <LocalProxy unbound>
     <Flask 'app1'>
     <flask.g of 'app1'>
-    <LocalProxy unbound>
-    <LocalProxy unbound>
     'http://myapp.dev:5000/x'
 
 Further, request contexts were made to implicitly create an application context.
