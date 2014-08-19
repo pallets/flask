@@ -60,17 +60,19 @@ for the duration of a request whenever it receives a new HTTP request [*]_::
                     response = self.make_response(self.handle_exception(e))
                 return response(environ, start_response)
 
-We can see how request contexts work in more detail via the interpreter. At
-first, Flask begins in the *application state* where the application may be
-configured and no context locals are bound::
+We can see how request contexts work in more detail via the interpreter::
 
-    >>> from flask import Flask, request, session
+    >>> from flask import Flask, current_app, g, request, session
     >>> app = Flask('app1')
+
+Flask starts in the *application setup state* when the :class:`Flask` object is
+instantiated. In this state, the programmer may safely configure the application
+and every context local is free::
+
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
 
-Trying to use any of these objects in this state will result in a
-``RuntimeError``::
+Trying to use a context local in this state will result in a ``RuntimeError``::
 
     >>> request.url
     Traceback (most recent call last):
