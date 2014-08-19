@@ -2,28 +2,28 @@
 Context locals
 ================================================================================
 
-Context-local objects ("context locals") are global objects that manage data
+Context local objects ("context locals") are global objects that manage data
 specific to the current greenlet or thread ("the context"). Flask uses
-context-local objects, like ``request``, ``session``, ``g``, and
-``current_app``, for information related to the current request and current
-application. These objects are only available for the duration of a request.
+context locals, like ``request``, ``session``, ``current_app``, and ``g``, for
+data related to the current request ("the request context"). These objects are
+only available when the application is processing a request.
 
 Motivation
 --------------------------------------------------------------------------------
 
-Some frameworks, like Django, require you to pass information related to the
-request around from function to function within a request in order to stay
+Some web frameworks, like Django, require you to pass data specific to the
+current request ("the request context") throughout your code in order to stay
 thread-safe. This is inconvenient since it can make application logic verbose
 and difficult to understand; many functions will need to take a ``request``
 parameter and many will only pass it through to other calls. [2]_
 
-One common solution to this problem is to make information related to the
-request globally available. In fact, Django does this in several modules.  For
-example, Django's internalization module inspects the current respects to figure
-out what the current language is. [2]_  And the database often keeps data around
-depending on the current transaction. [2]_ However, these instances are isolated
-since globals introduces two new problems. First, they risk making large
-applications unmaintainable. Second, they aren't thread safe.
+One common solution to this problem is to make the request context globally
+available. In fact, Django does this in several modules.  For example, Django's
+internalization module inspects the current respects to figure out what the
+current language is. [2]_ And the database often keeps data around depending on
+the current transaction. [2]_ However, globals introduce two new problems.
+First, they risk making large applications unmaintainable. Second, they aren't
+thread safe.
 
 Flask aims to make it quick and easy to write a traditional web application.
 [1]_ So, while globals can make a large application hard to maintain, Flask
@@ -32,23 +32,23 @@ it should be possible to tame the complexities of these globals; they do not
 manage state and are all singletons-- that is, there is one ``request`` per
 request).
 
-The typical solution to thread-safe globals is thread local storage, which
-Python has supported via ``threading.local()`` since 2.4. However, thread-locals
-are not viable in web applications for two reasons. First, WSGI does not
-guarantee that every request will get its own thread; web servers may reuse
-threads for requests, which could pollute the thread local object and leak
-memory. Second, some popular web servers handle concurrency without threads. For
-example, Gunicorn_ uses greenlets. Flask solves both of these problems by
-introducing the *request context* object that manages data specific to the
-current request in the current thread or greenlet ("context").
+The standard way to make globals thread-safe is to use thread local storage,
+which Python has supported via ``threading.local()`` since 2.4. However,
+thread locals are not viable in web applications for two reasons. First, WSGI
+does not guarantee that every request will get its own thread; web servers may
+reuse threads for requests, which could pollute the thread local object and leak
+memory. Second, some popular web servers, like Gunicorn, handle concurrency
+without threads. Flask solves both of these problems by taking advantage of
+context local objects from Werkzeug; global objects that manage data specific to
+the current greenlet or thread ("the context").
 
 The request context
 --------------------------------------------------------------------------------
 
-The *request context* is a context manager that handles entry into, and exit
-from, a runtime environment containing all information relevant to the current
-request. Flask creates a new request context and binds it to the current context
-for the duration of a request whenever it receives a new HTTP request [*]_::
+A Flask application uses a context manager to handle entry into, and exit from,
+the request context. The application creates a new request context and binds it
+to the current context when it receives a new HTTP request which lasts until the
+application responds [*]_::
 
     class Flask(_PackageBoundObject):
         ...
