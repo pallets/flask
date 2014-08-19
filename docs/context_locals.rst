@@ -42,7 +42,7 @@ without threads. Flask solves both of these problems by taking advantage of
 context local objects from Werkzeug; global objects that manage data specific to
 the current greenlet or thread ("the context").
 
-The request context
+The request runtime state
 --------------------------------------------------------------------------------
 
 A Flask application uses a context manager to handle entry into, and exit from,
@@ -85,8 +85,8 @@ Trying to use a context local in this state will result in a ``RuntimeError``::
         raise RuntimeError('working outside of request context')
     RuntimeError: working outside of request context
 
-When a request comes in, Flask transitions to the *runtime state* in which
-every context local is bound::
+When a request comes in, Flask transitions to the *request runtime state* in
+which every context local is bound::
 
     >>> with app.test_request_context():
     ...   request
@@ -105,19 +105,12 @@ state::
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
 
-The runtime state
+The application runtime state
 --------------------------------------------------------------------------------
 
-Flask 0.9 divided the runtime state into two parts: the *request runtime
-state*, managed by a request context, and the *application runtime state*,
-managed by an *application context*. The request context was restricted to
-manage anything to do with a web browser, e.g. HTTP request data or HTTP
-session data, and the application context took over managing anything to do with
-connection pooling (e.g. database connection) or configuration management.
-
-The advantage to this division is that it becomes possible to retrieve
-information related to the current app, like ``current_app``, ``g``, and
-``url_for``, without faking a request-- an expensive operation. For example::
+The programmer can cause the application to transition into the *application
+runtime state* in which only ``current_app`` and ``g`` are available by creating
+an *application context*::
 
     >>> from flask import Flask, current_app, g, request, session, url_for
     >>> current_app, g, request, session
@@ -138,9 +131,13 @@ information related to the current app, like ``current_app``, ``g``, and
     <flask.g of 'app1'>
     'http://myapp.dev:5000/x'
 
-Further, request contexts were made to implicitly create an application context.
-Therefore, anything available in an application context is also available in a
-request context::
+This state is useful for scripts, tests, and interactive sessions where the
+programmer may wish to access data related to a database or the application
+configuration without incurring the expense of faking a request.
+
+Flask applications implicitly create an application context whenever they create
+a request context, so any data available in an application context is also
+available in a request context::
 
     >>> with app.test_request_context():
     ...   current_app
