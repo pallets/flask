@@ -69,6 +69,20 @@ configured and no context locals are bound::
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
 
+Trying to use any of these objects in this state will result in a
+``RuntimeError``::
+
+    >>> request.url
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "/Library/Python/2.7/site-packages/werkzeug/local.py", line 338, in __getattr__
+        return getattr(self._get_current_object(), name)
+      File "/Library/Python/2.7/site-packages/werkzeug/local.py", line 297, in _get_current_object
+        return self.__local()
+      File "/Library/Python/2.7/site-packages/flask/globals.py", line 20, in _lookup_req_object
+        raise RuntimeError('working outside of request context')
+    RuntimeError: working outside of request context
+
 When a request comes in, Flask transitions to the *runtime state* in which
 every context local is bound::
 
