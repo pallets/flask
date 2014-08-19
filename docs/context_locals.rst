@@ -148,6 +148,48 @@ available in a request context::
     <flask.g of 'app1'>
     'http://myapp.dev:5000/x'
 
+Implementation
+--------------------------------------------------------------------------------
+
+Flask implements context locals via two objects from Werkzeug: ``LocalStack``
+and ``LocalProxy``. The best way to gain an intuition for how context locals
+work is by following a simple example::
+
+    >>> from werkzeug.local import LocalProxy, LocalStack
+    >>> mydata = LocalStack()
+    >>> mydata.top
+    None
+    >>> number = LocalProxy(lambda: mydata.top)
+    >>> number
+    None
+    >>> mydata.push(42)
+    [42]
+    >>> mydata.top
+    42
+    >>> number
+    42
+
+There are two important things to know about context locals. First, if we access
+data in a different context we get different data::
+
+    >>> log = []
+    >>> def f():
+    ...   log.append(number)
+    ...   mydata.push(11)
+    ...   log.append(number)
+    ...
+    >>> import threading
+    >>> thread = threading.Thread(target=f)
+    >>> thread.start()
+    >>> thread.join()
+    >>> log
+    [None, 11]
+
+Second, changes made in one context don't affect data in another::
+
+    >>> number
+    42
+
 Footnotes
 --------------------------------------------------------------------------------
 
