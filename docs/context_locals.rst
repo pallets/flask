@@ -202,6 +202,10 @@ Second, changing their data in one context doesn't affect data in another::
     >>> number
     42
 
+Stacks were chosen because they enable us to push and pop multiple times. The
+topmost level on the stack is the current active context. This is useful to
+implement things like internal redirects.
+
 Notice that ``LocalStack`` objects can only hold one value at a time, but that
 we have two stacks, both of which need to maintain two values. We can solve this
 by storing objects on each stack, since objects can hold multiple values. So, we
