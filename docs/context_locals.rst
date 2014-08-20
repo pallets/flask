@@ -203,10 +203,10 @@ Second, changing their data in one context doesn't affect data in another::
     42
 
 Notice that ``LocalStack`` objects can only hold one value at a time, but that
-we have two stacks which both need to maintain two values. Flask solves this by
-storing objects, which can hold multiple values, on each stack:
-``RequestContext`` objects manage ``request`` and ``session`` on the request
-context stack, and ``AppContext`` objects manage ``current_app`` and ``g`` on
+we have two stacks, both of which need to maintain two values. We can solve this
+by storing objects on each stack, since objects can hold multiple values. So, we
+introduce ``RequestContext`` to manage ``request`` and ``session`` on the
+request context stack and ``AppContext`` to manage ``current_app`` and ``g`` on
 the application context stack::
 
 
