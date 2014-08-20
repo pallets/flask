@@ -206,6 +206,23 @@ Stacks were chosen because they enable us to push and pop multiple times. The
 topmost level on the stack is the current active context. This is useful to
 implement things like internal redirects.
 
+It is important to note that the context locals objects themselves are actually
+proxies to other objects. This is so because these objects are shared between
+threads. Proxies allow us to dispatch to the actual object bound to a thread as
+necessary. Most of the time you don't have to care about this, but there are
+some exceptions when this is useful to know:
+
+- If you want to perform actual instance checks. Proxy objects do not fake their
+  inherited types, so you have to do that on the instance that is being proxied.
+
+- If the object reference is important (for example, when sending :ref:`signals`)
+
+To access the underlying object that is being proxied, you can use the
+:meth:`~werkzeug.local.LocalProxy._get_current_object` method::
+
+    app = current_app._get_current_object()
+    my_signal.send(app)
+
 Notice that ``LocalStack`` objects can only hold one value at a time, but that
 we have two stacks, both of which need to maintain two values. We can solve this
 by storing objects on each stack, since objects can hold multiple values. So, we
