@@ -151,9 +151,100 @@ available in a request context::
 Implementation
 --------------------------------------------------------------------------------
 
-Flask implements context locals via two objects from Werkzeug: ``LocalStack``
-and ``LocalProxy``. The best way to gain an intuition for these work is by
-following a simple example::
+Context locals are implemented with several pieces of machinery. We'll start
+from the most familiar toward the abstract. As mentioned above, request
+contexts are created when the application receives a request::
+
+    from .ctx import RequestContext
+
+    class Flask(_PackageBoundObject):
+        ...
+        def app_context(self):
+            return AppContext(self)
+
+        def request_context(self, environ):
+            return RequestContext(self, environ)
+
+        def wsgi_app(self, environ, start_response):
+            with self.request_context(environ):
+                try:
+                    response = self.full_dispatch_request()
+                except Exception as e:
+                    response = self.make_response(self.handle_exception(e))
+                return response(environ, start_response)
+
+We can see that this create an instance of ``RequestContext``, which is a
+context manager around ``_request_ctx_stack``::
+
+    from .globals import _request_ctx_stack, _app_ctx_stack
+
+    class RequestContext(object):
+        def __init__(self, app, environ):
+            self.app = app
+            self.request = app.request_class(environ)
+            self.session = app.open_session(self.request)
+
+        def push(self):
+            # Before we push the request context we have to ensure that there
+            # is an application context.
+            app_ctx = _app_ctx_stack.top
+            if app_ctx is None or app_ctx.app != self.app:
+                app_ctx = self.app.app_context()
+                app_ctx.push()
+                self._implicit_app_ctx_stack.append(app_ctx)
+            else:
+                self._implicit_app_ctx_stack.append(None)
+
+            _request_ctx_stack.push(self)
+
+        def pop(self):
+            app_ctx = self._implicit_app_ctx_stack.pop()
+
+            _request_ctx_stack.pop()
+
+            if app_ctx is not None:
+                app_ctx.pop()
+
+        def __enter__(self):
+            self.push()
+            return self
+
+        def __exit__(self, exc_type, exc_value, tb):
+            self.pop()
+
+    class AppContext(object):
+        def __init__(self, app):
+            self.app = app
+            self.g = app.app_ctx_globals_class()
+
+        def push(self):
+            _app_ctx_stack.push(self)
+
+        def pop(self):
+            _app_ctx_stack.pop()
+
+        def __enter__(self):
+            self.push()
+            return self
+
+        def __exit__(self, exc_type, exc_value, tb):
+            self.pop()
+
+We discover ``_request_ctx_stack`` inside ``flask.globals``, an instance of
+``werkzeug.local.LocalStack``::
+
+    from werkzeug.local import LocalStack, LocalProxy
+
+    # context locals
+    _request_ctx_stack = LocalStack()
+    _app_ctx_stack = LocalStack()
+    request = LocalProxy(lambda: _request_ctx_stack.top.request)
+    session = LocalProxy(lambda: _request_ctx_stack.top.session)
+    current_app = LocalProxy(lambda: _app_ctx_stack.top.app)
+    g = LocalProxy(lambda: _app_ctx_stack.top.g)
+
+To understand ``LocalStack`` and ``LocalProxy``, it's easier to follow a simple
+example than to study the source::
 
     >>> from werkzeug.local import LocalProxy, LocalStack
     >>> mydata = LocalStack()
