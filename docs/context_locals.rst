@@ -42,33 +42,22 @@ without threads. Flask solves both of these problems by taking advantage of
 context local objects from Werkzeug; global objects that manage data specific to
 the current request.
 
-The request runtime state
+Application states
 --------------------------------------------------------------------------------
 
-A Flask application uses a context manager to handle entry into, and exit from,
-the request context. The application creates a new request context and binds it
-to the current context when it receives a new HTTP request which lasts until the
-application responds [*]_::
+A Flask application is in one of three states. Request globals are only
+available in certain states. It is an error for an application to attempt to
+access a request global in an inappropriate state, and the application will
+throw a ``RuntimeError`` if this happens.
 
-    class Flask(_PackageBoundObject):
-        ...
-        def wsgi_app(self, environ, start_response):
-            with self.request_context(environ):
-                try:
-                    response = self.full_dispatch_request()
-                except Exception as e:
-                    response = self.make_response(self.handle_exception(e))
-                return response(environ, start_response)
-
-We can see how request contexts work in more detail via the interpreter::
-
-    >>> from flask import Flask, current_app, g, request, session
-    >>> app = Flask('app1')
-
-A Flask application starts in the *application setup state* when the
+The initial state is the *application setup state* which begins when the
 :class:`Flask` object is instantiated. The application may be configured in this
 state, but it must not use any request globals::
 
+    >>> from flask import Flask, current_app, g, request, session
+    >>> app = Flask(__name__)
+    >>> app.config['SERVER_NAME'] = 'myapp.dev:5000'
+    >>> app.add_url_rule("/", endpoint="hello")
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
     >>> request.url
@@ -83,7 +72,19 @@ state, but it must not use any request globals::
     RuntimeError: working outside of request context
 
 When the application receives a request, the application transitions to the
-*request runtime state* and it may access the request globals::
+*request runtime state* and binds a new request context to the current context::
+
+    class Flask(_PackageBoundObject):
+        ...
+        def wsgi_app(self, environ, start_response):
+            with self.request_context(environ):
+                try:
+                    response = self.full_dispatch_request()
+                except Exception as e:
+                    response = self.make_response(self.handle_exception(e))
+                return response(environ, start_response)
+
+The application may access the request globals in this state::
 
     >>> with app.test_request_context():
     ...   request
@@ -93,8 +94,8 @@ When the application receives a request, the application transitions to the
     ...
     <Request 'http://localhost/' [GET]>
     <NullSession {}>
-    <Flask 'app1'>
-    <flask.g of 'app1'>
+    <Flask '__main__'>
+    <flask.g of '__main__'>
 
 The application returns to the application setup state after processing the
 request::
@@ -102,38 +103,29 @@ request::
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
 
-The application runtime state
---------------------------------------------------------------------------------
+The application enters the *application runtime state* when an *application
+context* is created. In this state, only ``current_app`` and ``g`` are
+available::
 
-The programmer can cause the application to transition into the *application
-runtime state* in which only ``current_app`` and ``g`` are available by creating
-an *application context*::
-
-    >>> from flask import Flask, current_app, g, request, session, url_for
-    >>> current_app, g, request, session
-    (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
-    >>> app = Flask('app1')
-    >>> app.config['SERVER_NAME'] = 'myapp.dev:5000'
-    >>> app.add_url_rule("/x", endpoint="x")
     >>> with app.app_context():
     ...   request
     ...   session
     ...   current_app
     ...   g
-    ...   url_for('x')
+    ...   url_for('hello')
     ...
     <LocalProxy unbound>
     <LocalProxy unbound>
-    <Flask 'app1'>
-    <flask.g of 'app1'>
-    'http://myapp.dev:5000/x'
+    <Flask '__main__'>
+    <flask.g of '__main__'>
+    'http://myapp.dev:5000/'
 
 This state is useful for scripts, tests, and interactive sessions where the
 programmer may wish to access data related to a database or the application
 configuration without incurring the expense of faking a request.
 
-Flask applications implicitly create an application context whenever they create
-a request context, so any data available in an application context is also
+The application implicitly creates an application context whenever it creates a
+request context, so any data available in an application context is also
 available in a request context::
 
     >>> with app.test_request_context():
@@ -141,9 +133,9 @@ available in a request context::
     ...   g
     ...   url_for('x')
     ...
-    <Flask 'app1'>
-    <flask.g of 'app1'>
-    'http://myapp.dev:5000/x'
+    <Flask '__main__'>
+    <flask.g of '__main__'>
+    'http://myapp.dev:5000/'
 
 Implementation
 --------------------------------------------------------------------------------
@@ -301,10 +293,6 @@ useful for playing in the console::
 
 Footnotes
 --------------------------------------------------------------------------------
-
-.. [*]
-    This was changed in
-    https://github.com/mitsuhiko/flask/commit/f1918093ac70d589a4d67af0d77140734c06c13d
 
 .. [1] http://flask.pocoo.org/docs/design/
 
