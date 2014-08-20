@@ -65,10 +65,9 @@ We can see how request contexts work in more detail via the interpreter::
     >>> from flask import Flask, current_app, g, request, session
     >>> app = Flask('app1')
 
-Flask starts in the *application setup state* when the :class:`Flask` object is
-instantiated. The programmer may safely configure the application in this state,
-however he must not attempt to use a request global. Doing so will result in a
-``RuntimeError``::
+A Flask application starts in the *application setup state* when the
+:class:`Flask` object is instantiated. The application may be configured in this
+state, but it must not use any request globals::
 
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
@@ -83,9 +82,8 @@ however he must not attempt to use a request global. Doing so will result in a
         raise RuntimeError('working outside of request context')
     RuntimeError: working outside of request context
 
-The application transitions to the *request runtime state* when it receives a
-request. Any code that runs in this state will have access to the request
-globals::
+When the application receives a request, the application transitions to the
+*request runtime state* and it may access the request globals::
 
     >>> with app.test_request_context():
     ...   request
@@ -98,8 +96,8 @@ globals::
     <Flask 'app1'>
     <flask.g of 'app1'>
 
-Flask transitions back to the application setup state when the request is
-processed::
+The application returns to the application setup state after processing the
+request::
 
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
