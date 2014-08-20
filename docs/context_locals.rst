@@ -287,9 +287,9 @@ using the ``with`` statement::
         def __exit__(self, exc_type, exc_value, tb):
             self.pop()
 
-Notice, that each context also provides a ``push()`` (which binds them to the
-current context) and ``pop()`` (which does the opposite) method, which is useful
-for playing in the console::
+Notice that each context also provides the ``push()`` (which binds it to the
+current context) and ``pop()`` (which does the opposite) methods, which are
+useful for playing in the console::
 
     >>> from flask import Flask, current_app
     >>> app = Flask(__name__)
@@ -343,5 +343,5 @@ Footnotes
     #. Context Locals - 11:25
 
 .. [3]
-    Guido van Rossum. 2005. PEP 340 -- Anonymous Block Statement.
+    Guido van Rossum. 2005. PEP 340 -- Anonymous Block Statements.
     http://legacy.python.org/dev/peps/pep-0340/
