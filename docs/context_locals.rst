@@ -202,18 +202,47 @@ Second, changing their data in one context doesn't affect data in another::
     >>> number
     42
 
-Notice that these stack objects can only hold one value at a time. Flask gets
-around this by storing object on each stack: ``RequestContext`` objects, which
-manage ``request`` and ``session`` on ``_request_ctx_stack``, and ``AppContext``
-objects, which manage ``current_app`` and ``g`` on ``_app_ctx_stack``::
-
-    from .globals import _request_ctx_stack, _app_ctx_stack
+Notice that ``LocalStack`` objects can only hold one value at a time, but that
+we have two stacks which both need to maintain two values. Flask solves this by
+storing objects, which can hold multiple values, on each stack:
+``RequestContext`` objects manage ``request`` and ``session`` on the request
+context stack, and ``AppContext`` objects manage ``current_app`` and ``g`` on
+the application context stack::
 
 
     class AppContext(object):
         def __init__(self, app):
             self.app = app
             self.g = app.app_ctx_globals_class()
+            ...
+        ...
+
+    class RequestContext(object):
+        def __init__(self, app, environ):
+            self.request = app.request_class(environ)
+            self.session = app.open_session(self.request)
+            ...
+        ...
+
+If we stopped here, we could use the either context with something like the
+following code::
+
+    ctx = RequestContext(app, environ)
+    _request_ctx_stack.push(ctx)
+    try:
+        BLOCK
+    finally:
+        _request_ctx_stack.pop(ctx)
+
+However, repeating this code in every function that uses a context is error
+prone and make refactoring difficult. [3]_ We can eliminate this pattern by
+implementing the context management protocol, which allow us invoke a context
+using the ``with`` statement::
+
+    from .globals import _request_ctx_stack, _app_ctx_stack
+
+    class AppContext(object):
+        ...
 
         def push(self):
             _app_ctx_stack.push(self)
@@ -229,10 +258,7 @@ objects, which manage ``current_app`` and ``g`` on ``_app_ctx_stack``::
             self.pop()
 
     class RequestContext(object):
-        def __init__(self, app, environ):
-            self.app = app
-            self.request = app.request_class(environ)
-            self.session = app.open_session(self.request)
+        ...
 
         def push(self):
             # Before we push the request context we have to ensure that there
@@ -262,9 +288,26 @@ objects, which manage ``current_app`` and ``g`` on ``_app_ctx_stack``::
         def __exit__(self, exc_type, exc_value, tb):
             self.pop()
 
-Both ``RequestContext`` and ``AppContext`` are context managers. Therefore, both
-can be invoked with the ``with`` statement, which is how a Flask application
-invokes them::
+Notice, that each context also provides a ``push()`` (which binds them to the
+current context) and ``pop()`` (which does the opposite) method, which is useful
+for playing in the console::
+
+    >>> from flask import Flask, current_app
+    >>> app = Flask(__name__)
+    >>> ctx = app.app_context()
+    >>> ctx
+    <flask.ctx.AppContext object at 0x110359190>
+    >>> current_app
+    <LocalProxy unbound>
+    >>> ctx.push()
+    >>> current_app
+    <Flask '__main__'>
+    >>> ctx.pop()
+    >>> current_app
+    <LocalProxy unbound>
+
+Finally, we reach the Flask application which simply creates a request context
+for every new request::
 
     from .ctx import RequestContext
 
@@ -284,24 +327,6 @@ invokes them::
                     response = self.make_response(self.handle_exception(e))
                 return response(environ, start_response)
 
-However, they can also be used by directly invoking ``push()`` (which binds them
-to the current context) and ``pop()`` (which does the opposite), which is more
-useful for playing in the console::
-
-    >>> from flask import Flask, current_app
-    >>> app = Flask('x')
-    >>> ctx = app.app_context()
-    >>> ctx
-    <flask.ctx.AppContext object at 0x110359190>
-    >>> current_app
-    <LocalProxy unbound>
-    >>> ctx.push()
-    >>> current_app
-    <Flask 'x'>
-    >>> ctx.pop()
-    >>> current_app
-    <LocalProxy unbound>
-
 Footnotes
 --------------------------------------------------------------------------------
 
@@ -317,3 +342,7 @@ Footnotes
     #. Flask's Design - 11:05.
 
     #. Context Locals - 11:25
+
+.. [3]
+    Guido van Rossum. 2005. PEP 340 -- Anonymous Block Statement.
+    http://legacy.python.org/dev/peps/pep-0340/
