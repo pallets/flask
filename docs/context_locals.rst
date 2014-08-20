@@ -67,13 +67,11 @@ We can see how request contexts work in more detail via the interpreter::
 
 Flask starts in the *application setup state* when the :class:`Flask` object is
 instantiated. In this state, the programmer may safely configure the application
-and every context local is free::
+and every context local is free; attempting to use any of these will result in a
+``RuntimeError``::
 
     >>> current_app, g, request, session
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
-
-Trying to use a context local in this state will result in a ``RuntimeError``::
-
     >>> request.url
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
@@ -151,30 +149,61 @@ available in a request context::
 Implementation
 --------------------------------------------------------------------------------
 
-Context locals are implemented with several pieces of machinery. We'll start
-from the most familiar toward the abstract. As mentioned above, request
-contexts are created when the application receives a request::
+Flask internally maintains both the request context and the application context
+as global ``LocalStack`` objects from Werkzeug. Their data are maintained
+implemented as ``LocalProxy`` objects::
 
-    from .ctx import RequestContext
+    from werkzeug.local import LocalStack, LocalProxy
 
-    class Flask(_PackageBoundObject):
-        ...
-        def app_context(self):
-            return AppContext(self)
+    # context locals
+    _request_ctx_stack = LocalStack()
+    _app_ctx_stack = LocalStack()
+    request = LocalProxy(lambda: _request_ctx_stack.top.request)
+    session = LocalProxy(lambda: _request_ctx_stack.top.session)
+    current_app = LocalProxy(lambda: _app_ctx_stack.top.app)
+    g = LocalProxy(lambda: _app_ctx_stack.top.g)
 
-        def request_context(self, environ):
-            return RequestContext(self, environ)
+There are two important things to know about ``LocalStack`` and ``LocalProxy``,
+which are best explained with an example::
 
-        def wsgi_app(self, environ, start_response):
-            with self.request_context(environ):
-                try:
-                    response = self.full_dispatch_request()
-                except Exception as e:
-                    response = self.make_response(self.handle_exception(e))
-                return response(environ, start_response)
+    >>> from werkzeug.local import LocalProxy, LocalStack
+    >>> mydata = LocalStack()
+    >>> mydata.top
+    None
+    >>> number = LocalProxy(lambda: mydata.top)
+    >>> number
+    None
+    >>> mydata.push(42)
+    [42]
+    >>> mydata.top
+    42
+    >>> number
+    42
 
-We can see that this create an instance of ``RequestContext``, which is a
-context manager around ``_request_ctx_stack``::
+First, we get different data if we access their data in a different context::
+
+    >>> log = []
+    >>> def f():
+    ...   log.append(number)
+    ...   mydata.push(11)
+    ...   log.append(number)
+    ...
+    >>> import threading
+    >>> thread = threading.Thread(target=f)
+    >>> thread.start()
+    >>> thread.join()
+    >>> log
+    [None, 11]
+
+Second, changing their data in one context doesn't affect data in another::
+
+    >>> number
+    42
+
+Notice that these stack objects can only hold one value at a time. Flask gets
+around this by storing object on each stack: ``RequestContext`` objects, which
+manage ``request`` and ``session`` on ``_request_ctx_stack``, and ``AppContext``
+objects, which manage ``current_app`` and ``g`` on ``_app_ctx_stack``::
 
     from .globals import _request_ctx_stack, _app_ctx_stack
 
@@ -230,56 +259,45 @@ context manager around ``_request_ctx_stack``::
         def __exit__(self, exc_type, exc_value, tb):
             self.pop()
 
-We discover ``_request_ctx_stack`` inside ``flask.globals``, an instance of
-``werkzeug.local.LocalStack``::
+Both ``RequestContext`` and ``AppContext`` are context managers. Therefore, both
+can be invoked with the ``with`` statement, which is how a Flask application
+invokes them::
 
-    from werkzeug.local import LocalStack, LocalProxy
+    from .ctx import RequestContext
 
-    # context locals
-    _request_ctx_stack = LocalStack()
-    _app_ctx_stack = LocalStack()
-    request = LocalProxy(lambda: _request_ctx_stack.top.request)
-    session = LocalProxy(lambda: _request_ctx_stack.top.session)
-    current_app = LocalProxy(lambda: _app_ctx_stack.top.app)
-    g = LocalProxy(lambda: _app_ctx_stack.top.g)
+    class Flask(_PackageBoundObject):
+        ...
+        def app_context(self):
+            return AppContext(self)
 
-To understand ``LocalStack`` and ``LocalProxy``, it's easier to follow a simple
-example than to study the source::
+        def request_context(self, environ):
+            return RequestContext(self, environ)
 
-    >>> from werkzeug.local import LocalProxy, LocalStack
-    >>> mydata = LocalStack()
-    >>> mydata.top
-    None
-    >>> number = LocalProxy(lambda: mydata.top)
-    >>> number
-    None
-    >>> mydata.push(42)
-    [42]
-    >>> mydata.top
-    42
-    >>> number
-    42
+        def wsgi_app(self, environ, start_response):
+            with self.request_context(environ):
+                try:
+                    response = self.full_dispatch_request()
+                except Exception as e:
+                    response = self.make_response(self.handle_exception(e))
+                return response(environ, start_response)
 
-There are two important things to know about ``LocalStack`` and ``LocalProxy``.
-First, if we access them in a different context we get different data::
+However, they can also be used by directly invoking ``push()`` (which binds them
+to the current context) and ``pop()`` (which does the opposite), which is more
+useful for playing in the console::
 
-    >>> log = []
-    >>> def f():
-    ...   log.append(number)
-    ...   mydata.push(11)
-    ...   log.append(number)
-    ...
-    >>> import threading
-    >>> thread = threading.Thread(target=f)
-    >>> thread.start()
-    >>> thread.join()
-    >>> log
-    [None, 11]
-
-Second, changing their data in one context doesn't affect data in another::
-
-    >>> number
-    42
+    >>> from flask import Flask, current_app
+    >>> app = Flask('x')
+    >>> ctx = app.app_context()
+    >>> ctx
+    <flask.ctx.AppContext object at 0x110359190>
+    >>> current_app
+    <LocalProxy unbound>
+    >>> ctx.push()
+    >>> current_app
+    <Flask 'x'>
+    >>> ctx.pop()
+    >>> current_app
+    <LocalProxy unbound>
 
 Footnotes
 --------------------------------------------------------------------------------
