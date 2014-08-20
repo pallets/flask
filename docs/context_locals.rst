@@ -122,7 +122,18 @@ available::
 
 This state is useful for scripts, tests, and interactive sessions where the
 programmer may wish to access data related to a database or the application
-configuration without incurring the expense of faking a request.
+configuration without incurring the expense of faking a request. For example,
+Flaskr uses an application context to initialize the database::
+
+    class FlaskrTestCase(unittest.TestCase):
+
+        def setUp(self):
+            """Before each test, set up a blank database"""
+            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+            flaskr.app.config['TESTING'] = True
+            self.app = flaskr.app.test_client()
+            with flaskr.app.app_context():
+                flaskr.init_db()
 
 The application implicitly creates an application context whenever it creates a
 request context, so any data available in an application context is also
