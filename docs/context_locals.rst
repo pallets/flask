@@ -206,6 +206,25 @@ objects, which manage ``current_app`` and ``g`` on ``_app_ctx_stack``::
 
     from .globals import _request_ctx_stack, _app_ctx_stack
 
+
+    class AppContext(object):
+        def __init__(self, app):
+            self.app = app
+            self.g = app.app_ctx_globals_class()
+
+        def push(self):
+            _app_ctx_stack.push(self)
+
+        def pop(self):
+            _app_ctx_stack.pop()
+
+        def __enter__(self):
+            self.push()
+            return self
+
+        def __exit__(self, exc_type, exc_value, tb):
+            self.pop()
+
     class RequestContext(object):
         def __init__(self, app, environ):
             self.app = app
@@ -232,24 +251,6 @@ objects, which manage ``current_app`` and ``g`` on ``_app_ctx_stack``::
 
             if app_ctx is not None:
                 app_ctx.pop()
-
-        def __enter__(self):
-            self.push()
-            return self
-
-        def __exit__(self, exc_type, exc_value, tb):
-            self.pop()
-
-    class AppContext(object):
-        def __init__(self, app):
-            self.app = app
-            self.g = app.app_ctx_globals_class()
-
-        def push(self):
-            _app_ctx_stack.push(self)
-
-        def pop(self):
-            _app_ctx_stack.pop()
 
         def __enter__(self):
             self.push()
