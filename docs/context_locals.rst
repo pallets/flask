@@ -274,10 +274,9 @@ using the ``with`` statement::
             _request_ctx_stack.push(self)
 
         def pop(self):
-            app_ctx = self._implicit_app_ctx_stack.pop()
-
             _request_ctx_stack.pop()
 
+            app_ctx = self._implicit_app_ctx_stack.pop()
             if app_ctx is not None:
                 app_ctx.pop()
 
