@@ -8,17 +8,17 @@ Logging Application Errors
 Applications fail, servers fail.  Sooner or later you will see an exception
 in production.  Even if your code is 100% correct, you will still see
 exceptions from time to time.  Why?  Because everything else involved will
-fail.  Here some situations where perfectly fine code can lead to server
+fail.  Here are some situations where perfectly fine code can lead to server
 errors:
 
 -   the client terminated the request early and the application was still
-    reading from the incoming data.
--   the database server was overloaded and could not handle the query.
+    reading from the incoming data
+-   the database server was overloaded and could not handle the query
 -   a filesystem is full
 -   a harddrive crashed
 -   a backend server overloaded
 -   a programming error in a library you are using
--   network connection of the server to another system failed.
+-   network connection of the server to another system failed
 
 And that's just a small sample of issues you could be facing.  So how do we
 deal with that sort of problem?  By default if your application runs in
