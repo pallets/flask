@@ -762,8 +762,13 @@ Command Line Interface
 .. autoclass:: FlaskGroup
    :members:
 
+.. autoclass:: AppGroup
+   :members:
+
 .. autoclass:: ScriptInfo
    :members:
+
+.. autofunction:: with_appcontext
 
 .. autofunction:: pass_script_info
 
@@ -774,8 +779,7 @@ Command Line Interface
    A special decorator that informs a click callback to be passed the
    script info object as first argument.  This is normally not useful
    unless you implement very special commands like the run command which
-   does not want the application to be loaded yet.  This can be combined
-   with the :func:`without_appcontext` decorator.
+   does not want the application to be loaded yet. 
 
 .. autodata:: run_command
 

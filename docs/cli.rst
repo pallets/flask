@@ -100,6 +100,24 @@ The command will then show up on the command line::
     $ flask -a hello.py initdb
     Init the db
 
+Application Context
+-------------------
+
+Most commands operate on the application so it makes a lot of sense if
+they have the application context setup.  Because of this, if you register
+a callback on ``app.cli`` with the :meth:`~flask.cli.AppGroup.command` the
+callback will automatically be wrapped through :func:`cli.with_appcontext`
+which informs the cli system to ensure that an application context is set
+up.  This behavior is not available if a command is lated later with
+:func:`~click.Group.add_command` or through other means.
+
+It can also be disabled by passing ``with_appcontext=False`` to the
+decorator::
+
+    @app.cli.command(with_appcontext=False)
+    def example():
+        pass
+
 Factory Functions
 -----------------
 

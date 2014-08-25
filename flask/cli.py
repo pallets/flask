@@ -12,7 +12,7 @@
 import os
 import sys
 from threading import Lock
-from contextlib import contextmanager
+from functools import update_wrapper
 
 import click
 
@@ -166,30 +166,21 @@ class ScriptInfo(object):
         self._loaded_app = rv
         return rv
 
-    @contextmanager
-    def conditional_context(self, with_context=True):
-        """Creates an application context or not, depending on the given
-        parameter but always works as context manager.  This is just a
-        shortcut for a common operation.
-        """
-        if with_context:
-            with self.load_app().app_context() as ctx:
-                yield ctx
-        else:
-            yield None
+
+pass_script_info = click.make_pass_decorator(ScriptInfo, ensure=True)
 
 
-pass_script_info = click.make_pass_decorator(ScriptInfo)
-
-
-def without_appcontext(f):
-    """Marks a click callback so that it does not get a app context
-    created.  This only works for commands directly registered to
-    the toplevel system.  This really is only useful for very
-    special commands like the runserver one.
+def with_appcontext(f):
+    """Wraps a callback so that it's guaranteed to be executed with the
+    script's application context.  If callbacks are registered directly
+    to the ``app.cli`` object then they are wrapped with this function
+    by default unless it's disabled.
     """
-    f.__flask_without_appcontext__ = True
-    return f
+    @click.pass_context
+    def decorator(__ctx, *args, **kwargs):
+        with __ctx.ensure_object(ScriptInfo).load_app().app_context():
+            return __ctx.invoke(f, *args, **kwargs)
+    return update_wrapper(decorator, f)
 
 
 def set_debug_value(ctx, param, value):
@@ -220,7 +211,7 @@ class FlaskGroup(click.Group):
     more commands from the configured Flask app.  Normally a developer
     does not have to interface with this class but there are some very
     advanced usecases for which it makes sense to create an instance of
-    this.
+    this.  Not to be confused with :class:`AppGroup`.
 
     For information as of why this is useful see :ref:`custom-scripts`.
 
@@ -286,14 +277,6 @@ class FlaskGroup(click.Group):
             pass
         return sorted(rv)
 
-    def invoke_subcommand(self, ctx, cmd, cmd_name, args):
-        with_context = cmd.callback is None or \
-           not getattr(cmd.callback, '__flask_without_appcontext__', False)
-
-        with ctx.find_object(ScriptInfo).conditional_context(with_context):
-            return click.Group.invoke_subcommand(
-                self, ctx, cmd, cmd_name, args)
-
     def main(self, *args, **kwargs):
         obj = kwargs.get('obj')
         if obj is None:
@@ -301,6 +284,30 @@ class FlaskGroup(click.Group):
         kwargs['obj'] = obj
         kwargs.setdefault('auto_envvar_prefix', 'FLASK')
         return click.Group.main(self, *args, **kwargs)
+
+
+class AppGroup(click.Group):
+    """This works similar to a regular click :class:`~click.Group` but it
+    changes the behavior of the :meth:`command` decorator so that it
+    automatically wraps the functions in :func:`with_appcontext`.
+
+    Not to be confused with :class:`FlaskGroup`.
+    """
+
+    def __init__(self, app):
+        click.Group.__init__(self)
+
+    def command(self, *args, **kwargs):
+        """This works exactly like the method of the same name on a regular
+        :class:`click.Group` but it wraps callbacks in :func:`with_appcontext`
+        unless it's disabled by passing ``with_appcontext=False``.
+        """
+        wrap_for_ctx = kwargs.pop('with_appcontext', True)
+        def decorator(f):
+            if wrap_for_ctx:
+                f = with_appcontext(f)
+            return click.Group.command(*args, **kwargs)(f)
+        return decorator
 
 
 def script_info_option(*args, **kwargs):
@@ -346,7 +353,6 @@ def script_info_option(*args, **kwargs):
               'loading is enabled if the reloader is disabled.')
 @click.option('--with-threads/--without-threads', default=False,
               help='Enable or disable multithreading.')
-@without_appcontext
 @pass_script_info
 def run_command(info, host, port, reload, debugger, eager_loading,
                 with_threads):
@@ -388,6 +394,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
+@with_appcontext
 def shell_command():
     """Runs an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
