@@ -319,7 +319,7 @@ def script_info_option(*args, **kwargs):
         raise TypeError('script_info_key not provided.')
 
     real_callback = kwargs.get('callback')
-    def callback(ctx, value):
+    def callback(ctx, param, value):
         if real_callback is not None:
             value = real_callback(ctx, value)
         ctx.ensure_object(ScriptInfo).data[key] = value
