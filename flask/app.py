@@ -85,7 +85,7 @@ class Flask(_PackageBoundObject):
 
     .. admonition:: About the First Parameter
 
-        The idea of the first parameter is to give Flask an idea what
+        The idea of the first parameter is to give Flask an idea of what
         belongs to your application.  This name is used to find resources
         on the file system, can be used by extensions to improve debugging
         information and a lot more.
