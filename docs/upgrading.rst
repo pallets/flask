@@ -19,6 +19,16 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+.. _upgrading-to-10:
+
+Version 1.0
+-----------
+
+Flask 1.0 removed the ``debug_log_format`` attribute from Flask
+applications.  Instead the new ``LOGGER_HANDLER_POLICY`` configuration can
+be used to disable the default log handlers and custom log handlers can be
+set up.
+
 .. _upgrading-to-010:
 
 Version 0.10

@@ -136,6 +136,7 @@ class TestToolsTestCase(FlaskTestCase):
 
     def test_test_client_context_binding(self):
         app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
         @app.route('/')
         def index():
             flask.g.value = 42

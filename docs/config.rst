@@ -99,6 +99,14 @@ The following configuration values are used internally by Flask:
                                   by this.
 ``USE_X_SENDFILE``                enable/disable x-sendfile
 ``LOGGER_NAME``                   the name of the logger
+``LOGGER_HANDLER_POLICY``         the policy of the default logging
+                                  handler.  The default is ``'always'``
+                                  which means that the default logging
+                                  handler is always active.  ``'debug'``
+                                  will only activate logging in debug
+                                  mode, ``'production'`` will only log in
+                                  production and ``'never'`` disables it
+                                  entirely.
 ``SERVER_NAME``                   the name and port number of the server.
                                   Required for subdomain support (e.g.:
                                   ``'myapp.dev:5000'``)  Note that
@@ -229,7 +237,7 @@ The following configuration values are used internally by Flask:
    ``SESSION_REFRESH_EACH_REQUEST``
 
 .. versionadded:: 1.0
-   ``TEMPLATES_AUTO_RELOAD``
+   ``TEMPLATES_AUTO_RELOAD``, ``LOGGER_HANDLER_POLICY``
 
 Configuring from Files
 ----------------------
