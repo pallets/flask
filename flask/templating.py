@@ -14,7 +14,6 @@ from jinja2 import BaseLoader, Environment as BaseEnvironment, \
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered
-from .module import blueprint_is_module
 from ._compat import itervalues, iteritems
 
 
@@ -73,16 +72,10 @@ class DispatchingJinjaLoader(BaseLoader):
         try:
             module, local_name = posixpath.normpath(template).split('/', 1)
             blueprint = self.app.blueprints[module]
-            if blueprint_is_module(blueprint):
-                loader = blueprint.jinja_loader
-                if loader is not None:
-                    yield loader, local_name
         except (ValueError, KeyError):
             pass
 
         for blueprint in itervalues(self.app.blueprints):
-            if blueprint_is_module(blueprint):
-                continue
             loader = blueprint.jinja_loader
             if loader is not None:
                 yield loader, template
@@ -97,10 +90,7 @@ class DispatchingJinjaLoader(BaseLoader):
             loader = blueprint.jinja_loader
             if loader is not None:
                 for template in loader.list_templates():
-                    prefix = ''
-                    if blueprint_is_module(blueprint):
-                        prefix = name + '/'
-                    result.add(prefix + template)
+                    result.add(template)
 
         return list(result)
 
