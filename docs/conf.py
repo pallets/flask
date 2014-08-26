@@ -246,9 +246,11 @@ latex_additional_files = ['flaskstyle.sty', 'logo.pdf']
 intersphinx_mapping = {
     'https://docs.python.org/dev': None,
     'http://werkzeug.pocoo.org/docs/': None,
+    'http://click.pocoo.org/': None,
+    'http://jinja.pocoo.org/docs/': None,
     'http://www.sqlalchemy.org/docs/': None,
-    'http://wtforms.simplecodes.com/docs/0.5/': None,
-    'http://discorporate.us/projects/Blinker/docs/1.1/': None
+    'https://wtforms.readthedocs.org/en/latest/': None,
+    'https://pythonhosted.org/blinker/': None
 }
 
 pygments_style = 'flask_theme_support.FlaskyStyle'
