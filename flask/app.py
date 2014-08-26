@@ -260,18 +260,6 @@ class Flask(_PackageBoundObject):
     #: will be removed in favor of Blueprints
     enable_modules = True
 
-    #: The logging format used for the debug logger.  This is only used when
-    #: the application is in debug mode, otherwise the attached logging
-    #: handler does the formatting.
-    #:
-    #: .. versionadded:: 0.3
-    debug_log_format = (
-        '-' * 80 + '\n' +
-        '%(levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n' +
-        '%(message)s\n' +
-        '-' * 80
-    )
-
     #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
     #:
     #: .. versionadded:: 0.10
@@ -297,6 +285,7 @@ class Flask(_PackageBoundObject):
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
         'LOGGER_NAME':                          None,
+        'LOGGER_HANDLER_POLICY':               'always',
         'SERVER_NAME':                          None,
         'APPLICATION_ROOT':                     None,
         'SESSION_COOKIE_NAME':                  'session',

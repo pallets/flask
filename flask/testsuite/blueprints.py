@@ -137,6 +137,7 @@ class ModuleTestCase(FlaskTestCase):
     @emits_module_deprecation_warning
     def test_error_handling(self):
         app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
         admin = flask.Module(__name__, 'admin')
         @admin.app_errorhandler(404)
         def not_found(e):

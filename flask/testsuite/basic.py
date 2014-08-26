@@ -559,6 +559,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
     def test_teardown_request_handler_error(self):
         called = []
         app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
         @app.teardown_request
         def teardown_request1(exc):
             self.assert_equal(type(exc), ZeroDivisionError)
@@ -621,6 +622,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
     def test_error_handling(self):
         app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
         @app.errorhandler(404)
         def not_found(e):
             return 'not found', 404
@@ -920,6 +922,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
     def test_none_response(self):
         app = flask.Flask(__name__)
+        app.testing = True
         @app.route('/')
         def test():
             return None
@@ -989,6 +992,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
     def test_exception_propagation(self):
         def apprunner(configkey):
             app = flask.Flask(__name__)
+            app.config['LOGGER_HANDLER_POLICY'] = 'never'
             @app.route('/')
             def index():
                 1 // 0
@@ -996,7 +1000,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             if config_key is not None:
                 app.config[config_key] = True
                 try:
-                    resp = c.get('/')
+                    c.get('/')
                 except Exception:
                     pass
                 else:

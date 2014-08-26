@@ -473,6 +473,7 @@ class LoggingTestCase(FlaskTestCase):
     def test_exception_logging(self):
         out = StringIO()
         app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
         app.logger_name = 'flask_tests/test_exception_logging'
         app.logger.addHandler(StreamHandler(out))
 
@@ -492,6 +493,7 @@ class LoggingTestCase(FlaskTestCase):
 
     def test_processor_exceptions(self):
         app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
         @app.before_request
         def before_request():
             if trigger == 'before':
