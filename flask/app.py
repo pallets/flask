@@ -29,7 +29,6 @@ from .config import ConfigAttribute, Config
 from .ctx import RequestContext, AppContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, request, session, g
 from .sessions import SecureCookieSessionInterface
-from .module import blueprint_is_module
 from .templating import DispatchingJinjaLoader, Environment, \
      _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
@@ -254,11 +253,6 @@ class Flask(_PackageBoundObject):
     #:
     #: .. versionadded:: 0.4
     logger_name = ConfigAttribute('LOGGER_NAME')
-
-    #: Enable the deprecated module support?  This is active by default
-    #: in 0.7 but will be changed to False in 0.8.  With Flask 1.0 modules
-    #: will be removed in favor of Blueprints
-    enable_modules = True
 
     #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
     #:
@@ -892,32 +886,6 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         return self.session_interface.make_null_session(self)
-
-    def register_module(self, module, **options):
-        """Registers a module with this application.  The keyword arguments
-        of this function are the same as the ones for the constructor of the
-        :class:`Module` class and will override the values of the module if
-        provided.
-
-        .. versionchanged:: 0.7
-           The module system was deprecated in favor for the blueprint
-           system.
-        """
-        assert blueprint_is_module(module), 'register_module requires ' \
-            'actual module objects.  Please upgrade to blueprints though.'
-        if not self.enable_modules:
-            raise RuntimeError('Module support was disabled but code '
-                'attempted to register a module named %r' % module)
-        else:
-            from warnings import warn
-            warn(DeprecationWarning('Modules are deprecated.  Upgrade to '
-                'using blueprints.  Have a look into the documentation for '
-                'more information.  If this module was registered by a '
-                'Flask-Extension upgrade the extension or contact the author '
-                'of that extension instead.  (Registered %r)' % module),
-                stacklevel=2)
-
-        self.register_blueprint(module, **options)
 
     @setupmethod
     def register_blueprint(self, blueprint, **options):
