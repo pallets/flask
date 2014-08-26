@@ -11,7 +11,6 @@
 
 import os
 import sys
-import click
 from threading import Lock
 from datetime import timedelta
 from itertools import chain
