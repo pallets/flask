@@ -40,6 +40,7 @@ Version 1.0
 - Flask will now log by default even if debug is disabled.  The log format is
   now hardcoded but the default log handling can be disabled through the
   ``LOGGER_HANDLER_POLICY`` configuration key.
+- Removed deprecate module functionality.
 
 Version 0.10.2
 --------------
