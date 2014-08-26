@@ -771,6 +771,8 @@ Command Line Interface
 .. autofunction:: with_appcontext
 
 .. autofunction:: pass_script_info
+   Marks a function so that an instance of :class:`ScriptInfo` is passed
+   as first argument to the click callback.
 
 .. autofunction:: without_appcontext
 
