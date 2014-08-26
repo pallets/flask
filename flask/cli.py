@@ -294,9 +294,6 @@ class AppGroup(click.Group):
     Not to be confused with :class:`FlaskGroup`.
     """
 
-    def __init__(self, app):
-        click.Group.__init__(self)
-
     def command(self, *args, **kwargs):
         """This works exactly like the method of the same name on a regular
         :class:`click.Group` but it wraps callbacks in :func:`with_appcontext`
