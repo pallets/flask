@@ -150,9 +150,9 @@ The application is in this state while processing a request::
 Implementation
 --------------------------------------------------------------------------------
 
-Flask internally maintains both the request context and the application context
-as global ``LocalStack`` objects from Werkzeug. Their data are maintained
-implemented as ``LocalProxy`` objects::
+Flask implements both the request context and the application context as global
+``LocalStack`` objects from Werkzeug and implements each request global as a
+global ``LocalProxy`` object::
 
     from werkzeug.local import LocalStack, LocalProxy
 
@@ -164,8 +164,7 @@ implemented as ``LocalProxy`` objects::
     current_app = LocalProxy(lambda: _app_ctx_stack.top.app)
     g = LocalProxy(lambda: _app_ctx_stack.top.g)
 
-There are two important things to know about ``LocalStack`` and ``LocalProxy``,
-which are best explained with an example::
+Since both contexts are stacks, you can ``push()`` and ``pop()`` them::
 
     >>> from werkzeug.local import LocalProxy, LocalStack
     >>> mydata = LocalStack()
@@ -180,8 +179,18 @@ which are best explained with an example::
     42
     >>> number
     42
+    >>> mydata.push(15)
+    [42, 15]
+    >>> mydata.top
+    15
+    >>> mydata.pop()
+    15
+    >>> mydata.top
+    42
 
-First, we get different data if we access their data in a different context::
+What's important to know about ``LocalStack`` is that each thread that accesses
+its data has its own independent copy. Therefore, we get different data if
+we access data in a different thread::
 
     >>> log = []
     >>> def f():
@@ -196,14 +205,10 @@ First, we get different data if we access their data in a different context::
     >>> log
     [None, 11]
 
-Second, changing their data in one context doesn't affect data in another::
+And, we get the same data even if we change data in a different thread::
 
     >>> number
     42
-
-Stacks were chosen because they enable us to push and pop multiple times. The
-topmost level on the stack is the current active context. This is useful to
-implement things like internal redirects.
 
 .. admonition:: Proxies
 
@@ -224,13 +229,12 @@ implement things like internal redirects.
         app = current_app._get_current_object()
         my_signal.send(app)
 
-``LocalStack`` objects can only hold one value at a time, but that we have two
+``LocalStack`` objects can only hold one value at a time, but we have two
 stacks, both of which need to maintain two values. We can solve this by storing
 objects on each stack, since objects can hold multiple values. So, we introduce
 ``RequestContext`` to manage ``request`` and ``session`` on the request context
 stack and ``AppContext`` to manage ``current_app`` and ``g`` on the application
 context stack::
-
 
     class AppContext(object):
         def __init__(self, app):
