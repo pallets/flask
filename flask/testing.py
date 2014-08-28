@@ -54,6 +54,8 @@ class FlaskClient(Client):
         the test client uses.  Once the with block is left the session is
         stored back.
 
+        ::
+
             with client.session_transaction() as session:
                 session['value'] = 42
 
