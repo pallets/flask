@@ -52,9 +52,10 @@ Application states
 --------------------------------------------------------------------------------
 
 Flask exposes four request globals, ``request``, ``session``, ``current_app``,
-and ``g``, each of which is only available in certain states. It is an error for
-an application to attempt to access a request global in an inappropriate state,
-and the application will throw a ``RuntimeError`` if this happens.
+and ``g``, each of which is only available in certain application states. It is
+an error for an application to attempt to access a request global in an
+inappropriate state, and the application will throw a ``RuntimeError`` if this
+happens.
 
 There are three states that a Flask application can be in: the *application
 setup state*, the *application runtime state*, and the *request runtime state*.
