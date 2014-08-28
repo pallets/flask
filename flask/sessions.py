@@ -255,7 +255,7 @@ class SessionInterface(object):
             return datetime.utcnow() + app.permanent_session_lifetime
 
     def should_set_cookie(self, app, session):
-        """Indicates weather a cookie should be set now or not.  This is
+        """Indicates whether a cookie should be set now or not.  This is
         used by session backends to figure out if they should emit a
         set-cookie header or not.  The default behavior is controlled by
         the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
