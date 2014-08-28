@@ -142,7 +142,7 @@ Response Objects
 
    .. attribute:: headers
 
-      A :class:`Headers` object representing the response headers.
+      A :class:`~werkzeug.datastructures.Headers` object representing the response headers.
 
    .. attribute:: status
 
@@ -771,10 +771,9 @@ Command Line Interface
 .. autofunction:: with_appcontext
 
 .. autofunction:: pass_script_info
+
    Marks a function so that an instance of :class:`ScriptInfo` is passed
    as first argument to the click callback.
-
-.. autofunction:: without_appcontext
 
 .. autofunction:: script_info_option
 
