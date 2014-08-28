@@ -11,19 +11,21 @@ only available when the application is processing a request.
 Motivation
 --------------------------------------------------------------------------------
 
-Some web frameworks, like Django, require you to pass data specific to the
-current request ("the request context") throughout your code in order to stay
-thread-safe. This is inconvenient since it can make application logic verbose
-and difficult to understand; many functions will need to take a ``request``
-parameter and many will only pass it through to other calls. [2]_
+Some web frameworks, like Django, call view functions with data specific to the
+current request ("the request context"). This is in order to stay thread-safe;
+in these frameworks, view functions generate a response by passing the request
+context throughout their logic.
 
-One common solution to this problem is to make the request context globally
-available. In fact, Django does this in several modules.  For example, Django's
-internalization module inspects the current request to determine the current
-language is. [2]_ And the database often keeps data around depending on the
-current transaction. [2]_ However, globals introduce two new problems.  First,
-they risk making large applications unmaintainable. Second, they aren't thread
-safe.
+The problem with this approach is that it can make application logic verbose and
+opaque since many functions will depend on a request object only because they
+call other functions which depend on it. [2]_ This explains why some Django
+modules fetch the request context themselves. [*]_
+
+Since every view will want access to the request context, one solution to this
+problem is to make the request context globally available. However, globals
+introduce three new problems. First, they risk making large applications
+unmaintainable. Second, they aren't thread safe. Third, even if we can solve the
+first two problems, the behavior of thread-safe global is complex.
 
 Flask aims to make it quick and easy to write a traditional web application.
 [1]_ So, while globals can make a large application hard to maintain, Flask
@@ -42,17 +44,26 @@ without threads. Flask solves both of these problems by taking advantage of
 context local objects from Werkzeug; global objects that manage data specific to
 the current request.
 
+Thread-safe globals do introduce complexity into Flask. Developers who are
+unfamiliar with context local objects will need to carefully study the
+documentation to understand how they work.
+
 Application states
 --------------------------------------------------------------------------------
 
-A Flask application is in one of three states. Request globals are only
-available in certain states. It is an error for an application to attempt to
-access a request global in an inappropriate state, and the application will
-throw a ``RuntimeError`` if this happens.
+Flask exposes four request globals, ``request``, ``session``, ``current_app``,
+and ``g``, each of which is only available in certain states. It is an error for
+an application to attempt to access a request global in an inappropriate state,
+and the application will throw a ``RuntimeError`` if this happens.
 
-The initial state is the *application setup state* which begins when the
-:class:`Flask` object is instantiated. The application may be configured in this
-state, but it must not use any request globals::
+There are three states that a Flask application can be in: the *application
+setup state*, the *application runtime state*, and the *request runtime state*.
+
+The application setup state
+````````````````````````````````````````````````````````````````````````````````
+
+In the *application setup state*, no request globals are available. This state
+begins when the :class:`Flask` object is instantiated::
 
     >>> from flask import Flask, current_app, g, request, session
     >>> app = Flask(__name__)
@@ -71,41 +82,12 @@ state, but it must not use any request globals::
         raise RuntimeError('working outside of request context')
     RuntimeError: working outside of request context
 
-When the application receives a request, the application transitions to the
-*request runtime state* and binds a new request context to the current context::
-
-    class Flask(_PackageBoundObject):
-        ...
-        def wsgi_app(self, environ, start_response):
-            with self.request_context(environ):
-                try:
-                    response = self.full_dispatch_request()
-                except Exception as e:
-                    response = self.make_response(self.handle_exception(e))
-                return response(environ, start_response)
-
-The application may access the request globals in this state::
-
-    >>> with app.test_request_context():
-    ...   request
-    ...   session
-    ...   current_app
-    ...   g
-    ...
-    <Request 'http://localhost/' [GET]>
-    <NullSession {}>
-    <Flask '__main__'>
-    <flask.g of '__main__'>
-
-The application returns to the application setup state after processing the
-request::
-
-    >>> current_app, g, request, session
-    (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
+The application runtime state
+````````````````````````````````````````````````````````````````````````````````
 
 The application enters the *application runtime state* when an *application
-context* is created. In this state, only ``current_app`` and ``g`` are
-available::
+context* is created. In this state, only ``current_app`` and ``g`` ("the
+application context") are available::
 
     >>> with app.app_context():
     ...   request
@@ -135,18 +117,34 @@ Flaskr uses an application context to initialize the database::
             with flaskr.app.app_context():
                 flaskr.init_db()
 
-The application implicitly creates an application context whenever it creates a
-request context, so any data available in an application context is also
-available in a request context::
+The request runtime state
+````````````````````````````````````````````````````````````````````````````````
+
+In the *request runtime state*, the application has access to the application
+context and the request context::
 
     >>> with app.test_request_context():
+    ...   request
+    ...   session
     ...   current_app
     ...   g
-    ...   url_for('x')
     ...
+    <Request 'http://localhost/' [GET]>
+    <NullSession {}>
     <Flask '__main__'>
     <flask.g of '__main__'>
-    'http://myapp.dev:5000/'
+
+The application is in this state while processing a request::
+
+    class Flask(_PackageBoundObject):
+        ...
+        def wsgi_app(self, environ, start_response):
+            with self.request_context(environ):
+                try:
+                    response = self.full_dispatch_request()
+                except Exception as e:
+                    response = self.make_response(self.handle_exception(e))
+                return response(environ, start_response)
 
 Implementation
 --------------------------------------------------------------------------------
@@ -206,29 +204,31 @@ Stacks were chosen because they enable us to push and pop multiple times. The
 topmost level on the stack is the current active context. This is useful to
 implement things like internal redirects.
 
-It is important to note that the context locals objects themselves are actually
-proxies to other objects. This is so because these objects are shared between
-threads. Proxies allow us to dispatch to the actual object bound to a thread as
-necessary. Most of the time you don't have to care about this, but there are
-some exceptions when this is useful to know:
+.. admonition:: Proxies
 
-- If you want to perform actual instance checks. Proxy objects do not fake their
-  inherited types, so you have to do that on the instance that is being proxied.
+    The request globals are proxies to other objects. This is so because these
+    objects are shared between threads. Proxies allow us to dispatch to the
+    actual object bound to a thread as necessary. Most of the time you don't
+    have to care about this, but there are some exceptions when this is
+    important to know:
 
-- If the object reference is important (for example, when sending :ref:`signals`)
+    - If you want to perform actual instance checks. Proxy objects do not fake their
+      inherited types, so you have to do that on the instance that is being proxied.
 
-To access the underlying object that is being proxied, you can use the
-:meth:`~werkzeug.local.LocalProxy._get_current_object` method::
+    - If the object reference is important (for example, when sending :ref:`signals`)
 
-    app = current_app._get_current_object()
-    my_signal.send(app)
+    To access the underlying object that is being proxied, you can use the
+    :meth:`~werkzeug.local.LocalProxy._get_current_object` method::
 
-Notice that ``LocalStack`` objects can only hold one value at a time, but that
-we have two stacks, both of which need to maintain two values. We can solve this
-by storing objects on each stack, since objects can hold multiple values. So, we
-introduce ``RequestContext`` to manage ``request`` and ``session`` on the
-request context stack and ``AppContext`` to manage ``current_app`` and ``g`` on
-the application context stack::
+        app = current_app._get_current_object()
+        my_signal.send(app)
+
+``LocalStack`` objects can only hold one value at a time, but that we have two
+stacks, both of which need to maintain two values. We can solve this by storing
+objects on each stack, since objects can hold multiple values. So, we introduce
+``RequestContext`` to manage ``request`` and ``session`` on the request context
+stack and ``AppContext`` to manage ``current_app`` and ``g`` on the application
+context stack::
 
 
     class AppContext(object):
@@ -255,10 +255,10 @@ following code::
     finally:
         _request_ctx_stack.pop(ctx)
 
-However, repeating this code in every function that uses a context is error
-prone and make refactoring difficult. [3]_ We can eliminate this pattern by
-implementing the context management protocol, which allow us invoke a context
-using the ``with`` statement::
+However, repeating this code in every function that uses a context would be
+error prone and make refactoring difficult. [3]_ We can eliminate this pattern
+by implementing the context management protocol, which allows us invoke a
+context using the ``with`` statement::
 
     from .globals import _request_ctx_stack, _app_ctx_stack
 
@@ -349,6 +349,11 @@ for every new request::
 
 Footnotes
 --------------------------------------------------------------------------------
+
+.. [*]
+    For example, Django's internalization module inspects the current request to
+    determine the current language is. [2]_ And the database often keeps data
+    around depending on the current transaction. [2]_
 
 .. [1] http://flask.pocoo.org/docs/design/
 
