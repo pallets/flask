@@ -206,12 +206,33 @@ app_option = click.Option(['-a', '--app'],
     callback=set_app_value, is_eager=True)
 
 
-class FlaskGroup(click.Group):
-    """Special subclass of the a regular click group that supports loading
-    more commands from the configured Flask app.  Normally a developer
-    does not have to interface with this class but there are some very
-    advanced usecases for which it makes sense to create an instance of
-    this.  Not to be confused with :class:`AppGroup`.
+class AppGroup(click.Group):
+    """This works similar to a regular click :class:`~click.Group` but it
+    changes the behavior of the :meth:`command` decorator so that it
+    automatically wraps the functions in :func:`with_appcontext`.
+
+    Not to be confused with :class:`FlaskGroup`.
+    """
+
+    def command(self, *args, **kwargs):
+        """This works exactly like the method of the same name on a regular
+        :class:`click.Group` but it wraps callbacks in :func:`with_appcontext`
+        unless it's disabled by passing ``with_appcontext=False``.
+        """
+        wrap_for_ctx = kwargs.pop('with_appcontext', True)
+        def decorator(f):
+            if wrap_for_ctx:
+                f = with_appcontext(f)
+            return click.Group.command(self, *args, **kwargs)(f)
+        return decorator
+
+
+class FlaskGroup(AppGroup):
+    """Special subclass of the the :class:`AppGroup` group that supports
+    loading more commands from the configured Flask app.  Normally a
+    developer does not have to interface with this class but there are
+    some very advanced usecases for which it makes sense to create an
+    instance of this.
 
     For information as of why this is useful see :ref:`custom-scripts`.
 
@@ -235,7 +256,7 @@ class FlaskGroup(click.Group):
         if add_debug_option:
             params.append(debug_option)
 
-        click.Group.__init__(self, params=params, **extra)
+        AppGroup.__init__(self, params=params, **extra)
         self.create_app = create_app
 
         if add_default_commands:
@@ -250,7 +271,7 @@ class FlaskGroup(click.Group):
         #
         # This also means that the script stays functional in case the
         # application completely fails.
-        rv = click.Group.get_command(self, ctx, name)
+        rv = AppGroup.get_command(self, ctx, name)
         if rv is not None:
             return rv
 
@@ -283,28 +304,7 @@ class FlaskGroup(click.Group):
             obj = ScriptInfo(create_app=self.create_app)
         kwargs['obj'] = obj
         kwargs.setdefault('auto_envvar_prefix', 'FLASK')
-        return click.Group.main(self, *args, **kwargs)
-
-
-class AppGroup(click.Group):
-    """This works similar to a regular click :class:`~click.Group` but it
-    changes the behavior of the :meth:`command` decorator so that it
-    automatically wraps the functions in :func:`with_appcontext`.
-
-    Not to be confused with :class:`FlaskGroup`.
-    """
-
-    def command(self, *args, **kwargs):
-        """This works exactly like the method of the same name on a regular
-        :class:`click.Group` but it wraps callbacks in :func:`with_appcontext`
-        unless it's disabled by passing ``with_appcontext=False``.
-        """
-        wrap_for_ctx = kwargs.pop('with_appcontext', True)
-        def decorator(f):
-            if wrap_for_ctx:
-                f = with_appcontext(f)
-            return click.Group.command(self, *args, **kwargs)(f)
-        return decorator
+        return AppGroup.main(self, *args, **kwargs)
 
 
 def script_info_option(*args, **kwargs):
