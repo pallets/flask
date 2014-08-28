@@ -11,21 +11,25 @@ only available when the application is processing a request.
 Motivation
 --------------------------------------------------------------------------------
 
-Some web frameworks, like Django, call view functions with data specific to the
+Many web frameworks, like Django, call view functions with data specific to the
 current request ("the request context"). This is in order to stay thread-safe;
 in these frameworks, view functions generate a response by passing the request
 context throughout their logic.
 
-The problem with this approach is that it can make application logic verbose and
-opaque since many functions will depend on a request object only because they
-call other functions which depend on it. [2]_ This explains why some Django
-modules fetch the request context themselves. [*]_
+The problem with this approach is that it can make application logic verbose,
+opaque, and expensive to maintain. Since dependency is transitive, many
+functions will depend on the request context only because they depend on some
+function which depends on the request context. [2]_ This is especially
+frustrating when a dependency on the request context is discovered or eliminated
+in a deeply nested function that causes the signature of all of its callers and
+their callers to be rewritten. This explains why some Django modules fetch the
+request context themselves. [*]_
 
-Since every view will want access to the request context, one solution to this
-problem is to make the request context globally available. However, globals
-introduce three new problems. First, they risk making large applications
-unmaintainable. Second, they aren't thread safe. Third, even if we can solve the
-first two problems, the behavior of thread-safe global is complex.
+Many frameworks solve these problems by making the request context globally
+available. However, globals introduce three new problems. First, they can make
+large applications unmaintainable. Second, they aren't thread safe. Third, even
+if we can solve the first two problems, the behavior of thread-safe global is
+complex.
 
 Flask aims to make it quick and easy to write a traditional web application.
 [1]_ So, while globals can make a large application hard to maintain, Flask
