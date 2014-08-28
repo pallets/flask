@@ -226,6 +226,14 @@ class AppGroup(click.Group):
             return click.Group.command(self, *args, **kwargs)(f)
         return decorator
 
+    def group(self, *args, **kwargs):
+        """This works exactly like the method of the same name on a regular
+        :class:`click.Group` but it defaults the group class to
+        :class:`AppGroup`.
+        """
+        kwargs.setdefault('cls', AppGroup)
+        return click.Group.group(self, *args, **kwargs)
+
 
 class FlaskGroup(AppGroup):
     """Special subclass of the the :class:`AppGroup` group that supports
