@@ -6,7 +6,7 @@ Context local objects ("context locals") are global objects that manage data
 specific to the current greenlet or thread ("the context"). Flask uses
 context locals, like ``request``, ``session``, ``current_app``, and ``g``, for
 data related to the current request ("the request context"). These objects are
-only available when the application is processing a request.
+only bound when the application is processing a request.
 
 Motivation
 --------------------------------------------------------------------------------
@@ -55,11 +55,10 @@ documentation to understand how they work.
 Application states
 --------------------------------------------------------------------------------
 
-Flask exposes four request globals, ``request``, ``session``, ``current_app``,
-and ``g``, each of which is only available in certain application states. It is
-an error for an application to attempt to access a request global in an
-inappropriate state, and the application will throw a ``RuntimeError`` if this
-happens.
+Flask provides four request globals, ``request``, ``session``, ``current_app``,
+and ``g``, each of which is only bound in certain application states. A
+``RuntimeError`` exception is raised when an application accesses a request
+global that has not been bound.
 
 There are three states that a Flask application can be in: the *application
 setup state*, the *application runtime state*, and the *request runtime state*.
@@ -67,8 +66,8 @@ setup state*, the *application runtime state*, and the *request runtime state*.
 The application setup state
 ````````````````````````````````````````````````````````````````````````````````
 
-In the *application setup state*, no request globals are available. This state
-begins when the :class:`Flask` object is instantiated::
+In the *application setup state*, no request global is bound. This state begins
+when the :class:`Flask` object is instantiated::
 
     >>> from flask import Flask, current_app, g, request, session
     >>> app = Flask(__name__)
@@ -92,7 +91,7 @@ The application runtime state
 
 The application enters the *application runtime state* when an *application
 context* is created. In this state, only ``current_app`` and ``g`` ("the
-application context") are available::
+application context") are bound::
 
     >>> with app.app_context():
     ...   request
