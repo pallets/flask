@@ -12,10 +12,10 @@
 import flask
 import flask.views
 import unittest
-from tests import FlaskTestCase
+from tests import TestFlask
 from werkzeug.http import parse_set_header
 
-class ViewTestCase(FlaskTestCase):
+class TestView(TestFlask):
 
     def common_test(self, app):
         c = app.test_client()
@@ -165,5 +165,5 @@ class ViewTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ViewTestCase))
+    suite.addTest(unittest.makeSuite(TestView))
     return suite

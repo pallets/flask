@@ -15,10 +15,10 @@ try:
     from imp import reload as reload_module
 except ImportError:
     reload_module = reload
-from tests import FlaskTestCase
+from tests import TestFlask
 from flask._compat import PY2
 
-class ExtImportHookTestCase(FlaskTestCase):
+class TestExtImportHook(TestFlask):
 
     def setup(self):
         # we clear this out for various reasons.  The most important one is
@@ -132,5 +132,5 @@ class ExtImportHookTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ExtImportHookTestCase))
+    suite.addTest(unittest.makeSuite(TestExtImportHook))
     return suite

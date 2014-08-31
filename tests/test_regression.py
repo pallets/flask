@@ -9,14 +9,15 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import pytest
+
 import os
 import gc
 import sys
 import flask
 import threading
-import unittest
 from werkzeug.exceptions import NotFound
-from tests import FlaskTestCase
+from tests import TestFlask
 
 
 _gc_lock = threading.Lock()
@@ -51,13 +52,16 @@ class _NoLeakAsserter(object):
         gc.enable()
 
 
-class MemoryTestCase(FlaskTestCase):
+@pytest.mark.skipif(os.environ.get('RUN_FLASK_MEMORY_TESTS') != '1',
+                    reason='Turned off due to envvar.')
+class TestMemory(TestFlask):
 
     def assert_no_leak(self):
         return _NoLeakAsserter(self)
 
     def test_memory_consumption(self):
         app = flask.Flask(__name__)
+
         @app.route('/')
         def index():
             return flask.render_template('simple_template.html', whiskey=42)
@@ -84,33 +88,28 @@ class MemoryTestCase(FlaskTestCase):
             safe_join('/foo', '..')
 
 
-class ExceptionTestCase(FlaskTestCase):
+class TestException(TestFlask):
 
     def test_aborting(self):
         class Foo(Exception):
             whatever = 42
         app = flask.Flask(__name__)
         app.testing = True
+
         @app.errorhandler(Foo)
         def handle_foo(e):
             return str(e.whatever)
+
         @app.route('/')
         def index():
             raise flask.abort(flask.redirect(flask.url_for('test')))
+
         @app.route('/test')
         def test():
             raise Foo()
 
         with app.test_client() as c:
             rv = c.get('/')
-            self.assertEqual(rv.headers['Location'], 'http://localhost/test')
+            self.assert_equal(rv.headers['Location'], 'http://localhost/test')
             rv = c.get('/test')
-            self.assertEqual(rv.data, b'42')
-
-
-def suite():
-    suite = unittest.TestSuite()
-    if os.environ.get('RUN_FLASK_MEMORY_TESTS') == '1':
-        suite.addTest(unittest.makeSuite(MemoryTestCase))
-    suite.addTest(unittest.makeSuite(ExceptionTestCase))
-    return suite
+            self.assert_equal(rv.data, b'42')

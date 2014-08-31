@@ -11,14 +11,14 @@
 
 import flask
 import unittest
-from tests import FlaskTestCase, catch_warnings
+from tests import TestFlask, catch_warnings
 
 
-class DeprecationsTestCase(FlaskTestCase):
+class TestDeprecations(TestFlask):
     """not used currently"""
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DeprecationsTestCase))
+    suite.addTest(unittest.makeSuite(TestDeprecations))
     return suite
