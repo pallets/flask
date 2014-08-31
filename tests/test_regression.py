@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.regression
+    tests.regression
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests regressions.
@@ -16,7 +16,7 @@ import flask
 import threading
 import unittest
 from werkzeug.exceptions import NotFound
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 
 
 _gc_lock = threading.Lock()

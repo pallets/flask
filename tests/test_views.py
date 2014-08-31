@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.views
+    tests.views
     ~~~~~~~~~~~~~~~~~~~~~
 
     Pluggable views.
@@ -12,7 +12,7 @@
 import flask
 import flask.views
 import unittest
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 from werkzeug.http import parse_set_header
 
 class ViewTestCase(FlaskTestCase):

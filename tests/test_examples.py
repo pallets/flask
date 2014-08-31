@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.examples
+    tests.examples
     ~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests the examples.
@@ -10,7 +10,7 @@
 """
 import os
 import unittest
-from flask.testsuite import add_to_path
+from tests import add_to_path
 
 
 def setup_path():

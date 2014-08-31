@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.testing
+    tests.testing
     ~~~~~~~~~~~~~~~~~~~~~~~
 
     Test client and more.
@@ -11,7 +11,7 @@
 
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 from flask._compat import text_type
 
 

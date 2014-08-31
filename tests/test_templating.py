@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.templating
+    tests.templating
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Template functionality
@@ -14,7 +14,7 @@ import unittest
 import logging
 from jinja2 import TemplateNotFound
 
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 
 
 class TemplatingTestCase(FlaskTestCase):

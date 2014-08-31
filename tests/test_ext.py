@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.ext
+    tests.ext
     ~~~~~~~~~~~~~~~~~~~
 
     Tests the extension import thing.
@@ -15,7 +15,7 @@ try:
     from imp import reload as reload_module
 except ImportError:
     reload_module = reload
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 from flask._compat import PY2
 
 class ExtImportHookTestCase(FlaskTestCase):
