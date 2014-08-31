@@ -117,6 +117,5 @@ setup(
         [console_scripts]
         flask=flask.cli:main
     ''',
-    cmdclass={'audit': run_audit},
-    test_suite='flask.testsuite.suite'
+    cmdclass={'audit': run_audit}
 )
