@@ -92,7 +92,7 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    packages=['flask', 'flask.ext', 'flask.testsuite'],
+    packages=['flask', 'flask.ext'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
