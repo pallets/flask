@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.config
+    tests.config
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Configuration and instances.
@@ -15,7 +15,7 @@ import flask
 import pkgutil
 import unittest
 from contextlib import contextmanager
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 from flask._compat import PY2
 
 

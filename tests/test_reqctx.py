@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.reqctx
+    tests.reqctx
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Tests the request context.
@@ -15,7 +15,7 @@ try:
     from greenlet import greenlet
 except ImportError:
     greenlet = None
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 
 
 class RequestContextTestCase(FlaskTestCase):

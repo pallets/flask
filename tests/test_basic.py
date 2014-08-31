@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.basic
+    tests.basic
     ~~~~~~~~~~~~~~~~~~~~~
 
     The basic functionality.
@@ -17,7 +17,7 @@ import pickle
 import unittest
 from datetime import datetime
 from threading import Thread
-from flask.testsuite import FlaskTestCase, emits_module_deprecation_warning
+from tests import FlaskTestCase, emits_module_deprecation_warning
 from flask._compat import text_type
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from werkzeug.http import parse_date

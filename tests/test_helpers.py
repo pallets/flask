@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.helpers
+    tests.helpers
     ~~~~~~~~~~~~~~~~~~~~~~~
 
     Various helpers.
@@ -13,7 +13,7 @@ import os
 import flask
 import unittest
 from logging import StreamHandler
-from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
+from tests import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from flask._compat import StringIO, text_type
 

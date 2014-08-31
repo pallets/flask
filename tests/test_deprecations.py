@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.deprecations
+    tests.deprecations
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests deprecation support.
@@ -11,7 +11,7 @@
 
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase, catch_warnings
+from tests import FlaskTestCase, catch_warnings
 
 
 class DeprecationsTestCase(FlaskTestCase):

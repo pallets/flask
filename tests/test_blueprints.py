@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.blueprints
+    tests.blueprints
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Blueprints (and currently modules)
@@ -11,7 +11,7 @@
 
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 from flask._compat import text_type
 from werkzeug.http import parse_cache_control_header
 from jinja2 import TemplateNotFound

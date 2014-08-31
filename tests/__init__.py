@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite
+    tests
     ~~~~~~~~~~~~~~~
 
     Tests Flask itself.  The majority of Flask is already tested

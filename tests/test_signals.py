@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.testsuite.signals
+    tests.signals
     ~~~~~~~~~~~~~~~~~~~~~~~
 
     Signalling.
@@ -11,7 +11,7 @@
 
 import flask
 import unittest
-from flask.testsuite import FlaskTestCase
+from tests import FlaskTestCase
 
 
 class SignalsTestCase(FlaskTestCase):
