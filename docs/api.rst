@@ -86,6 +86,7 @@ Incoming Request Data
       The current request method (``POST``, ``GET`` etc.)
 
    .. attribute:: path
+   .. attribute:: full_path
    .. attribute:: script_root
    .. attribute:: url
    .. attribute:: base_url
@@ -105,6 +106,7 @@ Incoming Request Data
 
       ============= ======================================================
       `path`        ``/page.html``
+      `full_path`   ``/page.html?x=y``
       `script_root` ``/myapplication``
       `base_url`    ``http://www.example.com/myapplication/page.html``
       `url`         ``http://www.example.com/myapplication/page.html?x=y``
