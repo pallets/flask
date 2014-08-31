@@ -12,11 +12,11 @@
 import flask
 import unittest
 from logging import StreamHandler
-from tests import FlaskTestCase
+from tests import TestFlask
 from flask._compat import StringIO
 
 
-class FlaskSubclassingTestCase(FlaskTestCase):
+class TestFlaskSubclassing(TestFlask):
 
     def test_suppressed_exception_logging(self):
         class SuppressedFlask(flask.Flask):
@@ -42,5 +42,5 @@ class FlaskSubclassingTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(FlaskSubclassingTestCase))
+    suite.addTest(unittest.makeSuite(TestFlaskSubclassing))
     return suite

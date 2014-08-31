@@ -15,21 +15,21 @@ import flask
 import pkgutil
 import unittest
 from contextlib import contextmanager
-from tests import FlaskTestCase
+from tests import TestFlask
 from flask._compat import PY2
 
 
-# config keys used for the ConfigTestCase
+# config keys used for the TestConfig
 TEST_KEY = 'foo'
 SECRET_KEY = 'devkey'
 
 
-class ConfigTestCase(FlaskTestCase):
+class TestConfig(TestFlask):
 
     def common_object_test(self, app):
         self.assert_equal(app.secret_key, 'devkey')
         self.assert_equal(app.config['TEST_KEY'], 'foo')
-        self.assert_not_in('ConfigTestCase', app.config)
+        self.assert_not_in('TestConfig', app.config)
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
@@ -117,7 +117,7 @@ class ConfigTestCase(FlaskTestCase):
                 self.assert_true(msg.endswith("missing.cfg'"))
             else:
                 self.fail('expected IOError')
-            self.assertFalse(app.config.from_envvar('FOO_SETTINGS', silent=True))
+            self.assert_false(app.config.from_envvar('FOO_SETTINGS', silent=True))
         finally:
             os.environ = env
 
@@ -207,7 +207,7 @@ def patch_pkgutil_get_loader(wrapper_class=LimitedLoaderMockWrapper):
         pkgutil.get_loader = old_get_loader
 
 
-class InstanceTestCase(FlaskTestCase):
+class TestInstance(TestFlask):
 
     def test_explicit_instance_paths(self):
         here = os.path.abspath(os.path.dirname(__file__))
@@ -379,6 +379,6 @@ class InstanceTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ConfigTestCase))
-    suite.addTest(unittest.makeSuite(InstanceTestCase))
+    suite.addTest(unittest.makeSuite(TestConfig))
+    suite.addTest(unittest.makeSuite(TestInstance))
     return suite

@@ -24,15 +24,15 @@ def suite():
     setup_path()
     suite = unittest.TestSuite()
     try:
-        from minitwit_tests import MiniTwitTestCase
+        from minitwit_tests import TestMiniTwit
     except ImportError:
         pass
     else:
-        suite.addTest(unittest.makeSuite(MiniTwitTestCase))
+        suite.addTest(unittest.makeSuite(TestMiniTwit))
     try:
-        from flaskr_tests import FlaskrTestCase
+        from flaskr_tests import TestFlaskr
     except ImportError:
         pass
     else:
-        suite.addTest(unittest.makeSuite(FlaskrTestCase))
+        suite.addTest(unittest.makeSuite(TestFlaskr))
     return suite

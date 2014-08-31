@@ -11,13 +11,13 @@
 
 import flask
 import unittest
-from tests import FlaskTestCase
+from tests import TestFlask
 from flask._compat import text_type
 from werkzeug.http import parse_cache_control_header
 from jinja2 import TemplateNotFound
 
 
-class BlueprintTestCase(FlaskTestCase):
+class TestBlueprint(TestFlask):
 
     def test_blueprint_specific_error_handling(self):
         frontend = flask.Blueprint('frontend', __name__)
@@ -303,11 +303,11 @@ class BlueprintTestCase(FlaskTestCase):
             return flask.request.endpoint
 
         c = app.test_client()
-        self.assertEqual(c.get('/').data, b'index')
-        self.assertEqual(c.get('/py/foo').data, b'bp.foo')
-        self.assertEqual(c.get('/py/bar').data, b'bp.bar')
-        self.assertEqual(c.get('/py/bar/123').data, b'bp.123')
-        self.assertEqual(c.get('/py/bar/foo').data, b'bp.bar_foo')
+        self.assert_equal(c.get('/').data, b'index')
+        self.assert_equal(c.get('/py/foo').data, b'bp.foo')
+        self.assert_equal(c.get('/py/bar').data, b'bp.bar')
+        self.assert_equal(c.get('/py/bar/123').data, b'bp.123')
+        self.assert_equal(c.get('/py/bar/foo').data, b'bp.bar_foo')
 
     def test_route_decorator_custom_endpoint_with_dots(self):
         bp = flask.Blueprint('bp', __name__)
@@ -337,14 +337,14 @@ class BlueprintTestCase(FlaskTestCase):
         def foo_foo_foo():
             pass
 
-        self.assertRaises(
+        self.assert_raises(
             AssertionError,
             lambda: bp.add_url_rule(
                 '/bar/123', endpoint='bar.123', view_func=foo_foo_foo
             )
         )
 
-        self.assertRaises(
+        self.assert_raises(
             AssertionError,
             bp.route('/bar/123', endpoint='bar.123'),
             lambda: None
@@ -354,7 +354,7 @@ class BlueprintTestCase(FlaskTestCase):
         app.register_blueprint(bp, url_prefix='/py')
 
         c = app.test_client()
-        self.assertEqual(c.get('/py/foo').data, b'bp.foo')
+        self.assert_equal(c.get('/py/foo').data, b'bp.foo')
         # The rule's didn't actually made it through
         rv = c.get('/py/bar')
         assert rv.status_code == 404
@@ -581,5 +581,5 @@ class BlueprintTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BlueprintTestCase))
+    suite.addTest(unittest.makeSuite(TestBlueprint))
     return suite

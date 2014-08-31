@@ -17,14 +17,14 @@ import pickle
 import unittest
 from datetime import datetime
 from threading import Thread
-from tests import FlaskTestCase, emits_module_deprecation_warning
+from tests import TestFlask, emits_module_deprecation_warning
 from flask._compat import text_type
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
 
 
-class BasicFunctionalityTestCase(FlaskTestCase):
+class TestBasicFunctionality(TestFlask):
 
     def test_options_work(self):
         app = flask.Flask(__name__)
@@ -522,8 +522,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return 'Test'
         c = app.test_client()
         resp = c.get('/')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.headers['X-Foo'], 'a header')
+        self.assert_equal(resp.status_code, 200)
+        self.assert_equal(resp.headers['X-Foo'], 'a header')
 
     def test_teardown_request_handler(self):
         called = []
@@ -840,22 +840,22 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_request_context():
             rv = flask.make_response(
                 flask.jsonify({'msg': 'W00t'}), 400)
-            self.assertEqual(rv.status_code, 400)
-            self.assertEqual(rv.data, b'{\n  "msg": "W00t"\n}')
-            self.assertEqual(rv.mimetype, 'application/json')
+            self.assert_equal(rv.status_code, 400)
+            self.assert_equal(rv.data, b'{\n  "msg": "W00t"\n}')
+            self.assert_equal(rv.mimetype, 'application/json')
 
             rv = flask.make_response(
                 flask.Response(''), 400)
-            self.assertEqual(rv.status_code, 400)
-            self.assertEqual(rv.data, b'')
-            self.assertEqual(rv.mimetype, 'text/html')
+            self.assert_equal(rv.status_code, 400)
+            self.assert_equal(rv.data, b'')
+            self.assert_equal(rv.mimetype, 'text/html')
 
             rv = flask.make_response(
                 flask.Response('', headers={'Content-Type': 'text/html'}),
                 400, [('X-Foo', 'bar')])
-            self.assertEqual(rv.status_code, 400)
-            self.assertEqual(rv.headers['Content-Type'], 'text/html')
-            self.assertEqual(rv.headers['X-Foo'], 'bar')
+            self.assert_equal(rv.status_code, 400)
+            self.assert_equal(rv.headers['Content-Type'], 'text/html')
+            self.assert_equal(rv.headers['X-Foo'], 'bar')
 
     def test_url_generation(self):
         app = flask.Flask(__name__)
@@ -872,7 +872,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         # Test base case, a URL which results in a BuildError.
         with app.test_request_context():
-            self.assertRaises(BuildError, flask.url_for, 'spam')
+            self.assert_raises(BuildError, flask.url_for, 'spam')
 
         # Verify the error is re-raised if not the current exception.
         try:
@@ -883,7 +883,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             raise RuntimeError('Test case where BuildError is not current.')
         except RuntimeError:
-            self.assertRaises(BuildError, app.handle_url_build_error, error, 'spam', {})
+            self.assert_raises(BuildError, app.handle_url_build_error, error, 'spam', {})
 
         # Test a custom handler.
         def handler(error, endpoint, values):
@@ -936,7 +936,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
     def test_request_locals(self):
         self.assert_equal(repr(flask.g), '<LocalProxy unbound>')
-        self.assertFalse(flask.g)
+        self.assert_false(flask.g)
 
     def test_test_app_proper_environ(self):
         app = flask.Flask(__name__)
@@ -1205,9 +1205,9 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             assert flask.url_for('123') == '/bar/123'
 
         c = app.test_client()
-        self.assertEqual(c.get('/foo/').data, b'foo')
-        self.assertEqual(c.get('/bar/').data, b'bar')
-        self.assertEqual(c.get('/bar/123').data, b'123')
+        self.assert_equal(c.get('/foo/').data, b'foo')
+        self.assert_equal(c.get('/bar/').data, b'bar')
+        self.assert_equal(c.get('/bar/123').data, b'123')
 
     def test_preserve_only_once(self):
         app = flask.Flask(__name__)
@@ -1286,7 +1286,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             self.assert_equal(sorted(flask.g), ['bar', 'foo'])
 
 
-class SubdomainTestCase(FlaskTestCase):
+class TestSubdomain(TestFlask):
 
     def test_basic_support(self):
         app = flask.Flask(__name__)
@@ -1355,10 +1355,3 @@ class SubdomainTestCase(FlaskTestCase):
         self.assert_equal(rv.data, b'a')
         rv = app.test_client().open('/b/')
         self.assert_equal(rv.data, b'b')
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BasicFunctionalityTestCase))
-    suite.addTest(unittest.makeSuite(SubdomainTestCase))
-    return suite

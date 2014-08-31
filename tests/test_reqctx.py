@@ -15,10 +15,10 @@ try:
     from greenlet import greenlet
 except ImportError:
     greenlet = None
-from tests import FlaskTestCase
+from tests import TestFlask
 
 
-class RequestContextTestCase(FlaskTestCase):
+class TestRequestContext(TestFlask):
 
     def test_teardown_on_pop(self):
         buffer = []
@@ -197,5 +197,5 @@ class RequestContextTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(RequestContextTestCase))
+    suite.addTest(unittest.makeSuite(TestRequestContext))
     return suite

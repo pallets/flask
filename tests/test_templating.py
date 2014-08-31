@@ -14,10 +14,10 @@ import unittest
 import logging
 from jinja2 import TemplateNotFound
 
-from tests import FlaskTestCase
+from tests import TestFlask
 
 
-class TemplatingTestCase(FlaskTestCase):
+class TestTemplating(TestFlask):
 
     def test_context_processing(self):
         app = flask.Flask(__name__)
@@ -348,5 +348,5 @@ class TemplatingTestCase(FlaskTestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TemplatingTestCase))
+    suite.addTest(unittest.makeSuite(TestTemplating))
     return suite

@@ -13,7 +13,7 @@ import os
 import flask
 import unittest
 from logging import StreamHandler
-from tests import FlaskTestCase, catch_warnings, catch_stderr
+from tests import TestFlask, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from flask._compat import StringIO, text_type
 
@@ -27,7 +27,7 @@ def has_encoding(name):
         return False
 
 
-class JSONTestCase(FlaskTestCase):
+class TestJSON(TestFlask):
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
@@ -148,7 +148,7 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/', data=flask.json.dumps({
             'x': {'_foo': 42}
         }), content_type='application/json')
-        self.assertEqual(rv.data, b'"<42>"')
+        self.assert_equal(rv.data, b'"<42>"')
 
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):
@@ -240,7 +240,7 @@ class JSONTestCase(FlaskTestCase):
         except AssertionError:
             self.assert_equal(lines, sorted_by_str)
 
-class SendfileTestCase(FlaskTestCase):
+class TestSendfile(TestFlask):
 
     def test_send_file_regular(self):
         app = flask.Flask(__name__)
@@ -422,7 +422,7 @@ class SendfileTestCase(FlaskTestCase):
             rv.close()
 
 
-class LoggingTestCase(FlaskTestCase):
+class TestLogging(TestFlask):
 
     def test_logger_cache(self):
         app = flask.Flask(__name__)
@@ -450,7 +450,7 @@ class LoggingTestCase(FlaskTestCase):
             with catch_stderr() as err:
                 c.get('/')
                 out = err.getvalue()
-                self.assert_in('WARNING in helpers [', out)
+                self.assert_in('WARNING in test_helpers [', out)
                 self.assert_in(os.path.basename(__file__.rsplit('.', 1)[0] + '.py'), out)
                 self.assert_in('the standard library is dead', out)
                 self.assert_in('this is a debug statement', out)
@@ -572,7 +572,7 @@ class LoggingTestCase(FlaskTestCase):
                               '/myview/create')
 
 
-class NoImportsTestCase(FlaskTestCase):
+class TestNoImports(TestFlask):
     """Test Flasks are created without import.
 
     Avoiding ``__import__`` helps create Flask instances where there are errors
@@ -590,7 +590,7 @@ class NoImportsTestCase(FlaskTestCase):
             self.fail('Flask(import_name) is importing import_name.')
 
 
-class StreamingTestCase(FlaskTestCase):
+class TestStreaming(TestFlask):
 
     def test_streaming_with_context(self):
         app = flask.Flask(__name__)
@@ -604,7 +604,7 @@ class StreamingTestCase(FlaskTestCase):
             return flask.Response(flask.stream_with_context(generate()))
         c = app.test_client()
         rv = c.get('/?name=World')
-        self.assertEqual(rv.data, b'Hello World!')
+        self.assert_equal(rv.data, b'Hello World!')
 
     def test_streaming_with_context_as_decorator(self):
         app = flask.Flask(__name__)
@@ -619,7 +619,7 @@ class StreamingTestCase(FlaskTestCase):
             return flask.Response(generate())
         c = app.test_client()
         rv = c.get('/?name=World')
-        self.assertEqual(rv.data, b'Hello World!')
+        self.assert_equal(rv.data, b'Hello World!')
 
     def test_streaming_with_context_and_custom_close(self):
         app = flask.Flask(__name__)
@@ -645,16 +645,16 @@ class StreamingTestCase(FlaskTestCase):
                 Wrapper(generate())))
         c = app.test_client()
         rv = c.get('/?name=World')
-        self.assertEqual(rv.data, b'Hello World!')
-        self.assertEqual(called, [42])
+        self.assert_equal(rv.data, b'Hello World!')
+        self.assert_equal(called, [42])
 
 
 def suite():
     suite = unittest.TestSuite()
     if flask.json_available:
-        suite.addTest(unittest.makeSuite(JSONTestCase))
-    suite.addTest(unittest.makeSuite(SendfileTestCase))
-    suite.addTest(unittest.makeSuite(LoggingTestCase))
-    suite.addTest(unittest.makeSuite(NoImportsTestCase))
-    suite.addTest(unittest.makeSuite(StreamingTestCase))
+        suite.addTest(unittest.makeSuite(TestJSON))
+    suite.addTest(unittest.makeSuite(TestSendfile))
+    suite.addTest(unittest.makeSuite(TestLogging))
+    suite.addTest(unittest.makeSuite(TestNoImports))
+    suite.addTest(unittest.makeSuite(TestStreaming))
     return suite

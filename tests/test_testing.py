@@ -8,14 +8,15 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import pytest
 
 import flask
 import unittest
-from tests import FlaskTestCase
+from tests import TestFlask
 from flask._compat import text_type
 
 
-class TestToolsTestCase(FlaskTestCase):
+class TestTestTools(TestFlask):
 
     def test_environ_defaults_from_config(self):
         app = flask.Flask(__name__)
@@ -212,46 +213,45 @@ class TestToolsTestCase(FlaskTestCase):
             self.assert_true('vodka' in flask.request.args)
 
 
-class SubdomainTestCase(FlaskTestCase):
+class TestSubdomain(TestFlask):
 
-    def setUp(self):
-        self.app = flask.Flask(__name__)
-        self.app.config['SERVER_NAME'] = 'example.com'
-        self.client = self.app.test_client()
+    @pytest.fixture
+    def app(self, request):
+        app = flask.Flask(__name__)
+        app.config['SERVER_NAME'] = 'example.com'
 
-        self._ctx = self.app.test_request_context()
-        self._ctx.push()
+        ctx = app.test_request_context()
+        ctx.push()
 
-    def tearDown(self):
-        if self._ctx is not None:
-            self._ctx.pop()
+        def teardown():
+            if ctx is not None:
+                ctx.pop()
+        request.addfinalizer(teardown)
+        return app
 
-    def test_subdomain(self):
-        @self.app.route('/', subdomain='<company_id>')
+    @pytest.fixture
+    def client(self, app):
+        return app.test_client()
+
+    def test_subdomain(self, app, client):
+        @app.route('/', subdomain='<company_id>')
         def view(company_id):
             return company_id
 
         url = flask.url_for('view', company_id='xxx')
-        response = self.client.get(url)
+        response = client.get(url)
 
         self.assert_equal(200, response.status_code)
         self.assert_equal(b'xxx', response.data)
 
 
-    def test_nosubdomain(self):
-        @self.app.route('/<company_id>')
+    def test_nosubdomain(self, app, client):
+        @app.route('/<company_id>')
         def view(company_id):
             return company_id
 
         url = flask.url_for('view', company_id='xxx')
-        response = self.client.get(url)
+        response = client.get(url)
 
         self.assert_equal(200, response.status_code)
         self.assert_equal(b'xxx', response.data)
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestToolsTestCase))
-    suite.addTest(unittest.makeSuite(SubdomainTestCase))
-    return suite

@@ -11,10 +11,10 @@
 
 import flask
 import unittest
-from tests import FlaskTestCase
+from tests import TestFlask
 
 
-class SignalsTestCase(FlaskTestCase):
+class TestSignals(TestFlask):
 
     def test_template_rendered(self):
         app = flask.Flask(__name__)
@@ -149,5 +149,5 @@ class SignalsTestCase(FlaskTestCase):
 def suite():
     suite = unittest.TestSuite()
     if flask.signals_available:
-        suite.addTest(unittest.makeSuite(SignalsTestCase))
+        suite.addTest(unittest.makeSuite(TestSignals))
     return suite

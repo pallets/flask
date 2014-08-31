@@ -11,10 +11,10 @@
 
 import flask
 import unittest
-from tests import FlaskTestCase
+from tests import TestFlask
 
 
-class AppContextTestCase(FlaskTestCase):
+class TestAppContext(TestFlask):
 
     def test_basic_url_generation(self):
         app = flask.Flask(__name__)
@@ -109,10 +109,10 @@ class AppContextTestCase(FlaskTestCase):
             return u''
         c = app.test_client()
         c.get('/')
-        self.assertEqual(called, ['request', 'app'])
+        self.assert_equal(called, ['request', 'app'])
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(AppContextTestCase))
+    suite.addTest(unittest.makeSuite(TestAppContext))
     return suite
