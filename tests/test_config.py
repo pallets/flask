@@ -344,23 +344,23 @@ class TestInstance(TestFlask):
                 if 'site_package' in sys.modules:
                     del sys.modules['site_package']
 
-    def test_egg_installed_paths(self):
+    def test_egg_installed_paths(self, monkeypatch):
         here = os.path.abspath(os.path.dirname(__file__))
         expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
+        monkeypatch.setattr(sys, 'prefix', expected_prefix)
+
+        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5',
+                                     'site-packages')
         egg_path = os.path.join(site_packages, 'SiteEgg.egg')
-        sys.path.append(site_packages)
-        sys.path.append(egg_path)
+        monkeypatch.syspath_prepend(egg_path)
+        monkeypatch.syspath_prepend(site_packages)
+
         try:
             import site_egg # in SiteEgg.egg
             self.assert_equal(site_egg.app.instance_path,
                               os.path.join(expected_prefix, 'var',
                                            'site_egg-instance'))
         finally:
-            sys.prefix = real_prefix
-            sys.path.remove(site_packages)
-            sys.path.remove(egg_path)
             if 'site_egg' in sys.modules:
                 del sys.modules['site_egg']
 
