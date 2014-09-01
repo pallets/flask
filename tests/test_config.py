@@ -9,11 +9,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import pytest
+
 import os
 import sys
 import flask
 import pkgutil
 import unittest
+import textwrap
 from contextlib import contextmanager
 from tests import TestFlask
 from flask._compat import PY2
@@ -178,188 +181,185 @@ class TestConfig(TestFlask):
         self.assert_equal('bar stuff 2', bar_options['STUFF_2'])
 
 
-class LimitedLoaderMockWrapper(object):
-    def __init__(self, loader):
-        self.loader = loader
-
-    def __getattr__(self, name):
-        if name in ('archive', 'get_filename'):
-            msg = 'Mocking a loader which does not have `%s.`' % name
-            raise AttributeError(msg)
-        return getattr(self.loader, name)
-
-
-@contextmanager
-def patch_pkgutil_get_loader(wrapper_class=LimitedLoaderMockWrapper):
+@pytest.fixture(params=(True, False))
+def limit_loader(request, monkeypatch):
     """Patch pkgutil.get_loader to give loader without get_filename or archive.
 
     This provides for tests where a system has custom loaders, e.g. Google App
     Engine's HardenedModulesHook, which have neither the `get_filename` method
     nor the `archive` attribute.
+
+    This fixture will run the testcase twice, once with and once without the
+    limitation/mock.
     """
+    if not request.param:
+        return
+
+    class LimitedLoader(object):
+        def __init__(self, loader):
+            self.loader = loader
+
+        def __getattr__(self, name):
+            if name in ('archive', 'get_filename'):
+                msg = 'Mocking a loader which does not have `%s.`' % name
+                raise AttributeError(msg)
+            return getattr(self.loader, name)
+
     old_get_loader = pkgutil.get_loader
     def get_loader(*args, **kwargs):
-        return wrapper_class(old_get_loader(*args, **kwargs))
-    try:
-        pkgutil.get_loader = get_loader
-        yield
-    finally:
-        pkgutil.get_loader = old_get_loader
-
+        return LimitedLoader(old_get_loader(*args, **kwargs))
+    monkeypatch.setattr(pkgutil, 'get_loader', get_loader)
 
 class TestInstance(TestFlask):
+    @pytest.fixture
+    def apps_tmpdir(self, tmpdir, monkeypatch):
+        '''Test folder for all instance tests.'''
+        rv = tmpdir.mkdir('test_apps')
+        monkeypatch.syspath_prepend(str(rv))
+        return rv
 
-    def test_explicit_instance_paths(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        try:
+    @pytest.fixture
+    def apps_tmpdir_prefix(self, apps_tmpdir, monkeypatch):
+        monkeypatch.setattr(sys, 'prefix', str(apps_tmpdir))
+        return apps_tmpdir
+
+    @pytest.fixture
+    def site_packages(self, apps_tmpdir, monkeypatch):
+        '''Create a fake site-packages'''
+        rv = apps_tmpdir \
+            .mkdir('lib')\
+            .mkdir('python{x[0]}.{x[1]}'.format(x=sys.version_info))\
+            .mkdir('site-packages')
+        monkeypatch.syspath_prepend(str(rv))
+        return rv
+
+    @pytest.fixture
+    def install_egg(self, apps_tmpdir, monkeypatch):
+        '''Generate egg from package name inside base and put the egg into
+        sys.path'''
+        def inner(name, base=apps_tmpdir):
+            if not isinstance(name, str):
+                raise ValueError(name)
+            base.join(name).ensure_dir()
+            base.join(name).join('__init__.py').ensure()
+
+            egg_setup = base.join('setup.py')
+            egg_setup.write(textwrap.dedent("""
+            from setuptools import setup
+            setup(name='{0}',
+                  version='1.0',
+                  packages=['site_egg'],
+                  zip_safe=True)
+            """.format(name)))
+
+            import subprocess
+            subprocess.check_call(
+                [sys.executable, 'setup.py', 'bdist_egg'],
+                cwd=str(apps_tmpdir)
+            )
+            egg_path, = apps_tmpdir.join('dist/').listdir()
+            monkeypatch.syspath_prepend(str(egg_path))
+            return egg_path
+        return inner
+
+    @pytest.fixture
+    def purge_module(self, request):
+        def inner(name):
+            request.addfinalizer(lambda: sys.modules.pop(name, None))
+        return inner
+
+    def test_explicit_instance_paths(self, apps_tmpdir):
+        with pytest.raises(ValueError) as excinfo:
             flask.Flask(__name__, instance_path='instance')
-        except ValueError as e:
-            self.assert_in('must be absolute', str(e))
-        else:
-            self.fail('Expected value error')
+        assert 'must be absolute' in str(excinfo.value)
 
-        app = flask.Flask(__name__, instance_path=here)
-        self.assert_equal(app.instance_path, here)
+        app = flask.Flask(__name__, instance_path=str(apps_tmpdir))
+        self.assert_equal(app.instance_path, str(apps_tmpdir))
 
-    def test_main_module_paths(self):
-        # Test an app with '__main__' as the import name, uses cwd.
+    def test_main_module_paths(self, apps_tmpdir, purge_module):
+        app = apps_tmpdir.join('main_app.py')
+        app.write('import flask\n\napp = flask.Flask("__main__")')
+        purge_module('main_app')
+
         from main_app import app
         here = os.path.abspath(os.getcwd())
-        self.assert_equal(app.instance_path, os.path.join(here, 'instance'))
-        if 'main_app' in sys.modules:
-            del sys.modules['main_app']
+        assert app.instance_path == os.path.join(here, 'instance')
 
-    def test_uninstalled_module_paths(self):
+    def test_uninstalled_module_paths(self, apps_tmpdir, purge_module):
+        app = apps_tmpdir.join('config_module_app.py').write(
+            'import os\n'
+            'import flask\n'
+            'here = os.path.abspath(os.path.dirname(__file__))\n'
+            'app = flask.Flask(__name__)\n'
+        )
+        purge_module('config_module_app')
+
         from config_module_app import app
-        here = os.path.abspath(os.path.dirname(__file__))
-        self.assert_equal(app.instance_path, os.path.join(here, 'test_apps', 'instance'))
+        assert app.instance_path == str(apps_tmpdir.join('instance'))
 
-    def test_uninstalled_package_paths(self):
+    def test_uninstalled_package_paths(self, apps_tmpdir, purge_module):
+        app = apps_tmpdir.mkdir('config_package_app')
+        init = app.join('__init__.py')
+        init.write(
+            'import os\n'
+            'import flask\n'
+            'here = os.path.abspath(os.path.dirname(__file__))\n'
+            'app = flask.Flask(__name__)\n'
+        )
+        purge_module('config_package_app')
+
         from config_package_app import app
-        here = os.path.abspath(os.path.dirname(__file__))
-        self.assert_equal(app.instance_path, os.path.join(here, 'test_apps', 'instance'))
+        assert app.instance_path == str(apps_tmpdir.join('instance'))
 
-    def test_installed_module_paths(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
-        sys.path.append(site_packages)
+    def test_installed_module_paths(self, apps_tmpdir, apps_tmpdir_prefix,
+                                    purge_module, site_packages, limit_loader):
+        site_packages.join('site_app.py').write(
+            'import flask\n'
+            'app = flask.Flask(__name__)\n'
+        )
+        purge_module('site_app')
+
+        from site_app import app
+        assert app.instance_path == \
+            apps_tmpdir.join('var').join('site_app-instance')
+
+    def test_installed_package_paths(self, limit_loader, apps_tmpdir,
+                                     apps_tmpdir_prefix, purge_module,
+                                     monkeypatch):
+        installed_path = apps_tmpdir.mkdir('path')
+        monkeypatch.syspath_prepend(installed_path)
+
+        app = installed_path.mkdir('installed_package')
+        init = app.join('__init__.py')
+        init.write('import flask\napp = flask.Flask(__name__)')
+        purge_module('installed_package')
+
+        from installed_package import app
+        assert app.instance_path == \
+            apps_tmpdir.join('var').join('installed_package-instance')
+
+    def test_prefix_package_paths(self, limit_loader, apps_tmpdir,
+                                  apps_tmpdir_prefix, purge_module,
+                                  site_packages):
+        app = site_packages.mkdir('site_package')
+        init = app.join('__init__.py')
+        init.write('import flask\napp = flask.Flask(__name__)')
+        purge_module('site_package')
+
+        import site_package
+        assert site_package.app.instance_path == \
+            apps_tmpdir.join('var').join('site_package-instance')
+
+    def test_egg_installed_paths(self, install_egg, apps_tmpdir,
+                                 apps_tmpdir_prefix):
+        apps_tmpdir.mkdir('site_egg').join('__init__.py').write(
+            'import flask\n\napp = flask.Flask(__name__)'
+        )
+        install_egg('site_egg')
         try:
-            import site_app
-            self.assert_equal(site_app.app.instance_path,
-                              os.path.join(expected_prefix, 'var',
-                                           'site_app-instance'))
-        finally:
-            sys.prefix = real_prefix
-            sys.path.remove(site_packages)
-            if 'site_app' in sys.modules:
-                del sys.modules['site_app']
-
-    def test_installed_module_paths_with_limited_loader(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
-        sys.path.append(site_packages)
-        with patch_pkgutil_get_loader():
-            try:
-                import site_app
-                self.assert_equal(site_app.app.instance_path,
-                                  os.path.join(expected_prefix, 'var',
-                                               'site_app-instance'))
-            finally:
-                sys.prefix = real_prefix
-                sys.path.remove(site_packages)
-                if 'site_app' in sys.modules:
-                    del sys.modules['site_app']
-
-    def test_installed_package_paths(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        installed_path = os.path.join(expected_prefix, 'path')
-        sys.path.append(installed_path)
-        try:
-            import installed_package
-            self.assert_equal(installed_package.app.instance_path,
-                              os.path.join(expected_prefix, 'var',
-                                           'installed_package-instance'))
-        finally:
-            sys.prefix = real_prefix
-            sys.path.remove(installed_path)
-            if 'installed_package' in sys.modules:
-                del sys.modules['installed_package']
-
-    def test_installed_package_paths_with_limited_loader(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        installed_path = os.path.join(expected_prefix, 'path')
-        sys.path.append(installed_path)
-        with patch_pkgutil_get_loader():
-            try:
-                import installed_package
-                self.assert_equal(installed_package.app.instance_path,
-                                  os.path.join(expected_prefix, 'var',
-                                               'installed_package-instance'))
-            finally:
-                sys.prefix = real_prefix
-                sys.path.remove(installed_path)
-                if 'installed_package' in sys.modules:
-                    del sys.modules['installed_package']
-
-    def test_prefix_package_paths(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
-        sys.path.append(site_packages)
-        try:
-            import site_package
-            self.assert_equal(site_package.app.instance_path,
-                              os.path.join(expected_prefix, 'var',
-                                           'site_package-instance'))
-        finally:
-            sys.prefix = real_prefix
-            sys.path.remove(site_packages)
-            if 'site_package' in sys.modules:
-                del sys.modules['site_package']
-
-    def test_prefix_package_paths_with_limited_loader(self):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        real_prefix, sys.prefix = sys.prefix, expected_prefix
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5', 'site-packages')
-        sys.path.append(site_packages)
-        with patch_pkgutil_get_loader():
-            try:
-                import site_package
-                self.assert_equal(site_package.app.instance_path,
-                                  os.path.join(expected_prefix, 'var',
-                                               'site_package-instance'))
-            finally:
-                sys.prefix = real_prefix
-                sys.path.remove(site_packages)
-                if 'site_package' in sys.modules:
-                    del sys.modules['site_package']
-
-    def test_egg_installed_paths(self, monkeypatch):
-        here = os.path.abspath(os.path.dirname(__file__))
-        expected_prefix = os.path.join(here, 'test_apps')
-        monkeypatch.setattr(sys, 'prefix', expected_prefix)
-
-        site_packages = os.path.join(expected_prefix, 'lib', 'python2.5',
-                                     'site-packages')
-        egg_path = os.path.join(site_packages, 'SiteEgg.egg')
-        monkeypatch.syspath_prepend(egg_path)
-        monkeypatch.syspath_prepend(site_packages)
-
-        try:
-            import site_egg # in SiteEgg.egg
-            self.assert_equal(site_egg.app.instance_path,
-                              os.path.join(expected_prefix, 'var',
-                                           'site_egg-instance'))
+            import site_egg
+            assert site_egg.app.instance_path == \
+                str(apps_tmpdir.join('var/').join('site_egg-instance'))
         finally:
             if 'site_egg' in sys.modules:
                 del sys.modules['site_egg']
@@ -375,10 +375,3 @@ class TestInstance(TestFlask):
                     flask.Flask(__name__)
             finally:
                 sys.meta_path.pop()
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestConfig))
-    suite.addTest(unittest.makeSuite(TestInstance))
-    return suite
