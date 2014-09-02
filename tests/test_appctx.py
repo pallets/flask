@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import pytest
+
 import flask
 import unittest
 from tests import TestFlask
@@ -27,29 +29,29 @@ class TestAppContext(TestFlask):
 
         with app.app_context():
             rv = flask.url_for('index')
-            self.assert_equal(rv, 'https://localhost/')
+            assert rv == 'https://localhost/'
 
     def test_url_generation_requires_server_name(self):
         app = flask.Flask(__name__)
         with app.app_context():
-            with self.assert_raises(RuntimeError):
+            with pytest.raises(RuntimeError):
                 flask.url_for('index')
 
     def test_url_generation_without_context_fails(self):
-        with self.assert_raises(RuntimeError):
+        with pytest.raises(RuntimeError):
             flask.url_for('index')
 
     def test_request_context_means_app_context(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
-            self.assert_equal(flask.current_app._get_current_object(), app)
-        self.assert_equal(flask._app_ctx_stack.top, None)
+            assert flask.current_app._get_current_object() == app
+        assert flask._app_ctx_stack.top == None
 
     def test_app_context_provides_current_app(self):
         app = flask.Flask(__name__)
         with app.app_context():
-            self.assert_equal(flask.current_app._get_current_object(), app)
-        self.assert_equal(flask._app_ctx_stack.top, None)
+            assert flask.current_app._get_current_object() == app
+        assert flask._app_ctx_stack.top == None
 
     def test_app_tearing_down(self):
         cleanup_stuff = []
@@ -61,7 +63,7 @@ class TestAppContext(TestFlask):
         with app.app_context():
             pass
 
-        self.assert_equal(cleanup_stuff, [None])
+        assert cleanup_stuff == [None]
 
     def test_app_tearing_down_with_previous_exception(self):
         cleanup_stuff = []
@@ -78,7 +80,7 @@ class TestAppContext(TestFlask):
         with app.app_context():
             pass
 
-        self.assert_equal(cleanup_stuff, [None])
+        assert cleanup_stuff == [None]
 
     def test_custom_app_ctx_globals_class(self):
         class CustomRequestGlobals(object):
@@ -87,8 +89,7 @@ class TestAppContext(TestFlask):
         app = flask.Flask(__name__)
         app.app_ctx_globals_class = CustomRequestGlobals
         with app.app_context():
-            self.assert_equal(
-                flask.render_template_string('{{ g.spam }}'), 'eggs')
+            assert flask.render_template_string('{{ g.spam }}') == 'eggs'
 
     def test_context_refcounts(self):
         called = []
@@ -104,12 +105,14 @@ class TestAppContext(TestFlask):
             with flask._app_ctx_stack.top:
                 with flask._request_ctx_stack.top:
                     pass
-            self.assert_true(flask._request_ctx_stack.top.request.environ
-                ['werkzeug.request'] is not None)
+            env = flask._request_ctx_stack.top.request.environ
+            assert env['werkzeug.request'] is not None
             return u''
         c = app.test_client()
-        c.get('/')
-        self.assert_equal(called, ['request', 'app'])
+        res = c.get('/')
+        assert res.status_code == 200
+        assert res.data == u''
+        assert called == ['request', 'app']
 
 
 def suite():

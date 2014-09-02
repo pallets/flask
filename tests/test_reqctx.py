@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import pytest
+
 import flask
 import unittest
 try:
@@ -29,9 +31,9 @@ class TestRequestContext(TestFlask):
 
         ctx = app.test_request_context()
         ctx.push()
-        self.assert_equal(buffer, [])
+        assert buffer == []
         ctx.pop()
-        self.assert_equal(buffer, [None])
+        assert buffer == [None]
 
     def test_teardown_with_previous_exception(self):
         buffer = []
@@ -46,8 +48,8 @@ class TestRequestContext(TestFlask):
             pass
 
         with app.test_request_context():
-            self.assert_equal(buffer, [])
-        self.assert_equal(buffer, [None])
+            assert buffer == []
+        assert buffer == [None]
 
     def test_proper_test_request_context(self):
         app = flask.Flask(__name__)
@@ -64,37 +66,30 @@ class TestRequestContext(TestFlask):
             return None
 
         with app.test_request_context('/'):
-            self.assert_equal(flask.url_for('index', _external=True), 'http://localhost.localdomain:5000/')
+            assert flask.url_for('index', _external=True) == \
+                'http://localhost.localdomain:5000/'
 
         with app.test_request_context('/'):
-            self.assert_equal(flask.url_for('sub', _external=True), 'http://foo.localhost.localdomain:5000/')
+            assert flask.url_for('sub', _external=True) == \
+                'http://foo.localhost.localdomain:5000/'
 
         try:
             with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
                 pass
-        except Exception as e:
-            self.assert_true(isinstance(e, ValueError))
-            self.assert_equal(str(e), "the server name provided " +
-                    "('localhost.localdomain:5000') does not match the " + \
-                    "server name from the WSGI environment ('localhost')")
-
-        try:
-            app.config.update(SERVER_NAME='localhost')
-            with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost'}):
-                pass
         except ValueError as e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
+            assert str(e) == (
+                "the server name provided "
+                "('localhost.localdomain:5000') does not match the "
+                "server name from the WSGI environment ('localhost')"
             )
 
-        try:
-            app.config.update(SERVER_NAME='localhost:80')
-            with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
-                pass
-        except ValueError as e:
-            raise ValueError(
-                "No ValueError exception should have been raised \"%s\"" % e
-            )
+        app.config.update(SERVER_NAME='localhost')
+        with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost'}):
+            pass
+
+        app.config.update(SERVER_NAME='localhost:80')
+        with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
+            pass
 
     def test_context_binding(self):
         app = flask.Flask(__name__)
@@ -106,20 +101,20 @@ class TestRequestContext(TestFlask):
             return flask.request.url
 
         with app.test_request_context('/?name=World'):
-            self.assert_equal(index(), 'Hello World!')
+            assert index() == 'Hello World!'
         with app.test_request_context('/meh'):
-            self.assert_equal(meh(), 'http://localhost/meh')
-        self.assert_true(flask._request_ctx_stack.top is None)
+            assert meh() == 'http://localhost/meh'
+        assert flask._request_ctx_stack.top is None
 
     def test_context_test(self):
         app = flask.Flask(__name__)
-        self.assert_false(flask.request)
-        self.assert_false(flask.has_request_context())
+        assert not flask.request
+        assert not flask.has_request_context()
         ctx = app.test_request_context()
         ctx.push()
         try:
-            self.assert_true(flask.request)
-            self.assert_true(flask.has_request_context())
+            assert flask.request
+            assert flask.has_request_context()
         finally:
             ctx.pop()
 
@@ -131,14 +126,14 @@ class TestRequestContext(TestFlask):
 
         ctx = app.test_request_context('/?name=World')
         ctx.push()
-        self.assert_equal(index(), 'Hello World!')
+        assert index() == 'Hello World!'
         ctx.pop()
         try:
             index()
         except RuntimeError:
             pass
         else:
-            self.assert_true(0, 'expected runtime error')
+            assert 0, 'expected runtime error'
 
     def test_greenlet_context_copying(self):
         app = flask.Flask(__name__)
@@ -148,23 +143,23 @@ class TestRequestContext(TestFlask):
         def index():
             reqctx = flask._request_ctx_stack.top.copy()
             def g():
-                self.assert_false(flask.request)
-                self.assert_false(flask.current_app)
+                assert not flask.request
+                assert not flask.current_app
                 with reqctx:
-                    self.assert_true(flask.request)
-                    self.assert_equal(flask.current_app, app)
-                    self.assert_equal(flask.request.path, '/')
-                    self.assert_equal(flask.request.args['foo'], 'bar')
-                self.assert_false(flask.request)
+                    assert flask.request
+                    assert flask.current_app == app
+                    assert flask.request.path == '/'
+                    assert flask.request.args['foo'] == 'bar'
+                assert not flask.request
                 return 42
             greenlets.append(greenlet(g))
             return 'Hello World!'
 
         rv = app.test_client().get('/?foo=bar')
-        self.assert_equal(rv.data, b'Hello World!')
+        assert rv.data == b'Hello World!'
 
         result = greenlets[0].run()
-        self.assert_equal(result, 42)
+        assert result == 42
 
     def test_greenlet_context_copying_api(self):
         app = flask.Flask(__name__)
@@ -175,19 +170,19 @@ class TestRequestContext(TestFlask):
             reqctx = flask._request_ctx_stack.top.copy()
             @flask.copy_current_request_context
             def g():
-                self.assert_true(flask.request)
-                self.assert_equal(flask.current_app, app)
-                self.assert_equal(flask.request.path, '/')
-                self.assert_equal(flask.request.args['foo'], 'bar')
+                assert flask.request
+                assert flask.current_app == app
+                assert flask.request.path == '/'
+                assert flask.request.args['foo'] == 'bar'
                 return 42
             greenlets.append(greenlet(g))
             return 'Hello World!'
 
         rv = app.test_client().get('/?foo=bar')
-        self.assert_equal(rv.data, b'Hello World!')
+        assert rv.data == b'Hello World!'
 
         result = greenlets[0].run()
-        self.assert_equal(result, 42)
+        assert result == 42
 
     # Disable test if we don't have greenlets available
     if greenlet is None:

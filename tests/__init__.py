@@ -78,9 +78,9 @@ def emits_module_deprecation_warning(f):
     def new_f(self, *args, **kwargs):
         with catch_warnings() as log:
             f(self, *args, **kwargs)
-            self.assert_true(log, 'expected deprecation warning')
+            assert log, 'expected deprecation warning'
             for entry in log:
-                self.assert_in('Modules are deprecated', str(entry['message']))
+                assert 'Modules are deprecated' in str(entry['message'])
     return update_wrapper(new_f, f)
 
 
@@ -107,7 +107,7 @@ class TestFlask(object):
         leaks = []
         while flask._request_ctx_stack.top is not None:
             leaks.append(flask._request_ctx_stack.pop())
-        self.assert_equal(leaks, [])
+        assert leaks == []
 
     def setup_method(self, method):
         self.setup()
@@ -120,31 +120,3 @@ class TestFlask(object):
 
     def teardown(self):
         pass
-
-    def assert_equal(self, x, y):
-        assert x == y
-
-    def assert_raises(self, exc_type, callable=None, *args, **kwargs):
-        if callable:
-            return pytest.raises(exc_type, callable, *args, **kwargs)
-        else:
-            return pytest.raises(exc_type)
-
-    def assert_true(self, x, msg=None):
-        assert x
-    assert_ = assert_true
-
-    def assert_false(self, x, msg=None):
-        assert not x
-
-    def assert_in(self, x, y):
-        assert x in y
-
-    def assert_not_in(self, x, y):
-        assert x not in y
-
-    def assert_isinstance(self, obj, cls):
-        assert isinstance(obj, cls)
-
-    def fail(self, msg):
-        raise AssertionError(msg)

@@ -42,10 +42,10 @@ class TestSignals(TestFlask):
         flask.template_rendered.connect(record, app)
         try:
             app.test_client().get('/')
-            self.assert_equal(len(recorded), 1)
+            assert len(recorded) == 1
             template, context = recorded[0]
-            self.assert_equal(template.name, 'simple_template.html')
-            self.assert_equal(context['whiskey'], 42)
+            assert template.name == 'simple_template.html'
+            assert context['whiskey'] == 42
         finally:
             flask.template_rendered.disconnect(record, app)
 
@@ -57,7 +57,7 @@ class TestSignals(TestFlask):
             calls.append('before-signal')
 
         def after_request_signal(sender, response):
-            self.assert_equal(response.data, b'stuff')
+            assert response.data == b'stuff'
             calls.append('after-signal')
 
         @app.before_request
@@ -80,11 +80,10 @@ class TestSignals(TestFlask):
 
         try:
             rv = app.test_client().get('/')
-            self.assert_equal(rv.data, b'stuff')
+            assert rv.data == b'stuff'
 
-            self.assert_equal(calls, ['before-signal', 'before-handler',
-                                      'handler', 'after-handler',
-                                      'after-signal'])
+            assert calls == ['before-signal', 'before-handler', 'handler',
+                             'after-handler', 'after-signal']
         finally:
             flask.request_started.disconnect(before_request_signal, app)
             flask.request_finished.disconnect(after_request_signal, app)
@@ -102,9 +101,9 @@ class TestSignals(TestFlask):
 
         flask.got_request_exception.connect(record, app)
         try:
-            self.assert_equal(app.test_client().get('/').status_code, 500)
-            self.assert_equal(len(recorded), 1)
-            self.assert_true(isinstance(recorded[0], ZeroDivisionError))
+            assert app.test_client().get('/').status_code == 500
+            assert len(recorded) == 1
+            assert isinstance(recorded[0], ZeroDivisionError)
         finally:
             flask.got_request_exception.disconnect(record, app)
 
@@ -127,9 +126,9 @@ class TestSignals(TestFlask):
         try:
             with app.test_client() as c:
                 rv = c.get('/')
-                self.assert_equal(rv.data, b'Hello')
-                self.assert_equal(recorded, ['push'])
-            self.assert_equal(recorded, ['push', 'pop'])
+                assert rv.data == b'Hello'
+                assert recorded == ['push']
+            assert recorded == ['push', 'pop']
         finally:
             flask.appcontext_pushed.disconnect(record_push, app)
             flask.appcontext_popped.disconnect(record_pop, app)
@@ -153,9 +152,9 @@ class TestSignals(TestFlask):
             client = app.test_client()
             with client.session_transaction():
                 client.get('/')
-                self.assert_equal(len(recorded), 1)
+                assert len(recorded) == 1
                 message, category = recorded[0]
-                self.assert_equal(message, 'This is a flash message')
-                self.assert_equal(category, 'notice')
+                assert message == 'This is a flash message'
+                assert category == 'notice'
         finally:
             flask.message_flashed.disconnect(record, app)

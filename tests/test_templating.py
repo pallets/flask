@@ -28,7 +28,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('context_template.html', value=23)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'<p>23|42')
+        assert rv.data == b'<p>23|42'
 
     def test_original_win(self):
         app = flask.Flask(__name__)
@@ -36,7 +36,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template_string('{{ config }}', config=42)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'42')
+        assert rv.data == b'42'
 
     def test_request_less_rendering(self):
         app = flask.Flask(__name__)
@@ -48,7 +48,7 @@ class TestTemplating(TestFlask):
         with app.app_context():
             rv = flask.render_template_string('Hello {{ config.WORLD_NAME }} '
                                               '{{ foo }}')
-            self.assert_equal(rv, 'Hello Special World 42')
+            assert rv == 'Hello Special World 42'
 
     def test_standard_context(self):
         app = flask.Flask(__name__)
@@ -64,7 +64,7 @@ class TestTemplating(TestFlask):
                 {{ session.test }}
             ''')
         rv = app.test_client().get('/?foo=42')
-        self.assert_equal(rv.data.split(), [b'42', b'23', b'False', b'aha'])
+        assert rv.data.split() == [b'42', b'23', b'False', b'aha']
 
     def test_escaping(self):
         text = '<p>Hello World!'
@@ -74,64 +74,64 @@ class TestTemplating(TestFlask):
             return flask.render_template('escaping_template.html', text=text,
                                          html=flask.Markup(text))
         lines = app.test_client().get('/').data.splitlines()
-        self.assert_equal(lines, [
+        assert lines == [
             b'&lt;p&gt;Hello World!',
             b'<p>Hello World!',
             b'<p>Hello World!',
             b'<p>Hello World!',
             b'&lt;p&gt;Hello World!',
             b'<p>Hello World!'
-        ])
+        ]
 
     def test_no_escaping(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
-            self.assert_equal(flask.render_template_string('{{ foo }}',
-                              foo='<test>'), '<test>')
-            self.assert_equal(flask.render_template('mail.txt', foo='<test>'),
-                              '<test> Mail')
+            assert flask.render_template_string(
+                '{{ foo }}', foo='<test>') == '<test>'
+            assert flask.render_template('mail.txt', foo='<test>') == \
+                '<test> Mail'
 
     def test_macros(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
             macro = flask.get_template_attribute('_macro.html', 'hello')
-            self.assert_equal(macro('World'), 'Hello World!')
+            assert macro('World') == 'Hello World!'
 
     def test_template_filter(self):
         app = flask.Flask(__name__)
         @app.template_filter()
         def my_reverse(s):
             return s[::-1]
-        self.assert_in('my_reverse', app.jinja_env.filters.keys())
-        self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
-        self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
+        assert 'my_reverse' in app.jinja_env.filters.keys()
+        assert app.jinja_env.filters['my_reverse'] == my_reverse
+        assert app.jinja_env.filters['my_reverse']('abcd') == 'dcba'
 
     def test_add_template_filter(self):
         app = flask.Flask(__name__)
         def my_reverse(s):
             return s[::-1]
         app.add_template_filter(my_reverse)
-        self.assert_in('my_reverse', app.jinja_env.filters.keys())
-        self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
-        self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
+        assert 'my_reverse' in app.jinja_env.filters.keys()
+        assert app.jinja_env.filters['my_reverse'] == my_reverse
+        assert app.jinja_env.filters['my_reverse']('abcd') == 'dcba'
 
     def test_template_filter_with_name(self):
         app = flask.Flask(__name__)
         @app.template_filter('strrev')
         def my_reverse(s):
             return s[::-1]
-        self.assert_in('strrev', app.jinja_env.filters.keys())
-        self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
-        self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
+        assert 'strrev' in app.jinja_env.filters.keys()
+        assert app.jinja_env.filters['strrev'] == my_reverse
+        assert app.jinja_env.filters['strrev']('abcd') == 'dcba'
 
     def test_add_template_filter_with_name(self):
         app = flask.Flask(__name__)
         def my_reverse(s):
             return s[::-1]
         app.add_template_filter(my_reverse, 'strrev')
-        self.assert_in('strrev', app.jinja_env.filters.keys())
-        self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
-        self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
+        assert 'strrev' in app.jinja_env.filters.keys()
+        assert app.jinja_env.filters['strrev'] == my_reverse
+        assert app.jinja_env.filters['strrev']('abcd') == 'dcba'
 
     def test_template_filter_with_template(self):
         app = flask.Flask(__name__)
@@ -142,7 +142,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'dcba')
+        assert rv.data == b'dcba'
 
     def test_add_template_filter_with_template(self):
         app = flask.Flask(__name__)
@@ -153,7 +153,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'dcba')
+        assert rv.data == b'dcba'
 
     def test_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -164,7 +164,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'dcba')
+        assert rv.data == b'dcba'
 
     def test_add_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -175,43 +175,43 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'dcba')
+        assert rv.data == b'dcba'
 
     def test_template_test(self):
         app = flask.Flask(__name__)
         @app.template_test()
         def boolean(value):
             return isinstance(value, bool)
-        self.assert_in('boolean', app.jinja_env.tests.keys())
-        self.assert_equal(app.jinja_env.tests['boolean'], boolean)
-        self.assert_true(app.jinja_env.tests['boolean'](False))
+        assert 'boolean' in app.jinja_env.tests.keys()
+        assert app.jinja_env.tests['boolean'] == boolean
+        assert app.jinja_env.tests['boolean'](False)
 
     def test_add_template_test(self):
         app = flask.Flask(__name__)
         def boolean(value):
             return isinstance(value, bool)
         app.add_template_test(boolean)
-        self.assert_in('boolean', app.jinja_env.tests.keys())
-        self.assert_equal(app.jinja_env.tests['boolean'], boolean)
-        self.assert_true(app.jinja_env.tests['boolean'](False))
+        assert 'boolean' in app.jinja_env.tests.keys()
+        assert app.jinja_env.tests['boolean'] == boolean
+        assert app.jinja_env.tests['boolean'](False)
 
     def test_template_test_with_name(self):
         app = flask.Flask(__name__)
         @app.template_test('boolean')
         def is_boolean(value):
             return isinstance(value, bool)
-        self.assert_in('boolean', app.jinja_env.tests.keys())
-        self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
-        self.assert_true(app.jinja_env.tests['boolean'](False))
+        assert 'boolean' in app.jinja_env.tests.keys()
+        assert app.jinja_env.tests['boolean'] == is_boolean
+        assert app.jinja_env.tests['boolean'](False)
 
     def test_add_template_test_with_name(self):
         app = flask.Flask(__name__)
         def is_boolean(value):
             return isinstance(value, bool)
         app.add_template_test(is_boolean, 'boolean')
-        self.assert_in('boolean', app.jinja_env.tests.keys())
-        self.assert_equal(app.jinja_env.tests['boolean'], is_boolean)
-        self.assert_true(app.jinja_env.tests['boolean'](False))
+        assert 'boolean' in app.jinja_env.tests.keys()
+        assert app.jinja_env.tests['boolean'] == is_boolean
+        assert app.jinja_env.tests['boolean'](False)
 
     def test_template_test_with_template(self):
         app = flask.Flask(__name__)
@@ -222,7 +222,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_in(b'Success!', rv.data)
+        assert b'Success!' in rv.data
 
     def test_add_template_test_with_template(self):
         app = flask.Flask(__name__)
@@ -233,7 +233,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_in(b'Success!', rv.data)
+        assert b'Success!' in rv.data
 
     def test_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -244,7 +244,7 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_in(b'Success!', rv.data)
+        assert b'Success!' in rv.data
 
     def test_add_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -255,19 +255,19 @@ class TestTemplating(TestFlask):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_in(b'Success!', rv.data)
+        assert b'Success!' in rv.data
 
     def test_add_template_global(self):
         app = flask.Flask(__name__)
         @app.template_global()
         def get_stuff():
             return 42
-        self.assert_in('get_stuff', app.jinja_env.globals.keys())
-        self.assert_equal(app.jinja_env.globals['get_stuff'], get_stuff)
-        self.assert_true(app.jinja_env.globals['get_stuff'](), 42)
+        assert 'get_stuff' in app.jinja_env.globals.keys()
+        assert app.jinja_env.globals['get_stuff'] == get_stuff
+        assert app.jinja_env.globals['get_stuff'](), 42
         with app.app_context():
             rv = flask.render_template_string('{{ get_stuff() }}')
-            self.assert_equal(rv, '42')
+            assert rv == '42'
 
     def test_custom_template_loader(self):
         class MyFlask(flask.Flask):
@@ -280,7 +280,7 @@ class TestTemplating(TestFlask):
             return flask.render_template('index.html')
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.data, b'Hello Custom World!')
+        assert rv.data == b'Hello Custom World!'
 
     def test_iterable_loader(self):
         app = flask.Flask(__name__)
@@ -296,15 +296,15 @@ class TestTemplating(TestFlask):
                 value=23)
 
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'<h1>Jameson</h1>')
+        assert rv.data == b'<h1>Jameson</h1>'
 
     def test_templates_auto_reload(self):
         app = flask.Flask(__name__)
-        self.assert_true(app.config['TEMPLATES_AUTO_RELOAD'])
-        self.assert_true(app.jinja_env.auto_reload)
+        assert app.config['TEMPLATES_AUTO_RELOAD']
+        assert app.jinja_env.auto_reload
         app = flask.Flask(__name__)
         app.config['TEMPLATES_AUTO_RELOAD'] = False
-        self.assert_false(app.jinja_env.auto_reload)
+        assert not app.jinja_env.auto_reload
 
     def test_template_loader_debugging(self):
         from blueprintapp import app
@@ -314,17 +314,15 @@ class TestTemplating(TestFlask):
             def handle(x, record):
                 called.append(True)
                 text = str(record.msg)
-                self.assert_('1: trying loader of application '
-                             '"blueprintapp"' in text)
-                self.assert_('2: trying loader of blueprint "admin" '
-                             '(blueprintapp.apps.admin)' in text)
-                self.assert_('trying loader of blueprint "frontend" '
-                             '(blueprintapp.apps.frontend)' in text)
-                self.assert_('Error: the template could not be found' in text)
-                self.assert_('looked up from an endpoint that belongs to '
-                             'the blueprint "frontend"' in text)
-                self.assert_(
-                    'See http://flask.pocoo.org/docs/blueprints/#templates' in text)
+                assert '1: trying loader of application "blueprintapp"' in text
+                assert ('2: trying loader of blueprint "admin" '
+                        '(blueprintapp.apps.admin)') in text
+                assert ('trying loader of blueprint "frontend" '
+                        '(blueprintapp.apps.frontend)') in text
+                assert 'Error: the template could not be found' in text
+                assert ('looked up from an endpoint that belongs to '
+                        'the blueprint "frontend"') in text
+                assert 'See http://flask.pocoo.org/docs/blueprints/#templates' in text
 
         with app.test_client() as c:
             try:
@@ -336,14 +334,14 @@ class TestTemplating(TestFlask):
                 try:
                     c.get('/missing')
                 except TemplateNotFound as e:
-                    self.assert_('missing_template.html' in str(e))
+                    assert 'missing_template.html' in str(e)
                 else:
                     self.fail('Expected template not found exception.')
             finally:
                 app.logger.handlers[:] = old_handlers
                 app.config['EXPLAIN_TEMPLATE_LOADING'] = old_load_setting
 
-        self.assert_equal(len(called), 1)
+        assert len(called) == 1
 
 
 def suite():
