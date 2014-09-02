@@ -11,7 +11,7 @@
 
 import os
 import sys
-from threading import Lock
+from threading import Lock, Thread
 from functools import update_wrapper
 
 import click
@@ -99,25 +99,46 @@ def locate_app(app_id):
 
 class DispatchingApp(object):
     """Special application that dispatches to a flask application which
-    is imported by name on first request.  This is safer than importing
-    the application upfront because it means that we can forward all
-    errors for import problems into the browser as error.
+    is imported by name in a background thread.  If an error happens
+    it is is recorded and shows as part of the WSGI handling which in case
+    of the Werkzeug debugger means that it shows up in the browser.
     """
 
     def __init__(self, loader, use_eager_loading=False):
         self.loader = loader
         self._app = None
         self._lock = Lock()
+        self._bg_loading_exc_info = None
         if use_eager_loading:
             self._load_unlocked()
+        else:
+            self._load_in_background()
+
+    def _load_in_background(self):
+        def _load_app():
+            with self._lock:
+                try:
+                    self._load_unlocked()
+                except Exception:
+                    self._bg_loading_exc_info = sys.exc_info()
+        t = Thread(target=_load_app, args=())
+        t.start()
+
+    def _flush_bg_loading_exception(self):
+        exc_info = self._bg_loading_exc_info
+        if exc_info is not None:
+            self._bg_loading_exc_info = None
+            raise exc_info[0], exc_info[1], exc_info[2]
 
     def _load_unlocked(self):
         self._app = rv = self.loader()
+        self._bg_loading_exc_info = None
         return rv
 
     def __call__(self, environ, start_response):
         if self._app is not None:
             return self._app(environ, start_response)
+        self._flush_bg_loading_exception()
         with self._lock:
             if self._app is not None:
                 rv = self._app
