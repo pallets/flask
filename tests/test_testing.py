@@ -28,10 +28,10 @@ class TestTestTools(TestFlask):
             return flask.request.url
 
         ctx = app.test_request_context()
-        self.assert_equal(ctx.request.url, 'http://example.com:1234/foo/')
+        assert ctx.request.url == 'http://example.com:1234/foo/'
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.data, b'http://example.com:1234/foo/')
+            assert rv.data == b'http://example.com:1234/foo/'
 
     def test_environ_defaults(self):
         app = flask.Flask(__name__)
@@ -41,10 +41,10 @@ class TestTestTools(TestFlask):
             return flask.request.url
 
         ctx = app.test_request_context()
-        self.assert_equal(ctx.request.url, 'http://localhost/')
+        assert ctx.request.url == 'http://localhost/'
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.data, b'http://localhost/')
+            assert rv.data == b'http://localhost/'
 
     def test_redirect_keep_session(self):
         app = flask.Flask(__name__)
@@ -89,14 +89,14 @@ class TestTestTools(TestFlask):
 
         with app.test_client() as c:
             with c.session_transaction() as sess:
-                self.assert_equal(len(sess), 0)
+                assert len(sess) == 0
                 sess['foo'] = [42]
-                self.assert_equal(len(sess), 1)
+                assert len(sess) == 1
             rv = c.get('/')
-            self.assert_equal(rv.data, b'[42]')
+            assert rv.data == b'[42]'
             with c.session_transaction() as sess:
-                self.assert_equal(len(sess), 1)
-                self.assert_equal(sess['foo'], [42])
+                assert len(sess) == 1
+                assert sess['foo'] == [42]
 
     def test_session_transactions_no_null_sessions(self):
         app = flask.Flask(__name__)
@@ -107,9 +107,9 @@ class TestTestTools(TestFlask):
                 with c.session_transaction() as sess:
                     pass
             except RuntimeError as e:
-                self.assert_in('Session backend did not open a session', str(e))
+                assert 'Session backend did not open a session' in str(e)
             else:
-                self.fail('Expected runtime error')
+                assert False, 'Expected runtime error'
 
     def test_session_transactions_keep_context(self):
         app = flask.Flask(__name__)
@@ -119,9 +119,9 @@ class TestTestTools(TestFlask):
         with app.test_client() as c:
             rv = c.get('/')
             req = flask.request._get_current_object()
-            self.assert_true(req is not None)
+            assert req is not None
             with c.session_transaction():
-                self.assert_true(req is flask.request._get_current_object())
+                assert req is flask.request._get_current_object()
 
     def test_session_transaction_needs_cookies(self):
         app = flask.Flask(__name__)
@@ -131,9 +131,9 @@ class TestTestTools(TestFlask):
             with c.session_transaction() as s:
                 pass
         except RuntimeError as e:
-            self.assert_in('cookies', str(e))
+            assert 'cookies' in str(e)
         else:
-            self.fail('Expected runtime error')
+            assert False, 'Expected runtime error'
 
     def test_test_client_context_binding(self):
         app = flask.Flask(__name__)
@@ -149,14 +149,14 @@ class TestTestTools(TestFlask):
 
         with app.test_client() as c:
             resp = c.get('/')
-            self.assert_equal(flask.g.value, 42)
-            self.assert_equal(resp.data, b'Hello World!')
-            self.assert_equal(resp.status_code, 200)
+            assert flask.g.value == 42
+            assert resp.data == b'Hello World!'
+            assert resp.status_code == 200
 
             resp = c.get('/other')
-            self.assert_false(hasattr(flask.g, 'value'))
-            self.assert_in(b'Internal Server Error', resp.data)
-            self.assert_equal(resp.status_code, 500)
+            assert not hasattr(flask.g, 'value')
+            assert b'Internal Server Error' in resp.data
+            assert resp.status_code == 500
             flask.g.value = 23
 
         try:
@@ -171,10 +171,10 @@ class TestTestTools(TestFlask):
         c = app.test_client()
 
         with c:
-            self.assert_equal(c.get('/').status_code, 404)
+            assert c.get('/').status_code == 404
 
         with c:
-            self.assert_equal(c.get('/').status_code, 404)
+            assert c.get('/').status_code == 404
 
     def test_test_client_calls_teardown_handlers(self):
         app = flask.Flask(__name__)
@@ -184,19 +184,19 @@ class TestTestTools(TestFlask):
             called.append(error)
 
         with app.test_client() as c:
-            self.assert_equal(called, [])
+            assert called == []
             c.get('/')
-            self.assert_equal(called, [])
-        self.assert_equal(called, [None])
+            assert called == []
+        assert called == [None]
 
         del called[:]
         with app.test_client() as c:
-            self.assert_equal(called, [])
+            assert called == []
             c.get('/')
-            self.assert_equal(called, [])
+            assert called == []
             c.get('/')
-            self.assert_equal(called, [None])
-        self.assert_equal(called, [None, None])
+            assert called == [None]
+        assert called == [None, None]
 
     def test_full_url_request(self):
         app = flask.Flask(__name__)
@@ -208,9 +208,9 @@ class TestTestTools(TestFlask):
 
         with app.test_client() as c:
             rv = c.post('http://domain.com/action?vodka=42', data={'gin': 43})
-            self.assert_equal(rv.status_code, 200)
-            self.assert_true('gin' in flask.request.form)
-            self.assert_true('vodka' in flask.request.args)
+            assert rv.status_code == 200
+            assert 'gin' in flask.request.form
+            assert 'vodka' in flask.request.args
 
 
 class TestSubdomain(TestFlask):
@@ -241,8 +241,8 @@ class TestSubdomain(TestFlask):
         url = flask.url_for('view', company_id='xxx')
         response = client.get(url)
 
-        self.assert_equal(200, response.status_code)
-        self.assert_equal(b'xxx', response.data)
+        assert 200 == response.status_code
+        assert b'xxx' == response.data
 
 
     def test_nosubdomain(self, app, client):
@@ -253,5 +253,5 @@ class TestSubdomain(TestFlask):
         url = flask.url_for('view', company_id='xxx')
         response = client.get(url)
 
-        self.assert_equal(200, response.status_code)
-        self.assert_equal(b'xxx', response.data)
+        assert 200 == response.status_code
+        assert b'xxx' == response.data

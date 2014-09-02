@@ -30,9 +30,9 @@ SECRET_KEY = 'devkey'
 class TestConfig(TestFlask):
 
     def common_object_test(self, app):
-        self.assert_equal(app.secret_key, 'devkey')
-        self.assert_equal(app.config['TEST_KEY'], 'foo')
-        self.assert_not_in('TestConfig', app.config)
+        assert app.secret_key == 'devkey'
+        assert app.config['TEST_KEY'] == 'foo'
+        assert 'TestConfig' not in app.config
 
     def test_config_from_file(self):
         app = flask.Flask(__name__)
@@ -73,7 +73,7 @@ class TestConfig(TestFlask):
         self.common_object_test(app)
 
         app = flask.Flask(__name__)
-        with self.assert_raises(TypeError):
+        with pytest.raises(TypeError):
             app.config.from_mapping(
                 {}, {}
             )
@@ -95,13 +95,13 @@ class TestConfig(TestFlask):
             try:
                 app.config.from_envvar('FOO_SETTINGS')
             except RuntimeError as e:
-                self.assert_true("'FOO_SETTINGS' is not set" in str(e))
+                assert "'FOO_SETTINGS' is not set" in str(e)
             else:
-                self.assert_true(0, 'expected exception')
-            self.assert_false(app.config.from_envvar('FOO_SETTINGS', silent=True))
+                assert 0, 'expected exception'
+            assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
 
             os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
-            self.assert_true(app.config.from_envvar('FOO_SETTINGS'))
+            assert app.config.from_envvar('FOO_SETTINGS')
             self.common_object_test(app)
         finally:
             os.environ = env
@@ -115,12 +115,12 @@ class TestConfig(TestFlask):
                 app.config.from_envvar('FOO_SETTINGS')
             except IOError as e:
                 msg = str(e)
-                self.assert_true(msg.startswith('[Errno 2] Unable to load configuration '
-                                            'file (No such file or directory):'))
-                self.assert_true(msg.endswith("missing.cfg'"))
+                assert msg.startswith('[Errno 2] Unable to load configuration '
+                                      'file (No such file or directory):')
+                assert msg.endswith("missing.cfg'")
             else:
-                self.fail('expected IOError')
-            self.assert_false(app.config.from_envvar('FOO_SETTINGS', silent=True))
+                assert False, 'expected IOError'
+            assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
         finally:
             os.environ = env
 
@@ -130,12 +130,12 @@ class TestConfig(TestFlask):
             app.config.from_pyfile('missing.cfg')
         except IOError as e:
             msg = str(e)
-            self.assert_true(msg.startswith('[Errno 2] Unable to load configuration '
-                                        'file (No such file or directory):'))
-            self.assert_true(msg.endswith("missing.cfg'"))
+            assert msg.startswith('[Errno 2] Unable to load configuration '
+                                  'file (No such file or directory):')
+            assert msg.endswith("missing.cfg'")
         else:
-            self.assert_true(0, 'expected config')
-        self.assert_false(app.config.from_pyfile('missing.cfg', silent=True))
+            assert 0, 'expected config'
+        assert not app.config.from_pyfile('missing.cfg', silent=True)
 
     def test_config_missing_json(self):
         app = flask.Flask(__name__)
@@ -143,12 +143,12 @@ class TestConfig(TestFlask):
             app.config.from_json('missing.json')
         except IOError as e:
             msg = str(e)
-            self.assert_true(msg.startswith('[Errno 2] Unable to load configuration '
-                                            'file (No such file or directory):'))
-            self.assert_true(msg.endswith("missing.json'"))
+            assert msg.startswith('[Errno 2] Unable to load configuration '
+                                  'file (No such file or directory):')
+            assert msg.endswith("missing.json'")
         else:
-            self.assert_true(0, 'expected config')
-        self.assert_false(app.config.from_json('missing.json', silent=True))
+            assert 0, 'expected config'
+        assert not app.config.from_json('missing.json', silent=True)
 
     def test_custom_config_class(self):
         class Config(flask.Config):
@@ -156,14 +156,14 @@ class TestConfig(TestFlask):
         class Flask(flask.Flask):
             config_class = Config
         app = Flask(__name__)
-        self.assert_isinstance(app.config, Config)
+        assert isinstance(app.config, Config)
         app.config.from_object(__name__)
         self.common_object_test(app)
 
     def test_session_lifetime(self):
         app = flask.Flask(__name__)
         app.config['PERMANENT_SESSION_LIFETIME'] = 42
-        self.assert_equal(app.permanent_session_lifetime.seconds, 42)
+        assert app.permanent_session_lifetime.seconds == 42
 
     def test_get_namespace(self):
         app = flask.Flask(__name__)
@@ -172,13 +172,13 @@ class TestConfig(TestFlask):
         app.config['BAR_STUFF_1'] = 'bar stuff 1'
         app.config['BAR_STUFF_2'] = 'bar stuff 2'
         foo_options = app.config.get_namespace('FOO_')
-        self.assert_equal(2, len(foo_options))
-        self.assert_equal('foo option 1', foo_options['option_1'])
-        self.assert_equal('foo option 2', foo_options['option_2'])
+        assert 2 == len(foo_options)
+        assert 'foo option 1' == foo_options['option_1']
+        assert 'foo option 2' == foo_options['option_2']
         bar_options = app.config.get_namespace('BAR_', lowercase=False)
-        self.assert_equal(2, len(bar_options))
-        self.assert_equal('bar stuff 1', bar_options['STUFF_1'])
-        self.assert_equal('bar stuff 2', bar_options['STUFF_2'])
+        assert 2 == len(bar_options)
+        assert 'bar stuff 1' == bar_options['STUFF_1']
+        assert 'bar stuff 2' == bar_options['STUFF_2']
 
 
 class TestInstance(TestFlask):
@@ -188,7 +188,7 @@ class TestInstance(TestFlask):
         assert 'must be absolute' in str(excinfo.value)
 
         app = flask.Flask(__name__, instance_path=str(apps_tmpdir))
-        self.assert_equal(app.instance_path, str(apps_tmpdir))
+        assert app.instance_path == str(apps_tmpdir)
 
     def test_main_module_paths(self, apps_tmpdir, purge_module):
         app = apps_tmpdir.join('main_app.py')
@@ -285,7 +285,7 @@ class TestInstance(TestFlask):
                     return self
             sys.meta_path.append(Loader())
             try:
-                with self.assert_raises(AttributeError):
+                with pytest.raises(AttributeError):
                     flask.Flask(__name__)
             finally:
                 sys.meta_path.pop()

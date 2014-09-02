@@ -33,11 +33,11 @@ class TestFlaskSubclassing(TestFlask):
             1 // 0
 
         rv = app.test_client().get('/')
-        self.assert_equal(rv.status_code, 500)
-        self.assert_in(b'Internal Server Error', rv.data)
+        assert rv.status_code == 500
+        assert b'Internal Server Error' in rv.data
 
         err = out.getvalue()
-        self.assert_equal(err, '')
+        assert err == ''
 
 
 def suite():

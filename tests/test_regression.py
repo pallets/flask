@@ -69,8 +69,8 @@ class TestMemory(TestFlask):
         def fire():
             with app.test_client() as c:
                 rv = c.get('/')
-                self.assert_equal(rv.status_code, 200)
-                self.assert_equal(rv.data, b'<h1>42</h1>')
+                assert rv.status_code == 200
+                assert rv.data == b'<h1>42</h1>'
 
         # Trigger caches
         fire()
@@ -84,7 +84,7 @@ class TestMemory(TestFlask):
 
     def test_safe_join_toplevel_pardir(self):
         from flask.helpers import safe_join
-        with self.assert_raises(NotFound):
+        with pytest.raises(NotFound):
             safe_join('/foo', '..')
 
 
@@ -110,6 +110,6 @@ class TestException(TestFlask):
 
         with app.test_client() as c:
             rv = c.get('/')
-            self.assert_equal(rv.headers['Location'], 'http://localhost/test')
+            assert rv.headers['Location'] == 'http://localhost/test'
             rv = c.get('/test')
-            self.assert_equal(rv.data, b'42')
+            assert rv.data == b'42'

@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import pytest
+
 import re
 import uuid
 import time
@@ -32,8 +34,8 @@ class TestBasicFunctionality(TestFlask):
         def index():
             return 'Hello World'
         rv = app.test_client().open('/', method='OPTIONS')
-        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
-        self.assert_equal(rv.data, b'')
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
+        assert rv.data == b''
 
     def test_options_on_multiple_rules(self):
         app = flask.Flask(__name__)
@@ -44,7 +46,7 @@ class TestBasicFunctionality(TestFlask):
         def index_put():
             return 'Aha!'
         rv = app.test_client().open('/', method='OPTIONS')
-        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'])
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
 
     def test_options_handling_disabled(self):
         app = flask.Flask(__name__)
@@ -53,7 +55,7 @@ class TestBasicFunctionality(TestFlask):
         index.provide_automatic_options = False
         app.route('/')(index)
         rv = app.test_client().open('/', method='OPTIONS')
-        self.assert_equal(rv.status_code, 405)
+        assert rv.status_code == 405
 
         app = flask.Flask(__name__)
         def index2():
@@ -61,7 +63,7 @@ class TestBasicFunctionality(TestFlask):
         index2.provide_automatic_options = True
         app.route('/', methods=['OPTIONS'])(index2)
         rv = app.test_client().open('/', method='OPTIONS')
-        self.assert_equal(sorted(rv.allow), ['OPTIONS'])
+        assert sorted(rv.allow) == ['OPTIONS']
 
     def test_request_dispatching(self):
         app = flask.Flask(__name__)
@@ -73,22 +75,22 @@ class TestBasicFunctionality(TestFlask):
             return flask.request.method
 
         c = app.test_client()
-        self.assert_equal(c.get('/').data, b'GET')
+        assert c.get('/').data == b'GET'
         rv = c.post('/')
-        self.assert_equal(rv.status_code, 405)
-        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
+        assert rv.status_code == 405
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS']
         rv = c.head('/')
-        self.assert_equal(rv.status_code, 200)
-        self.assert_false(rv.data) # head truncates
-        self.assert_equal(c.post('/more').data, b'POST')
-        self.assert_equal(c.get('/more').data, b'GET')
+        assert rv.status_code == 200
+        assert not rv.data # head truncates
+        assert c.post('/more').data == b'POST'
+        assert c.get('/more').data == b'GET'
         rv = c.delete('/more')
-        self.assert_equal(rv.status_code, 405)
-        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
+        assert rv.status_code == 405
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
 
     def test_disallow_string_for_allowed_methods(self):
         app = flask.Flask(__name__)
-        with self.assert_raises(TypeError):
+        with pytest.raises(TypeError):
             @app.route('/', methods='GET POST')
             def index():
                 return "Hey"
@@ -104,18 +106,18 @@ class TestBasicFunctionality(TestFlask):
         app.add_url_rule('/more', 'more', more, methods=['GET', 'POST'])
 
         c = app.test_client()
-        self.assert_equal(c.get('/').data, b'GET')
+        assert c.get('/').data == b'GET'
         rv = c.post('/')
-        self.assert_equal(rv.status_code, 405)
-        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS'])
+        assert rv.status_code == 405
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS']
         rv = c.head('/')
-        self.assert_equal(rv.status_code, 200)
-        self.assert_false(rv.data) # head truncates
-        self.assert_equal(c.post('/more').data, b'POST')
-        self.assert_equal(c.get('/more').data, b'GET')
+        assert rv.status_code == 200
+        assert not rv.data # head truncates
+        assert c.post('/more').data == b'POST'
+        assert c.get('/more').data == b'GET'
         rv = c.delete('/more')
-        self.assert_equal(rv.status_code, 405)
-        self.assert_equal(sorted(rv.allow), ['GET', 'HEAD', 'OPTIONS', 'POST'])
+        assert rv.status_code == 405
+        assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
 
     def test_werkzeug_routing(self):
         from werkzeug.routing import Submount, Rule
@@ -132,8 +134,8 @@ class TestBasicFunctionality(TestFlask):
         app.view_functions['index'] = index
 
         c = app.test_client()
-        self.assert_equal(c.get('/foo/').data, b'index')
-        self.assert_equal(c.get('/foo/bar').data, b'bar')
+        assert c.get('/foo/').data == b'index'
+        assert c.get('/foo/bar').data == b'bar'
 
     def test_endpoint_decorator(self):
         from werkzeug.routing import Submount, Rule
@@ -152,8 +154,8 @@ class TestBasicFunctionality(TestFlask):
             return 'index'
 
         c = app.test_client()
-        self.assert_equal(c.get('/foo/').data, b'index')
-        self.assert_equal(c.get('/foo/bar').data, b'bar')
+        assert c.get('/foo/').data == b'index'
+        assert c.get('/foo/bar').data == b'bar'
 
     def test_session(self):
         app = flask.Flask(__name__)
@@ -167,8 +169,8 @@ class TestBasicFunctionality(TestFlask):
             return flask.session['value']
 
         c = app.test_client()
-        self.assert_equal(c.post('/set', data={'value': '42'}).data, b'value set')
-        self.assert_equal(c.get('/get').data, b'42')
+        assert c.post('/set', data={'value': '42'}).data == b'value set'
+        assert c.get('/get').data == b'42'
 
     def test_session_using_server_name(self):
         app = flask.Flask(__name__)
@@ -181,8 +183,8 @@ class TestBasicFunctionality(TestFlask):
             flask.session['testing'] = 42
             return 'Hello World'
         rv = app.test_client().get('/', 'http://example.com/')
-        self.assert_in('domain=.example.com', rv.headers['set-cookie'].lower())
-        self.assert_in('httponly', rv.headers['set-cookie'].lower())
+        assert 'domain=.example.com' in rv.headers['set-cookie'].lower()
+        assert 'httponly' in rv.headers['set-cookie'].lower()
 
     def test_session_using_server_name_and_port(self):
         app = flask.Flask(__name__)
@@ -195,8 +197,8 @@ class TestBasicFunctionality(TestFlask):
             flask.session['testing'] = 42
             return 'Hello World'
         rv = app.test_client().get('/', 'http://example.com:8080/')
-        self.assert_in('domain=.example.com', rv.headers['set-cookie'].lower())
-        self.assert_in('httponly', rv.headers['set-cookie'].lower())
+        assert 'domain=.example.com' in rv.headers['set-cookie'].lower()
+        assert 'httponly' in rv.headers['set-cookie'].lower()
 
     def test_session_using_server_name_port_and_path(self):
         app = flask.Flask(__name__)
@@ -210,9 +212,9 @@ class TestBasicFunctionality(TestFlask):
             flask.session['testing'] = 42
             return 'Hello World'
         rv = app.test_client().get('/', 'http://example.com:8080/foo')
-        self.assert_in('domain=example.com', rv.headers['set-cookie'].lower())
-        self.assert_in('path=/foo', rv.headers['set-cookie'].lower())
-        self.assert_in('httponly', rv.headers['set-cookie'].lower())
+        assert 'domain=example.com' in rv.headers['set-cookie'].lower()
+        assert 'path=/foo' in rv.headers['set-cookie'].lower()
+        assert 'httponly' in rv.headers['set-cookie'].lower()
 
     def test_session_using_application_root(self):
         class PrefixPathMiddleware(object):
@@ -234,7 +236,7 @@ class TestBasicFunctionality(TestFlask):
             flask.session['testing'] = 42
             return 'Hello World'
         rv = app.test_client().get('/', 'http://example.com:8080/')
-        self.assert_in('path=/bar', rv.headers['set-cookie'].lower())
+        assert 'path=/bar' in rv.headers['set-cookie'].lower()
 
     def test_session_using_session_settings(self):
         app = flask.Flask(__name__)
@@ -253,10 +255,10 @@ class TestBasicFunctionality(TestFlask):
             return 'Hello World'
         rv = app.test_client().get('/', 'http://www.example.com:8080/test/')
         cookie = rv.headers['set-cookie'].lower()
-        self.assert_in('domain=.example.com', cookie)
-        self.assert_in('path=/', cookie)
-        self.assert_in('secure', cookie)
-        self.assert_not_in('httponly', cookie)
+        assert 'domain=.example.com' in cookie
+        assert 'path=/' in cookie
+        assert 'secure' in cookie
+        assert 'httponly' not in cookie
 
     def test_missing_session(self):
         app = flask.Flask(__name__)
@@ -264,11 +266,11 @@ class TestBasicFunctionality(TestFlask):
             try:
                 f(*args, **kwargs)
             except RuntimeError as e:
-                self.assert_true(e.args and 'session is unavailable' in e.args[0])
+                assert e.args and 'session is unavailable' in e.args[0]
             else:
-                self.assert_true(False, 'expected exception')
+                assert False, 'expected exception'
         with app.test_request_context():
-            self.assert_true(flask.session.get('missing_key') is None)
+            assert flask.session.get('missing_key') is None
             expect_exception(flask.session.__setitem__, 'foo', 42)
             expect_exception(flask.session.pop, 'foo')
 
@@ -288,22 +290,22 @@ class TestBasicFunctionality(TestFlask):
 
         client = app.test_client()
         rv = client.get('/')
-        self.assert_in('set-cookie', rv.headers)
+        assert 'set-cookie' in rv.headers
         match = re.search(r'\bexpires=([^;]+)(?i)', rv.headers['set-cookie'])
         expires = parse_date(match.group())
         expected = datetime.utcnow() + app.permanent_session_lifetime
-        self.assert_equal(expires.year, expected.year)
-        self.assert_equal(expires.month, expected.month)
-        self.assert_equal(expires.day, expected.day)
+        assert expires.year == expected.year
+        assert expires.month == expected.month
+        assert expires.day == expected.day
 
         rv = client.get('/test')
-        self.assert_equal(rv.data, b'True')
+        assert rv.data == b'True'
 
         permanent = False
         rv = app.test_client().get('/')
-        self.assert_in('set-cookie', rv.headers)
+        assert 'set-cookie' in rv.headers
         match = re.search(r'\bexpires=([^;]+)', rv.headers['set-cookie'])
-        self.assert_true(match is None)
+        assert match is None
 
     def test_session_stored_last(self):
         app = flask.Flask(__name__)
@@ -319,8 +321,8 @@ class TestBasicFunctionality(TestFlask):
             return repr(flask.session.get('foo'))
 
         c = app.test_client()
-        self.assert_equal(c.get('/').data, b'None')
-        self.assert_equal(c.get('/').data, b'42')
+        assert c.get('/').data == b'None'
+        assert c.get('/').data == b'42'
 
     def test_session_special_types(self):
         app = flask.Flask(__name__)
@@ -345,13 +347,13 @@ class TestBasicFunctionality(TestFlask):
         c = app.test_client()
         c.get('/')
         rv = pickle.loads(c.get('/').data)
-        self.assert_equal(rv['m'], flask.Markup('Hello!'))
-        self.assert_equal(type(rv['m']), flask.Markup)
-        self.assert_equal(rv['dt'], now)
-        self.assert_equal(rv['u'], the_uuid)
-        self.assert_equal(rv['b'], b'\xff')
-        self.assert_equal(type(rv['b']), bytes)
-        self.assert_equal(rv['t'], (1, 2, 3))
+        assert rv['m'] == flask.Markup('Hello!')
+        assert type(rv['m']) == flask.Markup
+        assert rv['dt'] == now
+        assert rv['u'] == the_uuid
+        assert rv['b'] == b'\xff'
+        assert type(rv['b']) == bytes
+        assert rv['t'] == (1, 2, 3)
 
     def test_session_cookie_setting(self):
         app = flask.Flask(__name__)
@@ -371,14 +373,14 @@ class TestBasicFunctionality(TestFlask):
 
         def run_test(expect_header):
             with app.test_client() as c:
-                self.assert_equal(c.get('/bump').data, b'1')
-                self.assert_equal(c.get('/bump').data, b'2')
-                self.assert_equal(c.get('/bump').data, b'3')
+                assert c.get('/bump').data == b'1'
+                assert c.get('/bump').data == b'2'
+                assert c.get('/bump').data == b'3'
 
                 rv = c.get('/read')
                 set_cookie = rv.headers.get('set-cookie')
-                self.assert_equal(set_cookie is not None, expect_header)
-                self.assert_equal(rv.data, b'3')
+                assert (set_cookie is not None) == expect_header
+                assert rv.data == b'3'
 
         is_permanent = True
         app.config['SESSION_REFRESH_EACH_REQUEST'] = True
@@ -401,12 +403,12 @@ class TestBasicFunctionality(TestFlask):
         app.secret_key = 'testkey'
 
         with app.test_request_context():
-            self.assert_false(flask.session.modified)
+            assert not flask.session.modified
             flask.flash('Zap')
             flask.session.modified = False
             flask.flash('Zip')
-            self.assert_true(flask.session.modified)
-            self.assert_equal(list(flask.get_flashed_messages()), ['Zap', 'Zip'])
+            assert flask.session.modified
+            assert list(flask.get_flashed_messages()) == ['Zap', 'Zip']
 
     def test_extended_flashing(self):
         # Be sure app.testing=True below, else tests can fail silently.
@@ -429,42 +431,45 @@ class TestBasicFunctionality(TestFlask):
         @app.route('/test/')
         def test():
             messages = flask.get_flashed_messages()
-            self.assert_equal(len(messages), 3)
-            self.assert_equal(messages[0], u'Hello World')
-            self.assert_equal(messages[1], u'Hello World')
-            self.assert_equal(messages[2], flask.Markup(u'<em>Testing</em>'))
+            assert list(messages) == [
+                u'Hello World',
+                u'Hello World',
+                flask.Markup(u'<em>Testing</em>')
+            ]
             return ''
 
         @app.route('/test_with_categories/')
         def test_with_categories():
             messages = flask.get_flashed_messages(with_categories=True)
-            self.assert_equal(len(messages), 3)
-            self.assert_equal(messages[0], ('message', u'Hello World'))
-            self.assert_equal(messages[1], ('error', u'Hello World'))
-            self.assert_equal(messages[2], ('warning', flask.Markup(u'<em>Testing</em>')))
+            assert len(messages) == 3
+            assert list(messages) == [
+                ('message', u'Hello World'),
+                ('error', u'Hello World'),
+                ('warning', flask.Markup(u'<em>Testing</em>'))
+            ]
             return ''
 
         @app.route('/test_filter/')
         def test_filter():
             messages = flask.get_flashed_messages(category_filter=['message'], with_categories=True)
-            self.assert_equal(len(messages), 1)
-            self.assert_equal(messages[0], ('message', u'Hello World'))
+            assert list(messages) == [('message', u'Hello World')]
             return ''
 
         @app.route('/test_filters/')
         def test_filters():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'], with_categories=True)
-            self.assert_equal(len(messages), 2)
-            self.assert_equal(messages[0], ('message', u'Hello World'))
-            self.assert_equal(messages[1], ('warning', flask.Markup(u'<em>Testing</em>')))
+            assert list(messages) == [
+                ('message', u'Hello World'),
+                ('warning', flask.Markup(u'<em>Testing</em>'))
+            ]
             return ''
 
         @app.route('/test_filters_without_returning_categories/')
         def test_filters2():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'])
-            self.assert_equal(len(messages), 2)
-            self.assert_equal(messages[0], u'Hello World')
-            self.assert_equal(messages[1], flask.Markup(u'<em>Testing</em>'))
+            assert len(messages) == 2
+            assert messages[0] == u'Hello World'
+            assert messages[1] == flask.Markup(u'<em>Testing</em>')
             return ''
 
         # Create new test client on each test to clean flashed messages.
@@ -502,13 +507,13 @@ class TestBasicFunctionality(TestFlask):
             return response
         @app.route('/')
         def index():
-            self.assert_in('before', evts)
-            self.assert_not_in('after', evts)
+            assert 'before' in evts
+            assert 'after' not in evts
             return 'request'
-        self.assert_not_in('after', evts)
+        assert 'after' not in evts
         rv = app.test_client().get('/').data
-        self.assert_in('after', evts)
-        self.assert_equal(rv, b'request|after')
+        assert 'after' in evts
+        assert rv == b'request|after'
 
     def test_after_request_processing(self):
         app = flask.Flask(__name__)
@@ -522,8 +527,8 @@ class TestBasicFunctionality(TestFlask):
             return 'Test'
         c = app.test_client()
         resp = c.get('/')
-        self.assert_equal(resp.status_code, 200)
-        self.assert_equal(resp.headers['X-Foo'], 'a header')
+        assert resp.status_code == 200
+        assert resp.headers['X-Foo'] == 'a header'
 
     def test_teardown_request_handler(self):
         called = []
@@ -536,9 +541,9 @@ class TestBasicFunctionality(TestFlask):
         def root():
             return "Response"
         rv = app.test_client().get('/')
-        self.assert_equal(rv.status_code, 200)
-        self.assert_in(b'Response', rv.data)
-        self.assert_equal(len(called), 1)
+        assert rv.status_code == 200
+        assert b'Response' in rv.data
+        assert len(called) == 1
 
     def test_teardown_request_handler_debug_mode(self):
         called = []
@@ -552,9 +557,9 @@ class TestBasicFunctionality(TestFlask):
         def root():
             return "Response"
         rv = app.test_client().get('/')
-        self.assert_equal(rv.status_code, 200)
-        self.assert_in(b'Response', rv.data)
-        self.assert_equal(len(called), 1)
+        assert rv.status_code == 200
+        assert b'Response' in rv.data
+        assert len(called) == 1
 
     def test_teardown_request_handler_error(self):
         called = []
@@ -562,7 +567,7 @@ class TestBasicFunctionality(TestFlask):
         app.config['LOGGER_HANDLER_POLICY'] = 'never'
         @app.teardown_request
         def teardown_request1(exc):
-            self.assert_equal(type(exc), ZeroDivisionError)
+            assert type(exc) == ZeroDivisionError
             called.append(True)
             # This raises a new error and blows away sys.exc_info(), so we can
             # test that all teardown_requests get passed the same original
@@ -573,7 +578,7 @@ class TestBasicFunctionality(TestFlask):
                 pass
         @app.teardown_request
         def teardown_request2(exc):
-            self.assert_equal(type(exc), ZeroDivisionError)
+            assert type(exc) == ZeroDivisionError
             called.append(True)
             # This raises a new error and blows away sys.exc_info(), so we can
             # test that all teardown_requests get passed the same original
@@ -586,9 +591,9 @@ class TestBasicFunctionality(TestFlask):
         def fails():
             1 // 0
         rv = app.test_client().get('/')
-        self.assert_equal(rv.status_code, 500)
-        self.assert_in(b'Internal Server Error', rv.data)
-        self.assert_equal(len(called), 2)
+        assert rv.status_code == 500
+        assert b'Internal Server Error' in rv.data
+        assert len(called) == 2
 
     def test_before_after_request_order(self):
         called = []
@@ -617,8 +622,8 @@ class TestBasicFunctionality(TestFlask):
         def index():
             return '42'
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'42')
-        self.assert_equal(called, [1, 2, 3, 4, 5, 6])
+        assert rv.data == b'42'
+        assert called == [1, 2, 3, 4, 5, 6]
 
     def test_error_handling(self):
         app = flask.Flask(__name__)
@@ -643,14 +648,14 @@ class TestBasicFunctionality(TestFlask):
             flask.abort(403)
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.status_code, 404)
-        self.assert_equal(rv.data, b'not found')
+        assert rv.status_code == 404
+        assert rv.data == b'not found'
         rv = c.get('/error')
-        self.assert_equal(rv.status_code, 500)
-        self.assert_equal(b'internal server error', rv.data)
+        assert rv.status_code == 500
+        assert b'internal server error' == rv.data
         rv = c.get('/forbidden')
-        self.assert_equal(rv.status_code, 403)
-        self.assert_equal(b'forbidden', rv.data)
+        assert rv.status_code == 403
+        assert b'forbidden' == rv.data
 
     def test_before_request_and_routing_errors(self):
         app = flask.Flask(__name__)
@@ -661,8 +666,8 @@ class TestBasicFunctionality(TestFlask):
         def return_something(error):
             return flask.g.something, 404
         rv = app.test_client().get('/')
-        self.assert_equal(rv.status_code, 404)
-        self.assert_equal(rv.data, b'value')
+        assert rv.status_code == 404
+        assert rv.data == b'value'
 
     def test_user_error_handling(self):
         class MyException(Exception):
@@ -671,14 +676,14 @@ class TestBasicFunctionality(TestFlask):
         app = flask.Flask(__name__)
         @app.errorhandler(MyException)
         def handle_my_exception(e):
-            self.assert_true(isinstance(e, MyException))
+            assert isinstance(e, MyException)
             return '42'
         @app.route('/')
         def index():
             raise MyException()
 
         c = app.test_client()
-        self.assert_equal(c.get('/').data, b'42')
+        assert c.get('/').data == b'42'
 
     def test_http_error_subclass_handling(self):
         class ForbiddenSubclass(Forbidden):
@@ -687,12 +692,12 @@ class TestBasicFunctionality(TestFlask):
         app = flask.Flask(__name__)
         @app.errorhandler(ForbiddenSubclass)
         def handle_forbidden_subclass(e):
-            self.assert_true(isinstance(e, ForbiddenSubclass))
+            assert isinstance(e, ForbiddenSubclass)
             return 'banana'
         @app.errorhandler(403)
         def handle_forbidden_subclass(e):
-            self.assert_false(isinstance(e, ForbiddenSubclass))
-            self.assert_true(isinstance(e, Forbidden))
+            assert not isinstance(e, ForbiddenSubclass)
+            assert isinstance(e, Forbidden)
             return 'apple'
 
         @app.route('/1')
@@ -706,9 +711,9 @@ class TestBasicFunctionality(TestFlask):
             raise Forbidden()
 
         c = app.test_client()
-        self.assert_equal(c.get('/1').data, b'banana')
-        self.assert_equal(c.get('/2').data, b'apple')
-        self.assert_equal(c.get('/3').data, b'apple')
+        assert c.get('/1').data == b'banana'
+        assert c.get('/2').data == b'apple'
+        assert c.get('/3').data == b'apple'
 
     def test_trapping_of_bad_request_key_errors(self):
         app = flask.Flask(__name__)
@@ -717,16 +722,16 @@ class TestBasicFunctionality(TestFlask):
         def fail():
             flask.request.form['missing_key']
         c = app.test_client()
-        self.assert_equal(c.get('/fail').status_code, 400)
+        assert c.get('/fail').status_code == 400
 
         app.config['TRAP_BAD_REQUEST_ERRORS'] = True
         c = app.test_client()
         try:
             c.get('/fail')
         except KeyError as e:
-            self.assert_true(isinstance(e, BadRequest))
+            assert isinstance(e, BadRequest)
         else:
-            self.fail('Expected exception')
+            assert False, 'Expected exception'
 
     def test_trapping_of_all_http_exceptions(self):
         app = flask.Flask(__name__)
@@ -742,7 +747,7 @@ class TestBasicFunctionality(TestFlask):
         except NotFound as e:
             pass
         else:
-            self.fail('Expected exception')
+            assert False, 'Expected exception'
 
     def test_enctype_debug_helper(self):
         from flask.debughelpers import DebugFilesKeyError
@@ -759,10 +764,10 @@ class TestBasicFunctionality(TestFlask):
             try:
                 c.post('/fail', data={'foo': 'index.txt'})
             except DebugFilesKeyError as e:
-                self.assert_in('no file contents were transmitted', str(e))
-                self.assert_in('This was submitted: "index.txt"', str(e))
+                assert 'no file contents were transmitted' in str(e)
+                assert 'This was submitted: "index.txt"' in str(e)
             else:
-                self.fail('Expected exception')
+                assert False, 'Expected exception'
 
     def test_response_creation(self):
         app = flask.Flask(__name__)
@@ -795,67 +800,67 @@ class TestBasicFunctionality(TestFlask):
             }
 
         c = app.test_client()
-        self.assert_equal(c.get('/unicode').data, u'Hällo Wörld'.encode('utf-8'))
-        self.assert_equal(c.get('/string').data, u'Hällo Wörld'.encode('utf-8'))
+        assert c.get('/unicode').data == u'Hällo Wörld'.encode('utf-8')
+        assert c.get('/string').data == u'Hällo Wörld'.encode('utf-8')
         rv = c.get('/args')
-        self.assert_equal(rv.data, b'Meh')
-        self.assert_equal(rv.headers['X-Foo'], 'Testing')
-        self.assert_equal(rv.status_code, 400)
-        self.assert_equal(rv.mimetype, 'text/plain')
+        assert rv.data == b'Meh'
+        assert rv.headers['X-Foo'] == 'Testing'
+        assert rv.status_code == 400
+        assert rv.mimetype == 'text/plain'
         rv2 = c.get('/two_args')
-        self.assert_equal(rv2.data, b'Hello')
-        self.assert_equal(rv2.headers['X-Foo'], 'Test')
-        self.assert_equal(rv2.status_code, 200)
-        self.assert_equal(rv2.mimetype, 'text/plain')
+        assert rv2.data == b'Hello'
+        assert rv2.headers['X-Foo'] == 'Test'
+        assert rv2.status_code == 200
+        assert rv2.mimetype == 'text/plain'
         rv3 = c.get('/args_status')
-        self.assert_equal(rv3.data, b'Hi, status!')
-        self.assert_equal(rv3.status_code, 400)
-        self.assert_equal(rv3.mimetype, 'text/html')
+        assert rv3.data == b'Hi, status!'
+        assert rv3.status_code == 400
+        assert rv3.mimetype == 'text/html'
         rv4 = c.get('/args_header')
-        self.assert_equal(rv4.data, b'Hello world')
-        self.assert_equal(rv4.headers['X-Foo'], 'Bar')
-        self.assert_equal(rv4.headers['X-Bar'], 'Foo')
-        self.assert_equal(rv4.status_code, 404)
+        assert rv4.data == b'Hello world'
+        assert rv4.headers['X-Foo'] == 'Bar'
+        assert rv4.headers['X-Bar'] == 'Foo'
+        assert rv4.status_code == 404
 
     def test_make_response(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
             rv = flask.make_response()
-            self.assert_equal(rv.status_code, 200)
-            self.assert_equal(rv.data, b'')
-            self.assert_equal(rv.mimetype, 'text/html')
+            assert rv.status_code == 200
+            assert rv.data == b''
+            assert rv.mimetype == 'text/html'
 
             rv = flask.make_response('Awesome')
-            self.assert_equal(rv.status_code, 200)
-            self.assert_equal(rv.data, b'Awesome')
-            self.assert_equal(rv.mimetype, 'text/html')
+            assert rv.status_code == 200
+            assert rv.data == b'Awesome'
+            assert rv.mimetype == 'text/html'
 
             rv = flask.make_response('W00t', 404)
-            self.assert_equal(rv.status_code, 404)
-            self.assert_equal(rv.data, b'W00t')
-            self.assert_equal(rv.mimetype, 'text/html')
+            assert rv.status_code == 404
+            assert rv.data == b'W00t'
+            assert rv.mimetype == 'text/html'
 
     def test_make_response_with_response_instance(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
             rv = flask.make_response(
                 flask.jsonify({'msg': 'W00t'}), 400)
-            self.assert_equal(rv.status_code, 400)
-            self.assert_equal(rv.data, b'{\n  "msg": "W00t"\n}')
-            self.assert_equal(rv.mimetype, 'application/json')
+            assert rv.status_code == 400
+            assert rv.data == b'{\n  "msg": "W00t"\n}'
+            assert rv.mimetype == 'application/json'
 
             rv = flask.make_response(
                 flask.Response(''), 400)
-            self.assert_equal(rv.status_code, 400)
-            self.assert_equal(rv.data, b'')
-            self.assert_equal(rv.mimetype, 'text/html')
+            assert rv.status_code == 400
+            assert rv.data == b''
+            assert rv.mimetype == 'text/html'
 
             rv = flask.make_response(
                 flask.Response('', headers={'Content-Type': 'text/html'}),
                 400, [('X-Foo', 'bar')])
-            self.assert_equal(rv.status_code, 400)
-            self.assert_equal(rv.headers['Content-Type'], 'text/html')
-            self.assert_equal(rv.headers['X-Foo'], 'bar')
+            assert rv.status_code == 400
+            assert rv.headers['Content-Type'] == 'text/html'
+            assert rv.headers['X-Foo'] == 'bar'
 
     def test_url_generation(self):
         app = flask.Flask(__name__)
@@ -863,16 +868,16 @@ class TestBasicFunctionality(TestFlask):
         def hello():
             pass
         with app.test_request_context():
-            self.assert_equal(flask.url_for('hello', name='test x'), '/hello/test%20x')
-            self.assert_equal(flask.url_for('hello', name='test x', _external=True),
-                              'http://localhost/hello/test%20x')
+            assert flask.url_for('hello', name='test x') == '/hello/test%20x'
+            assert flask.url_for('hello', name='test x', _external=True) == \
+                'http://localhost/hello/test%20x'
 
     def test_build_error_handler(self):
         app = flask.Flask(__name__)
 
         # Test base case, a URL which results in a BuildError.
         with app.test_request_context():
-            self.assert_raises(BuildError, flask.url_for, 'spam')
+            pytest.raises(BuildError, flask.url_for, 'spam')
 
         # Verify the error is re-raised if not the current exception.
         try:
@@ -883,7 +888,7 @@ class TestBasicFunctionality(TestFlask):
         try:
             raise RuntimeError('Test case where BuildError is not current.')
         except RuntimeError:
-            self.assert_raises(BuildError, app.handle_url_build_error, error, 'spam', {})
+            pytest.raises(BuildError, app.handle_url_build_error, error, 'spam', {})
 
         # Test a custom handler.
         def handler(error, endpoint, values):
@@ -891,7 +896,7 @@ class TestBasicFunctionality(TestFlask):
             return '/test_handler/'
         app.url_build_error_handlers.append(handler)
         with app.test_request_context():
-            self.assert_equal(flask.url_for('spam'), '/test_handler/')
+            assert flask.url_for('spam') == '/test_handler/'
 
     def test_custom_converters(self):
         from werkzeug.routing import BaseConverter
@@ -907,17 +912,17 @@ class TestBasicFunctionality(TestFlask):
         def index(args):
             return '|'.join(args)
         c = app.test_client()
-        self.assert_equal(c.get('/1,2,3').data, b'1|2|3')
+        assert c.get('/1,2,3').data == b'1|2|3'
 
     def test_static_files(self):
         app = flask.Flask(__name__)
         app.testing = True
         rv = app.test_client().get('/static/index.html')
-        self.assert_equal(rv.status_code, 200)
-        self.assert_equal(rv.data.strip(), b'<h1>Hello World!</h1>')
+        assert rv.status_code == 200
+        assert rv.data.strip() == b'<h1>Hello World!</h1>'
         with app.test_request_context():
-            self.assert_equal(flask.url_for('static', filename='index.html'),
-                              '/static/index.html')
+            assert flask.url_for('static', filename='index.html') == \
+                '/static/index.html'
         rv.close()
 
     def test_none_response(self):
@@ -929,14 +934,14 @@ class TestBasicFunctionality(TestFlask):
         try:
             app.test_client().get('/')
         except ValueError as e:
-            self.assert_equal(str(e), 'View function did not return a response')
+            assert str(e) == 'View function did not return a response'
             pass
         else:
-            self.assert_true("Expected ValueError")
+            assert "Expected ValueError"
 
     def test_request_locals(self):
-        self.assert_equal(repr(flask.g), '<LocalProxy unbound>')
-        self.assert_false(flask.g)
+        assert repr(flask.g) == '<LocalProxy unbound>'
+        assert not flask.g
 
     def test_test_app_proper_environ(self):
         app = flask.Flask(__name__)
@@ -952,42 +957,46 @@ class TestBasicFunctionality(TestFlask):
             return 'Foo SubDomain'
 
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, b'Foo')
+        assert rv.data == b'Foo'
 
         rv = app.test_client().get('/', 'http://localhost.localdomain:5000')
-        self.assert_equal(rv.data, b'Foo')
+        assert rv.data == b'Foo'
 
         rv = app.test_client().get('/', 'https://localhost.localdomain:5000')
-        self.assert_equal(rv.data, b'Foo')
+        assert rv.data == b'Foo'
 
         app.config.update(SERVER_NAME='localhost.localdomain')
         rv = app.test_client().get('/', 'https://localhost.localdomain')
-        self.assert_equal(rv.data, b'Foo')
+        assert rv.data == b'Foo'
 
         try:
             app.config.update(SERVER_NAME='localhost.localdomain:443')
             rv = app.test_client().get('/', 'https://localhost.localdomain')
             # Werkzeug 0.8
-            self.assert_equal(rv.status_code, 404)
+            assert rv.status_code == 404
         except ValueError as e:
             # Werkzeug 0.7
-            self.assert_equal(str(e), "the server name provided " +
-                    "('localhost.localdomain:443') does not match the " + \
-                    "server name from the WSGI environment ('localhost.localdomain')")
+            assert str(e) == (
+                "the server name provided "
+                "('localhost.localdomain:443') does not match the "
+                "server name from the WSGI environment ('localhost.localdomain')"
+            )
 
         try:
             app.config.update(SERVER_NAME='localhost.localdomain')
             rv = app.test_client().get('/', 'http://foo.localhost')
             # Werkzeug 0.8
-            self.assert_equal(rv.status_code, 404)
+            assert rv.status_code == 404
         except ValueError as e:
             # Werkzeug 0.7
-            self.assert_equal(str(e), "the server name provided " + \
-                    "('localhost.localdomain') does not match the " + \
-                    "server name from the WSGI environment ('foo.localhost')")
+            assert str(e) == (
+                "the server name provided "
+                "('localhost.localdomain') does not match the "
+                "server name from the WSGI environment ('foo.localhost')"
+            )
 
         rv = app.test_client().get('/', 'http://foo.localhost.localdomain')
-        self.assert_equal(rv.data, b'Foo SubDomain')
+        assert rv.data == b'Foo SubDomain'
 
     def test_exception_propagation(self):
         def apprunner(configkey):
@@ -1004,9 +1013,9 @@ class TestBasicFunctionality(TestFlask):
                 except Exception:
                     pass
                 else:
-                    self.fail('expected exception')
+                    assert False, 'expected exception'
             else:
-                self.assert_equal(c.get('/').status_code, 500)
+                assert c.get('/').status_code == 500
 
         # we have to run this test in an isolated thread because if the
         # debug flag is set to true and an exception happens the context is
@@ -1023,18 +1032,18 @@ class TestBasicFunctionality(TestFlask):
         @app.before_request
         def always_first():
             flask.request.form['myfile']
-            self.assert_true(False)
+            assert False
         @app.route('/accept', methods=['POST'])
         def accept_file():
             flask.request.form['myfile']
-            self.assert_true(False)
+            assert False
         @app.errorhandler(413)
         def catcher(error):
             return '42'
 
         c = app.test_client()
         rv = c.post('/accept', data={'myfile': 'foo' * 100})
-        self.assert_equal(rv.data, b'42')
+        assert rv.data == b'42'
 
     def test_url_processors(self):
         app = flask.Flask(__name__)
@@ -1063,9 +1072,9 @@ class TestBasicFunctionality(TestFlask):
 
         c = app.test_client()
 
-        self.assert_equal(c.get('/de/').data, b'/de/about')
-        self.assert_equal(c.get('/de/about').data, b'/foo')
-        self.assert_equal(c.get('/foo').data, b'/en/about')
+        assert c.get('/de/').data == b'/de/about'
+        assert c.get('/de/about').data == b'/foo'
+        assert c.get('/foo').data == b'/en/about'
 
     def test_inject_blueprint_url_defaults(self):
         app = flask.Flask(__name__)
@@ -1083,12 +1092,12 @@ class TestBasicFunctionality(TestFlask):
         values = dict()
         app.inject_url_defaults('foo.bar.baz.view', values)
         expected = dict(page='login')
-        self.assert_equal(values, expected)
+        assert values == expected
 
         with app.test_request_context('/somepage'):
             url = flask.url_for('foo.bar.baz.view')
         expected = '/login'
-        self.assert_equal(url, expected)
+        assert url == expected
 
     def test_nonascii_pathinfo(self):
         app = flask.Flask(__name__)
@@ -1100,7 +1109,7 @@ class TestBasicFunctionality(TestFlask):
 
         c = app.test_client()
         rv = c.get(u'/киртест')
-        self.assert_equal(rv.data, b'Hello World!')
+        assert rv.data == b'Hello World!'
 
     def test_debug_mode_complains_after_first_request(self):
         app = flask.Flask(__name__)
@@ -1108,23 +1117,23 @@ class TestBasicFunctionality(TestFlask):
         @app.route('/')
         def index():
             return 'Awesome'
-        self.assert_false(app.got_first_request)
-        self.assert_equal(app.test_client().get('/').data, b'Awesome')
+        assert not app.got_first_request
+        assert app.test_client().get('/').data == b'Awesome'
         try:
             @app.route('/foo')
             def broken():
                 return 'Meh'
         except AssertionError as e:
-            self.assert_in('A setup function was called', str(e))
+            assert 'A setup function was called' in str(e)
         else:
-            self.fail('Expected exception')
+            assert False, 'Expected exception'
 
         app.debug = False
         @app.route('/foo')
         def working():
             return 'Meh'
-        self.assert_equal(app.test_client().get('/foo').data, b'Meh')
-        self.assert_true(app.got_first_request)
+        assert app.test_client().get('/foo').data == b'Meh'
+        assert app.got_first_request
 
     def test_before_first_request_functions(self):
         got = []
@@ -1134,10 +1143,10 @@ class TestBasicFunctionality(TestFlask):
             got.append(42)
         c = app.test_client()
         c.get('/')
-        self.assert_equal(got, [42])
+        assert got == [42]
         c.get('/')
-        self.assert_equal(got, [42])
-        self.assert_true(app.got_first_request)
+        assert got == [42]
+        assert app.got_first_request
 
     def test_before_first_request_functions_concurrent(self):
         got = []
@@ -1151,13 +1160,13 @@ class TestBasicFunctionality(TestFlask):
         c = app.test_client()
         def get_and_assert():
             c.get("/")
-            self.assert_equal(got, [42])
+            assert got == [42]
 
         t = Thread(target=get_and_assert)
         t.start()
         get_and_assert()
         t.join()
-        self.assert_true(app.got_first_request)
+        assert app.got_first_request
 
     def test_routing_redirect_debugging(self):
         app = flask.Flask(__name__)
@@ -1169,19 +1178,19 @@ class TestBasicFunctionality(TestFlask):
             try:
                 c.post('/foo', data={})
             except AssertionError as e:
-                self.assert_in('http://localhost/foo/', str(e))
-                self.assert_in('Make sure to directly send your POST-request '
-                               'to this URL', str(e))
+                assert 'http://localhost/foo/' in str(e)
+                assert ('Make sure to directly send '
+                        'your POST-request to this URL') in str(e)
             else:
-                self.fail('Expected exception')
+                assert False, 'Expected exception'
 
             rv = c.get('/foo', data={}, follow_redirects=True)
-            self.assert_equal(rv.data, b'success')
+            assert rv.data == b'success'
 
         app.debug = False
         with app.test_client() as c:
             rv = c.post('/foo', data={}, follow_redirects=True)
-            self.assert_equal(rv.data, b'success')
+            assert rv.data == b'success'
 
     def test_route_decorator_custom_endpoint(self):
         app = flask.Flask(__name__)
@@ -1205,9 +1214,9 @@ class TestBasicFunctionality(TestFlask):
             assert flask.url_for('123') == '/bar/123'
 
         c = app.test_client()
-        self.assert_equal(c.get('/foo/').data, b'foo')
-        self.assert_equal(c.get('/bar/').data, b'bar')
-        self.assert_equal(c.get('/bar/123').data, b'123')
+        assert c.get('/foo/').data == b'foo'
+        assert c.get('/bar/').data == b'bar'
+        assert c.get('/bar/123').data == b'123'
 
     def test_preserve_only_once(self):
         app = flask.Flask(__name__)
@@ -1219,15 +1228,15 @@ class TestBasicFunctionality(TestFlask):
 
         c = app.test_client()
         for x in range(3):
-            with self.assert_raises(ZeroDivisionError):
+            with pytest.raises(ZeroDivisionError):
                 c.get('/fail')
 
-        self.assert_true(flask._request_ctx_stack.top is not None)
-        self.assert_true(flask._app_ctx_stack.top is not None)
+        assert flask._request_ctx_stack.top is not None
+        assert flask._app_ctx_stack.top is not None
         # implicit appctx disappears too
         flask._request_ctx_stack.top.pop()
-        self.assert_true(flask._request_ctx_stack.top is None)
-        self.assert_true(flask._app_ctx_stack.top is None)
+        assert flask._request_ctx_stack.top is None
+        assert flask._app_ctx_stack.top is None
 
     def test_preserve_remembers_exception(self):
         app = flask.Flask(__name__)
@@ -1249,30 +1258,30 @@ class TestBasicFunctionality(TestFlask):
         c = app.test_client()
 
         # After this failure we did not yet call the teardown handler
-        with self.assert_raises(ZeroDivisionError):
+        with pytest.raises(ZeroDivisionError):
             c.get('/fail')
-        self.assert_equal(errors, [])
+        assert errors == []
 
         # But this request triggers it, and it's an error
         c.get('/success')
-        self.assert_equal(len(errors), 2)
-        self.assert_true(isinstance(errors[0], ZeroDivisionError))
+        assert len(errors) == 2
+        assert isinstance(errors[0], ZeroDivisionError)
 
         # At this point another request does nothing.
         c.get('/success')
-        self.assert_equal(len(errors), 3)
-        self.assert_equal(errors[1], None)
+        assert len(errors) == 3
+        assert errors[1] == None
 
     def test_get_method_on_g(self):
         app = flask.Flask(__name__)
         app.testing = True
 
         with app.app_context():
-            self.assert_equal(flask.g.get('x'), None)
-            self.assert_equal(flask.g.get('x', 11), 11)
+            assert flask.g.get('x') == None
+            assert flask.g.get('x', 11) == 11
             flask.g.x = 42
-            self.assert_equal(flask.g.get('x'), 42)
-            self.assert_equal(flask.g.x, 42)
+            assert flask.g.get('x') == 42
+            assert flask.g.x == 42
 
     def test_g_iteration_protocol(self):
         app = flask.Flask(__name__)
@@ -1281,9 +1290,9 @@ class TestBasicFunctionality(TestFlask):
         with app.app_context():
             flask.g.foo = 23
             flask.g.bar = 42
-            self.assert_equal('foo' in flask.g, True)
-            self.assert_equal('foos' in flask.g, False)
-            self.assert_equal(sorted(flask.g), ['bar', 'foo'])
+            assert 'foo' in flask.g
+            assert 'foos' not in flask.g
+            assert sorted(flask.g) == ['bar', 'foo']
 
 
 class TestSubdomain(TestFlask):
@@ -1300,10 +1309,10 @@ class TestSubdomain(TestFlask):
 
         c = app.test_client()
         rv = c.get('/', 'http://localhost/')
-        self.assert_equal(rv.data, b'normal index')
+        assert rv.data == b'normal index'
 
         rv = c.get('/', 'http://test.localhost/')
-        self.assert_equal(rv.data, b'test index')
+        assert rv.data == b'test index'
 
     def test_subdomain_matching(self):
         app = flask.Flask(__name__)
@@ -1314,7 +1323,7 @@ class TestSubdomain(TestFlask):
 
         c = app.test_client()
         rv = c.get('/', 'http://mitsuhiko.localhost/')
-        self.assert_equal(rv.data, b'index for mitsuhiko')
+        assert rv.data == b'index for mitsuhiko'
 
     def test_subdomain_matching_with_ports(self):
         app = flask.Flask(__name__)
@@ -1325,7 +1334,7 @@ class TestSubdomain(TestFlask):
 
         c = app.test_client()
         rv = c.get('/', 'http://mitsuhiko.localhost:3000/')
-        self.assert_equal(rv.data, b'index for mitsuhiko')
+        assert rv.data == b'index for mitsuhiko'
 
     def test_multi_route_rules(self):
         app = flask.Flask(__name__)
@@ -1336,9 +1345,9 @@ class TestSubdomain(TestFlask):
             return test
 
         rv = app.test_client().open('/')
-        self.assert_equal(rv.data, b'a')
+        assert rv.data == b'a'
         rv = app.test_client().open('/b/')
-        self.assert_equal(rv.data, b'b')
+        assert rv.data == b'b'
 
     def test_multi_route_class_views(self):
         class View(object):
@@ -1352,6 +1361,6 @@ class TestSubdomain(TestFlask):
         app = flask.Flask(__name__)
         _ = View(app)
         rv = app.test_client().open('/')
-        self.assert_equal(rv.data, b'a')
+        assert rv.data == b'a'
         rv = app.test_client().open('/b/')
-        self.assert_equal(rv.data, b'b')
+        assert rv.data == b'b'
