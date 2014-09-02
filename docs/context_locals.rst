@@ -77,13 +77,7 @@ when the :class:`Flask` object is instantiated::
     (<LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>, <LocalProxy unbound>)
     >>> request.url
     Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-      File "/Library/Python/2.7/site-packages/werkzeug/local.py", line 338, in __getattr__
-        return getattr(self._get_current_object(), name)
-      File "/Library/Python/2.7/site-packages/werkzeug/local.py", line 297, in _get_current_object
-        return self.__local()
-      File "/Library/Python/2.7/site-packages/flask/globals.py", line 20, in _lookup_req_object
-        raise RuntimeError('working outside of request context')
+    ...
     RuntimeError: working outside of request context
 
 The application runtime state
