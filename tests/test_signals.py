@@ -9,10 +9,21 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import pytest
+
+try:
+    import blinker
+except ImportError:
+    blinker = None
+
 import flask
-import unittest
 from tests import TestFlask
 
+
+pytestmark = pytest.mark.skipif(
+    blinker is None,
+    reason='Signals require the blinker library.'
+)
 
 class TestSignals(TestFlask):
 
@@ -24,6 +35,7 @@ class TestSignals(TestFlask):
             return flask.render_template('simple_template.html', whiskey=42)
 
         recorded = []
+
         def record(sender, template, context):
             recorded.append((template, context))
 
@@ -71,8 +83,8 @@ class TestSignals(TestFlask):
             self.assert_equal(rv.data, b'stuff')
 
             self.assert_equal(calls, ['before-signal', 'before-handler',
-                             'handler', 'after-handler',
-                             'after-signal'])
+                                      'handler', 'after-handler',
+                                      'after-signal'])
         finally:
             flask.request_started.disconnect(before_request_signal, app)
             flask.request_finished.disconnect(after_request_signal, app)
@@ -99,8 +111,10 @@ class TestSignals(TestFlask):
     def test_appcontext_signals(self):
         app = flask.Flask(__name__)
         recorded = []
+
         def record_push(sender, **kwargs):
             recorded.append('push')
+
         def record_pop(sender, **kwargs):
             recorded.append('pop')
 
@@ -130,6 +144,7 @@ class TestSignals(TestFlask):
             return flask.redirect('/other')
 
         recorded = []
+
         def record(sender, message, category):
             recorded.append((message, category))
 
@@ -144,10 +159,3 @@ class TestSignals(TestFlask):
                 self.assert_equal(category, 'notice')
         finally:
             flask.message_flashed.disconnect(record, app)
-
-
-def suite():
-    suite = unittest.TestSuite()
-    if flask.signals_available:
-        suite.addTest(unittest.makeSuite(TestSignals))
-    return suite
