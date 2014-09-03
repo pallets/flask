@@ -16,7 +16,7 @@ from functools import update_wrapper
 
 import click
 
-from ._compat import iteritems
+from ._compat import iteritems, reraise
 
 
 class NoAppException(click.UsageError):
@@ -128,7 +128,7 @@ class DispatchingApp(object):
         exc_info = self._bg_loading_exc_info
         if exc_info is not None:
             self._bg_loading_exc_info = None
-            raise exc_info[0], exc_info[1], exc_info[2]
+            reraise(*exc_info)
 
     def _load_unlocked(self):
         self._app = rv = self.loader()
