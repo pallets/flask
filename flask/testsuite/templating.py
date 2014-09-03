@@ -313,7 +313,7 @@ class TemplatingTestCase(FlaskTestCase):
         class _TestHandler(logging.Handler):
             def handle(x, record):
                 called.append(True)
-                text = unicode(record.msg)
+                text = str(record.msg)
                 self.assert_('1: trying loader of application '
                              '"blueprintapp"' in text)
                 self.assert_('2: trying loader of blueprint "admin" '
