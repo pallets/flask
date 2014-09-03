@@ -71,6 +71,7 @@ def _tag(value):
         try:
             return text_type(value)
         except UnicodeError:
+            from flask.debughelpers import UnexpectedUnicodeError
             raise UnexpectedUnicodeError(u'A byte string with '
                 u'non-ASCII data was passed to the session system '
                 u'which can only store unicode strings.  Consider '
@@ -362,6 +363,3 @@ class SecureCookieSessionInterface(SessionInterface):
         response.set_cookie(app.session_cookie_name, val,
                             expires=expires, httponly=httponly,
                             domain=domain, path=path, secure=secure)
-
-
-from flask.debughelpers import UnexpectedUnicodeError

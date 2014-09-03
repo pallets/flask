@@ -8,7 +8,6 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import posixpath
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
@@ -54,23 +53,38 @@ class DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
-        for loader, local_name in self._iter_loaders(template):
-            try:
-                return loader.get_source(environment, local_name)
-            except TemplateNotFound:
-                pass
+        explain = self.app.config['EXPLAIN_TEMPLATE_LOADING']
+        attempts = []
+        tmplrv = None
 
+        for srcobj, loader in self._iter_loaders(template):
+            try:
+                rv = loader.get_source(environment, template)
+                if tmplrv is None:
+                    tmplrv = rv
+                if not explain:
+                    break
+            except TemplateNotFound:
+                rv = None
+            attempts.append((loader, srcobj, rv))
+
+        if explain:
+            from debughelpers import explain_template_loading_attempts
+            explain_template_loading_attempts(self.app, template, attempts)
+
+        if tmplrv is not None:
+            return tmplrv
         raise TemplateNotFound(template)
 
     def _iter_loaders(self, template):
         loader = self.app.jinja_loader
         if loader is not None:
-            yield loader, template
+            yield self.app, loader
 
         for blueprint in itervalues(self.app.blueprints):
             loader = blueprint.jinja_loader
             if loader is not None:
-                yield loader, template
+                yield blueprint, loader
 
     def list_templates(self):
         result = set()

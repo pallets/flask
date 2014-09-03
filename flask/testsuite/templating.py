@@ -11,6 +11,9 @@
 
 import flask
 import unittest
+import logging
+from jinja2 import TemplateNotFound
+
 from flask.testsuite import FlaskTestCase
 
 
@@ -302,6 +305,45 @@ class TemplatingTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         app.config['TEMPLATES_AUTO_RELOAD'] = False
         self.assert_false(app.jinja_env.auto_reload)
+
+    def test_template_loader_debugging(self):
+        from blueprintapp import app
+
+        called = []
+        class _TestHandler(logging.Handler):
+            def handle(x, record):
+                called.append(True)
+                text = unicode(record.msg)
+                self.assert_('1: trying loader of application '
+                             '"blueprintapp"' in text)
+                self.assert_('2: trying loader of blueprint "admin" '
+                             '(blueprintapp.apps.admin)' in text)
+                self.assert_('trying loader of blueprint "frontend" '
+                             '(blueprintapp.apps.frontend)' in text)
+                self.assert_('Error: the template could not be found' in text)
+                self.assert_('looked up from an endpoint that belongs to '
+                             'the blueprint "frontend"' in text)
+                self.assert_(
+                    'See http://flask.pocoo.org/docs/blueprints/#templates' in text)
+
+        with app.test_client() as c:
+            try:
+                old_load_setting = app.config['EXPLAIN_TEMPLATE_LOADING']
+                old_handlers = app.logger.handlers[:]
+                app.logger.handlers = [_TestHandler()]
+                app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+
+                try:
+                    c.get('/missing')
+                except TemplateNotFound as e:
+                    self.assert_('missing_template.html' in str(e))
+                else:
+                    self.fail('Expected template not found exception.')
+            finally:
+                app.logger.handlers[:] = old_handlers
+                app.config['EXPLAIN_TEMPLATE_LOADING'] = old_load_setting
+
+        self.assert_equal(len(called), 1)
 
 
 def suite():
