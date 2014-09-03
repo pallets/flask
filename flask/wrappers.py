@@ -12,7 +12,6 @@
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.exceptions import BadRequest
 
-from .debughelpers import attach_enctype_error_multidict
 from . import json
 from .globals import _request_ctx_stack
 
@@ -184,6 +183,7 @@ class Request(RequestBase):
         ctx = _request_ctx_stack.top
         if ctx is not None and ctx.app.debug and \
            self.mimetype != 'multipart/form-data' and not self.files:
+            from .debughelpers import attach_enctype_error_multidict
             attach_enctype_error_multidict(self)
 
 

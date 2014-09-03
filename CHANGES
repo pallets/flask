@@ -41,6 +41,9 @@ Version 1.0
   now hardcoded but the default log handling can be disabled through the
   ``LOGGER_HANDLER_POLICY`` configuration key.
 - Removed deprecate module functionality.
+- Added the ``EXPLAIN_TEMPLATE_LOADING`` config flag which when enabled will
+  instruct Flask to explain how it locates templates.  This should help
+  users debug when the wrong templates are loaded.
 
 Version 0.10.2
 --------------

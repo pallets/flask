@@ -292,6 +292,7 @@ class Flask(_PackageBoundObject):
         'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
+        'EXPLAIN_TEMPLATE_LOADING':             False,
         'PREFERRED_URL_SCHEME':                 'http',
         'JSON_AS_ASCII':                        True,
         'JSON_SORT_KEYS':                       True,

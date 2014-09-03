@@ -185,6 +185,24 @@ want to render the template ``'admin/index.html'`` and you have provided
 ``templates`` as a `template_folder` you will have to create a file like
 this: ``yourapplication/admin/templates/admin/index.html``.
 
+To further reiterate this: if you have a blueprint named ``admin`` and you
+want to render a template called ``index.html`` which is specific to this
+blueprint, the best idea is to lay out your templates like this::
+
+    yourpackage/
+        blueprints/
+            admin/
+                templates/
+                    admin/
+                        index.html
+                __init__.py
+
+And then when you want to render the template, use ``admin/index.html`` as
+the name to look up the template by.  If you encounter problems loading
+the correct templates enable the ``EXPLAIN_TEMPLATE_LOADING`` config
+variable which will instruct Flask to print out the steps it goes through
+to locate templates on every ``render_template`` call.
+
 Building URLs
 -------------
 

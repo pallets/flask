@@ -188,6 +188,13 @@ The following configuration values are used internally by Flask:
                                   be viable to disable this feature by setting
                                   this key to ``False``. This option does not
                                   affect debug mode.
+``EXPLAIN_TEMPLATE_LOADING``      If this is enabled then every attempt to
+                                  load a template will write an info
+                                  message to the logger explaining the
+                                  attempts to locate the template.  This
+                                  can be useful to figure out why
+                                  templates cannot be found or wrong
+                                  templates appear to be loaded.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -234,10 +241,8 @@ The following configuration values are used internally by Flask:
    ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``, ``JSONIFY_PRETTYPRINT_REGULAR``
 
 .. versionadded:: 1.0
-   ``SESSION_REFRESH_EACH_REQUEST``
-
-.. versionadded:: 1.0
-   ``TEMPLATES_AUTO_RELOAD``, ``LOGGER_HANDLER_POLICY``
+   ``SESSION_REFRESH_EACH_REQUEST``, ``TEMPLATES_AUTO_RELOAD``,
+   ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
 
 Configuring from Files
 ----------------------
