@@ -29,7 +29,7 @@ def has_encoding(name):
         return False
 
 
-class TestJSON(TestFlask):
+class TestJSON(object):
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
@@ -241,7 +241,7 @@ class TestJSON(TestFlask):
         except AssertionError:
             assert lines == sorted_by_str
 
-class TestSendfile(TestFlask):
+class TestSendfile(object):
 
     def test_send_file_regular(self):
         app = flask.Flask(__name__)
@@ -423,7 +423,7 @@ class TestSendfile(TestFlask):
             rv.close()
 
 
-class TestLogging(TestFlask):
+class TestLogging(object):
 
     def test_logger_cache(self):
         app = flask.Flask(__name__)
@@ -566,7 +566,7 @@ class TestLogging(TestFlask):
             assert flask.url_for('myview', _method='POST') == '/myview/create'
 
 
-class TestNoImports(TestFlask):
+class TestNoImports(object):
     """Test Flasks are created without import.
 
     Avoiding ``__import__`` helps create Flask instances where there are errors
@@ -584,7 +584,7 @@ class TestNoImports(TestFlask):
             assert False, 'Flask(import_name) is importing import_name.'
 
 
-class TestStreaming(TestFlask):
+class TestStreaming(object):
 
     def test_streaming_with_context(self):
         app = flask.Flask(__name__)
@@ -641,14 +641,3 @@ class TestStreaming(TestFlask):
         rv = c.get('/?name=World')
         assert rv.data == b'Hello World!'
         assert called == [42]
-
-
-def suite():
-    suite = unittest.TestSuite()
-    if flask.json_available:
-        suite.addTest(unittest.makeSuite(TestJSON))
-    suite.addTest(unittest.makeSuite(TestSendfile))
-    suite.addTest(unittest.makeSuite(TestLogging))
-    suite.addTest(unittest.makeSuite(TestNoImports))
-    suite.addTest(unittest.makeSuite(TestStreaming))
-    return suite

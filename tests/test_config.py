@@ -27,7 +27,7 @@ TEST_KEY = 'foo'
 SECRET_KEY = 'devkey'
 
 
-class TestConfig(TestFlask):
+class TestConfig(object):
 
     def common_object_test(self, app):
         assert app.secret_key == 'devkey'
@@ -181,7 +181,7 @@ class TestConfig(TestFlask):
         assert 'bar stuff 2' == bar_options['STUFF_2']
 
 
-class TestInstance(TestFlask):
+class TestInstance(object):
     def test_explicit_instance_paths(self, apps_tmpdir):
         with pytest.raises(ValueError) as excinfo:
             flask.Flask(__name__, instance_path='instance')
