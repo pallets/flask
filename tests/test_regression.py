@@ -54,7 +54,7 @@ class _NoLeakAsserter(object):
 
 @pytest.mark.skipif(os.environ.get('RUN_FLASK_MEMORY_TESTS') != '1',
                     reason='Turned off due to envvar.')
-class TestMemory(TestFlask):
+class TestMemory(object):
 
     def assert_no_leak(self):
         return _NoLeakAsserter(self)
@@ -88,7 +88,7 @@ class TestMemory(TestFlask):
             safe_join('/foo', '..')
 
 
-class TestException(TestFlask):
+class TestException(object):
 
     def test_aborting(self):
         class Foo(Exception):

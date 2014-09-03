@@ -16,7 +16,7 @@ from tests import TestFlask
 from flask._compat import text_type
 
 
-class TestTestTools(TestFlask):
+class TestTestTools(object):
 
     def test_environ_defaults_from_config(self):
         app = flask.Flask(__name__)
@@ -213,7 +213,7 @@ class TestTestTools(TestFlask):
             assert 'vodka' in flask.request.args
 
 
-class TestSubdomain(TestFlask):
+class TestSubdomain(object):
 
     @pytest.fixture
     def app(self, request):

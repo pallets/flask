@@ -26,7 +26,7 @@ from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
 
 
-class TestBasicFunctionality(TestFlask):
+class TestBasicFunctionality(object):
 
     def test_options_work(self):
         app = flask.Flask(__name__)
@@ -1295,7 +1295,7 @@ class TestBasicFunctionality(TestFlask):
             assert sorted(flask.g) == ['bar', 'foo']
 
 
-class TestSubdomain(TestFlask):
+class TestSubdomain(object):
 
     def test_basic_support(self):
         app = flask.Flask(__name__)
