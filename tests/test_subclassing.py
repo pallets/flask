@@ -16,31 +16,23 @@ from tests import TestFlask
 from flask._compat import StringIO
 
 
-class TestFlaskSubclassing(TestFlask):
+def test_suppressed_exception_logging():
+    class SuppressedFlask(flask.Flask):
+        def log_exception(self, exc_info):
+            pass
 
-    def test_suppressed_exception_logging(self):
-        class SuppressedFlask(flask.Flask):
-            def log_exception(self, exc_info):
-                pass
+    out = StringIO()
+    app = SuppressedFlask(__name__)
+    app.logger_name = 'flask_tests/test_suppressed_exception_logging'
+    app.logger.addHandler(StreamHandler(out))
 
-        out = StringIO()
-        app = SuppressedFlask(__name__)
-        app.logger_name = 'flask_tests/test_suppressed_exception_logging'
-        app.logger.addHandler(StreamHandler(out))
+    @app.route('/')
+    def index():
+        1 // 0
 
-        @app.route('/')
-        def index():
-            1 // 0
+    rv = app.test_client().get('/')
+    assert rv.status_code == 500
+    assert b'Internal Server Error' in rv.data
 
-        rv = app.test_client().get('/')
-        assert rv.status_code == 500
-        assert b'Internal Server Error' in rv.data
-
-        err = out.getvalue()
-        assert err == ''
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestFlaskSubclassing))
-    return suite
+    err = out.getvalue()
+    assert err == ''

@@ -6,10 +6,32 @@
     :copyright: (c) 2014 by the Flask Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
+import flask
+import os
+import sys
 import pkgutil
 import pytest
-import sys
 import textwrap
+
+
+@pytest.fixture(autouse=True)
+def setup_path(monkeypatch):
+    monkeypatch.syspath_prepend(
+        os.path.abspath(os.path.join(
+            os.path.dirname(__file__), 'test_apps'))
+    )
+
+@pytest.fixture(autouse=True)
+def leak_detector(request):
+    def ensure_clean_request_context():
+        # make sure we're not leaking a request context since we are
+        # testing flask internally in debug mode in a few cases
+        leaks = []
+        while flask._request_ctx_stack.top is not None:
+            leaks.append(flask._request_ctx_stack.pop())
+        assert leaks == []
+    request.addfinalizer(ensure_clean_request_context)
+
 
 
 @pytest.fixture(params=(True, False))
