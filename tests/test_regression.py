@@ -17,7 +17,7 @@ import sys
 import flask
 import threading
 from werkzeug.exceptions import NotFound
-from tests import TestFlask
+
 
 
 _gc_lock = threading.Lock()

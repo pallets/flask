@@ -17,7 +17,7 @@ try:
     from greenlet import greenlet
 except ImportError:
     greenlet = None
-from tests import TestFlask
+
 
 
 def test_teardown_on_pop():

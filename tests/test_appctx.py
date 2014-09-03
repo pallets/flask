@@ -13,7 +13,7 @@ import pytest
 
 import flask
 import unittest
-from tests import TestFlask
+
 
 
 def test_basic_url_generation():

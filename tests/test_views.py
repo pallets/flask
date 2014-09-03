@@ -14,7 +14,7 @@ import pytest
 import flask
 import flask.views
 import unittest
-from tests import TestFlask
+
 from werkzeug.http import parse_set_header
 
 def common_test(app):

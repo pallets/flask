@@ -11,11 +11,9 @@
 """
 
 from __future__ import print_function
-import pytest
 
 import os
 import sys
-import flask
 import warnings
 from functools import update_wrapper
 from contextlib import contextmanager
@@ -82,22 +80,3 @@ def emits_module_deprecation_warning(f):
             for entry in log:
                 assert 'Modules are deprecated' in str(entry['message'])
     return update_wrapper(new_f, f)
-
-
-class TestFlask(object):
-    """Baseclass for all the tests that Flask uses.  Use these methods
-    for testing instead of the camelcased ones in the baseclass for
-    consistency.
-    """
-
-    def setup_method(self, method):
-        self.setup()
-
-    def teardown_method(self, method):
-        self.teardown()
-
-    def setup(self):
-        pass
-
-    def teardown(self):
-        pass

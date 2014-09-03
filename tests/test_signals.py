@@ -17,7 +17,7 @@ except ImportError:
     blinker = None
 
 import flask
-from tests import TestFlask
+
 
 
 pytestmark = pytest.mark.skipif(

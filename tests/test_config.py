@@ -18,7 +18,7 @@ import pkgutil
 import unittest
 import textwrap
 from contextlib import contextmanager
-from tests import TestFlask
+
 from flask._compat import PY2
 
 

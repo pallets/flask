@@ -12,7 +12,7 @@ import pytest
 
 import flask
 import unittest
-from tests import TestFlask
+
 from flask._compat import text_type
 
 

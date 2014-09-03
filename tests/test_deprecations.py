@@ -11,4 +11,4 @@
 
 import flask
 import unittest
-from tests import TestFlask, catch_warnings
+from tests import catch_warnings

@@ -16,7 +16,7 @@ import unittest
 import logging
 from jinja2 import TemplateNotFound
 
-from tests import TestFlask
+
 
 
 def test_context_processing():
