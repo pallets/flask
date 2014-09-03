@@ -67,14 +67,6 @@ class DispatchingJinjaLoader(BaseLoader):
         if loader is not None:
             yield loader, template
 
-        # old style module based loaders in case we are dealing with a
-        # blueprint that is an old style module
-        try:
-            module, local_name = posixpath.normpath(template).split('/', 1)
-            blueprint = self.app.blueprints[module]
-        except (ValueError, KeyError):
-            pass
-
         for blueprint in itervalues(self.app.blueprints):
             loader = blueprint.jinja_loader
             if loader is not None:
