@@ -3,6 +3,8 @@
 Modular Applications with Blueprints
 ====================================
 
+.. currentmodule:: flask
+
 .. versionadded:: 0.7
 
 Flask uses a concept of *blueprints* for making application components and
