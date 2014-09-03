@@ -44,6 +44,9 @@ Version 1.0
 - Added the ``EXPLAIN_TEMPLATE_LOADING`` config flag which when enabled will
   instruct Flask to explain how it locates templates.  This should help
   users debug when the wrong templates are loaded.
+- Enforce blueprint handling in the order they were registered for template
+  loading.
+
 
 Version 0.10.2
 --------------
