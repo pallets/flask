@@ -17,7 +17,7 @@ try:
     from imp import reload as reload_module
 except ImportError:
     reload_module = reload
-from tests import TestFlask
+
 from flask._compat import PY2
 
 

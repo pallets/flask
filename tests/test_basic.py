@@ -19,7 +19,7 @@ import pickle
 import unittest
 from datetime import datetime
 from threading import Thread
-from tests import TestFlask, emits_module_deprecation_warning
+from tests import emits_module_deprecation_warning
 from flask._compat import text_type
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from werkzeug.http import parse_date

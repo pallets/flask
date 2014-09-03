@@ -13,7 +13,7 @@ import pytest
 
 import flask
 import unittest
-from tests import TestFlask
+
 from flask._compat import text_type
 from werkzeug.http import parse_cache_control_header
 from jinja2 import TemplateNotFound

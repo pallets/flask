@@ -12,7 +12,7 @@
 import flask
 import unittest
 from logging import StreamHandler
-from tests import TestFlask
+
 from flask._compat import StringIO
 
 
