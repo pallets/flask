@@ -472,6 +472,7 @@ class Flask(_PackageBoundObject):
         #:
         #: .. versionadded:: 0.7
         self.blueprints = {}
+        self._blueprint_order = []
 
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
@@ -903,8 +904,16 @@ class Flask(_PackageBoundObject):
                 (blueprint, self.blueprints[blueprint.name], blueprint.name)
         else:
             self.blueprints[blueprint.name] = blueprint
+            self._blueprint_order.append(blueprint)
             first_registration = True
         blueprint.register(self, options, first_registration)
+
+    def iter_blueprints(self):
+        """Iterates over all blueprints by the order they were registered.
+
+        .. versionadded:: 1.0
+        """
+        return iter(self._blueprint_order)
 
     @setupmethod
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
