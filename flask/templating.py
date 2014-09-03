@@ -69,7 +69,7 @@ class DispatchingJinjaLoader(BaseLoader):
             attempts.append((loader, srcobj, rv))
 
         if explain:
-            from debughelpers import explain_template_loading_attempts
+            from .debughelpers import explain_template_loading_attempts
             explain_template_loading_attempts(self.app, template, attempts)
 
         if tmplrv is not None:
