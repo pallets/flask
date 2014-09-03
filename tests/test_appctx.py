@@ -111,7 +111,7 @@ class TestAppContext(TestFlask):
         c = app.test_client()
         res = c.get('/')
         assert res.status_code == 200
-        assert res.data == u''
+        assert res.data == b''
         assert called == ['request', 'app']
 
 
