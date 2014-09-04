@@ -66,23 +66,23 @@ def limit_loader(request, monkeypatch):
 
 
 @pytest.fixture
-def apps_tmpdir(tmpdir, monkeypatch):
-    '''Test folder for all instance tests.'''
-    rv = tmpdir.mkdir('test_apps')
+def modules_tmpdir(tmpdir, monkeypatch):
+    '''A tmpdir added to sys.path'''
+    rv = tmpdir.mkdir('modules_tmpdir')
     monkeypatch.syspath_prepend(str(rv))
     return rv
 
 
 @pytest.fixture
-def apps_tmpdir_prefix(apps_tmpdir, monkeypatch):
-    monkeypatch.setattr(sys, 'prefix', str(apps_tmpdir))
-    return apps_tmpdir
+def modules_tmpdir_prefix(modules_tmpdir, monkeypatch):
+    monkeypatch.setattr(sys, 'prefix', str(modules_tmpdir))
+    return modules_tmpdir
 
 
 @pytest.fixture
-def site_packages(apps_tmpdir, monkeypatch):
+def site_packages(modules_tmpdir, monkeypatch):
     '''Create a fake site-packages'''
-    rv = apps_tmpdir \
+    rv = modules_tmpdir \
         .mkdir('lib')\
         .mkdir('python{x[0]}.{x[1]}'.format(x=sys.version_info))\
         .mkdir('site-packages')
@@ -91,10 +91,10 @@ def site_packages(apps_tmpdir, monkeypatch):
 
 
 @pytest.fixture
-def install_egg(apps_tmpdir, monkeypatch):
+def install_egg(modules_tmpdir, monkeypatch):
     '''Generate egg from package name inside base and put the egg into
     sys.path'''
-    def inner(name, base=apps_tmpdir):
+    def inner(name, base=modules_tmpdir):
         if not isinstance(name, str):
             raise ValueError(name)
         base.join(name).ensure_dir()
@@ -112,9 +112,9 @@ def install_egg(apps_tmpdir, monkeypatch):
         import subprocess
         subprocess.check_call(
             [sys.executable, 'setup.py', 'bdist_egg'],
-            cwd=str(apps_tmpdir)
+            cwd=str(modules_tmpdir)
         )
-        egg_path, = apps_tmpdir.join('dist/').listdir()
+        egg_path, = modules_tmpdir.join('dist/').listdir()
         monkeypatch.syspath_prepend(str(egg_path))
         return egg_path
     return inner
