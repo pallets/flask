@@ -20,26 +20,6 @@ from contextlib import contextmanager
 from flask._compat import StringIO
 
 
-def add_to_path(path):
-    """Adds an entry to sys.path if it's not already there.  This does
-    not append it but moves it to the front so that we can be sure it
-    is loaded.
-    """
-    if not os.path.isdir(path):
-        raise RuntimeError('Tried to add nonexisting path')
-
-    def _samefile(x, y):
-        if x == y:
-            return True
-        try:
-            return os.path.samefile(x, y)
-        except (IOError, OSError, AttributeError):
-            # Windows has no samefile
-            return False
-    sys.path[:] = [x for x in sys.path if not _samefile(path, x)]
-    sys.path.insert(0, path)
-
-
 @contextmanager
 def catch_warnings():
     """Catch warnings in a with block in a list"""
