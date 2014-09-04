@@ -14,8 +14,8 @@ import pytest
 import textwrap
 
 
-@pytest.fixture(autouse=True)
-def setup_path(monkeypatch):
+@pytest.fixture
+def test_apps(monkeypatch):
     monkeypatch.syspath_prepend(
         os.path.abspath(os.path.join(
             os.path.dirname(__file__), 'test_apps'))

@@ -52,66 +52,66 @@ def importhook_setup(monkeypatch, request):
 
     request.addfinalizer(teardown)
 
-def test_flaskext_new_simple_import_normal():
+def test_flaskext_new_simple_import_normal(test_apps):
     from flask.ext.newext_simple import ext_id
     assert ext_id == 'newext_simple'
 
-def test_flaskext_new_simple_import_module():
+def test_flaskext_new_simple_import_module(test_apps):
     from flask.ext import newext_simple
     assert newext_simple.ext_id == 'newext_simple'
     assert newext_simple.__name__ == 'flask_newext_simple'
 
-def test_flaskext_new_package_import_normal():
+def test_flaskext_new_package_import_normal(test_apps):
     from flask.ext.newext_package import ext_id
     assert ext_id == 'newext_package'
 
-def test_flaskext_new_package_import_module():
+def test_flaskext_new_package_import_module(test_apps):
     from flask.ext import newext_package
     assert newext_package.ext_id == 'newext_package'
     assert newext_package.__name__ == 'flask_newext_package'
 
-def test_flaskext_new_package_import_submodule_function():
+def test_flaskext_new_package_import_submodule_function(test_apps):
     from flask.ext.newext_package.submodule import test_function
     assert test_function() == 42
 
-def test_flaskext_new_package_import_submodule():
+def test_flaskext_new_package_import_submodule(test_apps):
     from flask.ext.newext_package import submodule
     assert submodule.__name__ == 'flask_newext_package.submodule'
     assert submodule.test_function() == 42
 
-def test_flaskext_old_simple_import_normal():
+def test_flaskext_old_simple_import_normal(test_apps):
     from flask.ext.oldext_simple import ext_id
     assert ext_id == 'oldext_simple'
 
-def test_flaskext_old_simple_import_module():
+def test_flaskext_old_simple_import_module(test_apps):
     from flask.ext import oldext_simple
     assert oldext_simple.ext_id == 'oldext_simple'
     assert oldext_simple.__name__ == 'flaskext.oldext_simple'
 
-def test_flaskext_old_package_import_normal():
+def test_flaskext_old_package_import_normal(test_apps):
     from flask.ext.oldext_package import ext_id
     assert ext_id == 'oldext_package'
 
-def test_flaskext_old_package_import_module():
+def test_flaskext_old_package_import_module(test_apps):
     from flask.ext import oldext_package
     assert oldext_package.ext_id == 'oldext_package'
     assert oldext_package.__name__ == 'flaskext.oldext_package'
 
-def test_flaskext_old_package_import_submodule():
+def test_flaskext_old_package_import_submodule(test_apps):
     from flask.ext.oldext_package import submodule
     assert submodule.__name__ == 'flaskext.oldext_package.submodule'
     assert submodule.test_function() == 42
 
-def test_flaskext_old_package_import_submodule_function():
+def test_flaskext_old_package_import_submodule_function(test_apps):
     from flask.ext.oldext_package.submodule import test_function
     assert test_function() == 42
 
-def test_flaskext_broken_package_no_module_caching():
+def test_flaskext_broken_package_no_module_caching(test_apps):
     for x in range(2):
         with pytest.raises(ImportError):
             import flask.ext.broken
 
-def test_no_error_swallowing():
+def test_no_error_swallowing(test_apps):
     try:
         import flask.ext.broken
     except ImportError:
