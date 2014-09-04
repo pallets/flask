@@ -10,7 +10,6 @@
 """
 
 import sys
-import unittest
 import pytest
 
 try:
@@ -28,10 +27,12 @@ def importhook_setup(monkeypatch, request):
     # fake package.  Secondly we want to make sure that the flaskext
     # import hook does not break on reloading.
     for entry, value in list(sys.modules.items()):
-        if (entry.startswith('flask.ext.') or
+        if (
+            entry.startswith('flask.ext.') or
             entry.startswith('flask_') or
             entry.startswith('flaskext.') or
-            entry == 'flaskext') and value is not None:
+            entry == 'flaskext'
+        ) and value is not None:
             monkeypatch.delitem(sys.modules, entry)
     from flask import ext
     reload_module(ext)
@@ -52,86 +53,135 @@ def importhook_setup(monkeypatch, request):
 
     request.addfinalizer(teardown)
 
-def test_flaskext_new_simple_import_normal(test_apps):
+
+@pytest.fixture
+def newext_simple(apps_tmpdir):
+    x = apps_tmpdir.join('flask_newext_simple.py')
+    x.write('ext_id = "newext_simple"')
+
+
+@pytest.fixture
+def oldext_simple(apps_tmpdir):
+    flaskext = apps_tmpdir.mkdir('flaskext')
+    flaskext.join('__init__.py').write('\n')
+    flaskext.join('oldext_simple.py').write('ext_id = "oldext_simple"')
+
+
+@pytest.fixture
+def newext_package(apps_tmpdir):
+    pkg = apps_tmpdir.mkdir('flask_newext_package')
+    pkg.join('__init__.py').write('ext_id = "newext_package"')
+    pkg.join('submodule.py').write('def test_function():\n    return 42\n')
+
+
+@pytest.fixture
+def oldext_package(apps_tmpdir):
+    flaskext = apps_tmpdir.mkdir('flaskext')
+    flaskext.join('__init__.py').write('\n')
+    oldext = flaskext.mkdir('oldext_package')
+    oldext.join('__init__.py').write('ext_id = "oldext_package"')
+    oldext.join('submodule.py').write('def test_function():\n'
+                                      '    return 42')
+
+
+@pytest.fixture
+def flaskext_broken(apps_tmpdir):
+    ext = apps_tmpdir.mkdir('flask_broken')
+    ext.join('b.py').write('\n')
+    ext.join('__init__.py').write('import flask.ext.broken.b\n'
+                                  'import missing_module')
+
+
+def test_flaskext_new_simple_import_normal(newext_simple):
     from flask.ext.newext_simple import ext_id
     assert ext_id == 'newext_simple'
 
-def test_flaskext_new_simple_import_module(test_apps):
+
+def test_flaskext_new_simple_import_module(newext_simple):
     from flask.ext import newext_simple
     assert newext_simple.ext_id == 'newext_simple'
     assert newext_simple.__name__ == 'flask_newext_simple'
 
-def test_flaskext_new_package_import_normal(test_apps):
+
+def test_flaskext_new_package_import_normal(newext_package):
     from flask.ext.newext_package import ext_id
     assert ext_id == 'newext_package'
 
-def test_flaskext_new_package_import_module(test_apps):
+
+def test_flaskext_new_package_import_module(newext_package):
     from flask.ext import newext_package
     assert newext_package.ext_id == 'newext_package'
     assert newext_package.__name__ == 'flask_newext_package'
 
-def test_flaskext_new_package_import_submodule_function(test_apps):
+
+def test_flaskext_new_package_import_submodule_function(newext_package):
     from flask.ext.newext_package.submodule import test_function
     assert test_function() == 42
 
-def test_flaskext_new_package_import_submodule(test_apps):
+
+def test_flaskext_new_package_import_submodule(newext_package):
     from flask.ext.newext_package import submodule
     assert submodule.__name__ == 'flask_newext_package.submodule'
     assert submodule.test_function() == 42
 
-def test_flaskext_old_simple_import_normal(test_apps):
+
+def test_flaskext_old_simple_import_normal(oldext_simple):
     from flask.ext.oldext_simple import ext_id
     assert ext_id == 'oldext_simple'
 
-def test_flaskext_old_simple_import_module(test_apps):
+
+def test_flaskext_old_simple_import_module(oldext_simple):
     from flask.ext import oldext_simple
     assert oldext_simple.ext_id == 'oldext_simple'
     assert oldext_simple.__name__ == 'flaskext.oldext_simple'
 
-def test_flaskext_old_package_import_normal(test_apps):
+
+def test_flaskext_old_package_import_normal(oldext_package):
     from flask.ext.oldext_package import ext_id
     assert ext_id == 'oldext_package'
 
-def test_flaskext_old_package_import_module(test_apps):
+
+def test_flaskext_old_package_import_module(oldext_package):
     from flask.ext import oldext_package
     assert oldext_package.ext_id == 'oldext_package'
     assert oldext_package.__name__ == 'flaskext.oldext_package'
 
-def test_flaskext_old_package_import_submodule(test_apps):
+
+def test_flaskext_old_package_import_submodule(oldext_package):
     from flask.ext.oldext_package import submodule
     assert submodule.__name__ == 'flaskext.oldext_package.submodule'
     assert submodule.test_function() == 42
 
-def test_flaskext_old_package_import_submodule_function(test_apps):
+
+def test_flaskext_old_package_import_submodule_function(oldext_package):
     from flask.ext.oldext_package.submodule import test_function
     assert test_function() == 42
 
-def test_flaskext_broken_package_no_module_caching(test_apps):
+
+def test_flaskext_broken_package_no_module_caching(flaskext_broken):
     for x in range(2):
         with pytest.raises(ImportError):
             import flask.ext.broken
 
-def test_no_error_swallowing(test_apps):
-    try:
+
+def test_no_error_swallowing(flaskext_broken):
+    with pytest.raises(ImportError) as excinfo:
         import flask.ext.broken
-    except ImportError:
-        exc_type, exc_value, tb = sys.exc_info()
-        assert exc_type is ImportError
-        if PY2:
-            message = 'No module named missing_module'
-        else:
-            message = 'No module named \'missing_module\''
-        assert str(exc_value) == message
-        assert tb.tb_frame.f_globals is globals()
 
-        # reraise() adds a second frame so we need to skip that one too.
-        # On PY3 we even have another one :(
-        next = tb.tb_next.tb_next
-        if not PY2:
-            next = next.tb_next
-
-        import os.path
-        assert os.path.join('flask_broken', '__init__.py') in \
-            next.tb_frame.f_code.co_filename
+    assert excinfo.type is ImportError
+    if PY2:
+        message = 'No module named missing_module'
     else:
-        1/0  # XXX
+        message = 'No module named \'missing_module\''
+    assert str(excinfo.value) == message
+    assert excinfo.tb.tb_frame.f_globals is globals()
+
+    # reraise() adds a second frame so we need to skip that one too.
+    # On PY3 we even have another one :(
+    next = excinfo.tb.tb_next.tb_next
+    if not PY2:
+        next = next.tb_next
+
+    import os.path
+    assert os.path.join('flask_broken', '__init__.py') in \
+        next.tb_frame.f_code.co_filename
