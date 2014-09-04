@@ -55,28 +55,28 @@ def importhook_setup(monkeypatch, request):
 
 
 @pytest.fixture
-def newext_simple(apps_tmpdir):
-    x = apps_tmpdir.join('flask_newext_simple.py')
+def newext_simple(modules_tmpdir):
+    x = modules_tmpdir.join('flask_newext_simple.py')
     x.write('ext_id = "newext_simple"')
 
 
 @pytest.fixture
-def oldext_simple(apps_tmpdir):
-    flaskext = apps_tmpdir.mkdir('flaskext')
+def oldext_simple(modules_tmpdir):
+    flaskext = modules_tmpdir.mkdir('flaskext')
     flaskext.join('__init__.py').write('\n')
     flaskext.join('oldext_simple.py').write('ext_id = "oldext_simple"')
 
 
 @pytest.fixture
-def newext_package(apps_tmpdir):
-    pkg = apps_tmpdir.mkdir('flask_newext_package')
+def newext_package(modules_tmpdir):
+    pkg = modules_tmpdir.mkdir('flask_newext_package')
     pkg.join('__init__.py').write('ext_id = "newext_package"')
     pkg.join('submodule.py').write('def test_function():\n    return 42\n')
 
 
 @pytest.fixture
-def oldext_package(apps_tmpdir):
-    flaskext = apps_tmpdir.mkdir('flaskext')
+def oldext_package(modules_tmpdir):
+    flaskext = modules_tmpdir.mkdir('flaskext')
     flaskext.join('__init__.py').write('\n')
     oldext = flaskext.mkdir('oldext_package')
     oldext.join('__init__.py').write('ext_id = "oldext_package"')
@@ -85,8 +85,8 @@ def oldext_package(apps_tmpdir):
 
 
 @pytest.fixture
-def flaskext_broken(apps_tmpdir):
-    ext = apps_tmpdir.mkdir('flask_broken')
+def flaskext_broken(modules_tmpdir):
+    ext = modules_tmpdir.mkdir('flask_broken')
     ext.join('b.py').write('\n')
     ext.join('__init__.py').write('import flask.ext.broken.b\n'
                                   'import missing_module')
