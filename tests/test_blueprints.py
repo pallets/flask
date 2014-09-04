@@ -140,7 +140,7 @@ def test_blueprint_url_processors():
     assert c.get('/de/').data == b'/de/about'
     assert c.get('/de/about').data == b'/de/'
 
-def test_templates_and_static():
+def test_templates_and_static(test_apps):
     from blueprintapp import app
     c = app.test_client()
 
@@ -209,7 +209,7 @@ def test_default_static_cache_timeout():
     finally:
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 
-def test_templates_list():
+def test_templates_list(test_apps):
     from blueprintapp import app
     templates = sorted(app.jinja_env.list_templates())
     assert templates == ['admin/index.html', 'frontend/index.html']

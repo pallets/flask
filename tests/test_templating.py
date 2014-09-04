@@ -306,7 +306,7 @@ def test_templates_auto_reload():
     app.config['TEMPLATES_AUTO_RELOAD'] = False
     assert not app.jinja_env.auto_reload
 
-def test_template_loader_debugging():
+def test_template_loader_debugging(test_apps):
     from blueprintapp import app
 
     called = []
