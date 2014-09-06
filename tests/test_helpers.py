@@ -13,9 +13,7 @@ import pytest
 
 import os
 import flask
-import unittest
 from logging import StreamHandler
-from tests import catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from flask._compat import StringIO, text_type
 
@@ -266,9 +264,9 @@ class TestSendfile(object):
             assert rv.mimetype == 'text/html'
             rv.close()
 
-    def test_send_file_object(self):
+    def test_send_file_object(self, catch_deprecation_warnings):
         app = flask.Flask(__name__)
-        with catch_warnings() as captured:
+        with catch_deprecation_warnings() as captured:
             with app.test_request_context():
                 f = open(os.path.join(app.root_path, 'static/index.html'), mode='rb')
                 rv = flask.send_file(f)
@@ -281,7 +279,7 @@ class TestSendfile(object):
             assert len(captured) == 2
 
         app.use_x_sendfile = True
-        with catch_warnings() as captured:
+        with catch_deprecation_warnings() as captured:
             with app.test_request_context():
                 f = open(os.path.join(app.root_path, 'static/index.html'))
                 rv = flask.send_file(f)
@@ -295,7 +293,7 @@ class TestSendfile(object):
 
         app.use_x_sendfile = False
         with app.test_request_context():
-            with catch_warnings() as captured:
+            with catch_deprecation_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f)
                 rv.direct_passthrough = False
@@ -304,7 +302,7 @@ class TestSendfile(object):
                 rv.close()
             # etags
             assert len(captured) == 1
-            with catch_warnings() as captured:
+            with catch_deprecation_warnings() as captured:
                 class PyStringIO(object):
                     def __init__(self, *args, **kwargs):
                         self._io = StringIO(*args, **kwargs)
@@ -319,7 +317,7 @@ class TestSendfile(object):
                 rv.close()
             # attachment_filename and etags
             assert len(captured) == 3
-            with catch_warnings() as captured:
+            with catch_deprecation_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f, mimetype='text/plain')
                 rv.direct_passthrough = False
@@ -330,7 +328,7 @@ class TestSendfile(object):
             assert len(captured) == 1
 
         app.use_x_sendfile = True
-        with catch_warnings() as captured:
+        with catch_deprecation_warnings() as captured:
             with app.test_request_context():
                 f = StringIO('Test')
                 rv = flask.send_file(f)
@@ -339,9 +337,9 @@ class TestSendfile(object):
             # etags
             assert len(captured) == 1
 
-    def test_attachment(self):
+    def test_attachment(self, catch_deprecation_warnings):
         app = flask.Flask(__name__)
-        with catch_warnings() as captured:
+        with catch_deprecation_warnings() as captured:
             with app.test_request_context():
                 f = open(os.path.join(app.root_path, 'static/index.html'))
                 rv = flask.send_file(f, as_attachment=True)
@@ -433,7 +431,7 @@ class TestLogging(object):
         app.logger_name = __name__ + '/test_logger_cache'
         assert app.logger is not logger1
 
-    def test_debug_log(self):
+    def test_debug_log(self, capsys):
         app = flask.Flask(__name__)
         app.debug = True
 
@@ -448,21 +446,15 @@ class TestLogging(object):
             1 // 0
 
         with app.test_client() as c:
-            with catch_stderr() as err:
-                c.get('/')
-                out = err.getvalue()
-                assert 'WARNING in test_helpers [' in out
-                assert os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in out
-                assert 'the standard library is dead' in out
-                assert 'this is a debug statement' in out
+            c.get('/')
+            out, err = capsys.readouterr()
+            assert 'WARNING in test_helpers [' in err
+            assert os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in err
+            assert 'the standard library is dead' in err
+            assert 'this is a debug statement' in err
 
-            with catch_stderr() as err:
-                try:
-                    c.get('/exc')
-                except ZeroDivisionError:
-                    pass
-                else:
-                    assert False, 'debug log ate the exception'
+            with pytest.raises(ZeroDivisionError):
+                c.get('/exc')
 
     def test_debug_log_override(self):
         app = flask.Flask(__name__)
