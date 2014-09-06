@@ -125,3 +125,10 @@ def purge_module(request):
     def inner(name):
         request.addfinalizer(lambda: sys.modules.pop(name, None))
     return inner
+
+
+@pytest.fixture
+def catch_deprecation_warnings():
+    import warnings
+    warnings.simplefilter('default', category=DeprecationWarning)
+    return lambda: warnings.catch_warnings(record=True)

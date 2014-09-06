@@ -119,14 +119,16 @@ def test_egg_installed_paths(install_egg, modules_tmpdir,
 
 
 @pytest.mark.skipif(not PY2, reason='This only works under Python 2.')
-def test_meta_path_loader_without_is_package():
+def test_meta_path_loader_without_is_package(request, modules_tmpdir):
+    app = modules_tmpdir.join('unimportable.py')
+    app.write('import flask\napp = flask.Flask(__name__)')
+
     class Loader(object):
-        def find_module(self, name):
+        def find_module(self, name, path=None):
             return self
 
     sys.meta_path.append(Loader())
-    try:
-        with pytest.raises(AttributeError):
-            flask.Flask(__name__)
-    finally:
-        sys.meta_path.pop()
+    request.addfinalizer(sys.meta_path.pop)
+
+    with pytest.raises(AttributeError):
+        import unimportable
