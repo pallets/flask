@@ -726,7 +726,7 @@ def find_package(import_name):
             filename = sys.modules[import_name].__file__
         package_path = os.path.abspath(os.path.dirname(filename))
 
-        # In case the root module is a pcakage we need to chop of the
+        # In case the root module is a package we need to chop of the
         # rightmost part.  This needs to go through a helper function
         # because of python 3.3 namespace packages.
         if _matching_loader_thinks_module_is_package(
