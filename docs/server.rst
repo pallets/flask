@@ -43,7 +43,7 @@ This works well for the common case but it does not work well for
 development which is why from Flask 1.0 onwards the ``flask`` method is
 recommended.  The reason for this is that due to how the reload mechanism
 works there are some bizarre side-effects (like executing certain code
-twice, sometimes crashing without message or dieing when a syntax or
+twice, sometimes crashing without message or dying when a syntax or
 import error happens).
 
 It is however still a perfectly valid method for invoking a non automatic
