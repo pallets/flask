@@ -27,7 +27,7 @@ flask_svc_url = 'http://flask.pocoo.org/extensions/'
 
 # OS X has awful paths when using mkstemp or gettempdir().  I don't
 # care about security or clashes here, so pick something that is
-# actually rememberable.
+# actually memorable.
 if sys.platform == 'darwin':
     _tempdir = '/private/tmp'
 else:
