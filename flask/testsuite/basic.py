@@ -396,6 +396,56 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         app.config['SESSION_REFRESH_EACH_REQUEST'] = False
         run_test(expect_header=False)
 
+    def test_session_vary_cookie(self):
+
+        app = flask.Flask(__name__)
+        app.secret_key = 'testkey'
+
+        @app.route('/set-session')
+        def set_session():
+
+            flask.session['test'] = 'test'
+            return ''
+
+        @app.route('/get-session')
+        def get_session():
+
+            s = flask.session.get('test')
+            return ''
+
+        @app.route('/get-session-with-dictionary')
+        def get_session_with_dictionary():
+
+            s = flask.session['test']
+            return ''
+
+        @app.route('/no-vary-header')
+        def no_vary_header():
+
+            return ''
+
+        c = app.test_client()
+
+        rv = c.get('/set-session')
+
+        self.assert_in('Vary', rv.headers)
+        self.assert_equal('Cookie', rv.headers['Vary'])
+
+        rv = c.get('/get-session')
+
+        self.assert_in('Vary', rv.headers)
+        self.assert_equal('Cookie', rv.headers['Vary'])
+
+        rv = c.get('/get-session-with-dictionary')
+
+        self.assert_in('Vary', rv.headers)
+        self.assert_equal('Cookie', rv.headers['Vary'])
+
+        rv = c.get('/no-vary-header')
+
+        self.assert_not_in('Vary', rv.headers)
+
+
     def test_flashes(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testkey'

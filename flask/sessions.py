@@ -51,6 +51,13 @@ class SessionMixin(object):
     #: The default mixin implementation just hardcodes `True` in.
     modified = True
 
+    #: the accessed variable indicates whether or not the session object has
+    #: been accessed in that request. This allows flask to append a `Vary:
+    #: Cookie` header to the response if the session is being accessed. This
+    #: allows caching proxy servers, like Varnish, to use both the URL and the
+    #: session cookie as keys when caching pages, preventing multiple users
+    #: from being served the same cache.
+    accessed = True
 
 def _tag(value):
     if isinstance(value, tuple):
@@ -115,9 +122,18 @@ class SecureCookieSession(CallbackDict, SessionMixin):
     def __init__(self, initial=None):
         def on_update(self):
             self.modified = True
+            self.accessed = True
         CallbackDict.__init__(self, initial, on_update)
         self.modified = False
+        self.accessed = False
 
+    def __getitem__(self, key):
+        self.accessed = True
+        return super(SecureCookieSession, self).__getitem__(key)
+
+    def get(self, key, default=None):
+        self.accessed = True
+        return super(SecureCookieSession, self).get(key, default)
 
 class NullSession(SecureCookieSession):
     """Class used to generate nicer error messages if sessions are not
@@ -337,24 +353,30 @@ class SecureCookieSessionInterface(SessionInterface):
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
 
-        # Delete case.  If there is no session we bail early.
-        # If the session was modified to be empty we remove the
-        # whole cookie.
-        if not session:
-            if session.modified:
-                response.delete_cookie(app.session_cookie_name,
-                                       domain=domain, path=path)
-            return
+        if session.accessed:
 
-        # Modification case.  There are upsides and downsides to
-        # emitting a set-cookie header each request.  The behavior
-        # is controlled by the :meth:`should_set_cookie` method
-        # which performs a quick check to figure out if the cookie
-        # should be set or not.  This is controlled by the
-        # SESSION_REFRESH_EACH_REQUEST config flag as well as
-        # the permanent flag on the session itself.
-        if not self.should_set_cookie(app, session):
-            return
+            response.headers.add('Vary', 'Cookie')
+
+        else:
+
+            # Delete case.  If there is no session we bail early.
+            # If the session was modified to be empty we remove the
+            # whole cookie.
+            if not session:
+                if session.modified:
+                    response.delete_cookie(app.session_cookie_name,
+                                           domain=domain, path=path)
+                return
+
+            # Modification case.  There are upsides and downsides to
+            # emitting a set-cookie header each request.  The behavior
+            # is controlled by the :meth:`should_set_cookie` method
+            # which performs a quick check to figure out if the cookie
+            # should be set or not.  This is controlled by the
+            # SESSION_REFRESH_EACH_REQUEST config flag as well as
+            # the permanent flag on the session itself.
+            if not self.should_set_cookie(app, session):
+                return
 
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
