@@ -1,2 +1,0 @@
-# extra dependencies
-blinker
