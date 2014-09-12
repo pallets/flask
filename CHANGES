@@ -46,6 +46,7 @@ Version 1.0
   users debug when the wrong templates are loaded.
 - Enforce blueprint handling in the order they were registered for template
   loading.
+- Ported testsuite to py.test.
 
 
 Version 0.10.2
