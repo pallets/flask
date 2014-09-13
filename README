@@ -34,20 +34,10 @@
     ~ Where are the tests?
 
       Good that you're asking.  The tests are in the
-      flask/testsuite package.  To run the tests use the
-      `run-tests.py` file:
+      tests/ folder.  To run the tests use the
+      `py.test` testing tool:
 
-        $ python run-tests.py
-
-      If it's not enough output for you, you can use the
-      `--verbose` flag:
-
-        $ python run-tests.py --verbose
-
-      If you just want one particular testcase to run you can
-      provide it on the command line:
-
-        $ python run-tests.py test_to_run
+        $ py.test
 
     ~ Where can I get help?
 
