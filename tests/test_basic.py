@@ -22,6 +22,7 @@ from flask._compat import text_type
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
+import werkzeug.serving
 
 
 def test_options_work():
@@ -1506,3 +1507,30 @@ def test_multi_route_class_views():
     assert rv.data == b'a'
     rv = app.test_client().open('/b/')
     assert rv.data == b'b'
+
+
+def test_run_defaults(monkeypatch):
+    rv = {}
+
+    # Mocks werkzeug.serving.run_simple method
+    def run_simple_mock(*args, **kwargs):
+        rv['result'] = 'running...'
+
+    app = flask.Flask(__name__)
+    monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
+    app.run()
+    assert rv['result'] == 'running...'
+
+
+def test_run_server_port(monkeypatch):
+    rv = {}
+
+    # Mocks werkzeug.serving.run_simple method
+    def run_simple_mock(hostname, port, application, *args, **kwargs):
+        rv['result'] = 'running on %s:%s ...' % (hostname, port)
+
+    app = flask.Flask(__name__)
+    monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
+    hostname, port = 'localhost', 8000
+    app.run(hostname, port, debug=True)
+    assert rv['result'] == 'running on %s:%s ...' % (hostname, port)
