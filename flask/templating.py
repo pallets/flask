@@ -125,7 +125,7 @@ def render_template(template_name_or_list, **context):
 
 def render_template_string(source, **context):
     """Renders a template from the given template source string
-    with the given context.
+    with the given context. Template variables will be autoescaped.
 
     :param source: the sourcecode of the template to be
                    rendered

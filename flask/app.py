@@ -714,12 +714,12 @@ class Flask(_PackageBoundObject):
 
     def select_jinja_autoescape(self, filename):
         """Returns `True` if autoescaping should be active for the given
-        template name.
+        template name. If no template name is given, returns `True`.
 
         .. versionadded:: 0.5
         """
         if filename is None:
-            return False
+            return True
         return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
 
     def update_template_context(self, context):
