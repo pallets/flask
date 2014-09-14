@@ -84,12 +84,29 @@ def test_escaping():
     ]
 
 def test_no_escaping():
+    text = '<p>Hello World!'
+    app = flask.Flask(__name__)
+    @app.route('/')
+    def index():
+        return flask.render_template('non_escaping_template.txt', text=text,
+                                     html=flask.Markup(text))
+    lines = app.test_client().get('/').data.splitlines()
+    assert lines == [
+        b'<p>Hello World!',
+        b'<p>Hello World!',
+        b'<p>Hello World!',
+        b'<p>Hello World!',
+        b'&lt;p&gt;Hello World!',
+        b'<p>Hello World!'
+        b'<p>Hello World!'
+        b'<p>Hello World!'
+    ]
+
+def test_escaping_without_template_filename():
     app = flask.Flask(__name__)
     with app.test_request_context():
         assert flask.render_template_string(
-            '{{ foo }}', foo='<test>') == '<test>'
-        assert flask.render_template('mail.txt', foo='<test>') == \
-            '<test> Mail'
+            '{{ foo }}', foo='<test>') == '&lt;test%gt;'
 
 def test_macros():
     app = flask.Flask(__name__)
