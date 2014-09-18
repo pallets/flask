@@ -26,5 +26,5 @@
 	
     ~ Is it tested?
 
-      You betcha.  Run the `flaskr_tests.py` file to see
+      You betcha.  Run the `test_flaskr.py` file to see
       the tests pass.
