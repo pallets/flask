@@ -247,6 +247,8 @@ class Config(dict):
                 continue
             if trim_namespace:
                 key = k[len(namespace):]
+            else:
+                key = k
             if lowercase:
                 key = key.lower()
             rv[key] = v
