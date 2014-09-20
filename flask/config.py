@@ -213,7 +213,7 @@ class Config(dict):
                     self[key] = value
         return True
 
-    def get_namespace(self, namespace, lowercase=True):
+    def get_namespace(self, namespace, lowercase=True, trim_namespace=True):
         """Returns a dictionary containing a subset of configuration options
         that match the specified namespace/prefix. Example usage::
 
@@ -236,6 +236,8 @@ class Config(dict):
         :param namespace: a configuration namespace
         :param lowercase: a flag indicating if the keys of the resulting
                           dictionary should be lowercase
+        :param trim_namespace: a flag indicating if the keys of the resulting
+                          dictionary should not include the namespace
 
         .. versionadded:: 1.0
         """
@@ -243,7 +245,8 @@ class Config(dict):
         for k, v in iteritems(self):
             if not k.startswith(namespace):
                 continue
-            key = k[len(namespace):]
+            if trim_namespace:
+                key = k[len(namespace):]
             if lowercase:
                 key = key.lower()
             rv[key] = v
