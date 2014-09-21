@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.testing
-    ~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~
 
     Test client and more.
 
@@ -11,7 +11,6 @@
 import pytest
 
 import flask
-import unittest
 
 from flask._compat import text_type
 

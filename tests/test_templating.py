@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.templating
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~
 
     Template functionality
 
@@ -12,11 +12,8 @@
 import pytest
 
 import flask
-import unittest
 import logging
 from jinja2 import TemplateNotFound
-
-
 
 
 def test_context_processing():

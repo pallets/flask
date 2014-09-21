@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.blueprints
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~
 
     Blueprints (and currently modules)
 
@@ -12,7 +12,6 @@
 import pytest
 
 import flask
-import unittest
 
 from flask._compat import text_type
 from werkzeug.http import parse_cache_control_header

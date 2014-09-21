@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.views
-    ~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~
 
     Pluggable views.
 
@@ -13,7 +13,6 @@ import pytest
 
 import flask
 import flask.views
-import unittest
 
 from werkzeug.http import parse_set_header
 
