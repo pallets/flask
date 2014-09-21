@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.subclassing
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~
 
     Test that certain behavior of flask can be customized by
     subclasses.
@@ -10,7 +10,6 @@
     :license: BSD, see LICENSE for more details.
 """
 import flask
-import unittest
 from logging import StreamHandler
 
 from flask._compat import StringIO

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.appctx
-    ~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~
 
     Tests the application context.
 
@@ -12,8 +12,6 @@
 import pytest
 
 import flask
-import unittest
-
 
 
 def test_basic_url_generation():

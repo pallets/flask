@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     tests.reqctx
-    ~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~
 
     Tests the request context.
 
@@ -12,12 +12,11 @@
 import pytest
 
 import flask
-import unittest
+
 try:
     from greenlet import greenlet
 except ImportError:
     greenlet = None
-
 
 
 def test_teardown_on_pop():
