@@ -27,28 +27,6 @@ For example, to run a Flask application with 4 worker processes (``-w
 .. _eventlet: http://eventlet.net/
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
 
-Tornado
---------
-
-`Tornado`_ is an open source version of the scalable, non-blocking web
-server and tools that power `FriendFeed`_.  Because it is non-blocking and
-uses epoll, it can handle thousands of simultaneous standing connections,
-which means it is ideal for real-time web services.  Integrating this
-service with Flask is straightforward::
-
-    from tornado.wsgi import WSGIContainer
-    from tornado.httpserver import HTTPServer
-    from tornado.ioloop import IOLoop
-    from yourapplication import app
-
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
-    IOLoop.instance().start()
-
-
-.. _Tornado: http://www.tornadoweb.org/
-.. _FriendFeed: http://friendfeed.com/
-
 Gevent
 -------
 
