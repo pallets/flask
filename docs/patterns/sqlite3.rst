@@ -3,9 +3,9 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can implement the opening of database connections on demand
-and closing it when the context dies (usually at the end of the request)
-easily.
+In Flask you can easily implement the opening of database connections on 
+demand, closing them when the context dies (usually at the end of the 
+request).
 
 Here is a simple example of how you can use SQLite 3 with Flask::
 
@@ -26,8 +26,8 @@ Here is a simple example of how you can use SQLite 3 with Flask::
         if db is not None:
             db.close()
 
-All the application needs to do in order to now use the database is having
-an active application context (which is always true if there is an request
+All the application needs to do in order to now use the database is have
+an active application context (which is always true if there is a request
 in flight) or to create an application context itself.  At that point the
 ``get_db`` function can be used to get the current database connection.
 Whenever the context is destroyed the database connection will be
@@ -56,7 +56,7 @@ Connect on Demand
 -----------------
 
 The upside of this approach (connecting on first use) is that this will
-only opening the connection if truly necessary.  If you want to use this
+only open the connection if truly necessary.  If you want to use this
 code outside a request context you can use it in a Python shell by opening
 the application context by hand::
 
@@ -71,8 +71,8 @@ Easy Querying
 Now in each request handling function you can access `g.db` to get the
 current open database connection.  To simplify working with SQLite, a
 row factory function is useful.  It is executed for every result returned
-from the database to convert the result.  For instance in order to get
-dictionaries instead of tuples this could be inserted into ``get_db``::
+from the database to convert the result.  For instance, in order to get
+dictionaries instead of tuples, this could be inserted into ``get_db``::
 
     def make_dicts(cursor, row):
         return dict((cursor.description[idx][0], value)
@@ -93,9 +93,9 @@ getting the cursor, executing and fetching the results::
         cur.close()
         return (rv[0] if rv else None) if one else rv
 
-This handy little function in combination with a row factory makes working
-with the database much more pleasant than it is by just using the raw
-cursor and connection objects.
+This handy little function, in combination with a row factory, makes 
+working with the database much more pleasant than it is by just using the 
+raw cursor and connection objects.
 
 Here is how you can use it::
 
