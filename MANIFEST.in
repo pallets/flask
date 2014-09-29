@@ -10,4 +10,4 @@ recursive-exclude tests *.pyo
 recursive-exclude examples *.pyc
 recursive-exclude examples *.pyo
 prune docs/_build
-prune docs/_themes/.git
+prune docs/_themes
