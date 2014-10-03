@@ -156,3 +156,24 @@ def test_flash_signal():
             assert category == 'notice'
     finally:
         flask.message_flashed.disconnect(record, app)
+
+def test_appcontext_tearing_down_signal():
+    app = flask.Flask(__name__)
+    recorded = []
+
+    def record_teardown(sender, **kwargs):
+        recorded.append(('tear_down', kwargs))
+
+    @app.route('/')
+    def index():
+        1 // 0
+
+    flask.appcontext_tearing_down.connect(record_teardown, app)
+    try:
+        with app.test_client() as c:
+            rv = c.get('/')
+            assert rv.status_code == 500
+            assert recorded == []
+        assert recorded == [('tear_down', {'exc': None})]
+    finally:
+        flask.appcontext_tearing_down.disconnect(record_teardown, app)
