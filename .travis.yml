@@ -22,7 +22,7 @@ matrix:
 
 
 install:
-    - pip install hg+https://bitbucket.org/hpk42/tox
+    - pip install tox>=1.8
 
 script:
     - tox -e \
