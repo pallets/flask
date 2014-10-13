@@ -51,6 +51,9 @@ Version 1.0
   loading.
 - Ported testsuite to py.test.
 - Deprecated ``request.json`` in favour of ``request.get_json()``.
+- Add "pretty" and "compressed" separators definitions in jsonify() method.
+  Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
+  unnecessary white space included by default after separators.
 
 
 Version 0.10.2

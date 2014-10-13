@@ -959,6 +959,34 @@ def test_make_response_with_response_instance():
         assert rv.headers['X-Foo'] == 'bar'
 
 
+def test_jsonify_no_prettyprint():
+    app = flask.Flask(__name__)
+    app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": False})
+    with app.test_request_context():
+        compressed_msg = b'{"msg":{"submsg":"W00t"},"msg2":"foobar"}'
+        uncompressed_msg = {
+            "msg": {
+                "submsg": "W00t"
+            },
+            "msg2": "foobar"
+            }
+
+        rv = flask.make_response(
+            flask.jsonify(uncompressed_msg), 200)
+        assert rv.data == compressed_msg
+
+def test_jsonify_prettyprint():
+    app = flask.Flask(__name__)
+    app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": True})
+    with app.test_request_context():
+        compressed_msg = {"msg":{"submsg":"W00t"},"msg2":"foobar"}
+        pretty_response =\
+            b'{\n  "msg": {\n    "submsg": "W00t"\n  }, \n  "msg2": "foobar"\n}'
+
+        rv = flask.make_response(
+            flask.jsonify(compressed_msg), 200)
+        assert rv.data == pretty_response
+
 def test_url_generation():
     app = flask.Flask(__name__)
 
