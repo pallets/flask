@@ -20,8 +20,8 @@ Version 1.0
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
 - Added :meth:`flask.config.Config.get_namespace`.
-- Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the 
-  templates will be reloaded only if the application is running in 
+- Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the
+  templates will be reloaded only if the application is running in
   debug mode. For higher performance it’s possible to disable that.
 - Added a workaround for a limitation in Python 3.3's namespace loader.
 - Added support for explicit root paths when using Python 3.3's namespace
@@ -69,6 +69,9 @@ Version 0.10.2
 - Changed logic of before first request handlers to flip the flag after
   invoking.  This will allow some uses that are potentially dangerous but
   should probably be permitted.
+- Add "pretty" and "compressed" separators definitions in jsonify() method.
+  Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
+  unnecessary white space included by default after separators.
 
 Version 0.10.1
 --------------
