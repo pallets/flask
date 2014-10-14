@@ -103,7 +103,9 @@ class Request(RequestBase):
 
         The :meth:`get_json` method should be used instead.
         """
-        # XXX: deprecate property
+        from warnings import warn
+        warn(DeprecationWarning('json is deprecated.  '
+                                'Use get_json() instead.'), stacklevel=2)
         return self.get_json()
 
     @property
