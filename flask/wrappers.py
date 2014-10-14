@@ -88,7 +88,7 @@ class Request(RequestBase):
             The :meth:`get_json` method should be used instead.
         """
         from warnings import warn
-        warn(DeprecationWarning('jsop property was deprecated.  Use '
+        warn(DeprecationWarning('json property was deprecated.  Use '
                                 'get_json() instead.'), stacklevel=2)
         return self.get_json()
 
