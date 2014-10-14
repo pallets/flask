@@ -268,18 +268,10 @@ def url_for(endpoint, **values):
     if reqctx is not None:
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
-        if not reqctx.request._is_old_module:
-            if endpoint[:1] == '.':
-                if blueprint_name is not None:
-                    endpoint = blueprint_name + endpoint
-                else:
-                    endpoint = endpoint[1:]
-        else:
-            # TODO: get rid of this deprecated functionality in 1.0
-            if '.' not in endpoint:
-                if blueprint_name is not None:
-                    endpoint = blueprint_name + '.' + endpoint
-            elif endpoint.startswith('.'):
+        if endpoint[:1] == '.':
+            if blueprint_name is not None:
+                endpoint = blueprint_name + endpoint
+            else:
                 endpoint = endpoint[1:]
         external = values.pop('_external', False)
 
