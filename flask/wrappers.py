@@ -56,10 +56,6 @@ class Request(RequestBase):
     #: something similar.
     routing_exception = None
 
-    # Switched by the request context until 1.0 to opt in deprecated
-    # module functionality.
-    _is_old_module = False
-
     @property
     def max_content_length(self):
         """Read-only view of the `MAX_CONTENT_LENGTH` config key."""
@@ -78,19 +74,6 @@ class Request(RequestBase):
             return self.url_rule.endpoint
 
     @property
-    def module(self):
-        """The name of the current module if the request was dispatched
-        to an actual module.  This is deprecated functionality, use blueprints
-        instead.
-        """
-        from warnings import warn
-        warn(DeprecationWarning('modules were deprecated in favor of '
-                                'blueprints.  Use request.blueprint '
-                                'instead.'), stacklevel=2)
-        if self._is_old_module:
-            return self.blueprint
-
-    @property
     def blueprint(self):
         """The name of the current blueprint"""
         if self.url_rule and '.' in self.url_rule.endpoint:
@@ -101,9 +84,12 @@ class Request(RequestBase):
         """If the mimetype is `application/json` this will contain the
         parsed JSON data.  Otherwise this will be `None`.
 
-        The :meth:`get_json` method should be used instead.
+        .. deprecated:: 0.10
+            The :meth:`get_json` method should be used instead.
         """
-        # XXX: deprecate property
+        from warnings import warn
+        warn(DeprecationWarning('jsop property was deprecated.  Use '
+                                'get_json() instead.'), stacklevel=2)
         return self.get_json()
 
     @property
