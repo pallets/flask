@@ -47,6 +47,7 @@ Version 1.0
 - Enforce blueprint handling in the order they were registered for template
   loading.
 - Ported testsuite to py.test.
+- Deprecated ``request.json`` in favour of ``request.get_json()``.
 
 
 Version 0.10.2
