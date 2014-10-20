@@ -198,6 +198,12 @@ def htmlsafe_dump(obj, fp, **kwargs):
     fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
 
 
+ARRAY_SECURITY_MESSAGE = """\
+JSON Responses with arrays at the top level open up an attack vector in some browsers.
+For more information, see: http://flask.pocoo.org/docs/security/#json-security
+"""
+
+
 def jsonify(*args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
     the given arguments with an `application/json` mimetype.  The arguments
@@ -240,8 +246,12 @@ def jsonify(*args, **kwargs):
     else:
         data = dict(*args, **kwargs)
 
-    return current_app.response_class(dumps(data,
-        indent=indent),
+    serialized = dumps(data, indent=indent)
+
+    if current_app.config['JSONIFY_ARRAY_SECURITY'] and serialized.startswith('['):
+        raise ValueError, ARRAY_SECURITY_MESSAGE
+
+    return current_app.response_class(serialized,
         mimetype='application/json')
 
 
