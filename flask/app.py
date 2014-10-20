@@ -867,6 +867,10 @@ class Flask(_PackageBoundObject):
            The `use_cookies` parameter was added as well as the ability
            to override the client to be used by setting the
            :attr:`test_client_class` attribute.
+
+        .. versionchanged:: 1.0
+           Added `**kwargs` to support passing additional keyword arguments to
+           the constructor of :attr:`test_client_class`.
         """
         cls = self.test_client_class
         if cls is None:
