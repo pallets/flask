@@ -102,6 +102,9 @@ JSON Security
    with the builtin constructor of ``Array`` which closes this particular
    attack vector.
 
+   To disable this security check, set JSONIFY_ARRAY_SECURITY = False in
+   your config file.
+
 JSON itself is a high-level serialization format, so there is barely
 anything that could cause security problems, right?  You can't declare
 recursive structures that could cause problems and the only thing that
