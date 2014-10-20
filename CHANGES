@@ -8,6 +8,9 @@ Version 1.0
 
 (release date to be announced, codename to be selected)
 
+- Added `**kwargs` to :meth:`flask.Test.test_client` to support passing
+  additional keyword arguments to the constructor of
+  :attr:`flask.Flask.test_client_class`.
 - Added ``SESSION_REFRESH_EACH_REQUEST`` config key that controls the
   set-cookie behavior.  If set to `True` a permanent session will be
   refreshed each request and get their lifetime extended, if set to
@@ -20,8 +23,8 @@ Version 1.0
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
 - Added :meth:`flask.config.Config.get_namespace`.
-- Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the 
-  templates will be reloaded only if the application is running in 
+- Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the
+  templates will be reloaded only if the application is running in
   debug mode. For higher performance it’s possible to disable that.
 - Added a workaround for a limitation in Python 3.3's namespace loader.
 - Added support for explicit root paths when using Python 3.3's namespace

@@ -821,7 +821,7 @@ class Flask(_PackageBoundObject):
             # without reloader and that stuff from an interactive shell.
             self._got_first_request = False
 
-    def test_client(self, use_cookies=True):
+    def test_client(self, use_cookies=True, **kwargs):
         """Creates a test client for this application.  For information
         about unit testing head over to :ref:`testing`.
 
@@ -844,6 +844,20 @@ class Flask(_PackageBoundObject):
                 rv = c.get('/?vodka=42')
                 assert request.args['vodka'] == '42'
 
+        Additionally, you may pass optional keyword arguments that will then
+        be passed to the application's :attr:`test_client_class` constructor.
+        For example::
+
+            from flask.testing import FlaskClient
+
+            class CustomClient(FlaskClient):
+                def __init__(self, authentication=None, *args, **kwargs):
+                    FlaskClient.__init__(*args, **kwargs)
+                    self._authentication = authentication
+
+            app.test_client_class = CustomClient
+            client = app.test_client(authentication='Basic ....')
+
         See :class:`~flask.testing.FlaskClient` for more information.
 
         .. versionchanged:: 0.4
@@ -853,11 +867,15 @@ class Flask(_PackageBoundObject):
            The `use_cookies` parameter was added as well as the ability
            to override the client to be used by setting the
            :attr:`test_client_class` attribute.
+
+        .. versionchanged:: 1.0
+           Added `**kwargs` to support passing additional keyword arguments to
+           the constructor of :attr:`test_client_class`.
         """
         cls = self.test_client_class
         if cls is None:
             from flask.testing import FlaskClient as cls
-        return cls(self, self.response_class, use_cookies=use_cookies)
+        return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
