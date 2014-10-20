@@ -50,12 +50,18 @@ def close_database(exception):
 
 
 def init_db():
+    """Initializes the database."""
+    db = get_db()
+    with app.open_resource('schema.sql', mode='r') as f:
+        db.cursor().executescript(f.read())
+    db.commit()
+
+
+@app.cli.command('initdb')
+def initdb_command():
     """Creates the database tables."""
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+    init_db()
+    print('Initialized the database.')
 
 
 def query_db(query, args=(), one=False):
@@ -217,7 +223,7 @@ def register():
         if not request.form['username']:
             error = 'You have to enter a username'
         elif not request.form['email'] or \
-                 '@' not in request.form['email']:
+                '@' not in request.form['email']:
             error = 'You have to enter a valid email address'
         elif not request.form['password']:
             error = 'You have to enter a password'
@@ -248,8 +254,3 @@ def logout():
 # add some filters to jinja
 app.jinja_env.filters['datetimeformat'] = format_datetime
 app.jinja_env.filters['gravatar'] = gravatar_url
-
-
-if __name__ == '__main__':
-    init_db()
-    app.run()

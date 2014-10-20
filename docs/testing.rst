@@ -11,7 +11,7 @@ improve existing code and developers of untested applications tend to
 become pretty paranoid.  If an application has automated tests, you can
 safely make changes and instantly know if anything breaks.
 
-Flask provides a way to test your application by exposing the Werkzeug 
+Flask provides a way to test your application by exposing the Werkzeug
 test :class:`~werkzeug.test.Client` and handling the context locals for you.
 You can then use that with your favourite testing solution.  In this documentation
 we will use the :mod:`unittest` package that comes pre-installed with Python.
@@ -19,17 +19,17 @@ we will use the :mod:`unittest` package that comes pre-installed with Python.
 The Application
 ---------------
 
-First, we need an application to test; we will use the application from 
-the :ref:`tutorial`.  If you don't have that application yet, get the 
+First, we need an application to test; we will use the application from
+the :ref:`tutorial`.  If you don't have that application yet, get the
 sources from `the examples`_.
 
 .. _the examples:
-   http://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
+   https://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
 
 The Testing Skeleton
 --------------------
 
-In order to test the application, we add a second module 
+In order to test the application, we add a second module
 (`flaskr_tests.py`) and create a unittest skeleton there::
 
     import os
@@ -43,7 +43,8 @@ In order to test the application, we add a second module
             self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
             flaskr.app.config['TESTING'] = True
             self.app = flaskr.app.test_client()
-            flaskr.init_db()
+            with flaskr.app.app_context():
+                flaskr.init_db()
 
         def tearDown(self):
             os.close(self.db_fd)
@@ -54,15 +55,15 @@ In order to test the application, we add a second module
 
 The code in the :meth:`~unittest.TestCase.setUp` method creates a new test
 client and initializes a new database.  This function is called before
-each individual test function is run.  To delete the database after the 
+each individual test function is run.  To delete the database after the
 test, we close the file and remove it from the filesystem in the
 :meth:`~unittest.TestCase.tearDown` method.  Additionally during setup the
 ``TESTING`` config flag is activated.  What it does is disabling the error
 catching during request handling so that you get better error reports when
 performing test requests against the application.
 
-This test client will give us a simple interface to the application.  We can 
-trigger test requests to the application, and the client will also keep track 
+This test client will give us a simple interface to the application.  We can
+trigger test requests to the application, and the client will also keep track
 of cookies for us.
 
 Because SQLite3 is filesystem-based we can easily use the tempfile module
@@ -88,8 +89,8 @@ with an exception.
 The First Test
 --------------
 
-Now it's time to start testing the functionality of the application.  
-Let's check that the application shows "No entries here so far" if we 
+Now it's time to start testing the functionality of the application.
+Let's check that the application shows "No entries here so far" if we
 access the root of the application (``/``). To do this, we add a new
 test method to our class, like this::
 
@@ -108,13 +109,13 @@ test method to our class, like this::
             rv = self.app.get('/')
             assert 'No entries here so far' in rv.data
 
-Notice that our test functions begin with the word `test`; this allows 
-:mod:`unittest` to automatically identify the method as a test to run. 
+Notice that our test functions begin with the word `test`; this allows
+:mod:`unittest` to automatically identify the method as a test to run.
 
-By using `self.app.get` we can send an HTTP `GET` request to the application with 
-the given path.  The return value will be a :class:`~flask.Flask.response_class` object. 
+By using `self.app.get` we can send an HTTP `GET` request to the application with
+the given path.  The return value will be a :class:`~flask.Flask.response_class` object.
 We can now use the :attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect
-the return value (as string) from the application.  In this case, we ensure that 
+the return value (as string) from the application.  In this case, we ensure that
 ``'No entries here so far'`` is part of the output.
 
 Run it again and you should see one passing test::
@@ -131,8 +132,8 @@ Logging In and Out
 
 The majority of the functionality of our application is only available for
 the administrative user, so we need a way to log our test client in and out
-of the application.  To do this, we fire some requests to the login and logout 
-pages with the required form data (username and password).  And because the 
+of the application.  To do this, we fire some requests to the login and logout
+pages with the required form data (username and password).  And because the
 login and logout pages redirect, we tell the client to `follow_redirects`.
 
 Add the following two methods to your `FlaskrTestCase` class::
@@ -193,7 +194,7 @@ suite.
 
 
 .. _MiniTwit Example:
-   http://github.com/mitsuhiko/flask/tree/master/examples/minitwit/
+   https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/
 
 
 Other Testing Tricks

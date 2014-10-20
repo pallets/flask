@@ -44,7 +44,7 @@ class ExtensionImporter(object):
     def install(self):
         sys.meta_path[:] = [x for x in sys.meta_path if self != x] + [self]
 
-    def find_module(self, fullname):
+    def find_module(self, fullname, path=None):
         if fullname.startswith(self.prefix):
             return self
 

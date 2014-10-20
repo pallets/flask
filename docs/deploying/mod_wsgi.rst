@@ -29,12 +29,19 @@ follows:
 
     # apt-get install libapache2-mod-wsgi
 
+If you are using a yum based distribution (Fedora, OpenSUSE, etc..) you
+can install it as follows:
+
+.. sourcecode:: text
+
+    # yum install mod_wsgi
+
 On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by
 using pkg_add:
 
 .. sourcecode:: text
 
-    # pkg_add -r mod_wsgi
+    # pkg install ap22-mod_wsgi2
 
 If you are using pkgsrc you can install `mod_wsgi` by compiling the
 `www/ap2-wsgi` package.
@@ -91,7 +98,7 @@ execute the application under a different user for security reasons:
         </Directory>
     </VirtualHost>
 
-Note: WSGIDaemonProcess isn't implemented in Windows and Apache will 
+Note: WSGIDaemonProcess isn't implemented in Windows and Apache will
 refuse to run with the above configuration. On a Windows system, eliminate those lines:
 
 .. sourcecode:: apache
@@ -105,12 +112,16 @@ refuse to run with the above configuration. On a Windows system, eliminate those
 		</Directory>
 	</VirtualHost>
 
+Note: There have been some changes in access control configuration for `Apache 2.4`_.
+
+.. _Apache 2.4: http://httpd.apache.org/docs/trunk/upgrading.html
+
 For more information consult the `mod_wsgi wiki`_.
 
 .. _mod_wsgi: http://code.google.com/p/modwsgi/
 .. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
-.. _virtual python: http://pypi.python.org/pypi/virtualenv
-.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
+.. _virtual python: https://pypi.python.org/pypi/virtualenv
+.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/w/list
 
 Troubleshooting
 ---------------

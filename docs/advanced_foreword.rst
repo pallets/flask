@@ -8,7 +8,7 @@ Thread-Locals in Flask
 
 One of the design decisions in Flask was that simple tasks should be simple;
 they should not take a lot of code and yet they should not limit you. Because
-of that, Flask has few design choices that some people might find surprising or
+of that, Flask has a few design choices that some people might find surprising or
 unorthodox. For example, Flask uses thread-local objects internally so that you
 don’t have to pass objects around from function to function within a request in
 order to stay threadsafe. This approach is convenient, but requires a valid
@@ -57,7 +57,7 @@ partially caused by changes in the language that went unreviewed for too
 long, partially also because we have not quite worked out how the lower-
 level API should change to account for the Unicode differences in Python 3.
 
-We strongly recommend using Python 2.6 and 2.7 with activated Python 3
+We strongly recommend using Python 2.7 with activated Python 3
 warnings during development.  If you plan on upgrading to Python 3 in the
 near future we strongly recommend that you read `How to write forwards
 compatible Python code

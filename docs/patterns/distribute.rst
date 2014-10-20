@@ -161,6 +161,6 @@ folder instead of copying the data over.  You can then continue to work on
 the code without having to run `install` again after each change.
 
 
-.. _distribute: http://pypi.python.org/pypi/distribute
-.. _pip: http://pypi.python.org/pypi/pip
+.. _distribute: https://pypi.python.org/pypi/distribute
+.. _pip: https://pypi.python.org/pypi/pip
 .. _distribute_setup.py: http://python-distribute.org/distribute_setup.py

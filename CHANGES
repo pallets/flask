@@ -19,6 +19,36 @@ Version 1.0
   from a view function.
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
+- Added :meth:`flask.config.Config.get_namespace`.
+- Added ``TEMPLATES_AUTO_RELOAD`` config key. If disabled the 
+  templates will be reloaded only if the application is running in 
+  debug mode. For higher performance it’s possible to disable that.
+- Added a workaround for a limitation in Python 3.3's namespace loader.
+- Added support for explicit root paths when using Python 3.3's namespace
+  packages.
+- Added ``flask`` and the ``flask.cli`` module to start the local
+  debug server through the click CLI system.  This is recommended over the old
+  ``flask.run()`` method as it works faster and more reliable due to a
+  different design and also replaces ``Flask-Script``.
+- Error handlers that match specific classes are now checked first,
+  thereby allowing catching exceptions that are subclasses of HTTP
+  exceptions (in ``werkzeug.exceptions``).  This makes it possible
+  for an extension author to create exceptions that will by default
+  result in the HTTP error of their choosing, but may be caught with
+  a custom error handler if desired.
+- Added :meth:`flask.Config.from_mapping`.
+- Flask will now log by default even if debug is disabled.  The log format is
+  now hardcoded but the default log handling can be disabled through the
+  ``LOGGER_HANDLER_POLICY`` configuration key.
+- Removed deprecate module functionality.
+- Added the ``EXPLAIN_TEMPLATE_LOADING`` config flag which when enabled will
+  instruct Flask to explain how it locates templates.  This should help
+  users debug when the wrong templates are loaded.
+- Enforce blueprint handling in the order they were registered for template
+  loading.
+- Ported testsuite to py.test.
+- Deprecated ``request.json`` in favour of ``request.get_json()``.
+
 
 Version 0.10.2
 --------------
@@ -390,7 +420,7 @@ Released on July 27th 2010, codename Whisky
   prefix.  This makes it possible to bind a whole module to a
   configurable subdomain.
 
-.. _blinker: http://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.python.org/pypi/blinker
 
 Version 0.5.2
 -------------

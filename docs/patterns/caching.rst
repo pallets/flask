@@ -27,7 +27,7 @@ cache that keeps the item stored in the memory of the Python interpreter::
     cache = SimpleCache()
 
 If you want to use memcached, make sure to have one of the memcache modules
-supported (you get them from `PyPI <http://pypi.python.org/>`_) and a
+supported (you get them from `PyPI <https://pypi.python.org/pypi>`_) and a
 memcached server running somewhere.  This is how you connect to such an
 memcached server then::
 
@@ -44,7 +44,7 @@ Using a Cache
 -------------
 
 Now how can one use such a cache?  There are two very important
-operations: :meth:`~werkzeug.contrib.cache.BaseCache.get` and 
+operations: :meth:`~werkzeug.contrib.cache.BaseCache.get` and
 :meth:`~werkzeug.contrib.cache.BaseCache.set`.  This is how to use them:
 
 To get an item from the cache call

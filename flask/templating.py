@@ -8,14 +8,11 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import posixpath
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered
-from .module import blueprint_is_module
-from ._compat import itervalues, iteritems
 
 
 def _default_template_ctx_processor():
@@ -55,37 +52,38 @@ class DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
-        for loader, local_name in self._iter_loaders(template):
-            try:
-                return loader.get_source(environment, local_name)
-            except TemplateNotFound:
-                pass
+        explain = self.app.config['EXPLAIN_TEMPLATE_LOADING']
+        attempts = []
+        tmplrv = None
 
+        for srcobj, loader in self._iter_loaders(template):
+            try:
+                rv = loader.get_source(environment, template)
+                if tmplrv is None:
+                    tmplrv = rv
+                if not explain:
+                    break
+            except TemplateNotFound:
+                rv = None
+            attempts.append((loader, srcobj, rv))
+
+        if explain:
+            from .debughelpers import explain_template_loading_attempts
+            explain_template_loading_attempts(self.app, template, attempts)
+
+        if tmplrv is not None:
+            return tmplrv
         raise TemplateNotFound(template)
 
     def _iter_loaders(self, template):
         loader = self.app.jinja_loader
         if loader is not None:
-            yield loader, template
+            yield self.app, loader
 
-        # old style module based loaders in case we are dealing with a
-        # blueprint that is an old style module
-        try:
-            module, local_name = posixpath.normpath(template).split('/', 1)
-            blueprint = self.app.blueprints[module]
-            if blueprint_is_module(blueprint):
-                loader = blueprint.jinja_loader
-                if loader is not None:
-                    yield loader, local_name
-        except (ValueError, KeyError):
-            pass
-
-        for blueprint in itervalues(self.app.blueprints):
-            if blueprint_is_module(blueprint):
-                continue
+        for blueprint in self.app.iter_blueprints():
             loader = blueprint.jinja_loader
             if loader is not None:
-                yield loader, template
+                yield blueprint, loader
 
     def list_templates(self):
         result = set()
@@ -93,14 +91,11 @@ class DispatchingJinjaLoader(BaseLoader):
         if loader is not None:
             result.update(loader.list_templates())
 
-        for name, blueprint in iteritems(self.app.blueprints):
+        for blueprint in self.app.iter_blueprints():
             loader = blueprint.jinja_loader
             if loader is not None:
                 for template in loader.list_templates():
-                    prefix = ''
-                    if blueprint_is_module(blueprint):
-                        prefix = name + '/'
-                    result.add(prefix + template)
+                    result.add(template)
 
         return list(result)
 

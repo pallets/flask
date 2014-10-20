@@ -25,7 +25,7 @@ except ImportError:
     from itsdangerous import json as _json
 
 
-# figure out if simplejson escapes slashes.  This behavior was changed
+# Figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
 _slash_escape = '\\/' not in _json.dumps('/')
 
@@ -119,7 +119,7 @@ def dumps(obj, **kwargs):
     This function can return ``unicode`` strings or ascii-only bytestrings by
     default which coerce into unicode strings automatically.  That behavior by
     default is controlled by the ``JSON_AS_ASCII`` configuration variable
-    and can be overriden by the simplejson ``ensure_ascii`` parameter.
+    and can be overridden by the simplejson ``ensure_ascii`` parameter.
     """
     _dump_arg_defaults(kwargs)
     encoding = kwargs.pop('encoding', None)

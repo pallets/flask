@@ -3,7 +3,7 @@
 all: clean-pyc test
 
 test:
-	python run-tests.py
+	py.test tests examples
 
 tox-test:
 	tox
@@ -29,10 +29,10 @@ upload-docs:
 	$(MAKE) -C docs html dirhtml latex epub
 	$(MAKE) -C docs/_build/latex all-pdf
 	cd docs/_build/; mv html flask-docs; zip -r flask-docs.zip flask-docs; mv flask-docs html
-	rsync -a docs/_build/dirhtml/ pocoo.org:/var/www/flask.pocoo.org/docs/
-	rsync -a docs/_build/latex/Flask.pdf pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.pdf
-	rsync -a docs/_build/flask-docs.zip pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.zip
-	rsync -a docs/_build/epub/Flask.epub pocoo.org:/var/www/flask.pocoo.org/docs/flask-docs.epub
+	rsync -a docs/_build/dirhtml/ flow.srv.pocoo.org:/srv/websites/flask.pocoo.org/docs/
+	rsync -a docs/_build/latex/Flask.pdf flow.srv.pocoo.org:/srv/websites/flask.pocoo.org/docs/flask-docs.pdf
+	rsync -a docs/_build/flask-docs.zip flow.srv.pocoo.org:/srv/websites/flask.pocoo.org/docs/flask-docs.zip
+	rsync -a docs/_build/epub/Flask.epub flow.srv.pocoo.org:/srv/websites/flask.pocoo.org/docs/flask-docs.epub
 
 # ebook-convert docs: http://manual.calibre-ebook.com/cli/ebook-convert.html
 ebook:

@@ -19,6 +19,16 @@ installation, make sure to pass it the ``-U`` parameter::
 
     $ easy_install -U Flask
 
+.. _upgrading-to-10:
+
+Version 1.0
+-----------
+
+Flask 1.0 removed the ``debug_log_format`` attribute from Flask
+applications.  Instead the new ``LOGGER_HANDLER_POLICY`` configuration can
+be used to disable the default log handlers and custom log handlers can be
+set up.
+
 .. _upgrading-to-010:
 
 Version 0.10
@@ -43,7 +53,7 @@ when there is no request context yet but an application context.  The old
 ``flask.Flask.request_globals_class`` attribute was renamed to
 :attr:`flask.Flask.app_ctx_globals_class`.
 
-.. _Flask-OldSessions: http://packages.python.org/Flask-OldSessions/
+.. _Flask-OldSessions: http://pythonhosted.org/Flask-OldSessions/
 
 Version 0.9
 -----------
@@ -64,8 +74,8 @@ If you maintain an extension that was using :data:`~flask._request_ctx_stack`
 before, please consider changing to :data:`~flask._app_ctx_stack` if it makes
 sense for your extension.  For instance, the app context stack makes sense for
 extensions which connect to databases.  Using the app context stack instead of
-the request stack will make extensions more readily handle use cases outside of
-requests.
+the request context stack will make extensions more readily handle use cases
+outside of requests.
 
 Version 0.8
 -----------
@@ -115,7 +125,7 @@ good.
 To apply the upgrade script do the following:
 
 1.  Download the script: `flask-07-upgrade.py
-    <https://raw.github.com/mitsuhiko/flask/master/scripts/flask-07-upgrade.py>`_
+    <https://raw.githubusercontent.com/mitsuhiko/flask/master/scripts/flask-07-upgrade.py>`_
 2.  Run it in the directory of your application::
 
         python flask-07-upgrade.py > patchfile.diff

@@ -19,7 +19,7 @@ In addition to that you need to use the latest and greatest versions of
 API Stability
 -------------
 
-Some of the decisions made in regards to unicode and byte untilization on
+Some of the decisions made in regards to unicode and byte utilization on
 Python 3 make it hard to write low level code.  This mainly affects WSGI
 middlewares and interacting with the WSGI provided information.  Werkzeug
 wraps all that information in high-level helpers but some of those were
@@ -33,19 +33,20 @@ guarantee that this won't happen on Python 3.
 Few Users
 ---------
 
-Python 3 currently has less than 1% of the users of Python 2 going by PyPI
-download stats.  As a result many of the problems you will encounter are
+Although moving to Python 3 should be done someday, most people still use
+Python 2 for now.  As a result many of the problems you will encounter are
 probably hard to search for on the internet if they are Python 3 specific.
 
 Small Ecosystem
 ---------------
 
-The majority of the Flask extensions, all of the documentation and the
-vast majority of the PyPI provided libraries do not support Python 3 yet.
+Some Flask extensions, documentation and PyPI provided libraries do not
+support Python 3 yet.
+
 Even if you start your project with knowing that all you will need is
-supported by Python 3 you don't know what happens six months from now.  If
-you are adventurous you can start porting libraries on your own, but that
-is nothing for the faint of heart.
+supported by Python 3 you don't know what happens six months from now.
+But if you are familiar with Python 3 and Flask extension, you can start
+porting libraries on your own.
 
 Recommendations
 ---------------

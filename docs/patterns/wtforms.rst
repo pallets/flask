@@ -8,7 +8,7 @@ will handle here.  If you find yourself in the situation of having many
 forms, you might want to give it a try.
 
 When you are working with WTForms you have to define your forms as classes
-first.  I recommend breaking up the application into multiple modules 
+first.  I recommend breaking up the application into multiple modules
 (:ref:`larger-applications`) for that and adding a separate module for the
 forms.
 
@@ -17,9 +17,9 @@ forms.
    The `Flask-WTF`_ extension expands on this pattern and adds a few
    handful little helpers that make working with forms and Flask more
    fun.  You can get it from `PyPI
-   <http://pypi.python.org/pypi/Flask-WTF>`_.
+   <https://pypi.python.org/pypi/Flask-WTF>`_.
 
-.. _Flask-WTF: http://packages.python.org/Flask-WTF/
+.. _Flask-WTF: http://pythonhosted.org/Flask-WTF/
 
 The Forms
 ---------
@@ -122,5 +122,5 @@ takes advantage of the `_formhelpers.html` template:
 For more information about WTForms, head over to the `WTForms
 website`_.
 
-.. _WTForms: http://wtforms.simplecodes.com/
-.. _WTForms website: http://wtforms.simplecodes.com/
+.. _WTForms: http://wtforms.readthedocs.org/
+.. _WTForms website: http://wtforms.readthedocs.org/

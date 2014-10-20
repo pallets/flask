@@ -8,17 +8,17 @@ Logging Application Errors
 Applications fail, servers fail.  Sooner or later you will see an exception
 in production.  Even if your code is 100% correct, you will still see
 exceptions from time to time.  Why?  Because everything else involved will
-fail.  Here some situations where perfectly fine code can lead to server
+fail.  Here are some situations where perfectly fine code can lead to server
 errors:
 
 -   the client terminated the request early and the application was still
-    reading from the incoming data.
--   the database server was overloaded and could not handle the query.
+    reading from the incoming data
+-   the database server was overloaded and could not handle the query
 -   a filesystem is full
 -   a harddrive crashed
 -   a backend server overloaded
 -   a programming error in a library you are using
--   network connection of the server to another system failed.
+-   network connection of the server to another system failed
 
 And that's just a small sample of issues you could be facing.  So how do we
 deal with that sort of problem?  By default if your application runs in
@@ -32,18 +32,16 @@ Error Mails
 -----------
 
 If the application runs in production mode (which it will do on your
-server) you won't see any log messages by default.  Why is that?  Flask
-tries to be a zero-configuration framework.  Where should it drop the logs
-for you if there is no configuration?  Guessing is not a good idea because
-chances are, the place it guessed is not the place where the user has
-permission to create a logfile.  Also, for most small applications nobody
-will look at the logs anyways.
+server) you might not see any log messages.  The reason for that is that
+Flask by default will just report to the WSGI error stream or stderr
+(depending on what's available).  Where this ends up is sometimes hard to
+find.  Often it's in your webserver's log files.
 
-In fact, I promise you right now that if you configure a logfile for the
-application errors you will never look at it except for debugging an issue
-when a user reported it for you.  What you want instead is a mail the
-second the exception happened.  Then you get an alert and you can do
-something about it.
+I can pretty much promise you however that if you only use a logfile for
+the application errors you will never look at it except for debugging an
+issue when a user reported it for you.  What you probably want instead is
+a mail the second the exception happened.  Then you get an alert and you
+can do something about it.
 
 Flask uses the Python builtin logging system, and it can actually send
 you mails for errors which is probably what you want.  Here is how you can
@@ -81,9 +79,10 @@ Logging to a File
 
 Even if you get mails, you probably also want to log warnings.  It's a
 good idea to keep as much information around that might be required to
-debug a problem.  Please note that Flask itself will not issue any
-warnings in the core system, so it's your responsibility to warn in the
-code if something seems odd.
+debug a problem.  By default as of Flask 1.0, errors are logged to your
+webserver's log automatically.  Warnings however are not.  Please note
+that Flask itself will not issue any warnings in the core system, so it's
+your responsibility to warn in the code if something seems odd.
 
 There are a couple of handlers provided by the logging system out of the
 box but not all of them are useful for basic error logging.  The most
@@ -269,7 +268,7 @@ of the box (see :ref:`debug-mode`).  If you would like to use another Python
 debugger, note that debuggers interfere with each other.  You have to set some
 options in order to use your favorite debugger:
 
-* ``debug``        - whether to enable debug mode and catch exceptinos
+* ``debug``        - whether to enable debug mode and catch exceptions
 * ``use_debugger`` - whether to use the internal Flask debugger
 * ``use_reloader`` - whether to reload and fork the process on exception
 

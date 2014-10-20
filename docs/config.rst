@@ -99,6 +99,14 @@ The following configuration values are used internally by Flask:
                                   by this.
 ``USE_X_SENDFILE``                enable/disable x-sendfile
 ``LOGGER_NAME``                   the name of the logger
+``LOGGER_HANDLER_POLICY``         the policy of the default logging
+                                  handler.  The default is ``'always'``
+                                  which means that the default logging
+                                  handler is always active.  ``'debug'``
+                                  will only activate logging in debug
+                                  mode, ``'production'`` will only log in
+                                  production and ``'never'`` disables it
+                                  entirely.
 ``SERVER_NAME``                   the name and port number of the server.
                                   Required for subdomain support (e.g.:
                                   ``'myapp.dev:5000'``)  Note that
@@ -155,7 +163,7 @@ The following configuration values are used internally by Flask:
                                   ascii-encoded JSON.  If this is set to
                                   ``False`` Flask will not encode to ASCII
                                   and output strings as-is and return
-                                  unicode strings.  ``jsonfiy`` will
+                                  unicode strings.  ``jsonify`` will
                                   automatically encode it in ``utf-8``
                                   then for transport for instance.
 ``JSON_SORT_KEYS``                By default Flask will serialize JSON
@@ -174,6 +182,19 @@ The following configuration values are used internally by Flask:
                                   if they are not requested by an
                                   XMLHttpRequest object (controlled by
                                   the ``X-Requested-With`` header)
+``TEMPLATES_AUTO_RELOAD``         Flask checks if template was modified each
+                                  time it is requested and reloads it if
+                                  necessary. But disk I/O is costly and it may
+                                  be viable to disable this feature by setting
+                                  this key to ``False``. This option does not
+                                  affect debug mode.
+``EXPLAIN_TEMPLATE_LOADING``      If this is enabled then every attempt to
+                                  load a template will write an info
+                                  message to the logger explaining the
+                                  attempts to locate the template.  This
+                                  can be useful to figure out why
+                                  templates cannot be found or wrong
+                                  templates appear to be loaded.
 ================================= =========================================
 
 .. admonition:: More on ``SERVER_NAME``
@@ -188,12 +209,12 @@ The following configuration values are used internally by Flask:
    browsers will not allow cross-subdomain cookies to be set on a
    server name without dots in it.  So if your server name is
    ``'localhost'`` you will not be able to set a cookie for
-   ``'localhost'`` and every subdomain of it.  Please chose a different
+   ``'localhost'`` and every subdomain of it.  Please choose a different
    server name in that case, like ``'myapplication.local'`` and add
    this name + the subdomains you want to use into your host config
    or setup a local `bind`_.
 
-.. _bind: https://www.isc.org/software/bind
+.. _bind: https://www.isc.org/downloads/bind/
 
 .. versionadded:: 0.4
    ``LOGGER_NAME``
@@ -220,7 +241,8 @@ The following configuration values are used internally by Flask:
    ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``, ``JSONIFY_PRETTYPRINT_REGULAR``
 
 .. versionadded:: 1.0
-   ``SESSION_REFRESH_EACH_REQUEST``
+   ``SESSION_REFRESH_EACH_REQUEST``, ``TEMPLATES_AUTO_RELOAD``,
+   ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
 
 Configuring from Files
 ----------------------
@@ -278,7 +300,7 @@ a little harder.  There is no single 100% solution for this problem in
 general, but there are a couple of things you can keep in mind to improve
 that experience:
 
-1.  create your application in a function and register blueprints on it.
+1.  Create your application in a function and register blueprints on it.
     That way you can create multiple instances of your application with
     different configurations attached which makes unittesting a lot
     easier.  You can use this to pass in configuration as needed.
@@ -339,10 +361,10 @@ To enable such a config you just have to call into
 There are many different ways and it's up to you how you want to manage
 your configuration files.  However here a list of good recommendations:
 
--   keep a default configuration in version control.  Either populate the
+-   Keep a default configuration in version control.  Either populate the
     config with this default configuration or import it in your own
     configuration files before overriding values.
--   use an environment variable to switch between the configurations.
+-   Use an environment variable to switch between the configurations.
     This can be done from outside the Python interpreter and makes
     development and deployment much easier because you can quickly and
     easily switch between different configs without having to touch the
@@ -354,7 +376,7 @@ your configuration files.  However here a list of good recommendations:
     details about how to do that, head over to the
     :ref:`fabric-deployment` pattern.
 
-.. _fabric: http://fabfile.org/
+.. _fabric: http://www.fabfile.org/
 
 
 .. _instance-folders:

@@ -1,3 +1,5 @@
+.. _errorpages:
+
 Custom Error Pages
 ==================
 
@@ -37,7 +39,7 @@ even if the application behaves correctly:
 
 *500 Internal Server Error*
     Usually happens on programming errors or if the server is overloaded.
-    A terrible good idea to have a nice page there, because your
+    A terribly good idea is to have a nice page there, because your
     application *will* fail sooner or later (see also:
     :ref:`application-errors`).
 

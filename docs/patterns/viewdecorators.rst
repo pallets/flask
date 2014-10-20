@@ -2,12 +2,12 @@ View Decorators
 ===============
 
 Python has a really interesting feature called function decorators.  This
-allow some really neat things for web applications.  Because each view in
-Flask is a function decorators can be used to inject additional
+allows some really neat things for web applications.  Because each view in
+Flask is a function, decorators can be used to inject additional
 functionality to one or more functions.  The :meth:`~flask.Flask.route`
 decorator is the one you probably used already.  But there are use cases
 for implementing your own decorator.  For instance, imagine you have a
-view that should only be used by people that are logged in to.  If a user
+view that should only be used by people that are logged in.  If a user
 goes to the site and is not logged in, they should be redirected to the
 login page.  This is a good example of a use case where a decorator is an
 excellent solution.
@@ -54,7 +54,7 @@ because of that you would like to cache the generated results for a
 certain amount of time.  A decorator would be nice for that.  We're
 assuming you have set up a cache like mentioned in :ref:`caching-pattern`.
 
-Here an example cache function.  It generates the cache key from a
+Here is an example cache function.  It generates the cache key from a
 specific prefix (actually a format string) and the current path of the
 request.  Notice that we are using a function that first creates the
 decorator that then decorates the function.  Sounds awful? Unfortunately
@@ -124,10 +124,10 @@ the dictionary returned is passed to the template rendering function.  If
 a dictionary is returned we return it from the function unchanged.  That
 way you can still use the redirect function or return simple strings.
 
-Here the code for that decorator::
+Here is the code for that decorator::
 
     from functools import wraps
-    from flask import request
+    from flask import request, render_template
 
     def templated(template=None):
         def decorator(f):
@@ -163,6 +163,3 @@ to a view function. This is possible with this decorator. For example::
     @app.endpoint('index')                                                         
     def my_index():                                                                
         return "Hello world"     
-
-
-

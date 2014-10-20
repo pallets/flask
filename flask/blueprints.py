@@ -79,7 +79,7 @@ class BlueprintSetupState(object):
 class Blueprint(_PackageBoundObject):
     """Represents a blueprint.  A blueprint is an object that records
     functions that will be called with the
-    :class:`~flask.blueprint.BlueprintSetupState` later to register functions
+    :class:`~flask.blueprints.BlueprintSetupState` later to register functions
     or other things on the main application.  See :ref:`blueprints` for more
     information.
 
@@ -91,8 +91,10 @@ class Blueprint(_PackageBoundObject):
 
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
-                 url_prefix=None, subdomain=None, url_defaults=None):
-        _PackageBoundObject.__init__(self, import_name, template_folder)
+                 url_prefix=None, subdomain=None, url_defaults=None,
+                 root_path=None):
+        _PackageBoundObject.__init__(self, import_name, template_folder,
+                                     root_path=root_path)
         self.name = name
         self.url_prefix = url_prefix
         self.subdomain = subdomain
@@ -399,3 +401,14 @@ class Blueprint(_PackageBoundObject):
                 self.name, code_or_exception, f))
             return f
         return decorator
+
+    def register_error_handler(self, code_or_exception, f):
+        """Non-decorator version of the :meth:`errorhandler` error attach
+        function, akin to the :meth:`~flask.Flask.register_error_handler`
+        application-wide function of the :class:`~flask.Flask` object but
+        for error handlers limited to this blueprint.
+
+        .. versionadded:: 0.11
+        """
+        self.record_once(lambda s: s.app._register_error_handler(
+            self.name, code_or_exception, f))

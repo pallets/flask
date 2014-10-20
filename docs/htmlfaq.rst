@@ -186,7 +186,7 @@ Many other features have been added, as well. A good guide to new features
 in HTML5 is Mark Pilgrim's soon-to-be-published book, `Dive Into HTML5`_.
 Not all of them are supported in browsers yet, however, so use caution.
 
-.. _Dive Into HTML5: http://www.diveintohtml5.org/
+.. _Dive Into HTML5: http://diveintohtml5.info/
 
 What should be used?
 --------------------

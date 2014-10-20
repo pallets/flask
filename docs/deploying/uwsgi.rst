@@ -63,5 +63,5 @@ it the WSGI `SCRIPT_NAME` or set the uwsgi modifier to make use of it::
 
 .. _nginx: http://nginx.org/
 .. _lighttpd: http://www.lighttpd.net/
-.. _cherokee: http://www.cherokee-project.com/
+.. _cherokee: http://cherokee-project.com/
 .. _uwsgi: http://projects.unbit.it/uwsgi/

@@ -52,36 +52,39 @@ class SessionMixin(object):
     modified = True
 
 
+def _tag(value):
+    if isinstance(value, tuple):
+        return {' t': [_tag(x) for x in value]}
+    elif isinstance(value, uuid.UUID):
+        return {' u': value.hex}
+    elif isinstance(value, bytes):
+        return {' b': b64encode(value).decode('ascii')}
+    elif callable(getattr(value, '__html__', None)):
+        return {' m': text_type(value.__html__())}
+    elif isinstance(value, list):
+        return [_tag(x) for x in value]
+    elif isinstance(value, datetime):
+        return {' d': http_date(value)}
+    elif isinstance(value, dict):
+        return dict((k, _tag(v)) for k, v in iteritems(value))
+    elif isinstance(value, str):
+        try:
+            return text_type(value)
+        except UnicodeError:
+            from flask.debughelpers import UnexpectedUnicodeError
+            raise UnexpectedUnicodeError(u'A byte string with '
+                u'non-ASCII data was passed to the session system '
+                u'which can only store unicode strings.  Consider '
+                u'base64 encoding your string (String was %r)' % value)
+    return value
+
+
 class TaggedJSONSerializer(object):
     """A customized JSON serializer that supports a few extra types that
     we take for granted when serializing (tuples, markup objects, datetime).
     """
 
     def dumps(self, value):
-        def _tag(value):
-            if isinstance(value, tuple):
-                return {' t': [_tag(x) for x in value]}
-            elif isinstance(value, uuid.UUID):
-                return {' u': value.hex}
-            elif isinstance(value, bytes):
-                return {' b': b64encode(value).decode('ascii')}
-            elif callable(getattr(value, '__html__', None)):
-                return {' m': text_type(value.__html__())}
-            elif isinstance(value, list):
-                return [_tag(x) for x in value]
-            elif isinstance(value, datetime):
-                return {' d': http_date(value)}
-            elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in iteritems(value))
-            elif isinstance(value, str):
-                try:
-                    return text_type(value)
-                except UnicodeError:
-                    raise UnexpectedUnicodeError(u'A byte string with '
-                        u'non-ASCII data was passed to the session system '
-                        u'which can only store unicode strings.  Consider '
-                        u'base64 encoding your string (String was %r)' % value)
-            return value
         return json.dumps(_tag(value), separators=(',', ':'))
 
     def loads(self, value):
@@ -223,7 +226,7 @@ class SessionInterface(object):
 
     def get_cookie_path(self, app):
         """Returns the path for which the cookie should be valid.  The
-        default implementation uses the value from the SESSION_COOKIE_PATH``
+        default implementation uses the value from the ``SESSION_COOKIE_PATH``
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's `None`.
         """
@@ -253,7 +256,7 @@ class SessionInterface(object):
             return datetime.utcnow() + app.permanent_session_lifetime
 
     def should_set_cookie(self, app, session):
-        """Indicates weather a cookie should be set now or not.  This is
+        """Indicates whether a cookie should be set now or not.  This is
         used by session backends to figure out if they should emit a
         set-cookie header or not.  The default behavior is controlled by
         the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
@@ -360,6 +363,3 @@ class SecureCookieSessionInterface(SessionInterface):
         response.set_cookie(app.session_cookie_name, val,
                             expires=expires, httponly=httponly,
                             domain=domain, path=path, secure=secure)
-
-
-from flask.debughelpers import UnexpectedUnicodeError

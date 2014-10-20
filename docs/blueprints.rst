@@ -3,6 +3,8 @@
 Modular Applications with Blueprints
 ====================================
 
+.. currentmodule:: flask
+
 .. versionadded:: 0.7
 
 Flask uses a concept of *blueprints* for making application components and
@@ -97,7 +99,7 @@ these::
      <Rule '/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
      <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>]
 
-The first one is obviously from the application ifself for the static
+The first one is obviously from the application itself for the static
 files.  The other two are for the `show` function of the ``simple_page``
 blueprint.  As you can see, they are also prefixed with the name of the
 blueprint and separated by a dot (``.``).
@@ -185,6 +187,24 @@ want to render the template ``'admin/index.html'`` and you have provided
 ``templates`` as a `template_folder` you will have to create a file like
 this: ``yourapplication/admin/templates/admin/index.html``.
 
+To further reiterate this: if you have a blueprint named ``admin`` and you
+want to render a template called ``index.html`` which is specific to this
+blueprint, the best idea is to lay out your templates like this::
+
+    yourpackage/
+        blueprints/
+            admin/
+                templates/
+                    admin/
+                        index.html
+                __init__.py
+
+And then when you want to render the template, use ``admin/index.html`` as
+the name to look up the template by.  If you encounter problems loading
+the correct templates enable the ``EXPLAIN_TEMPLATE_LOADING`` config
+variable which will instruct Flask to print out the steps it goes through
+to locate templates on every ``render_template`` call.
+
 Building URLs
 -------------
 
@@ -202,3 +222,18 @@ you can use relative redirects by prefixing the endpoint with a dot only::
 
 This will link to ``admin.index`` for instance in case the current request
 was dispatched to any other admin blueprint endpoint.
+
+Error Handlers
+--------------
+
+Blueprints support the errorhandler decorator just like the :class:`Flask`
+application object, so it is easy to make Blueprint-specific custom error
+pages.
+
+Here is an example for a "404 Page Not Found" exception::
+
+    @simple_page.errorhandler(404)
+    def page_not_found(e):
+        return render_template('pages/404.html')
+
+More information on error handling see :ref:`errorpages`.
