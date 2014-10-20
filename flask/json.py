@@ -248,8 +248,8 @@ def jsonify(*args, **kwargs):
 
     serialized = dumps(data, indent=indent)
 
-    if current_app.config['JSONIFY_ARRAY_SECURITY'] and serialized.startswith('['):
-        raise ValueError, ARRAY_SECURITY_MESSAGE
+    if current_app.config['JSONIFY_ARRAY_SECURITY'] and serialized[0] == '[':
+        raise ValueError(ARRAY_SECURITY_MESSAGE)
 
     return current_app.response_class(serialized,
         mimetype='application/json')
