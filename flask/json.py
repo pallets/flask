@@ -234,7 +234,13 @@ def jsonify(*args, **kwargs):
     if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
        and not request.is_xhr:
         indent = 2
-    return current_app.response_class(dumps(dict(*args, **kwargs),
+
+    if len(args) == 1 and len(kwargs) == 0:
+        data = args[0]
+    else:
+        data = dict(*args, **kwargs)
+
+    return current_app.response_class(dumps(data,
         indent=indent),
         mimetype='application/json')
 
