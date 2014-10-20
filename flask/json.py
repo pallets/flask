@@ -235,7 +235,7 @@ def jsonify(*args, **kwargs):
        and not request.is_xhr:
         indent = 2
 
-    if len(args) == 1 and len(kwargs) == 0:
+    if len(args) == 1 and not kwargs:
         data = args[0]
     else:
         data = dict(*args, **kwargs)
