@@ -73,6 +73,9 @@ Version 0.10.2
 - Changed logic of before first request handlers to flip the flag after
   invoking.  This will allow some uses that are potentially dangerous but
   should probably be permitted.
+- Add "pretty" and "compressed" separators definitions in jsonify() method.
+  Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
+  unnecessary white space included by default after separators.
 
 Version 0.10.1
 --------------
