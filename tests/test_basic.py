@@ -975,6 +975,7 @@ def test_jsonify_no_prettyprint():
             flask.jsonify(uncompressed_msg), 200)
         assert rv.data == compressed_msg
 
+
 def test_jsonify_prettyprint():
     app = flask.Flask(__name__)
     app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": True})
@@ -986,6 +987,7 @@ def test_jsonify_prettyprint():
         rv = flask.make_response(
             flask.jsonify(compressed_msg), 200)
         assert rv.data == pretty_response
+
 
 def test_url_generation():
     app = flask.Flask(__name__)
