@@ -54,6 +54,7 @@ Version 1.0
 - Add "pretty" and "compressed" separators definitions in jsonify() method.
   Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
   unnecessary white space included by default after separators.
+- Updated extension dev guidelines.
 
 
 Version 0.10.2
