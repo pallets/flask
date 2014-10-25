@@ -66,6 +66,8 @@ Version 1.0
 - Don't leak exception info of already catched exceptions to context teardown
   handlers (pull request ``#1393``).
 - Allow custom Jinja environment subclasses (pull request ``#1422``).
+- Updated extension dev guidelines.
+
 
 Version 0.10.2
 --------------
