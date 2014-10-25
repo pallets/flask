@@ -410,8 +410,8 @@ deprecated ``flaskext.foo``.  Flask 0.8 introduces a redirect import
 system that lets uses import from ``flask.ext.foo`` and it will try
 ``flask_foo`` first and if that fails ``flaskext.foo``.
 
-Flask extensions should urge users to import from ``flask.ext.foo``
-instead of ``flask_foo`` or ``flaskext_foo`` so that extensions can
+Flask extensions should urge users to import from ``flask_foo``
+instead of ``flask.ext.foo`` or ``flaskext_foo`` so that extensions can
 transition to the new package name without affecting users.
 
 
