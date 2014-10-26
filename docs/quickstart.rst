@@ -858,7 +858,7 @@ The attached :attr:`~flask.Flask.logger` is a standard logging
 documentation <https://docs.python.org/library/logging.html>`_ for more
 information.
 
-Read more on :ref:`errorhandling`.
+Read more on :ref:`application-errors`.
 
 Hooking in WSGI Middlewares
 ---------------------------
