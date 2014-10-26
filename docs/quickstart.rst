@@ -810,16 +810,6 @@ not using the template engine (as in this example).
 
    Just take that thing and copy/paste it into your code and you're done.
 
-   Note that variations can include any of the following:
-
-   >>> hashlib.sha256(os.urandom(random.randint(256, 1024))).hexdigest()
-   '171c43ea16987b0516c2e4e03ee212678687f9c0fa698e4a8be42599dff6d0b9'
-   >>> import base64
-   >>> base64.b64encode(hashlib.sha256(os.urandom(random.randint(256, 1024))).digest())
-   'shbCeT6JCxu4prnGz1UIIZutCfhOENJD5e4/Z8ueAVg='
-   >>> base64.urlsafe_b64encode(hashlib.sha256(os.urandom(random.randint(256, 1024))).
-   '7NskksdPlc8Rot57CCU7Bm47zrKUaUtp_kZM5liFrTQ='
-
 A note on cookie-based sessions: Flask will take the values you put into the
 session object and serialize them into a cookie.  If you are finding some
 values do not persist across requests, cookies are indeed enabled, and you are
