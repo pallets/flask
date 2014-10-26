@@ -182,12 +182,12 @@ The following configuration values are used internally by Flask:
                                   if they are not requested by an
                                   XMLHttpRequest object (controlled by
                                   the ``X-Requested-With`` header)
-``TEMPLATES_AUTO_RELOAD``         Flask checks if template was modified each
-                                  time it is requested and reloads it if
-                                  necessary. But disk I/O is costly and it may
-                                  be viable to disable this feature by setting
-                                  this key to ``False``. This option does not
-                                  affect debug mode.
+``TEMPLATES_AUTO_RELOAD``         If this is set to `True` every time a template
+                                  is requested Flask checks if the template was
+                                  modified and if yes, it will reload the
+                                  template. By default the value is ``None``
+                                  which means that Flask checks template
+                                  sources only in debug mode.
 ``EXPLAIN_TEMPLATE_LOADING``      If this is enabled then every attempt to
                                   load a template will write an info
                                   message to the logger explaining the
