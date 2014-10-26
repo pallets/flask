@@ -803,10 +803,22 @@ not using the template engine (as in this example).
    random generator which can be used to get such a key:
 
    >>> import os
-   >>> os.urandom(24)
-   '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+   >>> import random
+   >>> import hashlib
+   >>> hashlib.sha256(os.urandom(random.randint(256, 1024))).digest()
+   '\xddw?\xcbO8\xab\x17\x96\xad\xfa\x91\x01\x95w\xb3%f\xe7P(2\x82t\xfd\x19\xfd\xfd\x9e\x06\xe4\xb6'
 
    Just take that thing and copy/paste it into your code and you're done.
+
+   Note that variations can include any of the following:
+
+   >>> hashlib.sha256(os.urandom(random.randint(256, 1024))).hexdigest()
+   '171c43ea16987b0516c2e4e03ee212678687f9c0fa698e4a8be42599dff6d0b9'
+   >>> import base64
+   >>> base64.b64encode(hashlib.sha256(os.urandom(random.randint(256, 1024))).digest())
+   'shbCeT6JCxu4prnGz1UIIZutCfhOENJD5e4/Z8ueAVg='
+   >>> base64.urlsafe_b64encode(hashlib.sha256(os.urandom(random.randint(256, 1024))).
+   '7NskksdPlc8Rot57CCU7Bm47zrKUaUtp_kZM5liFrTQ='
 
 A note on cookie-based sessions: Flask will take the values you put into the
 session object and serialize them into a cookie.  If you are finding some
