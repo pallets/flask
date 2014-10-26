@@ -48,7 +48,7 @@ that people can easily install the development version into their
 virtualenv without having to download the library by hand.
 
 Flask extensions must be licensed under a BSD, MIT or more liberal license
-to be able to be enlisted in the Flask Extension Registry.  Keep in mind
+in order to be listed in the Flask Extension Registry.  Keep in mind
 that the Flask Extension Registry is a moderated place and libraries will
 be reviewed upfront if they behave as required.
 
@@ -154,10 +154,10 @@ What to use depends on what you have in mind.  For the SQLite 3 extension
 we will use the class-based approach because it will provide users with an
 object that handles opening and closing database connections.
 
-What's important about classes is that they encourage to be shared around
-on module level.  In that case, the object itself must not under any
+When designing your classes, it's important to make them easily reusable
+at the module level. This means the object itself must not under any
 circumstances store any application specific state and must be shareable
-between different application.
+between different applications.
 
 The Extension Code
 ------------------
@@ -334,10 +334,10 @@ development.  If you want to learn more, it's a very good idea to check
 out existing extensions on the `Flask Extension Registry`_.  If you feel
 lost there is still the `mailinglist`_ and the `IRC channel`_ to get some
 ideas for nice looking APIs.  Especially if you do something nobody before
-you did, it might be a very good idea to get some more input.  This not
-only to get an idea about what people might want to have from an
-extension, but also to avoid having multiple developers working on pretty
-much the same side by side.
+you did, it might be a very good idea to get some more input.  This not only
+generates useful feedback on what people might want from an extension, but
+also avoids having multiple developers working in isolation on pretty much the
+same problem.
 
 Remember: good API design is hard, so introduce your project on the
 mailinglist, and let other developers give you a helping hand with
