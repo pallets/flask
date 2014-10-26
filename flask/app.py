@@ -297,7 +297,7 @@ class Flask(_PackageBoundObject):
         'JSON_AS_ASCII':                        True,
         'JSON_SORT_KEYS':                       True,
         'JSONIFY_PRETTYPRINT_REGULAR':          True,
-        'TEMPLATES_AUTO_RELOAD':                True,
+        'TEMPLATES_AUTO_RELOAD':                None,
     })
 
     #: The rule object to use for URL rules created.  This is used by
@@ -673,8 +673,10 @@ class Flask(_PackageBoundObject):
         if 'autoescape' not in options:
             options['autoescape'] = self.select_jinja_autoescape
         if 'auto_reload' not in options:
-            options['auto_reload'] = self.debug \
-                or self.config['TEMPLATES_AUTO_RELOAD']
+            if self.config['TEMPLATES_AUTO_RELOAD'] is not None:
+                options['auto_reload'] = self.config['TEMPLATES_AUTO_RELOAD']
+            else:
+                options['auto_reload'] = self.debug
         rv = Environment(self, **options)
         rv.globals.update(
             url_for=url_for,
