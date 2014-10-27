@@ -19,7 +19,6 @@ except ImportError:
 import flask
 
 
-
 pytestmark = pytest.mark.skipif(
     blinker is None,
     reason='Signals require the blinker library.'
