@@ -127,7 +127,7 @@ def render_template_string(source, **context):
     """Renders a template from the given template source string
     with the given context.
 
-    :param source: the sourcecode of the template to be
+    :param source: the source code of the template to be
                    rendered
     :param context: the variables that should be available in the
                     context of the template.

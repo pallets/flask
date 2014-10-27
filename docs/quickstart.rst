@@ -222,7 +222,7 @@ The following converters exist:
    Though they look rather similar, they differ in their use of the trailing
    slash in the URL *definition*.  In the first case, the canonical URL for the
    `projects` endpoint has a trailing slash.  In that sense, it is similar to
-   a folder on a file system.  Accessing it without a trailing slash will cause
+   a folder on a filesystem.  Accessing it without a trailing slash will cause
    Flask to redirect to the canonical URL with the trailing slash.
 
    In the second case, however, the URL is defined without a trailing slash,

@@ -4,7 +4,7 @@
     ~~~~~~~~~~~~~
 
     Implements signals based on blinker if available, otherwise
-    falls silently back to a noop
+    falls silently back to a noop.
 
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
@@ -42,7 +42,7 @@ except ImportError:
 _signals = Namespace()
 
 
-# Core signals.  For usage examples grep the sourcecode or consult
+# Core signals.  For usage examples grep the source code or consult
 # the API documentation in docs/api.rst as well as docs/signals.rst
 template_rendered = _signals.signal('template-rendered')
 request_started = _signals.signal('request-started')

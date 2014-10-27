@@ -264,7 +264,7 @@ def url_for(endpoint, **values):
                            'executed when application context is available.')
 
     # If request specific information is available we have some extra
-    # features that support "relative" urls.
+    # features that support "relative" URLs.
     if reqctx is not None:
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
@@ -284,7 +284,7 @@ def url_for(endpoint, **values):
         external = values.pop('_external', False)
 
     # Otherwise go with the url adapter from the appctx and make
-    # the urls external by default.
+    # the URLs external by default.
     else:
         url_adapter = appctx.url_adapter
         if url_adapter is None:
@@ -529,7 +529,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
 
-    # if we know the file modification date, we can store it as the
+    # if we know the file modification date, we can store it as
     # the time of the last modification.
     if mtime is not None:
         rv.last_modified = int(mtime)
@@ -573,7 +573,7 @@ def safe_join(directory, filename):
         def wiki_page(filename):
             filename = safe_join(app.config['WIKI_FOLDER'], filename)
             with open(filename, 'rb') as fd:
-                content = fd.read() # Read and process the file content...
+                content = fd.read()  # Read and process the file content...
 
     :param directory: the base directory.
     :param filename: the untrusted filename relative to that directory.

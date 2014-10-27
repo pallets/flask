@@ -26,7 +26,7 @@ documentation.
 -   "AUTHORS" hereby refers to all the authors listed in the
     :ref:`authors` section.
 
--   The ":ref:`flask-license`" applies to all the sourcecode shipped as
+-   The ":ref:`flask-license`" applies to all the source code shipped as
     part of Flask (Flask itself as well as the examples and the unittests)
     as well as documentation.
 
