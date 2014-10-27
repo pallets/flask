@@ -264,7 +264,7 @@ def url_for(endpoint, **values):
                            'executed when application context is available.')
 
     # If request specific information is available we have some extra
-    # features that support "relative" urls.
+    # features that support "relative" URLs.
     if reqctx is not None:
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
@@ -284,7 +284,7 @@ def url_for(endpoint, **values):
         external = values.pop('_external', False)
 
     # Otherwise go with the url adapter from the appctx and make
-    # the urls external by default.
+    # the URLs external by default.
     else:
         url_adapter = appctx.url_adapter
         if url_adapter is None:
