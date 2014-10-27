@@ -529,7 +529,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
 
-    # if we know the file modification date, we can store it as the
+    # if we know the file modification date, we can store it as
     # the time of the last modification.
     if mtime is not None:
         rv.last_modified = int(mtime)
