@@ -4,7 +4,7 @@
     ~~~~~~~~~~~~~
 
     Implements signals based on blinker if available, otherwise
-    falls silently back to a noop
+    falls silently back to a noop.
 
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
