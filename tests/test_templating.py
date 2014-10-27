@@ -287,8 +287,8 @@ def test_iterable_loader():
     @app.route('/')
     def index():
         return flask.render_template(
-            ['no_template.xml', # should skip this one
-            'simple_template.html', # should render this
+            ['no_template.xml',  # should skip this one
+            'simple_template.html',  # should render this
             'context_template.html'],
             value=23)
 

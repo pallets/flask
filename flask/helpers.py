@@ -573,7 +573,7 @@ def safe_join(directory, filename):
         def wiki_page(filename):
             filename = safe_join(app.config['WIKI_FOLDER'], filename)
             with open(filename, 'rb') as fd:
-                content = fd.read() # Read and process the file content...
+                content = fd.read()  # Read and process the file content...
 
     :param directory: the base directory.
     :param filename: the untrusted filename relative to that directory.
