@@ -85,7 +85,7 @@ class Flask(_PackageBoundObject):
 
         The idea of the first parameter is to give Flask an idea of what
         belongs to your application.  This name is used to find resources
-        on the file system, can be used by extensions to improve debugging
+        on the filesystem, can be used by extensions to improve debugging
         information and a lot more.
 
         So it's important what you provide there.  If you are using a single
