@@ -257,10 +257,10 @@ class AppGroup(click.Group):
 
 
 class FlaskGroup(AppGroup):
-    """Special subclass of the the :class:`AppGroup` group that supports
+    """Special subclass of the :class:`AppGroup` group that supports
     loading more commands from the configured Flask app.  Normally a
     developer does not have to interface with this class but there are
-    some very advanced usecases for which it makes sense to create an
+    some very advanced use cases for which it makes sense to create an
     instance of this.
 
     For information as of why this is useful see :ref:`custom-scripts`.

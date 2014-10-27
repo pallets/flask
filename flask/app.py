@@ -85,7 +85,7 @@ class Flask(_PackageBoundObject):
 
         The idea of the first parameter is to give Flask an idea of what
         belongs to your application.  This name is used to find resources
-        on the file system, can be used by extensions to improve debugging
+        on the filesystem, can be used by extensions to improve debugging
         information and a lot more.
 
         So it's important what you provide there.  If you are using a single
@@ -289,7 +289,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_SECURE':                False,
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
-        'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60, # 12 hours
+        'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60,  # 12 hours
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
         'EXPLAIN_TEMPLATE_LOADING':             False,

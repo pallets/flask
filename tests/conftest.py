@@ -33,7 +33,6 @@ def leak_detector(request):
     request.addfinalizer(ensure_clean_request_context)
 
 
-
 @pytest.fixture(params=(True, False))
 def limit_loader(request, monkeypatch):
     """Patch pkgutil.get_loader to give loader without get_filename or archive.

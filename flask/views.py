@@ -113,7 +113,7 @@ class MethodViewType(type):
                     methods.add(key.upper())
             # If we have no method at all in there we don't want to
             # add a method list.  (This is for instance the case for
-            # the baseclass or another subclass of a base method view
+            # the base class or another subclass of a base method view
             # that does not introduce new methods).
             if methods:
                 rv.methods = sorted(methods)

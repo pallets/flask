@@ -32,7 +32,7 @@ hosts.  These hosts can be defined either in the fabfile or on the command
 line.  In this case we will add them to the fabfile.
 
 This is a basic first example that has the ability to upload the current
-sourcecode to the server and install it into a pre-existing
+source code to the server and install it into a pre-existing
 virtual environment::
 
     from fabric.api import *
@@ -186,7 +186,7 @@ deployment actually fun:
     out the latest version on the server and then install.  That way you
     can also easily go back to older versions.
 -   hook in testing functionality so that you can deploy to an external
-    server and run the testsuite.
+    server and run the test suite.
 
 Working with Fabric is fun and you will notice that it's quite magical to
 type ``fab deploy`` and see your application being deployed automatically

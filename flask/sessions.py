@@ -110,7 +110,7 @@ session_json_serializer = TaggedJSONSerializer()
 
 
 class SecureCookieSession(CallbackDict, SessionMixin):
-    """Baseclass for sessions based on signed cookies."""
+    """Base class for sessions based on signed cookies."""
 
     def __init__(self, initial=None):
         def on_update(self):

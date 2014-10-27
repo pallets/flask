@@ -96,7 +96,7 @@ as `ValueError` you will need to change this.
 
 Due to a bug in the test client Flask 0.7 did not trigger teardown
 handlers when the test client was used in a with statement.  This was
-since fixed but might require some changes in your testsuites if you
+since fixed but might require some changes in your test suites if you
 relied on this behavior.
 
 Version 0.7

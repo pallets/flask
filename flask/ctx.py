@@ -291,7 +291,7 @@ class RequestContext(object):
         # information under debug situations.  However if someone forgets to
         # pop that context again we want to make sure that on the next push
         # it's invalidated, otherwise we run at risk that something leaks
-        # memory.  This is usually only a problem in testsuite since this
+        # memory.  This is usually only a problem in test suite since this
         # functionality is not active in production environments.
         top = _request_ctx_stack.top
         if top is not None and top.preserved:
