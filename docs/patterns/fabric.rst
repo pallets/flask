@@ -32,7 +32,7 @@ hosts.  These hosts can be defined either in the fabfile or on the command
 line.  In this case we will add them to the fabfile.
 
 This is a basic first example that has the ability to upload the current
-sourcecode to the server and install it into a pre-existing
+source code to the server and install it into a pre-existing
 virtual environment::
 
     from fabric.api import *
