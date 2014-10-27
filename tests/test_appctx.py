@@ -41,13 +41,13 @@ def test_request_context_means_app_context():
     app = flask.Flask(__name__)
     with app.test_request_context():
         assert flask.current_app._get_current_object() == app
-    assert flask._app_ctx_stack.top == None
+    assert flask._app_ctx_stack.top is None
 
 def test_app_context_provides_current_app():
     app = flask.Flask(__name__)
     with app.app_context():
         assert flask.current_app._get_current_object() == app
-    assert flask._app_ctx_stack.top == None
+    assert flask._app_ctx_stack.top is None
 
 def test_app_tearing_down():
     cleanup_stuff = []
