@@ -49,7 +49,7 @@ Version 1.0
   users debug when the wrong templates are loaded.
 - Enforce blueprint handling in the order they were registered for template
   loading.
-- Ported testsuite to py.test.
+- Ported test suite to py.test.
 - Deprecated ``request.json`` in favour of ``request.get_json()``.
 - Add "pretty" and "compressed" separators definitions in jsonify() method.
   Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing

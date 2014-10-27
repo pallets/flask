@@ -186,7 +186,7 @@ deployment actually fun:
     out the latest version on the server and then install.  That way you
     can also easily go back to older versions.
 -   hook in testing functionality so that you can deploy to an external
-    server and run the testsuite.
+    server and run the test suite.
 
 Working with Fabric is fun and you will notice that it's quite magical to
 type ``fab deploy`` and see your application being deployed automatically
