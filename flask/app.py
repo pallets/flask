@@ -317,6 +317,13 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.8
     session_interface = SecureCookieSessionInterface()
 
+    #: the factory which creates a new Jinja2 environment for this app
+    #: (or simply its class).
+    #: The default is :class:`~flask.templating.Environment`.
+    #: 
+    #: .. versionadded: 0.11
+    jinja2_environment = Environment
+
     def __init__(self, import_name, static_path=None, static_url_path=None,
                  static_folder='static', template_folder='templates',
                  instance_path=None, instance_relative_config=False,
@@ -675,7 +682,7 @@ class Flask(_PackageBoundObject):
         if 'auto_reload' not in options:
             options['auto_reload'] = self.debug \
                 or self.config['TEMPLATES_AUTO_RELOAD']
-        rv = Environment(self, **options)
+        rv = self.jinja2_environment(self, **options)
         rv.globals.update(
             url_for=url_for,
             get_flashed_messages=get_flashed_messages,
