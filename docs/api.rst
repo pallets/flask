@@ -83,7 +83,7 @@ Incoming Request Data
 
    .. attribute:: method
 
-      The current request method (``POST``, ``GET`` etc.)
+      The current request method (`POST`, `GET` etc.)
 
    .. attribute:: path
    .. attribute:: full_path
@@ -782,7 +782,7 @@ Command Line Interface
    A special decorator that informs a click callback to be passed the
    script info object as first argument.  This is normally not useful
    unless you implement very special commands like the run command which
-   does not want the application to be loaded yet. 
+   does not want the application to be loaded yet.
 
 .. autodata:: run_command
 

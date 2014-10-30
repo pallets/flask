@@ -35,7 +35,7 @@ automatically and discover the module name but that might not always work.
 In that imported file the name of the app needs to be called ``app`` or
 optionally be specified after a colon.
 
-Given a ``hello.py`` file with the application in it named ``app`` this is
+Given a `hello.py` file with the application in it named ``app`` this is
 how it can be run.
 
 Environment variables (On Windows use ``set`` instead of ``export``)::
@@ -133,7 +133,7 @@ For instance if you have a factory function that creates an application
 from a filename you could make a separate file that creates such an
 application from an environment variable.
 
-This could be a file named ``autoapp.py`` with these contents::
+This could be a file named `autoapp.py` with these contents::
 
     import os
     from yourapplication import create_app
@@ -179,7 +179,7 @@ We won't go into detail now about the differences but if you are curious
 you can have a look at the :ref:`script-info-object` section to learn all
 about it.
 
-To explain all of this, here is an example ``manage.py`` script that
+To explain all of this, here is an example `manage.py` script that
 manages a hypothetical wiki application.  We will go through the details
 afterwards::
 

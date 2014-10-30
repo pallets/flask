@@ -19,7 +19,7 @@ Loading jQuery
 In order to use jQuery, you have to download it first and place it in the
 static folder of your application and then ensure it's loaded.  Ideally
 you have a layout template that is used for all pages where you just have
-to add a script statement to the bottom of your `<body>` to load jQuery:
+to add a script statement to the bottom of your ``<body>`` to load jQuery:
 
 .. sourcecode:: html
 
@@ -119,9 +119,9 @@ special error reporting in that case.
 The HTML
 --------
 
-Your index.html template either has to extend a `layout.html` template with
+Your index.html template either has to extend a ``layout.html`` template with
 jQuery loaded and the `$SCRIPT_ROOT` variable set, or do that on the top.
-Here's the HTML code needed for our little application (`index.html`).
+Here's the HTML code needed for our little application (``index.html``).
 Notice that we also drop the script directly into the HTML here.  It is
 usually a better idea to have that in a separate script file:
 

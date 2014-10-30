@@ -55,10 +55,10 @@ The following configuration values are used internally by Flask:
 ``DEBUG``                         enable/disable debug mode
 ``TESTING``                       enable/disable testing mode
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
-                                  propagation of exceptions.  If not set or
+                                  propagation of exceptions. If not set or
                                   explicitly set to `None` this is
-                                  implicitly true if either `TESTING` or
-                                  `DEBUG` is true.
+                                  implicitly true if either ``TESTING`` or
+                                  ``DEBUG`` is true.
 ``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
                                   debug mode the request context is not
                                   popped on exceptions to enable debuggers
@@ -121,8 +121,7 @@ The following configuration values are used internally by Flask:
                                   be set to the path where the application
                                   is configured to live.  This is for
                                   session cookie as path value.  If
-                                  domains are used, this should be
-                                  ``None``.
+                                  domains are used, this should be `None`.
 ``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
                                   reject incoming requests with a
                                   content length greater than this by
@@ -137,7 +136,7 @@ The following configuration values are used internally by Flask:
                                   hook on :class:`~flask.Flask` or
                                   :class:`~flask.Blueprint`,
                                   respectively. Defaults to 43200 (12 hours).
-``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
+``TRAP_HTTP_EXCEPTIONS``          If this is set to `True` Flask will
                                   not execute the error handlers of HTTP
                                   exceptions but instead treat the
                                   exception like any other and bubble it
@@ -154,14 +153,14 @@ The following configuration values are used internally by Flask:
                                   Since it's nice for debugging to know
                                   why exactly it failed this flag can be
                                   used to debug those situations.  If this
-                                  config is set to ``True`` you will get
+                                  config is set to `True` you will get
                                   a regular traceback instead.
 ``PREFERRED_URL_SCHEME``          The URL scheme that should be used for
                                   URL generation if no URL scheme is
                                   available.  This defaults to ``http``.
 ``JSON_AS_ASCII``                 By default Flask serialize object to
                                   ascii-encoded JSON.  If this is set to
-                                  ``False`` Flask will not encode to ASCII
+                                  `False` Flask will not encode to ASCII
                                   and output strings as-is and return
                                   unicode strings.  ``jsonify`` will
                                   automatically encode it in ``utf-8``
@@ -177,7 +176,7 @@ The following configuration values are used internally by Flask:
                                   This is not recommended but might give
                                   you a performance improvement on the
                                   cost of cachability.
-``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
+``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to `True` (the default)
                                   jsonify responses will be pretty printed
                                   if they are not requested by an
                                   XMLHttpRequest object (controlled by
@@ -186,7 +185,7 @@ The following configuration values are used internally by Flask:
                                   time it is requested and reloads it if
                                   necessary. But disk I/O is costly and it may
                                   be viable to disable this feature by setting
-                                  this key to ``False``. This option does not
+                                  this key to `False`. This option does not
                                   affect debug mode.
 ``EXPLAIN_TEMPLATE_LOADING``      If this is enabled then every attempt to
                                   load a template will write an info

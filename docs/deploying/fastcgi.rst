@@ -41,7 +41,7 @@ The path has to be the exact same path you define in the server
 config.
 
 Save the `yourapplication.fcgi` file somewhere you will find it again.
-It makes sense to have that in `/var/www/yourapplication` or something
+It makes sense to have that in ``/var/www/yourapplication`` or something
 similar.
 
 Make sure to set the executable bit on that file so that the servers
@@ -56,8 +56,8 @@ Configuring Apache
 
 The example above is good enough for a basic Apache deployment but your
 `.fcgi` file will appear in your application URL e.g.
-example.com/yourapplication.fcgi/news/. There are few ways to configure
-your application so that yourapplication.fcgi does not appear in the URL.
+``example.com/yourapplication.fcgi/news/``. There are few ways to configure
+your application so that `yourapplication.fcgi` does not appear in the URL.
 A preferable way is to use the ScriptAlias and SetHandler configuration
 directives to route requests to the FastCGI server. The following example
 uses FastCgiServer to start 5 instances of the application which will
