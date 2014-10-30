@@ -64,6 +64,6 @@ compatible Python code
 <http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
 
 If you do want to dive into Python 3 already have a look at the
-:ref:`python3-support` page.
+:ref:`python3` page.
 
 Continue to :ref:`installation` or the :ref:`quickstart`.

@@ -15,7 +15,7 @@ at that first.
 
 You will need Python 2.6 or newer to get started, so be sure to have an
 up-to-date Python 2.x installation.  For using Flask with Python 3 have a
-look at :ref:`python3-support`.
+look at :ref:`python3`.
 
 .. _virtualenv:
 
