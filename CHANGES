@@ -23,9 +23,8 @@ Version 1.0
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
 - Added :meth:`flask.config.Config.get_namespace`.
-- Added ``TEMPLATES_AUTO_RELOAD`` config key. Now by default templates will be
-  reloaded every time a template is requested only if the application is
-  running in debug mode.
+- Templates are no longer automatically reloaded outside of debug mode. This
+  can be configured with the new ``TEMPLATES_AUTO_RELOAD`` config key.
 - Added a workaround for a limitation in Python 3.3's namespace loader.
 - Added support for explicit root paths when using Python 3.3's namespace
   packages.
