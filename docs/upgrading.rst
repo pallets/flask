@@ -136,7 +136,7 @@ To apply the upgrade script do the following:
         patch -p1 < patchfile.diff
 
 5.  If you were using per-module template folders you need to move some
-    templates around.  Previously if you had a folder named ``templates``
+    templates around.  Previously if you had a folder named `templates`
     next to a blueprint named ``admin`` the implicit template path
     automatically was ``admin/index.html`` for a template file called
     ``templates/index.html``.  This no longer is the case.  Now you need

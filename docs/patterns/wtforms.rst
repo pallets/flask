@@ -100,7 +100,7 @@ arguments will be inserted as HTML attributes.  So for example you can
 call ``render_field(form.username, class='username')`` to add a class to
 the input element.  Note that WTForms returns standard Python unicode
 strings, so we have to tell Jinja2 that this data is already HTML escaped
-with the `|safe` filter.
+with the ``|safe`` filter.
 
 Here the ``register.html`` template for the function we used above which
 takes advantage of the ``_formhelpers.html`` template:

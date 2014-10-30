@@ -19,7 +19,7 @@ Loading jQuery
 In order to use jQuery, you have to download it first and place it in the
 static folder of your application and then ensure it's loaded.  Ideally
 you have a layout template that is used for all pages where you just have
-to add a script statement to the bottom of your `<body>` to load jQuery:
+to add a script statement to the bottom of your ``<body>`` to load jQuery:
 
 .. sourcecode:: html
 

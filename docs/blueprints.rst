@@ -159,7 +159,7 @@ blueprint::
     admin = Blueprint('admin', __name__, static_folder='static')
 
 By default the rightmost part of the path is where it is exposed on the
-web.  Because the folder is called ``static`` here it will be available at
+web.  Because the folder is called `static` here it will be available at
 the location of the blueprint + ``/static``.  Say the blueprint is
 registered for ``/admin`` the static folder will be at ``/admin/static``.
 
