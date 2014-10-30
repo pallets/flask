@@ -104,8 +104,8 @@ localhost at port 8000, setting appropriate headers:
     }
 
 If your httpd is not providing these headers, the most common setup invokes the
-host being set from `X-Forwarded-Host` and the remote address from
-`X-Forwarded-For`::
+host being set from ``X-Forwarded-Host`` and the remote address from
+``X-Forwarded-For``::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)

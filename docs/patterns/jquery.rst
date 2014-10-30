@@ -119,9 +119,9 @@ special error reporting in that case.
 The HTML
 --------
 
-Your index.html template either has to extend a `layout.html` template with
+Your index.html template either has to extend a ``layout.html`` template with
 jQuery loaded and the `$SCRIPT_ROOT` variable set, or do that on the top.
-Here's the HTML code needed for our little application (`index.html`).
+Here's the HTML code needed for our little application (``index.html``).
 Notice that we also drop the script directly into the HTML here.  It is
 usually a better idea to have that in a separate script file:
 

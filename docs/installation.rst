@@ -157,8 +157,8 @@ you can upgrade them by running::
 
     > pip install --upgrade pip setuptools
 
-Most often, once you pull up a command prompt you want to be able to type ``pip``
-and ``python`` which will run those things, but this might not automatically happen
+Most often, once you pull up a command prompt you want to be able to type `pip`
+and `python` which will run those things, but this might not automatically happen
 on Windows, because it doesn't know where those executables are (give either a try!).
 
 To fix this, you should be able to navigate to your Python install directory

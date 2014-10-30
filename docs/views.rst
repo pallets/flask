@@ -46,7 +46,7 @@ class into an actual view function by using the
 that function is the name of the endpoint that view will then have.  But
 this by itself is not helpful, so let's refactor the code a bit::
 
-    
+
     from flask.views import View
 
     class ListView(View):
@@ -175,15 +175,15 @@ will require different URL rules that go to the same method view most of
 the time.  For instance consider that you are exposing a user object on
 the web:
 
-=============== =============== ======================================
+=============== ============= ======================================
 URL             Method          Description
---------------- --------------- --------------------------------------
-``/users/``     ``GET``         Gives a list of all users
-``/users/``     ``POST``        Creates a new user
-``/users/<id>`` ``GET``         Shows a single user
-``/users/<id>`` ``PUT``         Updates a single user
-``/users/<id>`` ``DELETE``      Deletes a single user
-=============== =============== ======================================
+--------------- ------------- --------------------------------------
+``/users/``     `GET`         Gives a list of all users
+``/users/``     `POST`        Creates a new user
+``/users/<id>`` `GET`         Shows a single user
+``/users/<id>`` `PUT`         Updates a single user
+``/users/<id>`` `DELETE`      Deletes a single user
+=============== ============= ======================================
 
 So how would you go about doing that with the
 :class:`~flask.views.MethodView`?  The trick is to take advantage of the

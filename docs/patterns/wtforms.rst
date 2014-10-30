@@ -14,7 +14,7 @@ forms.
 
 .. admonition:: Getting most of WTForms with an Extension
 
-   The `Flask-WTF`_ extension expands on this pattern and adds a few
+   The ``Flask-WTF``_ extension expands on this pattern and adds a few
    handful little helpers that make working with forms and Flask more
    fun.  You can get it from `PyPI
    <https://pypi.python.org/pypi/Flask-WTF>`_.
@@ -77,7 +77,7 @@ how easy this is.  WTForms does half the form generation for us already.
 To make it even nicer, we can write a macro that renders a field with
 label and a list of errors if there are any.
 
-Here's an example `_formhelpers.html` template with such a macro:
+Here's an example ``_formhelpers.html`` template with such a macro:
 
 .. sourcecode:: html+jinja
 
@@ -102,8 +102,8 @@ the input element.  Note that WTForms returns standard Python unicode
 strings, so we have to tell Jinja2 that this data is already HTML escaped
 with the `|safe` filter.
 
-Here the `register.html` template for the function we used above which
-takes advantage of the `_formhelpers.html` template:
+Here the ``register.html`` template for the function we used above which
+takes advantage of the ``_formhelpers.html`` template:
 
 .. sourcecode:: html+jinja
 
