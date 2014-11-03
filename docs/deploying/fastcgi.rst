@@ -79,7 +79,7 @@ handle all incoming requests::
         </Location>
     </VirtualHost>
 
-These processes will be managed by Apache. If you're using an standalone
+These processes will be managed by Apache. If you're using a standalone
 FastCGI server, you can use the FastCgiExternalServer directive instead.
 Note that in the following the path is not real, it's simply used as an
 identifier to other
@@ -87,7 +87,7 @@ directives such as AliasMatch::
 
     FastCgiServer /var/www/html/yourapplication -host 127.0.0.1:3000
 
-If you cannot set ScriptAlias, for example on an shared web host, you can use
+If you cannot set ScriptAlias, for example on a shared web host, you can use
 WSGI middleware to remove yourapplication.fcgi from the URLs. Set .htaccess::
 
     <IfModule mod_fcgid.c>
@@ -168,7 +168,7 @@ Configuring nginx
 Installing FastCGI applications on nginx is a bit different because by
 default no FastCGI parameters are forwarded.
 
-A basic flask FastCGI configuration for nginx looks like this::
+A basic Flask FastCGI configuration for nginx looks like this::
 
     location = /yourapplication { rewrite ^ /yourapplication/ last; }
     location /yourapplication { try_files $uri @yourapplication; }
@@ -195,7 +195,7 @@ have to figure out how to calculate `PATH_INFO` and `SCRIPT_NAME`::
 Running FastCGI Processes
 -------------------------
 
-Since Nginx and others do not load FastCGI apps, you have to do it by
+Since nginx and others do not load FastCGI apps, you have to do it by
 yourself.  `Supervisor can manage FastCGI processes.
 <http://supervisord.org/configuration.html#fcgi-program-x-section-settings>`_
 You can look around for other FastCGI process managers or write a script
@@ -210,14 +210,14 @@ manual solution which does not persist across system restart::
 Debugging
 ---------
 
-FastCGI deployments tend to be hard to debug on most webservers.  Very
+FastCGI deployments tend to be hard to debug on most web servers.  Very
 often the only thing the server log tells you is something along the
 lines of "premature end of headers".  In order to debug the application
 the only thing that can really give you ideas why it breaks is switching
 to the correct user and executing the application by hand.
 
 This example assumes your application is called `application.fcgi` and
-that your webserver user is `www-data`::
+that your web server user is `www-data`::
 
     $ su www-data
     $ cd /var/www/yourapplication
@@ -229,7 +229,7 @@ that your webserver user is `www-data`::
 In this case the error seems to be "yourapplication" not being on the
 python path.  Common problems are:
 
--   Relative paths being used.  Don't rely on the current working directory
+-   Relative paths being used.  Don't rely on the current working directory.
 -   The code depending on environment variables that are not set by the
     web server.
 -   Different python interpreters being used.
