@@ -108,7 +108,7 @@ def _dump_loader_info(loader):
 
 
 def explain_template_loading_attempts(app, template, attempts):
-    """This should help developers understand what """
+    """This should help developers understand what failed"""
     info = ['Locating template "%s":' % template]
     total_found = 0
     blueprint = None
