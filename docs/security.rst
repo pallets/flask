@@ -161,8 +161,8 @@ and social engineers a victim to visiting his site:
 If you know a bit of JavaScript internals you might know that it's
 possible to patch constructors and register callbacks for setters.  An
 attacker can use this (like above) to get all the data you exported in
-your JSON file.  The browser will totally ignore the ``application/json``
-mimetype if ``text/javascript`` is defined as content type in the script
+your JSON file.  The browser will totally ignore the :mimetype:`application/json`
+mimetype if :mimetype:`text/javascript` is defined as content type in the script
 tag and evaluate that as JavaScript.  Because top-level array elements are
 allowed (albeit useless) and we hooked in our own constructor, after that
 page loaded the data from the JSON response is in the `captured` array.

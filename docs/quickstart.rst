@@ -708,7 +708,7 @@ About Responses
 The return value from a view function is automatically converted into a
 response object for you.  If the return value is a string it's converted
 into a response object with the string as response body, a ``200 OK``
-status code and a ``text/html`` mimetype.  The logic that Flask applies to
+status code and a :mimetype:`text/html` mimetype.  The logic that Flask applies to
 converting return values into response objects is as follows:
 
 1.  If a response object of the correct type is returned it's directly
