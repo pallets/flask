@@ -127,7 +127,7 @@ The following configuration values are used internally by Flask:
                                   reject incoming requests with a
                                   content length greater than this by
                                   returning a 413 status code.
-``SEND_FILE_MAX_AGE_DEFAULT``:    Default cache control max age to use with
+``SEND_FILE_MAX_AGE_DEFAULT``     Default cache control max age to use with
                                   :meth:`~flask.Flask.send_static_file` (the
                                   default static file handler) and
                                   :func:`~flask.send_file`, in
