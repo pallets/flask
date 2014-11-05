@@ -570,7 +570,7 @@ To access parameters submitted in the URL (``?key=value``) you can use the
     searchword = request.args.get('key', '')
 
 We recommend accessing URL parameters with `get` or by catching the
-`KeyError` because users might change the URL and presenting them a 400
+:exc:`KeyError` because users might change the URL and presenting them a 400
 bad request page in that case is not user friendly.
 
 For a full list of methods and attributes of the request object, head over

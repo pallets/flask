@@ -92,7 +92,7 @@ If invalid JSON data was submitted Flask will now raise a
 default :exc:`ValueError` bubble up.  This has the advantage that you no
 longer have to handle that error to avoid an internal server error showing
 up for the user.  If you were catching this down explicitly in the past
-as `ValueError` you will need to change this.
+as :exc:`ValueError` you will need to change this.
 
 Due to a bug in the test client Flask 0.7 did not trigger teardown
 handlers when the test client was used in a with statement.  This was
