@@ -198,7 +198,7 @@ class Flask(_PackageBoundObject):
     #: exception occurs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
     #:
-    #: This attribute can also be configured from the config with the `DEBUG`
+    #: This attribute can also be configured from the config with the ``DEBUG``
     #: configuration key.  Defaults to ``False``.
     debug = ConfigAttribute('DEBUG')
 
@@ -211,7 +211,7 @@ class Flask(_PackageBoundObject):
     #: default it's implicitly enabled.
     #:
     #: This attribute can also be configured from the config with the
-    #: `TESTING` configuration key.  Defaults to ``False``.
+    #: ``TESTING`` configuration key.  Defaults to ``False``.
     testing = ConfigAttribute('TESTING')
 
     #: If a secret key is set, cryptographic components can use this to
@@ -219,13 +219,13 @@ class Flask(_PackageBoundObject):
     #: when you want to use the secure cookie for instance.
     #:
     #: This attribute can also be configured from the config with the
-    #: `SECRET_KEY` configuration key.  Defaults to ``None``.
+    #: ``SECRET_KEY`` configuration key.  Defaults to ``None``.
     secret_key = ConfigAttribute('SECRET_KEY')
 
     #: The secure cookie uses this for the name of the session cookie.
     #:
     #: This attribute can also be configured from the config with the
-    #: `SESSION_COOKIE_NAME` configuration key.  Defaults to ``'session'``
+    #: ``SESSION_COOKIE_NAME`` configuration key.  Defaults to ``'session'``
     session_cookie_name = ConfigAttribute('SESSION_COOKIE_NAME')
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
@@ -233,7 +233,7 @@ class Flask(_PackageBoundObject):
     #: permanent session survive for roughly one month.
     #:
     #: This attribute can also be configured from the config with the
-    #: `PERMANENT_SESSION_LIFETIME` configuration key.  Defaults to
+    #: ``PERMANENT_SESSION_LIFETIME`` configuration key.  Defaults to
     #: ``timedelta(days=31)``
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
         get_converter=_make_timedelta)
@@ -245,7 +245,7 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.2
     #:
     #: This attribute can also be configured from the config with the
-    #: `USE_X_SENDFILE` configuration key.  Defaults to ``False``.
+    #: ``USE_X_SENDFILE`` configuration key.  Defaults to ``False``.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
     #: The name of the logger to use.  By default the logger name is the
@@ -560,7 +560,7 @@ class Flask(_PackageBoundObject):
 
     @property
     def propagate_exceptions(self):
-        """Returns the value of the `PROPAGATE_EXCEPTIONS` configuration
+        """Returns the value of the ``PROPAGATE_EXCEPTIONS`` configuration
         value in case it's set, otherwise a sensible default is returned.
 
         .. versionadded:: 0.7
@@ -572,7 +572,7 @@ class Flask(_PackageBoundObject):
 
     @property
     def preserve_context_on_exception(self):
-        """Returns the value of the `PRESERVE_CONTEXT_ON_EXCEPTION`
+        """Returns the value of the ``PRESERVE_CONTEXT_ON_EXCEPTION``
         configuration value in case it's set, otherwise a sensible default
         is returned.
 

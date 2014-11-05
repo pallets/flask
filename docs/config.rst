@@ -57,8 +57,8 @@ The following configuration values are used internally by Flask:
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
                                   propagation of exceptions.  If not set or
                                   explicitly set to ``None`` this is
-                                  implicitly true if either `TESTING` or
-                                  `DEBUG` is true.
+                                  implicitly true if either ``TESTING`` or
+                                  ``DEBUG`` is true.
 ``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
                                   debug mode the request context is not
                                   popped on exceptions to enable debuggers
@@ -260,7 +260,7 @@ So a common pattern is this::
 
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
-with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
+with the contents of the file the :envvar:``YOURAPPLICATION_SETTINGS``
 environment variable points to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::

@@ -245,7 +245,7 @@ def url_for(endpoint, **values):
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
     :param _external: if set to ``True``, an absolute URL is generated. Server
-      address can be changed via `SERVER_NAME` configuration variable which
+      address can be changed via ``SERVER_NAME`` configuration variable which
       defaults to `localhost`.
     :param _scheme: a string specifying the desired URL scheme. The `_external`
       parameter must be set to ``True`` or a `ValueError` is raised. The default

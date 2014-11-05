@@ -62,7 +62,7 @@ class Request(RequestBase):
 
     @property
     def max_content_length(self):
-        """Read-only view of the `MAX_CONTENT_LENGTH` config key."""
+        """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         ctx = _request_ctx_stack.top
         if ctx is not None:
             return ctx.app.config['MAX_CONTENT_LENGTH']

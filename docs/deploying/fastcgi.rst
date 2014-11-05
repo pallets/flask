@@ -182,7 +182,7 @@ A basic Flask FastCGI configuration for nginx looks like this::
 
 This configuration binds the application to `/yourapplication`.  If you
 want to have it in the URL root it's a bit simpler because you don't
-have to figure out how to calculate `PATH_INFO` and `SCRIPT_NAME`::
+have to figure out how to calculate ``PATH_INFO`` and ``SCRIPT_NAME``::
 
     location / { try_files $uri @yourapplication; }
     location @yourapplication {

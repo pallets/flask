@@ -142,7 +142,7 @@ The Configuration File
 ----------------------
 
 Now as mentioned above, the application will find the correct
-configuration file by looking up the `YOURAPPLICATION_CONFIG` environment
+configuration file by looking up the ``YOURAPPLICATION_CONFIG`` environment
 variable.  So we have to put the configuration in a place where the
 application will able to find it.  Configuration files have the unfriendly
 quality of being different on all computers, so you do not version them
