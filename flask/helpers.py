@@ -418,8 +418,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
     you can set the application's :attr:`~Flask.use_x_sendfile` attribute
-    to ``True`` to directly emit an `X-Sendfile` header.  This however
-    requires support of the underlying webserver for `X-Sendfile`.
+    to ``True`` to directly emit an ``X-Sendfile`` header.  This however
+    requires support of the underlying webserver for ``X-Sendfile``.
 
     By default it will try to guess the mimetype for you, but you can
     also explicitly provide one.  For extra security you probably want
@@ -453,7 +453,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            relative to the :attr:`~Flask.root_path` if a
                            relative path is specified.
                            Alternatively a file object might be provided
-                           in which case `X-Sendfile` might not work and
+                           in which case ``X-Sendfile`` might not work and
                            fall back to the traditional method.  Make sure
                            that the file pointer is positioned at the start
                            of data to send before calling :func:`send_file`.
@@ -605,7 +605,7 @@ def send_from_directory(directory, filename, **options):
 
     .. admonition:: Sending files and Performance
 
-       It is strongly recommended to activate either `X-Sendfile` support in
+       It is strongly recommended to activate either ``X-Sendfile`` support in
        your webserver or (if no authentication happens) to tell the webserver
        to serve files for the given path on its own without calling into the
        web application for improved performance.
