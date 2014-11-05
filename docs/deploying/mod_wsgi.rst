@@ -52,7 +52,7 @@ reload you can safely ignore them.  Just restart the server.
 Creating a `.wsgi` file
 -----------------------
 
-To run your application you need a `yourapplication.wsgi` file.  This file
+To run your application you need a :file:`yourapplication.wsgi` file.  This file
 contains the code `mod_wsgi` is executing on startup to get the application
 object.  The object called `application` in that file is then used as
 application.
@@ -70,7 +70,7 @@ the libraries that are in use are on the python load path.  If you don't
 want to install it system wide consider using a `virtual python`_
 instance.  Keep in mind that you will have to actually install your
 application into the virtualenv as well.  Alternatively there is the
-option to just patch the path in the `.wsgi` file before the import::
+option to just patch the path in the ``.wsgi`` file before the import::
 
     import sys
     sys.path.insert(0, '/path/to/the/application')
@@ -171,7 +171,7 @@ Support for Automatic Reloading
 -------------------------------
 
 To help deployment tools you can activate support for automatic
-reloading.  Whenever something changes the `.wsgi` file, `mod_wsgi` will
+reloading.  Whenever something changes the ``.wsgi`` file, `mod_wsgi` will
 reload all the daemon processes for us.
 
 For that, just add the following directive to your `Directory` section:
@@ -186,9 +186,9 @@ Working with Virtual Environments
 Virtual environments have the advantage that they never install the
 required dependencies system wide so you have a better control over what
 is used where.  If you want to use a virtual environment with mod_wsgi
-you have to modify your `.wsgi` file slightly.
+you have to modify your ``.wsgi`` file slightly.
 
-Add the following lines to the top of your `.wsgi` file::
+Add the following lines to the top of your ``.wsgi`` file::
 
     activate_this = '/path/to/env/bin/activate_this.py'
     execfile(activate_this, dict(__file__=activate_this))

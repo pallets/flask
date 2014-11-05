@@ -71,7 +71,7 @@ class Flask(_PackageBoundObject):
     The name of the package is used to resolve resources from inside the
     package or the folder the module is contained in depending on if the
     package parameter resolves to an actual python package (a folder with
-    an :file:`__init__.py` file inside) or a standard module (just a `.py` file).
+    an :file:`__init__.py` file inside) or a standard module (just a ``.py`` file).
 
     For more information about resource loading, see :func:`open_resource`.
 

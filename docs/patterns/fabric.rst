@@ -86,7 +86,7 @@ this command::
 However this requires that our server already has the
 :file:`/var/www/yourapplication` folder created and
 :file:`/var/www/yourapplication/env` to be a virtual environment.  Furthermore
-are we not creating the configuration or `.wsgi` file on the server.  So
+are we not creating the configuration or ``.wsgi`` file on the server.  So
 how do we bootstrap a new server into our infrastructure?
 
 This now depends on the number of servers we want to set up.  If we just
@@ -110,7 +110,7 @@ To setup a new server you would roughly do these steps:
     configuration file for the application (eg: :file:`application.cfg`)
 
 3.  Create a new Apache config for ``yourapplication`` and activate it.
-    Make sure to activate watching for changes of the `.wsgi` file so
+    Make sure to activate watching for changes of the ``.wsgi`` file so
     that we can automatically reload the application by touching it.
     (See :ref:`mod_wsgi-deployment` for more information)
 
