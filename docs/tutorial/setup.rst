@@ -8,7 +8,7 @@ Let's call it flaskr.py. We will place this file inside the flaskr folder.
 We will begin by adding the imports we need and by adding the config
 section.  For small applications, it is possible to drop the configuration
 directly into the module, and this is what we will be doing here. However
-a cleaner solution would be to create a separate `.ini` or `.py` file and
+a cleaner solution would be to create a separate ``.ini`` or ``.py`` file and
 load that or import the values from there.
 
 First we add the imports in :file:`flaskr.py`::

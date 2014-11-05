@@ -887,7 +887,7 @@ class _PackageBoundObject(object):
                 /layout.html
                 /index.html
 
-        If you want to open the `schema.sql` file you would do the
+        If you want to open the :file:`schema.sql` file you would do the
         following::
 
             with app.open_resource('schema.sql') as f:

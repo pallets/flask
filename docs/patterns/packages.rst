@@ -23,7 +23,7 @@ Simple Packages
 To convert that into a larger one, just create a new folder
 :file:`yourapplication` inside the existing one and move everything below it.
 Then rename :file:`yourapplication.py` to :file:`__init__.py`.  (Make sure to delete
-all `.pyc` files first, otherwise things would most likely break)
+all ``.pyc`` files first, otherwise things would most likely break)
 
 You should then end up with something like that::
 
