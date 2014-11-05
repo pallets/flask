@@ -380,7 +380,7 @@ Version 0.6.1
 Bugfix release, released on December 31st 2010
 
 - Fixed an issue where the default ``OPTIONS`` response was
-  not exposing all valid methods in the `Allow` header.
+  not exposing all valid methods in the ``Allow`` header.
 - Jinja2 template loading syntax now allows "./" in front of
   a template load path.  Previously this caused issues with
   module setups.

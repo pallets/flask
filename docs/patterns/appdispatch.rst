@@ -144,7 +144,7 @@ Dispatch by Path
 ----------------
 
 Dispatching by a path on the URL is very similar.  Instead of looking at
-the `Host` header to figure out the subdomain one simply looks at the
+the ``Host`` header to figure out the subdomain one simply looks at the
 request path up to the first slash::
 
     from threading import Lock
