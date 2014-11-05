@@ -379,7 +379,7 @@ class Flask(_PackageBoundObject):
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
         #: is called with `error`, `endpoint` and `values`.  If a function
-        #: returns ``None`` or raises a `BuildError` the next function is
+        #: returns ``None`` or raises a :exc:`BuildError` the next function is
         #: tried.
         #:
         #: .. versionadded:: 0.9

@@ -248,7 +248,7 @@ def url_for(endpoint, **values):
       address can be changed via ``SERVER_NAME`` configuration variable which
       defaults to `localhost`.
     :param _scheme: a string specifying the desired URL scheme. The `_external`
-      parameter must be set to ``True`` or a `ValueError` is raised. The default
+      parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
       behavior uses the same scheme as the current request, or
       ``PREFERRED_URL_SCHEME`` from the :ref:`app configuration <config>` if no
       request context is available. As of Werkzeug 0.10, this also can be set

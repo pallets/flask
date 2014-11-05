@@ -60,7 +60,7 @@ class JSONEncoder(_json.JSONEncoder):
     def default(self, o):
         """Implement this method in a subclass such that it returns a
         serializable object for ``o``, or calls the base implementation (to
-        raise a ``TypeError``).
+        raise a :exc:`TypeError`).
 
         For example, to support arbitrary iterators, you could implement
         default like this::
