@@ -54,13 +54,13 @@ in your package manager.  If you use Ubuntu, try::
 
     $ sudo apt-get install python-virtualenv
 
-If you are on Windows and don't have the `easy_install` command, you must
+If you are on Windows and don't have the :command:`easy_install` command, you must
 install it first.  Check the :ref:`windows-easy-install` section for more
 information about how to do that.  Once you have it installed, run the same
-commands as above, but without the `sudo` prefix.
+commands as above, but without the :command:`sudo` prefix.
 
 Once you have virtualenv installed, just fire up a shell and create
-your own environment.  I usually create a project folder and a `venv`
+your own environment.  I usually create a project folder and a :file:`venv`
 folder within::
 
     $ mkdir myproject
@@ -99,19 +99,19 @@ System-Wide Installation
 ------------------------
 
 This is possible as well, though I do not recommend it.  Just run
-`pip` with root privileges::
+:command:`pip` with root privileges::
 
     $ sudo pip install Flask
 
 (On Windows systems, run it in a command-prompt window with administrator
-privileges, and leave out `sudo`.)
+privileges, and leave out :command:`sudo`.)
 
 
 Living on the Edge
 ------------------
 
 If you want to work with the latest version of Flask, there are two ways: you
-can either let `pip` pull in the development version, or you can tell
+can either let :command:`pip` pull in the development version, or you can tell
 it to operate on a git checkout.  Either way, virtualenv is recommended.
 
 Get the git checkout in a new virtualenv and run in development mode::
@@ -157,14 +157,14 @@ you can upgrade them by running::
 
     > pip install --upgrade pip setuptools
 
-Most often, once you pull up a command prompt you want to be able to type ``pip``
-and ``python`` which will run those things, but this might not automatically happen
+Most often, once you pull up a command prompt you want to be able to type :command:``pip``
+and :command:``python`` which will run those things, but this might not automatically happen
 on Windows, because it doesn't know where those executables are (give either a try!).
 
 To fix this, you should be able to navigate to your Python install directory
 (e.g ``C:\Python27``), then go to ``Tools``, then ``Scripts``; then find the
 ``win_add2path.py`` file and run that. Open a **new** Command Prompt and
-check that you can now just type ``python`` to bring up the interpreter.
+check that you can now just type :command:``python`` to bring up the interpreter.
 
 Finally, to install `virtualenv`_, you can simply run::
 

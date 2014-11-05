@@ -93,7 +93,7 @@ without problems.  Do this with the following command::
 
     flask --app=flaskr --debug run
 
-The ``--debug`` flag enables or disables the interactive debugger.  *Never
+The :option:`--debug` flag enables or disables the interactive debugger.  *Never
 leave debug mode activated in a production system*, because it will allow
 users to execute code on the server!
 

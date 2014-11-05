@@ -24,8 +24,8 @@ Just save it as :file:`hello.py` (or something similar) and run it with your Pyt
 interpreter.  Make sure to not call your application :file:`flask.py` because this
 would conflict with Flask itself.
 
-To run the application you can either use the ``flask`` command or
-python's ``-m`` switch with Flask::
+To run the application you can either use the :command:`flask` command or
+python's :option:`-m` switch with Flask::
 
     $ flask -a hello run
      * Running on http://127.0.0.1:5000/
@@ -79,7 +79,7 @@ To stop the server, hit control-C.
 What to do if the Server does not Start
 ---------------------------------------
 
-In case the ``python -m flask`` fails or ``flask`` does not exist,
+In case the ``python -m flask`` fails or :command:`flask` does not exist,
 there are multiple reasons this might be the case.  First of all you need
 to look at the error message.
 
@@ -87,7 +87,7 @@ Old Version of Flask
 ````````````````````
 
 Versions of Flask older than 1.0 use to have different ways to start the
-application.  In short, the ``flask`` command did not exist, and
+application.  In short, the :command:`flask` command did not exist, and
 neither did ``python -m flask``.  In that case you have two options:
 either upgrade to newer Flask versions or have a look at the :ref:`server`
 docs to see the alternative method for running a server.
@@ -96,7 +96,7 @@ Python older 2.7
 ````````````````
 
 In case you have a version of Python older than 2.7 ``python -m flask``
-does not work.  You can either use ``flask`` or ``python -m
+does not work.  You can either use :command:`flask` or ``python -m
 flask.cli`` as an alternative.  This is because Python before 2.7 does no
 permit packages to act as executable modules.  For more information see
 :ref:`cli`.
@@ -104,7 +104,7 @@ permit packages to act as executable modules.  For more information see
 Invalid Import Name
 ```````````````````
 
-The ``-a`` argument to ``flask`` is the name of the module to import.  In
+The :option:`-a` argument to :command:`flask` is the name of the module to import.  In
 case that module is incorrectly named you will get an import error upon
 start (or if debug is enabled when you navigate to the application).  It
 will tell you what it tried to import and why it failed.
@@ -117,14 +117,14 @@ The most common reason is a typo or because you did not actually create an
 Debug Mode
 ----------
 
-The ``flask`` script is nice to start a local development server, but
+The :command:`flask` script is nice to start a local development server, but
 you would have to restart it manually after each change to your code.
 That is not very nice and Flask can do better.  If you enable debug
 support the server will reload itself on code changes, and it will also
 provide you with a helpful debugger if things go wrong.
 
 There are different ways to enable the debug mode.  The most obvious one
-is the ``--debug`` parameter to the ``flask`` command::
+is the :option:`--debug` parameter to the :command:`flask` command::
 
     flask --debug -a hello run
 

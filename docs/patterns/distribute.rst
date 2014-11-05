@@ -18,9 +18,9 @@ make larger applications easier to distribute:
   this system is the entry point support which allows one package to
   declare an "entry point" another package can hook into to extend the
   other package.
-- **installation manager**: `easy_install`, which comes with distribute
-  can install other libraries for you.  You can also use `pip`_ which
-  sooner or later will replace `easy_install` which does more than just
+- **installation manager**: :command:`easy_install`, which comes with distribute
+  can install other libraries for you.  You can also use :command:`pip`_ which
+  sooner or later will replace :command:`easy_install` which does more than just
   installing packages for you.
 
 Flask itself, and all the libraries you can find on the cheeseshop

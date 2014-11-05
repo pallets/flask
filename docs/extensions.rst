@@ -8,7 +8,7 @@ Finding Extensions
 ------------------
 
 Flask extensions are listed on the `Flask Extension Registry`_ and can be
-downloaded with ``easy_install`` or ``pip``.  If you add a Flask extension
+downloaded with :command:`easy_install` or :command:`pip`.  If you add a Flask extension
 as dependency to your :file:`requirements.txt` or :file:`setup.py` file they are
 usually installed with a simple command or when your application installs.
 
