@@ -19,7 +19,7 @@ make larger applications easier to distribute:
   declare an "entry point" another package can hook into to extend the
   other package.
 - **installation manager**: :command:`easy_install`, which comes with distribute
-  can install other libraries for you.  You can also use :command:`pip`_ which
+  can install other libraries for you.  You can also use `pip`_ which
   sooner or later will replace :command:`easy_install` which does more than just
   installing packages for you.
 
@@ -42,7 +42,7 @@ Basic Setup Script
 
 Because you have Flask running, you either have setuptools or distribute
 available on your system anyways.  If you do not, fear not, there is a
-script to install it for you: :file:`distribute_setup.py`_.  Just download and
+script to install it for you: `distribute_setup.py`_.  Just download and
 run with your Python interpreter.
 
 Standard disclaimer applies: :ref:`you better use a virtualenv
