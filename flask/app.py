@@ -71,12 +71,12 @@ class Flask(_PackageBoundObject):
     The name of the package is used to resolve resources from inside the
     package or the folder the module is contained in depending on if the
     package parameter resolves to an actual python package (a folder with
-    an `__init__.py` file inside) or a standard module (just a `.py` file).
+    an :file:`__init__.py` file inside) or a standard module (just a `.py` file).
 
     For more information about resource loading, see :func:`open_resource`.
 
     Usually you create a :class:`Flask` instance in your main module or
-    in the `__init__.py` file of your package like this::
+    in the :file:`__init__.py` file of your package like this::
 
         from flask import Flask
         app = Flask(__name__)
@@ -93,7 +93,7 @@ class Flask(_PackageBoundObject):
         using a package, it's usually recommended to hardcode the name of
         your package there.
 
-        For example if your application is defined in `yourapplication/app.py`
+        For example if your application is defined in :file:`yourapplication/app.py`
         you should create it with one of the two versions below::
 
             app = Flask('yourapplication')

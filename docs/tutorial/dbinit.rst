@@ -22,7 +22,7 @@ for you to the application.
 
 To do this we can create a function and hook it into the ``flask`` command
 that initializes the database.  Let me show you the code first.  Just add
-this function below the `connect_db` function in `flaskr.py`::
+this function below the `connect_db` function in :file:`flaskr.py`::
 
     def init_db():
         db = get_db()

@@ -23,8 +23,8 @@
 
          the application will greet you on
          http://localhost:5000/
-	
+
     ~ Is it tested?
 
-      You betcha.  Run the `test_flaskr.py` file to see
+      You betcha.  Run the :file:`test_flaskr.py` file to see
       the tests pass.

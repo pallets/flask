@@ -14,7 +14,7 @@ escaped with their XML equivalents.
 We are also using template inheritance which makes it possible to reuse
 the layout of the website in all pages.
 
-Put the following templates into the `templates` folder:
+Put the following templates into the :file:`templates` folder:
 
 .. _Jinja2: http://jinja.pocoo.org/docs/templates
 
@@ -55,7 +55,7 @@ the session:
 show_entries.html
 -----------------
 
-This template extends the `layout.html` template from above to display the
+This template extends the :file:`layout.html` template from above to display the
 messages.  Note that the `for` loop iterates over the messages we passed
 in with the :func:`~flask.render_template` function.  We also tell the
 form to submit to your `add_entry` function and use ``POST`` as HTTP

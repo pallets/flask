@@ -150,7 +150,7 @@ If you don't currently have either, then `get-pip.py` will install both for you
 
 To install the latest setuptools, you can use its bootstrap file:
 
-`ez_setup.py`_
+:file:`ez_setup.py`_
 
 Either should be double-clickable once you download them. If you already have pip,
 you can upgrade them by running::

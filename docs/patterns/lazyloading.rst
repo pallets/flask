@@ -33,7 +33,7 @@ Imagine the current application looks somewhat like this::
         pass
 
 Then the centralized approach you would have one file with the views
-(`views.py`) but without any decorator::
+(:file:`views.py`) but without any decorator::
 
     def index():
         pass

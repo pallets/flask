@@ -323,7 +323,7 @@ def url_for(endpoint, **values):
 def get_template_attribute(template_name, attribute):
     """Loads a macro (or variable) a template exports.  This can be used to
     invoke a macro from within Python code.  If you for example have a
-    template named `_cider.html` with the following contents:
+    template named :file:`_cider.html` with the following contents:
 
     .. sourcecode:: html+jinja
 

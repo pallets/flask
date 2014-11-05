@@ -11,7 +11,7 @@ directly into the module, and this is what we will be doing here. However
 a cleaner solution would be to create a separate `.ini` or `.py` file and
 load that or import the values from there.
 
-First we add the imports in `flaskr.py`::
+First we add the imports in :file:`flaskr.py`::
 
     # all the imports
     import os
@@ -20,7 +20,7 @@ First we add the imports in `flaskr.py`::
          render_template, flash
 
 Next we can create our actual application and initialize it with the
-config from the same file, in `flaskr.py`::
+config from the same file, in :file:`flaskr.py`::
 
     # create our little application :)
     app = Flask(__name__)
@@ -54,14 +54,14 @@ can update it with new values.
     :ref:`instance-folders` instead.
 
 Usually, it is a good idea to load a separate, environment specific
-configuration file.  Flask allows you to import multiple configurations and it 
-will use the setting defined in the last import. This enables robust 
-configuration setups.  :meth:`~flask.Config.from_envvar` can help achieve this. 
-    
+configuration file.  Flask allows you to import multiple configurations and it
+will use the setting defined in the last import. This enables robust
+configuration setups.  :meth:`~flask.Config.from_envvar` can help achieve this.
+
     app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-Simply define the environment variable :envvar:`FLASKR_SETTINGS` that points to 
-a config file to be loaded.  The silent switch just tells Flask to not complain 
+Simply define the environment variable :envvar:`FLASKR_SETTINGS` that points to
+a config file to be loaded.  The silent switch just tells Flask to not complain
 if no such environment key is set.
 
 In addition to that you can use the :meth:`~flask.Config.from_object`

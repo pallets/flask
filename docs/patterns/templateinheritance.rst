@@ -14,7 +14,7 @@ with an example.
 Base Template
 -------------
 
-This template, which we'll call ``layout.html``, defines a simple HTML skeleton
+This template, which we'll call :file:`layout.html`, defines a simple HTML skeleton
 document that you might use for a simple two-column page. It's the job of
 "child" templates to fill the empty blocks with content:
 

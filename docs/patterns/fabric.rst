@@ -15,7 +15,7 @@ upfront:
 -   Fabric 1.0 has to be installed locally.  This tutorial assumes the
     latest version of Fabric.
 -   The application already has to be a package and requires a working
-    `setup.py` file (:ref:`distribute-deployment`).
+    :file:`setup.py` file (:ref:`distribute-deployment`).
 -   In the following example we are using `mod_wsgi` for the remote
     servers.  You can of course use your own favourite server there, but
     for this example we chose Apache + `mod_wsgi` because it's very easy
@@ -25,7 +25,7 @@ upfront:
 Creating the first Fabfile
 --------------------------
 
-A fabfile is what controls what Fabric executes.  It is named `fabfile.py`
+A fabfile is what controls what Fabric executes.  It is named :file:`fabfile.py`
 and executed by the `fab` command.  All the functions defined in that file
 will show up as `fab` subcommands.  They are executed on one or more
 hosts.  These hosts can be defined either in the fabfile or on the command
@@ -168,7 +168,7 @@ can pack up the application and deploy it::
 Fabric will now connect to all servers and run the commands as written
 down in the fabfile.  First it will execute pack so that we have our
 tarball ready and then it will execute deploy and upload the source code
-to all servers and install it there.  Thanks to the `setup.py` file we
+to all servers and install it there.  Thanks to the :file:`setup.py` file we
 will automatically pull in the required libraries into our virtual
 environment.
 

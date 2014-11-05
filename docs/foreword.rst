@@ -30,7 +30,7 @@ Configuration and Conventions
 Flask has many configuration values, with sensible defaults, and a few
 conventions when getting started.  By convention templates and static files are
 stored in subdirectories within the application's Python source tree, with the
-names `templates` and `static` respectively. While this can be changed you
+names :file:`templates` and :file:`static` respectively. While this can be changed you
 usually don't have to, especially when getting started.
 
 Growing with Flask

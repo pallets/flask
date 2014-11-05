@@ -132,7 +132,7 @@ If your application does not run, follow this guide to troubleshoot:
     You have a ``app.run()`` call in your application file that is not
     guarded by an ``if __name__ == '__main__':`` condition.  Either
     remove that :meth:`~flask.Flask.run` call from the file and move it
-    into a separate `run.py` file or put it into such an if block.
+    into a separate :file:`run.py` file or put it into such an if block.
 
 **Problem:** application gives permission errors
     Probably caused by your application running as the wrong user.  Make

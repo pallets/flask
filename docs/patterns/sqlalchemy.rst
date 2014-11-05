@@ -33,7 +33,7 @@ SQLAlchemy.  It allows you to define tables and models in one go, similar
 to how Django works.  In addition to the following text I recommend the
 official documentation on the `declarative`_ extension.
 
-Here the example `database.py` module for your application::
+Here the example :file:`database.py` module for your application::
 
     from sqlalchemy import create_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -70,7 +70,7 @@ when the application shuts down::
     def shutdown_session(exception=None):
         db_session.remove()
 
-Here is an example model (put this into `models.py`, e.g.)::
+Here is an example model (put this into :file:`models.py`, e.g.)::
 
     from sqlalchemy import Column, Integer, String
     from yourapplication.database import Base
@@ -122,7 +122,7 @@ flexible but a little more to type.  In general it works like the
 declarative approach, so make sure to also split up your application into
 multiple modules in a package.
 
-Here is an example `database.py` module for your application::
+Here is an example :file:`database.py` module for your application::
 
     from sqlalchemy import create_engine, MetaData
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -145,7 +145,7 @@ application module::
     def shutdown_session(exception=None):
         db_session.remove()
 
-Here is an example table and model (put this into `models.py`)::
+Here is an example table and model (put this into :file:`models.py`)::
 
     from sqlalchemy import Table, Column, Integer, String
     from sqlalchemy.orm import mapper

@@ -20,7 +20,7 @@ Declarative
 The default behavior of MongoKit is the declarative one that is based on
 common ideas from Django or the SQLAlchemy declarative extension.
 
-Here an example `app.py` module for your application::
+Here an example :file:`app.py` module for your application::
 
     from flask import Flask
     from mongokit import Connection, Document
@@ -47,7 +47,7 @@ MongoDB is schemaless.  This means you can modify the data structure from one
 insert query to the next without any problem.  MongoKit is just schemaless
 too, but implements some validation to ensure data integrity.
 
-Here is an example document (put this also into `app.py`, e.g.)::
+Here is an example document (put this also into :file:`app.py`, e.g.)::
 
     def max_length(length):
         def validate(value):
