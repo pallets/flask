@@ -56,9 +56,9 @@ The following configuration values are used internally by Flask:
 ``TESTING``                       enable/disable testing mode
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
                                   propagation of exceptions.  If not set or
-                                  explicitly set to `None` this is
-                                  implicitly true if either `TESTING` or
-                                  `DEBUG` is true.
+                                  explicitly set to ``None`` this is
+                                  implicitly true if either ``TESTING`` or
+                                  ``DEBUG`` is true.
 ``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
                                   debug mode the request context is not
                                   popped on exceptions to enable debuggers
@@ -80,20 +80,20 @@ The following configuration values are used internally by Flask:
                                   that is not set for ``'/'``.
 ``SESSION_COOKIE_HTTPONLY``       controls if the cookie should be set
                                   with the httponly flag.  Defaults to
-                                  `True`.
+                                  ``True``.
 ``SESSION_COOKIE_SECURE``         controls if the cookie should be set
                                   with the secure flag.  Defaults to
-                                  `False`.
+                                  ``False``.
 ``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
                                   :class:`datetime.timedelta` object.
                                   Starting with Flask 0.8 this can also be
                                   an integer representing seconds.
 ``SESSION_REFRESH_EACH_REQUEST``  this flag controls how permanent
-                                  sessions are refreshed.  If set to `True`
+                                  sessions are refreshed.  If set to ``True``
                                   (which is the default) then the cookie
                                   is refreshed each request which
                                   automatically bumps the lifetime.  If
-                                  set to `False` a `set-cookie` header is
+                                  set to ``False`` a `set-cookie` header is
                                   only sent if the session is modified.
                                   Non permanent sessions are not affected
                                   by this.
@@ -127,7 +127,7 @@ The following configuration values are used internally by Flask:
                                   reject incoming requests with a
                                   content length greater than this by
                                   returning a 413 status code.
-``SEND_FILE_MAX_AGE_DEFAULT``:    Default cache control max age to use with
+``SEND_FILE_MAX_AGE_DEFAULT``     Default cache control max age to use with
                                   :meth:`~flask.Flask.send_static_file` (the
                                   default static file handler) and
                                   :func:`~flask.send_file`, in
@@ -260,7 +260,7 @@ So a common pattern is this::
 
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
-with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
+with the contents of the file the :envvar:``YOURAPPLICATION_SETTINGS``
 environment variable points to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::
@@ -323,7 +323,7 @@ in the example above::
     app.config.from_object('yourapplication.default_settings')
     app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
-Then you just have to add a separate `config.py` file and export
+Then you just have to add a separate :file:`config.py` file and export
 ``YOURAPPLICATION_SETTINGS=/path/to/config.py`` and you are done.  However
 there are alternative ways as well.  For example you could use imports or
 subclassing.

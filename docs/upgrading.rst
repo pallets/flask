@@ -14,8 +14,8 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
-If you want to use the `easy_install` command to upgrade your Flask
-installation, make sure to pass it the ``-U`` parameter::
+If you want to use the :command:`easy_install` command to upgrade your Flask
+installation, make sure to pass it the :option:`-U` parameter::
 
     $ easy_install -U Flask
 
@@ -92,7 +92,7 @@ If invalid JSON data was submitted Flask will now raise a
 default :exc:`ValueError` bubble up.  This has the advantage that you no
 longer have to handle that error to avoid an internal server error showing
 up for the user.  If you were catching this down explicitly in the past
-as `ValueError` you will need to change this.
+as :exc:`ValueError` you will need to change this.
 
 Due to a bug in the test client Flask 0.7 did not trigger teardown
 handlers when the test client was used in a with statement.  This was
@@ -136,11 +136,11 @@ To apply the upgrade script do the following:
         patch -p1 < patchfile.diff
 
 5.  If you were using per-module template folders you need to move some
-    templates around.  Previously if you had a folder named ``templates``
+    templates around.  Previously if you had a folder named :file:`templates`
     next to a blueprint named ``admin`` the implicit template path
-    automatically was ``admin/index.html`` for a template file called
-    ``templates/index.html``.  This no longer is the case.  Now you need
-    to name the template ``templates/admin/index.html``.  The tool will
+    automatically was :file:`admin/index.html` for a template file called
+    :file:`templates/index.html`.  This no longer is the case.  Now you need
+    to name the template :file:`templates/admin/index.html`.  The tool will
     not detect this so you will have to do that on your own.
 
 Please note that deprecation warnings are disabled by default starting
@@ -271,7 +271,7 @@ to upgrade.  What changed?
     modules.
 -   Blueprints do not automatically provide static folders.  They will
     also no longer automatically export templates from a folder called
-    `templates` next to their location however but it can be enabled from
+    :file:`templates` next to their location however but it can be enabled from
     the constructor.  Same with static files: if you want to continue
     serving static files you need to tell the constructor explicitly the
     path to the static folder (which can be relative to the blueprint's
@@ -279,7 +279,7 @@ to upgrade.  What changed?
 -   Rendering templates was simplified.  Now the blueprints can provide
     template folders which are added to a general template searchpath.
     This means that you need to add another subfolder with the blueprint's
-    name into that folder if you want ``blueprintname/template.html`` as
+    name into that folder if you want :file:`blueprintname/template.html` as
     the template name.
 
 If you continue to use the `Module` object which is deprecated, Flask will

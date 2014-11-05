@@ -20,12 +20,12 @@ A minimal Flask application looks something like this::
     def hello_world():
         return 'Hello World!'
 
-Just save it as `hello.py` (or something similar) and run it with your Python
-interpreter.  Make sure to not call your application `flask.py` because this
+Just save it as :file:`hello.py` (or something similar) and run it with your Python
+interpreter.  Make sure to not call your application :file:`flask.py` because this
 would conflict with Flask itself.
 
-To run the application you can either use the ``flask`` command or
-python's ``-m`` switch with Flask::
+To run the application you can either use the :command:`flask` command or
+python's :option:`-m` switch with Flask::
 
     $ flask -a hello run
      * Running on http://127.0.0.1:5000/
@@ -79,7 +79,7 @@ To stop the server, hit control-C.
 What to do if the Server does not Start
 ---------------------------------------
 
-In case the ``python -m flask`` fails or ``flask`` does not exist,
+In case the ``python -m flask`` fails or :command:`flask` does not exist,
 there are multiple reasons this might be the case.  First of all you need
 to look at the error message.
 
@@ -87,7 +87,7 @@ Old Version of Flask
 ````````````````````
 
 Versions of Flask older than 1.0 use to have different ways to start the
-application.  In short, the ``flask`` command did not exist, and
+application.  In short, the :command:`flask` command did not exist, and
 neither did ``python -m flask``.  In that case you have two options:
 either upgrade to newer Flask versions or have a look at the :ref:`server`
 docs to see the alternative method for running a server.
@@ -96,7 +96,7 @@ Python older 2.7
 ````````````````
 
 In case you have a version of Python older than 2.7 ``python -m flask``
-does not work.  You can either use ``flask`` or ``python -m
+does not work.  You can either use :command:`flask` or ``python -m
 flask.cli`` as an alternative.  This is because Python before 2.7 does no
 permit packages to act as executable modules.  For more information see
 :ref:`cli`.
@@ -104,7 +104,7 @@ permit packages to act as executable modules.  For more information see
 Invalid Import Name
 ```````````````````
 
-The ``-a`` argument to ``flask`` is the name of the module to import.  In
+The :option:`-a` argument to :command:`flask` is the name of the module to import.  In
 case that module is incorrectly named you will get an import error upon
 start (or if debug is enabled when you navigate to the application).  It
 will tell you what it tried to import and why it failed.
@@ -117,14 +117,14 @@ The most common reason is a typo or because you did not actually create an
 Debug Mode
 ----------
 
-The ``flask`` script is nice to start a local development server, but
+The :command:`flask` script is nice to start a local development server, but
 you would have to restart it manually after each change to your code.
 That is not very nice and Flask can do better.  If you enable debug
 support the server will reload itself on code changes, and it will also
 provide you with a helpful debugger if things go wrong.
 
 There are different ways to enable the debug mode.  The most obvious one
-is the ``--debug`` parameter to the ``flask`` command::
+is the :option:`--debug` parameter to the :command:`flask` command::
 
     flask --debug -a hello run
 
@@ -292,7 +292,7 @@ HTTP Methods
 ````````````
 
 HTTP (the protocol web applications are speaking) knows different methods for
-accessing URLs.  By default, a route only answers to `GET` requests, but that
+accessing URLs.  By default, a route only answers to ``GET`` requests, but that
 can be changed by providing the `methods` argument to the
 :meth:`~flask.Flask.route` decorator.  Here are some examples::
 
@@ -305,11 +305,11 @@ can be changed by providing the `methods` argument to the
         else:
             show_the_login_form()
 
-If `GET` is present, `HEAD` will be added automatically for you.  You
-don't have to deal with that.  It will also make sure that `HEAD` requests
+If ``GET`` is present, ``HEAD`` will be added automatically for you.  You
+don't have to deal with that.  It will also make sure that ``HEAD`` requests
 are handled as the `HTTP RFC`_ (the document describing the HTTP
 protocol) demands, so you can completely ignore that part of the HTTP
-specification.  Likewise, as of Flask 0.6, `OPTIONS` is implemented for you
+specification.  Likewise, as of Flask 0.6, ``OPTIONS`` is implemented for you
 automatically as well.
 
 You have no idea what an HTTP method is?  Worry not, here is a quick
@@ -319,44 +319,44 @@ The HTTP method (also often called "the verb") tells the server what the
 clients wants to *do* with the requested page.  The following methods are
 very common:
 
-`GET`
+``GET``
     The browser tells the server to just *get* the information stored on
     that page and send it.  This is probably the most common method.
 
-`HEAD`
+``HEAD``
     The browser tells the server to get the information, but it is only
     interested in the *headers*, not the content of the page.  An
-    application is supposed to handle that as if a `GET` request was
+    application is supposed to handle that as if a ``GET`` request was
     received but to not deliver the actual content.  In Flask you don't
     have to deal with that at all, the underlying Werkzeug library handles
     that for you.
 
-`POST`
+``POST``
     The browser tells the server that it wants to *post* some new
     information to that URL and that the server must ensure the data is
     stored and only stored once.  This is how HTML forms usually
     transmit data to the server.
 
-`PUT`
-    Similar to `POST` but the server might trigger the store procedure
+``PUT``
+    Similar to ``POST`` but the server might trigger the store procedure
     multiple times by overwriting the old values more than once.  Now you
     might be asking why this is useful, but there are some good reasons
     to do it this way.  Consider that the connection is lost during
     transmission: in this situation a system between the browser and the
     server might receive the request safely a second time without breaking
-    things.  With `POST` that would not be possible because it must only
+    things.  With ``POST`` that would not be possible because it must only
     be triggered once.
 
-`DELETE`
+``DELETE``
     Remove the information at the given location.
 
-`OPTIONS`
+``OPTIONS``
     Provides a quick way for a client to figure out which methods are
     supported by this URL.  Starting with Flask 0.6, this is implemented
     for you automatically.
 
 Now the interesting part is that in HTML4 and XHTML1, the only methods a
-form can submit to the server are `GET` and `POST`.  But with JavaScript
+form can submit to the server are ``GET`` and ``POST``.  But with JavaScript
 and future HTML standards you can use the other methods as well.  Furthermore
 HTTP has become quite popular lately and browsers are no longer the only
 clients that are using HTTP. For instance, many revision control systems
@@ -370,14 +370,14 @@ Static Files
 Dynamic web applications also need static files.  That's usually where
 the CSS and JavaScript files are coming from.  Ideally your web server is
 configured to serve them for you, but during development Flask can do that
-as well.  Just create a folder called `static` in your package or next to
-your module and it will be available at `/static` on the application.
+as well.  Just create a folder called :file:`static` in your package or next to
+your module and it will be available at ``/static`` on the application.
 
 To generate URLs for static files, use the special ``'static'`` endpoint name::
 
     url_for('static', filename='style.css')
 
-The file has to be stored on the filesystem as ``static/style.css``.
+The file has to be stored on the filesystem as :file:`static/style.css`.
 
 Rendering Templates
 -------------------
@@ -399,7 +399,7 @@ Here's a simple example of how to render a template::
     def hello(name=None):
         return render_template('hello.html', name=name)
 
-Flask will look for templates in the `templates` folder.  So if your
+Flask will look for templates in the :file:`templates` folder.  So if your
 application is a module, this folder is next to that module, if it's a
 package it's actually inside your package:
 
@@ -510,7 +510,7 @@ will notice that code which depends on a request object will suddenly break
 because there is no request object.  The solution is creating a request
 object yourself and binding it to the context.  The easiest solution for
 unit testing is to use the :meth:`~flask.Flask.test_request_context`
-context manager.  In combination with the `with` statement it will bind a
+context manager.  In combination with the ``with`` statement it will bind a
 test request so that you can interact with it.  Here is an example::
 
     from flask import request
@@ -541,7 +541,7 @@ the `flask` module::
 
 The current request method is available by using the
 :attr:`~flask.request.method` attribute.  To access form data (data
-transmitted in a `POST` or `PUT` request) you can use the
+transmitted in a ``POST`` or ``PUT`` request) you can use the
 :attr:`~flask.request.form` attribute.  Here is a full example of the two
 attributes mentioned above::
 
@@ -570,7 +570,7 @@ To access parameters submitted in the URL (``?key=value``) you can use the
     searchword = request.args.get('key', '')
 
 We recommend accessing URL parameters with `get` or by catching the
-`KeyError` because users might change the URL and presenting them a 400
+:exc:`KeyError` because users might change the URL and presenting them a 400
 bad request page in that case is not user friendly.
 
 For a full list of methods and attributes of the request object, head over
@@ -708,7 +708,7 @@ About Responses
 The return value from a view function is automatically converted into a
 response object for you.  If the return value is a string it's converted
 into a response object with the string as response body, a ``200 OK``
-status code and a ``text/html`` mimetype.  The logic that Flask applies to
+status code and a :mimetype:`text/html` mimetype.  The logic that Flask applies to
 converting return values into response objects is as follows:
 
 1.  If a response object of the correct type is returned it's directly

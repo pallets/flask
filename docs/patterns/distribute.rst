@@ -18,16 +18,16 @@ make larger applications easier to distribute:
   this system is the entry point support which allows one package to
   declare an "entry point" another package can hook into to extend the
   other package.
-- **installation manager**: `easy_install`, which comes with distribute
+- **installation manager**: :command:`easy_install`, which comes with distribute
   can install other libraries for you.  You can also use `pip`_ which
-  sooner or later will replace `easy_install` which does more than just
+  sooner or later will replace :command:`easy_install` which does more than just
   installing packages for you.
 
 Flask itself, and all the libraries you can find on the cheeseshop
 are distributed with either distribute, the older setuptools or distutils.
 
 In this case we assume your application is called
-`yourapplication.py` and you are not using a module, but a :ref:`package
+:file:`yourapplication.py` and you are not using a module, but a :ref:`package
 <larger-applications>`.  Distributing resources with standard modules is
 not supported by `distribute`_ so we will not bother with it.  If you have
 not yet converted your application into a package, head over to the
@@ -48,7 +48,7 @@ run with your Python interpreter.
 Standard disclaimer applies: :ref:`you better use a virtualenv
 <virtualenv>`.
 
-Your setup code always goes into a file named `setup.py` next to your
+Your setup code always goes into a file named :file:`setup.py` next to your
 application.  The name of the file is only convention, but because
 everybody will look for a file with that name, you better not change it.
 
@@ -56,7 +56,7 @@ Yes, even if you are using `distribute`, you are importing from a package
 called `setuptools`.  `distribute` is fully backwards compatible with
 `setuptools`, so it also uses the same import name.
 
-A basic `setup.py` file for a Flask application looks like this::
+A basic :file:`setup.py` file for a Flask application looks like this::
 
     from setuptools import setup
 
@@ -83,7 +83,7 @@ the `find_packages` function::
 
 Most parameters to the `setup` function should be self explanatory,
 `include_package_data` and `zip_safe` might not be.
-`include_package_data` tells distribute to look for a `MANIFEST.in` file
+`include_package_data` tells distribute to look for a :file:`MANIFEST.in` file
 and install all the entries that match as package data.  We will use this
 to distribute the static files and templates along with the Python module
 (see :ref:`distributing-resources`).  The `zip_safe` flag can be used to
@@ -98,18 +98,18 @@ Distributing Resources
 ----------------------
 
 If you try to install the package you just created, you will notice that
-folders like `static` or `templates` are not installed for you.  The
+folders like :file:`static` or :file:`templates` are not installed for you.  The
 reason for this is that distribute does not know which files to add for
-you.  What you should do, is to create a `MANIFEST.in` file next to your
-`setup.py` file.  This file lists all the files that should be added to
+you.  What you should do, is to create a :file:`MANIFEST.in` file next to your
+:file:`setup.py` file.  This file lists all the files that should be added to
 your tarball::
 
     recursive-include yourapplication/templates *
     recursive-include yourapplication/static *
 
-Don't forget that even if you enlist them in your `MANIFEST.in` file, they
+Don't forget that even if you enlist them in your :file:`MANIFEST.in` file, they
 won't be installed for you unless you set the `include_package_data`
-parameter of the `setup` function to `True`!
+parameter of the `setup` function to ``True``!
 
 
 Declaring Dependencies
@@ -145,7 +145,7 @@ Installing / Developing
 -----------------------
 
 To install your application (ideally into a virtualenv) just run the
-`setup.py` script with the `install` parameter.  It will install your
+:file:`setup.py` script with the `install` parameter.  It will install your
 application into the virtualenv's site-packages folder and also download
 and install all dependencies::
 

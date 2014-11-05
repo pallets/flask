@@ -45,7 +45,7 @@ us a :class:`~flask.ctx.RequestContext`:
 
 >>> ctx = app.test_request_context()
 
-Normally you would use the `with` statement to make this request object
+Normally you would use the ``with`` statement to make this request object
 active, but in the shell it's easier to use the
 :meth:`~flask.ctx.RequestContext.push` and
 :meth:`~flask.ctx.RequestContext.pop` methods by hand:

@@ -15,7 +15,7 @@ applications.
 Basic Usage
 -----------
 
-After installation of Flask you will now find a ``flask`` script installed
+After installation of Flask you will now find a :command:`flask` script installed
 into your virtualenv.  If you don't want to install Flask or you have a
 special use-case you can also use ``python -m flask`` to accomplish exactly
 the same.
@@ -25,9 +25,9 @@ your Flask application's :attr:`Flask.cli` instance as well as some
 built-in commands that are always there.  Flask extensions can also
 register more commands there if they desire so.
 
-For the ``flask`` script to work, an application needs to be discovered.
+For the :command:`flask` script to work, an application needs to be discovered.
 The two most common ways are either an environment variable
-(``FLASK_APP``) or the ``--app`` / ``-a`` parameter.  It should be the
+(``FLASK_APP``) or the :option:`--app` / :option:`-a` parameter.  It should be the
 import path for your application or the path to a Python file.  In the
 latter case Flask will attempt to setup the Python path for you
 automatically and discover the module name but that might not always work.
@@ -35,7 +35,7 @@ automatically and discover the module name but that might not always work.
 In that imported file the name of the app needs to be called ``app`` or
 optionally be specified after a colon.
 
-Given a ``hello.py`` file with the application in it named ``app`` this is
+Given a :file:`hello.py` file with the application in it named ``app`` this is
 how it can be run.
 
 Environment variables (On Windows use ``set`` instead of ``export``)::
@@ -62,7 +62,7 @@ automatically also activate the correct application name.
 Debug Flag
 ----------
 
-The ``flask`` script can be run with ``--debug`` or ``--no-debug`` to
+The :command:`flask` script can be run with :option:`--debug` or :option:`--no-debug` to
 automatically flip the debug flag of the application.  This can also be
 configured by setting ``FLASK_DEBUG`` to ``1`` or ``0``.
 
@@ -122,7 +122,7 @@ Factory Functions
 -----------------
 
 In case you are using factory functions to create your application (see
-:ref:`app-factories`) you will discover that the ``flask`` command cannot
+:ref:`app-factories`) you will discover that the :command:`flask` command cannot
 work with them directly.  Flask won't be able to figure out how to
 instantiate your application properly by itself.  Because of this reason
 the recommendation is to create a separate file that instantiates
@@ -133,7 +133,7 @@ For instance if you have a factory function that creates an application
 from a filename you could make a separate file that creates such an
 application from an environment variable.
 
-This could be a file named ``autoapp.py`` with these contents::
+This could be a file named :file:`autoapp.py` with these contents::
 
     import os
     from yourapplication import create_app
@@ -145,14 +145,14 @@ it up::
     export YOURAPPLICATION_CONFIG=/path/to/config.cfg
     export FLASK_APP=/path/to/autoapp.py
 
-From this point onwards ``flask`` will find your application.
+From this point onwards :command:`flask` will find your application.
 
 .. _custom-scripts:
 
 Custom Scripts
 --------------
 
-While the most common way is to use the ``flask`` command, you can also
+While the most common way is to use the :command:`flask` command, you can also
 make your own "driver scripts".  Since Flask uses click for the scripts
 there is no reason you cannot hook these scripts into any click
 application.  There is one big caveat and that is, that commands
@@ -162,7 +162,7 @@ necessary so that the commands know which Flask application they have to
 work with.
 
 To understand why you might want custom scripts you need to understand how
-click finds and executes the Flask application.  If you use the ``flask``
+click finds and executes the Flask application.  If you use the :command:`flask`
 script you specify the application to work with on the command line or
 environment variable as an import name.  This is simple but it has some
 limitations.  Primarily it does not work with application factory
@@ -179,7 +179,7 @@ We won't go into detail now about the differences but if you are curious
 you can have a look at the :ref:`script-info-object` section to learn all
 about it.
 
-To explain all of this, here is an example ``manage.py`` script that
+To explain all of this, here is an example :file:`manage.py` script that
 manages a hypothetical wiki application.  We will go through the details
 afterwards::
 
@@ -223,7 +223,7 @@ step.
     call that function with the script info and ask for it to be created.
 4.  In step 2 you could see that the config is passed to the actual
     creation function.  This config comes from the :func:`script_info_option`
-    decorator for the main script.  It accepts a ``--config`` option and
+    decorator for the main script.  It accepts a :option:`--config` option and
     then stores it in the script info so we can use it to create the
     application.
 5.  All is rounded up by invoking the script.
@@ -239,7 +239,7 @@ both provide custom commands to click as well as not loading your
 application unless it has to.  The reason for this is added flexibility.
 
 This way an application can provide custom commands, but even in the
-absence of an application the ``flask`` script is still operational on a
+absence of an application the :command:`flask` script is still operational on a
 basic level.  In addition to that it means that the individual commands
 have the option to avoid creating an instance of the Flask application
 unless required.  This is very useful as it allows the server commands for

@@ -33,8 +33,8 @@ Incoming Request Data
 
    .. attribute:: form
 
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from `POST`
-      or `PUT` requests.  Please keep in mind that file uploads will not
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from ``POST``
+      or ``PUT`` requests.  Please keep in mind that file uploads will not
       end up here,  but instead in the :attr:`files` attribute.
 
    .. attribute:: args
@@ -71,7 +71,7 @@ Incoming Request Data
    .. attribute:: files
 
       A :class:`~werkzeug.datastructures.MultiDict` with files uploaded as part of a
-      `POST` or `PUT` request.  Each file is stored as
+      ``POST`` or ``PUT`` request.  Each file is stored as
       :class:`~werkzeug.datastructures.FileStorage` object.  It basically behaves like a
       standard file object you know from Python, with the difference that
       it also has a :meth:`~werkzeug.datastructures.FileStorage.save` function that can
@@ -115,7 +115,7 @@ Incoming Request Data
 
    .. attribute:: is_xhr
 
-      `True` if the request was triggered via a JavaScript
+      ``True`` if the request was triggered via a JavaScript
       `XMLHttpRequest`. This only works with libraries that support the
       ``X-Requested-With`` header and set it to `XMLHttpRequest`.
       Libraries that do that are prototype, jQuery and Mochikit and
@@ -178,14 +178,14 @@ To access the current session you can use the :class:`session` object:
 
    .. attribute:: new
 
-      `True` if the session is new, `False` otherwise.
+      ``True`` if the session is new, ``False`` otherwise.
 
    .. attribute:: modified
 
-      `True` if the session object detected a modification.  Be advised
+      ``True`` if the session object detected a modification.  Be advised
       that modifications on mutable structures are not picked up
       automatically, in that situation you have to explicitly set the
-      attribute to `True` yourself.  Here an example::
+      attribute to ``True`` yourself.  Here an example::
 
           # this change is not picked up because a mutable object (here
           # a list) is changed.
@@ -195,9 +195,9 @@ To access the current session you can use the :class:`session` object:
 
    .. attribute:: permanent
 
-      If set to `True` the session lives for
+      If set to ``True`` the session lives for
       :attr:`~flask.Flask.permanent_session_lifetime` seconds.  The
-      default is 31 days.  If set to `False` (which is the default) the
+      default is 31 days.  If set to ``False`` (which is the default) the
       session will be deleted when the user closes the browser.
 
 
@@ -279,7 +279,7 @@ thing, like it does for :class:`request` and :class:`session`.
    pattern for testing.
 
    Additionally as of 0.10 you can use the :meth:`get` method to
-   get an attribute or `None` (or the second argument) if it's not set.
+   get an attribute or ``None`` (or the second argument) if it's not set.
    These two usages are now equivalent::
 
         user = getattr(flask.g, 'user', None)
@@ -376,9 +376,9 @@ JSON module:
     as string.
 
 The :func:`~htmlsafe_dumps` function of this json module is also available
-as filter called ``|tojson`` in Jinja2.  Note that inside `script`
+as filter called ``|tojson`` in Jinja2.  Note that inside ``script``
 tags no escaping must take place, so make sure to disable escaping
-with ``|safe`` if you intend to use it inside `script` tags unless
+with ``|safe`` if you intend to use it inside ``script`` tags unless
 you are using Flask 0.10 which implies that:
 
 .. sourcecode:: html+jinja
@@ -516,7 +516,7 @@ Signals
 
 .. data:: signals_available
 
-   `True` if the signaling system is available.  This is the case
+   ``True`` if the signaling system is available.  This is the case
    when `blinker`_ is installed.
 
 .. data:: template_rendered
@@ -704,9 +704,9 @@ instead of the `view_func` parameter.
 `**options`     the options to be forwarded to the underlying
                 :class:`~werkzeug.routing.Rule` object.  A change to
                 Werkzeug is handling of method options.  methods is a list
-                of methods this rule should be limited to (`GET`, `POST`
-                etc.).  By default a rule just listens for `GET` (and
-                implicitly `HEAD`).  Starting with Flask 0.6, `OPTIONS` is
+                of methods this rule should be limited to (``GET``, ``POST``
+                etc.).  By default a rule just listens for ``GET`` (and
+                implicitly ``HEAD``).  Starting with Flask 0.6, ``OPTIONS`` is
                 implicitly added and handled by the standard request
                 handling.  They have to be specified as keyword arguments.
 =============== ==========================================================
@@ -733,8 +733,8 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
 
 -   `provide_automatic_options`: if this attribute is set Flask will
     either force enable or disable the automatic implementation of the
-    HTTP `OPTIONS` response.  This can be useful when working with
-    decorators that want to customize the `OPTIONS` response on a per-view
+    HTTP ``OPTIONS`` response.  This can be useful when working with
+    decorators that want to customize the ``OPTIONS`` response on a per-view
     basis.
 
 -   `required_methods`: if this attribute is set, Flask will always add
@@ -782,7 +782,7 @@ Command Line Interface
    A special decorator that informs a click callback to be passed the
    script info object as first argument.  This is normally not useful
    unless you implement very special commands like the run command which
-   does not want the application to be loaded yet. 
+   does not want the application to be loaded yet.
 
 .. autodata:: run_command
 
