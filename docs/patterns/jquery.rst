@@ -65,12 +65,12 @@ like this:
 
 The ``|safe`` is necessary in Flask before 0.10 so that Jinja does not
 escape the JSON encoded string with HTML rules.  Usually this would be
-necessary, but we are inside a `script` block here where different rules
+necessary, but we are inside a ``script`` block here where different rules
 apply.
 
 .. admonition:: Information for Pros
 
-   In HTML the `script` tag is declared `CDATA` which means that entities
+   In HTML the ``script`` tag is declared ``CDATA`` which means that entities
    will not be parsed.  Everything until ``</script>`` is handled as script.
    This also means that there must never be any ``</`` between the script
    tags.  ``|tojson`` is kind enough to do the right thing here and
