@@ -59,8 +59,8 @@ here is that each Flask application is a valid WSGI application and they
 are combined by the dispatcher middleware into a larger one that
 dispatched based on prefix.
 
-For example you could have your main application run on `/` and your
-backend interface on `/backend`::
+For example you could have your main application run on ``/`` and your
+backend interface on ``/backend``::
 
     from werkzeug.wsgi import DispatcherMiddleware
     from frontend_app import application as frontend

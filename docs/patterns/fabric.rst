@@ -84,8 +84,8 @@ this command::
     $ fab pack deploy
 
 However this requires that our server already has the
-``/var/www/yourapplication`` folder created and
-``/var/www/yourapplication/env`` to be a virtual environment.  Furthermore
+:file:`/var/www/yourapplication` folder created and
+:file:`/var/www/yourapplication/env` to be a virtual environment.  Furthermore
 are we not creating the configuration or `.wsgi` file on the server.  So
 how do we bootstrap a new server into our infrastructure?
 
@@ -100,16 +100,16 @@ command line::
 
 To setup a new server you would roughly do these steps:
 
-1.  Create the directory structure in ``/var/www``::
+1.  Create the directory structure in :file:`/var/www`::
 
         $ mkdir /var/www/yourapplication
         $ cd /var/www/yourapplication
         $ virtualenv --distribute env
 
-2.  Upload a new `application.wsgi` file to the server and the
-    configuration file for the application (eg: `application.cfg`)
+2.  Upload a new :file:`application.wsgi` file to the server and the
+    configuration file for the application (eg: :file:`application.cfg`)
 
-3.  Create a new Apache config for `yourapplication` and activate it.
+3.  Create a new Apache config for ``yourapplication`` and activate it.
     Make sure to activate watching for changes of the `.wsgi` file so
     that we can automatically reload the application by touching it.
     (See :ref:`mod_wsgi-deployment` for more information)
@@ -151,7 +151,7 @@ usually.
 A popular approach is to store configuration files for different servers
 in a separate version control repository and check them out on all
 servers.  Then symlink the file that is active for the server into the
-location where it's expected (eg: ``/var/www/yourapplication``).
+location where it's expected (eg: :file:`/var/www/yourapplication`).
 
 Either way, in our case here we only expect one or two servers and we can
 upload them ahead of time by hand.

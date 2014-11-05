@@ -51,7 +51,7 @@ A basic flask uWSGI configuration for nginx looks like this::
       uwsgi_pass unix:/tmp/uwsgi.sock;
     }
 
-This configuration binds the application to `/yourapplication`.  If you want
+This configuration binds the application to ``/yourapplication``.  If you want
 to have it in the URL root it's a bit simpler because you don't have to tell
 it the WSGI ``SCRIPT_NAME`` or set the uwsgi modifier to make use of it::
 
