@@ -33,8 +33,8 @@ Incoming Request Data
 
    .. attribute:: form
 
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from `POST`
-      or `PUT` requests.  Please keep in mind that file uploads will not
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from ``POST``
+      or ``PUT`` requests.  Please keep in mind that file uploads will not
       end up here,  but instead in the :attr:`files` attribute.
 
    .. attribute:: args
@@ -71,7 +71,7 @@ Incoming Request Data
    .. attribute:: files
 
       A :class:`~werkzeug.datastructures.MultiDict` with files uploaded as part of a
-      `POST` or `PUT` request.  Each file is stored as
+      ``POST`` or ``PUT`` request.  Each file is stored as
       :class:`~werkzeug.datastructures.FileStorage` object.  It basically behaves like a
       standard file object you know from Python, with the difference that
       it also has a :meth:`~werkzeug.datastructures.FileStorage.save` function that can
@@ -704,9 +704,9 @@ instead of the `view_func` parameter.
 `**options`     the options to be forwarded to the underlying
                 :class:`~werkzeug.routing.Rule` object.  A change to
                 Werkzeug is handling of method options.  methods is a list
-                of methods this rule should be limited to (`GET`, `POST`
-                etc.).  By default a rule just listens for `GET` (and
-                implicitly `HEAD`).  Starting with Flask 0.6, `OPTIONS` is
+                of methods this rule should be limited to (``GET``, ``POST``
+                etc.).  By default a rule just listens for ``GET`` (and
+                implicitly ``HEAD``).  Starting with Flask 0.6, ``OPTIONS`` is
                 implicitly added and handled by the standard request
                 handling.  They have to be specified as keyword arguments.
 =============== ==========================================================
@@ -733,8 +733,8 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
 
 -   `provide_automatic_options`: if this attribute is set Flask will
     either force enable or disable the automatic implementation of the
-    HTTP `OPTIONS` response.  This can be useful when working with
-    decorators that want to customize the `OPTIONS` response on a per-view
+    HTTP ``OPTIONS`` response.  This can be useful when working with
+    decorators that want to customize the ``OPTIONS`` response on a per-view
     basis.
 
 -   `required_methods`: if this attribute is set, Flask will always add

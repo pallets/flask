@@ -968,7 +968,7 @@ class Flask(_PackageBoundObject):
            `view_func` parameter added.
 
         .. versionchanged:: 0.6
-           `OPTIONS` is added automatically as method.
+           ``OPTIONS`` is added automatically as method.
 
         :param rule: the URL rule as string
         :param endpoint: the endpoint for the registered URL rule.  Flask
@@ -980,9 +980,9 @@ class Flask(_PackageBoundObject):
                         :class:`~werkzeug.routing.Rule` object.  A change
                         to Werkzeug is handling of method options.  methods
                         is a list of methods this rule should be limited
-                        to (`GET`, `POST` etc.).  By default a rule
-                        just listens for `GET` (and implicitly `HEAD`).
-                        Starting with Flask 0.6, `OPTIONS` is implicitly
+                        to (``GET``, ``POST`` etc.).  By default a rule
+                        just listens for ``GET`` (and implicitly ``HEAD``).
+                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
                         added and handled by the standard request handling.
         """
         if endpoint is None:
@@ -992,7 +992,7 @@ class Flask(_PackageBoundObject):
 
         # if the methods are not given and the view_func object knows its
         # methods we can use that instead.  If neither exists, we go with
-        # a tuple of only `GET` as default.
+        # a tuple of only ``GET`` as default.
         if methods is None:
             methods = getattr(view_func, 'methods', None) or ('GET',)
         if isinstance(methods, string_types):
@@ -1048,9 +1048,9 @@ class Flask(_PackageBoundObject):
                         :class:`~werkzeug.routing.Rule` object.  A change
                         to Werkzeug is handling of method options.  methods
                         is a list of methods this rule should be limited
-                        to (`GET`, `POST` etc.).  By default a rule
-                        just listens for `GET` (and implicitly `HEAD`).
-                        Starting with Flask 0.6, `OPTIONS` is implicitly
+                        to (``GET``, ``POST`` etc.).  By default a rule
+                        just listens for ``GET`` (and implicitly ``HEAD``).
+                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
                         added and handled by the standard request handling.
         """
         def decorator(f):
@@ -1559,9 +1559,9 @@ class Flask(_PackageBoundObject):
             self._got_first_request = True
 
     def make_default_options_response(self):
-        """This method is called to create the default `OPTIONS` response.
+        """This method is called to create the default ``OPTIONS`` response.
         This can be changed through subclassing to change the default
-        behavior of `OPTIONS` responses.
+        behavior of ``OPTIONS`` responses.
 
         .. versionadded:: 0.7
         """

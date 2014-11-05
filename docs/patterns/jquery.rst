@@ -156,7 +156,7 @@ explanation of the little bit of code above:
    when the user clicked on the element.  If that function returns
    `false`, the default behavior will not kick in (in this case, navigate
    to the `#` URL).
-4. ``$.getJSON(url, data, func)`` sends a `GET` request to `url` and will
+4. ``$.getJSON(url, data, func)`` sends a ``GET`` request to `url` and will
    send the contents of the `data` object as query parameters.  Once the
    data arrived, it will call the given function with the return value as
    argument.  Note that we can use the `$SCRIPT_ROOT` variable here that

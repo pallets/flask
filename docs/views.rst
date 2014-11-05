@@ -46,7 +46,7 @@ class into an actual view function by using the
 that function is the name of the endpoint that view will then have.  But
 this by itself is not helpful, so let's refactor the code a bit::
 
-    
+
     from flask.views import View
 
     class ListView(View):

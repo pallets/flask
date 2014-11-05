@@ -61,8 +61,8 @@ the code as necessary.
 Things to remember:
 
 1. create the form from the request :attr:`~flask.request.form` value if
-   the data is submitted via the HTTP `POST` method and
-   :attr:`~flask.request.args` if the data is submitted as `GET`.
+   the data is submitted via the HTTP ``POST`` method and
+   :attr:`~flask.request.args` if the data is submitted as ``GET``.
 2. to validate the data, call the :func:`~wtforms.form.Form.validate`
    method which will return ``True`` if the data validates, ``False``
    otherwise.

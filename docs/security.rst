@@ -70,7 +70,7 @@ don't keep that in mind, some people might be able to trick your
 application's users with social engineering to do stupid things without
 them knowing.
 
-Say you have a specific URL that, when you sent `POST` requests to will
+Say you have a specific URL that, when you sent ``POST`` requests to will
 delete a user's profile (say `http://example.com/user/delete`).  If an
 attacker now creates a page that sends a post request to that page with
 some JavaScript they just has to trick some users to load that page and
@@ -130,7 +130,7 @@ Not very uncommon:
     ]
 
 And it is doing that of course only as long as you are logged in and only
-for you.  And it is doing that for all `GET` requests to a certain URL,
+for you.  And it is doing that for all ``GET`` requests to a certain URL,
 say the URL for that request is
 ``http://example.com/api/get_friends.json``.
 

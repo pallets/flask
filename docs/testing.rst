@@ -112,7 +112,7 @@ test method to our class, like this::
 Notice that our test functions begin with the word `test`; this allows
 :mod:`unittest` to automatically identify the method as a test to run.
 
-By using `self.app.get` we can send an HTTP `GET` request to the application with
+By using `self.app.get` we can send an HTTP ``GET`` request to the application with
 the given path.  The return value will be a :class:`~flask.Flask.response_class` object.
 We can now use the :attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect
 the return value (as string) from the application.  In this case, we ensure that
