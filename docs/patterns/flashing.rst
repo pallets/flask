@@ -38,7 +38,7 @@ So here is a full example::
                 return redirect(url_for('index'))
         return render_template('login.html', error=error)
 
-And here the ``layout.html`` template which does the magic:
+And here the :file:`layout.html` template which does the magic:
 
 .. sourcecode:: html+jinja
 

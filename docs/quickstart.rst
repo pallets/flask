@@ -20,8 +20,8 @@ A minimal Flask application looks something like this::
     def hello_world():
         return 'Hello World!'
 
-Just save it as `hello.py` (or something similar) and run it with your Python
-interpreter.  Make sure to not call your application `flask.py` because this
+Just save it as :file:`hello.py` (or something similar) and run it with your Python
+interpreter.  Make sure to not call your application :file:`flask.py` because this
 would conflict with Flask itself.
 
 To run the application you can either use the ``flask`` command or
@@ -370,14 +370,14 @@ Static Files
 Dynamic web applications also need static files.  That's usually where
 the CSS and JavaScript files are coming from.  Ideally your web server is
 configured to serve them for you, but during development Flask can do that
-as well.  Just create a folder called `static` in your package or next to
+as well.  Just create a folder called :file:`static` in your package or next to
 your module and it will be available at `/static` on the application.
 
 To generate URLs for static files, use the special ``'static'`` endpoint name::
 
     url_for('static', filename='style.css')
 
-The file has to be stored on the filesystem as ``static/style.css``.
+The file has to be stored on the filesystem as :file:`static/style.css`.
 
 Rendering Templates
 -------------------
@@ -399,7 +399,7 @@ Here's a simple example of how to render a template::
     def hello(name=None):
         return render_template('hello.html', name=name)
 
-Flask will look for templates in the `templates` folder.  So if your
+Flask will look for templates in the :file:`templates` folder.  So if your
 application is a module, this folder is next to that module, if it's a
 package it's actually inside your package:
 

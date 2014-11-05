@@ -24,8 +24,8 @@
 
          the application will greet you on
          http://localhost:5000/
-	
+
     ~ Is it tested?
 
-      You betcha.  Run the `test_minitwit.py` file to
+      You betcha.  Run the :file:`test_minitwit.py` file to
       see the tests pass.

@@ -16,7 +16,7 @@ returned from the cursor look a bit like tuples because we are using
 the :class:`sqlite3.Row` row factory.
 
 The view function will pass the entries as dicts to the
-`show_entries.html` template and return the rendered one::
+:file:`show_entries.html` template and return the rendered one::
 
     @app.route('/')
     def show_entries():

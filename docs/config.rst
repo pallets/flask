@@ -323,7 +323,7 @@ in the example above::
     app.config.from_object('yourapplication.default_settings')
     app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
-Then you just have to add a separate `config.py` file and export
+Then you just have to add a separate :file:`config.py` file and export
 ``YOURAPPLICATION_SETTINGS=/path/to/config.py`` and you are done.  However
 there are alternative ways as well.  For example you could use imports or
 subclassing.

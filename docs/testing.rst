@@ -30,7 +30,7 @@ The Testing Skeleton
 --------------------
 
 In order to test the application, we add a second module
-(`flaskr_tests.py`) and create a unittest skeleton there::
+(:file:`flaskr_tests.py`) and create a unittest skeleton there::
 
     import os
     import flaskr

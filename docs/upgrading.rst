@@ -136,11 +136,11 @@ To apply the upgrade script do the following:
         patch -p1 < patchfile.diff
 
 5.  If you were using per-module template folders you need to move some
-    templates around.  Previously if you had a folder named ``templates``
+    templates around.  Previously if you had a folder named :file:`templates`
     next to a blueprint named ``admin`` the implicit template path
-    automatically was ``admin/index.html`` for a template file called
-    ``templates/index.html``.  This no longer is the case.  Now you need
-    to name the template ``templates/admin/index.html``.  The tool will
+    automatically was :file:`admin/index.html` for a template file called
+    :file:`templates/index.html`.  This no longer is the case.  Now you need
+    to name the template :file:`templates/admin/index.html`.  The tool will
     not detect this so you will have to do that on your own.
 
 Please note that deprecation warnings are disabled by default starting
@@ -271,7 +271,7 @@ to upgrade.  What changed?
     modules.
 -   Blueprints do not automatically provide static folders.  They will
     also no longer automatically export templates from a folder called
-    `templates` next to their location however but it can be enabled from
+    :file:`templates` next to their location however but it can be enabled from
     the constructor.  Same with static files: if you want to continue
     serving static files you need to tell the constructor explicitly the
     path to the static folder (which can be relative to the blueprint's
@@ -279,7 +279,7 @@ to upgrade.  What changed?
 -   Rendering templates was simplified.  Now the blueprints can provide
     template folders which are added to a general template searchpath.
     This means that you need to add another subfolder with the blueprint's
-    name into that folder if you want ``blueprintname/template.html`` as
+    name into that folder if you want :file:`blueprintname/template.html` as
     the template name.
 
 If you continue to use the `Module` object which is deprecated, Flask will
