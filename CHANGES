@@ -326,7 +326,7 @@ Released on June 28th 2011, codename Grappa
 
 - Added :meth:`~flask.Flask.make_default_options_response`
   which can be used by subclasses to alter the default
-  behavior for `OPTIONS` responses.
+  behavior for ``OPTIONS`` responses.
 - Unbound locals now raise a proper :exc:`RuntimeError` instead
   of an :exc:`AttributeError`.
 - Mimetype guessing and etag support based on file objects is now
@@ -379,7 +379,7 @@ Version 0.6.1
 
 Bugfix release, released on December 31st 2010
 
-- Fixed an issue where the default `OPTIONS` response was
+- Fixed an issue where the default ``OPTIONS`` response was
   not exposing all valid methods in the `Allow` header.
 - Jinja2 template loading syntax now allows "./" in front of
   a template load path.  Previously this caused issues with
