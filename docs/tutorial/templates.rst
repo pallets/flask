@@ -56,7 +56,7 @@ show_entries.html
 -----------------
 
 This template extends the :file:`layout.html` template from above to display the
-messages.  Note that the `for` loop iterates over the messages we passed
+messages.  Note that the ``for`` loop iterates over the messages we passed
 in with the :func:`~flask.render_template` function.  We also tell the
 form to submit to your `add_entry` function and use ``POST`` as HTTP
 method:

@@ -202,7 +202,7 @@ Other Testing Tricks
 
 Besides using the test client as shown above, there is also the
 :meth:`~flask.Flask.test_request_context` method that can be used
-in combination with the `with` statement to activate a request context
+in combination with the ``with`` statement to activate a request context
 temporarily.  With this you can access the :class:`~flask.request`,
 :class:`~flask.g` and :class:`~flask.session` objects like in view
 functions.  Here is a full example that demonstrates this approach::
@@ -224,7 +224,7 @@ Note however that if you are using a test request context, the
 :meth:`~flask.Flask.before_request` functions are not automatically called
 same for :meth:`~flask.Flask.after_request` functions.  However
 :meth:`~flask.Flask.teardown_request` functions are indeed executed when
-the test request context leaves the `with` block.  If you do want the
+the test request context leaves the ``with`` block.  If you do want the
 :meth:`~flask.Flask.before_request` functions to be called as well, you
 need to call :meth:`~flask.Flask.preprocess_request` yourself::
 
@@ -308,7 +308,7 @@ Keeping the Context Around
 Sometimes it is helpful to trigger a regular request but still keep the
 context around for a little longer so that additional introspection can
 happen.  With Flask 0.4 this is possible by using the
-:meth:`~flask.Flask.test_client` with a `with` block::
+:meth:`~flask.Flask.test_client` with a ``with`` block::
 
     app = flask.Flask(__name__)
 
@@ -317,7 +317,7 @@ happen.  With Flask 0.4 this is possible by using the
         assert request.args['tequila'] == '42'
 
 If you were to use just the :meth:`~flask.Flask.test_client` without
-the `with` block, the `assert` would fail with an error because `request`
+the ``with`` block, the ``assert`` would fail with an error because `request`
 is no longer available (because you are trying to use it outside of the actual request).
 
 

@@ -72,7 +72,7 @@ a recap of the most common commands fabric provides:
 -   `local` - executes a command on the local machine
 -   `put` - uploads a file to the remote server
 -   `cd` - changes the directory on the serverside.  This has to be used
-    in combination with the `with` statement.
+    in combination with the ``with`` statement.
 
 Running Fabfiles
 ----------------
@@ -114,8 +114,8 @@ To setup a new server you would roughly do these steps:
     that we can automatically reload the application by touching it.
     (See :ref:`mod_wsgi-deployment` for more information)
 
-So now the question is, where do the `application.wsgi` and
-`application.cfg` files come from?
+So now the question is, where do the :file:`application.wsgi` and
+:file:`application.cfg` files come from?
 
 The WSGI File
 -------------
