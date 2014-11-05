@@ -20,7 +20,7 @@ requires that we provide the path to the database  which can introduce
 errors.  It's a good idea to add a function that initializes the database
 for you to the application.
 
-To do this we can create a function and hook it into the ``flask`` command
+To do this we can create a function and hook it into the :command:`flask` command
 that initializes the database.  Let me show you the code first.  Just add
 this function below the `connect_db` function in :file:`flaskr.py`::
 
@@ -37,7 +37,7 @@ this function below the `connect_db` function in :file:`flaskr.py`::
         print 'Initialized the database.'
 
 The ``app.cli.command()`` decorator registers a new command with the
-``flask`` script.  When the command executes Flask will automatically
+:command:`flask` script.  When the command executes Flask will automatically
 create a application context for us bound to the right application.
 Within the function we can then access :attr:`flask.g` and other things as
 we would expect.  When the script ends, the application context tears down
@@ -58,7 +58,7 @@ On that cursor there is a method to execute a complete script.  Finally we
 only have to commit the changes.  SQLite 3 and other transactional
 databases will not commit unless you explicitly tell it to.
 
-Now it is possible to create a database with the ``flask`` script::
+Now it is possible to create a database with the :command:`flask` script::
 
     flask --app=flaskr initdb
     Initialized the database.

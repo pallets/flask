@@ -90,14 +90,14 @@ Using Applications
 ------------------
 
 So to use such an application you then have to create the application
-first in a separate file otherwise the ``flask`` command won't be able
+first in a separate file otherwise the :command:`flask` command won't be able
 to find it.  Here an example :file:`exampleapp.py` file that creates such
 an application::
 
     from yourapplication import create_app
     app = create_app('/path/to/config.cfg')
 
-It can then be used with the ``flask`` command::
+It can then be used with the :command:`flask` command::
 
     flask --app=exampleapp run
 

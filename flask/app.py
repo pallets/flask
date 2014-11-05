@@ -523,7 +523,7 @@ class Flask(_PackageBoundObject):
                               view_func=self.send_static_file)
 
         #: The click command line context for this application.  Commands
-        #: registered here show up in the ``flask`` command once the
+        #: registered here show up in the :command:`flask` command once the
         #: application has been discovered.  The default commands are
         #: provided by Flask itself and can be overridden.
         #:
@@ -773,7 +773,7 @@ class Flask(_PackageBoundObject):
 
         It is not recommended to use this function for development with
         automatic reloading as this is badly supported.  Instead you should
-        be using the ``flask`` command line script's ``runserver``
+        be using the :command:`flask` command line script's ``runserver``
         support.
 
         .. admonition:: Keep in Mind

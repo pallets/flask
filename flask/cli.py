@@ -267,10 +267,10 @@ class FlaskGroup(AppGroup):
 
     :param add_default_commands: if this is True then the default run and
                                  shell commands wil be added.
-    :param add_app_option: adds the default ``--app`` option.  This gets
+    :param add_app_option: adds the default :option:`--app` option.  This gets
                            automatically disabled if a `create_app`
                            callback is defined.
-    :param add_debug_option: adds the default ``--debug`` option.
+    :param add_debug_option: adds the default :option:`--debug` option.
     :param create_app: an optional callback that is passed the script info
                        and returns the loaded app.
     """
