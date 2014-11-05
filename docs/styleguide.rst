@@ -108,7 +108,7 @@ Comparisons:
   - against arbitrary types: ``==`` and ``!=``
   - against singletons with ``is`` and ``is not`` (eg: ``foo is not
     None``)
-  - never compare something with `True` or `False` (for example never
+  - never compare something with ``True`` or ``False`` (for example never
     do ``foo == False``, do ``not foo`` instead)
 
 Negated containment checks:

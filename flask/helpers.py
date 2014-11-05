@@ -188,7 +188,7 @@ def url_for(endpoint, **values):
 
     Variable arguments that are unknown to the target endpoint are appended
     to the generated URL as query arguments.  If the value of a query argument
-    is `None`, the whole pair is skipped.  In case blueprints are active
+    is ``None``, the whole pair is skipped.  In case blueprints are active
     you can shortcut references to the same blueprint by prefixing the
     local endpoint with a dot (``.``).
 
@@ -203,7 +203,7 @@ def url_for(endpoint, **values):
     function results in a :exc:`~werkzeug.routing.BuildError` when the current
     app does not have a URL for the given endpoint and values.  When it does, the
     :data:`~flask.current_app` calls its :attr:`~Flask.url_build_error_handlers` if
-    it is not `None`, which can return a string to use as the result of
+    it is not ``None``, which can return a string to use as the result of
     `url_for` (instead of `url_for`'s default to raise the
     :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
     An example::
@@ -244,11 +244,11 @@ def url_for(endpoint, **values):
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
-    :param _external: if set to `True`, an absolute URL is generated. Server
-      address can be changed via `SERVER_NAME` configuration variable which
+    :param _external: if set to ``True``, an absolute URL is generated. Server
+      address can be changed via ``SERVER_NAME`` configuration variable which
       defaults to `localhost`.
     :param _scheme: a string specifying the desired URL scheme. The `_external`
-      parameter must be set to `True` or a `ValueError` is raised. The default
+      parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
       behavior uses the same scheme as the current request, or
       ``PREFERRED_URL_SCHEME`` from the :ref:`app configuration <config>` if no
       request context is available. As of Werkzeug 0.10, this also can be set
@@ -323,7 +323,7 @@ def url_for(endpoint, **values):
 def get_template_attribute(template_name, attribute):
     """Loads a macro (or variable) a template exports.  This can be used to
     invoke a macro from within Python code.  If you for example have a
-    template named `_cider.html` with the following contents:
+    template named :file:`_cider.html` with the following contents:
 
     .. sourcecode:: html+jinja
 
@@ -376,7 +376,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     """Pulls all flashed messages from the session and returns them.
     Further calls in the same request to the function will return
     the same messages.  By default just the messages are returned,
-    but when `with_categories` is set to `True`, the return value will
+    but when `with_categories` is set to ``True``, the return value will
     be a list of tuples in the form ``(category, message)`` instead.
 
     Filter the flashed messages to one or more categories by providing those
@@ -385,7 +385,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     arguments are distinct:
 
     * `with_categories` controls whether categories are returned with message
-      text (`True` gives a tuple, where `False` gives just the message text).
+      text (``True`` gives a tuple, where ``False`` gives just the message text).
     * `category_filter` filters the messages down to only those matching the
       provided categories.
 
@@ -397,7 +397,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     .. versionchanged:: 0.9
         `category_filter` parameter added.
 
-    :param with_categories: set to `True` to also receive categories.
+    :param with_categories: set to ``True`` to also receive categories.
     :param category_filter: whitelist of categories to limit return values
     """
     flashes = _request_ctx_stack.top.flashes
@@ -418,8 +418,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
     you can set the application's :attr:`~Flask.use_x_sendfile` attribute
-    to ``True`` to directly emit an `X-Sendfile` header.  This however
-    requires support of the underlying webserver for `X-Sendfile`.
+    to ``True`` to directly emit an ``X-Sendfile`` header.  This however
+    requires support of the underlying webserver for ``X-Sendfile``.
 
     By default it will try to guess the mimetype for you, but you can
     also explicitly provide one.  For extra security you probably want
@@ -453,20 +453,20 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            relative to the :attr:`~Flask.root_path` if a
                            relative path is specified.
                            Alternatively a file object might be provided
-                           in which case `X-Sendfile` might not work and
+                           in which case ``X-Sendfile`` might not work and
                            fall back to the traditional method.  Make sure
                            that the file pointer is positioned at the start
                            of data to send before calling :func:`send_file`.
     :param mimetype: the mimetype of the file if provided, otherwise
                      auto detection happens.
-    :param as_attachment: set to `True` if you want to send this file with
+    :param as_attachment: set to ``True`` if you want to send this file with
                           a ``Content-Disposition: attachment`` header.
     :param attachment_filename: the filename for the attachment if it
                                 differs from the file's filename.
-    :param add_etags: set to `False` to disable attaching of etags.
-    :param conditional: set to `True` to enable conditional responses.
+    :param add_etags: set to ``False`` to disable attaching of etags.
+    :param conditional: set to ``True`` to enable conditional responses.
 
-    :param cache_timeout: the timeout in seconds for the headers. When `None`
+    :param cache_timeout: the timeout in seconds for the headers. When ``None``
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
                           :data:`~flask.current_app`.
@@ -605,7 +605,7 @@ def send_from_directory(directory, filename, **options):
 
     .. admonition:: Sending files and Performance
 
-       It is strongly recommended to activate either `X-Sendfile` support in
+       It is strongly recommended to activate either ``X-Sendfile`` support in
        your webserver or (if no authentication happens) to tell the webserver
        to serve files for the given path on its own without calling into the
        web application for improved performance.
@@ -784,7 +784,7 @@ class _PackageBoundObject(object):
         #: it was set by the constructor.
         self.import_name = import_name
 
-        #: location of the templates.  `None` if templates should not be
+        #: location of the templates.  ``None`` if templates should not be
         #: exposed.
         self.template_folder = template_folder
 
@@ -818,7 +818,7 @@ class _PackageBoundObject(object):
 
     @property
     def has_static_folder(self):
-        """This is `True` if the package bound object's container has a
+        """This is ``True`` if the package bound object's container has a
         folder named ``'static'``.
 
         .. versionadded:: 0.5
@@ -843,7 +843,7 @@ class _PackageBoundObject(object):
 
         Static file functions such as :func:`send_from_directory` use this
         function, and :func:`send_file` calls this function on
-        :data:`~flask.current_app` when the given cache_timeout is `None`. If a
+        :data:`~flask.current_app` when the given cache_timeout is ``None``. If a
         cache_timeout is given in :func:`send_file`, that timeout is used;
         otherwise, this method is called.
 
@@ -887,7 +887,7 @@ class _PackageBoundObject(object):
                 /layout.html
                 /index.html
 
-        If you want to open the `schema.sql` file you would do the
+        If you want to open the :file:`schema.sql` file you would do the
         following::
 
             with app.open_resource('schema.sql') as f:

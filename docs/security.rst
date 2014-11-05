@@ -25,7 +25,7 @@ careful:
 -   generating HTML without the help of Jinja2
 -   calling :class:`~flask.Markup` on data submitted by users
 -   sending out HTML from uploaded files, never do that, use the
-    `Content-Disposition: attachment` header to prevent that problem.
+    ``Content-Disposition: attachment`` header to prevent that problem.
 -   sending out textfiles from uploaded files.  Some browsers are using
     content-type guessing based on the first few bytes so users could
     trick a browser to execute HTML.
@@ -70,8 +70,8 @@ don't keep that in mind, some people might be able to trick your
 application's users with social engineering to do stupid things without
 them knowing.
 
-Say you have a specific URL that, when you sent `POST` requests to will
-delete a user's profile (say `http://example.com/user/delete`).  If an
+Say you have a specific URL that, when you sent ``POST`` requests to will
+delete a user's profile (say ``http://example.com/user/delete``).  If an
 attacker now creates a page that sends a post request to that page with
 some JavaScript they just has to trick some users to load that page and
 their profiles will end up being deleted.
@@ -130,7 +130,7 @@ Not very uncommon:
     ]
 
 And it is doing that of course only as long as you are logged in and only
-for you.  And it is doing that for all `GET` requests to a certain URL,
+for you.  And it is doing that for all ``GET`` requests to a certain URL,
 say the URL for that request is
 ``http://example.com/api/get_friends.json``.
 
@@ -161,8 +161,8 @@ and social engineers a victim to visiting his site:
 If you know a bit of JavaScript internals you might know that it's
 possible to patch constructors and register callbacks for setters.  An
 attacker can use this (like above) to get all the data you exported in
-your JSON file.  The browser will totally ignore the ``application/json``
-mimetype if ``text/javascript`` is defined as content type in the script
+your JSON file.  The browser will totally ignore the :mimetype:`application/json`
+mimetype if :mimetype:`text/javascript` is defined as content type in the script
 tag and evaluate that as JavaScript.  Because top-level array elements are
 allowed (albeit useless) and we hooked in our own constructor, after that
 page loaded the data from the JSON response is in the `captured` array.

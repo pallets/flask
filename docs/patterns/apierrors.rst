@@ -4,7 +4,7 @@ Implementing API Exceptions
 It's very common to implement RESTful APIs on top of Flask.  One of the
 first thing that developers run into is the realization that the builtin
 exceptions are not expressive enough for APIs and that the content type of
-``text/html`` they are emitting is not very useful for API consumers.
+:mimetype:`text/html` they are emitting is not very useful for API consumers.
 
 The better solution than using ``abort`` to signal errors for invalid API
 usage is to implement your own exception type and install an error handler

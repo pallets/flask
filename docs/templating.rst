@@ -105,9 +105,9 @@ by Jinja2 itself:
    is for example very helpful if you try to generate JavaScript on the
    fly.
 
-   Note that inside `script` tags no escaping must take place, so make
+   Note that inside ``script`` tags no escaping must take place, so make
    sure to disable escaping with ``|safe`` before Flask 0.10 if you intend
-   to use it inside `script` tags:
+   to use it inside ``script`` tags:
 
    .. sourcecode:: html+jinja
 

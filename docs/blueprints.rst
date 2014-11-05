@@ -159,7 +159,7 @@ blueprint::
     admin = Blueprint('admin', __name__, static_folder='static')
 
 By default the rightmost part of the path is where it is exposed on the
-web.  Because the folder is called ``static`` here it will be available at
+web.  Because the folder is called :file:`static` here it will be available at
 the location of the blueprint + ``/static``.  Say the blueprint is
 registered for ``/admin`` the static folder will be at ``/admin/static``.
 
@@ -185,10 +185,10 @@ provides in the actual application.
 So if you have a blueprint in the folder ``yourapplication/admin`` and you
 want to render the template ``'admin/index.html'`` and you have provided
 ``templates`` as a `template_folder` you will have to create a file like
-this: ``yourapplication/admin/templates/admin/index.html``.
+this: :file:`yourapplication/admin/templates/admin/index.html`.
 
 To further reiterate this: if you have a blueprint named ``admin`` and you
-want to render a template called ``index.html`` which is specific to this
+want to render a template called :file:`index.html` which is specific to this
 blueprint, the best idea is to lay out your templates like this::
 
     yourpackage/
@@ -199,7 +199,7 @@ blueprint, the best idea is to lay out your templates like this::
                         index.html
                 __init__.py
 
-And then when you want to render the template, use ``admin/index.html`` as
+And then when you want to render the template, use :file:`admin/index.html` as
 the name to look up the template by.  If you encounter problems loading
 the correct templates enable the ``EXPLAIN_TEMPLATE_LOADING`` config
 variable which will instruct Flask to print out the steps it goes through

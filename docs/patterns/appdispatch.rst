@@ -59,8 +59,8 @@ here is that each Flask application is a valid WSGI application and they
 are combined by the dispatcher middleware into a larger one that
 dispatched based on prefix.
 
-For example you could have your main application run on `/` and your
-backend interface on `/backend`::
+For example you could have your main application run on ``/`` and your
+backend interface on ``/backend``::
 
     from werkzeug.wsgi import DispatcherMiddleware
     from frontend_app import application as frontend
@@ -144,7 +144,7 @@ Dispatch by Path
 ----------------
 
 Dispatching by a path on the URL is very similar.  Instead of looking at
-the `Host` header to figure out the subdomain one simply looks at the
+the ``Host`` header to figure out the subdomain one simply looks at the
 request path up to the first slash::
 
     from threading import Lock
@@ -176,7 +176,7 @@ request path up to the first slash::
             return app(environ, start_response)
 
 The big difference between this and the subdomain one is that this one
-falls back to another application if the creator function returns `None`::
+falls back to another application if the creator function returns ``None``::
 
     from myapplication import create_app, default_app, get_user_for_prefix
 

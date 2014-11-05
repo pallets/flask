@@ -40,8 +40,8 @@ socket to the :class:`~flup.server.fcgi.WSGIServer`::
 The path has to be the exact same path you define in the server
 config.
 
-Save the `yourapplication.fcgi` file somewhere you will find it again.
-It makes sense to have that in `/var/www/yourapplication` or something
+Save the :file:`yourapplication.fcgi` file somewhere you will find it again.
+It makes sense to have that in :file:`/var/www/yourapplication` or something
 similar.
 
 Make sure to set the executable bit on that file so that the servers
@@ -56,7 +56,7 @@ Configuring Apache
 
 The example above is good enough for a basic Apache deployment but your
 `.fcgi` file will appear in your application URL e.g.
-example.com/yourapplication.fcgi/news/. There are few ways to configure
+``example.com/yourapplication.fcgi/news/``. There are few ways to configure
 your application so that yourapplication.fcgi does not appear in the URL.
 A preferable way is to use the ScriptAlias and SetHandler configuration
 directives to route requests to the FastCGI server. The following example
@@ -153,7 +153,7 @@ A basic FastCGI configuration for lighttpd looks like that::
     )
 
 Remember to enable the FastCGI, alias and rewrite modules. This configuration
-binds the application to `/yourapplication`.  If you want the application to
+binds the application to ``/yourapplication``.  If you want the application to
 work in the URL root you have to work around a lighttpd bug with the
 :class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix` middleware.
 
@@ -180,9 +180,9 @@ A basic Flask FastCGI configuration for nginx looks like this::
         fastcgi_pass unix:/tmp/yourapplication-fcgi.sock;
     }
 
-This configuration binds the application to `/yourapplication`.  If you
+This configuration binds the application to ``/yourapplication``.  If you
 want to have it in the URL root it's a bit simpler because you don't
-have to figure out how to calculate `PATH_INFO` and `SCRIPT_NAME`::
+have to figure out how to calculate ``PATH_INFO`` and ``SCRIPT_NAME``::
 
     location / { try_files $uri @yourapplication; }
     location @yourapplication {

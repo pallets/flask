@@ -74,8 +74,8 @@ Proxy Setups
 
 If you deploy your application using one of these servers behind an HTTP proxy
 you will need to rewrite a few headers in order for the application to work.
-The two problematic values in the WSGI environment usually are `REMOTE_ADDR`
-and `HTTP_HOST`.  You can configure your httpd to pass these headers, or you
+The two problematic values in the WSGI environment usually are ``REMOTE_ADDR``
+and ``HTTP_HOST``.  You can configure your httpd to pass these headers, or you
 can fix them in middleware.  Werkzeug ships a fixer that will solve some common
 setups, but you might want to write your own WSGI middleware for specific
 setups.
@@ -104,8 +104,8 @@ localhost at port 8000, setting appropriate headers:
     }
 
 If your httpd is not providing these headers, the most common setup invokes the
-host being set from `X-Forwarded-Host` and the remote address from
-`X-Forwarded-For`::
+host being set from ``X-Forwarded-Host`` and the remote address from
+``X-Forwarded-For``::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)

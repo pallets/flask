@@ -60,9 +60,9 @@ Factories & Extensions
 It's preferable to create your extensions and app factories so that the
 extension object does not initially get bound to the application.
 
-Using `Flask-SQLAlchemy <http://pythonhosted.org/Flask-SQLAlchemy/>`_, 
+Using `Flask-SQLAlchemy <http://pythonhosted.org/Flask-SQLAlchemy/>`_,
 as an example, you should not do something along those lines::
-    
+
     def create_app(config_filename):
         app = Flask(__name__)
         app.config.from_pyfile(config_filename)
@@ -72,7 +72,7 @@ as an example, you should not do something along those lines::
 But, rather, in model.py (or equivalent)::
 
     db = SQLAlchemy()
-    
+
 and in your application.py (or equivalent)::
 
     def create_app(config_filename):
@@ -83,21 +83,21 @@ and in your application.py (or equivalent)::
         db.init_app(app)
 
 Using this design pattern, no application-specific state is stored on the
-extension object, so one extension object can be used for multiple apps. 
+extension object, so one extension object can be used for multiple apps.
 For more information about the design of extensions refer to :doc:`/extensiondev`.
 
 Using Applications
 ------------------
 
 So to use such an application you then have to create the application
-first in a separate file otherwise the ``flask`` command won't be able
-to find it.  Here an example `exampleapp.py` file that creates such
+first in a separate file otherwise the :command:`flask` command won't be able
+to find it.  Here an example :file:`exampleapp.py` file that creates such
 an application::
 
     from yourapplication import create_app
     app = create_app('/path/to/config.cfg')
 
-It can then be used with the ``flask`` command::
+It can then be used with the :command:`flask` command::
 
     flask --app=exampleapp run
 

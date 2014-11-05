@@ -50,7 +50,7 @@ operations: :meth:`~werkzeug.contrib.cache.BaseCache.get` and
 To get an item from the cache call
 :meth:`~werkzeug.contrib.cache.BaseCache.get` with a string as key name.
 If something is in the cache, it is returned.  Otherwise that function
-will return `None`::
+will return ``None``::
 
     rv = cache.get('my-item')
 
