@@ -21,7 +21,7 @@ Simple Packages
 ---------------
 
 To convert that into a larger one, just create a new folder
-`yourapplication` inside the existing one and move everything below it.
+:file:`yourapplication` inside the existing one and move everything below it.
 Then rename :file:`yourapplication.py` to :file:`__init__.py`.  (Make sure to delete
 all `.pyc` files first, otherwise things would most likely break)
 
@@ -42,7 +42,7 @@ But how do you run your application now?  The naive ``python
 yourapplication/__init__.py`` will not work.  Let's just say that Python
 does not want modules in packages to be the startup file.  But that is not
 a big problem, just add a new file called :file:`runserver.py` next to the inner
-`yourapplication` folder with the following contents::
+:file:`yourapplication` folder with the following contents::
 
     from yourapplication import app
     app.run(debug=True)

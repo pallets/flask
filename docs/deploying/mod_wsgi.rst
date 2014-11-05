@@ -65,7 +65,7 @@ If you don't have a factory function for application creation but a singleton
 instance you can directly import that one as `application`.
 
 Store that file somewhere that you will find it again (e.g.:
-`/var/www/yourapplication`) and make sure that `yourapplication` and all
+:file:`/var/www/yourapplication`) and make sure that `yourapplication` and all
 the libraries that are in use are on the python load path.  If you don't
 want to install it system wide consider using a `virtual python`_
 instance.  Keep in mind that you will have to actually install your
