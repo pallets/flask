@@ -209,7 +209,7 @@ class RequestContext(object):
     for you.  In debug mode the request context is kept around if
     exceptions happen so that interactive debuggers have a chance to
     introspect the data.  With 0.4 this can also be forced for requests
-    that did not fail and outside of `DEBUG` mode.  By setting
+    that did not fail and outside of ``DEBUG`` mode.  By setting
     ``'flask._preserve_context'`` to ``True`` on the WSGI environment the
     context will not pop itself at the end of the request.  This is used by
     the :meth:`~flask.Flask.test_client` for example to implement the

@@ -339,10 +339,10 @@ Released on June 28th 2011, codename Grappa
   1.0 the old behavior will continue to work but issue dependency
   warnings.
 - fixed a problem for Flask to run on jython.
-- added a `PROPAGATE_EXCEPTIONS` configuration variable that can be
+- added a ``PROPAGATE_EXCEPTIONS`` configuration variable that can be
   used to flip the setting of exception propagation which previously
-  was linked to `DEBUG` alone and is now linked to either `DEBUG` or
-  `TESTING`.
+  was linked to ``DEBUG`` alone and is now linked to either ``DEBUG`` or
+  ``TESTING``.
 - Flask no longer internally depends on rules being added through the
   `add_url_rule` function and can now also accept regular werkzeug
   rules added to the url map.
@@ -450,7 +450,7 @@ Released on July 6th 2010, codename Calvados
 
 - fixed a bug with subdomains that was caused by the inability to
   specify the server name.  The server name can now be set with
-  the `SERVER_NAME` config key.  This key is now also used to set
+  the ``SERVER_NAME`` config key.  This key is now also used to set
   the session cookie cross-subdomain wide.
 - autoescaping is no longer active for all templates.  Instead it
   is only active for ``.html``, ``.htm``, ``.xml`` and ``.xhtml``.
@@ -482,8 +482,8 @@ Released on June 18th 2010, codename Rakia
   requests that do not pop the request stack for testing.
 - because the Python standard library caches loggers, the name of
   the logger is configurable now to better support unittests.
-- added `TESTING` switch that can activate unittesting helpers.
-- the logger switches to `DEBUG` mode now if debug is enabled.
+- added ``TESTING`` switch that can activate unittesting helpers.
+- the logger switches to ``DEBUG`` mode now if debug is enabled.
 
 Version 0.3.1
 -------------

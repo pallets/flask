@@ -32,8 +32,8 @@ bootstrapping code for our application::
 
 So first we need a couple of imports.  Most should be straightforward, the
 :func:`werkzeug.secure_filename` is explained a little bit later.  The
-`UPLOAD_FOLDER` is where we will store the uploaded files and the
-`ALLOWED_EXTENSIONS` is the set of allowed file extensions.  Then we add a
+``UPLOAD_FOLDER`` is where we will store the uploaded files and the
+``ALLOWED_EXTENSIONS`` is the set of allowed file extensions.  Then we add a
 URL rule by hand to the application.  Now usually we're not doing that, so
 why here?  The reasons is that we want the webserver (or our development
 server) to serve these files for us and so we only need a rule to generate
@@ -98,7 +98,7 @@ before storing it directly on the filesystem.
       filename = "../../../../home/username/.bashrc"
 
    Assuming the number of ``../`` is correct and you would join this with
-   the `UPLOAD_FOLDER` the user might have the ability to modify a file on
+   the ``UPLOAD_FOLDER`` the user might have the ability to modify a file on
    the server's filesystem he or she should not modify.  This does require some
    knowledge about how the application looks like, but trust me, hackers
    are patient :)
