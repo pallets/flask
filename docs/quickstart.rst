@@ -510,7 +510,7 @@ will notice that code which depends on a request object will suddenly break
 because there is no request object.  The solution is creating a request
 object yourself and binding it to the context.  The easiest solution for
 unit testing is to use the :meth:`~flask.Flask.test_request_context`
-context manager.  In combination with the `with` statement it will bind a
+context manager.  In combination with the ``with`` statement it will bind a
 test request so that you can interact with it.  Here is an example::
 
     from flask import request

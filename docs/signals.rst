@@ -77,7 +77,7 @@ Make sure to subscribe with an extra ``**extra`` argument so that your
 calls don't fail if Flask introduces new arguments to the signals.
 
 All the template rendering in the code issued by the application `app`
-in the body of the `with` block will now be recorded in the `templates`
+in the body of the ``with`` block will now be recorded in the `templates`
 variable.  Whenever a template is rendered, the template object as well as
 context are appended to it.
 
@@ -148,7 +148,7 @@ signal subscribers::
             model_saved.send(self)
 
 Try to always pick a good sender.  If you have a class that is emitting a
-signal, pass `self` as sender.  If you are emitting a signal from a random
+signal, pass ``self`` as sender.  If you are emitting a signal from a random
 function, you can pass ``current_app._get_current_object()`` as sender.
 
 .. admonition:: Passing Proxies as Senders

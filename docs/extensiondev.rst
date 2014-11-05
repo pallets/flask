@@ -259,7 +259,7 @@ way::
         cur = db.connection.cursor()
         cur.execute(...)
 
-At the end of the `with` block the teardown handles will be executed
+At the end of the ``with`` block the teardown handles will be executed
 automatically.
 
 Additionally, the ``init_app`` method is used to support the factory pattern

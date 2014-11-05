@@ -838,8 +838,8 @@ class Flask(_PackageBoundObject):
             app.testing = True
             client = app.test_client()
 
-        The test client can be used in a `with` block to defer the closing down
-        of the context until the end of the `with` block.  This is useful if
+        The test client can be used in a ``with`` block to defer the closing down
+        of the context until the end of the ``with`` block.  This is useful if
         you want to access the context locals for testing::
 
             with app.test_client() as c:
@@ -863,7 +863,7 @@ class Flask(_PackageBoundObject):
         See :class:`~flask.testing.FlaskClient` for more information.
 
         .. versionchanged:: 0.4
-           added support for `with` block usage for the client.
+           added support for ``with`` block usage for the client.
 
         .. versionadded:: 0.7
            The `use_cookies` parameter was added as well as the ability
@@ -1812,15 +1812,15 @@ class Flask(_PackageBoundObject):
     def request_context(self, environ):
         """Creates a :class:`~flask.ctx.RequestContext` from the given
         environment and binds it to the current context.  This must be used in
-        combination with the `with` statement because the request is only bound
-        to the current context for the duration of the `with` block.
+        combination with the ``with`` statement because the request is only bound
+        to the current context for the duration of the ``with`` block.
 
         Example usage::
 
             with app.request_context(environ):
                 do_something_with(request)
 
-        The object returned can also be used without the `with` statement
+        The object returned can also be used without the ``with`` statement
         which is useful for working in the shell.  The example above is
         doing exactly the same as this code::
 
@@ -1832,7 +1832,7 @@ class Flask(_PackageBoundObject):
                 ctx.pop()
 
         .. versionchanged:: 0.3
-           Added support for non-with statement usage and `with` statement
+           Added support for non-with statement usage and ``with`` statement
            is now passed the ctx object.
 
         :param environ: a WSGI environment
