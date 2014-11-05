@@ -76,7 +76,7 @@ Here is an example document (put this also into `app.py`, e.g.)::
 This example shows you how to define your schema (named structure), a
 validator for the maximum character length and uses a special MongoKit feature
 called `use_dot_notation`.  Per default MongoKit behaves like a python
-dictionary but with `use_dot_notation` set to `True` you can use your
+dictionary but with `use_dot_notation` set to ``True`` you can use your
 documents like you use models in nearly any other ORM by using dots to
 separate between attributes.
 

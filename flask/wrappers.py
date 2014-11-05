@@ -47,7 +47,7 @@ class Request(RequestBase):
     url_rule = None
 
     #: A dict of view arguments that matched the request.  If an exception
-    #: happened when matching, this will be `None`.
+    #: happened when matching, this will be ``None``.
     view_args = None
 
     #: If matching the URL failed, this is the exception that will be
@@ -72,7 +72,7 @@ class Request(RequestBase):
         """The endpoint that matched the request.  This in combination with
         :attr:`view_args` can be used to reconstruct the same or a
         modified URL.  If an exception happened when matching, this will
-        be `None`.
+        be ``None``.
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
@@ -99,7 +99,7 @@ class Request(RequestBase):
     @property
     def json(self):
         """If the mimetype is `application/json` this will contain the
-        parsed JSON data.  Otherwise this will be `None`.
+        parsed JSON data.  Otherwise this will be ``None``.
 
         The :meth:`get_json` method should be used instead.
         """
@@ -130,10 +130,10 @@ class Request(RequestBase):
         only load the json data if the mimetype is ``application/json``
         but this can be overridden by the `force` parameter.
 
-        :param force: if set to `True` the mimetype is ignored.
-        :param silent: if set to `True` this method will fail silently
-                       and return `None`.
-        :param cache: if set to `True` the parsed JSON data is remembered
+        :param force: if set to ``True`` the mimetype is ignored.
+        :param silent: if set to ``True`` this method will fail silently
+                       and return ``None``.
+        :param cache: if set to ``True`` the parsed JSON data is remembered
                       on the request.
         """
         rv = getattr(self, '_cached_json', _missing)

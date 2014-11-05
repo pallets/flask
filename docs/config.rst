@@ -56,7 +56,7 @@ The following configuration values are used internally by Flask:
 ``TESTING``                       enable/disable testing mode
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
                                   propagation of exceptions.  If not set or
-                                  explicitly set to `None` this is
+                                  explicitly set to ``None`` this is
                                   implicitly true if either `TESTING` or
                                   `DEBUG` is true.
 ``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
@@ -80,20 +80,20 @@ The following configuration values are used internally by Flask:
                                   that is not set for ``'/'``.
 ``SESSION_COOKIE_HTTPONLY``       controls if the cookie should be set
                                   with the httponly flag.  Defaults to
-                                  `True`.
+                                  ``True``.
 ``SESSION_COOKIE_SECURE``         controls if the cookie should be set
                                   with the secure flag.  Defaults to
-                                  `False`.
+                                  ``False``.
 ``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
                                   :class:`datetime.timedelta` object.
                                   Starting with Flask 0.8 this can also be
                                   an integer representing seconds.
 ``SESSION_REFRESH_EACH_REQUEST``  this flag controls how permanent
-                                  sessions are refreshed.  If set to `True`
+                                  sessions are refreshed.  If set to ``True``
                                   (which is the default) then the cookie
                                   is refreshed each request which
                                   automatically bumps the lifetime.  If
-                                  set to `False` a `set-cookie` header is
+                                  set to ``False`` a `set-cookie` header is
                                   only sent if the session is modified.
                                   Non permanent sessions are not affected
                                   by this.

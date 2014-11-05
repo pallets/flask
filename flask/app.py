@@ -135,7 +135,7 @@ class Flask(_PackageBoundObject):
                           By default the folder ``'instance'`` next to the
                           package or module is assumed to be the instance
                           path.
-    :param instance_relative_config: if set to `True` relative filenames
+    :param instance_relative_config: if set to ``True`` relative filenames
                                      for loading the config are assumed to
                                      be relative to the instance path instead
                                      of the application root.
@@ -193,16 +193,16 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 1.0
     config_class = Config
 
-    #: The debug flag.  Set this to `True` to enable debugging of the
+    #: The debug flag.  Set this to ``True`` to enable debugging of the
     #: application.  In debug mode the debugger will kick in when an unhandled
     #: exception occurs and the integrated server will automatically reload
     #: the application if changes in the code are detected.
     #:
     #: This attribute can also be configured from the config with the `DEBUG`
-    #: configuration key.  Defaults to `False`.
+    #: configuration key.  Defaults to ``False``.
     debug = ConfigAttribute('DEBUG')
 
-    #: The testing flag.  Set this to `True` to enable the test mode of
+    #: The testing flag.  Set this to ``True`` to enable the test mode of
     #: Flask extensions (and in the future probably also Flask itself).
     #: For example this might activate unittest helpers that have an
     #: additional runtime cost which should not be enabled by default.
@@ -211,7 +211,7 @@ class Flask(_PackageBoundObject):
     #: default it's implicitly enabled.
     #:
     #: This attribute can also be configured from the config with the
-    #: `TESTING` configuration key.  Defaults to `False`.
+    #: `TESTING` configuration key.  Defaults to ``False``.
     testing = ConfigAttribute('TESTING')
 
     #: If a secret key is set, cryptographic components can use this to
@@ -219,7 +219,7 @@ class Flask(_PackageBoundObject):
     #: when you want to use the secure cookie for instance.
     #:
     #: This attribute can also be configured from the config with the
-    #: `SECRET_KEY` configuration key.  Defaults to `None`.
+    #: `SECRET_KEY` configuration key.  Defaults to ``None``.
     secret_key = ConfigAttribute('SECRET_KEY')
 
     #: The secure cookie uses this for the name of the session cookie.
@@ -245,7 +245,7 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.2
     #:
     #: This attribute can also be configured from the config with the
-    #: `USE_X_SENDFILE` configuration key.  Defaults to `False`.
+    #: `USE_X_SENDFILE` configuration key.  Defaults to ``False``.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
     #: The name of the logger to use.  By default the logger name is the
@@ -364,11 +364,11 @@ class Flask(_PackageBoundObject):
         # :attr:`error_handler_spec` shall be used now.
         self._error_handlers = {}
 
-        #: A dictionary of all registered error handlers.  The key is `None`
+        #: A dictionary of all registered error handlers.  The key is ``None``
         #: for error handlers active on the application, otherwise the key is
         #: the name of the blueprint.  Each key points to another dictionary
         #: where the key is the status code of the http exception.  The
-        #: special key `None` points to a list of tuples where the first item
+        #: special key ``None`` points to a list of tuples where the first item
         #: is the class for the instance check and the second the error handler
         #: function.
         #:
@@ -379,7 +379,7 @@ class Flask(_PackageBoundObject):
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
         #: is called with `error`, `endpoint` and `values`.  If a function
-        #: returns `None` or raises a `BuildError` the next function is
+        #: returns ``None`` or raises a `BuildError` the next function is
         #: tried.
         #:
         #: .. versionadded:: 0.9
@@ -387,7 +387,7 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
-        #: the blueprint this function is active for, `None` for all requests.
+        #: the blueprint this function is active for, ``None`` for all requests.
         #: This can for example be used to open database connections or
         #: getting hold of the currently logged in user.  To register a
         #: function here, use the :meth:`before_request` decorator.
@@ -402,7 +402,7 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with lists of functions that should be called after
         #: each request.  The key of the dictionary is the name of the blueprint
-        #: this function is active for, `None` for all requests.  This can for
+        #: this function is active for, ``None`` for all requests.  This can for
         #: example be used to open database connections or getting hold of the
         #: currently logged in user.  To register a function here, use the
         #: :meth:`after_request` decorator.
@@ -411,7 +411,7 @@ class Flask(_PackageBoundObject):
         #: A dictionary with lists of functions that are called after
         #: each request, even if an exception has occurred. The key of the
         #: dictionary is the name of the blueprint this function is active for,
-        #: `None` for all requests. These functions are not allowed to modify
+        #: ``None`` for all requests. These functions are not allowed to modify
         #: the request, and their return values are ignored. If an exception
         #: occurred while processing the request, it gets passed to each
         #: teardown_request function. To register a function here, use the
@@ -431,7 +431,7 @@ class Flask(_PackageBoundObject):
         #: A dictionary with lists of functions that can be used as URL
         #: value processor functions.  Whenever a URL is built these functions
         #: are called to modify the dictionary of values in place.  The key
-        #: `None` here is used for application wide
+        #: ``None`` here is used for application wide
         #: callbacks, otherwise the key is the name of the blueprint.
         #: Each of these functions has the chance to modify the dictionary
         #:
@@ -439,7 +439,7 @@ class Flask(_PackageBoundObject):
         self.url_value_preprocessors = {}
 
         #: A dictionary with lists of functions that can be used as URL value
-        #: preprocessors.  The key `None` here is used for application wide
+        #: preprocessors.  The key ``None`` here is used for application wide
         #: callbacks, otherwise the key is the name of the blueprint.
         #: Each of these functions has the chance to modify the dictionary
         #: of URL values before they are used as the keyword arguments of the
@@ -452,7 +452,7 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the
-        #: name of the blueprint this function is active for, `None` for all
+        #: name of the blueprint this function is active for, ``None`` for all
         #: requests.  Each returns a dictionary that the template context is
         #: updated with.  To register a function here, use the
         #: :meth:`context_processor` decorator.
@@ -612,7 +612,7 @@ class Flask(_PackageBoundObject):
 
     @property
     def got_first_request(self):
-        """This attribute is set to `True` if the application started
+        """This attribute is set to ``True`` if the application started
         handling the first request.
 
         .. versionadded:: 0.8
@@ -715,7 +715,7 @@ class Flask(_PackageBoundObject):
         """
 
     def select_jinja_autoescape(self, filename):
-        """Returns `True` if autoescaping should be active for the given
+        """Returns ``True`` if autoescaping should be active for the given
         template name.
 
         .. versionadded:: 0.5
@@ -782,7 +782,7 @@ class Flask(_PackageBoundObject):
            unless it is in debug mode.  As such to enable just the
            interactive debugger without the code reloading, you have to
            invoke :meth:`run` with ``debug=True`` and ``use_reloader=False``.
-           Setting ``use_debugger`` to `True` without being in debug mode
+           Setting ``use_debugger`` to ``True`` without being in debug mode
            won't catch any exceptions because there won't be any to
            catch.
 
@@ -1102,8 +1102,8 @@ class Flask(_PackageBoundObject):
         however is discouraged as it requires fiddling with nested dictionaries
         and the special case for arbitrary exception types.
 
-        The first `None` refers to the active blueprint.  If the error
-        handler should be application wide `None` shall be used.
+        The first ``None`` refers to the active blueprint.  If the error
+        handler should be application wide ``None`` shall be used.
 
         .. versionadded:: 0.7
             Use :meth:`register_error_handler` instead of modifying
@@ -1392,12 +1392,12 @@ class Flask(_PackageBoundObject):
 
     def trap_http_exception(self, e):
         """Checks if an HTTP exception should be trapped or not.  By default
-        this will return `False` for all exceptions except for a bad request
-        key error if ``TRAP_BAD_REQUEST_ERRORS`` is set to `True`.  It
-        also returns `True` if ``TRAP_HTTP_EXCEPTIONS`` is set to `True`.
+        this will return ``False`` for all exceptions except for a bad request
+        key error if ``TRAP_BAD_REQUEST_ERRORS`` is set to ``True``.  It
+        also returns ``True`` if ``TRAP_HTTP_EXCEPTIONS`` is set to ``True``.
 
         This is called for all HTTP exceptions raised by a view function.
-        If it returns `True` for any exception the error handler for this
+        If it returns ``True`` for any exception the error handler for this
         exception is not called and it shows up as regular exception in the
         traceback.  This is helpful for debugging implicitly raised HTTP
         exceptions.
@@ -1584,7 +1584,7 @@ class Flask(_PackageBoundObject):
     def should_ignore_error(self, error):
         """This is called to figure out if an error should be ignored
         or not as far as the teardown system is concerned.  If this
-        function returns `True` then the teardown handlers will not be
+        function returns ``True`` then the teardown handlers will not be
         passed the error.
 
         .. versionadded:: 0.10

@@ -23,7 +23,7 @@ often forgotten, but you don't have to do that by hand, there is a
 function for that that is used like a decorator (:func:`functools.wraps`).
 
 This example assumes that the login page is called ``'login'`` and that
-the current user is stored as `g.user` and `None` if there is no-one
+the current user is stored as `g.user` and ``None`` if there is no-one
 logged in::
 
     from functools import wraps
@@ -120,7 +120,7 @@ As you can see, if no template name is provided it will use the endpoint
 of the URL map with dots converted to slashes + ``'.html'``.  Otherwise
 the provided template name is used.  When the decorated function returns,
 the dictionary returned is passed to the template rendering function.  If
-`None` is returned, an empty dictionary is assumed, if something else than
+``None`` is returned, an empty dictionary is assumed, if something else than
 a dictionary is returned we return it from the function unchanged.  That
 way you can still use the redirect function or return simple strings.
 
@@ -151,15 +151,15 @@ Endpoint Decorator
 ------------------
 
 When you want to use the werkzeug routing system for more flexibility you
-need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule` 
-to a view function. This is possible with this decorator. For example:: 
+need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule`
+to a view function. This is possible with this decorator. For example::
 
     from flask import Flask
     from werkzeug.routing import Rule
 
-    app = Flask(__name__)                                                          
-    app.url_map.add(Rule('/', endpoint='index'))                                   
+    app = Flask(__name__)
+    app.url_map.add(Rule('/', endpoint='index'))
 
-    @app.endpoint('index')                                                         
-    def my_index():                                                                
-        return "Hello world"     
+    @app.endpoint('index')
+    def my_index():
+        return "Hello world"

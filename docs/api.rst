@@ -115,7 +115,7 @@ Incoming Request Data
 
    .. attribute:: is_xhr
 
-      `True` if the request was triggered via a JavaScript
+      ``True`` if the request was triggered via a JavaScript
       `XMLHttpRequest`. This only works with libraries that support the
       ``X-Requested-With`` header and set it to `XMLHttpRequest`.
       Libraries that do that are prototype, jQuery and Mochikit and
@@ -178,14 +178,14 @@ To access the current session you can use the :class:`session` object:
 
    .. attribute:: new
 
-      `True` if the session is new, `False` otherwise.
+      ``True`` if the session is new, ``False`` otherwise.
 
    .. attribute:: modified
 
-      `True` if the session object detected a modification.  Be advised
+      ``True`` if the session object detected a modification.  Be advised
       that modifications on mutable structures are not picked up
       automatically, in that situation you have to explicitly set the
-      attribute to `True` yourself.  Here an example::
+      attribute to ``True`` yourself.  Here an example::
 
           # this change is not picked up because a mutable object (here
           # a list) is changed.
@@ -195,9 +195,9 @@ To access the current session you can use the :class:`session` object:
 
    .. attribute:: permanent
 
-      If set to `True` the session lives for
+      If set to ``True`` the session lives for
       :attr:`~flask.Flask.permanent_session_lifetime` seconds.  The
-      default is 31 days.  If set to `False` (which is the default) the
+      default is 31 days.  If set to ``False`` (which is the default) the
       session will be deleted when the user closes the browser.
 
 
@@ -279,7 +279,7 @@ thing, like it does for :class:`request` and :class:`session`.
    pattern for testing.
 
    Additionally as of 0.10 you can use the :meth:`get` method to
-   get an attribute or `None` (or the second argument) if it's not set.
+   get an attribute or ``None`` (or the second argument) if it's not set.
    These two usages are now equivalent::
 
         user = getattr(flask.g, 'user', None)
@@ -516,7 +516,7 @@ Signals
 
 .. data:: signals_available
 
-   `True` if the signaling system is available.  This is the case
+   ``True`` if the signaling system is available.  This is the case
    when `blinker`_ is installed.
 
 .. data:: template_rendered
@@ -782,7 +782,7 @@ Command Line Interface
    A special decorator that informs a click callback to be passed the
    script info object as first argument.  This is normally not useful
    unless you implement very special commands like the run command which
-   does not want the application to be loaded yet. 
+   does not want the application to be loaded yet.
 
 .. autodata:: run_command
 
