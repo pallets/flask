@@ -42,13 +42,13 @@ class SessionMixin(object):
 
     #: some session backends can tell you if a session is new, but that is
     #: not necessarily guaranteed.  Use with caution.  The default mixin
-    #: implementation just hardcodes `False` in.
+    #: implementation just hardcodes ``False`` in.
     new = False
 
-    #: for some backends this will always be `True`, but some backends will
+    #: for some backends this will always be ``True``, but some backends will
     #: default this to false and detect changes in the dictionary for as
     #: long as changes do not happen on mutable structures in the session.
-    #: The default mixin implementation just hardcodes `True` in.
+    #: The default mixin implementation just hardcodes ``True`` in.
     modified = True
 
 
@@ -149,7 +149,7 @@ class SessionInterface(object):
         class Session(dict, SessionMixin):
             pass
 
-    If :meth:`open_session` returns `None` Flask will call into
+    If :meth:`open_session` returns ``None`` Flask will call into
     :meth:`make_null_session` to create a session that acts as replacement
     if the session support cannot work because some requirement is not
     fulfilled.  The default :class:`NullSession` class that is created
@@ -228,7 +228,7 @@ class SessionInterface(object):
         """Returns the path for which the cookie should be valid.  The
         default implementation uses the value from the ``SESSION_COOKIE_PATH``
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
-        uses ``/`` if it's `None`.
+        uses ``/`` if it's ``None``.
         """
         return app.config['SESSION_COOKIE_PATH'] or \
                app.config['APPLICATION_ROOT'] or '/'
@@ -248,7 +248,7 @@ class SessionInterface(object):
 
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
-        or `None` if the session is linked to the browser session.  The
+        or ``None`` if the session is linked to the browser session.  The
         default implementation returns now + the permanent session
         lifetime configured on the application.
         """
@@ -260,8 +260,8 @@ class SessionInterface(object):
         used by session backends to figure out if they should emit a
         set-cookie header or not.  The default behavior is controlled by
         the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
-        it's set to `False` then a cookie is only set if the session is
-        modified, if set to `True` it's always set if the session is
+        it's set to ``False`` then a cookie is only set if the session is
+        modified, if set to ``True`` it's always set if the session is
         permanent.
 
         This check is usually skipped if sessions get deleted.
@@ -274,7 +274,7 @@ class SessionInterface(object):
         return save_each and session.permanent
 
     def open_session(self, app, request):
-        """This method has to be implemented and must either return `None`
+        """This method has to be implemented and must either return ``None``
         in case the loading failed because of a configuration error or an
         instance of a session object which implements a dictionary like
         interface + the methods and attributes on :class:`SessionMixin`.

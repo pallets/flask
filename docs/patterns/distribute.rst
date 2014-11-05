@@ -109,7 +109,7 @@ your tarball::
 
 Don't forget that even if you enlist them in your `MANIFEST.in` file, they
 won't be installed for you unless you set the `include_package_data`
-parameter of the `setup` function to `True`!
+parameter of the `setup` function to ``True``!
 
 
 Declaring Dependencies

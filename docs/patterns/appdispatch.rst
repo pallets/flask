@@ -176,7 +176,7 @@ request path up to the first slash::
             return app(environ, start_response)
 
 The big difference between this and the subdomain one is that this one
-falls back to another application if the creator function returns `None`::
+falls back to another application if the creator function returns ``None``::
 
     from myapplication import create_app, default_app, get_user_for_prefix
 

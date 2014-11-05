@@ -64,7 +64,7 @@ Things to remember:
    the data is submitted via the HTTP `POST` method and
    :attr:`~flask.request.args` if the data is submitted as `GET`.
 2. to validate the data, call the :func:`~wtforms.form.Form.validate`
-   method which will return `True` if the data validates, `False`
+   method which will return ``True`` if the data validates, ``False``
    otherwise.
 3. to access individual values from the form, access `form.<NAME>.data`.
 

@@ -12,9 +12,9 @@ Version 1.0
   additional keyword arguments to the constructor of
   :attr:`flask.Flask.test_client_class`.
 - Added ``SESSION_REFRESH_EACH_REQUEST`` config key that controls the
-  set-cookie behavior.  If set to `True` a permanent session will be
+  set-cookie behavior.  If set to ``True`` a permanent session will be
   refreshed each request and get their lifetime extended, if set to
-  `False` it will only be modified if the session actually modifies.
+  ``False`` it will only be modified if the session actually modifies.
   Non permanent sessions are not affected by this and will always
   expire if the browser window closes.
 - Made Flask support custom JSON mimetypes for incoming data.
@@ -183,7 +183,7 @@ Released on July 1st 2012, codename Campari.
   explicitly.
 - Unregister a circular dependency between the WSGI environment and
   the request object when shutting down the request.  This means that
-  environ ``werkzeug.request`` will be `None` after the response was
+  environ ``werkzeug.request`` will be ``None`` after the response was
   returned to the WSGI server but has the advantage that the garbage
   collector is not needed on CPython to tear down the request unless
   the user created circular dependencies themselves.
@@ -204,8 +204,8 @@ Released on July 1st 2012, codename Campari.
 - The :func:`flask.get_flashed_messages` function now allows rendering flashed
   message categories in separate blocks, through a ``category_filter``
   argument.
-- The :meth:`flask.Flask.run` method now accepts `None` for `host` and `port`
-  arguments, using default values when `None`.  This allows for calling run
+- The :meth:`flask.Flask.run` method now accepts ``None`` for `host` and `port`
+  arguments, using default values when ``None``.  This allows for calling run
   using configuration values, e.g. ``app.run(app.config.get('MYHOST'),
   app.config.get('MYPORT'))``, with proper behavior whether or not a config
   file is provided.

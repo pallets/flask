@@ -46,7 +46,7 @@ redirect back to the `show_entries` page::
         return redirect(url_for('show_entries'))
 
 Note that we check that the user is logged in here (the `logged_in` key is
-present in the session and `True`).
+present in the session and ``True``).
 
 .. admonition:: Security Note
 
@@ -61,7 +61,7 @@ Login and Logout
 These functions are used to sign the user in and out.  Login checks the
 username and password against the ones from the configuration and sets the
 `logged_in` key in the session.  If the user logged in successfully, that
-key is set to `True`, and the user is redirected back to the `show_entries`
+key is set to ``True``, and the user is redirected back to the `show_entries`
 page.  In addition, a message is flashed that informs the user that he or
 she was logged in successfully.  If an error occurred, the template is
 notified about that, and the user is asked again::
