@@ -4,7 +4,7 @@ Adding a favicon
 A "favicon" is an icon used by browsers for tabs and bookmarks. This helps
 to distinguish your website and to give it a unique brand.
 
-A common question is how to add a favicon to a flask application. First, of
+A common question is how to add a favicon to a Flask application. First, of
 course, you need an icon. It should be 16 × 16 pixels and in the ICO file
 format. This is not a requirement but a de-facto standard supported by all
 relevant browsers. Put the icon in your static directory as
@@ -20,7 +20,7 @@ tag in your HTML. So, for example:
 That's all you need for most browsers, however some really old ones do not
 support this standard. The old de-facto standard is to serve this file,
 with this name, at the website root. If your application is not mounted at
-the root path of the domain you either need to configure the webserver to
+the root path of the domain you either need to configure the web server to
 serve the icon at the root or if you can't do that you're out of luck. If
 however your application is the root you can simply route a redirect::
 
@@ -44,7 +44,7 @@ same.
 
 The above will serve the icon via your application and if possible it's
 better to configure your dedicated web server to serve it; refer to the
-webserver's documentation.
+web server's documentation.
 
 See also
 --------
