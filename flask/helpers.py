@@ -126,7 +126,7 @@ def stream_with_context(generator_or_function):
                     gen.close()
 
     # The trick is to start the generator.  Then the code execution runs until
-    # the first dummy None is yielded at which point the context was already
+    # the first dummy ``None`` is yielded at which point the context was already
     # pushed.  This item is discarded.  Then when the iteration continues the
     # real generator is executed.
     wrapped_g = generator()
@@ -214,7 +214,7 @@ def url_for(endpoint, **values):
             # Here, lookup_url is some utility function you've built
             # which looks up the endpoint in some external URL registry.
             url = lookup_url(endpoint, **values)
-            if url is None:
+            if url is ``None``:
                 # External lookup did not have a URL.
                 # Re-raise the BuildError, in context of original traceback.
                 exc_type, exc_value, tb = sys.exc_info()
@@ -419,7 +419,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     try to use the WSGI server's file_wrapper support.  Alternatively
     you can set the application's :attr:`~Flask.use_x_sendfile` attribute
     to ``True`` to directly emit an ``X-Sendfile`` header.  This however
-    requires support of the underlying webserver for ``X-Sendfile``.
+    requires support of the underlying web server for ``X-Sendfile``.
 
     By default it will try to guess the mimetype for you, but you can
     also explicitly provide one.  For extra security you probably want
@@ -447,7 +447,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
        will be removed in Flask 1.0
 
     .. versionchanged:: 0.9
-       cache_timeout pulls its default from application config, when None.
+       cache_timeout pulls its default from application config, when ``None``.
 
     :param filename_or_fp: the filename of the file to send.  This is
                            relative to the :attr:`~Flask.root_path` if a
@@ -489,7 +489,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                 'attach_filename if you want mimetypes to be guessed.'),
                 stacklevel=2)
         if add_etags:
-            warn(DeprecationWarning('In future flask releases etags will no '
+            warn(DeprecationWarning('In future Flask releases etags will no '
                 'longer be generated for file objects passed to the send_file '
                 'function because this behavior was unreliable.  Pass '
                 'filenames instead if possible, otherwise attach an etag '
@@ -606,7 +606,7 @@ def send_from_directory(directory, filename, **options):
     .. admonition:: Sending files and Performance
 
        It is strongly recommended to activate either ``X-Sendfile`` support in
-       your webserver or (if no authentication happens) to tell the webserver
+       your web server or (if no authentication happens) to tell the web server
        to serve files for the given path on its own without calling into the
        web application for improved performance.
 
@@ -697,7 +697,7 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
 
 
 def find_package(import_name):
-    """Finds a package and returns the prefix (or None if the package is
+    """Finds a package and returns the prefix (or ``None`` if the package is
     not installed) as well as the folder that contains the package or
     module as a tuple.  The package path returned is the module that would
     have to be added to the pythonpath in order to make it possible to
@@ -726,9 +726,9 @@ def find_package(import_name):
             filename = sys.modules[import_name].__file__
         package_path = os.path.abspath(os.path.dirname(filename))
 
-        # In case the root module is a package we need to chop of the
+        # In case the root module is a package we need to chop off the
         # rightmost part.  This needs to go through a helper function
-        # because of python 3.3 namespace packages.
+        # because of Python 3.3 namespace packages.
         if _matching_loader_thinks_module_is_package(
                 loader, root_mod_name):
             package_path = os.path.dirname(package_path)
