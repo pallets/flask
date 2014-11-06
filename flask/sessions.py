@@ -126,7 +126,7 @@ class NullSession(SecureCookieSession):
     """
 
     def _fail(self, *args, **kwargs):
-        raise RuntimeError('the session is unavailable because no secret '
+        raise RuntimeError('The session is unavailable because no secret '
                            'key was set.  Set the secret_key on the '
                            'application to something unique and secret.')
     __setitem__ = __delitem__ = clear = pop = popitem = \
@@ -205,7 +205,7 @@ class SessionInterface(object):
         if app.config['SESSION_COOKIE_DOMAIN'] is not None:
             return app.config['SESSION_COOKIE_DOMAIN']
         if app.config['SERVER_NAME'] is not None:
-            # chop of the port which is usually not supported by browsers
+            # chop off the port which is usually not supported by browsers
             rv = '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
 
             # Google chrome does not like cookies set to .localhost, so
