@@ -4,7 +4,7 @@ Using SQLite 3 with Flask
 =========================
 
 In Flask you can easily implement the opening of database connections on 
-demand, closing them when the context dies (usually at the end of the 
+demand and closing them when the context dies (usually at the end of the 
 request).
 
 Here is a simple example of how you can use SQLite 3 with Flask::
@@ -83,7 +83,7 @@ Or even simpler::
 
     db.row_factory = sqlite3.Row
 
-Additionally it is a good idea to provide a query function that combines
+Additionally, it is a good idea to provide a query function that combines
 getting the cursor, executing and fetching the results::
     
     def query_db(query, args=(), one=False):
@@ -131,7 +131,7 @@ can do that for you::
                 db.cursor().executescript(f.read())
             db.commit()
 
-You can then create such a database from the python shell:
+You can then create such a database from the Python shell:
 
 >>> from yourapplication import init_db
 >>> init_db()
