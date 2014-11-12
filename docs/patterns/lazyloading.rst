@@ -32,7 +32,7 @@ Imagine the current application looks somewhat like this::
     def user(username):
         pass
 
-Then the centralized approach you would have one file with the views
+Then, with the centralized approach you would have one file with the views
 (:file:`views.py`) but without any decorator::
 
     def index():
@@ -54,7 +54,7 @@ Loading Late
 ------------
 
 So far we only split up the views and the routing, but the module is still
-loaded upfront.  The trick to actually load the view function as needed.
+loaded upfront.  The trick is to actually load the view function as needed.
 This can be accomplished with a helper class that behaves just like a
 function but internally imports the real function on first use::
 
