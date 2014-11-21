@@ -81,6 +81,12 @@ class View(object):
         """
         def view(*args, **kwargs):
             self = view.view_class(*class_args, **class_kwargs)
+
+            # solution for running context dependent attributes
+            # i.e. db must have app initialized
+            if self.__bases__ != (object,):
+                for base in self.__bases__:
+                    base.dispatch_request(self)
             return self.dispatch_request(*args, **kwargs)
 
         if cls.decorators:
