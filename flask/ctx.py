@@ -176,8 +176,9 @@ class AppContext(object):
                 exc = sys.exc_info()[1]
             self.app.do_teardown_appcontext(exc)
         rv = _app_ctx_stack.pop()
-        assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
-            % (rv, self)
+        if rv is not self:
+            raise RuntimeError('Popped wrong app context.  (%r instead of %r)'\
+                    % (rv, self))
         appcontext_popped.send(self.app)
 
     def __enter__(self):
@@ -351,8 +352,9 @@ class RequestContext(object):
             clear_request = True
 
         rv = _request_ctx_stack.pop()
-        assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
-            % (rv, self)
+        if rv is not self:
+            raise RuntimeError('Popped wrong request context.  (%r instead of %r)' \
+                    % (rv, self))
 
         # get rid of circular dependencies at the end of the request
         # so that we don't require the GC to be active.
