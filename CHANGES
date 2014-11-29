@@ -53,7 +53,11 @@ Version 1.0
 - Add "pretty" and "compressed" separators definitions in jsonify() method.
   Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
   unnecessary white space included by default after separators.
-
+- JSON responses are now terminated with a newline character, because it is a
+  convention that UNIX text files end with a newline and some clients don't
+  deal well when this newline is missing. See
+  https://github.com/mitsuhiko/flask/pull/1262 -- this came up originally as a
+  part of https://github.com/kennethreitz/httpbin/issues/168
 
 Version 0.10.2
 --------------
