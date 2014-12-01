@@ -253,7 +253,7 @@ info and keeps it around.  From that point onwards modifications on the
 script info can be done through click options.  To simplify this pattern
 the :func:`flask.cli.script_info_option` decorator was added.
 
-One Flask actually needs the individual Flask application it will invoke
+Once Flask actually needs the individual Flask application it will invoke
 the :meth:`flask.cli.ScriptInfo.load_app` method.  This happens when the
 server starts, when the shell is launched or when the script looks for an
 application-provided click command.
