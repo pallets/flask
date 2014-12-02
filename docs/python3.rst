@@ -35,7 +35,8 @@ Recommendations
 
 Unless you require absolute compatibility, you should be fine with Python 3
 nowadays. Most libraries and Flask extensions have been ported by now and
-using Flask with Python 3 is a stable affair.
+using Flask with Python 3 is generally a smooth ride. However, you might
+occasionally encounter encoding problems.
 
 The majority of the upgrade pain is in the lower-level libararies like
 Flask and Werkzeug and not in the actual high-level application code.  For
