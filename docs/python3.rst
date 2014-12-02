@@ -30,30 +30,12 @@ details as it was written before WSGI was updated to Python 3.  While the
 API for Werkzeug and Flask on Python 2.x should not change much we cannot
 guarantee that this won't happen on Python 3.
 
-Few Users
----------
-
-Although moving to Python 3 should be done someday, most people still use
-Python 2 for now.  As a result many of the problems you will encounter are
-probably hard to search for on the internet if they are Python 3 specific.
-
-Small Ecosystem
----------------
-
-Some Flask extensions, documentation and PyPI provided libraries do not
-support Python 3 yet.
-
-Even if you start your project with knowing that all you will need is
-supported by Python 3 you don't know what happens six months from now.
-But if you are familiar with Python 3 and Flask extension, you can start
-porting libraries on your own.
-
 Recommendations
 ---------------
 
-Unless you are already familiar with the differences in the versions we
-recommend sticking to current versions of Python until the ecosystem
-caught up.
+Unless you require absolute compatibility, you should be fine with Python 3
+nowadays. Most libraries and Flask extensions have been ported by now and
+using Flask with Python 3 is a stable affair.
 
 The majority of the upgrade pain is in the lower-level libararies like
 Flask and Werkzeug and not in the actual high-level application code.  For
