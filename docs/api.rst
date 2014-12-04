@@ -727,7 +727,7 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
     cannot be customized from the function itself.
 
 -   `methods`: If methods are not provided when the URL rule is added,
-    Flask will look on the view function object itself is an `methods`
+    Flask will look on the view function object itself if a `methods`
     attribute exists.  If it does, it will pull the information for the
     methods from there.
 
