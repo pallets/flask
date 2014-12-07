@@ -200,8 +200,9 @@ def htmlsafe_dump(obj, fp, **kwargs):
 
 def jsonify(*args, **kwargs):
     """Creates a :class:`~flask.Response` with the JSON representation of
-    the given arguments with an :mimetype:`application/json` mimetype.  The arguments
-    to this function are the same as to the :class:`dict` constructor.
+    the given arguments with an :mimetype:`application/json` mimetype.  The
+    arguments to this function are the same as to the :class:`dict`
+    constructor.
 
     Example usage::
 
@@ -241,9 +242,13 @@ def jsonify(*args, **kwargs):
         indent = 2
         separators = (', ', ': ')
 
-    return current_app.response_class(dumps(dict(*args, **kwargs),
-        indent=indent, separators=separators),
+    # Note that we add '\n' to end of response
+    # (see https://github.com/mitsuhiko/flask/pull/1262)
+    rv = current_app.response_class(
+        (dumps(dict(*args, **kwargs), indent=indent, separators=separators),
+         '\n'),
         mimetype='application/json')
+    return rv
 
 
 def tojson_filter(obj, **kwargs):

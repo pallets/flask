@@ -942,7 +942,7 @@ def test_make_response_with_response_instance():
         rv = flask.make_response(
             flask.jsonify({'msg': 'W00t'}), 400)
         assert rv.status_code == 400
-        assert rv.data == b'{\n  "msg": "W00t"\n}'
+        assert rv.data == b'{\n  "msg": "W00t"\n}\n'
         assert rv.mimetype == 'application/json'
 
         rv = flask.make_response(
@@ -963,7 +963,7 @@ def test_jsonify_no_prettyprint():
     app = flask.Flask(__name__)
     app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": False})
     with app.test_request_context():
-        compressed_msg = b'{"msg":{"submsg":"W00t"},"msg2":"foobar"}'
+        compressed_msg = b'{"msg":{"submsg":"W00t"},"msg2":"foobar"}\n'
         uncompressed_msg = {
             "msg": {
                 "submsg": "W00t"
@@ -982,7 +982,7 @@ def test_jsonify_prettyprint():
     with app.test_request_context():
         compressed_msg = {"msg":{"submsg":"W00t"},"msg2":"foobar"}
         pretty_response =\
-            b'{\n  "msg": {\n    "submsg": "W00t"\n  }, \n  "msg2": "foobar"\n}'
+            b'{\n  "msg": {\n    "submsg": "W00t"\n  }, \n  "msg2": "foobar"\n}\n'
 
         rv = flask.make_response(
             flask.jsonify(compressed_msg), 200)
