@@ -111,6 +111,12 @@ class MethodViewType(type):
             for key in d:
                 if key in http_method_funcs:
                     methods.add(key.upper())
+            # Support for Mixins
+            for method in http_method_funcs:
+                if method not in methods:
+                    for base in bases:
+                        if hasattr(base, method):
+                            methods.add(method.upper())
             # If we have no method at all in there we don't want to
             # add a method list.  (This is for instance the case for
             # the base class or another subclass of a base method view
