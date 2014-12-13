@@ -165,4 +165,4 @@ explanation of the little bit of code above:
 If you don't get the whole picture, download the `sourcecode
 for this example
 <https://github.com/mitsuhiko/flask/tree/master/examples/jqueryexample>`_
-from github.
+from GitHub.
