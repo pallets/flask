@@ -3,7 +3,7 @@
 Step 5: The View Functions
 ==========================
 
-Now that the database connections are working we can start writing the
+Now that the database connections are working, we can start writing the
 view functions.  We will need four of them:
 
 Show Entries
@@ -15,7 +15,7 @@ The one with the highest id (the newest entry) will be on top.  The rows
 returned from the cursor look a bit like tuples because we are using
 the :class:`sqlite3.Row` row factory.
 
-The view function will pass the entries as dicts to the
+The view function will pass the entries as dictionaries to the
 :file:`show_entries.html` template and return the rendered one::
 
     @app.route('/')
@@ -29,8 +29,8 @@ Add New Entry
 -------------
 
 This view lets the user add new entries if they are logged in.  This only
-responds to ``POST`` requests, the actual form is shown on the
-`show_entries` page.  If everything worked out well we will
+responds to ``POST`` requests; the actual form is shown on the
+`show_entries` page.  If everything worked out well, we will
 :func:`~flask.flash` an information message to the next request and
 redirect back to the `show_entries` page::
 
@@ -60,7 +60,7 @@ Login and Logout
 
 These functions are used to sign the user in and out.  Login checks the
 username and password against the ones from the configuration and sets the
-`logged_in` key in the session.  If the user logged in successfully, that
+`logged_in` key for the session.  If the user logged in successfully, that
 key is set to ``True``, and the user is redirected back to the `show_entries`
 page.  In addition, a message is flashed that informs the user that he or
 she was logged in successfully.  If an error occurred, the template is
@@ -80,7 +80,7 @@ notified about that, and the user is asked again::
                 return redirect(url_for('show_entries'))
         return render_template('login.html', error=error)
 
-The logout function, on the other hand, removes that key from the session
+The `logout` function, on the other hand, removes that key from the session
 again.  We use a neat trick here: if you use the :meth:`~dict.pop` method
 of the dict and pass a second parameter to it (the default), the method
 will delete the key from the dictionary if present or do nothing when that
