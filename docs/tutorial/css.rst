@@ -4,8 +4,8 @@ Step 7: Adding Style
 ====================
 
 Now that everything else works, it's time to add some style to the
-application.  Just create a stylesheet called :file:`style.css` in the :file:`static`
-folder we created before:
+application.  Just create a stylesheet called :file:`style.css` in the
+:file:`static` folder we created before:
 
 .. sourcecode:: css
 

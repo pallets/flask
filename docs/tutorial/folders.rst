@@ -10,13 +10,13 @@ application::
         /static
         /templates
 
-The `flaskr` folder is not a python package, but just something where we
-drop our files. We will then put our database schema as well as main module
-into this folder. It is done in the following way. The files inside
+The ``flaskr`` folder is not a Python package, but just something where we
+drop our files. Later on, we will put our database schema as well as main
+module into this folder. It is done in the following way. The files inside
 the :file:`static` folder are available to users of the application via HTTP.
-This is the place where css and javascript files go.  Inside the
-:file:`templates` folder Flask will look for `Jinja2`_ templates.  The
-templates you create later in the tutorial will go in this directory.
+This is the place where CSS and Javascript files go.  Inside the
+:file:`templates` folder, Flask will look for `Jinja2`_ templates.  The
+templates you create later on in the tutorial will go in this directory.
 
 Continue with :ref:`tutorial-schema`.
 
