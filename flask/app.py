@@ -1134,6 +1134,7 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def _register_error_handler(self, key, code_or_exception, f):
         if isinstance(code_or_exception, HTTPException) or \
+           isinstance(code_or_exception, type) and \
            issubclass(code_or_exception, HTTPException):
             code_or_exception = code_or_exception.code
         if isinstance(code_or_exception, integer_types):
