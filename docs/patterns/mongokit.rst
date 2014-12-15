@@ -48,12 +48,13 @@ insert query to the next without any problem.  MongoKit is just schemaless
 too, but implements some validation to ensure data integrity.
 
 Here is an example document (put this also into :file:`app.py`, e.g.)::
+    from mongokit import ValidationError
 
     def max_length(length):
         def validate(value):
             if len(value) <= length:
                 return True
-            raise Exception('%s must be at most %s characters long' % length)
+            raise ValidationError('%s must be at most {0} characters long'.format(length))
         return validate
 
     class User(Document):
@@ -75,7 +76,9 @@ Here is an example document (put this also into :file:`app.py`, e.g.)::
 
 This example shows you how to define your schema (named structure), a
 validator for the maximum character length and uses a special MongoKit feature
-called `use_dot_notation`.  Per default MongoKit behaves like a python
+called `use_dot_notation`.  When you define a ValidationError, you can add the `%s`
+into the format string to have the value placed in there for the final error message.
+ValueErrors can also be thrown as an alternative. Per default MongoKit behaves like a python
 dictionary but with `use_dot_notation` set to ``True`` you can use your
 documents like you use models in nearly any other ORM by using dots to
 separate between attributes.
