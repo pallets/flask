@@ -32,7 +32,7 @@ depending on how the extension is distributed.  If you want to develop an
 application that supports Flask 0.7 or earlier you should still import
 from the :data:`flask.ext` package.  We provide you with a compatibility
 module that provides this package for older versions of Flask.  You can
-download it from github: `flaskext_compat.py`_
+download it from GitHub: `flaskext_compat.py`_
 
 And here is how you can use it::
 
