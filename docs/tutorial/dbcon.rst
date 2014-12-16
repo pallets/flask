@@ -4,29 +4,29 @@ Step 3: Database Connections
 ----------------------------
 
 We have created a function for establishing a database connection with
-`connect_db` but by itself that's not particularly useful.  Creating and
+`connect_db`, but by itself, that's not particularly useful.  Creating and
 closing database connections all the time is very inefficient, so we want
 to keep it around for longer.  Because database connections encapsulate a
-transaction we also need to make sure that only one request at the time
-uses the connection.  So how can we elegantly do that with Flask?
+transaction, we also need to make sure that only one request at the time
+uses the connection. How can we elegantly do that with Flask?
 
-This is where the application context comes into play.  So let's start
+This is where the application context comes into play, so let's start
 there.
 
 Flask provides us with two contexts: the application context and the
-request context.  For the time being all you have to know is that there
-are special variables that use these.  For instance the
+request context.  For the time being, all you have to know is that there
+are special variables that use these.  For instance, the
 :data:`~flask.request` variable is the request object associated with
 the current request, whereas :data:`~flask.g` is a general purpose
 variable associated with the current application context.  We will go into
 the details of this a bit later.
 
-For the time being all you have to know is that you can store information
+For the time being, all you have to know is that you can store information
 safely on the :data:`~flask.g` object.
 
 So when do you put it on there?  To do that you can make a helper
-function.  The first time the function is called it will create a database
-connection for the current context and successive calls will return the
+function.  The first time the function is called, it will create a database
+connection for the current context, and successive calls will return the
 already established connection::
 
     def get_db():
@@ -39,7 +39,7 @@ already established connection::
 
 
 So now we know how to connect, but how do we properly disconnect?  For
-that flask provides us with the :meth:`~flask.Flask.teardown_appcontext`
+that, Flask provides us with the :meth:`~flask.Flask.teardown_appcontext`
 decorator.  It's executed every time the application context tears down::
 
     @app.teardown_appcontext
@@ -49,11 +49,11 @@ decorator.  It's executed every time the application context tears down::
             g.sqlite_db.close()
 
 Functions marked with :meth:`~flask.Flask.teardown_appcontext` are called
-every time the app context tears down.  So what does this mean?
-Essentially the app context is created before the request comes in and is
+every time the app context tears down.  What does this mean?
+Essentially, the app context is created before the request comes in and is
 destroyed (torn down) whenever the request finishes.  A teardown can
 happen because of two reasons: either everything went well (the error
-parameter will be ``None``) or an exception happened in which case the error
+parameter will be ``None``) or an exception happened, in which case the error
 is passed to the teardown function.
 
 Curious about what these contexts mean?  Have a look at the
