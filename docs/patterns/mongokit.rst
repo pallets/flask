@@ -48,12 +48,14 @@ insert query to the next without any problem.  MongoKit is just schemaless
 too, but implements some validation to ensure data integrity.
 
 Here is an example document (put this also into :file:`app.py`, e.g.)::
+    from mongokit import ValidationError
 
     def max_length(length):
         def validate(value):
             if len(value) <= length:
                 return True
-            raise Exception('%s must be at most %s characters long' % length)
+            # must have %s in error format string to have mongokit place key in there
+            raise ValidationError('%s must be at most {} characters long'.format(length))
         return validate
 
     class User(Document):
