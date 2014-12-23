@@ -8,6 +8,7 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from collections import ChainMap
 
 import os
 import sys
@@ -19,7 +20,7 @@ from functools import update_wrapper
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
 from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest
+     MethodNotAllowed, BadRequest, default_exceptions
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
      locked_cached_property, _endpoint_from_view_func, find_package
@@ -63,6 +64,64 @@ def setupmethod(f):
                 'before the application starts serving requests.')
         return f(self, *args, **kwargs)
     return update_wrapper(wrapper_func, f)
+
+
+def get_http_code(error_class_or_instance):
+    if (
+        isinstance(error_class_or_instance, HTTPException) or
+        isinstance(error_class_or_instance, type) and
+        issubclass(error_class_or_instance, HTTPException)
+    ):
+        return error_class_or_instance.code
+    return None
+
+
+class ExceptionHandlerDict(ChainMap):
+    """A dict storing exception handlers or falling back to the default ones
+    
+    Designed to be app.error_handler_spec[blueprint_or_none]
+    And hold a Exception → handler function mapping.
+    Converts error codes to default HTTPException subclasses.
+    
+    Returns None if no handler is defined for blueprint or app
+    """
+    def __init__(self, app, blueprint):
+        self.app = app
+        init = super(ExceptionHandlerDict, self).__init__
+        if blueprint:  # fall back to app mapping
+            init({}, app.error_handler_spec[None])
+        else:
+            init({})
+    
+    def get_class(self, exc_class_or_code):
+        if isinstance(exc_class_or_code, integer_types):
+            # ensure that we register only exceptions as keys
+            exc_class = default_exceptions[exc_class_or_code]
+        else:
+            assert issubclass(exc_class_or_code, Exception)
+            exc_class = exc_class_or_code
+        return exc_class
+    
+    def __contains__(self, e_or_c):
+        return super(ExceptionHandlerDict, self).__contains__(self.get_class(e_or_c))
+    
+    def __getitem__(self, e_or_c):
+        return super(ExceptionHandlerDict, self).__getitem__(self.get_class(e_or_c))
+    
+    def __setitem__(self, e_or_c, handler):
+        assert callable(handler)
+        return super(ExceptionHandlerDict, self).__setitem__(self.get_class(e_or_c), handler)
+    
+    def find_handler(self, ex_instance):
+        assert isinstance(ex_instance, Exception)
+        
+        for superclass in type(ex_instance).mro():
+            if superclass is BaseException:
+                return None
+            handler = self.get(superclass)
+            if handler is not None:
+                return handler
+        return None
 
 
 class Flask(_PackageBoundObject):
@@ -365,7 +424,7 @@ class Flask(_PackageBoundObject):
 
         # support for the now deprecated `error_handlers` attribute.  The
         # :attr:`error_handler_spec` shall be used now.
-        self._error_handlers = {}
+        self._error_handlers = ExceptionHandlerDict(self, None)
 
         #: A dictionary of all registered error handlers.  The key is ``None``
         #: for error handlers active on the application, otherwise the key is
@@ -1136,16 +1195,30 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def _register_error_handler(self, key, code_or_exception, f):
-        if isinstance(code_or_exception, HTTPException):
-            code_or_exception = code_or_exception.code
-        if isinstance(code_or_exception, integer_types):
-            assert code_or_exception != 500 or key is None, \
+        """
+        :type key: None|str
+        :type code_or_exception: int|T<=Exception
+        :type f: callable
+        """
+        assert not isinstance(code_or_exception, HTTPException)  # old broken behavior
+        
+        code = code_or_exception
+        is_code = isinstance(code_or_exception, integer_types)
+        if not is_code:
+            if issubclass(code_or_exception, HTTPException):
+                code = code_or_exception.code
+            else:
+                code = None
+        
+        handlers = self.error_handler_spec.setdefault(key, ExceptionHandlerDict(self, key))
+        
+        if is_code:
+            # TODO: why is this?
+            assert code != 500 or key is None, \
                 'It is currently not possible to register a 500 internal ' \
                 'server error on a per-blueprint level.'
-            self.error_handler_spec.setdefault(key, {})[code_or_exception] = f
-        else:
-            self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
-                .append((code_or_exception, f))
+        
+        handlers[code_or_exception] = f
 
     @setupmethod
     def template_filter(self, name=None):
@@ -1386,6 +1459,13 @@ class Flask(_PackageBoundObject):
         self.url_default_functions.setdefault(None, []).append(f)
         return f
 
+    def _find_error_handler(self, e):
+        """Finds a registered error handler for the request’s blueprint.
+        If nether blueprint nor App has a suitable handler registered, returns None
+        """
+        handlers = self.error_handler_spec.get(request.blueprint, self.error_handler_spec[None])
+        return handlers.find_handler(e)
+
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the
         registered error handlers and fall back to returning the
@@ -1393,15 +1473,12 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.3
         """
-        handlers = self.error_handler_spec.get(request.blueprint)
         # Proxy exceptions don't have error codes.  We want to always return
         # those unchanged as errors
         if e.code is None:
             return e
-        if handlers and e.code in handlers:
-            handler = handlers[e.code]
-        else:
-            handler = self.error_handler_spec[None].get(e.code)
+        
+        handler = self._find_error_handler(e)
         if handler is None:
             return e
         return handler(e)
@@ -1443,20 +1520,15 @@ class Flask(_PackageBoundObject):
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
-
-        blueprint_handlers = ()
-        handlers = self.error_handler_spec.get(request.blueprint)
-        if handlers is not None:
-            blueprint_handlers = handlers.get(None, ())
-        app_handlers = self.error_handler_spec[None].get(None, ())
-        for typecheck, handler in chain(blueprint_handlers, app_handlers):
-            if isinstance(e, typecheck):
-                return handler(e)
-
+        
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
 
-        reraise(exc_type, exc_value, tb)
+        handler = self._find_error_handler(e)
+        
+        if handler is None:
+            reraise(exc_type, exc_value, tb)
+        return handler(e)
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
