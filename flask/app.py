@@ -8,14 +8,13 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from collections import ChainMap
-
 import os
 import sys
 from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
+from collections import Mapping
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
@@ -34,7 +33,7 @@ from .templating import DispatchingJinjaLoader, Environment, \
      _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
      request_tearing_down, appcontext_tearing_down
-from ._compat import reraise, string_types, text_type, integer_types
+from ._compat import reraise, string_types, text_type, integer_types, iterkeys
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -76,7 +75,7 @@ def get_http_code(error_class_or_instance):
     return None
 
 
-class ExceptionHandlerDict(ChainMap):
+class ExceptionHandlerDict(Mapping):
     """A dict storing exception handlers or falling back to the default ones
     
     Designed to be app.error_handler_spec[blueprint_or_none]
@@ -86,12 +85,13 @@ class ExceptionHandlerDict(ChainMap):
     Returns None if no handler is defined for blueprint or app
     """
     def __init__(self, app, blueprint):
+        super(ExceptionHandlerDict, self).__init__()
         self.app = app
-        init = super(ExceptionHandlerDict, self).__init__
+        self.data = {}
         if blueprint:  # fall back to app mapping
-            init({}, app.error_handler_spec[None])
+            self.fallback = app.error_handler_spec[None]
         else:
-            init({})
+            self.fallback = {}
     
     def get_class(self, exc_class_or_code):
         if isinstance(exc_class_or_code, integer_types):
@@ -103,14 +103,28 @@ class ExceptionHandlerDict(ChainMap):
         return exc_class
     
     def __contains__(self, e_or_c):
-        return super(ExceptionHandlerDict, self).__contains__(self.get_class(e_or_c))
+        clazz = self.get_class(e_or_c)
+        return clazz in self.data or clazz in self.fallback
     
     def __getitem__(self, e_or_c):
-        return super(ExceptionHandlerDict, self).__getitem__(self.get_class(e_or_c))
+        clazz = self.get_class(e_or_c)
+        item = self.data.get(clazz)
+        if item is not None:
+            return item
+        elif len(self.fallback):
+            return self.fallback[clazz]
+        else:
+            raise KeyError(e_or_c)
     
     def __setitem__(self, e_or_c, handler):
         assert callable(handler)
-        return super(ExceptionHandlerDict, self).__setitem__(self.get_class(e_or_c), handler)
+        self.data[self.get_class(e_or_c)] = handler
+    
+    def __iter__(self):
+        return iterkeys(self.data)
+    
+    def __len__(self):
+        return len(self.data)
     
     def find_handler(self, ex_instance):
         assert isinstance(ex_instance, Exception)
