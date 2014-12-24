@@ -107,14 +107,23 @@ def test_disallow_string_for_allowed_methods():
 def test_url_mapping():
     app = flask.Flask(__name__)
 
+    random_uuid4 = "7eb41166-9ebf-4d26-b771-ea3f54f8b383"
+
     def index():
         return flask.request.method
 
     def more():
         return flask.request.method
 
+    def options():
+        return random_uuid4
+
+
     app.add_url_rule('/', 'index', index)
     app.add_url_rule('/more', 'more', more, methods=['GET', 'POST'])
+
+    # Issue 1288: Test that automatic options are not added when non-uppercase 'options' in methods
+    app.add_url_rule('/options', 'options', options, methods=['options'])
 
     c = app.test_client()
     assert c.get('/').data == b'GET'
@@ -129,6 +138,9 @@ def test_url_mapping():
     rv = c.delete('/more')
     assert rv.status_code == 405
     assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST']
+    rv = c.open('/options', method='OPTIONS')
+    assert rv.status_code == 200
+    assert random_uuid4 in rv.data.decode("utf-8")
 
 
 def test_werkzeug_routing():
