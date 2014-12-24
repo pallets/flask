@@ -998,7 +998,7 @@ class Flask(_PackageBoundObject):
         if isinstance(methods, string_types):
             raise TypeError('Allowed methods have to be iterables of strings, '
                             'for example: @app.route(..., methods=["POST"])')
-        methods = set(methods)
+        methods = set(item.upper() for item in methods)
 
         # Methods that should always be added
         required_methods = set(getattr(view_func, 'required_methods', ()))
