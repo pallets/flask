@@ -65,16 +65,6 @@ def setupmethod(f):
     return update_wrapper(wrapper_func, f)
 
 
-def get_http_code(error_class_or_instance):
-    if (
-        isinstance(error_class_or_instance, HTTPException) or
-        isinstance(error_class_or_instance, type) and
-        issubclass(error_class_or_instance, HTTPException)
-    ):
-        return error_class_or_instance.code
-    return None
-
-
 class ExceptionHandlerDict(Mapping):
     """A dict storing exception handlers or falling back to the default ones
     
@@ -93,7 +83,8 @@ class ExceptionHandlerDict(Mapping):
         else:
             self.fallback = {}
     
-    def get_class(self, exc_class_or_code):
+    @staticmethod
+    def get_class(exc_class_or_code):
         if isinstance(exc_class_or_code, integer_types):
             # ensure that we register only exceptions as keys
             exc_class = default_exceptions[exc_class_or_code]
