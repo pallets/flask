@@ -58,6 +58,9 @@ Version 1.0
   deal well when this newline is missing. See
   https://github.com/mitsuhiko/flask/pull/1262 -- this came up originally as a
   part of https://github.com/kennethreitz/httpbin/issues/168
+- The automatically provided ``OPTIONS`` method is now correctly disabled if
+  the user registered an overriding rule with the lowercase-version
+  ``options`` (issue ``#1288``).
 
 Version 0.10.2
 --------------
