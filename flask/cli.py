@@ -78,6 +78,7 @@ def prepare_exec_for_file(filename):
 
 def locate_app(app_id):
     """Attempts to locate the application."""
+    __traceback_hide__ = True
     if ':' in app_id:
         module, app_obj = app_id.split(':', 1)
     else:
@@ -116,6 +117,7 @@ class DispatchingApp(object):
 
     def _load_in_background(self):
         def _load_app():
+            __traceback_hide__ = True
             with self._lock:
                 try:
                     self._load_unlocked()
@@ -125,17 +127,20 @@ class DispatchingApp(object):
         t.start()
 
     def _flush_bg_loading_exception(self):
+        __traceback_hide__ = True
         exc_info = self._bg_loading_exc_info
         if exc_info is not None:
             self._bg_loading_exc_info = None
             reraise(*exc_info)
 
     def _load_unlocked(self):
+        __traceback_hide__ = True
         self._app = rv = self.loader()
         self._bg_loading_exc_info = None
         return rv
 
     def __call__(self, environ, start_response):
+        __traceback_hide__ = True
         if self._app is not None:
             return self._app(environ, start_response)
         self._flush_bg_loading_exception()
@@ -172,6 +177,7 @@ class ScriptInfo(object):
         this multiple times will just result in the already loaded app to
         be returned.
         """
+        __traceback_hide__ = True
         if self._loaded_app is not None:
             return self._loaded_app
         if self.create_app is not None:
