@@ -1166,7 +1166,7 @@ class Flask(_PackageBoundObject):
                 error_builder.extend(tailed_errors[0:i])
                 error_builder.append((exception, f))
                 error_builder.extend(tailed_errors[i:])
-                self.registered_errors = error_builder
+                self.error_handler_spec[key][None] = error_builder
                 return
         registered_errors.append((exception, f))
 

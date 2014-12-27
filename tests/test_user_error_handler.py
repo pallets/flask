@@ -37,7 +37,7 @@ def test_register_error_handler_the_right_order():
         assert error_handlers[2] == (E2, f)
         assert error_handlers[3] == (E1, f)
         assert error_handlers[4] == (BasicException, f)
-        error_handlers = []
+        app.error_handler_spec[None][None] = []
 
 
 def test_error_handler_call_order():
