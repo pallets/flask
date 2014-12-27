@@ -1151,13 +1151,12 @@ class Flask(_PackageBoundObject):
             return
 
         error_builder = []
-        found = -1
         for i, (error, _) in enumerate(registered_errors):
             if issubclass(error, exception):
                 error_builder.extend(registered_errors[0:i + 1])
                 found = i
                 break
-        if found == -1:
+        else:
             registered_errors.insert(0, (exception, f))
             return
 
