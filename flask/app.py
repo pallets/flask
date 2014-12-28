@@ -1211,21 +1211,7 @@ class Flask(_PackageBoundObject):
                 'Handlers can only be registered for exception classes or HTTP error codes.'
                 .format(code_or_exception))
         
-        code = code_or_exception
-        is_code = isinstance(code_or_exception, integer_types)
-        if not is_code:
-            if issubclass(code_or_exception, HTTPException):
-                code = code_or_exception.code
-            else:
-                code = None
-        
         handlers = self.error_handler_spec.setdefault(key, ExceptionHandlerDict(self, key))
-        
-        if is_code:
-            # TODO: why is this?
-            assert code != 500 or key is None, \
-                'It is currently not possible to register a 500 internal ' \
-                'server error on a per-blueprint level.'
         
         handlers[code_or_exception] = f
 
@@ -1551,7 +1537,7 @@ class Flask(_PackageBoundObject):
         exc_type, exc_value, tb = sys.exc_info()
 
         got_request_exception.send(self, exception=e)
-        handler = self.error_handler_spec[None].get(500)
+        handler = self._find_error_handler(InternalServerError())
 
         if self.propagate_exceptions:
             # if we want to repropagate the exception, we can attempt to
