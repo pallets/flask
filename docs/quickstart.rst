@@ -475,7 +475,7 @@ u'Marked up \xbb HTML'
 Accessing Request Data
 ----------------------
 
-For web applications it's crucial to react to the data a client sent to
+For web applications it's crucial to react to the data a client sends to
 the server.  In Flask this information is provided by the global
 :class:`~flask.request` object.  If you have some experience with Python
 you might be wondering how that object can be global and how Flask
