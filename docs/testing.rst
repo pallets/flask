@@ -58,7 +58,7 @@ client and initializes a new database.  This function is called before
 each individual test function is run.  To delete the database after the
 test, we close the file and remove it from the filesystem in the
 :meth:`~unittest.TestCase.tearDown` method.  Additionally during setup the
-``TESTING`` config flag is activated.  What it does is disabling the error
+``TESTING`` config flag is activated.  What it does is disable the error
 catching during request handling so that you get better error reports when
 performing test requests against the application.
 
