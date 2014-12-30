@@ -107,7 +107,7 @@ test method to our class, like this::
 
         def test_empty_db(self):
             rv = self.app.get('/')
-            assert 'No entries here so far' in rv.data
+            assert b'No entries here so far' in rv.data
 
 Notice that our test functions begin with the word `test`; this allows
 :mod:`unittest` to automatically identify the method as a test to run.
