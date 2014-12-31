@@ -87,12 +87,11 @@ class Blueprint(_PackageBoundObject):
     """
 
     warn_on_modifications = False
-    _got_registered_once = False
 
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
-                 root_path=None):
+                 root_path=None, register_once=False):
         _PackageBoundObject.__init__(self, import_name, template_folder,
                                      root_path=root_path)
         self.name = name
@@ -102,6 +101,8 @@ class Blueprint(_PackageBoundObject):
         self.static_url_path = static_url_path
         self.deferred_functions = []
         self.view_functions = {}
+        self.register_once = register_once
+        self.is_registered = False
         if url_defaults is None:
             url_defaults = {}
         self.url_values_defaults = url_defaults
@@ -112,7 +113,7 @@ class Blueprint(_PackageBoundObject):
         state as argument as returned by the :meth:`make_setup_state`
         method.
         """
-        if self._got_registered_once and self.warn_on_modifications:
+        if self.is_registered and self.warn_on_modifications:
             from warnings import warn
             warn(Warning('The blueprint was already registered once '
                          'but is getting modified now.  These changes '
@@ -144,7 +145,11 @@ class Blueprint(_PackageBoundObject):
         :func:`~flask.Flask.register_blueprint` are directly forwarded to this
         method in the `options` dictionary.
         """
-        self._got_registered_once = True
+        if self.is_registered and self.register_once:
+            from warnings import warn
+            msg = 'This blueprint (%s) was already registered once.' % self.name
+            warn(Warning(msg))
+
         state = self.make_setup_state(app, options, first_registration)
         if self.has_static_folder:
             state.add_url_rule(self.static_url_path + '/<path:filename>',
@@ -153,6 +158,8 @@ class Blueprint(_PackageBoundObject):
 
         for deferred in self.deferred_functions:
             deferred(state)
+
+        self.is_registered = True
 
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the

@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import warnings
+
 import pytest
 
 import flask
@@ -575,3 +577,39 @@ def test_add_template_test_with_name_and_template():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
+
+def test_blueprint_is_registered():
+    blueprint = flask.Blueprint('blueprint', __name__)
+    other_blueprint = flask.Blueprint('other', __name__)
+
+    assert not blueprint.is_registered
+    assert not other_blueprint.is_registered
+
+    app = flask.Flask(__name__)
+    app.register_blueprint(blueprint)
+    assert blueprint.is_registered
+    assert not other_blueprint.is_registered
+
+def test_blueprint_can_be_registered_more_than_once():
+    blueprint = flask.Blueprint('blueprint', __name__)
+    app = flask.Flask(__name__)
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        app.register_blueprint(blueprint)
+        app.register_blueprint(blueprint)
+
+        assert len(w) == 0
+
+def test_blueprint_raise_warning_if_registered_twice():
+    blueprint = flask.Blueprint('blueprint', __name__, register_once=True)
+    app = flask.Flask(__name__)
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        app.register_blueprint(blueprint)
+        app.register_blueprint(blueprint)
+
+        assert len(w) == 1

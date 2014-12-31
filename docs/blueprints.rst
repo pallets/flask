@@ -118,6 +118,20 @@ On top of that you can register blueprints multiple times though not every
 blueprint might respond properly to that.  In fact it depends on how the
 blueprint is implemented if it can be mounted more than once.
 
+You can hint other developers on your implementation with the ``register_once``
+parameter::
+
+  from flask import Flask, Blueprint
+
+  blueprint = Blueprint('blueprint', __name__, register_once=True)
+  app = Flask(__name__)
+
+  assert not blueprint.is_registered
+  app.register_blueprint(blueprint)
+  assert blueprint.is_registered
+
+  app.register_blueprint(blueprint) # Raise a warning
+
 Blueprint Resources
 -------------------
 
