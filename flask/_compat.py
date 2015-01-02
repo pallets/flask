@@ -7,7 +7,7 @@
     version of six so we don't have to depend on a specific version
     of it.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 import sys
