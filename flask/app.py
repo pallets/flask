@@ -1079,14 +1079,12 @@ class Flask(_PackageBoundObject):
         return decorator
 
     @staticmethod
-    def _ensure_exc_class(exc_class_or_code):
+    def _get_exc_class_and_code(exc_class_or_code):
         """ensure that we register only exceptions as handler keys"""
         if isinstance(exc_class_or_code, integer_types):
             exc_class = default_exceptions[exc_class_or_code]
-        elif isinstance(exc_class_or_code, type):
-            exc_class = exc_class_or_code
         else:
-            exc_class = type(exc_class_or_code)
+            exc_class = exc_class_or_code
         
         assert issubclass(exc_class, Exception)
         
@@ -1164,7 +1162,7 @@ class Flask(_PackageBoundObject):
                 'Handlers can only be registered for exception classes or HTTP error codes.'
                 .format(code_or_exception))
         
-        exc_class, code = self._ensure_exc_class(code_or_exception)
+        exc_class, code = self._get_exc_class_and_code(code_or_exception)
         
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
         handlers[exc_class] = f
@@ -1412,7 +1410,7 @@ class Flask(_PackageBoundObject):
         """Finds a registered error handler for the request’s blueprint.
         If neither blueprint nor App has a suitable handler registered, returns None
         """
-        exc_class, code = self._ensure_exc_class(e)
+        exc_class, code = self._get_exc_class_and_code(type(e))
         
         def find_superclass(d):
             if not d:
@@ -1422,6 +1420,7 @@ class Flask(_PackageBoundObject):
                     return None
                 handler = d.get(superclass)
                 if handler is not None:
+                    d[exc_class] = handler  # cache for next time exc_class is raised
                     return handler
             return None
         
