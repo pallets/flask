@@ -33,7 +33,11 @@ bootstrapping code for our application::
 So first we need a couple of imports.  Most should be straightforward, the
 :func:`werkzeug.secure_filename` is explained a little bit later.  The
 ``UPLOAD_FOLDER`` is where we will store the uploaded files and the
-``ALLOWED_EXTENSIONS`` is the set of allowed file extensions.
+``ALLOWED_EXTENSIONS`` is the set of allowed file extensions.  Then we add a
+URL rule by hand to the application.  Now usually we're not doing that, so
+why here?  The reasons is that we want the webserver (or our development
+server) to serve these files for us and so we only need a rule to generate
+the URL to these files.
 
 Why do we limit the extensions that are allowed?  You probably don't want
 your users to be able to upload everything there if the server is directly
@@ -104,11 +108,8 @@ before storing it directly on the filesystem.
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files. In the 
-:func:`upload_file()` we redirect the user to 
-``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``. 
-So we write the :func:`uploaded_file` function to return the file of that name. As
-of Flask 0.5 we can use a function that does that for us::
+Now one last thing is missing: the serving of the uploaded files.  As of
+Flask 0.5 we can use a function that does that for us::
 
     from flask import send_from_directory
 
