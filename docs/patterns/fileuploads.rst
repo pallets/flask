@@ -168,14 +168,11 @@ client asks the server every 5 seconds how much it has transmitted
 already.  Do you realize the irony?  The client is asking for something it
 should already know.
 
-Now there are better solutions to that work faster and more reliable.  The
-web changed a lot lately and you can use HTML5, Java, Silverlight or Flash
-to get a nicer uploading experience on the client side.  Look at the
-following libraries for some nice examples how to do that:
-
--   `Plupload <http://www.plupload.com/>`_ - HTML5, Java, Flash
--   `SWFUpload <http://www.swfupload.org/>`_ - Flash
--   `JumpLoader <http://jumploader.com/>`_ - Java
+Now there are better solutions that work faster and are more reliable. There 
+are JavaScript libraries like jQuery (http://jQuery.com) that have form plugins 
+to ease the construction of progress bar. Another great option is dropzone.js 
+(http://www.dropzonejs.com) that allows users to drag and drop files on to the 
+page.
 
 
 An Easier Solution
