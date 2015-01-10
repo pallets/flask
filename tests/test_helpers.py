@@ -561,8 +561,8 @@ class TestLogging(object):
         """Test logger configuration before app creation without default
         logging handlers"""
         # setup logging
-        from StringIO import StringIO
-        log_output = StringIO()
+        from io import BytesIO
+        log_output = BytesIO()
         stringio_handler = StreamHandler(log_output)
         stringio_handler.level = DEBUG
         logger = getLogger("flask")
