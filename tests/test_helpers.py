@@ -13,7 +13,7 @@ import pytest
 
 import os
 import flask
-from logging import StreamHandler
+from logging import StreamHandler, getLogger, DEBUG
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from flask._compat import StringIO, text_type
 
@@ -558,28 +558,16 @@ class TestLogging(object):
             assert flask.url_for('myview', _method='POST') == '/myview/create'
 
     def test_configuration(self):
-        """Test logger configuration without default logging handlers"""
+        """Test logger configuration before app creation without default
+        logging handlers"""
         # setup logging
         from StringIO import StringIO
         log_output = StringIO()
-        log_config = {
-            'version': 1,
-            'handlers': {
-                'stringio': {
-                    'class': 'logging.StreamHandler',
-                    'level': 'DEBUG',
-                    'stream': log_output
-                }
-            },
-            'loggers': {
-                'flask': {
-                    'handlers': ['stringio']
-                }
-            }
-         }
-        # initialize logging
-        import logging.config
-        logging.config.dictConfig(log_config)
+        stringio_handler = StreamHandler(log_output)
+        stringio_handler.level = DEBUG
+        logger = getLogger("flask")
+        logger.addHandler(stringio_handler)
+
         # initialize flask without default logging handlers
         app = flask.Flask(__name__)
         app.config.update(LOGGER_NAME='flask',
