@@ -557,6 +557,39 @@ class TestLogging(object):
             assert flask.url_for('myview', id=42, _method='GET') == '/myview/42'
             assert flask.url_for('myview', _method='POST') == '/myview/create'
 
+    def test_configuration(self):
+        """Test logger configuration without default logging handlers"""
+        # setup logging
+        from StringIO import StringIO
+        log_output = StringIO()
+        log_config = {
+            'version': 1,
+            'handlers': {
+                'stringio': {
+                    'class': 'logging.StreamHandler',
+                    'level': 'DEBUG',
+                    'stream': log_output
+                }
+            },
+            'loggers': {
+                'flask': {
+                    'handlers': ['stringio']
+                }
+            }
+         }
+        # initialize logging
+        import logging.config
+        logging.config.dictConfig(log_config)
+        # initialize flask without default logging handlers
+        app = flask.Flask(__name__)
+        app.config.update(LOGGER_NAME='flask',
+                          LOGGER_HANDLER_POLICY='never')
+
+        # log a warning
+        log_message = 'A fair warning.'
+        app.logger.warn(log_message)
+        assert log_output.getvalue() == (log_message + '\n')
+
 
 class TestNoImports(object):
     """Test Flasks are created without import.
