@@ -561,11 +561,11 @@ class TestLogging(object):
         """Test logger configuration before app creation without default
         logging handlers"""
         # setup logging
-        from io import BytesIO
-        log_output = BytesIO()
+        from io import StringIO
+        log_output = StringIO()
         stringio_handler = StreamHandler(log_output)
         stringio_handler.level = DEBUG
-        logger = getLogger("flask")
+        logger = getLogger('flask')
         logger.addHandler(stringio_handler)
 
         # initialize flask without default logging handlers
@@ -574,9 +574,9 @@ class TestLogging(object):
                           LOGGER_HANDLER_POLICY='never')
 
         # log a warning
-        log_message = 'A fair warning.'
+        log_message = u'A fair warning.'
         app.logger.warn(log_message)
-        assert log_output.getvalue() == (log_message + '\n')
+        assert log_output.getvalue() == (log_message + u'\n')
 
 
 class TestNoImports(object):
