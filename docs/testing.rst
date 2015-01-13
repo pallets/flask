@@ -276,7 +276,7 @@ having to change some code.  This can trivially be accomplished with
 hooking the :data:`flask.appcontext_pushed` signal::
 
     from contextlib import contextmanager
-    from flask import appcontext_pushed
+    from flask import appcontext_pushed, g
 
     @contextmanager
     def user_set(app, user):
