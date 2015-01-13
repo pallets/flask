@@ -26,11 +26,11 @@ The Forms
 
 This is an example form for a typical registration page::
 
-    from wtforms import Form, BooleanField, TextField, PasswordField, validators
+    from wtforms import Form, BooleanField, StringField, PasswordField, validators
 
     class RegistrationForm(Form):
-        username = TextField('Username', [validators.Length(min=4, max=25)])
-        email = TextField('Email Address', [validators.Length(min=6, max=35)])
+        username = StringField('Username', [validators.Length(min=4, max=25)])
+        email = StringField('Email Address', [validators.Length(min=6, max=35)])
         password = PasswordField('New Password', [
             validators.Required(),
             validators.EqualTo('confirm', message='Passwords must match')
