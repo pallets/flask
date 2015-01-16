@@ -18,7 +18,7 @@ A minimal Flask application looks something like this::
 
     @app.route('/')
     def hello_world():
-        return 'Hello World!'
+        return 'Hello, World!'
 
 So what did that code do?
 
@@ -172,7 +172,7 @@ bind a function to a URL.  Here are some basic examples::
 
     @app.route('/hello')
     def hello():
-        return 'Hello World'
+        return 'Hello, World'
 
 But there is more to it!  You can make certain parts of the URL dynamic and
 attach multiple rules to a function.
@@ -430,7 +430,7 @@ Here is an example template:
     {% if name %}
       <h1>Hello {{ name }}!</h1>
     {% else %}
-      <h1>Hello World!</h1>
+      <h1>Hello, World!</h1>
     {% endif %}
 
 Inside templates you also have access to the :class:`~flask.request`,
