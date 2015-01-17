@@ -1,0 +1,10 @@
+Flask==0.10.1
+Jinja2==2.7.3
+MarkupSafe==0.23
+Werkzeug==0.9.6
+argparse==1.2.1
+gunicorn==19.1.1
+hashids==1.0.1
+itsdangerous==0.24
+redis==2.10.3
+wsgiref==0.1.2

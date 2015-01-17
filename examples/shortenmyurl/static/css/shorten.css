@@ -1,0 +1,37 @@
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+html{
+    max-width: 100%;
+    overflow-x: hidden
+}
+body{
+	margin: 0;
+
+       background: url('../images/text.jpg') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+    
+}
+.jumbotron{
+background:transparent;
+}
+.no-bg{
+  background:transparent;
+    border:0;
+}
+.vertical-center {
+display: table-cell;
+vertical-align: middle;
+}
+.fn-17{
+   font-size: 17.5px;
+   padding: 11px 19px;
+}

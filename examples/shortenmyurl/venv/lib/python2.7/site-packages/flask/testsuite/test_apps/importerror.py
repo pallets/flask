@@ -1,0 +1,2 @@
+# NoImportsTestCase
+raise NotImplementedError

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang='en'>
+<head>
+	<title>Micro</title>
+ 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script> -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/shorten.css') }}">
+</head>
+<body>
+	<a href="https://github.com/melvin0008/shortenmyurl"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/c6286ade715e9bea433b4705870de482a654f78a/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png"></a>
+	<div class="container theme-showcase" role="main">
+		<div class="container horizontal-center" >
+			<img src="{{ url_for('static', filename='images/logo.png') }}" class="img-thumbnail no-bg" >
+		</div>
+		<div class="jumbotron vartical-center">
+			<form action="/put" method="POST">
+				<div class="input-group">
+					<input type="text" class="form-control fn-17" name="url" placeholder="ex. https://google.com" />
+					<span class="input-group-btn">
+						<input class="btn btn-primary" type="submit" value="Minify!"/>
+					</span>
+				</div>
+			</form>
+		</div>
+		<div class="container">
+			{% if hashid %}
+
+			<div class="panel panel-info">
+				<div class="panel-body">
+					<a class="btn btn-default" href="{{ hashid }}">Click Here</a> Your Shortened Url is :{{myurl+hashid}}
+				</div>
+			</div>
+			<div class="col-lg-4">
+				<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{myurl+hashid}}" class="img-thumbnail">
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</body>
+</html>
