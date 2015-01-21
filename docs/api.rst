@@ -99,18 +99,18 @@ Incoming Request Data
 
       And a user requests the following IRI::
 
-          http://www.example.com/myapplication/日本/page.html?x=y
+          http://www.example.com/myapplication/π/page.html?x=y
 
       In this case the values of the above mentioned attributes would be
       the following:
 
       ============= ======================================================
-      `path`        ``/日本/page.html``
-      `full_path`   ``/日本/page.html?x=y``
-      `script_root` ``/myapplication``
-      `base_url`    ``http://www.example.com/myapplication/日本/page.html``
-      `url`         ``http://www.example.com/myapplication/日本/page.html?x=y``
-      `url_root`    ``http://www.example.com/myapplication/``
+      `path`        ``u'/π/page.html'``
+      `full_path`   ``u'/π/page.html?x=y'``
+      `script_root` ``u'/myapplication'``
+      `base_url`    ``u'http://www.example.com/myapplication/π/page.html'``
+      `url`         ``u'http://www.example.com/myapplication/π/page.html?x=y'``
+      `url_root`    ``u'http://www.example.com/myapplication/'``
       ============= ======================================================
 
    .. attribute:: is_xhr
