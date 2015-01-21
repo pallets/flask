@@ -93,13 +93,13 @@ Incoming Request Data
    .. attribute:: url_root
 
       Provides different ways to look at the current `IRI<http://tools.ietf.org/html/rfc3987>`_.  Imagine your
-      application is listening on the following IRI::
+      application is listening on the following application root::
 
           http://www.example.com/myapplication
 
-      And a user requests the following IRI::
+      And a user requests the following URI::
 
-          http://www.example.com/myapplication/π/page.html?x=y
+          http://www.example.com/myapplication/%CF%80/page.html?x=y
 
       In this case the values of the above mentioned attributes would be
       the following:
