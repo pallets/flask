@@ -92,24 +92,24 @@ Incoming Request Data
    .. attribute:: base_url
    .. attribute:: url_root
 
-      Provides different ways to look at the current URL.  Imagine your
-      application is listening on the following URL::
+      Provides different ways to look at the current `IRI<http://tools.ietf.org/html/rfc3987>`_.  Imagine your
+      application is listening on the following IRI::
 
           http://www.example.com/myapplication
 
-      And a user requests the following URL::
+      And a user requests the following IRI::
 
-          http://www.example.com/myapplication/page.html?x=y
+          http://www.example.com/myapplication/日本/page.html?x=y
 
       In this case the values of the above mentioned attributes would be
       the following:
 
       ============= ======================================================
-      `path`        ``/page.html``
-      `full_path`   ``/page.html?x=y``
+      `path`        ``/日本/page.html``
+      `full_path`   ``/日本/page.html?x=y``
       `script_root` ``/myapplication``
-      `base_url`    ``http://www.example.com/myapplication/page.html``
-      `url`         ``http://www.example.com/myapplication/page.html?x=y``
+      `base_url`    ``http://www.example.com/myapplication/日本/page.html``
+      `url`         ``http://www.example.com/myapplication/日本/page.html?x=y``
       `url_root`    ``http://www.example.com/myapplication/``
       ============= ======================================================
 
