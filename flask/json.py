@@ -10,7 +10,7 @@
 """
 import io
 import uuid
-from datetime import datetime
+from datetime import date
 from .globals import current_app, request
 from ._compat import text_type, PY2
 
@@ -74,8 +74,8 @@ class JSONEncoder(_json.JSONEncoder):
                     return list(iterable)
                 return JSONEncoder.default(self, o)
         """
-        if isinstance(o, datetime):
-            return http_date(o)
+        if isinstance(o, date):
+            return http_date(o.timetuple())
         if isinstance(o, uuid.UUID):
             return str(o)
         if hasattr(o, '__html__'):

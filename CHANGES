@@ -61,6 +61,7 @@ Version 1.0
 - The automatically provided ``OPTIONS`` method is now correctly disabled if
   the user registered an overriding rule with the lowercase-version
   ``options`` (issue ``#1288``).
+- flask.json.jsonify now supports the datetime.date type
 
 Version 0.10.2
 --------------

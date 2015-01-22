@@ -12,9 +12,11 @@
 import pytest
 
 import os
+import datetime
 import flask
 from logging import StreamHandler
 from werkzeug.http import parse_cache_control_header, parse_options_header
+from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
 
 
@@ -28,6 +30,24 @@ def has_encoding(name):
 
 
 class TestJSON(object):
+
+    def test_jsonify_date_types(self):
+        """Test jsonify with datetime.date and datetime.datetime types."""
+
+        test_dates = (
+            datetime.datetime(1973, 3, 11, 6, 30, 45),
+            datetime.date(1975, 1, 5)
+        )
+
+        app = flask.Flask(__name__)
+        c = app.test_client()
+
+        for i, d in enumerate(test_dates):
+            url = '/datetest{0}'.format(i)
+            app.add_url_rule(url, str(i), lambda val=d: flask.jsonify(x=val))
+            rv = c.get(url)
+            assert rv.mimetype == 'application/json'
+            assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
