@@ -1301,7 +1301,7 @@ class Flask(_PackageBoundObject):
         .. admonition:: Debug Note
 
            In debug mode Flask will not tear down a request on an exception
-           immediately.  Instead if will keep it alive so that the interactive
+           immediately.  Instead it will keep it alive so that the interactive
            debugger can still access it.  This behavior can be controlled
            by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
         """
