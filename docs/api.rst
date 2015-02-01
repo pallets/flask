@@ -350,7 +350,7 @@ JSON Support
 Flask uses ``simplejson`` for the JSON implementation.  Since simplejson
 is provided both by the standard library as well as extension Flask will
 try simplejson first and then fall back to the stdlib json module.  On top
-of that it will delegate access to the current application's JSOn encoders
+of that it will delegate access to the current application's JSON encoders
 and decoders for easier customization.
 
 So for starters instead of doing::
