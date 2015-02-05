@@ -1243,7 +1243,13 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def before_request(self, f):
-        """Registers a function to run before each request."""
+        """Registers a function to run before each request.
+
+        The function will be called without any arguments.
+        If the function returns a non-None value, it's handled as
+        if it was the return value from the view and further
+        request handling is stopped.
+        """
         self.before_request_funcs.setdefault(None, []).append(f)
         return f
 
