@@ -1243,7 +1243,13 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def before_request(self, f):
-        """Registers a function to run before each request."""
+        """Registers a function to run before each request.
+
+        The function will be called without any arguments.
+        If the function returns a non-None value, it's handled as
+        if it was the return value from the view and further
+        request handling is stopped.
+        """
         self.before_request_funcs.setdefault(None, []).append(f)
         return f
 
@@ -1251,6 +1257,9 @@ class Flask(_PackageBoundObject):
     def before_first_request(self, f):
         """Registers a function to be run before the first request to this
         instance of the application.
+
+        The function will be called without any arguments and its return
+        value is ignored.
 
         .. versionadded:: 0.8
         """
@@ -1298,6 +1307,8 @@ class Flask(_PackageBoundObject):
         When a teardown function was called because of a exception it will
         be passed an error object.
 
+        The return values of teardown functions are ignored.
+
         .. admonition:: Debug Note
 
            In debug mode Flask will not tear down a request on an exception
@@ -1331,6 +1342,8 @@ class Flask(_PackageBoundObject):
 
         When a teardown function was called because of an exception it will
         be passed an error object.
+
+        The return values of teardown functions are ignored.
 
         .. versionadded:: 0.9
         """
@@ -1710,8 +1723,9 @@ class Flask(_PackageBoundObject):
 
     def preprocess_request(self):
         """Called before the actual request dispatching and will
-        call every as :meth:`before_request` decorated function.
-        If any of these function returns a value it's handled as
+        call each :meth:`before_request` decorated function, passing no
+        arguments.
+        If any of these functions returns a value, it's handled as
         if it was the return value from the view and further
         request handling is stopped.
 
