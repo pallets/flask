@@ -1258,6 +1258,9 @@ class Flask(_PackageBoundObject):
         """Registers a function to be run before the first request to this
         instance of the application.
 
+        The function will be called without any arguments and its return
+        value is ignored.
+
         .. versionadded:: 0.8
         """
         self.before_first_request_funcs.append(f)
