@@ -1304,6 +1304,8 @@ class Flask(_PackageBoundObject):
         When a teardown function was called because of a exception it will
         be passed an error object.
 
+        The return values of teardown functions are ignored.
+
         .. admonition:: Debug Note
 
            In debug mode Flask will not tear down a request on an exception
@@ -1337,6 +1339,8 @@ class Flask(_PackageBoundObject):
 
         When a teardown function was called because of an exception it will
         be passed an error object.
+
+        The return values of teardown functions are ignored.
 
         .. versionadded:: 0.9
         """
