@@ -1710,8 +1710,9 @@ class Flask(_PackageBoundObject):
 
     def preprocess_request(self):
         """Called before the actual request dispatching and will
-        call every as :meth:`before_request` decorated function.
-        If any of these function returns a value it's handled as
+        call each :meth:`before_request` decorated function, passing no
+        arguments.
+        If any of these functions returns a value, it's handled as
         if it was the return value from the view and further
         request handling is stopped.
 
