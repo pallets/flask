@@ -575,6 +575,24 @@ def test_request_processing():
     assert rv == b'request|after'
 
 
+def test_request_preprocessing_early_return():
+    app = flask.Flask(__name__)
+    evts = []
+
+    @app.before_request
+    def before_request():
+        return "hello"
+
+    @app.route('/')
+    def index():
+        evts.append('index')
+        return "damnit"
+
+    rv = app.test_client().get('/').data.strip()
+    assert rv == 'hello'
+    assert not evts
+
+
 def test_after_request_processing():
     app = flask.Flask(__name__)
     app.testing = True
