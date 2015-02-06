@@ -589,7 +589,7 @@ def test_request_preprocessing_early_return():
         return "damnit"
 
     rv = app.test_client().get('/').data.strip()
-    assert rv == 'hello'
+    assert rv == b'hello'
     assert not evts
 
 
