@@ -427,12 +427,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
 
-    Please never pass filenames to this function from user sources without
-    checking them first.  Something like this is usually sufficient to
-    avoid security problems::
-
-        if '..' in filename or filename.startswith('/'):
-            abort(404)
+    Please never pass filenames to this function from user sources;
+    you should use :func:`send_from_directory` instead.
 
     .. versionadded:: 0.2
 
