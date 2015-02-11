@@ -9,6 +9,7 @@ from flask.ext.foo import (bam,
                            b
 )
 
+import flask.ext.foo
 
 from flask.ext import foo
 
