@@ -83,10 +83,9 @@ def fix_standard_imports(red):
     return red
 
 
-def fix(input_file):
-    ast = read_source(input_file)
-    new_ast = fix_imports(ast)
-    write_source(new_ast, input_file)
+def fix(ast):
+    """Wrapper which allows for testing when not running from shell"""
+    return fix_imports(ast).dumps()
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
