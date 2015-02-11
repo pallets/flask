@@ -83,8 +83,11 @@ def fix_standard_imports(red):
     return red
 
 
-if __name__ == "__main__":
-    input_file = sys.argv[1]
+def fix(input_file):
     ast = read_source(input_file)
     new_ast = fix_imports(ast)
     write_source(new_ast, input_file)
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    fix(input_file)
