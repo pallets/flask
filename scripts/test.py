@@ -1,6 +1,18 @@
-from flask.ext.foo import bam
+from flask.ext.foo import \
+    bam, \
+    crackle
+
 from flask.ext import foo
 
+from flask.ext.foo import (bam,
+                           a,
+                           b
+)
+
+
+from flask.ext import foo
+
+import sys
 
 def migrate(old_file):
     new_file = open("temp.py", "w")
@@ -15,6 +27,7 @@ def migrate(old_file):
                 pass
 
         new_file.write(line)
+
 
 if __name__ == "__main__":
     old_file = open(sys.arv[1])
