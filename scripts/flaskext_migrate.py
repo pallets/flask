@@ -26,7 +26,6 @@ def fix_imports(red):
                 package = values[2].value
                 modules = from_imports[x].modules()
                 r = "{}," * len(modules)
-                print modules
                 from_imports[x].replace("from flask_%s import %s"
                                         % (package, r.format(*modules)[:-1]))
             # Case 2
