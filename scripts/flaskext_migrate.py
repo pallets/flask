@@ -89,4 +89,6 @@ def fix(ast):
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
-    fix(input_file)
+    ast = read_source(input_file)
+    ast = fix_imports(ast)
+    write_source(ast, input_file)
