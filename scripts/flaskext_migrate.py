@@ -76,9 +76,12 @@ def fix_standard_imports(red):
         try:
             if (node.value[0].value[0].value == 'flask' and
                node.value[0].value[1].value == 'ext'):
-                package = node.value[0].value[2]
+                package = node.value[0].value[2].value
                 name = node.names()[0].split('.')[-1]
-                node.replace("import flask_%s as %s" % (package, name))
+                if name == package:
+                    node.replace("import flask_%s" % (package))
+                else:
+                    node.replace("import flask_%s as %s" % (package, name))
         except IndexError:
             pass
 
@@ -113,11 +116,26 @@ def fix_function_calls(red):
         try:
             if (node.value[0].value == 'flask' and
                node.value[1].value == 'ext'):
-                node.replace("flask_%s%s" % (node.value[3], node.value[3]))
+                params = _form_function_call(node)
+                node.replace("flask_%s%s" % (node.value[2], params))
         except IndexError:
             pass
 
     return red
+
+
+def _form_function_call(node):
+    """
+    Reconstructs function call strings when making attribute access calls.
+    """
+    node_vals = node.value
+    output = "."
+    for x, param in enumerate(node_vals[3::]):
+        if param.dumps()[0] == "(":
+            output = output[0:-1] + param.dumps()
+            return output
+        else:
+            output += param.dumps() + "."
 
 
 def check_user_input():

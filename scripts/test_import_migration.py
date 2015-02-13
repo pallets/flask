@@ -36,7 +36,7 @@ def test_multiline_import():
 def test_module_import():
     red = RedBaron("import flask.ext.foo")
     output = migrate.fix_tester(red)
-    assert output == "import flask_foo as foo"
+    assert output == "import flask_foo"
 
 
 def test_named_module_import():
@@ -61,3 +61,11 @@ def test_function_call_migration():
     red = RedBaron("flask.ext.foo(var)")
     output = migrate.fix_tester(red)
     assert output == "flask_foo(var)"
+
+
+def test_nested_function_call_migration():
+    red = RedBaron("import flask.ext.foo\n\n"
+                   "flask.ext.foo.bar(var)")
+    output = migrate.fix_tester(red)
+    assert output == ("import flask_foo\n\n"
+                      "flask_foo.bar(var)")
