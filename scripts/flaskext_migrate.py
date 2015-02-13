@@ -113,7 +113,7 @@ def fix_function_calls(red):
         try:
             if (node.value[0].value == 'flask' and
                node.value[1].value == 'ext'):
-                node.replace("flask_foo%s" % node.value[3])
+                node.replace("flask_%s%s" % (node.value[3], node.value[3]))
         except IndexError:
             pass
 
