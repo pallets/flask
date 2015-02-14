@@ -3,8 +3,6 @@
 #
 # "import flask.ext.foo"
 #
-# these are converted to "import flask_foo" in the
-# main import statement, but does not handle function calls in the source.
 #
 # Run in the terminal by typing: `python flaskext_migrate.py <source_file.py>`
 #
