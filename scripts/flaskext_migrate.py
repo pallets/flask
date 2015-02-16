@@ -1,8 +1,5 @@
 # Script which modifies source code away from the deprecated "flask.ext"
-# format. Does not yet fully support imports in the style:
-#
-# "import flask.ext.foo"
-#
+# format.
 #
 # Run in the terminal by typing: `python flaskext_migrate.py <source_file.py>`
 #
