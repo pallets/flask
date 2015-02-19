@@ -38,7 +38,7 @@ So here is a full example::
                 return redirect(url_for('index'))
         return render_template('login.html', error=error)
 
-And here the :file:`layout.html` template which does the magic:
+And here is the :file:`layout.html` template which does the magic:
 
 .. sourcecode:: html+jinja
 
@@ -55,7 +55,7 @@ And here the :file:`layout.html` template which does the magic:
    {% endwith %}
    {% block body %}{% endblock %}
 
-And here the index.html template:
+Here is the :file:`index.html` template which inherits from :file:`layout.html`:
 
 .. sourcecode:: html+jinja
 
@@ -65,7 +65,8 @@ And here the index.html template:
      <p>Do you want to <a href="{{ url_for('login') }}">log in?</a>
    {% endblock %}
 
-And of course the login template:
+And here is the :file:`login.html` template which also inherits from
+:file:`layout.html`:
 
 .. sourcecode:: html+jinja
 
