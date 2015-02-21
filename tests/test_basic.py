@@ -580,8 +580,18 @@ def test_request_preprocessing_early_return():
     evts = []
 
     @app.before_request
-    def before_request():
+    def before_request1():
+        evts.append(1)
+
+    @app.before_request
+    def before_request2():
+        evts.append(2)
         return "hello"
+
+    @app.before_request
+    def before_request3():
+        evts.append(3)
+        return "bye"
 
     @app.route('/')
     def index():
@@ -589,8 +599,8 @@ def test_request_preprocessing_early_return():
         return "damnit"
 
     rv = app.test_client().get('/').data.strip()
-    assert rv == 'hello'
-    assert not evts
+    assert rv == b'hello'
+    assert evts == [1, 2]
 
 
 def test_after_request_processing():

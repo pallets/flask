@@ -42,13 +42,21 @@ Links
   <http://github.com/mitsuhiko/flask/zipball/master#egg=Flask-dev>`_
 
 """
-from __future__ import print_function
-from setuptools import Command, setup
+import re
+import ast
+from setuptools import setup
+
+
+_version_re = re.compile(r'__version__\s+=\s+(.*)')
+
+with open('flask/__init__.py', 'rb') as f:
+    version = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
 
 
 setup(
     name='Flask',
-    version='0.11-dev',
+    version=version,
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
