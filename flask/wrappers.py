@@ -175,7 +175,7 @@ class Request(RequestBase):
 
         .. versionadded:: 0.8
         """
-        raise BadRequest()
+        raise BadRequest(e)
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
