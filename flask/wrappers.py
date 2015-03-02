@@ -13,8 +13,7 @@ from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.exceptions import BadRequest
 
 from . import json
-from .globals import _request_ctx_stack
-
+from .globals import _request_ctx_stack, current_app
 
 _missing = object()
 
@@ -175,7 +174,10 @@ class Request(RequestBase):
 
         .. versionadded:: 0.8
         """
-        raise BadRequest(e)
+        if current_app.config['DEBUG']:
+            raise BadRequest(e)
+        else:
+            raise BadRequest()
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
