@@ -168,19 +168,17 @@ client asks the server every 5 seconds how much it has transmitted
 already.  Do you realize the irony?  The client is asking for something it
 should already know.
 
-Now there are better solutions that work faster and are more reliable. There 
-are JavaScript libraries like jQuery (http://jQuery.com) that have form plugins 
-to ease the construction of progress bar. Another great option is dropzone.js 
-(http://www.dropzonejs.com) that allows users to drag and drop files on to the 
-page.
-
-
 An Easier Solution
 ------------------
 
-Because the common pattern for file uploads exists almost unchanged in all
-applications dealing with uploads, there is a Flask extension called
-`Flask-Uploads`_ that implements a full fledged upload mechanism with
-white and blacklisting of extensions and more.
+Now there are better solutions that work faster and are more reliable. There
+are JavaScript libraries like jQuery_ that have form plugins to ease the
+construction of progress bar.
 
+Because the common pattern for file uploads exists almost unchanged in all
+applications dealing with uploads, there is also a Flask extension called
+`Flask-Uploads`_ that implements a full fledged upload mechanism with white and
+blacklisting of extensions and more.
+
+.. _jQuery: https://jquery.com/
 .. _Flask-Uploads: http://pythonhosted.org/Flask-Uploads/
