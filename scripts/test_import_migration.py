@@ -45,7 +45,7 @@ def test_named_module_import():
     assert output == "import flask_foo as foobar"
 
 
-def test__named_from_import():
+def test_named_from_import():
     red = RedBaron("from flask.ext.foo import bar as baz")
     output = migrate.fix_tester(red)
     assert output == "from flask_foo import bar as baz"
@@ -69,3 +69,9 @@ def test_nested_function_call_migration():
     output = migrate.fix_tester(red)
     assert output == ("import flask_foo\n\n"
                       "flask_foo.bar(var)")
+
+
+def test_no_change_to_import():
+    red = RedBaron("from flask import Flask")
+    output = migrate.fix_tester(red)
+    assert output == "from flask import Flask"

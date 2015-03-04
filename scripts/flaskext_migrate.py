@@ -40,6 +40,8 @@ def fix_from_imports(red):
     from_imports = red.find_all("FromImport")
     for x, node in enumerate(from_imports):
         values = node.value
+        if len(values) < 2:
+            continue
         if (values[0].value == 'flask') and (values[1].value == 'ext'):
             # Case 1
             if len(node.value) == 3:
