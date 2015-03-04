@@ -49,7 +49,7 @@ class TestJSON(object):
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
 
-    def test_post_empty_json_adds_exception_to_reponse_content_in_debug(self):
+    def test_post_empty_json_adds_exception_to_response_content_in_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = True
         @app.route('/json', methods=['POST'])
@@ -59,9 +59,9 @@ class TestJSON(object):
         c = app.test_client()
         rv = c.post('/json', data=None, content_type='application/json')
         assert rv.status_code == 400
-        assert 'No JSON object could be decoded' in rv.data
+        assert b'No JSON object could be decoded' in rv.data
 
-    def test_post_empty_json_doesnt_add_exception_to_reponse_if_no_debug(self):
+    def test_post_empty_json_wont_add_exception_to_response_if_no_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = False
         @app.route('/json', methods=['POST'])
@@ -71,7 +71,7 @@ class TestJSON(object):
         c = app.test_client()
         rv = c.post('/json', data=None, content_type='application/json')
         assert rv.status_code == 400
-        assert 'No JSON object could be decoded' not in rv.data
+        assert b'No JSON object could be decoded' not in rv.data
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
