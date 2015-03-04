@@ -174,10 +174,11 @@ class Request(RequestBase):
 
         .. versionadded:: 0.8
         """
-        if current_app.config['DEBUG']:
-            raise BadRequest(e)
-        else:
-            raise BadRequest()
+        ctx = _request_ctx_stack.top
+        if ctx is not None:
+            if ctx.app.config.get('DEBUG', False):
+                raise BadRequest(e)
+        raise BadRequest()
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
