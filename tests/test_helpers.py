@@ -59,7 +59,7 @@ class TestJSON(object):
         c = app.test_client()
         rv = c.post('/json', data=None, content_type='application/json')
         assert rv.status_code == 400
-        assert b'No JSON object could be decoded' in rv.data
+        assert b'Failed to decode JSON object' in rv.data
 
     def test_post_empty_json_wont_add_exception_to_response_if_no_debug(self):
         app = flask.Flask(__name__)
@@ -71,7 +71,7 @@ class TestJSON(object):
         c = app.test_client()
         rv = c.post('/json', data=None, content_type='application/json')
         assert rv.status_code == 400
-        assert b'No JSON object could be decoded' not in rv.data
+        assert b'Failed to decode JSON object' not in rv.data
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
