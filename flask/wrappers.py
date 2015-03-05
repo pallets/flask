@@ -177,7 +177,7 @@ class Request(RequestBase):
         ctx = _request_ctx_stack.top
         if ctx is not None:
             if ctx.app.config.get('DEBUG', False):
-                raise BadRequest('Failed to decode JSON object: {}'.format(e))
+                raise BadRequest('Failed to decode JSON object: {0}'.format(e))
         raise BadRequest()
 
     def _load_form_data(self):
