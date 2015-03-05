@@ -19,10 +19,9 @@
 
     ~ What do I need?
 
-      If you do `pip install Flask`, `pip` or `easy_install` will
-      install all dependencies. I encourage you to use a
-      virtualenv. Check the docs for complete installation and
-      usage instructions.
+      All dependencies are installed by using `pip install Flask`.
+      I encourage you to use a virtualenv. Check the docs for
+      complete installation and usage instructions.
 
     ~ Where are the docs?
 
