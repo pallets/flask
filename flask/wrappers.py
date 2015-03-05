@@ -15,7 +15,6 @@ from werkzeug.exceptions import BadRequest
 from . import json
 from .globals import _request_ctx_stack
 
-
 _missing = object()
 
 
@@ -175,6 +174,9 @@ class Request(RequestBase):
 
         .. versionadded:: 0.8
         """
+        ctx = _request_ctx_stack.top
+        if ctx is not None and ctx.app.config.get('DEBUG', False):
+            raise BadRequest('Failed to decode JSON object: {0}'.format(e))
         raise BadRequest()
 
     def _load_form_data(self):
