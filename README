@@ -19,11 +19,9 @@
 
     ~ What do I need?
 
-      Jinja 2.4 and Werkzeug 0.7 or later.
-      `pip` or `easy_install` will install them for you if you do
-      `pip install Flask`.  I encourage you to use a virtualenv.
-      Check the docs for complete installation and usage
-      instructions.
+      All dependencies are installed by using `pip install Flask`.
+      I encourage you to use a virtualenv. Check the docs for
+      complete installation and usage instructions.
 
     ~ Where are the docs?
 
