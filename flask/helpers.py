@@ -802,11 +802,10 @@ class _PackageBoundObject(object):
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
-        if self._static_url_path is None:
-            if self.static_folder is None:
-                return None
+        if self._static_url_path is not None:
+            return self._static_url_path
+        if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
-        return self._static_url_path
     def _set_static_url_path(self, value):
         self._static_url_path = value
     static_url_path = property(_get_static_url_path, _set_static_url_path)
