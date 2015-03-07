@@ -27,13 +27,10 @@ The name of the actual extension (the human readable name) however would
 be something like "Flask-SimpleXML".  Make sure to include the name
 "Flask" somewhere in that name and that you check the capitalization.
 This is how users can then register dependencies to your extension in
-their :file:`setup.py` files.
-
-Flask sets up a redirect package called :data:`flask.ext` where users
-should import the extensions from.  If you for instance have a package
-called ``flask_something`` users would import it as
-``flask.ext.something``.  This is done to transition from the old
-namespace packages.  See :ref:`ext-import-transition` for more details.
+their :file:`setup.py` files. If you for instance have a package called
+``flask_something`` users should import it as ``flask_something`` rather than
+using the soon to deprecated format ``flask.ext.something``. See
+:ref:`ext-import-transition` for more details.
 
 But how do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
@@ -399,20 +396,14 @@ extension to be approved you have to follow these guidelines:
 Extension Import Transition
 ---------------------------
 
-For a while we recommended using namespace packages for Flask extensions.
-This turned out to be problematic in practice because many different
-competing namespace package systems exist and pip would automatically
-switch between different systems and this caused a lot of problems for
-users.
-
-Instead we now recommend naming packages ``flask_foo`` instead of the now
-deprecated ``flaskext.foo``.  Flask 0.8 introduces a redirect import
-system that lets uses import from ``flask.ext.foo`` and it will try
-``flask_foo`` first and if that fails ``flaskext.foo``.
+Flask 0.8 introduced a redirect import system that lets users import from
+``flask.ext.foo`` before trying ``flask_foo`` and if that fails
+``flaskext.foo``. As of Flask 1.0 this import redirection system will be
+removed and users will have to import from ``flask_foo``.
 
 Flask extensions should urge users to import from ``flask.ext.foo``
 instead of ``flask_foo`` or ``flaskext_foo`` so that extensions can
-transition to the new package name without affecting users.
+transition to the new import format without affecting users.
 
 
 .. _OAuth extension: http://pythonhosted.org/Flask-OAuth/
