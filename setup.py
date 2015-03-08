@@ -74,6 +74,9 @@ setup(
         'itsdangerous>=0.21',
         'click>=2.0',
     ],
+    extras_require={
+        'redbaron': ['redbaron>=0.5'],
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -88,6 +91,6 @@ setup(
     entry_points='''
         [console_scripts]
         flask=flask.cli:main
-        ext_migrate=scripts.flaskext_migrate:fix
+        flask_ext_migrate=scripts.flaskext_migrate:fix [redbaron]
     '''
 )
