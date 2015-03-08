@@ -9,9 +9,65 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from collections import defaultdict
 from functools import update_wrapper
 
+import click
+import click.decorators
+
+from . import cli
+from ._compat import iteritems
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
+
+
+class BlueprintGroup(object):
+    def __init__(self):
+        self._default_group = object()
+        self.commands = defaultdict(dict)
+
+    def add_command(self, cmd, name=None, group=None):
+        """Registers another :class:`Command`.  If the name is not provided,
+        the name of the command is used.
+        """
+        name = name or cmd.name
+        if name is None:
+            raise TypeError('Command has no name.')
+        self.commands[group][name] = cmd
+
+    def command(self, *args, **kwargs):
+        """This works exactly like the method of the same name on a regular
+        :class:`click.Group` but it wraps callbacks in :func:`with_appcontext`
+        unless it's disabled by passing ``with_appcontext=False``.
+        """
+        wrap_for_ctx = kwargs.pop('with_appcontext', True)
+        group = kwargs.pop('group', self._default_group)
+        def decorator(f):
+            if wrap_for_ctx:
+                f = cli.with_appcontext(f)
+            cmd = click.decorators.command(*args, **kwargs)(f)
+            self.commands[group][cmd.name] = cmd
+            return cmd
+
+        return decorator
+
+    def group(self, *args, **kwargs):
+        """This works exactly like the method of the same name on a regular
+        :class:`click.Group` but it defaults the group class to
+        :class:`AppGroup`.
+        """
+        kwargs.setdefault('cls', cli.AppGroup)
+        group = kwargs.pop('group', self._default_group)
+        def decorator(f):
+            cmd = click.decorators.group(*args, **kwargs)(f)
+            self.commands[group][cmd.name] = cmd
+            return cmd
+        return decorator
+
+    def iter_commands(self, default_group):
+        for group, commands in iteritems(self.commands):
+            if group is self._default_group:
+                group = default_group
+            yield group, commands
 
 
 class BlueprintSetupState(object):
@@ -92,7 +148,7 @@ class Blueprint(_PackageBoundObject):
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
-                 root_path=None):
+                 root_path=None, cli_group_name=None, cli_group_desc=None):
         _PackageBoundObject.__init__(self, import_name, template_folder,
                                      root_path=root_path)
         self.name = name
@@ -105,6 +161,19 @@ class Blueprint(_PackageBoundObject):
         if url_defaults is None:
             url_defaults = {}
         self.url_values_defaults = url_defaults
+        self.cli_group_name = cli_group_name
+        if cli_group_desc is None:
+            cli_group_desc = 'Commands from the {0} blueprint.'.format(
+                self.name)
+        self.cli_group_desc = cli_group_desc
+
+        #: The click command line context for this blueprint.  Commands
+        #: registered here show up in the :command:`flask` command as a group
+        #: named like the blueprint (unless `cli_group_name` is set )once the
+        #: blueprint has been loaded.
+        #:
+        #: This behaves like an instance of a :class:`click.Group` object.
+        self.cli = BlueprintGroup()
 
     def record(self, func):
         """Registers a function that is called when the blueprint is
@@ -153,6 +222,20 @@ class Blueprint(_PackageBoundObject):
 
         for deferred in self.deferred_functions:
             deferred(state)
+        # Register commands for the `flask` command-line tool
+        default_group_name = state.options.get('cli_group_name',
+                                               self.cli_group_name)
+        for group_name, commands in self.cli.iter_commands(default_group_name):
+            if group_name is None:
+                state.app.cli.commands.update(commands)
+            else:
+                group = state.app.cli.commands.get(group_name)
+                if group is None:
+                    group_args = {'name': group_name}
+                    if group_name == default_group_name:
+                        group_args['help'] = self.cli_group_desc
+                    group = state.app.cli.group(**group_args)(lambda: None)
+                group.commands.update(commands)
 
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
