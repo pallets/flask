@@ -445,14 +445,14 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionchanged:: 0.9
        cache_timeout pulls its default from application config, when None.
 
-    :param filename_or_fp: the filename of the file to send.  This is
-                           relative to the :attr:`~Flask.root_path` if a
-                           relative path is specified.
-                           Alternatively a file object might be provided
-                           in which case ``X-Sendfile`` might not work and
-                           fall back to the traditional method.  Make sure
-                           that the file pointer is positioned at the start
-                           of data to send before calling :func:`send_file`.
+    :param filename_or_fp: the filename of the file to send in `latin-1`
+                           This is relative to the :attr:`~Flask.root_path`
+                           if a relative path is specified. Alternatively a
+                           file object might be provided in which case
+                           ``X-Sendfile`` might not work and fall back to the
+                           traditional method.  Make sure that the file
+                           pointer is positioned at the start of data to send
+                           before calling :func:`send_file`.
     :param mimetype: the mimetype of the file if provided, otherwise
                      auto detection happens.
     :param as_attachment: set to ``True`` if you want to send this file with
