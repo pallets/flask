@@ -207,6 +207,8 @@ temporarily.  With this you can access the :class:`~flask.request`,
 :class:`~flask.g` and :class:`~flask.session` objects like in view
 functions.  Here is a full example that demonstrates this approach::
 
+    import flask
+    
     app = flask.Flask(__name__)
 
     with app.test_request_context('/?name=Peter'):
