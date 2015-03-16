@@ -18,8 +18,8 @@ from functools import update_wrapper
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
-from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest
+from werkzeug.exceptions import default_exceptions, HTTPException, \
+     InternalServerError, MethodNotAllowed, BadRequest
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
      locked_cached_property, _endpoint_from_view_func, find_package
@@ -1133,7 +1133,9 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def _register_error_handler(self, key, code_or_exception, f):
-        if isinstance(code_or_exception, HTTPException):
+        # The HTTPException base class doesn't have a code
+        if code_or_exception in default_exceptions.values() and \
+           code_or_exception is not HTTPException:
             code_or_exception = code_or_exception.code
         if isinstance(code_or_exception, integer_types):
             assert code_or_exception != 500 or key is None, \
