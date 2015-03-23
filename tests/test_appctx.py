@@ -78,6 +78,21 @@ def test_app_tearing_down_with_previous_exception():
 
     assert cleanup_stuff == [None]
 
+def test_app_tearing_down_with_handled_exception():
+    cleanup_stuff = []
+    app = flask.Flask(__name__)
+    @app.teardown_appcontext
+    def cleanup(exception):
+        cleanup_stuff.append(exception)
+
+    with app.app_context():
+        try:
+            raise Exception('dummy')
+        except Exception:
+            pass
+
+    assert cleanup_stuff == [None]
+
 def test_custom_app_ctx_globals_class():
     class CustomRequestGlobals(object):
         def __init__(self):
