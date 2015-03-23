@@ -21,6 +21,10 @@ from .signals import appcontext_pushed, appcontext_popped
 from ._compat import BROKEN_PYPY_CTXMGR_EXIT, reraise
 
 
+# a singleton sentinel value for parameter defaults
+_sentinel = object()
+
+
 class _AppCtxGlobals(object):
     """A plain object."""
 
@@ -168,11 +172,11 @@ class AppContext(object):
         _app_ctx_stack.push(self)
         appcontext_pushed.send(self.app)
 
-    def pop(self, exc=None):
+    def pop(self, exc=_sentinel):
         """Pops the app context."""
         self._refcnt -= 1
         if self._refcnt <= 0:
-            if exc is None:
+            if exc is _sentinel:
                 exc = sys.exc_info()[1]
             self.app.do_teardown_appcontext(exc)
         rv = _app_ctx_stack.pop()
@@ -320,7 +324,7 @@ class RequestContext(object):
         if self.session is None:
             self.session = self.app.make_null_session()
 
-    def pop(self, exc=None):
+    def pop(self, exc=_sentinel):
         """Pops the request context and unbinds it by doing that.  This will
         also trigger the execution of functions registered by the
         :meth:`~flask.Flask.teardown_request` decorator.
@@ -334,7 +338,7 @@ class RequestContext(object):
         if not self._implicit_app_ctx_stack:
             self.preserved = False
             self._preserved_exc = None
-            if exc is None:
+            if exc is _sentinel:
                 exc = sys.exc_info()[1]
             self.app.do_teardown_request(exc)
 
