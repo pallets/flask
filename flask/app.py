@@ -38,6 +38,9 @@ from ._compat import reraise, string_types, text_type, integer_types
 # a lock used for logger initialization
 _logger_lock = Lock()
 
+# a singleton sentinel value for parameter defaults
+_sentinel = object()
+
 
 def _make_timedelta(value):
     if not isinstance(value, timedelta):
@@ -1774,7 +1777,7 @@ class Flask(_PackageBoundObject):
             self.save_session(ctx.session, response)
         return response
 
-    def do_teardown_request(self, exc=None):
+    def do_teardown_request(self, exc=_sentinel):
         """Called after the actual request dispatching and will
         call every as :meth:`teardown_request` decorated function.  This is
         not actually called by the :class:`Flask` object itself but is always
@@ -1785,7 +1788,7 @@ class Flask(_PackageBoundObject):
            Added the `exc` argument.  Previously this was always using the
            current exception information.
         """
-        if exc is None:
+        if exc is _sentinel:
             exc = sys.exc_info()[1]
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
         bp = _request_ctx_stack.top.request.blueprint
@@ -1795,14 +1798,14 @@ class Flask(_PackageBoundObject):
             func(exc)
         request_tearing_down.send(self, exc=exc)
 
-    def do_teardown_appcontext(self, exc=None):
+    def do_teardown_appcontext(self, exc=_sentinel):
         """Called when an application context is popped.  This works pretty
         much the same as :meth:`do_teardown_request` but for the application
         context.
 
         .. versionadded:: 0.9
         """
-        if exc is None:
+        if exc is _sentinel:
             exc = sys.exc_info()[1]
         for func in reversed(self.teardown_appcontext_funcs):
             func(exc)
