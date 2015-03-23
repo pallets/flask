@@ -1,9 +1,8 @@
 # Tester for the flaskext_migrate.py module located in flask/scripts/
 #
 # Author: Keyan Pishdadian
-import pytest
 from redbaron import RedBaron
-import flaskext_migrate as migrate
+import scripts.flaskext_migrate as migrate
 
 
 def test_simple_from_import():

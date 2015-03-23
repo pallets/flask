@@ -64,7 +64,7 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    packages=['flask', 'flask.ext'],
+    packages=['flask', 'flask.ext', 'scripts'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
@@ -74,6 +74,9 @@ setup(
         'itsdangerous>=0.21',
         'click>=2.0',
     ],
+    extras_require={
+        'redbaron': ['redbaron>=0.5'],
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -88,5 +91,6 @@ setup(
     entry_points='''
         [console_scripts]
         flask=flask.cli:main
+        flask_ext_migrate=scripts.flaskext_migrate:fix [redbaron]
     '''
 )
