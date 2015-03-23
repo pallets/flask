@@ -8,9 +8,6 @@ test:
 tox-test:
 	tox
 
-test-with-mem:
-	RUN_FLASK_MEMORY_TESTS=1 python run-tests.py
-
 audit:
 	python setup.py audit
 

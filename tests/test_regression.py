@@ -48,10 +48,6 @@ class assert_no_leak(object):
         gc.enable()
 
 
-# XXX: untitaker: These tests need to be revised. They broke around the time we
-# ported Flask to Python 3.
-@pytest.mark.skipif(os.environ.get('RUN_FLASK_MEMORY_TESTS') != '1',
-                    reason='Turned off due to envvar.')
 def test_memory_consumption():
     app = flask.Flask(__name__)
 
