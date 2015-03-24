@@ -59,13 +59,16 @@ def test_before_render_template():
         context['whiskey'] = 43
         recorded.append((template, context))
 
-    with flask.before_render_template.connected_to(record):
+    flask.before_render_template.connect(record, app)
+    try:
         rv = app.test_client().get('/')
         assert len(recorded) == 1
         template, context = recorded[0]
         assert template.name == 'simple_template.html'
         assert context['whiskey'] == 43
         assert rv.data == b'<h1>43</h1>'
+    finally:
+        flask.before_render_template.disconnect(record, app)
 
 def test_before_render_template_signal_not_None_result_render_skip_render_template():
     app = flask.Flask(__name__)
@@ -80,9 +83,12 @@ def test_before_render_template_signal_not_None_result_render_skip_render_templa
         recorded.append((template, context))
         return 'Not template string'
 
-    with flask.before_render_template.connected_to(record):
+    flask.before_render_template.connect(record, app)
+    try:
         rv = app.test_client().get('/')
         assert rv.data == 'Not template string'
+    finally:
+       flask.before_render_template.disconnect(record, app) 
 
 def test_request_signals():
     app = flask.Flask(__name__)
