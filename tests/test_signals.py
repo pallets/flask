@@ -67,6 +67,22 @@ def test_before_render_template():
         assert context['whiskey'] == 43
         assert rv.data == b'<h1>43</h1>'
 
+def test_before_render_template_signal_not_None_result_render_skip_render_template():
+    app = flask.Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return flask.render_template('simple_template.html', whiskey=42)
+
+    recorded = []
+
+    def record(sender, template, context):
+        recorded.append((template, context))
+        return 'Not template string'
+
+    with flask.before_render_template.connected_to(record):
+        rv = app.test_client().get('/')
+        assert rv.data == 'Not template string'
 
 def test_request_signals():
     app = flask.Flask(__name__)
