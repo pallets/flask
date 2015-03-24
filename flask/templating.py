@@ -101,8 +101,19 @@ class DispatchingJinjaLoader(BaseLoader):
 
 
 def _render(template, context, app):
-    """Renders the template and fires the signal"""
-    before_render_template.send(app, template=template, context=context)
+    """Renders the template and fires signals.
+
+    It is possible to override render template in the before_render_template signal.
+    It can be done only if exactly one receiver and it return not None result."""
+
+    brt_resp = before_render_template.send(app, template=template, context=context)
+    
+    if len(brt_resp) == 1:
+        first_resp = brt_resp[0]
+
+        if len(first_resp) == 2 and first_resp[1] is not None:
+            return first_resp[1]
+
     rv = template.render(context)
     template_rendered.send(app, template=template, context=context)
     return rv
