@@ -86,7 +86,7 @@ def test_before_render_template_signal_not_None_result_render_skip_render_templa
     flask.before_render_template.connect(record, app)
     try:
         rv = app.test_client().get('/')
-        assert rv.data == 'Not template string'
+        assert rv.data == b'Not template string'
     finally:
        flask.before_render_template.disconnect(record, app) 
 
