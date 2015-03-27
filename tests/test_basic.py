@@ -1181,7 +1181,7 @@ def test_test_app_proper_environ():
 
 
 def test_exception_propagation():
-    def apprunner(configkey):
+    def apprunner(config_key):
         app = flask.Flask(__name__)
         app.config['LOGGER_HANDLER_POLICY'] = 'never'
 
