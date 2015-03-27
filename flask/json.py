@@ -243,13 +243,15 @@ def jsonify(*args, **kwargs):
         indent = 2
         separators = (', ', ': ')
 
-    # Return toplevel array only when no kwargs is given
-    data = kwargs
-    if not data:
+    try:
+        data = dict(*args, **kwargs)
+    except:
         if current_app.config['JSONIFY_ALLOW_TOPLEVEL_ARRAY']:
-            data = args
+            # Return a toplevel array when converting to an object
+            # is not possible
+            data = list(*args, **kwargs)
         else:
-            raise ValueError('top-level array is not allowed')
+            raise
 
     # Note that we add '\n' to end of response
     # (see https://github.com/mitsuhiko/flask/pull/1262)
