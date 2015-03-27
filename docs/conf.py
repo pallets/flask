@@ -19,6 +19,8 @@ import sys, os
 sys.path.append(os.path.abspath('_themes'))
 sys.path.append(os.path.abspath('.'))
 
+os.environ['SPHINX_BUILD'] = '1'
+
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
