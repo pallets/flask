@@ -300,6 +300,7 @@ class Flask(_PackageBoundObject):
         'JSON_AS_ASCII':                        True,
         'JSON_SORT_KEYS':                       True,
         'JSONIFY_PRETTYPRINT_REGULAR':          True,
+        'JSONIFY_ALLOW_TOPLEVEL_ARRAY':         False,
         'TEMPLATES_AUTO_RELOAD':                None,
     })
 
