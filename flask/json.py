@@ -248,8 +248,8 @@ def jsonify(*args, **kwargs):
     except:
         if current_app.config['JSONIFY_ALLOW_TOPLEVEL_ARRAY']:
             # Return a toplevel array when converting to an object
-            # is not possible
-            data = list(*args, **kwargs)
+            # is not possible and kwargs is empty
+            data = kwargs or args
         else:
             raise
 
