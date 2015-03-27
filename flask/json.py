@@ -222,7 +222,8 @@ def jsonify(*args, **kwargs):
             "id": 42
         }
 
-    For security reasons only objects are supported toplevel.  For more
+    For security reasons only objects are supported toplevel unless the
+    ``JSONIFY_ALLOW_TOPLEVEL_ARRAY`` config parameter is set.  For more
     information about this, have a look at :ref:`json-security`.
 
     This function's response will be pretty printed if it was not requested
@@ -242,11 +243,18 @@ def jsonify(*args, **kwargs):
         indent = 2
         separators = (', ', ': ')
 
+    # Return toplevel array only when no kwargs is given
+    data = kwargs
+    if not data:
+        if current_app.config['JSONIFY_ALLOW_TOPLEVEL_ARRAY']:
+            data = args
+        else:
+            raise ValueError('top-level array is not allowed')
+
     # Note that we add '\n' to end of response
     # (see https://github.com/mitsuhiko/flask/pull/1262)
     rv = current_app.response_class(
-        (dumps(dict(*args, **kwargs), indent=indent, separators=separators),
-         '\n'),
+        (dumps(data, indent=indent, separators=separators), '\n'),
         mimetype='application/json')
     return rv
 
