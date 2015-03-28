@@ -7,19 +7,19 @@ import flaskext_migrate as migrate
 
 
 def test_simple_from_import():
-    red = RedBaron("from flask.ext import foo")
+    red = RedBaron("import flask_foo as foo")
     output = migrate.fix_tester(red)
     assert output == "import flask_foo as foo"
 
 
 def test_from_to_from_import():
-    red = RedBaron("from flask.ext.foo import bar")
+    red = RedBaron("from flask_foo import bar")
     output = migrate.fix_tester(red)
     assert output == "from flask_foo import bar as bar"
 
 
 def test_multiple_import():
-    red = RedBaron("from flask.ext.foo import bar, foobar, something")
+    red = RedBaron("from flask_foo import bar, foobar, something")
     output = migrate.fix_tester(red)
     assert output == "from flask_foo import bar, foobar, something"
 
@@ -34,19 +34,19 @@ def test_multiline_import():
 
 
 def test_module_import():
-    red = RedBaron("import flask.ext.foo")
+    red = RedBaron("flask.ext.foo")
     output = migrate.fix_tester(red)
     assert output == "import flask_foo"
 
 
 def test_named_module_import():
-    red = RedBaron("import flask.ext.foo as foobar")
+    red = RedBaron("flask.ext.foo as foobar")
     output = migrate.fix_tester(red)
     assert output == "import flask_foo as foobar"
 
 
 def test_named_from_import():
-    red = RedBaron("from flask.ext.foo import bar as baz")
+    red = RedBaron("from flask_foo import bar as baz")
     output = migrate.fix_tester(red)
     assert output == "from flask_foo import bar as baz"
 
@@ -64,7 +64,7 @@ def test_function_call_migration():
 
 
 def test_nested_function_call_migration():
-    red = RedBaron("import flask.ext.foo\n\n"
+    red = RedBaron("flask.ext.foo\n\n"
                    "flask.ext.foo.bar(var)")
     output = migrate.fix_tester(red)
     assert output == ("import flask_foo\n\n"
