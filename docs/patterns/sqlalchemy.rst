@@ -110,7 +110,7 @@ Querying is simple as well:
 
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _declarative:
-   http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative.html
+   http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
 
 Manual Object Relational Mapping
 --------------------------------
