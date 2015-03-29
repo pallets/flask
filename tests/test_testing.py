@@ -215,6 +215,7 @@ def test_json_request():
         json_data = {'drink': {'gin': 1, 'tonic': True}, 'price': 10}
         rv = c.post('/api', json=json_data)
         assert rv.status_code == 200
+        assert flask.request.is_json
         assert flask.request.get_json() == json_data
 
 def test_subdomain():

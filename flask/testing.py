@@ -35,16 +35,14 @@ def make_test_environ_builder(app, path='/', base_url=None, json=None, *args, **
             if url.query:
                 path += '?' + url.query
 
-    if json:
+    if json is not None:
         if 'data' in kwargs:
             raise RuntimeError('Client cannot provide both `json` and `data`')
         kwargs['data'] = json_dumps(json)
 
         # Only set Content-Type when not explicitly provided
-        if 'Content-Type' not in kwargs.get('headers', {}):
-            new_headers = kwargs.get('headers', {}).copy()
-            new_headers['Content-Type'] = 'application/json'
-            kwargs['headers'] = new_headers
+        if 'content_type' not in kwargs:
+            kwargs['content_type'] = 'application/json'
 
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
