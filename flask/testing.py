@@ -13,6 +13,7 @@
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
+from flask.json import dumps as json_dumps
 
 try:
     from werkzeug.urls import url_parse
@@ -20,7 +21,7 @@ except ImportError:
     from urlparse import urlsplit as url_parse
 
 
-def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
+def make_test_environ_builder(app, path='/', base_url=None, json=None, *args, **kwargs):
     """Creates a new test builder with some application defaults thrown in."""
     http_host = app.config.get('SERVER_NAME')
     app_root = app.config.get('APPLICATION_ROOT')
@@ -33,6 +34,18 @@ def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
             path = url.path
             if url.query:
                 path += '?' + url.query
+
+    if json:
+        if 'data' in kwargs:
+            raise RuntimeError('Client cannot provide both `json` and `data`')
+        kwargs['data'] = json_dumps(json)
+
+        # Only set Content-Type when not explicitly provided
+        if 'Content-Type' not in kwargs.get('headers', {}):
+            new_headers = kwargs.get('headers', {}).copy()
+            new_headers['Content-Type'] = 'application/json'
+            kwargs['headers'] = new_headers
+
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
 
