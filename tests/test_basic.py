@@ -1180,32 +1180,35 @@ def test_test_app_proper_environ():
     assert rv.data == b'Foo SubDomain'
 
 
-@pytest.mark.parametrize('config_key',
-                         ['TESTING', 'PROPAGATE_EXCEPTIONS', 'DEBUG', None])
-def test_exception_propagation(config_key):
-    app = flask.Flask(__name__)
-    app.config['LOGGER_HANDLER_POLICY'] = 'never'
+def test_exception_propagation():
+    def apprunner(configkey):
+        app = flask.Flask(__name__)
+        app.config['LOGGER_HANDLER_POLICY'] = 'never'
 
-    @app.route('/')
-    def index():
-        1 // 0
-    c = app.test_client()
+        @app.route('/')
+        def index():
+            1 // 0
+        c = app.test_client()
+        if config_key is not None:
+            app.config[config_key] = True
+            try:
+                c.get('/')
+            except Exception:
+                pass
+            else:
+                assert False, 'expected exception'
+        else:
+            assert c.get('/').status_code == 500
 
-    if config_key is not None:
-        app.config[config_key] = True
-        with pytest.raises(Exception):
-            c.get('/')
-
-    else:
-        assert c.get('/').status_code == 500
-
-    # If the debug flag is set to true and an exception happens the context
-    # is not torn down.  This causes other tests that run after this fail
+    # we have to run this test in an isolated thread because if the
+    # debug flag is set to true and an exception happens the context is
+    # not torn down.  This causes other tests that run after this fail
     # when they expect no exception on the stack.
-    while flask._request_ctx_stack.top is not None:
-        flask._request_ctx_stack.pop()
-    while flask._app_ctx_stack.top is not None:
-        flask._app_ctx_stack.pop()
+    for config_key in 'TESTING', 'PROPAGATE_EXCEPTIONS', 'DEBUG', None:
+        t = Thread(target=apprunner, args=(config_key,))
+        t.start()
+        t.join()
+
 
 def test_max_content_length():
     app = flask.Flask(__name__)
