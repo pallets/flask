@@ -203,6 +203,20 @@ def test_full_url_request():
         assert 'gin' in flask.request.form
         assert 'vodka' in flask.request.args
 
+def test_json_request():
+    app = flask.Flask(__name__)
+    app.testing = True
+
+    @app.route('/api', methods=['POST'])
+    def api():
+        return ''
+
+    with app.test_client() as c:
+        json_data = {'drink': {'gin': 1, 'tonic': True}, 'price': 10}
+        rv = c.post('/api', json=json_data)
+        assert rv.status_code == 200
+        assert flask.request.get_json() == json_data
+
 def test_subdomain():
     app = flask.Flask(__name__)
     app.config['SERVER_NAME'] = 'example.com'
