@@ -1193,7 +1193,7 @@ def test_exception_propagation(config_key):
 
     if config_key is not None:
         app.config[config_key] = True
-        with pytest.raises(Exception):
+        with pytest.raises(ZeroDivisionError):
             c.get('/')
 
     else:
