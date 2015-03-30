@@ -108,11 +108,12 @@ def _render(template, context, app):
 
     brt_resp = before_render_template.send(app, template=template, context=context)
     
-    if len(brt_resp) == 1:
-        first_resp = brt_resp[0]
-
-        if len(first_resp) == 2 and first_resp[1] is not None:
-            return first_resp[1]
+    overrides = [rv for _, rv in brt_resp if rv is not None]
+    if len(overrides) == 1:
+        return overrides[0]
+    elif len(overrides) > 1:
+        raise RuntimeError('More than one before_render_template signal '
+                           'returned data')
 
     rv = template.render(context)
     template_rendered.send(app, template=template, context=context)
