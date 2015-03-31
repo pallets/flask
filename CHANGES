@@ -8,6 +8,9 @@ Version 1.0
 
 (release date to be announced, codename to be selected)
 
+- Added `json` keyword argument to :meth:`flask.testing.FlaskClient.open`
+  (and related ``get``, ``post``, etc.), which makes it more convenient to
+  send JSON requests from the test client.
 - Added before_render_template signal.
 - Added `**kwargs` to :meth:`flask.Test.test_client` to support passing
   additional keyword arguments to the constructor of
