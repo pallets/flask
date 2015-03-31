@@ -58,6 +58,9 @@ decorator and the error code of the exception.  Keep in mind that Flask
 will *not* set the error code for you, so make sure to also provide the
 HTTP status code when returning a response.
 
+Please note that if you add an error handler for "500 Internal Server
+Error", Flask will not trigger it if it's running in Debug mode.
+
 Here an example implementation for a "404 Page Not Found" exception::
 
     from flask import render_template
@@ -77,3 +80,4 @@ An example template might be this:
      <p>What you were looking for is just not there.
      <p><a href="{{ url_for('index') }}">go somewhere nice</a>
    {% endblock %}
+
