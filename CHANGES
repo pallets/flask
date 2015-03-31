@@ -11,6 +11,9 @@ Version 0.12
   See pull request ``#1849``.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
+- Added `json` keyword argument to :meth:`flask.testing.FlaskClient.open`
+  (and related ``get``, ``post``, etc.), which makes it more convenient to
+  send JSON requests from the test client.
 
 Version 0.11.2
 --------------
