@@ -77,3 +77,6 @@ An example template might be this:
      <p>What you were looking for is just not there.
      <p><a href="{{ url_for('index') }}">go somewhere nice</a>
    {% endblock %}
+
+Please note that if you add an error handler for "500 Internal Server
+Error", Flask will not trigger it if it's running in Debug mode.
