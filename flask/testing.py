@@ -37,7 +37,7 @@ def make_test_environ_builder(app, path='/', base_url=None, json=None, *args, **
 
     if json is not None:
         if 'data' in kwargs:
-            raise RuntimeError('Client cannot provide both `json` and `data`')
+            raise ValueError('Client cannot provide both `json` and `data`')
         kwargs['data'] = json_dumps(json)
 
         # Only set Content-Type when not explicitly provided
