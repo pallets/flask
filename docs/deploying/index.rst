@@ -18,6 +18,7 @@ Hosted options
 --------------
 
 - `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/getting-started-with-python>`_
+- `Deploying Flask on OpenShift <https://developers.openshift.com/en/python-flask.html>`_
 - `Deploying WSGI on dotCloud <http://docs.dotcloud.com/services/python/>`_
   with `Flask-specific notes <http://flask.pocoo.org/snippets/48/>`_
 - `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
