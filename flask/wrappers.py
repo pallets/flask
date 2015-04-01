@@ -25,6 +25,14 @@ def _get_data(req, cache):
     return req.data
 
 
+def _is_mimetype_json(mimetype):
+    if mimetype == 'application/json':
+        return True
+    if mimetype.startswith('application/') and mimetype.endswith('+json'):
+        return True
+    return False
+
+
 class Request(RequestBase):
     """The request object used by default in Flask.  Remembers the
     matched endpoint and view arguments.
@@ -115,12 +123,7 @@ class Request(RequestBase):
 
         .. versionadded:: 0.11
         """
-        mt = self.mimetype
-        if mt == 'application/json':
-            return True
-        if mt.startswith('application/') and mt.endswith('+json'):
-            return True
-        return False
+        return _is_mimetype_json(self.mimetype)
 
     def get_json(self, force=False, silent=False, cache=True):
         """Parses the incoming JSON request data and returns it.  By default
@@ -202,3 +205,69 @@ class Response(ResponseBase):
     set :attr:`~flask.Flask.response_class` to your subclass.
     """
     default_mimetype = 'text/html'
+
+    @property
+    def json(self):
+        """If the mimetype is :mimetype:`application/json` this will contain the
+        parsed JSON data.  Otherwise this will be ``None``.
+
+        The :meth:`get_json` method should be used instead.
+
+        .. versionadded:: 1.0
+        """
+        from warnings import warn
+        warn(DeprecationWarning('json is deprecated.  '
+                                'Use get_json() instead.'), stacklevel=2)
+        return self.get_json()
+
+    @property
+    def is_json(self):
+        """Indicates if this response is JSON or not.  By default a response
+        is considered to include JSON data if the mimetype is
+        :mimetype:`application/json` or :mimetype:`application/*+json`.
+
+        .. versionadded:: 1.0
+        """
+        return _is_mimetype_json(self.mimetype)
+
+    def get_json(self, force=False, silent=False, cache=True):
+        """Parses the incoming JSON request data and returns it.  If
+        parsing fails the :meth:`on_json_loading_failed` method on the
+        request object will be invoked.  By default this function will
+        only load the json data if the mimetype is :mimetype:`application/json`
+        but this can be overridden by the `force` parameter.
+
+        :param force: if set to ``True`` the mimetype is ignored.
+        :param silent: if set to ``True`` this method will fail silently
+                       and return ``None``.
+        :param cache: if set to ``True`` the parsed JSON data is remembered
+                      on the request.
+
+        .. versionadded:: 1.0
+        """
+        rv = getattr(self, '_cached_json', _missing)
+        if rv is not _missing:
+            return rv
+
+        if not (force or self.is_json):
+            return None
+
+        # We accept a request charset against the specification as
+        # certain clients have been using this in the past.  This
+        # fits our general approach of being nice in what we accept
+        # and strict in what we send out.
+        request_charset = self.mimetype_params.get('charset')
+        try:
+            data = _get_data(self, cache)
+            if request_charset is not None:
+                rv = json.loads(data, encoding=request_charset)
+            else:
+                rv = json.loads(data)
+        except ValueError as e:
+            if silent:
+                rv = None
+            else:
+                rv = self.on_json_loading_failed(e)
+        if cache:
+            self._cached_json = rv
+        return rv

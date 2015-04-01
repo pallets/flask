@@ -13,6 +13,7 @@ import pytest
 import flask
 
 from flask._compat import text_type
+from flask.json import jsonify
 
 
 def test_environ_defaults_from_config():
@@ -203,20 +204,26 @@ def test_full_url_request():
         assert 'gin' in flask.request.form
         assert 'vodka' in flask.request.args
 
-def test_json_request():
+def test_json_request_and_response():
     app = flask.Flask(__name__)
     app.testing = True
 
-    @app.route('/api', methods=['POST'])
-    def api():
-        return ''
+    @app.route('/echo', methods=['POST'])
+    def echo():
+        return jsonify(flask.request.json)
 
     with app.test_client() as c:
         json_data = {'drink': {'gin': 1, 'tonic': True}, 'price': 10}
-        rv = c.post('/api', json=json_data)
-        assert rv.status_code == 200
+        rv = c.post('/echo', json=json_data)
+
+        # Request should be in JSON
         assert flask.request.is_json
         assert flask.request.get_json() == json_data
+
+        # Response should be in JSON
+        assert rv.status_code == 200
+        assert rv.is_json
+        assert rv.get_json() == json_data
 
 def test_subdomain():
     app = flask.Flask(__name__)
