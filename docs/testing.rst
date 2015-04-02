@@ -353,3 +353,11 @@ independently of the session backend used::
 Note that in this case you have to use the ``sess`` object instead of the
 :data:`flask.session` proxy.  The object however itself will provide the
 same interface.
+
+
+Testing JSON APIs
+-----------------
+
+.. versionadded:: 1.0
+
+Flask has comprehensive

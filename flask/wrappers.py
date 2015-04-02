@@ -18,10 +18,10 @@ from .globals import _request_ctx_stack
 _missing = object()
 
 
-def _get_data(req, cache):
+def _get_data(req):
     getter = getattr(req, 'get_data', None)
     if getter is not None:
-        return getter(cache=cache)
+        return getter()
     return req.data
 
 
@@ -84,7 +84,7 @@ class JSONMixin(object):
         # been encoded correctly as well.
         charset = self.mimetype_params.get('charset')
         try:
-            data = _get_data(self, cache)
+            data = _get_data(self)
             if charset is not None:
                 rv = json.loads(data, encoding=charset)
             else:
