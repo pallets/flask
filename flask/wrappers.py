@@ -18,13 +18,6 @@ from .globals import _request_ctx_stack
 _missing = object()
 
 
-def _get_data(req):
-    getter = getattr(req, 'get_data', None)
-    if getter is not None:
-        return getter()
-    return req.data
-
-
 class JSONMixin(object):
     """Mixin for both request and response classes to provide JSON parsing
     capabilities.
@@ -57,6 +50,12 @@ class JSONMixin(object):
                                 'Use get_json() instead.'), stacklevel=2)
         return self.get_json()
 
+    def _get_data_for_json(req, cache):
+        getter = getattr(req, 'get_data', None)
+        if getter is not None:
+            return getter(cache=cache)
+        return req.data
+
     def get_json(self, force=False, silent=False, cache=True):
         """Parses the incoming JSON request data and returns it.  By default
         this function will return ``None`` if the mimetype is not
@@ -84,7 +83,7 @@ class JSONMixin(object):
         # been encoded correctly as well.
         charset = self.mimetype_params.get('charset')
         try:
-            data = _get_data(self)
+            data = self._get_data_for_json(cache)
             if charset is not None:
                 rv = json.loads(data, encoding=charset)
             else:
@@ -215,3 +214,10 @@ class Response(ResponseBase, JSONMixin):
     set :attr:`~flask.Flask.response_class` to your subclass.
     """
     default_mimetype = 'text/html'
+
+    def _get_data_for_json(req, cache):
+        # Ignore the cache flag since response doesn't support it
+        getter = getattr(req, 'get_data', None)
+        if getter is not None:
+            return getter()
+        return req.data
