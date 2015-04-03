@@ -12,7 +12,7 @@ but you can also continue using the :meth:`Flask.run` method.
 Command Line
 ------------
 
-The :command:`flask` command line script (:ref:`cli`) is strongly recommende for
+The :command:`flask` command line script (:ref:`cli`) is strongly recommended for
 development because it provides a superior reload experience due to how it
 loads the application.  The basic usage is like this::
 
