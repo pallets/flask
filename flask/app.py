@@ -1144,8 +1144,34 @@ class Flask(_PackageBoundObject):
                 'server error on a per-blueprint level.'
             self.error_handler_spec.setdefault(key, {})[code_or_exception] = f
         else:
-            self.error_handler_spec.setdefault(key, {}).setdefault(None, []) \
-                .append((code_or_exception, f))
+            self._append_error_handler(key, code_or_exception, f)
+
+    def _append_error_handler(self, key, exception, f):
+        registered_errors = self.error_handler_spec.setdefault(key, {}).\
+            setdefault(None, [])
+        if exception in dict(registered_errors):
+            # do not register the same exception to another handler
+            return
+
+        error_builder = []
+        for i, (error, _) in enumerate(registered_errors):
+            if issubclass(error, exception):
+                error_builder.extend(registered_errors[0:i + 1])
+                found = i
+                break
+        else:
+            registered_errors.insert(0, (exception, f))
+            return
+
+        tailed_errors = registered_errors[found + 1:]
+        for i, (error, _) in enumerate(tailed_errors):
+            if issubclass(exception, error):
+                error_builder.extend(tailed_errors[0:i])
+                error_builder.append((exception, f))
+                error_builder.extend(tailed_errors[i:])
+                self.error_handler_spec[key][None] = error_builder
+                return
+        registered_errors.append((exception, f))
 
     @setupmethod
     def template_filter(self, name=None):
