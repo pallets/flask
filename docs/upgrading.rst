@@ -258,7 +258,7 @@ applications automatically, but there might be some cases where it fails
 to upgrade.  What changed?
 
 -   Blueprints need explicit names.  Modules had an automatic name
-    guesssing scheme where the shortname for the module was taken from the
+    guessing scheme where the shortname for the module was taken from the
     last part of the import module.  The upgrade script tries to guess
     that name but it might fail as this information could change at
     runtime.
@@ -296,7 +296,7 @@ Flask 0.6 comes with a backwards incompatible change which affects the
 order of after-request handlers.  Previously they were called in the order
 of the registration, now they are called in reverse order.  This change
 was made so that Flask behaves more like people expected it to work and
-how other systems handle request pre- and postprocessing.  If you
+how other systems handle request pre- and post-processing.  If you
 depend on the order of execution of post-request functions, be sure to
 change the order.
 
