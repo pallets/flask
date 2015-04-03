@@ -30,7 +30,7 @@ at :func:`werkzeug.serving.run_simple`::
 Note that :func:`run_simple <werkzeug.serving.run_simple>` is not intended for
 use in production.  Use a :ref:`full-blown WSGI server <deployment>`.
 
-In order to use the interactive debuggger, debugging must be enabled both on
+In order to use the interactive debugger, debugging must be enabled both on
 the application and the simple server, here is the "hello world" example with
 debugging and :func:`run_simple <werkzeug.serving.run_simple>`::
 

@@ -3,7 +3,7 @@
 Step 6: The Templates
 =====================
 
-Now we should start working on the templates.  If we were torequest the URLs
+Now we should start working on the templates.  If we were to request the URLs
 now, we would only get an exception that Flask cannot find the templates.  The
 templates are using `Jinja2`_ syntax and have autoescaping enabled by
 default.  This means that unless you mark a value in the code with
