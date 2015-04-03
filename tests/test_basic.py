@@ -817,8 +817,13 @@ def test_http_error_subclass_handling():
         assert isinstance(e, ForbiddenSubclass)
         return 'banana'
 
+    # Should get overwritten with handle_403()
+    @app.errorhandler(Forbidden)
+    def handle_forbidden(e):
+        return 'pear'
+
     @app.errorhandler(403)
-    def handle_forbidden_subclass(e):
+    def handle_403(e):
         assert not isinstance(e, ForbiddenSubclass)
         assert isinstance(e, Forbidden)
         return 'apple'
