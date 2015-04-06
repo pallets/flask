@@ -50,11 +50,11 @@ class JSONMixin(object):
                                 'Use get_json() instead.'), stacklevel=2)
         return self.get_json()
 
-    def _get_data_for_json(req, cache):
-        getter = getattr(req, 'get_data', None)
+    def _get_data_for_json(self, cache):
+        getter = getattr(self, 'get_data', None)
         if getter is not None:
             return getter(cache=cache)
-        return req.data
+        return self.data
 
     def get_json(self, force=False, silent=False, cache=True):
         """Parses the incoming JSON request data and returns it.  By default
@@ -215,9 +215,9 @@ class Response(ResponseBase, JSONMixin):
     """
     default_mimetype = 'text/html'
 
-    def _get_data_for_json(req, cache):
-        # Ignore the cache flag since response doesn't support it
-        getter = getattr(req, 'get_data', None)
+    def _get_data_for_json(self, cache):
+        getter = getattr(self, 'get_data', None)
         if getter is not None:
+            # Ignore the cache flag since response doesn't support it
             return getter()
-        return req.data
+        return self.data
