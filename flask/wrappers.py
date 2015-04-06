@@ -13,7 +13,7 @@ from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.exceptions import BadRequest
 
 from . import json
-from .globals import _request_ctx_stack
+from .globals import _app_ctx_stack
 
 _missing = object()
 
@@ -101,7 +101,17 @@ class JSONMixin(object):
         """Called if decoding of the JSON data failed.  The return value of
         this method is used by :meth:`get_json` when an error occurred.  The
         default implementation just raises a :class:`BadRequest` exception.
+
+        .. versionchanged:: 0.10
+           Removed buggy previous behavior of generating a random JSON
+           response.  If you want that behavior back you can trivially
+           add it by subclassing.
+
+        .. versionadded:: 0.8
         """
+        ctx = _app_ctx_stack.top
+        if ctx is not None and ctx.app.debug:
+            raise BadRequest('Failed to decode JSON object: {0}'.format(e))
         raise BadRequest()
 
 
@@ -142,7 +152,7 @@ class Request(RequestBase, JSONMixin):
     @property
     def max_content_length(self):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
-        ctx = _request_ctx_stack.top
+        ctx = _app_ctx_stack.top
         if ctx is not None:
             return ctx.app.config['MAX_CONTENT_LENGTH']
 
@@ -175,29 +185,12 @@ class Request(RequestBase, JSONMixin):
         if self.url_rule and '.' in self.url_rule.endpoint:
             return self.url_rule.endpoint.rsplit('.', 1)[0]
 
-    def on_json_loading_failed(self, e):
-        """Called if decoding of the JSON data failed.  The return value of
-        this method is used by :meth:`get_json` when an error occurred.  The
-        default implementation just raises a :class:`BadRequest` exception.
-
-        .. versionchanged:: 0.10
-           Removed buggy previous behavior of generating a random JSON
-           response.  If you want that behavior back you can trivially
-           add it by subclassing.
-
-        .. versionadded:: 0.8
-        """
-        ctx = _request_ctx_stack.top
-        if ctx is not None and ctx.app.config.get('DEBUG', False):
-            raise BadRequest('Failed to decode JSON object: {0}'.format(e))
-        raise BadRequest()
-
     def _load_form_data(self):
         RequestBase._load_form_data(self)
 
         # In debug mode we're replacing the files multidict with an ad-hoc
         # subclass that raises a different error for key errors.
-        ctx = _request_ctx_stack.top
+        ctx = _app_ctx_stack.top
         if ctx is not None and ctx.app.debug and \
            self.mimetype != 'multipart/form-data' and not self.files:
             from .debughelpers import attach_enctype_error_multidict
