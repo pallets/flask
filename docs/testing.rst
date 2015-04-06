@@ -360,24 +360,24 @@ Testing JSON APIs
 
 .. versionadded:: 1.0
 
-Flask has a great support for JSON, and is a popular choice for building REST
+Flask has great support for JSON, and is a popular choice for building REST
 APIs. Testing both JSON requests and responses using the test client is very
 convenient:
 
-    from flask import json, jsonify
+    from flask import jsonify
 
     @app.route('/api/auth')
     def auth():
-        email = request.json['email']
-        password = request.json['password']
+        email = request.get_json()['email']
+        password = request.get_json()['password']
         return jsonify(token=generate_token(email, password))
 
     with app.test_client() as c:
         email = 'john@example.com'
         password = 'secret'
-        resp = c.post('/api/auth', json={'email': email, 'password': password})
-        assert verify_token(email, resp.json['token'])
+        resp = c.post('/api/auth', json={'login': email, 'password': password})
+        assert verify_token(email, resp.get_json()['token'])
 
 Note that if the ``json`` argument is provided then the test client will put
-the JSON-serialized object in the request body, and also set the
-``Content-Type: application/json`` header.
+JSON-serialized data in the request body, and also set the
+``Content-Type: application/json`` HTTP header.

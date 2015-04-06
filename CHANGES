@@ -14,6 +14,8 @@ Version 0.12
 - Added `json` keyword argument to :meth:`flask.testing.FlaskClient.open`
   (and related ``get``, ``post``, etc.), which makes it more convenient to
   send JSON requests from the test client.
+- Added ``is_json`` and ``get_json`` to :class:``flask.wrappers.Response``
+  in order to make it easier to build assertions when testing JSON responses.
 
 Version 0.11.2
 --------------
