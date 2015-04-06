@@ -368,15 +368,17 @@ convenient:
 
     @app.route('/api/auth')
     def auth():
-        email = request.get_json()['email']
-        password = request.get_json()['password']
+        json_data = request.get_json()
+        email = json_data['email']
+        password = json_data['password']
         return jsonify(token=generate_token(email, password))
 
     with app.test_client() as c:
         email = 'john@example.com'
         password = 'secret'
         resp = c.post('/api/auth', json={'login': email, 'password': password})
-        assert verify_token(email, resp.get_json()['token'])
+        json_data = resp.get_json()
+        assert verify_token(email, json_data['token'])
 
 Note that if the ``json`` argument is provided then the test client will put
 JSON-serialized data in the request body, and also set the
