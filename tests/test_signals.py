@@ -70,26 +70,6 @@ def test_before_render_template():
     finally:
         flask.before_render_template.disconnect(record, app)
 
-def test_before_render_template_signal_not_None_result_render_skip_render_template():
-    app = flask.Flask(__name__)
-
-    @app.route('/')
-    def index():
-        return flask.render_template('simple_template.html', whiskey=42)
-
-    recorded = []
-
-    def record(sender, template, context):
-        recorded.append((template, context))
-        return 'Not template string'
-
-    flask.before_render_template.connect(record, app)
-    try:
-        rv = app.test_client().get('/')
-        assert rv.data == b'Not template string'
-    finally:
-       flask.before_render_template.disconnect(record, app) 
-
 def test_request_signals():
     app = flask.Flask(__name__)
     calls = []
