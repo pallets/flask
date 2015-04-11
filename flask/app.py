@@ -1444,14 +1444,35 @@ class Flask(_PackageBoundObject):
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
 
+        def closest_class(error):
+            """Parametric key for sort function. Allows classes sorting
+            according to their inheritance distance with error"""
+            def recurs(cls):
+                all_bases = [recurs(base) for base in cls.__bases__]
+                return chain([cls], *all_bases)
+
+            def key(entry):
+                typecheck, _ = entry
+                try:
+                    return list(recurs(error.__class__)).index(typecheck)
+                except ValueError:
+                    return 999
+            return key
+
         blueprint_handlers = ()
         handlers = self.error_handler_spec.get(request.blueprint)
         if handlers is not None:
             blueprint_handlers = handlers.get(None, ())
         app_handlers = self.error_handler_spec[None].get(None, ())
-        for typecheck, handler in chain(blueprint_handlers, app_handlers):
-            if isinstance(e, typecheck):
+        handlers_map = chain(blueprint_handlers, app_handlers)
+        for typecheck, handler in sorted(handlers_map, key=closest_class(e)):
+            if not isinstance(e, typecheck):
+                break
+            try:
                 return handler(e)
+            except type(e):
+                # If a handler reraises, try the following ones
+                pass
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
