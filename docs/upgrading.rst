@@ -43,6 +43,8 @@ See :ref:`error-handlers` for specifics.
     only for exception *instances*. This was unintended and plain wrong,
     and therefore was replaced with the intended behavior of registering
     handlers only using exception classes and HTTP error codes.
+    
+    Trying to register a handler on an instance now raises :exc:`ValueError`
 
 .. _upgrading-to-010:
 
