@@ -6,5 +6,5 @@ app.register_blueprint(simple_page)
 # Blueprint can be registered many times
 app.register_blueprint(simple_page, url_prefix='/pages')
 
-if __name__=='__main__':
-  app.run()
+if __name__ == '__main__':
+    app.run()
