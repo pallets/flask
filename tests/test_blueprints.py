@@ -58,9 +58,11 @@ def test_blueprint_specific_error_handling():
     assert c.get('/backend-no').data == b'backend says no'
     assert c.get('/what-is-a-sideend').data == b'application itself says no'
 
+
 def test_blueprint_specific_user_error_handling():
     class MyDecoratorException(Exception):
         pass
+
     class MyFunctionException(Exception):
         pass
 
@@ -74,11 +76,13 @@ def test_blueprint_specific_user_error_handling():
     def my_function_exception_handler(e):
         assert isinstance(e, MyFunctionException)
         return 'bam'
-    blue.register_error_handler(MyFunctionException, my_function_exception_handler)
+    blue.register_error_handler(
+        MyFunctionException, my_function_exception_handler)
 
     @blue.route('/decorator')
     def blue_deco_test():
         raise MyDecoratorException()
+
     @blue.route('/function')
     def blue_func_test():
         raise MyFunctionException()
@@ -90,6 +94,7 @@ def test_blueprint_specific_user_error_handling():
 
     assert c.get('/decorator').data == b'boom'
     assert c.get('/function').data == b'bam'
+
 
 def test_blueprint_url_definitions():
     bp = flask.Blueprint('test', __name__)
@@ -111,6 +116,7 @@ def test_blueprint_url_definitions():
     assert c.get('/2/foo').data == b'19/42'
     assert c.get('/1/bar').data == b'23'
     assert c.get('/2/bar').data == b'19'
+
 
 def test_blueprint_url_processors():
     bp = flask.Blueprint('frontend', __name__, url_prefix='/<lang_code>')
@@ -138,6 +144,7 @@ def test_blueprint_url_processors():
 
     assert c.get('/de/').data == b'/de/about'
     assert c.get('/de/about').data == b'/de/'
+
 
 def test_templates_and_static(test_apps):
     from blueprintapp import app
@@ -171,7 +178,8 @@ def test_templates_and_static(test_apps):
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 
     with app.test_request_context():
-        assert flask.url_for('admin.static', filename='test.txt') == '/admin/static/test.txt'
+        assert flask.url_for(
+            'admin.static', filename='test.txt') == '/admin/static/test.txt'
 
     with app.test_request_context():
         try:
@@ -184,9 +192,12 @@ def test_templates_and_static(test_apps):
     with flask.Flask(__name__).test_request_context():
         assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
+
 def test_default_static_cache_timeout():
     app = flask.Flask(__name__)
+
     class MyBlueprint(flask.Blueprint):
+
         def get_send_file_max_age(self, filename):
             return 100
 
@@ -208,10 +219,12 @@ def test_default_static_cache_timeout():
     finally:
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = max_age_default
 
+
 def test_templates_list(test_apps):
     from blueprintapp import app
     templates = sorted(app.jinja_env.list_templates())
     assert templates == ['admin/index.html', 'frontend/index.html']
+
 
 def test_dotted_names():
     frontend = flask.Blueprint('myapp.frontend', __name__)
@@ -238,6 +251,7 @@ def test_dotted_names():
     assert c.get('/fe2').data.strip() == b'/fe'
     assert c.get('/be').data.strip() == b'/fe'
 
+
 def test_dotted_names_from_app():
     app = flask.Flask(__name__)
     app.testing = True
@@ -257,6 +271,7 @@ def test_dotted_names_from_app():
         rv = c.get('/')
         assert rv.data == b'/test/'
 
+
 def test_empty_url_defaults():
     bp = flask.Blueprint('bp', __name__)
 
@@ -271,6 +286,7 @@ def test_empty_url_defaults():
     c = app.test_client()
     assert c.get('/').data == b'1'
     assert c.get('/page/2').data == b'2'
+
 
 def test_route_decorator_custom_endpoint():
 
@@ -305,6 +321,7 @@ def test_route_decorator_custom_endpoint():
     assert c.get('/py/bar').data == b'bp.bar'
     assert c.get('/py/bar/123').data == b'bp.123'
     assert c.get('/py/bar/foo').data == b'bp.bar_foo'
+
 
 def test_route_decorator_custom_endpoint_with_dots():
     bp = flask.Blueprint('bp', __name__)
@@ -358,8 +375,10 @@ def test_route_decorator_custom_endpoint_with_dots():
     rv = c.get('/py/bar/123')
     assert rv.status_code == 404
 
+
 def test_template_filter():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_filter()
     def my_reverse(s):
         return s[::-1]
@@ -369,8 +388,10 @@ def test_template_filter():
     assert app.jinja_env.filters['my_reverse'] == my_reverse
     assert app.jinja_env.filters['my_reverse']('abcd') == 'dcba'
 
+
 def test_add_template_filter():
     bp = flask.Blueprint('bp', __name__)
+
     def my_reverse(s):
         return s[::-1]
     bp.add_app_template_filter(my_reverse)
@@ -380,8 +401,10 @@ def test_add_template_filter():
     assert app.jinja_env.filters['my_reverse'] == my_reverse
     assert app.jinja_env.filters['my_reverse']('abcd') == 'dcba'
 
+
 def test_template_filter_with_name():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_filter('strrev')
     def my_reverse(s):
         return s[::-1]
@@ -391,8 +414,10 @@ def test_template_filter_with_name():
     assert app.jinja_env.filters['strrev'] == my_reverse
     assert app.jinja_env.filters['strrev']('abcd') == 'dcba'
 
+
 def test_add_template_filter_with_name():
     bp = flask.Blueprint('bp', __name__)
+
     def my_reverse(s):
         return s[::-1]
     bp.add_app_template_filter(my_reverse, 'strrev')
@@ -402,25 +427,31 @@ def test_add_template_filter_with_name():
     assert app.jinja_env.filters['strrev'] == my_reverse
     assert app.jinja_env.filters['strrev']('abcd') == 'dcba'
 
+
 def test_template_filter_with_template():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_filter()
     def super_reverse(s):
         return s[::-1]
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_filter.html', value='abcd')
     rv = app.test_client().get('/')
     assert rv.data == b'dcba'
+
 
 def test_template_filter_after_route_with_template():
     app = flask.Flask(__name__)
+
     @app.route('/')
     def index():
         return flask.render_template('template_filter.html', value='abcd')
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_filter()
     def super_reverse(s):
         return s[::-1]
@@ -428,47 +459,58 @@ def test_template_filter_after_route_with_template():
     rv = app.test_client().get('/')
     assert rv.data == b'dcba'
 
+
 def test_add_template_filter_with_template():
     bp = flask.Blueprint('bp', __name__)
+
     def super_reverse(s):
         return s[::-1]
     bp.add_app_template_filter(super_reverse)
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_filter.html', value='abcd')
     rv = app.test_client().get('/')
     assert rv.data == b'dcba'
 
+
 def test_template_filter_with_name_and_template():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_filter('super_reverse')
     def my_reverse(s):
         return s[::-1]
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_filter.html', value='abcd')
     rv = app.test_client().get('/')
     assert rv.data == b'dcba'
 
+
 def test_add_template_filter_with_name_and_template():
     bp = flask.Blueprint('bp', __name__)
+
     def my_reverse(s):
         return s[::-1]
     bp.add_app_template_filter(my_reverse, 'super_reverse')
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_filter.html', value='abcd')
     rv = app.test_client().get('/')
     assert rv.data == b'dcba'
 
+
 def test_template_test():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_test()
     def is_boolean(value):
         return isinstance(value, bool)
@@ -478,8 +520,10 @@ def test_template_test():
     assert app.jinja_env.tests['is_boolean'] == is_boolean
     assert app.jinja_env.tests['is_boolean'](False)
 
+
 def test_add_template_test():
     bp = flask.Blueprint('bp', __name__)
+
     def is_boolean(value):
         return isinstance(value, bool)
     bp.add_app_template_test(is_boolean)
@@ -489,8 +533,10 @@ def test_add_template_test():
     assert app.jinja_env.tests['is_boolean'] == is_boolean
     assert app.jinja_env.tests['is_boolean'](False)
 
+
 def test_template_test_with_name():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_test('boolean')
     def is_boolean(value):
         return isinstance(value, bool)
@@ -500,8 +546,10 @@ def test_template_test_with_name():
     assert app.jinja_env.tests['boolean'] == is_boolean
     assert app.jinja_env.tests['boolean'](False)
 
+
 def test_add_template_test_with_name():
     bp = flask.Blueprint('bp', __name__)
+
     def is_boolean(value):
         return isinstance(value, bool)
     bp.add_app_template_test(is_boolean, 'boolean')
@@ -511,25 +559,31 @@ def test_add_template_test_with_name():
     assert app.jinja_env.tests['boolean'] == is_boolean
     assert app.jinja_env.tests['boolean'](False)
 
+
 def test_template_test_with_template():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_test()
     def boolean(value):
         return isinstance(value, bool)
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
+
 
 def test_template_test_after_route_with_template():
     app = flask.Flask(__name__)
+
     @app.route('/')
     def index():
         return flask.render_template('template_test.html', value=False)
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_test()
     def boolean(value):
         return isinstance(value, bool)
@@ -537,39 +591,48 @@ def test_template_test_after_route_with_template():
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
 
+
 def test_add_template_test_with_template():
     bp = flask.Blueprint('bp', __name__)
+
     def boolean(value):
         return isinstance(value, bool)
     bp.add_app_template_test(boolean)
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
 
+
 def test_template_test_with_name_and_template():
     bp = flask.Blueprint('bp', __name__)
+
     @bp.app_template_test('boolean')
     def is_boolean(value):
         return isinstance(value, bool)
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
 
+
 def test_add_template_test_with_name_and_template():
     bp = flask.Blueprint('bp', __name__)
+
     def is_boolean(value):
         return isinstance(value, bool)
     bp.add_app_template_test(is_boolean, 'boolean')
     app = flask.Flask(__name__)
     app.register_blueprint(bp, url_prefix='/py')
+
     @app.route('/')
     def index():
         return flask.render_template('template_test.html', value=False)

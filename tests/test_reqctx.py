@@ -22,6 +22,7 @@ except ImportError:
 def test_teardown_on_pop():
     buffer = []
     app = flask.Flask(__name__)
+
     @app.teardown_request
     def end_of_request(exception):
         buffer.append(exception)
@@ -32,9 +33,11 @@ def test_teardown_on_pop():
     ctx.pop()
     assert buffer == [None]
 
+
 def test_teardown_with_previous_exception():
     buffer = []
     app = flask.Flask(__name__)
+
     @app.teardown_request
     def end_of_request(exception):
         buffer.append(exception)
@@ -48,9 +51,11 @@ def test_teardown_with_previous_exception():
         assert buffer == []
     assert buffer == [None]
 
+
 def test_teardown_with_handled_exception():
     buffer = []
     app = flask.Flask(__name__)
+
     @app.teardown_request
     def end_of_request(exception):
         buffer.append(exception)
@@ -62,6 +67,7 @@ def test_teardown_with_handled_exception():
         except Exception:
             pass
     assert buffer == [None]
+
 
 def test_proper_test_request_context():
     app = flask.Flask(__name__)
@@ -103,11 +109,14 @@ def test_proper_test_request_context():
     with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
         pass
 
+
 def test_context_binding():
     app = flask.Flask(__name__)
+
     @app.route('/')
     def index():
         return 'Hello %s!' % flask.request.args['name']
+
     @app.route('/meh')
     def meh():
         return flask.request.url
@@ -117,6 +126,7 @@ def test_context_binding():
     with app.test_request_context('/meh'):
         assert meh() == 'http://localhost/meh'
     assert flask._request_ctx_stack.top is None
+
 
 def test_context_test():
     app = flask.Flask(__name__)
@@ -130,8 +140,10 @@ def test_context_test():
     finally:
         ctx.pop()
 
+
 def test_manual_context_binding():
     app = flask.Flask(__name__)
+
     @app.route('/')
     def index():
         return 'Hello %s!' % flask.request.args['name']
@@ -147,6 +159,7 @@ def test_manual_context_binding():
     else:
         assert 0, 'expected runtime error'
 
+
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
 def test_greenlet_context_copying():
     app = flask.Flask(__name__)
@@ -155,6 +168,7 @@ def test_greenlet_context_copying():
     @app.route('/')
     def index():
         reqctx = flask._request_ctx_stack.top.copy()
+
         def g():
             assert not flask.request
             assert not flask.current_app
@@ -174,6 +188,7 @@ def test_greenlet_context_copying():
     result = greenlets[0].run()
     assert result == 42
 
+
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
 def test_greenlet_context_copying_api():
     app = flask.Flask(__name__)
@@ -181,7 +196,8 @@ def test_greenlet_context_copying_api():
 
     @app.route('/')
     def index():
-        reqctx = flask._request_ctx_stack.top.copy()
+        reqctx = flask._request_ctx_stack.top.copy()  # noqa
+
         @flask.copy_current_request_context
         def g():
             assert flask.request

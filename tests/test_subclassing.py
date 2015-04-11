@@ -17,6 +17,7 @@ from flask._compat import StringIO
 
 def test_suppressed_exception_logging():
     class SuppressedFlask(flask.Flask):
+
         def log_exception(self, exc_info):
             pass
 

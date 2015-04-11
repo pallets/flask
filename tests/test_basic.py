@@ -118,11 +118,11 @@ def test_url_mapping():
     def options():
         return random_uuid4
 
-
     app.add_url_rule('/', 'index', index)
     app.add_url_rule('/more', 'more', more, methods=['GET', 'POST'])
 
-    # Issue 1288: Test that automatic options are not added when non-uppercase 'options' in methods
+    # Issue 1288: Test that automatic options are not added when non-uppercase
+    # 'options' in methods
     app.add_url_rule('/options', 'options', options, methods=['options'])
 
     c = app.test_client()
@@ -818,7 +818,7 @@ def test_http_error_subclass_handling():
         return 'banana'
 
     @app.errorhandler(403)
-    def handle_forbidden_subclass(e):
+    def handle_forbidden_code(e):
         assert not isinstance(e, ForbiddenSubclass)
         assert isinstance(e, Forbidden)
         return 'apple'
@@ -1009,7 +1009,7 @@ def test_jsonify_no_prettyprint():
                 "submsg": "W00t"
             },
             "msg2": "foobar"
-            }
+        }
 
         rv = flask.make_response(
             flask.jsonify(uncompressed_msg), 200)
@@ -1020,7 +1020,7 @@ def test_jsonify_prettyprint():
     app = flask.Flask(__name__)
     app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": True})
     with app.test_request_context():
-        compressed_msg = {"msg":{"submsg":"W00t"},"msg2":"foobar"}
+        compressed_msg = {"msg": {"submsg": "W00t"}, "msg2": "foobar"}
         pretty_response =\
             b'{\n  "msg": {\n    "submsg": "W00t"\n  }, \n  "msg2": "foobar"\n}\n'
 
@@ -1572,7 +1572,7 @@ def test_multi_route_class_views():
             return test
 
     app = flask.Flask(__name__)
-    _ = View(app)
+    View(app)
     rv = app.test_client().open('/')
     assert rv.data == b'a'
     rv = app.test_client().open('/b/')

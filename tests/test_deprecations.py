@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
-
 import flask
 
 

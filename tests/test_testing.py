@@ -8,8 +8,6 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import pytest
-
 import flask
 
 from flask._compat import text_type
@@ -20,6 +18,7 @@ def test_environ_defaults_from_config():
     app.testing = True
     app.config['SERVER_NAME'] = 'example.com:1234'
     app.config['APPLICATION_ROOT'] = '/foo'
+
     @app.route('/')
     def index():
         return flask.request.url
@@ -30,9 +29,11 @@ def test_environ_defaults_from_config():
         rv = c.get('/')
         assert rv.data == b'http://example.com:1234/foo/'
 
+
 def test_environ_defaults():
     app = flask.Flask(__name__)
     app.testing = True
+
     @app.route('/')
     def index():
         return flask.request.url
@@ -42,6 +43,7 @@ def test_environ_defaults():
     with app.test_client() as c:
         rv = c.get('/')
         assert rv.data == b'http://localhost/'
+
 
 def test_redirect_keep_session():
     app = flask.Flask(__name__)
@@ -75,6 +77,7 @@ def test_redirect_keep_session():
         rv = c.get('/getsession')
         assert rv.data == b'foo'
 
+
 def test_session_transactions():
     app = flask.Flask(__name__)
     app.testing = True
@@ -95,18 +98,20 @@ def test_session_transactions():
             assert len(sess) == 1
             assert sess['foo'] == [42]
 
+
 def test_session_transactions_no_null_sessions():
     app = flask.Flask(__name__)
     app.testing = True
 
     with app.test_client() as c:
         try:
-            with c.session_transaction() as sess:
+            with c.session_transaction():
                 pass
         except RuntimeError as e:
             assert 'Session backend did not open a session' in str(e)
         else:
             assert False, 'Expected runtime error'
+
 
 def test_session_transactions_keep_context():
     app = flask.Flask(__name__)
@@ -114,27 +119,30 @@ def test_session_transactions_keep_context():
     app.secret_key = 'testing'
 
     with app.test_client() as c:
-        rv = c.get('/')
+        c.get('/')
         req = flask.request._get_current_object()
         assert req is not None
         with c.session_transaction():
             assert req is flask.request._get_current_object()
+
 
 def test_session_transaction_needs_cookies():
     app = flask.Flask(__name__)
     app.testing = True
     c = app.test_client(use_cookies=False)
     try:
-        with c.session_transaction() as s:
+        with c.session_transaction():
             pass
     except RuntimeError as e:
         assert 'cookies' in str(e)
     else:
         assert False, 'Expected runtime error'
 
+
 def test_test_client_context_binding():
     app = flask.Flask(__name__)
     app.config['LOGGER_HANDLER_POLICY'] = 'never'
+
     @app.route('/')
     def index():
         flask.g.value = 42
@@ -163,6 +171,7 @@ def test_test_client_context_binding():
     else:
         raise AssertionError('some kind of exception expected')
 
+
 def test_reuse_client():
     app = flask.Flask(__name__)
     c = app.test_client()
@@ -173,9 +182,11 @@ def test_reuse_client():
     with c:
         assert c.get('/').status_code == 404
 
+
 def test_test_client_calls_teardown_handlers():
     app = flask.Flask(__name__)
     called = []
+
     @app.teardown_request
     def remember(error):
         called.append(error)
@@ -195,6 +206,7 @@ def test_test_client_calls_teardown_handlers():
         assert called == [None]
     assert called == [None, None]
 
+
 def test_full_url_request():
     app = flask.Flask(__name__)
     app.testing = True
@@ -209,9 +221,11 @@ def test_full_url_request():
         assert 'gin' in flask.request.form
         assert 'vodka' in flask.request.args
 
+
 def test_subdomain():
     app = flask.Flask(__name__)
     app.config['SERVER_NAME'] = 'example.com'
+
     @app.route('/', subdomain='<company_id>')
     def view(company_id):
         return company_id
@@ -225,9 +239,11 @@ def test_subdomain():
     assert 200 == response.status_code
     assert b'xxx' == response.data
 
+
 def test_nosubdomain():
     app = flask.Flask(__name__)
     app.config['SERVER_NAME'] = 'example.com'
+
     @app.route('/<company_id>')
     def view(company_id):
         return company_id
