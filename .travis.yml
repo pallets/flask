@@ -26,8 +26,8 @@ install:
     - pip install tox>=1.8
 
 script:
-    - tox -e \
-      $(echo py$TRAVIS_PYTHON_VERSION | tr -d . | sed -e 's/pypypy/pypy/')-$REQUIREMENTS
+    - tox -e $(echo py$TRAVIS_PYTHON_VERSION | tr -d . | sed -e 's/pypypy/pypy/')-$REQUIREMENTS
+    - make stylecheck
 
 branches:
   except:
