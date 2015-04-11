@@ -35,12 +35,7 @@ Error handlers
 
 .. versionadded:: 1.0
 
-Some errors are unavoidable because not only you make them.  Users might
-enter a wrong password or do something different in a way that you just
-cannot allow.  Or a third party service that your site relies on is
-unreachable while an user tries to do something with it.
-
-In those cases you might want to show error pages to the user in response.
+You might want to show error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
 Error handlers are normal :ref:`views` but instead of being registered for
