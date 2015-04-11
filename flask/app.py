@@ -1080,7 +1080,7 @@ class Flask(_PackageBoundObject):
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
-        """ensure that we register only exceptions as handler keys"""
+        """Ensure that we register only exceptions as handler keys"""
         if isinstance(exc_class_or_code, integer_types):
             exc_class = default_exceptions[exc_class_or_code]
         else:
@@ -1412,15 +1412,15 @@ class Flask(_PackageBoundObject):
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
         
-        def find_superclass(d):
-            if not d:
+        def find_superclass(handler_map):
+            if not handler_map:
                 return None
-            for superclass in exc_class.mro():
+            for superclass in exc_class.__mro__:
                 if superclass is BaseException:
                     return None
-                handler = d.get(superclass)
+                handler = handler_map.get(superclass)
                 if handler is not None:
-                    d[exc_class] = handler  # cache for next time exc_class is raised
+                    handler_map[exc_class] = handler  # cache for next time exc_class is raised
                     return handler
             return None
         
