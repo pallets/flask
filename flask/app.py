@@ -14,7 +14,7 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
-from collections import Mapping
+from collections import Mapping, deque
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
@@ -1411,27 +1411,37 @@ class Flask(_PackageBoundObject):
         If neither blueprint nor App has a suitable handler registered, returns None
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
-        
-        def find_superclass(handler_map):
+
+        def find_handler(handler_map):
             if not handler_map:
-                return None
-            for superclass in exc_class.__mro__:
-                if superclass is BaseException:
-                    return None
-                handler = handler_map.get(superclass)
+                return
+            queue = deque(exc_class.__mro__)
+            # Protect from geniuses who might create circular references in
+            # __mro__
+            done = set()
+
+            while True:
+                cls = queue.popleft()
+                if cls in done:
+                    continue
+                done.add(cls)
+                handler = handler_map.get(cls)
                 if handler is not None:
-                    handler_map[exc_class] = handler  # cache for next time exc_class is raised
+                    # cache for next time exc_class is raised
+                    handler_map[exc_class] = handler
                     return handler
-            return None
-        
+
+                queue.extend(cls.__mro__)
+
         # try blueprint handlers
-        handler = find_superclass(self.error_handler_spec.get(request.blueprint, {}).get(code))
-        
+        handler = find_handler(self.error_handler_spec
+                               .get(request.blueprint, {})
+                               .get(code))
         if handler is not None:
             return handler
-        
+
         # fall back to app handlers
-        return find_superclass(self.error_handler_spec[None].get(code))
+        return find_handler(self.error_handler_spec[None].get(code))
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the
