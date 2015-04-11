@@ -1,7 +1,7 @@
 .. _application-errors:
 
-Logging Application Errors
-==========================
+Application Errors
+==================
 
 .. versionadded:: 0.3
 
@@ -27,6 +27,59 @@ exception to the :attr:`~flask.Flask.logger`.
 
 But there is more you can do, and we will cover some better setups to deal
 with errors.
+
+.. _error-handlers:
+
+Error handlers
+--------------
+
+.. versionadded:: 1.0
+
+Some errors are unavoidable because not only you make them.  Users might
+enter a wrong password or do something different in a way that you just
+cannot allow.  Or a third party service that your site relies on is
+unreachable while an user tries to do something with it.
+
+In those cases you might want to show error pages to the user in response.
+This can be done by registering error handlers.
+
+Error handlers are normal :ref:`views` but instead of being registered for
+routes they are registered exceptions that are rised while trying to do
+something else.
+
+Registering
+```````````
+
+Register error handlers using :meth:`~flask.Flask.errorhandler` or
+:meth:`~flask.Flask.register_error_handler`::
+
+    @app.errorhandler(werkzeug.exceptions.BadRequest)
+    def handle_bad_request(e):
+        return 'bad request!'
+    
+    app.register_error_handler(400, lambda e: 'bad request!')
+
+Those two ways are equivalent, but the first one is more clear and leaves
+you with a function to call on your whim (and in tests).  Note that
+:exc:`werkzeug.exceptions.HTTPException` subclasses like
+:exc:`~werkzeug.exceptions.BadRequest` from the example and their HTTP codes
+are interchangable when handed to the registration methods or decorator
+(``BadRequest.code == 400``).
+
+You are however not limited to a :exc:`~werkzeug.exceptions.HTTPException`
+or its code but can register a handler for every exception class you like.
+
+Handling
+````````
+
+Once an exception instance is raised, its class hierarchy is traversed,
+and searched for in the exception classes for which handlers are registered.
+The most specific handler is selected.
+
+E.g. if a instance of :exc:`ConnectionRefusedError` is raised, and a handler
+is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
+the more specific :exc:`ConnectionRefusedError` handler is called on the
+exception instance, and its response is shown to the user.
 
 Error Mails
 -----------
