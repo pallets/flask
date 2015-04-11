@@ -701,6 +701,8 @@ Note the ``404`` after the :func:`~flask.render_template` call.  This
 tells Flask that the status code of that page should be 404 which means
 not found.  By default 200 is assumed which translates to: all went well.
 
+See :ref:`error-handlers` for more details.
+
 .. _about-responses:
 
 About Responses
