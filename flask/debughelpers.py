@@ -15,6 +15,7 @@ from .globals import _request_ctx_stack
 
 
 class UnexpectedUnicodeError(AssertionError, UnicodeError):
+
     """Raised in places where we want some better error reporting for
     unexpected unicode or binary data.
     """
@@ -22,6 +23,7 @@ class UnexpectedUnicodeError(AssertionError, UnicodeError):
 
 @implements_to_string
 class DebugFilesKeyError(KeyError, AssertionError):
+
     """Raised from request.files during debugging.  The idea is that it can
     provide a better error message than just a generic KeyError/BadRequest.
     """
@@ -37,7 +39,7 @@ class DebugFilesKeyError(KeyError, AssertionError):
         if form_matches:
             buf.append('\n\nThe browser instead transmitted some file names. '
                        'This was submitted: %s' % ', '.join('"%s"' % x
-                            for x in form_matches))
+                                                            for x in form_matches))
         self.msg = ''.join(buf)
 
     def __str__(self):
@@ -45,6 +47,7 @@ class DebugFilesKeyError(KeyError, AssertionError):
 
 
 class FormDataRoutingRedirect(AssertionError):
+
     """This exception is raised by Flask in debug mode if it detects a
     redirect caused by the routing system when the request method is not
     GET, HEAD or OPTIONS.  Reasoning: form data will be dropped.
@@ -77,7 +80,9 @@ def attach_enctype_error_multidict(request):
     object is accessed.
     """
     oldcls = request.files.__class__
+
     class newcls(oldcls):
+
         def __getitem__(self, key):
             try:
                 return oldcls.__getitem__(self, key)
@@ -143,13 +148,15 @@ def explain_template_loading_attempts(app, template, attempts):
         info.append('Error: the template could not be found.')
         seems_fishy = True
     elif total_found > 1:
-        info.append('Warning: multiple loaders returned a match for the template.')
+        info.append(
+            'Warning: multiple loaders returned a match for the template.')
         seems_fishy = True
 
     if blueprint is not None and seems_fishy:
         info.append('  The template was looked up from an endpoint that '
                     'belongs to the blueprint "%s".' % blueprint)
-        info.append('  Maybe you did not place a template in the right folder?')
+        info.append(
+            '  Maybe you did not place a template in the right folder?')
         info.append('  See http://flask.pocoo.org/docs/blueprints/#templates')
 
     app.logger.info('\n'.join(info))

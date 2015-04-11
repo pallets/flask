@@ -15,10 +15,12 @@ try:
     signals_available = True
 except ImportError:
     class Namespace(object):
+
         def signal(self, name, doc=None):
             return _FakeSignal(name, doc)
 
     class _FakeSignal(object):
+
         """If blinker is unavailable, create a fake class with the same
         interface that allows sending of signals but will fail with an
         error on anything else.  Instead of doing anything on send, it
@@ -28,6 +30,7 @@ except ImportError:
         def __init__(self, name, doc=None):
             self.name = name
             self.__doc__ = doc
+
         def _fail(self, *args, **kwargs):
             raise RuntimeError('signalling support is unavailable '
                                'because the blinker library is '

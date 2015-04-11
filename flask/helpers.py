@@ -38,7 +38,7 @@ from jinja2 import FileSystemLoader
 
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
-     current_app, request
+    current_app, request
 from ._compat import string_types, text_type
 
 
@@ -108,7 +108,7 @@ def stream_with_context(generator_or_function):
         ctx = _request_ctx_stack.top
         if ctx is None:
             raise RuntimeError('Attempted to stream with context but '
-                'there was no context in the first place to keep around.')
+                               'there was no context in the first place to keep around.')
         with ctx:
             # Dummy sentinel.  Has to be inside the context block or we're
             # not actually keeping the context around.
@@ -481,15 +481,15 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if not attachment_filename and not mimetype \
            and isinstance(filename, string_types):
             warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is now deprecated.  Pass an '
-                'attach_filename if you want mimetypes to be guessed.'),
-                stacklevel=2)
+                                    'passed to send_file is now deprecated.  Pass an '
+                                    'attach_filename if you want mimetypes to be guessed.'),
+                 stacklevel=2)
         if add_etags:
             warn(DeprecationWarning('In future flask releases etags will no '
-                'longer be generated for file objects passed to the send_file '
-                'function because this behavior was unreliable.  Pass '
-                'filenames instead if possible, otherwise attach an etag '
-                'yourself based on another value'), stacklevel=2)
+                                    'longer be generated for file objects passed to the send_file '
+                                    'function because this behavior was unreliable.  Pass '
+                                    'filenames instead if possible, otherwise attach an etag '
+                                    'yourself based on another value'), stacklevel=2)
 
     if filename is not None:
         if not os.path.isabs(filename):
@@ -748,6 +748,7 @@ def find_package(import_name):
 
 
 class locked_cached_property(object):
+
     """A decorator that converts a function into a lazy property.  The
     function wrapped is called the first time to retrieve the result
     and then that calculated result is used the next time you access
@@ -796,6 +797,7 @@ class _PackageBoundObject(object):
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
     static_folder = property(_get_static_folder, _set_static_folder)
@@ -806,6 +808,7 @@ class _PackageBoundObject(object):
             return self._static_url_path
         if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
     static_url_path = property(_get_static_url_path, _set_static_url_path)

@@ -26,6 +26,7 @@ def total_seconds(td):
 
 
 class SessionMixin(object):
+
     """Expands a basic dictionary with an accessors that are expected
     by Flask extensions and users for the session.
     """
@@ -73,13 +74,14 @@ def _tag(value):
         except UnicodeError:
             from flask.debughelpers import UnexpectedUnicodeError
             raise UnexpectedUnicodeError(u'A byte string with '
-                u'non-ASCII data was passed to the session system '
-                u'which can only store unicode strings.  Consider '
-                u'base64 encoding your string (String was %r)' % value)
+                                         u'non-ASCII data was passed to the session system '
+                                         u'which can only store unicode strings.  Consider '
+                                         u'base64 encoding your string (String was %r)' % value)
     return value
 
 
 class TaggedJSONSerializer(object):
+
     """A customized JSON serializer that supports a few extra types that
     we take for granted when serializing (tuples, markup objects, datetime).
     """
@@ -110,6 +112,7 @@ session_json_serializer = TaggedJSONSerializer()
 
 
 class SecureCookieSession(CallbackDict, SessionMixin):
+
     """Base class for sessions based on signed cookies."""
 
     def __init__(self, initial=None):
@@ -120,6 +123,7 @@ class SecureCookieSession(CallbackDict, SessionMixin):
 
 
 class NullSession(SecureCookieSession):
+
     """Class used to generate nicer error messages if sessions are not
     available.  Will still allow read-only access to the empty session
     but fail on setting.
@@ -135,6 +139,7 @@ class NullSession(SecureCookieSession):
 
 
 class SessionInterface(object):
+
     """The basic interface you have to implement in order to replace the
     default session interface which uses werkzeug's securecookie
     implementation.  The only methods you have to implement are
@@ -231,7 +236,7 @@ class SessionInterface(object):
         uses ``/`` if it's ``None``.
         """
         return app.config['SESSION_COOKIE_PATH'] or \
-               app.config['APPLICATION_ROOT'] or '/'
+            app.config['APPLICATION_ROOT'] or '/'
 
     def get_cookie_httponly(self, app):
         """Returns True if the session cookie should be httponly.  This
@@ -291,6 +296,7 @@ class SessionInterface(object):
 
 
 class SecureCookieSessionInterface(SessionInterface):
+
     """The default session interface that stores sessions in signed cookies
     through the :mod:`itsdangerous` module.
     """

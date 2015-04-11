@@ -19,6 +19,7 @@ from . import json
 
 
 class ConfigAttribute(object):
+
     """Makes an attribute forward to the config"""
 
     def __init__(self, name, get_converter=None):
@@ -38,6 +39,7 @@ class ConfigAttribute(object):
 
 
 class Config(dict):
+
     """Works exactly like a dict but provides ways to fill it from files
     or special dictionaries.  There are two common patterns to populate the
     config.
