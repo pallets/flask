@@ -14,15 +14,14 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
-from collections import Mapping
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
 from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest, default_exceptions
+    MethodNotAllowed, BadRequest, default_exceptions
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-     locked_cached_property, _endpoint_from_view_func, find_package
+    locked_cached_property, _endpoint_from_view_func, find_package
 from . import json, cli
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
@@ -30,10 +29,10 @@ from .ctx import RequestContext, AppContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, request, session, g
 from .sessions import SecureCookieSessionInterface
 from .templating import DispatchingJinjaLoader, Environment, \
-     _default_template_ctx_processor
+    _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
-     request_tearing_down, appcontext_tearing_down
-from ._compat import reraise, string_types, text_type, integer_types, iterkeys
+    request_tearing_down, appcontext_tearing_down
+from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -52,20 +51,22 @@ def setupmethod(f):
     """Wraps a method so that it performs a check in debug mode if the
     first request was already handled.
     """
+
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request:
             raise AssertionError('A setup function was called after the '
-                'first request was handled.  This usually indicates a bug '
-                'in the application where a module was not imported '
-                'and decorators or other functionality was called too late.\n'
-                'To fix this make sure to import all your view modules, '
-                'database models and everything related at a central place '
-                'before the application starts serving requests.')
+                                 'first request was handled.  This usually indicates a bug '
+                                 'in the application where a module was not imported '
+                                 'and decorators or other functionality was called too late.\n'
+                                 'To fix this make sure to import all your view modules, '
+                                 'database models and everything related at a central place '
+                                 'before the application starts serving requests.')
         return f(self, *args, **kwargs)
     return update_wrapper(wrapper_func, f)
 
 
 class Flask(_PackageBoundObject):
+
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
     application.  Once it is created it will act as a central registry for
@@ -176,6 +177,7 @@ class Flask(_PackageBoundObject):
     # Backwards compatibility support
     def _get_request_globals_class(self):
         return self.app_ctx_globals_class
+
     def _set_request_globals_class(self, value):
         from warnings import warn
         warn(DeprecationWarning('request_globals_class attribute is now '
@@ -239,7 +241,7 @@ class Flask(_PackageBoundObject):
     #: ``PERMANENT_SESSION_LIFETIME`` configuration key.  Defaults to
     #: ``timedelta(days=31)``
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
-        get_converter=_make_timedelta)
+                                                 get_converter=_make_timedelta)
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
@@ -536,8 +538,9 @@ class Flask(_PackageBoundObject):
     def _get_error_handlers(self):
         from warnings import warn
         warn(DeprecationWarning('error_handlers is deprecated, use the '
-            'new error_handler_spec attribute instead.'), stacklevel=1)
+                                'new error_handler_spec attribute instead.'), stacklevel=1)
         return self._error_handlers
+
     def _set_error_handlers(self, value):
         self._error_handlers = value
         self.error_handler_spec[None] = value
@@ -1009,7 +1012,7 @@ class Flask(_PackageBoundObject):
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
         provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+                                            'provide_automatic_options', None)
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
@@ -1085,14 +1088,14 @@ class Flask(_PackageBoundObject):
             exc_class = default_exceptions[exc_class_or_code]
         else:
             exc_class = exc_class_or_code
-        
+
         assert issubclass(exc_class, Exception)
-        
+
         if issubclass(exc_class, HTTPException):
             return exc_class, exc_class.code
         else:
             return exc_class, None
-    
+
     @setupmethod
     def errorhandler(self, code_or_exception):
         """A decorator that is used to register a function give a given
@@ -1161,10 +1164,11 @@ class Flask(_PackageBoundObject):
                 'Tried to register a handler for an exception instance {0!r}. '
                 'Handlers can only be registered for exception classes or HTTP error codes.'
                 .format(code_or_exception))
-        
+
         exc_class, code = self._get_exc_class_and_code(code_or_exception)
-        
-        handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
+
+        handlers = self.error_handler_spec.setdefault(
+            key, {}).setdefault(code, {})
         handlers[exc_class] = f
 
     @setupmethod
@@ -1411,7 +1415,7 @@ class Flask(_PackageBoundObject):
         If neither blueprint nor App has a suitable handler registered, returns None
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
-        
+
         def find_superclass(handler_map):
             if not handler_map:
                 return None
@@ -1420,16 +1424,18 @@ class Flask(_PackageBoundObject):
                     return None
                 handler = handler_map.get(superclass)
                 if handler is not None:
-                    handler_map[exc_class] = handler  # cache for next time exc_class is raised
+                    # cache for next time exc_class is raised
+                    handler_map[exc_class] = handler
                     return handler
             return None
-        
+
         # try blueprint handlers
-        handler = find_superclass(self.error_handler_spec.get(request.blueprint, {}).get(code))
-        
+        handler = find_superclass(
+            self.error_handler_spec.get(request.blueprint, {}).get(code))
+
         if handler is not None:
             return handler
-        
+
         # fall back to app handlers
         return find_superclass(self.error_handler_spec[None].get(code))
 
@@ -1444,7 +1450,7 @@ class Flask(_PackageBoundObject):
         # those unchanged as errors
         if e.code is None:
             return e
-        
+
         handler = self._find_error_handler(e)
         if handler is None:
             return e
@@ -1487,12 +1493,12 @@ class Flask(_PackageBoundObject):
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
-        
+
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
 
         handler = self._find_error_handler(e)
-        
+
         if handler is None:
             reraise(exc_type, exc_value, tb)
         return handler(e)
@@ -1721,7 +1727,7 @@ class Flask(_PackageBoundObject):
         """
         if request is not None:
             return self.url_map.bind_to_environ(request.environ,
-                server_name=self.config['SERVER_NAME'])
+                                                server_name=self.config['SERVER_NAME'])
         # We need at the very least the server name to be set for this
         # to work.
         if self.config['SERVER_NAME'] is not None:

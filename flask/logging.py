@@ -15,7 +15,7 @@ import sys
 
 from werkzeug.local import LocalProxy
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, \
-     DEBUG, ERROR
+    DEBUG, ERROR
 from .globals import _request_ctx_stack
 
 
@@ -57,17 +57,20 @@ def create_logger(app):
     Logger = getLoggerClass()
 
     class DebugLogger(Logger):
+
         def getEffectiveLevel(x):
             if x.level == 0 and app.debug:
                 return DEBUG
             return Logger.getEffectiveLevel(x)
 
     class DebugHandler(StreamHandler):
+
         def emit(self, record):
             if app.debug and _should_log_for(app, 'debug'):
                 StreamHandler.emit(self, record)
 
     class ProductionHandler(StreamHandler):
+
         def emit(self, record):
             if not app.debug and _should_log_for(app, 'production'):
                 StreamHandler.emit(self, record)

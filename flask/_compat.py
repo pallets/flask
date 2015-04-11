@@ -10,6 +10,8 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+# flake8: noqa
+
 import sys
 
 PY2 = sys.version_info[0] == 2
@@ -66,6 +68,7 @@ def with_metaclass(meta, *bases):
     class metaclass(meta):
         __call__ = type.__call__
         __init__ = type.__init__
+
         def __new__(cls, name, this_bases, d):
             if this_bases is None:
                 return type.__new__(cls, name, (), d)
@@ -81,8 +84,10 @@ def with_metaclass(meta, *bases):
 BROKEN_PYPY_CTXMGR_EXIT = False
 if hasattr(sys, 'pypy_version_info'):
     class _Mgr(object):
+
         def __enter__(self):
             return self
+
         def __exit__(self, *args):
             sys.exc_clear()
     try:

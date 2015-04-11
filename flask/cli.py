@@ -20,6 +20,7 @@ from ._compat import iteritems, reraise
 
 
 class NoAppException(click.UsageError):
+
     """Raised if an application cannot be found or loaded."""
 
 
@@ -78,7 +79,7 @@ def prepare_exec_for_file(filename):
 
 def locate_app(app_id):
     """Attempts to locate the application."""
-    __traceback_hide__ = True
+    __traceback_hide__ = True  # noqa
     if ':' in app_id:
         module, app_obj = app_id.split(':', 1)
     else:
@@ -99,6 +100,7 @@ def locate_app(app_id):
 
 
 class DispatchingApp(object):
+
     """Special application that dispatches to a flask application which
     is imported by name in a background thread.  If an error happens
     it is is recorded and shows as part of the WSGI handling which in case
@@ -117,7 +119,7 @@ class DispatchingApp(object):
 
     def _load_in_background(self):
         def _load_app():
-            __traceback_hide__ = True
+            __traceback_hide__ = True  # noqa
             with self._lock:
                 try:
                     self._load_unlocked()
@@ -127,20 +129,20 @@ class DispatchingApp(object):
         t.start()
 
     def _flush_bg_loading_exception(self):
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa
         exc_info = self._bg_loading_exc_info
         if exc_info is not None:
             self._bg_loading_exc_info = None
             reraise(*exc_info)
 
     def _load_unlocked(self):
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa
         self._app = rv = self.loader()
         self._bg_loading_exc_info = None
         return rv
 
     def __call__(self, environ, start_response):
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa
         if self._app is not None:
             return self._app(environ, start_response)
         self._flush_bg_loading_exception()
@@ -153,6 +155,7 @@ class DispatchingApp(object):
 
 
 class ScriptInfo(object):
+
     """Help object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
     to click.
@@ -177,7 +180,7 @@ class ScriptInfo(object):
         this multiple times will just result in the already loaded app to
         be returned.
         """
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa
         if self._loaded_app is not None:
             return self._loaded_app
         if self.create_app is not None:
@@ -224,16 +227,17 @@ def set_app_value(ctx, param, value):
 
 
 debug_option = click.Option(['--debug/--no-debug'],
-    help='Enable or disable debug mode.',
-    default=None, callback=set_debug_value)
+                            help='Enable or disable debug mode.',
+                            default=None, callback=set_debug_value)
 
 
 app_option = click.Option(['-a', '--app'],
-    help='The application to run',
-    callback=set_app_value, is_eager=True)
+                          help='The application to run',
+                          callback=set_app_value, is_eager=True)
 
 
 class AppGroup(click.Group):
+
     """This works similar to a regular click :class:`~click.Group` but it
     changes the behavior of the :meth:`command` decorator so that it
     automatically wraps the functions in :func:`with_appcontext`.
@@ -247,6 +251,7 @@ class AppGroup(click.Group):
         unless it's disabled by passing ``with_appcontext=False``.
         """
         wrap_for_ctx = kwargs.pop('with_appcontext', True)
+
         def decorator(f):
             if wrap_for_ctx:
                 f = with_appcontext(f)
@@ -263,6 +268,7 @@ class AppGroup(click.Group):
 
 
 class FlaskGroup(AppGroup):
+
     """Special subclass of the :class:`AppGroup` group that supports
     loading more commands from the configured Flask app.  Normally a
     developer does not have to interface with this class but there are
@@ -358,6 +364,7 @@ def script_info_option(*args, **kwargs):
         raise TypeError('script_info_key not provided.')
 
     real_callback = kwargs.get('callback')
+
     def callback(ctx, param, value):
         if real_callback is not None:
             value = real_callback(ctx, value)

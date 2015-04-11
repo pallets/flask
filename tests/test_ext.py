@@ -161,12 +161,12 @@ def test_flaskext_old_package_import_submodule_function(oldext_package):
 def test_flaskext_broken_package_no_module_caching(flaskext_broken):
     for x in range(2):
         with pytest.raises(ImportError):
-            import flask.ext.broken
+            import flask.ext.broken  # noqa
 
 
 def test_no_error_swallowing(flaskext_broken):
     with pytest.raises(ImportError) as excinfo:
-        import flask.ext.broken
+        import flask.ext.broken  # noqa
 
     assert excinfo.type is ImportError
     if PY2:

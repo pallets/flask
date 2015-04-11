@@ -105,14 +105,17 @@ def timeline():
     """
     if not g.user:
         return redirect(url_for('public_timeline'))
-    return render_template('timeline.html', messages=query_db('''
+    return render_template('timeline.html', messages=query_db(
+        '''
         select message.*, user.* from message, user
         where message.author_id = user.user_id and (
             user.user_id = ? or
             user.user_id in (select whom_id from follower
                                     where who_id = ?))
-        order by message.pub_date desc limit ?''',
-        [session['user_id'], session['user_id'], PER_PAGE]))
+        order by message.pub_date desc limit ?
+        ''',
+        [session['user_id'], session['user_id'], PER_PAGE]
+    ))
 
 
 @app.route('/public')
@@ -133,16 +136,20 @@ def user_timeline(username):
         abort(404)
     followed = False
     if g.user:
-        followed = query_db('''select 1 from follower where
+        followed = query_db(
+            '''select 1 from follower where
             follower.who_id = ? and follower.whom_id = ?''',
             [session['user_id'], profile_user['user_id']],
-            one=True) is not None
-    return render_template('timeline.html', messages=query_db('''
-            select message.*, user.* from message, user where
-            user.user_id = message.author_id and user.user_id = ?
-            order by message.pub_date desc limit ?''',
-            [profile_user['user_id'], PER_PAGE]), followed=followed,
-            profile_user=profile_user)
+            one=True
+        ) is not None
+    return render_template('timeline.html', messages=query_db(
+        '''select message.*, user.* from message, user where
+        user.user_id = message.author_id and user.user_id = ?
+        order by message.pub_date desc limit ?''',
+        [profile_user['user_id'], PER_PAGE]),
+        followed=followed,
+        profile_user=profile_user
+    )
 
 
 @app.route('/<username>/follow')
@@ -155,7 +162,7 @@ def follow_user(username):
         abort(404)
     db = get_db()
     db.execute('insert into follower (who_id, whom_id) values (?, ?)',
-              [session['user_id'], whom_id])
+               [session['user_id'], whom_id])
     db.commit()
     flash('You are now following "%s"' % username)
     return redirect(url_for('user_timeline', username=username))
@@ -171,7 +178,7 @@ def unfollow_user(username):
         abort(404)
     db = get_db()
     db.execute('delete from follower where who_id=? and whom_id=?',
-              [session['user_id'], whom_id])
+               [session['user_id'], whom_id])
     db.commit()
     flash('You are no longer following "%s"' % username)
     return redirect(url_for('user_timeline', username=username))
@@ -233,10 +240,12 @@ def register():
             error = 'The username is already taken'
         else:
             db = get_db()
-            db.execute('''insert into user (
-              username, email, pw_hash) values (?, ?, ?)''',
-              [request.form['username'], request.form['email'],
-               generate_password_hash(request.form['password'])])
+            db.execute(
+                '''insert into user (
+                username, email, pw_hash) values (?, ?, ?)''',
+                [request.form['username'], request.form['email'],
+                 generate_password_hash(request.form['password'])]
+            )
             db.commit()
             flash('You were successfully registered and can login now')
             return redirect(url_for('login'))

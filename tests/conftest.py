@@ -21,6 +21,7 @@ def test_apps(monkeypatch):
             os.path.dirname(__file__), 'test_apps'))
     )
 
+
 @pytest.fixture(autouse=True)
 def leak_detector(request):
     def ensure_clean_request_context():
@@ -48,6 +49,7 @@ def limit_loader(request, monkeypatch):
         return
 
     class LimitedLoader(object):
+
         def __init__(self, loader):
             self.loader = loader
 

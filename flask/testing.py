@@ -37,6 +37,7 @@ def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
 
 
 class FlaskClient(Client):
+
     """Works like a regular Werkzeug test client but has some knowledge about
     how Flask works to defer the cleanup of the request context stack to the
     end of a with body when used in a with statement.  For general information
@@ -98,8 +99,9 @@ class FlaskClient(Client):
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
-        kwargs.setdefault('environ_overrides', {}) \
-            ['flask._preserve_context'] = self.preserve_context
+        kwargs.setdefault(
+            'environ_overrides', {}
+        )['flask._preserve_context'] = self.preserve_context
 
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)

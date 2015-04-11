@@ -11,7 +11,6 @@
 
 import pytest
 
-import os
 import gc
 import sys
 import flask

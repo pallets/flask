@@ -124,6 +124,7 @@ def test_meta_path_loader_without_is_package(request, modules_tmpdir):
     app.write('import flask\napp = flask.Flask(__name__)')
 
     class Loader(object):
+
         def find_module(self, name, path=None):
             return self
 
@@ -131,4 +132,4 @@ def test_meta_path_loader_without_is_package(request, modules_tmpdir):
     request.addfinalizer(sys.meta_path.pop)
 
     with pytest.raises(AttributeError):
-        import unimportable
+        import unimportable  # noqa

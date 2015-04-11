@@ -26,6 +26,7 @@ _sentinel = object()
 
 
 class _AppCtxGlobals(object):
+
     """A plain object."""
 
     def get(self, name, default=None):
@@ -95,9 +96,10 @@ def copy_current_request_context(f):
     top = _request_ctx_stack.top
     if top is None:
         raise RuntimeError('This decorator can only be used at local scopes '
-            'when a request context is on the stack.  For instance within '
-            'view functions.')
+                           'when a request context is on the stack.  For instance within '
+                           'view functions.')
     reqctx = top.copy()
+
     def wrapper(*args, **kwargs):
         with reqctx:
             return f(*args, **kwargs)
@@ -147,6 +149,7 @@ def has_app_context():
 
 
 class AppContext(object):
+
     """The application context binds an application object implicitly
     to the current thread or greenlet, similar to how the
     :class:`RequestContext` binds request information.  The application
@@ -196,6 +199,7 @@ class AppContext(object):
 
 
 class RequestContext(object):
+
     """The request context contains all request relevant information.  It is
     created at the beginning of the request and pushed to the
     `_request_ctx_stack` and removed at the end of it.  It will create the
@@ -257,6 +261,7 @@ class RequestContext(object):
 
     def _get_g(self):
         return _app_ctx_stack.top.g
+
     def _set_g(self, value):
         _app_ctx_stack.top.g = value
     g = property(_get_g, _set_g)
@@ -272,9 +277,9 @@ class RequestContext(object):
         .. versionadded:: 0.10
         """
         return self.__class__(self.app,
-            environ=self.request.environ,
-            request=self.request
-        )
+                              environ=self.request.environ,
+                              request=self.request
+                              )
 
     def match_request(self):
         """Can be overridden by a subclass to hook into the matching

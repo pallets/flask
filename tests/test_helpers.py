@@ -52,6 +52,7 @@ class TestJSON(object):
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = True
+
         @app.route('/json', methods=['POST'])
         def post_json():
             flask.request.get_json()
@@ -64,6 +65,7 @@ class TestJSON(object):
     def test_post_empty_json_wont_add_exception_to_response_if_no_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = False
+
         @app.route('/json', methods=['POST'])
         def post_json():
             flask.request.get_json()
@@ -75,6 +77,7 @@ class TestJSON(object):
 
     def test_json_bad_requests(self):
         app = flask.Flask(__name__)
+
         @app.route('/json', methods=['POST'])
         def return_json():
             return flask.jsonify(foo=text_type(flask.request.get_json()))
@@ -84,6 +87,7 @@ class TestJSON(object):
 
     def test_json_custom_mimetypes(self):
         app = flask.Flask(__name__)
+
         @app.route('/json', methods=['POST'])
         def return_json():
             return flask.request.get_json()
@@ -94,6 +98,7 @@ class TestJSON(object):
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
         app.testing = True
+
         @app.route('/')
         def index():
             return flask.request.get_json()
@@ -106,9 +111,11 @@ class TestJSON(object):
     def test_jsonify(self):
         d = dict(a=23, b=42, c=[1, 2, 3])
         app = flask.Flask(__name__)
+
         @app.route('/kw')
         def return_kwargs():
             return flask.jsonify(**d)
+
         @app.route('/dict')
         def return_dict():
             return flask.jsonify(d)
@@ -133,13 +140,14 @@ class TestJSON(object):
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
+
         @app.route('/add', methods=['POST'])
         def add():
             json = flask.request.get_json()
             return text_type(json['a'] + json['b'])
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
-                            content_type='application/json')
+                    content_type='application/json')
         assert rv.data == b'3'
 
     def test_template_escaping(self):
@@ -160,22 +168,28 @@ class TestJSON(object):
             rv = render('{{ "\'"|tojson }}')
             assert rv == '"\\u0027"'
             rv = render("<a ng-data='{{ data|tojson }}'></a>",
-                data={'x': ["foo", "bar", "baz'"]})
+                        data={'x': ["foo", "bar", "baz'"]})
             assert rv == '<a ng-data=\'{"x": ["foo", "bar", "baz\\u0027"]}\'></a>'
 
     def test_json_customization(self):
         class X(object):
+
             def __init__(self, val):
                 self.val = val
+
         class MyEncoder(flask.json.JSONEncoder):
+
             def default(self, o):
                 if isinstance(o, X):
                     return '<%d>' % o.val
                 return flask.json.JSONEncoder.default(self, o)
+
         class MyDecoder(flask.json.JSONDecoder):
+
             def __init__(self, *args, **kwargs):
                 kwargs.setdefault('object_hook', self.object_hook)
                 flask.json.JSONDecoder.__init__(self, *args, **kwargs)
+
             def object_hook(self, obj):
                 if len(obj) == 1 and '_foo' in obj:
                     return X(obj['_foo'])
@@ -184,6 +198,7 @@ class TestJSON(object):
         app.testing = True
         app.json_encoder = MyEncoder
         app.json_decoder = MyDecoder
+
         @app.route('/', methods=['POST'])
         def index():
             return flask.json.dumps(flask.request.get_json()['x'])
@@ -193,6 +208,8 @@ class TestJSON(object):
         }), content_type='application/json')
         assert rv.data == b'"<42>"'
 
+    @pytest.mark.skipif(not has_encoding('euc-kr'),
+                        reason='Encoding not available.')
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
@@ -209,13 +226,10 @@ class TestJSON(object):
         assert rv.status_code == 200
         assert rv.data == u'정상처리'.encode('utf-8')
 
-    if not has_encoding('euc-kr'):
-        test_modified_url_encoding = None
-
     def test_json_key_sorting(self):
         app = flask.Flask(__name__)
         app.testing = True
-        assert app.config['JSON_SORT_KEYS'] == True
+        assert app.config['JSON_SORT_KEYS'] is True
         d = dict.fromkeys(range(20), 'foo')
 
         @app.route('/')
@@ -224,7 +238,8 @@ class TestJSON(object):
 
         c = app.test_client()
         rv = c.get('/')
-        lines = [x.strip() for x in rv.data.strip().decode('utf-8').splitlines()]
+        lines = [x.strip()
+                 for x in rv.data.strip().decode('utf-8').splitlines()]
         sorted_by_str = [
             '{',
             '"values": {',
@@ -283,6 +298,7 @@ class TestJSON(object):
         except AssertionError:
             assert lines == sorted_by_str
 
+
 class TestSendfile(object):
 
     def test_send_file_regular(self):
@@ -312,7 +328,8 @@ class TestSendfile(object):
         app = flask.Flask(__name__)
         with catch_deprecation_warnings() as captured:
             with app.test_request_context():
-                f = open(os.path.join(app.root_path, 'static/index.html'), mode='rb')
+                f = open(
+                    os.path.join(app.root_path, 'static/index.html'), mode='rb')
                 rv = flask.send_file(f)
                 rv.direct_passthrough = False
                 with app.open_resource('static/index.html') as f:
@@ -348,8 +365,10 @@ class TestSendfile(object):
             assert len(captured) == 1
             with catch_deprecation_warnings() as captured:
                 class PyStringIO(object):
+
                     def __init__(self, *args, **kwargs):
                         self._io = StringIO(*args, **kwargs)
+
                     def __getattr__(self, name):
                         return getattr(self._io, name)
                 f = PyStringIO('Test')
@@ -387,7 +406,8 @@ class TestSendfile(object):
             with app.test_request_context():
                 f = open(os.path.join(app.root_path, 'static/index.html'))
                 rv = flask.send_file(f, as_attachment=True)
-                value, options = parse_options_header(rv.headers['Content-Disposition'])
+                value, options = parse_options_header(
+                    rv.headers['Content-Disposition'])
                 assert value == 'attachment'
                 rv.close()
             # mimetypes + etag
@@ -396,7 +416,8 @@ class TestSendfile(object):
         with app.test_request_context():
             assert options['filename'] == 'index.html'
             rv = flask.send_file('static/index.html', as_attachment=True)
-            value, options = parse_options_header(rv.headers['Content-Disposition'])
+            value, options = parse_options_header(
+                rv.headers['Content-Disposition'])
             assert value == 'attachment'
             assert options['filename'] == 'index.html'
             rv.close()
@@ -406,7 +427,8 @@ class TestSendfile(object):
                                  attachment_filename='index.txt',
                                  add_etags=False)
             assert rv.mimetype == 'text/plain'
-            value, options = parse_options_header(rv.headers['Content-Disposition'])
+            value, options = parse_options_header(
+                rv.headers['Content-Disposition'])
             assert value == 'attachment'
             assert options['filename'] == 'index.txt'
             rv.close()
@@ -437,7 +459,9 @@ class TestSendfile(object):
             cc = parse_cache_control_header(rv.headers['Cache-Control'])
             assert cc.max_age == 3600
             rv.close()
+
         class StaticFileApp(flask.Flask):
+
             def get_send_file_max_age(self, filename):
                 return 10
         app = StaticFileApp(__name__)
@@ -531,18 +555,22 @@ class TestLogging(object):
     def test_processor_exceptions(self):
         app = flask.Flask(__name__)
         app.config['LOGGER_HANDLER_POLICY'] = 'never'
+
         @app.before_request
         def before_request():
             if trigger == 'before':
                 1 // 0
+
         @app.after_request
         def after_request(response):
             if trigger == 'after':
                 1 // 0
             return response
+
         @app.route('/')
         def index():
             return 'Foo'
+
         @app.errorhandler(500)
         def internal_server_error(e):
             return 'Hello Server Error', 500
@@ -553,6 +581,7 @@ class TestLogging(object):
 
     def test_url_for_with_anchor(self):
         app = flask.Flask(__name__)
+
         @app.route('/')
         def index():
             return '42'
@@ -561,31 +590,37 @@ class TestLogging(object):
 
     def test_url_for_with_scheme(self):
         app = flask.Flask(__name__)
+
         @app.route('/')
         def index():
             return '42'
         with app.test_request_context():
-            assert flask.url_for('index', _external=True, _scheme='https') == 'https://localhost/'
+            assert flask.url_for(
+                'index', _external=True, _scheme='https') == 'https://localhost/'
 
     def test_url_for_with_scheme_not_external(self):
         app = flask.Flask(__name__)
+
         @app.route('/')
         def index():
             return '42'
         with app.test_request_context():
             pytest.raises(ValueError,
-                               flask.url_for,
-                               'index',
-                               _scheme='https')
+                          flask.url_for,
+                          'index',
+                          _scheme='https')
 
     def test_url_with_method(self):
         from flask.views import MethodView
         app = flask.Flask(__name__)
+
         class MyView(MethodView):
+
             def get(self, id=None):
                 if id is None:
                     return 'List'
                 return 'Get %d' % id
+
             def post(self):
                 return 'Create'
         myview = MyView.as_view('myview')
@@ -598,11 +633,13 @@ class TestLogging(object):
 
         with app.test_request_context():
             assert flask.url_for('myview', _method='GET') == '/myview/'
-            assert flask.url_for('myview', id=42, _method='GET') == '/myview/42'
+            assert flask.url_for(
+                'myview', id=42, _method='GET') == '/myview/42'
             assert flask.url_for('myview', _method='POST') == '/myview/create'
 
 
 class TestNoImports(object):
+
     """Test Flasks are created without import.
 
     Avoiding ``__import__`` helps create Flask instances where there are errors
@@ -614,7 +651,8 @@ class TestNoImports(object):
     """
 
     def test_name_with_import_error(self, modules_tmpdir):
-        modules_tmpdir.join('importerror.py').write('raise NotImplementedError()')
+        modules_tmpdir.join('importerror.py').write(
+            'raise NotImplementedError()')
         try:
             flask.Flask('importerror')
         except NotImplementedError:
@@ -626,6 +664,7 @@ class TestStreaming(object):
     def test_streaming_with_context(self):
         app = flask.Flask(__name__)
         app.testing = True
+
         @app.route('/')
         def index():
             def generate():
@@ -640,6 +679,7 @@ class TestStreaming(object):
     def test_streaming_with_context_as_decorator(self):
         app = flask.Flask(__name__)
         app.testing = True
+
         @app.route('/')
         def index():
             @flask.stream_with_context
@@ -656,16 +696,22 @@ class TestStreaming(object):
         app = flask.Flask(__name__)
         app.testing = True
         called = []
+
         class Wrapper(object):
+
             def __init__(self, gen):
                 self._gen = gen
+
             def __iter__(self):
                 return self
+
             def close(self):
                 called.append(42)
+
             def __next__(self):
                 return next(self._gen)
             next = __next__
+
         @app.route('/')
         def index():
             def generate():

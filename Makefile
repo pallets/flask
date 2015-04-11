@@ -5,6 +5,9 @@ all: clean-pyc test
 test:
 	py.test tests examples
 
+stylecheck:
+	flake8
+
 tox-test:
 	tox
 

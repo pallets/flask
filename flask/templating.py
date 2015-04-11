@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
-     TemplateNotFound
+    TemplateNotFound
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered
@@ -31,6 +31,7 @@ def _default_template_ctx_processor():
 
 
 class Environment(BaseEnvironment):
+
     """Works like a regular Jinja2 environment but has some additional
     knowledge of how Flask's blueprint works so that it can prepend the
     name of the blueprint to referenced templates if necessary.
@@ -44,6 +45,7 @@ class Environment(BaseEnvironment):
 
 
 class DispatchingJinjaLoader(BaseLoader):
+
     """A loader that looks for templates in the application and all
     the blueprint folders.
     """

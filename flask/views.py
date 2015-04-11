@@ -17,6 +17,7 @@ http_method_funcs = frozenset(['get', 'post', 'head', 'options',
 
 
 class View(object):
+
     """Alternative way to use view functions.  A subclass has to implement
     :meth:`dispatch_request` which is called with the view arguments from
     the URL routing system.  If :attr:`methods` is provided the methods
@@ -121,6 +122,7 @@ class MethodViewType(type):
 
 
 class MethodView(with_metaclass(MethodViewType, View)):
+
     """Like a regular class-based view but that dispatches requests to
     particular methods.  For instance if you implement a method called
     :meth:`get` it means you will response to ``'GET'`` requests and
@@ -139,6 +141,7 @@ class MethodView(with_metaclass(MethodViewType, View)):
 
         app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
     """
+
     def dispatch_request(self, *args, **kwargs):
         meth = getattr(self, request.method.lower(), None)
         # If the request method is HEAD and we don't have a handler for it

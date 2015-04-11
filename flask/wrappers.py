@@ -26,6 +26,7 @@ def _get_data(req, cache):
 
 
 class Request(RequestBase):
+
     """The request object used by default in Flask.  Remembers the
     matched endpoint and view arguments.
 
@@ -192,6 +193,7 @@ class Request(RequestBase):
 
 
 class Response(ResponseBase):
+
     """The response object that is used by default in Flask.  Works like the
     response object from Werkzeug but is set to have an HTML mimetype by
     default.  Quite often you don't have to create this object yourself because
