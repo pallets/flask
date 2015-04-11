@@ -4,110 +4,108 @@ import flask
 
 
 def test_error_handler_subclass():
-	app = flask.Flask(__name__)
+    app = flask.Flask(__name__)
 
-	class ParentException(Exception):
-		pass
+    class ParentException(Exception):
+        pass
 
-	class ChildExceptionUnregistered(ParentException):
-		pass
+    class ChildExceptionUnregistered(ParentException):
+        pass
 
-	class ChildExceptionRegistered(ParentException):
-		pass
+    class ChildExceptionRegistered(ParentException):
+        pass
 
-	@app.errorhandler(ParentException)
-	def parent_exception_handler(e):
-		assert isinstance(e, ParentException)
-		return 'parent'
+    @app.errorhandler(ParentException)
+    def parent_exception_handler(e):
+        assert isinstance(e, ParentException)
+        return 'parent'
 
-	@app.errorhandler(ChildExceptionRegistered)
-	def child_exception_handler(e):
-		assert isinstance(e, ChildExceptionRegistered)
-		return 'child-registered'
+    @app.errorhandler(ChildExceptionRegistered)
+    def child_exception_handler(e):
+        assert isinstance(e, ChildExceptionRegistered)
+        return 'child-registered'
 
-	@app.route('/parent')
-	def parent_test():
-		raise ParentException()
+    @app.route('/parent')
+    def parent_test():
+        raise ParentException()
 
-	@app.route('/child-unregistered')
-	def unregistered_test():
-		raise ChildExceptionUnregistered()
+    @app.route('/child-unregistered')
+    def unregistered_test():
+        raise ChildExceptionUnregistered()
 
-	@app.route('/child-registered')
-	def registered_test():
-		raise ChildExceptionRegistered()
+    @app.route('/child-registered')
+    def registered_test():
+        raise ChildExceptionRegistered()
 
+    c = app.test_client()
 
-	c = app.test_client()
-
-	assert c.get('/parent').data == b'parent'
-	assert c.get('/child-unregistered').data == b'parent'
-	assert c.get('/child-registered').data == b'child-registered'
+    assert c.get('/parent').data == b'parent'
+    assert c.get('/child-unregistered').data == b'parent'
+    assert c.get('/child-registered').data == b'child-registered'
 
 
 def test_error_handler_http_subclass():
-	app = flask.Flask(__name__)
+    app = flask.Flask(__name__)
 
-	class ForbiddenSubclassRegistered(Forbidden):
-		pass
+    class ForbiddenSubclassRegistered(Forbidden):
+        pass
 
-	class ForbiddenSubclassUnregistered(Forbidden):
-		pass
+    class ForbiddenSubclassUnregistered(Forbidden):
+        pass
 
-	@app.errorhandler(403)
-	def code_exception_handler(e):
-		assert isinstance(e, Forbidden)
-		return 'forbidden'
+    @app.errorhandler(403)
+    def code_exception_handler(e):
+        assert isinstance(e, Forbidden)
+        return 'forbidden'
 
-	@app.errorhandler(ForbiddenSubclassRegistered)
-	def subclass_exception_handler(e):
-		assert isinstance(e, ForbiddenSubclassRegistered)
-		return 'forbidden-registered'
+    @app.errorhandler(ForbiddenSubclassRegistered)
+    def subclass_exception_handler(e):
+        assert isinstance(e, ForbiddenSubclassRegistered)
+        return 'forbidden-registered'
 
-	@app.route('/forbidden')
-	def forbidden_test():
-		raise Forbidden()
+    @app.route('/forbidden')
+    def forbidden_test():
+        raise Forbidden()
 
-	@app.route('/forbidden-registered')
-	def registered_test():
-		raise ForbiddenSubclassRegistered()
+    @app.route('/forbidden-registered')
+    def registered_test():
+        raise ForbiddenSubclassRegistered()
 
-	@app.route('/forbidden-unregistered')
-	def unregistered_test():
-		raise ForbiddenSubclassUnregistered()
+    @app.route('/forbidden-unregistered')
+    def unregistered_test():
+        raise ForbiddenSubclassUnregistered()
 
+    c = app.test_client()
 
-	c = app.test_client()
-
-	assert c.get('/forbidden').data == b'forbidden'
-	assert c.get('/forbidden-unregistered').data == b'forbidden'
-	assert c.get('/forbidden-registered').data == b'forbidden-registered'
+    assert c.get('/forbidden').data == b'forbidden'
+    assert c.get('/forbidden-unregistered').data == b'forbidden'
+    assert c.get('/forbidden-registered').data == b'forbidden-registered'
 
 
 def test_error_handler_blueprint():
-	bp = flask.Blueprint('bp', __name__)
-	
-	@bp.errorhandler(500)
-	def bp_exception_handler(e):
-		return 'bp-error'
-	
-	@bp.route('/error')
-	def bp_test():
-		raise InternalServerError()
-	
-	app = flask.Flask(__name__)
-	
-	@app.errorhandler(500)
-	def app_exception_handler(e):
-		return 'app-error'
-	
-	@app.route('/error')
-	def app_test():
-		raise InternalServerError()
-	
-	app.register_blueprint(bp, url_prefix='/bp')
-	
-	c = app.test_client()
-	
-	assert c.get('/error').data == b'app-error'
-	assert c.get('/bp/error').data == b'bp-error'
+    bp = flask.Blueprint('bp', __name__)
+
+    @bp.errorhandler(500)
+    def bp_exception_handler(e):
+        return 'bp-error'
+
+    @bp.route('/error')
+    def bp_test():
+        raise InternalServerError()
+
+    app = flask.Flask(__name__)
+
+    @app.errorhandler(500)
+    def app_exception_handler(e):
+        return 'app-error'
+
+    @app.route('/error')
+    def app_test():
+        raise InternalServerError()
+
+    app.register_blueprint(bp, url_prefix='/bp')
+
+    c = app.test_client()
+
+    assert c.get('/error').data == b'app-error'
+    assert c.get('/bp/error').data == b'bp-error'
