@@ -57,7 +57,7 @@ class JSONMixin(object):
         return self.data
 
     def get_json(self, force=False, silent=False, cache=True):
-        """Parses the incoming JSON request data and returns it.  By default
+        """Parses the JSON request/response data and returns it.  By default
         this function will return ``None`` if the mimetype is not
         :mimetype:`application/json` but this can be overridden by the
         ``force`` parameter. If parsing fails the

@@ -362,7 +362,7 @@ Testing JSON APIs
 
 Flask has great support for JSON, and is a popular choice for building REST
 APIs. Testing both JSON requests and responses using the test client is very
-convenient:
+convenient::
 
     from flask import jsonify
 
@@ -371,12 +371,14 @@ convenient:
         json_data = request.get_json()
         email = json_data['email']
         password = json_data['password']
+
         return jsonify(token=generate_token(email, password))
 
     with app.test_client() as c:
         email = 'john@example.com'
         password = 'secret'
         resp = c.post('/api/auth', json={'login': email, 'password': password})
+
         json_data = resp.get_json()
         assert verify_token(email, json_data['token'])
 
