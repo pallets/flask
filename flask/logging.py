@@ -54,37 +54,41 @@ def create_logger(app):
     function also removes all attached handlers in case there was a
     logger with the log name before.
     """
-    Logger = getLoggerClass()
-
-    class DebugLogger(Logger):
-        def getEffectiveLevel(x):
-            if x.level == 0 and app.debug:
-                return DEBUG
-            return Logger.getEffectiveLevel(x)
-
-    class DebugHandler(StreamHandler):
-        def emit(self, record):
-            if app.debug and _should_log_for(app, 'debug'):
-                StreamHandler.emit(self, record)
-
-    class ProductionHandler(StreamHandler):
-        def emit(self, record):
-            if not app.debug and _should_log_for(app, 'production'):
-                StreamHandler.emit(self, record)
-
-    debug_handler = DebugHandler()
-    debug_handler.setLevel(DEBUG)
-    debug_handler.setFormatter(Formatter(DEBUG_LOG_FORMAT))
-
-    prod_handler = ProductionHandler(_proxy_stream)
-    prod_handler.setLevel(ERROR)
-    prod_handler.setFormatter(Formatter(PROD_LOG_FORMAT))
-
     logger = getLogger(app.logger_name)
-    # just in case that was not a new logger, get rid of all the handlers
-    # already attached to it.
-    del logger.handlers[:]
-    logger.__class__ = DebugLogger
-    logger.addHandler(debug_handler)
-    logger.addHandler(prod_handler)
+    if app.config['LOGGER_HANDLER_POLICY'] != 'never':
+        Logger = getLoggerClass()
+
+        class DebugLogger(Logger):
+            def getEffectiveLevel(x):
+                if x.level == 0 and app.debug:
+                    return DEBUG
+                return Logger.getEffectiveLevel(x)
+
+        logger.__class__ = DebugLogger
+        # just in case that was not a new logger, get rid of all the handlers
+        # already attached to it.
+        del logger.handlers[:]
+
+    if _should_log_for(app, 'debug'):
+        class DebugHandler(StreamHandler):
+            def emit(self, record):
+                if app.debug:
+                    StreamHandler.emit(self, record)
+
+        debug_handler = DebugHandler()
+        debug_handler.setLevel(DEBUG)
+        debug_handler.setFormatter(Formatter(DEBUG_LOG_FORMAT))
+        logger.addHandler(debug_handler)
+
+    if _should_log_for(app, 'production'):
+        class ProductionHandler(StreamHandler):
+            def emit(self, record):
+                if not app.debug:
+                    StreamHandler.emit(self, record)
+
+        prod_handler = ProductionHandler(_proxy_stream)
+        prod_handler.setLevel(ERROR)
+        prod_handler.setFormatter(Formatter(PROD_LOG_FORMAT))
+        logger.addHandler(prod_handler)
+
     return logger

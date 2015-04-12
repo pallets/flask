@@ -14,7 +14,7 @@ import pytest
 import os
 import datetime
 import flask
-from logging import StreamHandler
+from logging import StreamHandler, getLogger, DEBUG
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
@@ -600,6 +600,27 @@ class TestLogging(object):
             assert flask.url_for('myview', _method='GET') == '/myview/'
             assert flask.url_for('myview', id=42, _method='GET') == '/myview/42'
             assert flask.url_for('myview', _method='POST') == '/myview/create'
+
+    def test_configuration(self):
+        """Test logger configuration before app creation without default
+        logging handlers"""
+        # setup logging
+        from io import StringIO
+        log_output = StringIO()
+        stringio_handler = StreamHandler(log_output)
+        stringio_handler.level = DEBUG
+        logger = getLogger('flask')
+        logger.addHandler(stringio_handler)
+
+        # initialize flask without default logging handlers
+        app = flask.Flask(__name__)
+        app.config.update(LOGGER_NAME='flask',
+                          LOGGER_HANDLER_POLICY='never')
+
+        # log a warning
+        log_message = u'A fair warning.'
+        app.logger.warn(log_message)
+        assert log_output.getvalue() == (log_message + u'\n')
 
 
 class TestNoImports(object):
