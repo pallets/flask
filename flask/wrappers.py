@@ -57,7 +57,7 @@ class JSONMixin(object):
         return self.data
 
     def get_json(self, force=False, silent=False, cache=True):
-        """Parses the incoming JSON request data and returns it.  If parsing
+        """Parses the JSON request/response data and returns it.  If parsing
         fails the :meth:`on_json_loading_failed` will be invoked. By default
         this function will only load the JSON data if :attr:`is_json` is true,
         but this can be overridden by the `force` parameter.
