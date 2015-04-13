@@ -1,4 +1,4 @@
-![image](http://oi58.tinypic.com/23upobq.jpg)
+![image](http://flask.pocoo.org/docs/0.10/_images/logo-full.png)
 
 ##  What is Flask?
 
