@@ -400,9 +400,9 @@ Flask 0.8 introduced a redirect import system that lets users import from
 will have to import from ``flask_foo``.
 
 Should you have code that uses the old ``flask.ext.foo`` format, there is a
-import migration tool included in the Flask repository:
-``scripts/flaskext_migrate.py``. You can run the script using
-``python flaskext_migrate.py <filename>.py`` and it will convert old style
+import migration package developed by Pocoo called `flask-ext-migrate`_. It
+can be installed with ``pip install flask_ext_migrate`` and can be run with
+``flask_ext_migrate <filename>.py``. The script will convert old style
 imports to the new format as well as change function calls such as
 ``flask.ext.foo(var)`` to ``flask_foo(var)``. Although the tool has been
 thoroughly tested, please check over your code to ensure proper modification.
@@ -411,3 +411,4 @@ thoroughly tested, please check over your code to ensure proper modification.
 .. _OAuth extension: http://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
+.. _flask-ext-migrate: https://github.com/pocoo/flask-ext-migrate
