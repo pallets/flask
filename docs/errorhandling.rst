@@ -33,8 +33,6 @@ with errors.
 Error handlers
 --------------
 
-.. versionadded:: 1.0
-
 You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
@@ -63,6 +61,11 @@ are interchangable when handed to the registration methods or decorator
 
 You are however not limited to a :exc:`~werkzeug.exceptions.HTTPException`
 or its code but can register a handler for every exception class you like.
+
+.. versionchanged:: 1.0
+
+   Errorhandlers are now prioritized by specifity instead of the order they're
+   registered in.
 
 Handling
 ````````
