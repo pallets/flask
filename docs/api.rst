@@ -643,6 +643,8 @@ The following converters are available:
 `path`      like the default but also accepts slashes
 =========== ===============================================
 
+Custom converters can be defined using :attr:`flask.Flask.url_map`.
+
 Here are some examples::
 
     @app.route('/')
