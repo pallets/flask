@@ -15,9 +15,9 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import types
 import sys
 import os
-import imp
 
 
 class ExtensionImporter(object):
@@ -118,7 +118,7 @@ class ExtensionImporter(object):
 
 def activate():
     import flask
-    ext_module = imp.new_module('flask.ext')
+    ext_module = types.ModuleType('flask.ext')
     ext_module.__path__ = []
     flask.ext = sys.modules['flask.ext'] = ext_module
     importer = ExtensionImporter(['flask_%s', 'flaskext.%s'], 'flask.ext')
