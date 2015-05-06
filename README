@@ -20,7 +20,7 @@
     ~ What do I need?
 
       All dependencies are installed by using `pip install Flask`.
-      I encourage you to use a virtualenv. Check the docs for
+      We encourage you to use a virtualenv. Check the docs for
       complete installation and usage instructions.
 
     ~ Where are the docs?
