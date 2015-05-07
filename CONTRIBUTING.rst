@@ -43,6 +43,14 @@ install it with::
 
     pip install pytest
 
+Clone this repository::
+
+    git clone https://github.com/mitsuhiko/flask.git
+
+Install Flask as an editable package using the current source::
+
+    pip install --editable . 
+
 Then you can run the testsuite with::
 
     py.test
