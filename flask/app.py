@@ -1408,7 +1408,8 @@ class Flask(_PackageBoundObject):
 
     def _find_error_handler(self, e):
         """Finds a registered error handler for the request’s blueprint.
-        If neither blueprint nor App has a suitable handler registered, returns None
+        Otherwise falls back to the app, returns None if not a suitable
+        handler is found.
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
 
