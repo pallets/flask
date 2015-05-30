@@ -85,7 +85,7 @@ class JSONEncoder(_json.JSONEncoder):
 
 class JSONDecoder(_json.JSONDecoder):
     """The default JSON decoder.  This one does not change the behavior from
-    the default simplejson encoder.  Consult the :mod:`json` documentation
+    the default simplejson decoder.  Consult the :mod:`json` documentation
     for more information.  This decoder is not only used for the load
     functions of this module but also :attr:`~flask.Request`.
     """
