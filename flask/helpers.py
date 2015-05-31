@@ -814,7 +814,7 @@ class _PackageBoundObject(object):
     @property
     def has_static_folder(self):
         """This is ``True`` if the package bound object's container has a
-        folder named ``'static'``.
+        folder for static files.
 
         .. versionadded:: 0.5
         """
