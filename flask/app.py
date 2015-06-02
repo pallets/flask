@@ -1421,7 +1421,7 @@ class Flask(_PackageBoundObject):
             # __mro__
             done = set()
 
-            while True:
+            while queue:
                 cls = queue.popleft()
                 if cls in done:
                     continue

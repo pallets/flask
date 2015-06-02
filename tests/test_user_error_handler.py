@@ -3,6 +3,35 @@ from werkzeug.exceptions import Forbidden, InternalServerError
 import flask
 
 
+def test_error_handler_no_match():
+    app = flask.Flask(__name__)
+
+    class CustomException(Exception):
+        pass
+
+    @app.errorhandler(CustomException)
+    def custom_exception_handler(e):
+        assert isinstance(e, CustomException)
+        return 'custom'
+
+    @app.errorhandler(500)
+    def handle_500(e):
+        return type(e).__name__
+
+    @app.route('/custom')
+    def custom_test():
+        raise CustomException()
+
+    @app.route('/keyerror')
+    def key_error():
+        raise KeyError()
+
+    c = app.test_client()
+
+    assert c.get('/custom').data == b'custom'
+    assert c.get('/keyerror').data == b'KeyError'
+
+
 def test_error_handler_subclass():
     app = flask.Flask(__name__)
 
