@@ -48,7 +48,16 @@ of :func:`~flask.templating.render_template`.
     and therefore was replaced with the intended behavior of registering
     handlers only using exception classes and HTTP error codes.
     
-    Trying to register a handler on an instance now raises :exc:`ValueError`.
+Trying to register a handler on an instance now raises :exc:`ValueError`.
+
+Extension imports of the form ``flask.ext.foo`` are deprecated, you should use
+``flask_foo``.
+
+The old form still works, but Flask will issue a
+``flask.exthook.ExtDeprecationWarning`` for each extension you import the old
+way. We also provide a migration utility called `flask-ext-migrate
+<https://github.com/pocoo/flask-ext-migrate>`_ that is supposed to
+automatically rewrite your imports for this.
 
 .. _upgrading-to-010:
 
