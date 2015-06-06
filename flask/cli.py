@@ -478,6 +478,13 @@ def main(as_module=False):
     this_module = __package__ + '.cli'
     args = sys.argv[1:]
 
+    # Add help option if called with no args so click displays custom commands
+    if not args:
+        ctx = click.Context(cli)
+        help_option_names = cli.get_help_option_names(ctx)
+        if len(help_option_names):
+            args = [help_option_names.pop()]
+
     if as_module:
         if sys.version_info >= (2, 7):
             name = 'python -m ' + this_module.rsplit('.', 1)[0]
