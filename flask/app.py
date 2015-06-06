@@ -159,7 +159,7 @@ class Flask(_PackageBoundObject):
 
     #: The class that is used for the Jinja environment.
     #:
-    #: .. versionadded:: 0.11
+    #: .. versionadded:: 1.0
     jinja_env_class = Environment
 
     #: The class that is used for the :data:`~flask.g` instance.
