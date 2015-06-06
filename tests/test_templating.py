@@ -367,7 +367,7 @@ def test_custom_jinja_env():
         pass
 
     class CustomFlask(flask.Flask):
-        jinja_env_class = CustomEnvironment
+        jinja_environment = CustomEnvironment
 
     app = CustomFlask(__name__)
     assert isinstance(app.jinja_env, CustomEnvironment)
