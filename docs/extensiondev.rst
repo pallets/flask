@@ -27,13 +27,8 @@ The name of the actual extension (the human readable name) however would
 be something like "Flask-SimpleXML".  Make sure to include the name
 "Flask" somewhere in that name and that you check the capitalization.
 This is how users can then register dependencies to your extension in
-their :file:`setup.py` files.
-
-Flask sets up a redirect package called :data:`flask.ext` where users
-should import the extensions from.  If you for instance have a package
-called ``flask_something`` users would import it as
-``flask.ext.something``.  This is done to transition from the old
-namespace packages.  See :ref:`ext-import-transition` for more details.
+their :file:`setup.py` files. See :ref:`ext-import-transition` for details.
+on proper importing of extensions.
 
 But how do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
@@ -399,22 +394,21 @@ extension to be approved you have to follow these guidelines:
 Extension Import Transition
 ---------------------------
 
-For a while we recommended using namespace packages for Flask extensions.
-This turned out to be problematic in practice because many different
-competing namespace package systems exist and pip would automatically
-switch between different systems and this caused a lot of problems for
-users.
+Flask 0.8 introduced a redirect import system that lets users import from
+``flask.ext.foo`` before trying ``flask_foo`` and if that fails
+``flaskext.foo``. This import redirection system has been removed and users
+will have to import from ``flask_foo``.
 
-Instead we now recommend naming packages ``flask_foo`` instead of the now
-deprecated ``flaskext.foo``.  Flask 0.8 introduces a redirect import
-system that lets uses import from ``flask.ext.foo`` and it will try
-``flask_foo`` first and if that fails ``flaskext.foo``.
-
-Flask extensions should urge users to import from ``flask.ext.foo``
-instead of ``flask_foo`` or ``flaskext_foo`` so that extensions can
-transition to the new package name without affecting users.
+Should you have code that uses the old ``flask.ext.foo`` format, there is a
+import migration package developed by Pocoo called `flask-ext-migrate`_. It
+can be installed with ``pip install flask_ext_migrate`` and can be run with
+``flask_ext_migrate <filename>.py``. The script will convert old style
+imports to the new format as well as change function calls such as
+``flask.ext.foo(var)`` to ``flask_foo(var)``. Although the tool has been
+thoroughly tested, please check over your code to ensure proper modification.
 
 
 .. _OAuth extension: http://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
+.. _flask-ext-migrate: https://github.com/pocoo/flask-ext-migrate
