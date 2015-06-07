@@ -45,17 +45,14 @@ def _lookup_app_object(name):
     return getattr(top, name)
 
 
-def _find_app():
-    top = _app_ctx_stack.top
-    if top is None:
-        raise RuntimeError(_app_ctx_err_msg)
-    return top.app
+def _proxy_attr(fn, name):
+    return LocalProxy(partial(fn, name))
 
 
 # context locals
 _request_ctx_stack = LocalStack()
 _app_ctx_stack = LocalStack()
-current_app = LocalProxy(_find_app)
-request = LocalProxy(partial(_lookup_req_object, 'request'))
-session = LocalProxy(partial(_lookup_req_object, 'session'))
-g = LocalProxy(partial(_lookup_app_object, 'g'))
+current_app = _proxy_attr(_lookup_app_object, 'app')
+g = _proxy_attr(_lookup_app_object, 'g')
+request = _proxy_attr(_lookup_req_object, 'request')
+session = _proxy_attr(_lookup_req_object, 'session')
