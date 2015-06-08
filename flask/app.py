@@ -1013,8 +1013,10 @@ class Flask(_PackageBoundObject):
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
-        provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+        provide_automatic_options = options.pop(
+            'provide_automatic_options', getattr(view_func,
+                'provide_automatic_options', None))
+
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
