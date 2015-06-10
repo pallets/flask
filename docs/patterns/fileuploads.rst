@@ -174,3 +174,5 @@ An Easier Solution
 Now there are better solutions that work faster and are more reliable. There
 are JavaScript libraries like jQuery_ that have form plugins to ease the
 construction of progress bar.
+
+.. _jQuery: https://jquery.com/
