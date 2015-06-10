@@ -104,9 +104,9 @@ before storing it directly on the filesystem.
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files. In the 
-:func:`upload_file()` we redirect the user to 
-``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``. 
+Now one last thing is missing: the serving of the uploaded files. In the
+:func:`upload_file()` we redirect the user to
+``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``.
 So we write the :func:`uploaded_file` function to return the file of that name. As
 of Flask 0.5 we can use a function that does that for us::
 
@@ -174,11 +174,3 @@ An Easier Solution
 Now there are better solutions that work faster and are more reliable. There
 are JavaScript libraries like jQuery_ that have form plugins to ease the
 construction of progress bar.
-
-Because the common pattern for file uploads exists almost unchanged in all
-applications dealing with uploads, there is also a Flask extension called
-`Flask-Uploads`_ that implements a full fledged upload mechanism with white and
-blacklisting of extensions and more.
-
-.. _jQuery: https://jquery.com/
-.. _Flask-Uploads: http://pythonhosted.org/Flask-Uploads/
