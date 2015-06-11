@@ -798,7 +798,9 @@ class _PackageBoundObject(object):
             return os.path.join(self.root_path, self._static_folder)
     def _set_static_folder(self, value):
         self._static_folder = value
-    static_folder = property(_get_static_folder, _set_static_folder)
+    static_folder = property(_get_static_folder, _set_static_folder, doc='''
+    The absolute path to the configured static folder.
+    ''')
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
