@@ -118,6 +118,8 @@ The most common reason is a typo or because you did not actually create an
 Debug Mode
 ----------
 
+(Want to just log errors and stack traces? See :ref:`application-errors`)
+
 The :command:`flask` script is nice to start a local development server, but
 you would have to restart it manually after each change to your code.
 That is not very nice and Flask can do better.  If you enable debug

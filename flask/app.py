@@ -157,6 +157,11 @@ class Flask(_PackageBoundObject):
     #: :class:`~flask.Response` for more information.
     response_class = Response
 
+    #: The class that is used for the Jinja environment.
+    #:
+    #: .. versionadded:: 1.0
+    jinja_environment = Environment
+
     #: The class that is used for the :data:`~flask.g` instance.
     #:
     #: Example use cases for a custom class:
@@ -680,7 +685,7 @@ class Flask(_PackageBoundObject):
                 options['auto_reload'] = self.config['TEMPLATES_AUTO_RELOAD']
             else:
                 options['auto_reload'] = self.debug
-        rv = Environment(self, **options)
+        rv = self.jinja_environment(self, **options)
         rv.globals.update(
             url_for=url_for,
             get_flashed_messages=get_flashed_messages,
@@ -1421,7 +1426,7 @@ class Flask(_PackageBoundObject):
             # __mro__
             done = set()
 
-            while True:
+            while queue:
                 cls = queue.popleft()
                 if cls in done:
                     continue

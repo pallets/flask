@@ -6,7 +6,7 @@ have a Flask integration but it became unnecessary after some
 restructuring of the internals of Celery with Version 3.  This guide fills
 in the blanks in how to properly use Celery with Flask but assumes that
 you generally already read the `First Steps with Celery
-<http://docs.celeryproject.org/en/master/getting-started/first-steps-with-celery.html>`_
+<http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html>`_
 guide in the official Celery documentation.
 
 Installing Celery
@@ -36,7 +36,8 @@ This is all that is necessary to properly integrate Celery with Flask::
     from celery import Celery
 
     def make_celery(app):
-        celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+        celery = Celery(app.import_name, backend=app.config['CELERY_BACKEND'],
+                        broker=app.config['CELERY_BROKER_URL'])
         celery.conf.update(app.config)
         TaskBase = celery.Task
         class ContextTask(TaskBase):

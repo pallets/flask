@@ -274,7 +274,7 @@ this code to get the current user::
         return user
 
 For a test it would be nice to override this user from the outside without
-having to change some code.  This can trivially be accomplished with
+having to change some code.  This can be accomplished with
 hooking the :data:`flask.appcontext_pushed` signal::
 
     from contextlib import contextmanager

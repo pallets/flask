@@ -361,3 +361,13 @@ def test_template_loader_debugging(test_apps):
             app.config['EXPLAIN_TEMPLATE_LOADING'] = old_load_setting
 
     assert len(called) == 1
+
+def test_custom_jinja_env():
+    class CustomEnvironment(flask.templating.Environment):
+        pass
+
+    class CustomFlask(flask.Flask):
+        jinja_environment = CustomEnvironment
+
+    app = CustomFlask(__name__)
+    assert isinstance(app.jinja_env, CustomEnvironment)
