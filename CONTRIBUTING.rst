@@ -2,7 +2,7 @@
 How to contribute to Flask
 ==========================
 
-Thanks for considering contributing to Flask. 
+Thanks for considering contributing to Flask.
 
 Support questions
 =================
@@ -49,16 +49,16 @@ Clone this repository::
 
 Install Flask as an editable package using the current source::
 
-    pip install --editable . 
+    pip install --editable .
 
 Then you can run the testsuite with::
 
     py.test
 
 With only py.test installed, a large part of the testsuite will get skipped
-though.  Whether this is relevant depends on which part of Werkzeug you're
-working on.  Travis is set up to run the full testsuite when you submit your
-pull request anyways.
+though.  Whether this is relevant depends on which part of Flask you're working
+on.  Travis is set up to run the full testsuite when you submit your pull
+request anyways.
 
 If you really want to test everything, you will have to install ``tox`` instead
 of ``pytest``. Currently we're depending on a development version of Tox
