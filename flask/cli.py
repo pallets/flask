@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.run
+    flask.cli
     ~~~~~~~~~
 
     A simple command line application to run flask apps.
