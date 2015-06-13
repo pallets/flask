@@ -101,7 +101,6 @@ class Blueprint(_PackageBoundObject):
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.deferred_functions = []
-        self.view_functions = {}
         if url_defaults is None:
             url_defaults = {}
         self.url_values_defaults = url_defaults
