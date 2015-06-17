@@ -526,6 +526,12 @@ Signals
    signal is invoked with the instance of the template as `template`
    and the context as dictionary (named `context`).
 
+.. data:: before_render_template
+
+   This signal is sent before template rendering process. The
+   signal is invoked with the instance of the template as `template`
+   and the context as dictionary (named `context`).
+
 .. data:: request_started
 
    This signal is sent before any request processing started but when the
