@@ -538,6 +538,23 @@ The following signals exist in Flask:
         from flask import template_rendered
         template_rendered.connect(log_template_renders, app)
 
+.. data:: flask.before_render_template
+   :noindex:
+
+   This signal is sent before template rendering process. The
+   signal is invoked with the instance of the template as `template`
+   and the context as dictionary (named `context`).
+
+   Example subscriber::
+
+        def log_template_renders(sender, template, context, **extra):
+            sender.logger.debug('Rendering template "%s" with context %s',
+                                template.name or 'string template',
+                                context)
+
+        from flask import before_render_template
+        before_render_template.connect(log_template_renders, app)
+
 .. data:: request_started
 
    This signal is sent when the request context is set up, before
