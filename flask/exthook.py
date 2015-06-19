@@ -66,8 +66,10 @@ class ExtensionImporter(object):
 
         modname = fullname.split('.', self.prefix_cutoff)[self.prefix_cutoff]
 
-        warnings.warn("flask.ext.{x} is deprecated, use flask_{x} instead."
-                      .format(x=modname), ExtDeprecationWarning)
+        warnings.warn(
+            "Importing flask.ext.{x} is deprecated, use flask_{x} instead."
+            .format(x=modname), ExtDeprecationWarning
+        )
 
         for path in self.module_choices:
             realname = path % modname
@@ -96,6 +98,14 @@ class ExtensionImporter(object):
             module = sys.modules[fullname] = sys.modules[realname]
             if '.' not in modname:
                 setattr(sys.modules[self.wrapper_module], modname, module)
+
+            if realname.startswith('flaskext.'):
+                warnings.warn(
+                    "Detected extension named flaskext.{x}, please rename it "
+                    "to flask_{x}. The old form is deprecated."
+                    .format(x=modname), ExtDeprecationWarning
+                )
+
             return module
         raise ImportError('No module named %s' % fullname)
 
