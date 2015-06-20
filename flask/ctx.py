@@ -31,6 +31,15 @@ class _AppCtxGlobals(object):
     def get(self, name, default=None):
         return self.__dict__.get(name, default)
 
+    def pop(self, name, default=_sentinel):
+        if default is _sentinel:
+            return self.__dict__.pop(name)
+        else:
+            return self.__dict__.pop(name, default)
+
+    def setdefault(self, name, default=None):
+        self.__dict__.setdefault(name, default)
+
     def __contains__(self, item):
         return item in self.__dict__
 
