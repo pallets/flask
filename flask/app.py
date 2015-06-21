@@ -1963,13 +1963,6 @@ class Flask(_PackageBoundObject):
                 error = None
             ctx.auto_pop(error)
 
-    @property
-    def modules(self):
-        from warnings import warn
-        warn(DeprecationWarning('Flask.modules is deprecated, use '
-                                'Flask.blueprints instead'), stacklevel=2)
-        return self.blueprints
-
     def __call__(self, environ, start_response):
         """Shortcut for :attr:`wsgi_app`."""
         return self.wsgi_app(environ, start_response)
