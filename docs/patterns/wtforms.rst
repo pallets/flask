@@ -1,7 +1,7 @@
 Form Validation with WTForms
 ============================
 
-When you have to work with form data submitted by a browser view code
+When you have to work with form data submitted by a browser view, code
 quickly becomes very hard to read.  There are libraries out there designed
 to make this process easier to manage.  One of them is `WTForms`_ which we
 will handle here.  If you find yourself in the situation of having many
