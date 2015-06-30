@@ -289,6 +289,9 @@ thing, like it does for :class:`request` and :class:`session`.
    It's now also possible to use the ``in`` operator on it to see if an
    attribute is defined and it yields all keys on iteration.
 
+   As of 1.0 you can use :meth:`pop` and :meth:`setdefault` in the same
+   way you would use them on a dictionary.
+
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 
