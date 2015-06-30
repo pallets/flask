@@ -37,6 +37,10 @@ Now the inheritance hierarchy takes precedence and handlers for more
 specific exception classes are executed instead of more general ones.
 See :ref:`error-handlers` for specifics.
 
+The :func:`~flask.templating.render_template_string` function has changed to
+autoescape template variables by default. This better matches the behavior
+of :func:`~flask.templating.render_template`.
+
 .. note::
 
     There used to be a logic error allowing you to register handlers
