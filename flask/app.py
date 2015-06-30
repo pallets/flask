@@ -724,12 +724,12 @@ class Flask(_PackageBoundObject):
 
     def select_jinja_autoescape(self, filename):
         """Returns ``True`` if autoescaping should be active for the given
-        template name.
+        template name. If no template name is given, returns `True`.
 
         .. versionadded:: 0.5
         """
         if filename is None:
-            return False
+            return True
         return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
 
     def update_template_context(self, context):
@@ -1090,14 +1090,14 @@ class Flask(_PackageBoundObject):
             exc_class = default_exceptions[exc_class_or_code]
         else:
             exc_class = exc_class_or_code
-        
+
         assert issubclass(exc_class, Exception)
-        
+
         if issubclass(exc_class, HTTPException):
             return exc_class, exc_class.code
         else:
             return exc_class, None
-    
+
     @setupmethod
     def errorhandler(self, code_or_exception):
         """A decorator that is used to register a function give a given
@@ -1166,9 +1166,9 @@ class Flask(_PackageBoundObject):
                 'Tried to register a handler for an exception instance {0!r}. '
                 'Handlers can only be registered for exception classes or HTTP error codes.'
                 .format(code_or_exception))
-        
+
         exc_class, code = self._get_exc_class_and_code(code_or_exception)
-        
+
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
         handlers[exc_class] = f
 
@@ -1460,7 +1460,7 @@ class Flask(_PackageBoundObject):
         # those unchanged as errors
         if e.code is None:
             return e
-        
+
         handler = self._find_error_handler(e)
         if handler is None:
             return e
@@ -1503,12 +1503,12 @@ class Flask(_PackageBoundObject):
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
-        
+
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
 
         handler = self._find_error_handler(e)
-        
+
         if handler is None:
             reraise(exc_type, exc_value, tb)
         return handler(e)

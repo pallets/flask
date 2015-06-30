@@ -18,7 +18,10 @@ Jinja Setup
 Unless customized, Jinja2 is configured by Flask as follows:
 
 -   autoescaping is enabled for all templates ending in ``.html``,
-    ``.htm``, ``.xml`` as well as ``.xhtml``
+    ``.htm``, ``.xml`` as well as ``.xhtml`` when using
+    :func:`~flask.templating.render_template`.
+-   autoescaping is enabled for all strings when using
+    :func:`~flask.templating.render_template_string`.
 -   a template has the ability to opt in/out autoescaping with the
     ``{% autoescape %}`` tag.
 -   Flask inserts a couple of global functions and helpers into the

@@ -67,6 +67,8 @@ Version 1.0
 - Don't leak exception info of already catched exceptions to context teardown
   handlers (pull request ``#1393``).
 - Allow custom Jinja environment subclasses (pull request ``#1422``).
+- Turn on autoescape for ``flask.templating.render_template_string`` by default
+  (pull request ``#1515``).
 
 Version 0.10.2
 --------------
