@@ -47,13 +47,23 @@ def test_request_context_reset_correctly():
     app = flask.Flask(__name__)
 
     class BadSessionInterface(object):
+
+        """Fails once."""
+        fail = True
+
         def open_session(*args, **kwargs):
-            raise Exception()
+            if self.fail:
+                setattr(flask.g, "test_g_attr", 1)
+                self.fail = False
+                raise Exception()
 
     app.session_interface = BadSessionInterface()
 
-    with app.test_request_context():
-        setattr(flask.g, "test_g_attr", 1)
+    try:
+        with app.test_request_context():
+            pass
+    except:
+        pass
 
     with app.test_request_context():
         assert getattr(flask.g, "test_g_attr", None) is None
