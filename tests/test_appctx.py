@@ -43,6 +43,21 @@ def test_request_context_means_app_context():
         assert flask.current_app._get_current_object() == app
     assert flask._app_ctx_stack.top is None
 
+def test_request_context_reset_correctly():
+    app = flask.Flask(__name__)
+
+    class BadSessionInterface(object):
+        def open_session(*args, **kwargs):
+            raise Exception()
+
+    app.session_interface = BadSessionInterface()
+
+    with app.test_request_context():
+        setattr(flask.g, "test_g_attr", 1)
+
+    with app.test_request_context():
+        assert getattr(flask.g, "test_g_attr", None) is None
+
 def test_app_context_provides_current_app():
     app = flask.Flask(__name__)
     with app.app_context():
