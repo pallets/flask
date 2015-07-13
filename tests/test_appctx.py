@@ -51,11 +51,13 @@ def test_request_context_reset_correctly():
         """Fails once."""
         fail = True
 
-        def open_session(*args, **kwargs):
+        def open_session(self, *args, **kwargs):
             if self.fail:
                 setattr(flask.g, "test_g_attr", 1)
                 self.fail = False
                 raise Exception()
+        def make_null_session(self, *args, **kwargs):
+            return None
 
     app.session_interface = BadSessionInterface()
 
