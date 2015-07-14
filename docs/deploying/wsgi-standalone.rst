@@ -31,7 +31,7 @@ Gevent
 -------
 
 `Gevent`_ is a coroutine-based Python networking library that uses
-`greenlet`_ to provide a high-level synchronous API on top of `libevent`_
+`greenlet`_ to provide a high-level synchronous API on top of `libev`_
 event loop::
 
     from gevent.wsgi import WSGIServer
@@ -42,7 +42,7 @@ event loop::
 
 .. _Gevent: http://www.gevent.org/
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
-.. _libevent: http://libevent.org/
+.. _libev: http://software.schmorp.de/pkg/libev.html
 
 Twisted Web
 -----------
