@@ -23,6 +23,8 @@ Version 0.10.2
 - Changed logic of before first request handlers to flip the flag after
   invoking.  This will allow some uses that are potentially dangerous but
   should probably be permitted.
+- Fixed Python 3 bug when a handler from `app.url_build_error_handlers`
+  reraises the `BuildError`.
 
 Version 0.10.1
 --------------
