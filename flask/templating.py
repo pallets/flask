@@ -113,6 +113,7 @@ def _render(template, context, app):
 def render_template(template_name_or_list, **context):
     """Renders a template from the template folder with the given
     context.
+
     :param template_name_or_list: the name of the template to be
                                   rendered, or an iterable with template names
                                   the first one existing will be rendered
