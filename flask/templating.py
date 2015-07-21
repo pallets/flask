@@ -12,7 +12,7 @@ from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
 from ._compat import string_types
-from .globals import _request_ctx_stack, _app_ctx_stack, current_app, request
+from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered, before_render_template
 
 
@@ -124,9 +124,10 @@ def render_template(template_name_or_list, **context):
 
     template = None
 
-    if request.blueprint is not None and \
+    if _request_ctx_stack.top is not None and \
+            _request_ctx_stack.top.blueprint is not None and \
             isinstance(template_name_or_list, string_types):
-        bp = current_app.blueprints[request.blueprint]
+        bp = ctx.app.blueprints[_request_ctx_stack.top.blueprint]
         try:
             template = bp.jinja_loader.load(ctx.app.jinja_env,
                                             template_name_or_list,
