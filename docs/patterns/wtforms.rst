@@ -1,7 +1,7 @@
 Form Validation with WTForms
 ============================
 
-When you have to work with form data submitted by a browser view code
+When you have to work with form data submitted by a browser view, code
 quickly becomes very hard to read.  There are libraries out there designed
 to make this process easier to manage.  One of them is `WTForms`_ which we
 will handle here.  If you find yourself in the situation of having many
@@ -12,10 +12,10 @@ first.  I recommend breaking up the application into multiple modules
 (:ref:`larger-applications`) for that and adding a separate module for the
 forms.
 
-.. admonition:: Getting most of WTForms with an Extension
+.. admonition:: Getting the most out of WTForms with an Extension
 
-   The `Flask-WTF`_ extension expands on this pattern and adds a few
-   handful little helpers that make working with forms and Flask more
+   The `Flask-WTF`_ extension expands on this pattern and adds a
+   few little helpers that make working with forms and Flask more
    fun.  You can get it from `PyPI
    <https://pypi.python.org/pypi/Flask-WTF>`_.
 
@@ -54,8 +54,8 @@ In the view function, the usage of this form looks like this::
             return redirect(url_for('login'))
         return render_template('register.html', form=form)
 
-Notice that we are implying that the view is using SQLAlchemy here
-(:ref:`sqlalchemy-pattern`) but this is no requirement of course.  Adapt
+Notice we're implying that the view is using SQLAlchemy here
+(:ref:`sqlalchemy-pattern`), but that's not a requirement, of course.  Adapt
 the code as necessary.
 
 Things to remember:
@@ -64,14 +64,14 @@ Things to remember:
    the data is submitted via the HTTP ``POST`` method and
    :attr:`~flask.request.args` if the data is submitted as ``GET``.
 2. to validate the data, call the :func:`~wtforms.form.Form.validate`
-   method which will return ``True`` if the data validates, ``False``
+   method, which will return ``True`` if the data validates, ``False``
    otherwise.
 3. to access individual values from the form, access `form.<NAME>.data`.
 
 Forms in Templates
 ------------------
 
-Now to the template side.  When you pass the form to the templates you can
+Now to the template side.  When you pass the form to the templates, you can
 easily render them there.  Look at the following example template to see
 how easy this is.  WTForms does half the form generation for us already.
 To make it even nicer, we can write a macro that renders a field with
@@ -95,14 +95,14 @@ Here's an example :file:`_formhelpers.html` template with such a macro:
     {% endmacro %}
 
 This macro accepts a couple of keyword arguments that are forwarded to
-WTForm's field function that renders the field for us.  The keyword
-arguments will be inserted as HTML attributes.  So for example you can
+WTForm's field function, which renders the field for us.  The keyword
+arguments will be inserted as HTML attributes.  So, for example, you can
 call ``render_field(form.username, class='username')`` to add a class to
 the input element.  Note that WTForms returns standard Python unicode
-strings, so we have to tell Jinja2 that this data is already HTML escaped
+strings, so we have to tell Jinja2 that this data is already HTML-escaped
 with the ``|safe`` filter.
 
-Here the :file:`register.html` template for the function we used above which
+Here is the :file:`register.html` template for the function we used above, which
 takes advantage of the :file:`_formhelpers.html` template:
 
 .. sourcecode:: html+jinja
