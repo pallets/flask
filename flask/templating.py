@@ -126,9 +126,9 @@ def render_template(template_name_or_list, **context):
     template = None
 
     if _request_ctx_stack.top is not None and \
-            _request_ctx_stack.top.blueprint is not None and \
+            _request_ctx_stack.top.request.blueprint is not None and \
             isinstance(template_name_or_list, string_types):
-        bp = ctx.app.blueprints[_request_ctx_stack.top.blueprint]
+        bp = ctx.app.blueprints[_request_ctx_stack.top.request.blueprint]
         try:
             template = bp.jinja_loader.load(ctx.app.jinja_env,
                                             template_name_or_list,
