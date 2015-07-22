@@ -325,14 +325,6 @@ class RequestContext(object):
 
         _request_ctx_stack.push(self)
 
-        # Open the session at the moment that the request context is
-        # available. This allows a custom open_session method to use the
-        # request context (e.g. code that access database information
-        # stored on `g` instead of the appcontext).
-        self.session = self.app.open_session(self.request)
-        if self.session is None:
-            self.session = self.app.make_null_session()
-
     def pop(self, exc=_sentinel):
         """Pops the request context and unbinds it by doing that.  This will
         also trigger the execution of functions registered by the

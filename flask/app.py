@@ -1923,6 +1923,15 @@ class Flask(_PackageBoundObject):
         finally:
             builder.close()
 
+    def ctx_open_session(self):
+        """Opens session for current request context using session_interface.
+        """
+        ctx = _request_ctx_stack.top
+        session = self.open_session(ctx.request)
+        if session is None:
+            session = self.make_null_session()
+        ctx.session = session
+
     def wsgi_app(self, environ, start_response):
         """The actual WSGI application.  This is not implemented in
         `__call__` so that middlewares can be applied without losing a
@@ -1953,6 +1962,7 @@ class Flask(_PackageBoundObject):
         error = None
         try:
             try:
+                self.ctx_open_session()
                 response = self.full_dispatch_request()
             except Exception as e:
                 error = e
