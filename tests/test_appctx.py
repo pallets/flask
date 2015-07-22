@@ -63,11 +63,12 @@ def test_request_context_reset_correctly():
 
     try:
         with app.test_request_context():
-            pass
+            app.ctx_open_session()
     except:
         pass
 
     with app.test_request_context():
+        app.ctx_open_session()
         assert getattr(flask.g, "test_g_attr", None) is None
 
 def test_app_context_provides_current_app():

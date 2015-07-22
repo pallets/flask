@@ -314,6 +314,7 @@ def test_missing_session():
         else:
             assert False, 'expected exception'
     with app.test_request_context():
+        app.ctx_open_session()
         assert flask.session.get('missing_key') is None
         expect_exception(flask.session.__setitem__, 'foo', 42)
         expect_exception(flask.session.pop, 'foo')
@@ -454,6 +455,7 @@ def test_flashes():
     app.secret_key = 'testkey'
 
     with app.test_request_context():
+        app.ctx_open_session()
         assert not flask.session.modified
         flask.flash('Zap')
         flask.session.modified = False
