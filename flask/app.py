@@ -1769,8 +1769,9 @@ class Flask(_PackageBoundObject):
                 rv = handler(error, endpoint, values)
                 if rv is not None:
                     return rv
-            except BuildError as error:
-                pass
+            except BuildError as e:
+                # make error available outside except block (py3)
+                error = e
 
         # At this point we want to reraise the exception.  If the error is
         # still the same one we can reraise it with the original traceback,
