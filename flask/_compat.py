@@ -54,15 +54,14 @@ else:
 
 
 def with_metaclass(meta, *bases):
+    """Create a base class with a metaclass."""
     # This requires a bit of explanation: the basic idea is to make a
     # dummy metaclass for one level of class instantiation that replaces
     # itself with the actual metaclass.
-    #
-    # This has the advantage over six.with_metaclass in that it does not
-    # introduce dummy classes into the final MRO.
-    constructor = lambda c, name, b, dct: meta(name, bases, dct)
-    metaclass = type('with_metaclass', (type,), {'__new__': constructor})
-    return type.__new__(metaclass, 'temporary_class', (object,), {})
+    class metaclass(type):
+        def __new__(cls, name, this_bases, d):
+            return meta(name, bases, d)
+    return type.__new__(metaclass, 'temporary_class', (), {})
 
 
 # Certain versions of pypy have a bug where clearing the exception stack
