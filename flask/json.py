@@ -244,7 +244,7 @@ def jsonify(*args, **kwargs):
 
     # Note that we add '\n' to end of response
     # (see https://github.com/mitsuhiko/flask/pull/1262)
-    if type(*args) == type ([]):
+    if type(*args, **kwargs) == type ([]):
         rv = current_app.response_class(
             (dumps(list(*args, **kwargs), indent=indent, separators=separators),
              '\n'),
