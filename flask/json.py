@@ -244,11 +244,18 @@ def jsonify(*args, **kwargs):
 
     # Note that we add '\n' to end of response
     # (see https://github.com/mitsuhiko/flask/pull/1262)
-    rv = current_app.response_class(
-        (dumps(dict(*args, **kwargs), indent=indent, separators=separators),
-         '\n'),
-        mimetype='application/json')
-    return rv
+    if type(*args, **kwargs) == type ([]):
+        rv = current_app.response_class(
+            (dumps(list(*args, **kwargs), indent=indent, separators=separators),
+             '\n'),
+            mimetype='application/json')
+        return rv
+    else:
+        rv = current_app.response_class(
+            (dumps(dict(*args, **kwargs), indent=indent, separators=separators),
+             '\n'),
+            mimetype='application/json')
+        return rv
 
 
 def tojson_filter(obj, **kwargs):
