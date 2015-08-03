@@ -129,12 +129,13 @@ def render_template(template_name_or_list, **context):
             _request_ctx_stack.top.request.blueprint is not None and \
             isinstance(template_name_or_list, string_types):
         bp = ctx.app.blueprints[_request_ctx_stack.top.request.blueprint]
-        try:
-            template = bp.jinja_loader.load(ctx.app.jinja_env,
-                                            template_name_or_list,
-                                            ctx.app.jinja_env.globals)
-        except TemplateNotFound:
-            pass
+        if bp.jinja_loader is not None:
+            try:
+                template = bp.jinja_loader.load(ctx.app.jinja_env,
+                                                template_name_or_list,
+                                                ctx.app.jinja_env.globals)
+            except TemplateNotFound:
+                pass
 
     if template is None:
         template = ctx.app.jinja_env\
