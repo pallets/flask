@@ -34,7 +34,7 @@ and was developed with best intentions in mind.
 
     $ py.test
 
-~ Where can I get help?
+### Where can I get help?
 
   Either use the #pocoo IRC channel on irc.freenode.net or
   ask on the mailinglist: http://flask.pocoo.org/mailinglist/
