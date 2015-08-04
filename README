@@ -1,47 +1,44 @@
+## Flask
 
+web development, one drop at a time
 
-                          // Flask //
+### What is Flask?
 
-              web development, one drop at a time
+Flask is a microframework for Python based on Werkzeug
+and Jinja2.  It's intended for getting started very quickly
+and was developed with best intentions in mind.
 
+### Is it ready?
 
-    ~ What is Flask?
+  It's still not 1.0 but it's shaping up nicely and is
+  already widely used.  Consider the API to slightly
+  improve over time but we don't plan on breaking it.
 
-      Flask is a microframework for Python based on Werkzeug
-      and Jinja2.  It's intended for getting started very quickly
-      and was developed with best intentions in mind.
+### What do I need?
 
-    ~ Is it ready?
+  All dependencies are installed by using `pip install Flask`.
+  We encourage you to use a virtualenv. Check the docs for
+  complete installation and usage instructions.
 
-      It's still not 1.0 but it's shaping up nicely and is
-      already widely used.  Consider the API to slightly
-      improve over time but we don't plan on breaking it.
+### Where are the docs?
 
-    ~ What do I need?
+  Go to http://flask.pocoo.org/docs/ for a prebuilt version
+  of the current documentation.  Otherwise build them yourself
+  from the sphinx sources in the docs folder.
 
-      All dependencies are installed by using `pip install Flask`.
-      We encourage you to use a virtualenv. Check the docs for
-      complete installation and usage instructions.
+### Where are the tests?
 
-    ~ Where are the docs?
+  Good that you're asking.  The tests are in the
+  tests/ folder.  To run the tests use the
+  `py.test` testing tool:
 
-      Go to http://flask.pocoo.org/docs/ for a prebuilt version
-      of the current documentation.  Otherwise build them yourself
-      from the sphinx sources in the docs folder.
+    $ py.test
 
-    ~ Where are the tests?
+~ Where can I get help?
 
-      Good that you're asking.  The tests are in the
-      tests/ folder.  To run the tests use the
-      `py.test` testing tool:
+  Either use the #pocoo IRC channel on irc.freenode.net or
+  ask on the mailinglist: http://flask.pocoo.org/mailinglist/
 
-        $ py.test
-
-    ~ Where can I get help?
-
-      Either use the #pocoo IRC channel on irc.freenode.net or
-      ask on the mailinglist: http://flask.pocoo.org/mailinglist/
-
-      See http://flask.pocoo.org/community/ for more resources.
+  See http://flask.pocoo.org/community/ for more resources.
 
 
