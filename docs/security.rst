@@ -125,8 +125,10 @@ Not very uncommon:
 .. sourcecode:: javascript
 
     [
-        {"username": "admin",
-         "email": "admin@localhost"}
+        {
+            "username": "admin",
+            "email": "admin@localhost"
+        }
     ]
 
 And it is doing that of course only as long as you are logged in and only
