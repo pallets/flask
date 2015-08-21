@@ -44,6 +44,11 @@ directive which will make requests to ``/yourapplication`` be directed to
 application (without extension). ``app`` is the callable inside of your
 application (usually the line reads ``app = Flask(__name__)``.
 
+If you want to deploy your flask application inside of a virtual environment,
+you need to also add ``--virtualenv /path/to/virtual/environment``. You might
+also need to add ``--plugin python`` or ``--plugin python3`` depending on which
+python version you use for your project.
+
 Configuring nginx
 -----------------
 
