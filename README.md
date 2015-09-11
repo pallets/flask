@@ -1,7 +1,6 @@
 
 
-#FLASK
-##### web development, one drop at a time
+#[Flask](https://github.com/mitsuhiko/flask) - web development, one drop at a time
 
 
 ### What is Flask?
@@ -26,14 +25,14 @@ complete installation and usage instructions.
 
 Go to the [online doc](http://flask.pocoo.org/docs/) for a prebuilt version
 of the current documentation.  Otherwise build them yourself
-from the sphinx sources [here](https://github.com/vivekanand1101/flask/tree/master/docs)
+from the [sphinx](http://sphinx-doc.org/) sources [here](https://github.com/vivekanand1101/flask/tree/master/docs)
 
 ### Where are the tests?
 
 Good that you're asking.  The tests are in [here](https://github.com/vivekanand1101/flask/tree/master/tests).  To run the tests use the
 `py.test` testing tool:
 
-    `$ py.test`
+    $ py.test
 
 ### Where can I get help?
 
