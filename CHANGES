@@ -67,6 +67,9 @@ Version 1.0
 - Don't leak exception info of already catched exceptions to context teardown
   handlers (pull request ``#1393``).
 - Allow custom Jinja environment subclasses (pull request ``#1422``).
+- ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
+- Turn on autoescape for ``flask.templating.render_template_string`` by default
+  (pull request ``#1515``).
 
 Version 0.10.2
 --------------
@@ -88,6 +91,8 @@ Version 0.10.2
 - Changed logic of before first request handlers to flip the flag after
   invoking.  This will allow some uses that are potentially dangerous but
   should probably be permitted.
+- Fixed Python 3 bug when a handler from `app.url_build_error_handlers`
+  reraises the `BuildError`.
 
 Version 0.10.1
 --------------

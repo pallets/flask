@@ -1069,6 +1069,18 @@ def test_build_error_handler():
         assert flask.url_for('spam') == '/test_handler/'
 
 
+def test_build_error_handler_reraise():
+    app = flask.Flask(__name__)
+
+    # Test a custom handler which reraises the BuildError
+    def handler_raises_build_error(error, endpoint, values):
+        raise error
+    app.url_build_error_handlers.append(handler_raises_build_error)
+
+    with app.test_request_context():
+        pytest.raises(BuildError, flask.url_for, 'not.existing')
+
+
 def test_custom_converters():
     from werkzeug.routing import BaseConverter
 
