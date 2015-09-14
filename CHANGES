@@ -70,9 +70,9 @@ Version 1.0
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).
-- Added support for `provide_automatic_options` in `**kwargs` on
-  :meth:`add_url_rule` to turn off automatic OPTIONS when the `view_func`
-  argument is not a class (pull request ``#1489``).
+- Added support for `provide_automatic_options` in :meth:`add_url_rule` to
+  turn off automatic OPTIONS when the `view_func` argument is not a class
+  (pull request ``#1489``).
 
 Version 0.10.2
 --------------
