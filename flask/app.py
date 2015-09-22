@@ -515,6 +515,10 @@ class Flask(_PackageBoundObject):
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
+        # tracks internally if the application is adding a new rule that has
+        # already been added previously.
+        self.prior_rules = {}
+
         # tracks internally if the application already handled at least one
         # request.
         self._got_first_request = False
@@ -1029,6 +1033,32 @@ class Flask(_PackageBoundObject):
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
 
+        # a bound subdomain's null value is '' and a unbound is None.
+        current_subdomain = rule.subdomain
+        if current_subdomain is None:
+            # Normalizing.
+            current_subdomain = ''
+        prior_rule_check = (rule.rule, current_subdomain)
+        if prior_rule_check in self.prior_rules:
+            # static/<path:filename> is added once per blueprint. Ignoring for
+            # this check.
+            if rule.rule != "/static/<path:filename>":
+                prior_rule_methods = self.prior_rules.get(
+                    prior_rule_check,
+                    None)
+                # Flask adds non-specified methods to routes. Removing the
+                # required methods so we don't get false positives.
+                intersection_minus_required = bool(
+                    (rule.methods & prior_rule_methods) - required_methods)
+                if intersection_minus_required:
+                    error = ('View function mapping is overwriting an existing '
+                            'URL Rule: path: %s,  method: %s' % (
+                                rule,
+                                intersection_minus_required))
+                    raise AssertionError(error)
+        else:
+            self.prior_rules[prior_rule_check] = rule.methods
+
         self.url_map.add(rule)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
@@ -1090,14 +1120,14 @@ class Flask(_PackageBoundObject):
             exc_class = default_exceptions[exc_class_or_code]
         else:
             exc_class = exc_class_or_code
-        
+
         assert issubclass(exc_class, Exception)
-        
+
         if issubclass(exc_class, HTTPException):
             return exc_class, exc_class.code
         else:
             return exc_class, None
-    
+
     @setupmethod
     def errorhandler(self, code_or_exception):
         """A decorator that is used to register a function give a given
@@ -1166,9 +1196,9 @@ class Flask(_PackageBoundObject):
                 'Tried to register a handler for an exception instance {0!r}. '
                 'Handlers can only be registered for exception classes or HTTP error codes.'
                 .format(code_or_exception))
-        
+
         exc_class, code = self._get_exc_class_and_code(code_or_exception)
-        
+
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
         handlers[exc_class] = f
 
@@ -1460,7 +1490,7 @@ class Flask(_PackageBoundObject):
         # those unchanged as errors
         if e.code is None:
             return e
-        
+
         handler = self._find_error_handler(e)
         if handler is None:
             return e
@@ -1503,12 +1533,12 @@ class Flask(_PackageBoundObject):
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
-        
+
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
 
         handler = self._find_error_handler(e)
-        
+
         if handler is None:
             reraise(exc_type, exc_value, tb)
         return handler(e)
