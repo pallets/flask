@@ -15,21 +15,21 @@ from werkzeug.exceptions import BadRequest
 from . import json
 from .globals import _app_ctx_stack
 
-_missing = object()
-
 
 class JSONMixin(object):
-    """Mixin for both request and response classes to provide JSON parsing
-    capabilities.
+    """Common mixin for both request and response objects to provide JSON
+    parsing capabilities.
 
     .. versionadded:: 0.12
     """
 
     @property
     def is_json(self):
-        """Indicates if this request/response is JSON or not.  By default it
-        is considered to include JSON data if the mimetype is
+        """Indicates if this request/response is in JSON format or not.  By
+        default it is considered to include JSON data if the mimetype is
         :mimetype:`application/json` or :mimetype:`application/*+json`.
+
+        .. versionadded:: 1.0
         """
         mt = self.mimetype
         if mt == 'application/json':
@@ -40,14 +40,14 @@ class JSONMixin(object):
 
     @property
     def json(self):
-        """If the mimetype is :mimetype:`application/json` this will contain the
-        parsed JSON data.  Otherwise this will be ``None``.
+        """If this request/response is in JSON format then this property will
+        contain the parsed JSON data.  Otherwise it will be ``None``.
 
         The :meth:`get_json` method should be used instead.
         """
         from warnings import warn
-        warn(DeprecationWarning('json is deprecated.  '
-                                'Use get_json() instead.'), stacklevel=2)
+        warn(DeprecationWarning(
+            'json is deprecated.  Use get_json() instead.'), stacklevel=2)
         return self.get_json()
 
     def _get_data_for_json(self, cache):
@@ -68,16 +68,17 @@ class JSONMixin(object):
         :param silent: if set to ``True`` this method will fail silently
                        and return ``None``.
         :param cache: if set to ``True`` the parsed JSON data is remembered
-                      on the request.
+                      on the object.
         """
-        rv = getattr(self, '_cached_json', _missing)
-        if rv is not _missing:
-            return rv
+        try:
+            return getattr(self, '_cached_json')
+        except AttributeError:
+            pass
 
         if not (force or self.is_json):
             return None
 
-        # We accept a request charset against the specification as certain
+        # We accept MIME charset header against the specification as certain
         # clients have been using this in the past.  For responses, we assume
         # that if the response charset was set explicitly then the data had
         # been encoded correctly as well.
