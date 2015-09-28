@@ -71,7 +71,8 @@ Now in each request handling function you can access `g.db` to get the
 current open database connection.  To simplify working with SQLite, a
 row factory function is useful.  It is executed for every result returned
 from the database to convert the result.  For instance, in order to get
-dictionaries instead of tuples, this could be inserted into ``get_db``::
+dictionaries instead of tuples, this could be inserted into the ``get_db`` 
+function we created above::
 
     def make_dicts(cursor, row):
         return dict((cursor.description[idx][0], value)
@@ -79,9 +80,22 @@ dictionaries instead of tuples, this could be inserted into ``get_db``::
 
     db.row_factory = make_dicts
 
-Or even simpler::
+This will make the sqlite3 module return dicts for this database connection, which are much nicer to deal with. Even more simply, we could place this in ``get_db`` instead::
 
     db.row_factory = sqlite3.Row
+
+This would use Row objects rather than dicts to return the results of queries. These objects work mostly like a tuple. For example, assuming we have a ``sqlite3.Row`` called ``r`` for the rows id, FirstName, LastName, and MiddleInitial::
+
+    >>> tuple(r) # returns a real tuple
+    (1, 'John', 'Doe', 'M')
+    >>> r.keys()
+    ['id', 'FirstName', 'LastName', 'MiddleInitial']
+    >>> for value in r: # iterable
+    ...     print(member)
+    1
+    John
+    Doe
+    M
 
 Additionally, it is a good idea to provide a query function that combines
 getting the cursor, executing and fetching the results::
