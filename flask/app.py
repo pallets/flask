@@ -14,7 +14,7 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
-from collections import Mapping, deque
+from collections import deque
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
@@ -33,7 +33,7 @@ from .templating import DispatchingJinjaLoader, Environment, \
      _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
      request_tearing_down, appcontext_tearing_down
-from ._compat import reraise, string_types, text_type, integer_types, iterkeys
+from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
 _logger_lock = Lock()
