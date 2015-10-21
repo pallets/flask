@@ -116,6 +116,9 @@ class MethodViewType(type):
             # the base class or another subclass of a base method view
             # that does not introduce new methods).
             if methods:
+                # If we can do a GET, we can always do a HEAD
+                if 'GET' in methods:
+                    methods.add('HEAD')
                 rv.methods = sorted(methods)
         return rv
 
