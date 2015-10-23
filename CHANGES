@@ -112,7 +112,7 @@ Version 0.10.1
 Version 0.10
 ------------
 
-Released on June 13nd 2013, codename Limoncello.
+Released on June 13th 2013, codename Limoncello.
 
 - Changed default cookie serialization format from pickle to JSON to
   limit the impact an attacker can do if the secret key leaks.  See
