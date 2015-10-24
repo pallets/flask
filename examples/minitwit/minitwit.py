@@ -72,7 +72,7 @@ def query_db(query, args=(), one=False):
 
 
 def get_user_id(username):
-    """Convenience method to look up the id for a username."""
+    """Convenient method to look up the id for a username."""
     rv = query_db('select user_id from user where username = ?',
                   [username], one=True)
     return rv[0] if rv else None
