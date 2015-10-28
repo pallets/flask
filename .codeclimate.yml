@@ -1,0 +1,8 @@
+---
+engines:
+  radon:
+    enabled: true
+ratings:
+  paths:
+  - "**.py"
+exclude_paths: []
