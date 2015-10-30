@@ -14,6 +14,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
+from datetime import timedelta
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -856,7 +857,7 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.9
         """
-        return current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        return total_seconds(current_app.send_file_max_age_default)
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
@@ -898,3 +899,14 @@ class _PackageBoundObject(object):
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
         return open(os.path.join(self.root_path, resource), mode)
+
+
+def total_seconds(td):
+    """Returns the total seconds from a timedelta object.
+
+    :param timedelta td: the timedelta to be converted in seconds
+
+    :returns: number of seconds
+    :rtype: int
+    """
+    return td.days * 60 * 60 * 24 + td.seconds

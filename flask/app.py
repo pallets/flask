@@ -246,6 +246,16 @@ class Flask(_PackageBoundObject):
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
         get_converter=_make_timedelta)
 
+    #: A :class:`~datetime.timedelta` which is used as default cache_timeout
+    #: for the :func:`send_file` functions. The default is 12 hours.
+    #:
+    #: This attribute can also be configured from the config with the
+    #: ``SEND_FILE_MAX_AGE_DEFAULT`` configuration key. This configuration
+    #: variable can also be set with an integer value used as seconds.
+    #: Defaults to ``timedelta(hours=12)``
+    send_file_max_age_default = ConfigAttribute('SEND_FILE_MAX_AGE_DEFAULT',
+        get_converter=_make_timedelta)
+
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
     #: sent with the :func:`send_file` method.
@@ -297,7 +307,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_SECURE':                False,
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
-        'SEND_FILE_MAX_AGE_DEFAULT':            12 * 60 * 60,  # 12 hours
+        'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
         'TRAP_BAD_REQUEST_ERRORS':              False,
         'TRAP_HTTP_EXCEPTIONS':                 False,
         'EXPLAIN_TEMPLATE_LOADING':             False,

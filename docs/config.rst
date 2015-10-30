@@ -130,7 +130,8 @@ The following configuration values are used internally by Flask:
 ``SEND_FILE_MAX_AGE_DEFAULT``     Default cache control max age to use with
                                   :meth:`~flask.Flask.send_static_file` (the
                                   default static file handler) and
-                                  :func:`~flask.send_file`, in
+                                  :func:`~flask.send_file`, as
+                                  :class:`datetime.timedelta` or as seconds.
                                   seconds. Override this value on a per-file
                                   basis using the
                                   :meth:`~flask.Flask.get_send_file_max_age`
