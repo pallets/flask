@@ -7,6 +7,7 @@ python:
   - "pypy"
   - "3.3"
   - "3.4"
+  - "3.5"
 
 env:
   - REQUIREMENTS=lowest
@@ -19,6 +20,8 @@ matrix:
     - python: "3.3"
       env: REQUIREMENTS=lowest
     - python: "3.4"
+      env: REQUIREMENTS=lowest
+    - python: "3.5"
       env: REQUIREMENTS=lowest
 
 
