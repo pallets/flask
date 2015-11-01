@@ -122,7 +122,7 @@ requirements.  Here some examples::
         'BrokenPackage>=0.7,<=1.0'
     ]
 
-As mentioned earlier that dependencies are pulled from PyPI.  What if you
+As mentioned earlier, dependencies are pulled from PyPI.  What if you
 want to depend on a package that cannot be found on PyPI and won't be
 because it is an internal package you don't want to share with anyone?
 Just still do as if there was a PyPI entry for it and provide a list of
