@@ -24,7 +24,7 @@ Hosted options
 - `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
 - `Deploying Flask on Google App Engine <https://github.com/kamalgill/flask-appengine-template>`_
 - `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
-
+- `Deploying on Azure (IIS) <https://azure.microsoft.com/documentation/articles/web-sites-python-configure/>`_
 
 Self-hosted options
 -------------------
