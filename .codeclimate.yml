@@ -2,8 +2,6 @@
 engines:
   radon:
     enabled: true
-    config:
-      threshold: 'b'
   pep8:
     enabled: true
 ratings:
