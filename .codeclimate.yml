@@ -2,7 +2,12 @@
 engines:
   radon:
     enabled: true
+    config:
+      threshold: 'b'
+  pep8:
+    enabled: true
 ratings:
   paths:
   - "**.py"
-exclude_paths: []
+exclude_paths:
+- tests/**/*
