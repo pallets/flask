@@ -4,7 +4,5 @@ engines:
     enabled: true
   pep8:
     enabled: true
-ratings:
-  paths:
-  - flask/**/*
-  - tests/**/*
+exclude_paths:
+- tests/**/*
