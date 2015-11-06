@@ -6,4 +6,5 @@ engines:
     enabled: true
 ratings:
   paths:
-  - "**.py"
+  - flask/**/*
+  - tests/**/*
