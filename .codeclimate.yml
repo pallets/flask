@@ -4,5 +4,5 @@ engines:
     enabled: true
   pep8:
     enabled: true
-exclude_paths:
-- tests/**/*
+ratings:
+- "**.py"
