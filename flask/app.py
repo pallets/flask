@@ -168,7 +168,7 @@ class Flask(_PackageBoundObject):
     #:
     #: 1. Store arbitrary attributes on flask.g.
     #: 2. Add a property for lazy per-request database connectors.
-    #: 3. Return None instead of AttributeError on expected attributes.
+    #: 3. Return None instead of AttributeError on unexpected attributes.
     #: 4. Raise exception if an unexpected attr is set, a "controlled" flask.g.
     #:
     #: In Flask 0.9 this property was called `request_globals_class` but it
