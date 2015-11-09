@@ -5,4 +5,7 @@ engines:
   pep8:
     enabled: true
 ratings:
-- "**.py"
+  paths:
+  - "**.py"
+exclude_paths:
+  - Makefile
