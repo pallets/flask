@@ -132,7 +132,7 @@ The following configuration values are used internally by Flask:
                                   default static file handler) and
                                   :func:`~flask.send_file`, as
                                   :class:`datetime.timedelta` or as seconds.
-                                  seconds. Override this value on a per-file
+                                  Override this value on a per-file
                                   basis using the
                                   :meth:`~flask.Flask.get_send_file_max_age`
                                   hook on :class:`~flask.Flask` or
