@@ -45,6 +45,38 @@ class TestToolsTestCase(FlaskTestCase):
             rv = c.get('/')
             self.assert_equal(rv.data, b'http://localhost/')
 
+    def test_specify_url_scheme(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            return flask.request.url
+
+        ctx = app.test_request_context(url_scheme='https')
+        self.assert_equal(ctx.request.url, 'https://localhost/')
+        with app.test_client() as c:
+            rv = c.get('/', url_scheme='https')
+            self.assert_equal(rv.data, b'https://localhost/')
+
+    def test_blueprint_with_subdomain(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.config['SERVER_NAME'] = 'example.com:1234'
+        app.config['APPLICATION_ROOT'] = '/foo'
+
+        bp = flask.Blueprint('company', __name__, subdomain='xxx')
+        @bp.route('/')
+        def index():
+            return flask.request.url
+        app.register_blueprint(bp)
+
+        ctx = app.test_request_context('/', subdomain='xxx')
+        self.assert_equal(ctx.request.url, 'http://xxx.example.com:1234/foo/')
+        self.assert_equal(ctx.request.blueprint, bp.name)
+        with app.test_client() as c:
+            rv = c.get('/', subdomain='xxx')
+            self.assert_equal(rv.data, b'http://xxx.example.com:1234/foo/')
+
     def test_redirect_keep_session(self):
         app = flask.Flask(__name__)
         app.secret_key = 'testing'
