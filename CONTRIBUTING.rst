@@ -38,10 +38,10 @@ Running the testsuite
 You probably want to set up a `virtualenv
 <http://virtualenv.readthedocs.org/en/latest/index.html>`_.
 
-The minimal requirement for running the testsuite is ``py.test``.  You can
-install it with::
+The minimal requirement for running the testsuite is ``py.test`` and ``redbaron``.  You can
+install them with the following command::
 
-    pip install pytest
+    pip install pytest redbaron
 
 Clone this repository::
 
