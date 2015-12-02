@@ -160,3 +160,29 @@ def test_endpoint_override():
 
     # But these tests should still pass. We just log a warning.
     common_test(app)
+
+def test_before_init():
+    app = flask.Flask(__name__)
+    app.debug = True
+
+    class Index(flask.views.View):
+        methods = ['GET', 'POST']
+        def dispatch_request(self):
+            return flask.request.method
+
+    def dosomething1():
+        return None
+
+    def dosomething2():
+        return "dosomething"
+
+    view_func1 = Index.as_view('index', before_init=dosomething1)
+    app.add_url_rule('/', view_func=view_func1)
+    view_func2 = Index.as_view('do2', before_init=dosomething2)
+    app.add_url_rule('/do2', view_func=view_func2)
+    c = app.test_client()
+    rv = c.get('/')
+    assert rv.data == b'GET'
+    c = app.test_client()
+    rv = c.get('/do2')
+    assert rv.data == b'dosomething'

@@ -92,10 +92,10 @@ class View(object):
         def view(*args, **kwargs):
             if before_init:
                 resp = before_init()
-            if resp is None:
-                self = view.view_class(*class_args, **class_kwargs)
-                resp = self.dispatch_request(*args, **kwargs)
-            return resp
+                if resp is not None:
+                    return resp
+            self = view.view_class(*class_args, **class_kwargs)
+            return self.dispatch_request(*args, **kwargs)
 
         if cls.decorators:
             view.__name__ = name
