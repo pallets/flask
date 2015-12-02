@@ -10,3 +10,4 @@ build
 _mailinglist
 .tox
 .cache/
+.idea/
