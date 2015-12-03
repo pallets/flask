@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    Flaskr
-    ~~~~~~
-
-    A microblog example application written as Flask tutorial with
-    Flask and sqlite3.
-
-    :copyright: (c) 2015 by Armin Ronacher.
-    :license: BSD, see LICENSE for more details.
-"""
 
 import os
 from sqlite3 import dbapi2 as sqlite3
@@ -17,6 +7,8 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 
 
 # create our little application :)
+import sys
+
 app = Flask(__name__)
 
 # Load default config and override config from an environment variable
@@ -28,6 +20,14 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
+
+def unauthenticated(func):
+    if 'unauthenticated_list' not in globals():
+        globals()['unauthenticated_list'] = ["static"]
+    """decorator to identify requests which don't need authentication"""
+    globals()['unauthenticated_list'].append(func.__name__)
+    return func
 
 
 def connect_db():
@@ -68,8 +68,19 @@ def close_db(error):
         g.sqlite_db.close()
 
 
+@app.before_request
+def before_request():
+    """require authentication on all request which are not specifically decorated with @unauthenticated"""
+    if 'unauthenticated_list' not in globals():
+        globals()['unauthenticated_list'] = ["static"]
+    if 'logged_in' not in session and request.endpoint not in globals()['unauthenticated_list']:
+        return redirect(url_for('login'))
+
+
 @app.route('/')
 def show_entries():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     db = get_db()
     cur = db.execute('select title, text from entries order by id desc')
     entries = cur.fetchall()
@@ -89,6 +100,7 @@ def add_entry():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@unauthenticated
 def login():
     error = None
     if request.method == 'POST':

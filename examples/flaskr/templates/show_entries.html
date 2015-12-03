@@ -1,21 +1,58 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
-    <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
-      <dl>
-        <dt>Title:
-        <dd><input type="text" size="30" name="title">
-        <dt>Text:
-        <dd><textarea name="text" rows="5" cols="40"></textarea>
-        <dd><input type="submit" value="Share">
-      </dl>
-    </form>
-  {% endif %}
-  <ul class="entries">
-  {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
-  {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
-  {% endfor %}
-  </ul>
+
+    <div class="form-row row add-entry-panel">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Add Entry</h3>
+                </div>
+                <div class="panel-body">
+                    <form action="{{ url_for('add_entry') }}" method="post">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input name="title" type="text" class="form-control" id="title">
+                        </div>
+                        <div class="form-group">
+                            <label for="text">Text</label>
+                            <input name="text" type="text" class="form-control" id="text">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="list-row row">
+    {% if entries %}
+        <div class="col-sm-12">
+            <table class="table table-striped">
+                <tr><th>Title</th><th>Text</th></tr>
+                {% for entry in entries %}
+                    <tr><td>{{ entry.title|safe }}</td><td>{{ entry.text|safe }}</td></tr>
+                {% endfor %}
+            </table>
+            <div class="list-actions">
+                <button type="button" class="btn btn-primary add-button">Add Entry</button>
+            </div>
+        </div>
+    {% else %}
+
+        <div class="col-sm-12">
+            <h4 class="bg-warning message-item">Unbelievable.  No entries here so far</h4>
+        </div>
+        <script>
+            $('.add-entry-panel').slideDown();
+        </script>
+    {% endif %}
+    </div>
+
+    <script>
+        $('.list-row .add-button').on('click',function(evt){
+            $('.add-entry-panel').slideDown();
+            $('.list-row .add-button').fadeOut();
+        });
+    </script>
+
 {% endblock %}
