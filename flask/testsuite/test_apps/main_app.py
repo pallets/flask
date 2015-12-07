@@ -1,3 +1,4 @@
+import os
 import flask
 
 # Test Flask initialization with main module.
