@@ -116,6 +116,20 @@ Note: There have been some changes in access control configuration for `Apache 2
 
 .. _Apache 2.4: http://httpd.apache.org/docs/trunk/upgrading.html
 
+Most notably, the syntax for directory permissions has changed from httpd 2.2
+
+.. sourcecode:: apache
+
+    Order allow,deny
+    Allow from all
+
+to httpd 2.4 syntax
+
+.. sourcecode:: apache
+
+    Require all granted
+
+
 For more information consult the `mod_wsgi wiki`_.
 
 .. _mod_wsgi: http://code.google.com/p/modwsgi/
