@@ -9,8 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
-
 import sys
 from functools import update_wrapper
 
