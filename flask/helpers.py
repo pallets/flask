@@ -14,7 +14,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
-from datetime import timedelta
+from warnings import warn
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -39,7 +39,7 @@ from jinja2 import FileSystemLoader
 
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
-     current_app, request
+    current_app, request
 from ._compat import string_types, text_type
 
 
@@ -108,8 +108,10 @@ def stream_with_context(generator_or_function):
     def generator():
         ctx = _request_ctx_stack.top
         if ctx is None:
-            raise RuntimeError('Attempted to stream with context but '
-                'there was no context in the first place to keep around.')
+            raise RuntimeError(
+                'Attempted to stream with context but '
+                'there was no context in the first place to keep around.'
+            )
         with ctx:
             # Dummy sentinel.  Has to be inside the context block or we're
             # not actually keeping the context around.
@@ -202,10 +204,11 @@ def url_for(endpoint, **values):
     To integrate applications, :class:`Flask` has a hook to intercept URL build
     errors through :attr:`Flask.url_build_error_handlers`.  The `url_for`
     function results in a :exc:`~werkzeug.routing.BuildError` when the current
-    app does not have a URL for the given endpoint and values.  When it does, the
-    :data:`~flask.current_app` calls its :attr:`~Flask.url_build_error_handlers` if
-    it is not ``None``, which can return a string to use as the result of
-    `url_for` (instead of `url_for`'s default to raise the
+    app does not have a URL for the given endpoint and values.  When it does,
+    the :data:`~flask.current_app` calls its
+    :attr:`~Flask.url_build_error_handlers` if it is not ``None``,
+    which can return a string to use as the result of `url_for`
+    (instead of `url_for`'s default to raise the
     :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
     An example::
 
@@ -249,8 +252,8 @@ def url_for(endpoint, **values):
       address can be changed via ``SERVER_NAME`` configuration variable which
       defaults to `localhost`.
     :param _scheme: a string specifying the desired URL scheme. The `_external`
-      parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
-      behavior uses the same scheme as the current request, or
+      parameter must be set to ``True`` or a :exc:`ValueError` is raised. The
+      default behavior uses the same scheme as the current request, or
       ``PREFERRED_URL_SCHEME`` from the :ref:`app configuration <config>` if no
       request context is available. As of Werkzeug 0.10, this also can be set
       to an empty string to build protocol-relative URLs.
@@ -289,10 +292,12 @@ def url_for(endpoint, **values):
     else:
         url_adapter = appctx.url_adapter
         if url_adapter is None:
-            raise RuntimeError('Application was not able to create a URL '
-                               'adapter for request independent URL generation. '
-                               'You might be able to fix this by setting '
-                               'the SERVER_NAME config variable.')
+            raise RuntimeError(
+                'Application was not able to create a URL '
+                'adapter for request independent URL generation. '
+                'You might be able to fix this by setting '
+                'the SERVER_NAME config variable.'
+            )
         external = values.pop('_external', True)
 
     anchor = values.pop('_anchor', None)
@@ -386,7 +391,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     arguments are distinct:
 
     * `with_categories` controls whether categories are returned with message
-      text (``True`` gives a tuple, where ``False`` gives just the message text).
+      text (``True`` gives a tuple, where ``False`` gives just the msg text).
     * `category_filter` filters the messages down to only those matching the
       provided categories.
 
@@ -473,7 +478,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         filename = filename_or_fp
         file = None
     else:
-        from warnings import warn
         file = filename_or_fp
         filename = getattr(file, 'name', None)
 
@@ -481,17 +485,19 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
            and isinstance(filename, string_types):
-            warn(DeprecationWarning('The filename support for file objects '
+            warn(DeprecationWarning(
+                'The filename support for file objects '
                 'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
                 stacklevel=2)
         if add_etags:
-            warn(DeprecationWarning('In future flask releases etags will no '
+            warn(DeprecationWarning(
+                'In future flask releases etags will no '
                 'longer be generated for file objects passed to the send_file '
                 'function because this behavior was unreliable.  Pass '
                 'filenames instead if possible, otherwise attach an etag '
-                'yourself based on another value'), stacklevel=2)
-
+                'yourself based on another value'),
+                stacklevel=2)
     if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
@@ -549,8 +555,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                 ) & 0xffffffff
             ))
         except OSError:
-            warn('Access %s failed, maybe it does not exist, so ignore etags in '
-                 'headers' % filename, stacklevel=2)
+            warn('Access %s failed, maybe it does not exist, '
+                 'so ignore etags in headers' % filename, stacklevel=2)
 
         if conditional:
             rv = rv.make_conditional(request)
@@ -582,8 +588,7 @@ def safe_join(directory, filename):
         if sep in filename:
             raise NotFound()
     if os.path.isabs(filename) or \
-       filename == '..' or \
-       filename.startswith('../'):
+            filename == '..' or filename.startswith('../'):
         raise NotFound()
     return os.path.join(directory, filename)
 
@@ -797,11 +802,13 @@ class _PackageBoundObject(object):
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
     static_folder = property(_get_static_folder, _set_static_folder, doc='''
     The absolute path to the configured static folder.
     ''')
+
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
@@ -809,9 +816,12 @@ class _PackageBoundObject(object):
             return self._static_url_path
         if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
+
     static_url_path = property(_get_static_url_path, _set_static_url_path)
+
     del _get_static_url_path, _set_static_url_path
 
     @property
@@ -841,8 +851,8 @@ class _PackageBoundObject(object):
 
         Static file functions such as :func:`send_from_directory` use this
         function, and :func:`send_file` calls this function on
-        :data:`~flask.current_app` when the given cache_timeout is ``None``. If a
-        cache_timeout is given in :func:`send_file`, that timeout is used;
+        :data:`~flask.current_app` when the given cache_timeout is ``None``.
+        If a cache_timeout is given in :func:`send_file`, that timeout is used;
         otherwise, this method is called.
 
         This allows subclasses to change the behavior when sending files based
