@@ -126,6 +126,7 @@ class Config(dict):
         d = types.ModuleType('config')
         d.__file__ = filename
         try:
+            from io import open
             with open(filename, encoding) as config_file:
                 exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
         except IOError as e:
