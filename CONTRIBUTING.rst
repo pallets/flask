@@ -49,6 +49,7 @@ Clone this repository::
 
 Install Flask as an editable package using the current source::
 
+    cd flask
     pip install --editable .
 
 Then you can run the testsuite with::
