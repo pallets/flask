@@ -8,6 +8,9 @@ Version 1.0
 
 (release date to be announced, codename to be selected)
 
+- Added support to serializing top-level arrays to :func:`flask.jsonify`. This
+  introduces a security risk in ancient browsers. See
+  :ref:`json_security` for details.
 - Added before_render_template signal.
 - Added `**kwargs` to :meth:`flask.Test.test_client` to support passing
   additional keyword arguments to the constructor of
