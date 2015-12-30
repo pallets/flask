@@ -31,24 +31,6 @@ def has_encoding(name):
 
 class TestJSON(object):
 
-    def test_jsonify_date_types(self):
-        """Test jsonify with datetime.date and datetime.datetime types."""
-
-        test_dates = (
-            datetime.datetime(1973, 3, 11, 6, 30, 45),
-            datetime.date(1975, 1, 5)
-        )
-
-        app = flask.Flask(__name__)
-        c = app.test_client()
-
-        for i, d in enumerate(test_dates):
-            url = '/datetest{0}'.format(i)
-            app.add_url_rule(url, str(i), lambda val=d: flask.jsonify(x=val))
-            rv = c.get(url)
-            assert rv.mimetype == 'application/json'
-            assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
-
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = True
@@ -103,8 +85,41 @@ class TestJSON(object):
                      content_type='application/json; charset=iso-8859-15')
         assert resp.data == u'Hällo Wörld'.encode('utf-8')
 
-    def test_jsonify(self):
-        d = dict(a=23, b=42, c=[1, 2, 3])
+    def test_json_as_unicode(self):
+        app = flask.Flask(__name__)
+
+        app.config['JSON_AS_ASCII'] = True
+        with app.app_context():
+            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            assert rv == '"\\u2603"'
+
+        app.config['JSON_AS_ASCII'] = False
+        with app.app_context():
+            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            assert rv == u'"\u2603"'
+
+    def test_jsonify_basic_types(self):
+        """Test jsonify with basic types."""
+        # Should be able to use pytest parametrize on this, but I couldn't
+        # figure out the correct syntax
+        # https://pytest.org/latest/parametrize.html#pytest-mark-parametrize-parametrizing-test-functions
+        test_data = (0, 1, 23, 3.14, 's', "longer string", True, False,)
+        app = flask.Flask(__name__)
+        c = app.test_client()
+        for i, d in enumerate(test_data):
+            url = '/jsonify_basic_types{0}'.format(i)
+            app.add_url_rule(url, str(i), lambda x=d: flask.jsonify(x))
+            rv = c.get(url)
+            assert rv.mimetype == 'application/json'
+            assert flask.json.loads(rv.data) == d
+
+    def test_jsonify_dicts(self):
+        """Test jsonify with dicts and kwargs unpacking."""
+        d = dict(
+            a=0, b=23, c=3.14, d='t', e='Hi', f=True, g=False,
+            h=['test list', 10, False],
+            i={'test':'dict'}
+        )
         app = flask.Flask(__name__)
         @app.route('/kw')
         def return_kwargs():
@@ -118,18 +133,43 @@ class TestJSON(object):
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data) == d
 
-    def test_json_as_unicode(self):
+    def test_jsonify_arrays(self):
+        """Test jsonify of lists and args unpacking."""
+        l = [
+            0, 42, 3.14, 't', 'hello', True, False,
+            ['test list', 2, False],
+            {'test':'dict'}
+        ]
         app = flask.Flask(__name__)
+        @app.route('/args_unpack')
+        def return_args_unpack():
+            return flask.jsonify(*l)
+        @app.route('/array')
+        def return_array():
+            return flask.jsonify(l)
+        c = app.test_client()
+        for url in '/args_unpack', '/array':
+            rv = c.get(url)
+            assert rv.mimetype == 'application/json'
+            assert flask.json.loads(rv.data) == l
 
-        app.config['JSON_AS_ASCII'] = True
-        with app.app_context():
-            rv = flask.json.dumps(u'\N{SNOWMAN}')
-            assert rv == '"\\u2603"'
+    def test_jsonify_date_types(self):
+        """Test jsonify with datetime.date and datetime.datetime types."""
 
-        app.config['JSON_AS_ASCII'] = False
-        with app.app_context():
-            rv = flask.json.dumps(u'\N{SNOWMAN}')
-            assert rv == u'"\u2603"'
+        test_dates = (
+            datetime.datetime(1973, 3, 11, 6, 30, 45),
+            datetime.date(1975, 1, 5)
+        )
+
+        app = flask.Flask(__name__)
+        c = app.test_client()
+
+        for i, d in enumerate(test_dates):
+            url = '/datetest{0}'.format(i)
+            app.add_url_rule(url, str(i), lambda val=d: flask.jsonify(x=val))
+            rv = c.get(url)
+            assert rv.mimetype == 'application/json'
+            assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
