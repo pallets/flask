@@ -62,11 +62,9 @@ on.  Travis is set up to run the full testsuite when you submit your pull
 request anyways.
 
 If you really want to test everything, you will have to install ``tox`` instead
-of ``pytest``. Currently we're depending on a development version of Tox
-because the released version is missing features we absolutely need. You can
-install it with::
+of ``pytest``. You can install it with::
 
-    pip install hg+https://bitbucket.org/hpk42/tox
+    pip install tox
 
 The ``tox`` command will then run all tests against multiple combinations
 Python versions and dependency versions.
