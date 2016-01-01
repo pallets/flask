@@ -3,7 +3,7 @@
 #
 # Run in the terminal by typing: `python flaskext_migrate.py <source_file.py>`
 #
-# Author: Keyan Pishdadian 2015
+# Author: Keyan Pishdadian 2016
 
 from redbaron import RedBaron
 import sys
