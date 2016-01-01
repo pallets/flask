@@ -5,7 +5,7 @@
 
     This module provides class-based views inspired by the ones in Django.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) 2016 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 from .globals import request
