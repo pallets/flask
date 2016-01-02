@@ -833,6 +833,7 @@ class Flask(_PackageBoundObject):
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
+        options.setdefault('passthrough_errors', True)
         try:
             run_simple(host, port, self, **options)
         finally:
