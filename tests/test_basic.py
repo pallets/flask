@@ -1222,6 +1222,26 @@ def test_exception_propagation():
         t.join()
 
 
+@pytest.mark.parametrize('debug', [True, False])
+@pytest.mark.parametrize('use_debugger', [True, False])
+@pytest.mark.parametrize('use_reloader', [True, False])
+@pytest.mark.parametrize('propagate_exceptions', [None, True, False])
+def test_werkzeug_passthrough_errors(monkeypatch, debug, use_debugger,
+                                     use_reloader, propagate_exceptions):
+    rv = {}
+
+    # Mocks werkzeug.serving.run_simple method
+    def run_simple_mock(*args, **kwargs):
+        rv['passthrough_errors'] = kwargs.get('passthrough_errors')
+
+    app = flask.Flask(__name__)
+    monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
+    app.config['PROPAGATE_EXCEPTIONS'] = propagate_exceptions
+    app.run(debug=debug, use_debugger=use_debugger, use_reloader=use_reloader)
+    # make sure werkzeug always passes errors through
+    assert rv['passthrough_errors']
+
+
 def test_max_content_length():
     app = flask.Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 64
