@@ -1791,31 +1791,30 @@ class Flask(_PackageBoundObject):
         raise error
 
     def preprocess_request(self):
-        """Called before the actual request dispatching and will
-        call each :meth:`before_request` decorated function, passing no
-        arguments.
-        If any of these functions returns a value, it's handled as
-        if it was the return value from the view and further
-        request handling is stopped.
+        """Called before the request dispatching.
+        Triggers two set of hook functions that should be invoked prior to a request dispatching:
+        self.url_value_preprocessors and self.before_request_funcs.
+        In both cases, triggers only the functions that are either global or registered to the current blueprint.
 
-        This also triggers the :meth:`url_value_processor` functions before
-        the actual :meth:`before_request` functions are called.
+        If any of the before_request_funcs returns a value, it's handled as if it was
+        the return value from the view function, and further request handling is stopped.
         """
-        bp = _request_ctx_stack.top.request.blueprint
-
-        funcs = self.url_value_preprocessors.get(None, ())
-        if bp is not None and bp in self.url_value_preprocessors:
-            funcs = chain(funcs, self.url_value_preprocessors[bp])
-        for func in funcs:
+        for func in self._get_relevant_hook_functions(self.url_value_preprocessors):
             func(request.endpoint, request.view_args)
 
-        funcs = self.before_request_funcs.get(None, ())
-        if bp is not None and bp in self.before_request_funcs:
-            funcs = chain(funcs, self.before_request_funcs[bp])
-        for func in funcs:
+        for func in self._get_relevant_hook_functions(self.before_request_funcs):
             rv = func()
             if rv is not None:
                 return rv
+
+    def _get_relevant_hook_functions(self, all_hooks):
+        blueprint = _request_ctx_stack.top.request.blueprint
+
+        global_hooks = all_hooks.get(None, ())  # global hook functions are mapped to None key
+        if blueprint is not None and blueprint in all_hooks:
+            return chain(global_hooks, all_hooks[blueprint])
+        else:
+            return global_hooks
 
     def process_response(self, response):
         """Can be overridden in order to modify the response object
