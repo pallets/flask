@@ -14,7 +14,7 @@
     We're switching from namespace packages because it was just too painful for
     everybody involved.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 

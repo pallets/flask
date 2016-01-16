@@ -7,7 +7,7 @@
     Helper script that performs a release.  Does pretty much everything
     automatically for us.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 import sys

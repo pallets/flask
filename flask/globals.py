@@ -6,7 +6,7 @@
     Defines all the global objects that are proxies to the current
     active context.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 
