@@ -121,8 +121,10 @@ def render_template(template_name_or_list, **context):
     """
     ctx = _app_ctx_stack.top
     ctx.app.update_template_context(context)
-    return _render(ctx.app.jinja_env.get_or_select_template(template_name_or_list),
-                   context, ctx.app)
+    return _render(
+        ctx.app.jinja_env.get_or_select_template(template_name_or_list),
+        context, ctx.app
+    )
 
 
 def render_template_string(source, **context):

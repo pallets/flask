@@ -116,5 +116,5 @@ class ExtensionImporter(object):
         # the filename then.
         filename = os.path.abspath(tb.tb_frame.f_code.co_filename)
         test_string = os.path.sep + important_module.replace('.', os.path.sep)
-        return test_string + '.py' in filename or \
-               test_string + os.path.sep + '__init__.py' in filename
+        return (test_string + '.py' in filename or
+                test_string + os.path.sep + '__init__.py' in filename)

@@ -29,15 +29,15 @@ class DebugFilesKeyError(KeyError, AssertionError):
     def __init__(self, request, key):
         form_matches = request.form.getlist(key)
         buf = ['You tried to access the file "%s" in the request.files '
-               'dictionary but it does not exist.  The mimetype for the request '
-               'is "%s" instead of "multipart/form-data" which means that no '
-               'file contents were transmitted.  To fix this error you should '
-               'provide enctype="multipart/form-data" in your form.' %
-               (key, request.mimetype)]
+               'dictionary but it does not exist.  The mimetype for the '
+               'request is "%s" instead of "multipart/form-data" which means '
+               'that no file contents were transmitted.  To fix this error '
+               'you should provide enctype="multipart/form-data" in your form.'
+               % (key, request.mimetype)]
         if form_matches:
             buf.append('\n\nThe browser instead transmitted some file names. '
-                       'This was submitted: %s' % ', '.join('"%s"' % x
-                            for x in form_matches))
+                       'This was submitted: %s'
+                       % ', '.join('"%s"' % x for x in form_matches))
         self.msg = ''.join(buf)
 
     def __str__(self):
@@ -143,13 +143,15 @@ def explain_template_loading_attempts(app, template, attempts):
         info.append('Error: the template could not be found.')
         seems_fishy = True
     elif total_found > 1:
-        info.append('Warning: multiple loaders returned a match for the template.')
+        info.append('Warning: multiple loaders returned a match for the '
+                    'template.')
         seems_fishy = True
 
     if blueprint is not None and seems_fishy:
         info.append('  The template was looked up from an endpoint that '
                     'belongs to the blueprint "%s".' % blueprint)
-        info.append('  Maybe you did not place a template in the right folder?')
+        info.append('  Maybe you did not place a template in the right '
+                    'folder?')
         info.append('  See http://flask.pocoo.org/docs/blueprints/#templates')
 
     app.logger.info('\n'.join(info))

@@ -201,9 +201,9 @@ def htmlsafe_dump(obj, fp, **kwargs):
 def jsonify(*args, **kwargs):
     """This function wraps :func:`dumps` to add a few enhancements that make
     life easier.  It turns the JSON output into a :class:`~flask.Response`
-    object with the :mimetype:`application/json` mimetype.  For convenience, it
-    also converts multiple arguments into an array or multiple keyword arguments
-    into a dict.  This means that both ``jsonify(1,2,3)`` and
+    object with the :mimetype:`application/json` mimetype.  For convenience,
+    it also converts multiple arguments into an array or multiple keyword
+    arguments into a dict.  This means that both ``jsonify(1,2,3)`` and
     ``jsonify([1,2,3])`` serialize to ``[1,2,3]``.
 
     For clarity, the JSON serialization behavior has the following differences
@@ -260,11 +260,11 @@ def jsonify(*args, **kwargs):
         raise TypeError(
             "jsonify() behavior undefined when passed both args and kwargs"
         )
-    elif len(args) == 1: # single args are passed directly to dumps()
+    elif len(args) == 1:  # single args are passed directly to dumps()
         data = args[0]
-    elif args: # convert multiple args into an array
+    elif args:  # convert multiple args into an array
         data = list(args)
-    else: # convert kwargs to a dict
+    else:  # convert kwargs to a dict
         data = dict(kwargs)
 
     # Note that we add '\n' to end of response

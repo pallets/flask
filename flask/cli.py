@@ -224,13 +224,13 @@ def set_app_value(ctx, param, value):
 
 
 debug_option = click.Option(['--debug/--no-debug'],
-    help='Enable or disable debug mode.',
-    default=None, callback=set_debug_value)
+                            help='Enable or disable debug mode.',
+                            default=None, callback=set_debug_value)
 
 
 app_option = click.Option(['-a', '--app'],
-    help='The application to run',
-    callback=set_app_value, is_eager=True)
+                          help='The application to run',
+                          callback=set_app_value, is_eager=True)
 
 
 class AppGroup(click.Group):

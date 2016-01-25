@@ -98,8 +98,8 @@ class FlaskClient(Client):
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
-        kwargs.setdefault('environ_overrides', {}) \
-            ['flask._preserve_context'] = self.preserve_context
+        environ_overrides = kwargs.setdefault('environ_overrides', {})
+        environ_overrides['flask._preserve_context'] = self.preserve_context
 
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)
