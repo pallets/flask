@@ -211,9 +211,9 @@ def jsonify(*args, **kwargs):
 
     1. Single argument: Passed straight through to :func:`dumps`.
     2. Multiple arguments: Converted to an array before being passed to
-    :func:`dumps`.
+       :func:`dumps`.
     3. Multiple keyword arguments: Converted to a dict before being passed to
-    :func:`dumps`.
+       :func:`dumps`.
     4. Both args and kwargs: Behavior undefined and will throw an exception.
 
     Example usage::
@@ -237,7 +237,7 @@ def jsonify(*args, **kwargs):
 
     .. versionchanged:: 1.0
        Added support for serializing top-level arrays. This introduces a
-       security risk in ancient browsers. See :ref:`json_security` for details.
+       security risk in ancient browsers. See :ref:`json-security` for details.
 
     This function's response will be pretty printed if it was not requested
     with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
@@ -260,12 +260,10 @@ def jsonify(*args, **kwargs):
         raise TypeError(
             "jsonify() behavior undefined when passed both args and kwargs"
         )
-    elif len(args) == 1: # single args are passed directly to dumps()
+    elif len(args) == 1:  # single args are passed directly to dumps()
         data = args[0]
-    elif args: # convert multiple args into an array
-        data = list(args)
-    else: # convert kwargs to a dict
-        data = dict(kwargs)
+    else:
+        data = args or kwargs
 
     # Note that we add '\n' to end of response
     # (see https://github.com/mitsuhiko/flask/pull/1262)
