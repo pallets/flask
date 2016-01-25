@@ -18,21 +18,23 @@ from collections import deque
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
-from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest, default_exceptions
+from werkzeug.exceptions import (HTTPException, InternalServerError,
+                                 MethodNotAllowed, BadRequest,
+                                 default_exceptions)
 
-from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-     locked_cached_property, _endpoint_from_view_func, find_package
+from .helpers import (_PackageBoundObject, url_for, get_flashed_messages,
+                      locked_cached_property, _endpoint_from_view_func,
+                      find_package)
 from . import json, cli
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext, AppContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, request, session, g
 from .sessions import SecureCookieSessionInterface
-from .templating import DispatchingJinjaLoader, Environment, \
-     _default_template_ctx_processor
-from .signals import request_started, request_finished, got_request_exception, \
-     request_tearing_down, appcontext_tearing_down
+from .templating import (DispatchingJinjaLoader, Environment,
+                         _default_template_ctx_processor)
+from .signals import (request_started, request_finished, got_request_exception,
+                      request_tearing_down, appcontext_tearing_down)
 from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
@@ -54,13 +56,16 @@ def setupmethod(f):
     """
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request:
-            raise AssertionError('A setup function was called after the '
-                'first request was handled.  This usually indicates a bug '
-                'in the application where a module was not imported '
-                'and decorators or other functionality was called too late.\n'
-                'To fix this make sure to import all your view modules, '
-                'database models and everything related at a central place '
-                'before the application starts serving requests.')
+            raise AssertionError('A setup function was called after the first '
+                                 'request was handled.  This usually '
+                                 'indicates a bug in the application where a '
+                                 'module was not imported and decorators or '
+                                 'other functionality was called too late.\n'
+                                 'To fix this make sure to import all your '
+                                 'view modules, database models and '
+                                 'everything related at a central place '
+                                 'before the application starts serving '
+                                 'requests.')
         return f(self, *args, **kwargs)
     return update_wrapper(wrapper_func, f)
 
@@ -74,7 +79,8 @@ class Flask(_PackageBoundObject):
     The name of the package is used to resolve resources from inside the
     package or the folder the module is contained in depending on if the
     package parameter resolves to an actual python package (a folder with
-    an :file:`__init__.py` file inside) or a standard module (just a ``.py`` file).
+    an :file:`__init__.py` file inside) or a standard module (just a ``.py``
+    file).
 
     For more information about resource loading, see :func:`open_resource`.
 
@@ -96,7 +102,8 @@ class Flask(_PackageBoundObject):
         using a package, it's usually recommended to hardcode the name of
         your package there.
 
-        For example if your application is defined in :file:`yourapplication/app.py`
+        For example if your application is defined in
+        :file:`yourapplication/app.py`
         you should create it with one of the two versions below::
 
             app = Flask('yourapplication')
@@ -244,7 +251,7 @@ class Flask(_PackageBoundObject):
     #: ``PERMANENT_SESSION_LIFETIME`` configuration key.  Defaults to
     #: ``timedelta(days=31)``
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
-        get_converter=_make_timedelta)
+                                                 get_converter=_make_timedelta)
 
     #: A :class:`~datetime.timedelta` which is used as default cache_timeout
     #: for the :func:`send_file` functions. The default is 12 hours.
@@ -254,7 +261,7 @@ class Flask(_PackageBoundObject):
     #: variable can also be set with an integer value used as seconds.
     #: Defaults to ``timedelta(hours=12)``
     send_file_max_age_default = ConfigAttribute('SEND_FILE_MAX_AGE_DEFAULT',
-        get_converter=_make_timedelta)
+                                                get_converter=_make_timedelta)
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
@@ -272,12 +279,14 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.4
     logger_name = ConfigAttribute('LOGGER_NAME')
 
-    #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
+    #: The JSON encoder class to use.  Defaults to
+    #: :class:`~flask.json.JSONEncoder`.
     #:
     #: .. versionadded:: 0.10
     json_encoder = json.JSONEncoder
 
-    #: The JSON decoder class to use.  Defaults to :class:`~flask.json.JSONDecoder`.
+    #: The JSON decoder class to use.  Defaults to
+    #: :class:`~flask.json.JSONDecoder`.
     #:
     #: .. versionadded:: 0.10
     json_decoder = json.JSONDecoder
@@ -289,33 +298,33 @@ class Flask(_PackageBoundObject):
 
     #: Default configuration parameters.
     default_config = ImmutableDict({
-        'DEBUG':                                False,
-        'TESTING':                              False,
-        'PROPAGATE_EXCEPTIONS':                 None,
-        'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
-        'SECRET_KEY':                           None,
-        'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
-        'USE_X_SENDFILE':                       False,
-        'LOGGER_NAME':                          None,
-        'LOGGER_HANDLER_POLICY':               'always',
-        'SERVER_NAME':                          None,
-        'APPLICATION_ROOT':                     None,
-        'SESSION_COOKIE_NAME':                  'session',
-        'SESSION_COOKIE_DOMAIN':                None,
-        'SESSION_COOKIE_PATH':                  None,
-        'SESSION_COOKIE_HTTPONLY':              True,
-        'SESSION_COOKIE_SECURE':                False,
-        'SESSION_REFRESH_EACH_REQUEST':         True,
-        'MAX_CONTENT_LENGTH':                   None,
-        'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
-        'TRAP_BAD_REQUEST_ERRORS':              False,
-        'TRAP_HTTP_EXCEPTIONS':                 False,
-        'EXPLAIN_TEMPLATE_LOADING':             False,
-        'PREFERRED_URL_SCHEME':                 'http',
-        'JSON_AS_ASCII':                        True,
-        'JSON_SORT_KEYS':                       True,
-        'JSONIFY_PRETTYPRINT_REGULAR':          True,
-        'TEMPLATES_AUTO_RELOAD':                None,
+        'DEBUG': False,
+        'TESTING': False,
+        'PROPAGATE_EXCEPTIONS': None,
+        'PRESERVE_CONTEXT_ON_EXCEPTION': None,
+        'SECRET_KEY': None,
+        'PERMANENT_SESSION_LIFETIME': timedelta(days=31),
+        'USE_X_SENDFILE': False,
+        'LOGGER_NAME': None,
+        'LOGGER_HANDLER_POLICY': 'always',
+        'SERVER_NAME': None,
+        'APPLICATION_ROOT': None,
+        'SESSION_COOKIE_NAME': 'session',
+        'SESSION_COOKIE_DOMAIN': None,
+        'SESSION_COOKIE_PATH': None,
+        'SESSION_COOKIE_HTTPONLY': True,
+        'SESSION_COOKIE_SECURE': False,
+        'SESSION_REFRESH_EACH_REQUEST': True,
+        'MAX_CONTENT_LENGTH': None,
+        'SEND_FILE_MAX_AGE_DEFAULT': timedelta(hours=12),
+        'TRAP_BAD_REQUEST_ERRORS': False,
+        'TRAP_HTTP_EXCEPTIONS': False,
+        'EXPLAIN_TEMPLATE_LOADING': False,
+        'PREFERRED_URL_SCHEME': 'http',
+        'JSON_AS_ASCII': True,
+        'JSON_SORT_KEYS': True,
+        'JSONIFY_PRETTYPRINT_REGULAR': True,
+        'TEMPLATES_AUTO_RELOAD': None,
     })
 
     #: The rule object to use for URL rules created.  This is used by
@@ -405,7 +414,8 @@ class Flask(_PackageBoundObject):
 
         #: A dictionary with lists of functions that should be called at the
         #: beginning of the request.  The key of the dictionary is the name of
-        #: the blueprint this function is active for, ``None`` for all requests.
+        #: the blueprint this function is active for, ``None`` for all
+        #: requests.
         #: This can for example be used to open database connections or
         #: getting hold of the currently logged in user.  To register a
         #: function here, use the :meth:`before_request` decorator.
@@ -419,11 +429,11 @@ class Flask(_PackageBoundObject):
         self.before_first_request_funcs = []
 
         #: A dictionary with lists of functions that should be called after
-        #: each request.  The key of the dictionary is the name of the blueprint
-        #: this function is active for, ``None`` for all requests.  This can for
-        #: example be used to open database connections or getting hold of the
-        #: currently logged in user.  To register a function here, use the
-        #: :meth:`after_request` decorator.
+        #: each request.  The key of the dictionary is the name of the
+        #: blueprint  this function is active for, ``None`` for all requests.
+        #: This can for example be used to open database connections or getting
+        #: hold of the currently logged in user.  To register a function here,
+        #: use the :meth:`after_request` decorator.
         self.after_request_funcs = {}
 
         #: A dictionary with lists of functions that are called after
@@ -494,8 +504,8 @@ class Flask(_PackageBoundObject):
 
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
-        #: similar things.  For backwards compatibility extensions should register
-        #: themselves like this::
+        #: similar things.  For backwards compatibility extensions should
+        #: register themselves like this::
         #:
         #:      if not hasattr(app, 'extensions'):
         #:          app.extensions = {}
@@ -550,8 +560,9 @@ class Flask(_PackageBoundObject):
 
     def _get_error_handlers(self):
         from warnings import warn
-        warn(DeprecationWarning('error_handlers is deprecated, use the '
-            'new error_handler_spec attribute instead.'), stacklevel=1)
+        warn(DeprecationWarning('error_handlers is deprecated, use the new '
+                                'error_handler_spec attribute instead.'),
+             stacklevel=1)
         return self._error_handlers
     def _set_error_handlers(self, value):
         self._error_handlers = value
@@ -856,9 +867,9 @@ class Flask(_PackageBoundObject):
             app.testing = True
             client = app.test_client()
 
-        The test client can be used in a ``with`` block to defer the closing down
-        of the context until the end of the ``with`` block.  This is useful if
-        you want to access the context locals for testing::
+        The test client can be used in a ``with`` block to defer the closing
+        down of the context until the end of the ``with`` block.  This is
+        useful if you want to access the context locals for testing::
 
             with app.test_client() as c:
                 rv = c.get('/?vodka=42')
@@ -895,7 +906,8 @@ class Flask(_PackageBoundObject):
         cls = self.test_client_class
         if cls is None:
             from flask.testing import FlaskClient as cls
-        return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
+        return cls(self, self.response_class, use_cookies=use_cookies,
+                   **kwargs)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
@@ -1024,7 +1036,7 @@ class Flask(_PackageBoundObject):
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
         provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+                                            'provide_automatic_options', None)
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
@@ -1044,7 +1056,8 @@ class Flask(_PackageBoundObject):
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
                 raise AssertionError('View function mapping is overwriting an '
-                                     'existing endpoint function: %s' % endpoint)
+                                     'existing endpoint function: %s'
+                                     % endpoint)
             self.view_functions[endpoint] = view_func
 
     def route(self, rule, **options):
@@ -1174,12 +1187,15 @@ class Flask(_PackageBoundObject):
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
                 'Tried to register a handler for an exception instance {0!r}. '
-                'Handlers can only be registered for exception classes or HTTP error codes.'
-                .format(code_or_exception))
+                'Handlers can only be registered for exception classes or '
+                'HTTP error codes.'
+                .format(code_or_exception)
+            )
 
         exc_class, code = self._get_exc_class_and_code(code_or_exception)
 
-        handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
+        handlers = self.error_handler_spec.setdefault(key, {}) \
+            .setdefault(code, {})
         handlers[exc_class] = f
 
     @setupmethod
@@ -1746,8 +1762,8 @@ class Flask(_PackageBoundObject):
            URL adapter is created for the application context.
         """
         if request is not None:
-            return self.url_map.bind_to_environ(request.environ,
-                server_name=self.config['SERVER_NAME'])
+            return self.url_map.bind_to_environ(
+                request.environ, server_name=self.config['SERVER_NAME'])
         # We need at the very least the server name to be set for this
         # to work.
         if self.config['SERVER_NAME'] is not None:
@@ -1895,8 +1911,8 @@ class Flask(_PackageBoundObject):
     def request_context(self, environ):
         """Creates a :class:`~flask.ctx.RequestContext` from the given
         environment and binds it to the current context.  This must be used in
-        combination with the ``with`` statement because the request is only bound
-        to the current context for the duration of the ``with`` block.
+        combination with the ``with`` statement because the request is only
+        bound to the current context for the duration of the ``with`` block.
 
         Example usage::
 
