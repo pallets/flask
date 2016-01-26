@@ -540,7 +540,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     if add_etags and filename is not None:
         try:
-            rv.set_etag('flask-%s-%s-%s' % (
+            rv.set_etag('%s-%s-%s' % (
                 os.path.getmtime(filename),
                 os.path.getsize(filename),
                 adler32(
