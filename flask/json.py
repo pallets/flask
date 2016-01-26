@@ -195,7 +195,7 @@ def htmlsafe_dumps(obj, **kwargs):
 
 def htmlsafe_dump(obj, fp, **kwargs):
     """Like :func:`htmlsafe_dumps` but writes into a file object."""
-    fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
+    fp.write(text_type(htmlsafe_dumps(obj, **kwargs)))
 
 
 def jsonify(*args, **kwargs):
@@ -251,26 +251,21 @@ def jsonify(*args, **kwargs):
     indent = None
     separators = (',', ':')
 
-    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
-       and not request.is_xhr:
+    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] and not request.is_xhr:
         indent = 2
         separators = (', ', ': ')
 
     if args and kwargs:
-        raise TypeError(
-            "jsonify() behavior undefined when passed both args and kwargs"
-        )
+        raise TypeError('jsonify() behavior undefined when passed both args and kwargs')
     elif len(args) == 1:  # single args are passed directly to dumps()
         data = args[0]
     else:
         data = args or kwargs
 
-    # Note that we add '\n' to end of response
-    # (see https://github.com/mitsuhiko/flask/pull/1262)
-    rv = current_app.response_class(
+    return current_app.response_class(
         (dumps(data, indent=indent, separators=separators), '\n'),
-        mimetype='application/json')
-    return rv
+        mimetype='application/json'
+    )
 
 
 def tojson_filter(obj, **kwargs):
