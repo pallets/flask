@@ -1,11 +1,11 @@
 .. _distribute-deployment:
 
-Deploying with Distribute
+Deploying with Setuptools
 =========================
 
-`distribute`_, formerly setuptools, is an extension library that is
-commonly used to (like the name says) distribute Python libraries and
-extensions.  It extends distutils, a basic module installation system
+`Setuptools`_, is an extension library that is commonly used to
+(like the name says) distribute Python libraries and
+extensions. It extends distutils, a basic module installation system
 shipped with Python to also support various more complex constructs that
 make larger applications easier to distribute:
 
@@ -28,10 +28,9 @@ are distributed with either distribute, the older setuptools or distutils.
 
 In this case we assume your application is called
 :file:`yourapplication.py` and you are not using a module, but a :ref:`package
-<larger-applications>`.  Distributing resources with standard modules is
-not supported by `distribute`_ so we will not bother with it.  If you have
-not yet converted your application into a package, head over to the
-:ref:`larger-applications` pattern to see how this can be done.
+<larger-applications>`. If you have not yet converted your application into
+a package, head over to the :ref:`larger-applications` pattern to see
+how this can be done.
 
 A working deployment with distribute is the first step into more complex
 and more automated deployment scenarios.  If you want to fully automate
@@ -40,9 +39,9 @@ the process, also read the :ref:`fabric-deployment` chapter.
 Basic Setup Script
 ------------------
 
-Because you have Flask running, you either have setuptools or distribute
-available on your system anyways.  If you do not, fear not, there is a
-script to install it for you: `distribute_setup.py`_.  Just download and
+Because you have Flask running, you have setuptools available on your system anyways.
+Flask already depends upon setuptools. If you do not, fear not, there is a
+script to install it for you: `ez_setup.py`_.  Just download and
 run with your Python interpreter.
 
 Standard disclaimer applies: :ref:`you better use a virtualenv
@@ -51,10 +50,6 @@ Standard disclaimer applies: :ref:`you better use a virtualenv
 Your setup code always goes into a file named :file:`setup.py` next to your
 application.  The name of the file is only convention, but because
 everybody will look for a file with that name, you better not change it.
-
-Yes, even if you are using `distribute`, you are importing from a package
-called `setuptools`.  `distribute` is fully backwards compatible with
-`setuptools`, so it also uses the same import name.
 
 A basic :file:`setup.py` file for a Flask application looks like this::
 
@@ -127,7 +122,7 @@ requirements.  Here some examples::
         'BrokenPackage>=0.7,<=1.0'
     ]
 
-I mentioned earlier that dependencies are pulled from PyPI.  What if you
+As mentioned earlier, dependencies are pulled from PyPI.  What if you
 want to depend on a package that cannot be found on PyPI and won't be
 because it is an internal package you don't want to share with anyone?
 Just still do as if there was a PyPI entry for it and provide a list of
@@ -161,6 +156,6 @@ folder instead of copying the data over.  You can then continue to work on
 the code without having to run `install` again after each change.
 
 
-.. _distribute: https://pypi.python.org/pypi/distribute
 .. _pip: https://pypi.python.org/pypi/pip
-.. _distribute_setup.py: http://python-distribute.org/distribute_setup.py
+.. _ez_setup.py: https://bootstrap.pypa.io/ez_setup.py
+.. _Setuptools: https://pythonhosted.org/setuptools
