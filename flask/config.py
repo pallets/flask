@@ -222,7 +222,7 @@ class Config(dict):
             app.config['IMAGE_STORE_BASE_URL'] = 'http://img.website.com'
             image_store_config = app.config.get_namespace('IMAGE_STORE_')
 
-        The resulting dictionary `image_store` would look like::
+        The resulting dictionary `image_store_config` would look like::
 
             {
                 'type': 'fs',

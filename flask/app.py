@@ -421,7 +421,7 @@ class Flask(_PackageBoundObject):
         #: A dictionary with lists of functions that should be called after
         #: each request.  The key of the dictionary is the name of the blueprint
         #: this function is active for, ``None`` for all requests.  This can for
-        #: example be used to open database connections or getting hold of the
+        #: example be used to close database connections or getting hold of the
         #: currently logged in user.  To register a function here, use the
         #: :meth:`after_request` decorator.
         self.after_request_funcs = {}
