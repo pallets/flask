@@ -6,7 +6,6 @@
   
 If you're new to web development, and specifically looking at python as your language of choice, check out flask.  Even if you are a complete noob learning python, once you grasp some of the python basics, flask can make it easy for you to get up and running on creating web content in python much quicker than if you were just using python by itself.
 
-
 Although it is possible to jump right into flask and go through some tutorials to create web apps right away, having a basic grasp of the following concepts will speed up your learning curve, as it will create a mental foundation for understanding flask: 
 
 Framework - A framework is basically a set of software tools that take care of common tasks necessary for the development of web applications or sites. These common tasks include accessing databases, managing sessions, creating displays of HTML and using templating, which is a way of separating the layout from the content. For example if you think about a facebook page, the layout is pretty much set, there are menus and areas of the page that don't move, however the *content* of some of the areas in this layout changes according to your actions, like uploading a new profile picture, or sharing a new video . A basic tenet for using a framework is to promote the efficient writing of code and avoiding repetition. The complexity of a framework is proportional to the number of tools or libraries that it offers.
