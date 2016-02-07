@@ -8,10 +8,7 @@ If you're new to web development, and specifically looking at python as your lan
 
 Although it is possible to jump right into flask and go through some tutorials to create web apps right away, having a basic grasp of the following concepts will speed up your learning curve, as it will create a mental foundation for understanding flask: 
 
-Framework - A framework is basically a set of software tools that take care of common tasks necessary for the development of web applications or sites. These common tasks include accessing databases, managing sessions, creating displays of HTML and using templating, which is a way of separating the layout from the content. For example if you think about a facebook page, the layout is pretty much set, there are menus and areas of the page that don't move, however the *content* of some of the areas in this layout
-changes according to your actions, like uploading a new profile picture, or sharing a new video . A basic tenet for using a framework
-is to promote the efficient writing of code and avoiding repetition. The complexity of a framework is proportional to the number of
-tools or libraries that it offers.
+Framework - A framework is basically a set of software tools that take care of common tasks necessary for the development of web applications or sites. These common tasks include accessing databases, managing sessions, creating displays of HTML and using templating, which is a way of separating the layout from the content. For example if you think about a facebook page, the layout is pretty much set, there are menus and areas of the page that don't move, however the *content* of some of the areas in this layout changes according to your actions, like uploading a new profile picture, or sharing a new video . A basic tenet for using a framework is to promote the efficient writing of code and avoiding repetition. The complexity of a framework is proportional to the number of tools or libraries that it offers.
 
 Microframework - A microframework is a framework that has a minimal number of libraries or tools, leaving you the option to use python
 libraries that are already available elsewhere. This is what is meant by the Flask documentation when it says that it is "extensible".
