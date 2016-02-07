@@ -16,10 +16,9 @@ Jinja2 - Jinja2 is a template engine for Python. This library allows for differe
 
 https://realpython.com/blog/python/primer-on-jinja-templating. 
 
-Werkzeug - Werkzeug is a set of utilities for applications that communicate through an interface specification called WSGI (Web Server
-Gateway Interface), which as stated in the werkzeug documentation, "WSGI itself is a protocol or convetion that ensures that your web
-applicationcan speak with the webserver and more importantly that web applications work nicely together." The werkzeug tutorial can get
-you up and running on werkzeug, the link is this: http://werkzeug.pocoo.org/docs/0.11/tutorial/#introducint-shortly 
+Werkzeug - Werkzeug is a set of utilities for applications that communicate through an interface specification called WSGI (Web Server Gateway Interface), which as stated in the werkzeug documentation, "WSGI itself is a protocol or convetion that ensures that your web applicationcan speak with the webserver and more importantly that web applications work nicely together." The werkzeug tutorial can get you up and running on werkzeug, the link is this:
+
+http://werkzeug.pocoo.org/docs/0.11/tutorial/#introducint-shortly 
 
 If you look at the documentation for werkzeug and jinja2 you can get to some pretty simple tutorials that can get you started. Then do
 a wider search for tutorial videos on Flask and you'll see some presentations of the capabilities of flask and get a feel for its
