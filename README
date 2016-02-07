@@ -20,10 +20,9 @@ Werkzeug - Werkzeug is a set of utilities for applications that communicate thro
 
 http://werkzeug.pocoo.org/docs/0.11/tutorial/#introducint-shortly 
 
-If you look at the documentation for werkzeug and jinja2 you can get to some pretty simple tutorials that can get you started. Then do
-a wider search for tutorial videos on Flask and you'll see some presentations of the capabilities of flask and get a feel for its
-potential. Some of the best tutorials I've found are by miguel grinberg, you can go to his site and look for some of his video
-tutorials on youtube, his blog is: http://blog.miguelgrinberg.com. 
+If you look at the documentation for werkzeug and jinja2 you can get to some pretty simple tutorials that can get you started. Then do a wider search for tutorial videos on Flask and you'll see some presentations of the capabilities of flask and get a feel for its potential. Some of the best tutorials I've found are by miguel grinberg, you can go to his site and look for some of his video tutorials on youtube, his blog is:
+
+http://blog.miguelgrinberg.com. 
 
     ~ What is Flask?
 
