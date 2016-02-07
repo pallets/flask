@@ -12,10 +12,7 @@ Framework - A framework is basically a set of software tools that take care of c
 
 Microframework - A microframework is a framework that has a minimal number of libraries or tools, leaving you the option to use python libraries that are already available elsewhere. This is what is meant by the Flask documentation when it says that it is "extensible". This actually makes it easier to get started using it, as you can incorporate different tools only as they are needed.
 
-Jinja2 - Jinja2 is a template engine for Python. This library allows for different data to populate common templates through the use
-of programming logic.  Think of templating as a way to change the content of a web page or html element within a page while keeping
-the template or area where the changes occur constant, as for example news sites that change the latest stories when you visit them
-at different times of day. Check out these Jinja examples:
+Jinja2 - Jinja2 is a template engine for Python. This library allows for different data to populate common templates through the use of programming logic.  Think of templating as a way to change the content of a web page or html element within a page while keeping the template or area where the changes occur constant, as for example news sites that change the latest stories when you visit them at different times of day. Check out these Jinja examples:
 
 https://realpython.com/blog/python/primer-on-jinja-templating. 
 
