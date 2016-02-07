@@ -10,9 +10,7 @@ Although it is possible to jump right into flask and go through some tutorials t
 
 Framework - A framework is basically a set of software tools that take care of common tasks necessary for the development of web applications or sites. These common tasks include accessing databases, managing sessions, creating displays of HTML and using templating, which is a way of separating the layout from the content. For example if you think about a facebook page, the layout is pretty much set, there are menus and areas of the page that don't move, however the *content* of some of the areas in this layout changes according to your actions, like uploading a new profile picture, or sharing a new video . A basic tenet for using a framework is to promote the efficient writing of code and avoiding repetition. The complexity of a framework is proportional to the number of tools or libraries that it offers.
 
-Microframework - A microframework is a framework that has a minimal number of libraries or tools, leaving you the option to use python
-libraries that are already available elsewhere. This is what is meant by the Flask documentation when it says that it is "extensible".
-This actually makes it easier to get started using it, as you can incorporate different tools only as they are needed.
+Microframework - A microframework is a framework that has a minimal number of libraries or tools, leaving you the option to use python libraries that are already available elsewhere. This is what is meant by the Flask documentation when it says that it is "extensible". This actually makes it easier to get started using it, as you can incorporate different tools only as they are needed.
 
 Jinja2 - Jinja2 is a template engine for Python. This library allows for different data to populate common templates through the use
 of programming logic.  Think of templating as a way to change the content of a web page or html element within a page while keeping
