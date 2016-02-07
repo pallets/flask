@@ -1,4 +1,9 @@
  
+
+                          // Flask //
+
+              web development, one drop at a time
+              
   Novice Introduction:
   
 If you're new to web development, and specifically looking at python as your language of choice, check out flask.  Even if you are a complete noob learning python, once you grasp some of the python basics, flask can make it easy for you to get up and running on creating web content in python much quicker than if you were just using python by itself.
