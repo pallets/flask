@@ -56,7 +56,7 @@ Those two ways are equivalent, but the first one is more clear and leaves
 you with a function to call on your whim (and in tests).  Note that
 :exc:`werkzeug.exceptions.HTTPException` subclasses like
 :exc:`~werkzeug.exceptions.BadRequest` from the example and their HTTP codes
-are interchangable when handed to the registration methods or decorator
+are interchangeable when handed to the registration methods or decorator
 (``BadRequest.code == 400``).
 
 You are however not limited to a :exc:`~werkzeug.exceptions.HTTPException`
