@@ -12,7 +12,7 @@ Flask has several unique aspects which sets it apart from more tightly integrate
 
 For instance, Flask does not force developers to use particular tools or libraries, nor does it have built-in components where third-party libraries provide common functions. Instead, Flask is easily extensible to add extra functionality. If a desired extension [doesn't exist](http://flask.pocoo.org/extensions/), developers can write a stand-alone library and bridge that library to Flask by wrapping it in an extension.  
  
-Unlike other frameworks which include an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping), Flask developers can choose how they want their data to be stored. Flask applications can use existing Python libaries for projects that aren't suited to work with a standard ORM. This makes Flask easier to use with non-relational databases than more tightly integrated frameworks. 
+Flask developers have the flexibility to choose how they want their data to be stored and manipulated. For instance, for projects that aren't suited to work with a standard ORM, Flask applications can use existing Python libaries like SQLAlchemy, Django ORM, Peewee, PonyORM or SQLObject. This makes Flask easier to use with non-relational databases than more tightly integrated frameworks.
 
 Unlike frameworks which use the *module approach*, Flask utilizes *application dispatching* which isolates the same or different Flask applications from each other in the same Python interpreter process. This is useful for developers who want to use multiple instances of the same application with different configurations, OR ? 
 
