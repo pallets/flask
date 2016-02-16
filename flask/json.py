@@ -264,7 +264,7 @@ def jsonify(*args, **kwargs):
 
     return current_app.response_class(
         (dumps(data, indent=indent, separators=separators), '\n'),
-        mimetype='application/json'
+        mimetype=current_app.config['JSONIFY_MIMETYPE']
     )
 
 
