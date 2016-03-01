@@ -108,7 +108,7 @@ class Config(dict):
                                variable_name)
         return self.from_pyfile(rv, silent=silent)
 
-    def from_pyfile(self, filename, silent=False):
+    def from_pyfile(self, filename, silent=False, encoding='utf-8'):
         """Updates the values in the config from a Python file.  This function
         behaves as if the file was imported as module with the
         :meth:`from_object` function.
@@ -126,7 +126,7 @@ class Config(dict):
         d = types.ModuleType('config')
         d.__file__ = filename
         try:
-            with open(filename) as config_file:
+            with open(filename, encoding=encoding) as config_file:
                 exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
         except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
