@@ -899,7 +899,7 @@ class _PackageBoundObject(object):
         """
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
-        return open(os.path.join(self.root_path, resource), mode, encoding)
+        return open(os.path.join(self.root_path, resource), mode, encoding=encoding)
 
 
 def total_seconds(td):
