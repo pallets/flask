@@ -101,10 +101,12 @@ def copy_current_request_context(f):
     """
     top = _request_ctx_stack.top
     if top is None:
-        raise RuntimeError('This decorator can only be used at local scopes '
+        raise RuntimeError(
+            'This decorator can only be used at local scopes '
             'when a request context is on the stack.  For instance within '
             'view functions.')
     reqctx = top.copy()
+
     def wrapper(*args, **kwargs):
         with reqctx:
             return f(*args, **kwargs)
@@ -264,9 +266,11 @@ class RequestContext(object):
 
     def _get_g(self):
         return _app_ctx_stack.top.g
+
     def _set_g(self, value):
         _app_ctx_stack.top.g = value
     g = property(_get_g, _set_g)
+
     del _get_g, _set_g
 
     def copy(self):
@@ -279,9 +283,8 @@ class RequestContext(object):
         .. versionadded:: 0.10
         """
         return self.__class__(self.app,
-            environ=self.request.environ,
-            request=self.request
-        )
+                              environ=self.request.environ,
+                              request=self.request)
 
     def match_request(self):
         """Can be overridden by a subclass to hook into the matching

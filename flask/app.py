@@ -19,10 +19,10 @@ from collections import deque
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
 from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest, default_exceptions
+    MethodNotAllowed, BadRequest, default_exceptions
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-     locked_cached_property, _endpoint_from_view_func, find_package
+    locked_cached_property, _endpoint_from_view_func, find_package
 from . import json, cli
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
@@ -30,9 +30,9 @@ from .ctx import RequestContext, AppContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, request, session, g
 from .sessions import SecureCookieSessionInterface
 from .templating import DispatchingJinjaLoader, Environment, \
-     _default_template_ctx_processor
+    _default_template_ctx_processor
 from .signals import request_started, request_finished, got_request_exception, \
-     request_tearing_down, appcontext_tearing_down
+    request_tearing_down, appcontext_tearing_down
 from ._compat import reraise, string_types, text_type, integer_types
 
 # a lock used for logger initialization
@@ -54,7 +54,8 @@ def setupmethod(f):
     """
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request:
-            raise AssertionError('A setup function was called after the '
+            raise AssertionError(
+                'A setup function was called after the '
                 'first request was handled.  This usually indicates a bug '
                 'in the application where a module was not imported '
                 'and decorators or other functionality was called too late.\n'
@@ -181,6 +182,7 @@ class Flask(_PackageBoundObject):
     # Backwards compatibility support
     def _get_request_globals_class(self):
         return self.app_ctx_globals_class
+
     def _set_request_globals_class(self, value):
         from warnings import warn
         warn(DeprecationWarning('request_globals_class attribute is now '
@@ -244,7 +246,7 @@ class Flask(_PackageBoundObject):
     #: ``PERMANENT_SESSION_LIFETIME`` configuration key.  Defaults to
     #: ``timedelta(days=31)``
     permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
-        get_converter=_make_timedelta)
+                                                 get_converter=_make_timedelta)
 
     #: A :class:`~datetime.timedelta` which is used as default cache_timeout
     #: for the :func:`send_file` functions. The default is 12 hours.
@@ -254,7 +256,7 @@ class Flask(_PackageBoundObject):
     #: variable can also be set with an integer value used as seconds.
     #: Defaults to ``timedelta(hours=12)``
     send_file_max_age_default = ConfigAttribute('SEND_FILE_MAX_AGE_DEFAULT',
-        get_converter=_make_timedelta)
+                                                get_converter=_make_timedelta)
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
@@ -289,33 +291,33 @@ class Flask(_PackageBoundObject):
 
     #: Default configuration parameters.
     default_config = ImmutableDict({
-        'DEBUG':                                False,
-        'TESTING':                              False,
-        'PROPAGATE_EXCEPTIONS':                 None,
-        'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
-        'SECRET_KEY':                           None,
-        'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
-        'USE_X_SENDFILE':                       False,
-        'LOGGER_NAME':                          None,
-        'LOGGER_HANDLER_POLICY':               'always',
-        'SERVER_NAME':                          None,
-        'APPLICATION_ROOT':                     None,
-        'SESSION_COOKIE_NAME':                  'session',
-        'SESSION_COOKIE_DOMAIN':                None,
-        'SESSION_COOKIE_PATH':                  None,
-        'SESSION_COOKIE_HTTPONLY':              True,
-        'SESSION_COOKIE_SECURE':                False,
-        'SESSION_REFRESH_EACH_REQUEST':         True,
-        'MAX_CONTENT_LENGTH':                   None,
-        'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
-        'TRAP_BAD_REQUEST_ERRORS':              False,
-        'TRAP_HTTP_EXCEPTIONS':                 False,
-        'EXPLAIN_TEMPLATE_LOADING':             False,
-        'PREFERRED_URL_SCHEME':                 'http',
-        'JSON_AS_ASCII':                        True,
-        'JSON_SORT_KEYS':                       True,
-        'JSONIFY_PRETTYPRINT_REGULAR':          True,
-        'TEMPLATES_AUTO_RELOAD':                None,
+        'DEBUG': False,
+        'TESTING': False,
+        'PROPAGATE_EXCEPTIONS': None,
+        'PRESERVE_CONTEXT_ON_EXCEPTION': None,
+        'SECRET_KEY': None,
+        'PERMANENT_SESSION_LIFETIME': timedelta(days=31),
+        'USE_X_SENDFILE': False,
+        'LOGGER_NAME': None,
+        'LOGGER_HANDLER_POLICY': 'always',
+        'SERVER_NAME': None,
+        'APPLICATION_ROOT': None,
+        'SESSION_COOKIE_NAME': 'session',
+        'SESSION_COOKIE_DOMAIN': None,
+        'SESSION_COOKIE_PATH': None,
+        'SESSION_COOKIE_HTTPONLY': True,
+        'SESSION_COOKIE_SECURE': False,
+        'SESSION_REFRESH_EACH_REQUEST': True,
+        'MAX_CONTENT_LENGTH': None,
+        'SEND_FILE_MAX_AGE_DEFAULT': timedelta(hours=12),
+        'TRAP_BAD_REQUEST_ERRORS': False,
+        'TRAP_HTTP_EXCEPTIONS': False,
+        'EXPLAIN_TEMPLATE_LOADING': False,
+        'PREFERRED_URL_SCHEME': 'http',
+        'JSON_AS_ASCII': True,
+        'JSON_SORT_KEYS': True,
+        'JSONIFY_PRETTYPRINT_REGULAR': True,
+        'TEMPLATES_AUTO_RELOAD': None,
     })
 
     #: The rule object to use for URL rules created.  This is used by
@@ -549,9 +551,11 @@ class Flask(_PackageBoundObject):
 
     def _get_error_handlers(self):
         from warnings import warn
-        warn(DeprecationWarning('error_handlers is deprecated, use the '
+        warn(DeprecationWarning(
+            'error_handlers is deprecated, use the '
             'new error_handler_spec attribute instead.'), stacklevel=1)
         return self._error_handlers
+
     def _set_error_handlers(self, value):
         self._error_handlers = value
         self.error_handler_spec[None] = value
@@ -1022,8 +1026,8 @@ class Flask(_PackageBoundObject):
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
-        provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+        provide_automatic_options = getattr(
+            view_func, 'provide_automatic_options', None)
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
@@ -1745,8 +1749,8 @@ class Flask(_PackageBoundObject):
            URL adapter is created for the application context.
         """
         if request is not None:
-            return self.url_map.bind_to_environ(request.environ,
-                server_name=self.config['SERVER_NAME'])
+            return self.url_map.bind_to_environ(
+                request.environ, server_name=self.config['SERVER_NAME'])
         # We need at the very least the server name to be set for this
         # to work.
         if self.config['SERVER_NAME'] is not None:

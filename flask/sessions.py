@@ -69,7 +69,8 @@ def _tag(value):
             return text_type(value)
         except UnicodeError:
             from flask.debughelpers import UnexpectedUnicodeError
-            raise UnexpectedUnicodeError(u'A byte string with '
+            raise UnexpectedUnicodeError(
+                u'A byte string with '
                 u'non-ASCII data was passed to the session system '
                 u'which can only store unicode strings.  Consider '
                 u'base64 encoding your string (String was %r)' % value)
@@ -227,8 +228,8 @@ class SessionInterface(object):
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's ``None``.
         """
-        return app.config['SESSION_COOKIE_PATH'] or \
-               app.config['APPLICATION_ROOT'] or '/'
+        return (app.config['SESSION_COOKIE_PATH'] or \
+                app.config['APPLICATION_ROOT'] or '/')
 
     def get_cookie_httponly(self, app):
         """Returns True if the session cookie should be httponly.  This

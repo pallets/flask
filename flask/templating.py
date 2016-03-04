@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
-     TemplateNotFound
+    TemplateNotFound
 
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered, before_render_template

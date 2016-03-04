@@ -74,6 +74,7 @@ if hasattr(sys, 'pypy_version_info'):
     class _Mgr(object):
         def __enter__(self):
             return self
+
         def __exit__(self, *args):
             sys.exc_clear()
     try:
