@@ -140,12 +140,8 @@ def test_manual_context_binding():
     ctx.push()
     assert index() == 'Hello World!'
     ctx.pop()
-    try:
+    with pytest.raises(RuntimeError):
         index()
-    except RuntimeError:
-        pass
-    else:
-        assert 0, 'expected runtime error'
 
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
 def test_greenlet_context_copying():
