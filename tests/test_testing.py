@@ -100,13 +100,10 @@ def test_session_transactions_no_null_sessions():
     app.testing = True
 
     with app.test_client() as c:
-        try:
+        with pytest.raises(RuntimeError) as e:
             with c.session_transaction() as sess:
                 pass
-        except RuntimeError as e:
-            assert 'Session backend did not open a session' in str(e)
-        else:
-            assert False, 'Expected runtime error'
+        assert 'Session backend did not open a session' in str(e.value)
 
 def test_session_transactions_keep_context():
     app = flask.Flask(__name__)
@@ -124,13 +121,10 @@ def test_session_transaction_needs_cookies():
     app = flask.Flask(__name__)
     app.testing = True
     c = app.test_client(use_cookies=False)
-    try:
+    with pytest.raises(RuntimeError) as e:
         with c.session_transaction() as s:
             pass
-    except RuntimeError as e:
-        assert 'cookies' in str(e)
-    else:
-        assert False, 'Expected runtime error'
+    assert 'cookies' in str(e.value)
 
 def test_test_client_context_binding():
     app = flask.Flask(__name__)
