@@ -55,10 +55,11 @@ _blueprint_related = [
 
 
 def make_diff(filename, old, new):
-    for line in difflib.unified_diff(old.splitlines(), new.splitlines(),
-                     posixpath.normpath(posixpath.join('a', filename)),
-                     posixpath.normpath(posixpath.join('b', filename)),
-                     lineterm=''):
+    for line in difflib.unified_diff(old.splitlines(),
+                                     new.splitlines(),
+                                     posixpath.normpath(posixpath.join('a', filename)),
+                                     posixpath.normpath(posixpath.join('b', filename)),
+                                     lineterm=''):
         print line
 
 
@@ -208,6 +209,7 @@ def rewrite_blueprint_imports(contents):
 
 def rewrite_for_blueprints(contents, filename):
     modules_declared = []
+
     def handle_match(match):
         target = match.group(1)
         name_param = match.group(2)

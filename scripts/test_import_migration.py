@@ -5,6 +5,7 @@ import pytest
 redbaron = pytest.importorskip("redbaron")
 import flaskext_migrate as migrate
 
+
 def test_simple_from_import():
     red = redbaron.RedBaron("from flask.ext import foo")
     output = migrate.fix_tester(red)
@@ -64,7 +65,7 @@ def test_function_call_migration():
 
 def test_nested_function_call_migration():
     red = redbaron.RedBaron("import flask.ext.foo\n\n"
-                   "flask.ext.foo.bar(var)")
+                            "flask.ext.foo.bar(var)")
     output = migrate.fix_tester(red)
     assert output == ("import flask_foo\n\n"
                       "flask_foo.bar(var)")

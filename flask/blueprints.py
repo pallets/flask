@@ -170,7 +170,7 @@ class Blueprint(_PackageBoundObject):
         if endpoint:
             assert '.' not in endpoint, "Blueprint endpoints should not contain dots"
         self.record(lambda s:
-            s.add_url_rule(rule, endpoint, view_func, **options))
+                    s.add_url_rule(rule, endpoint, view_func, **options))
 
     def endpoint(self, endpoint):
         """Like :meth:`Flask.endpoint` but for a blueprint.  This does not

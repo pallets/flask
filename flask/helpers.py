@@ -39,7 +39,7 @@ from jinja2 import FileSystemLoader
 
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
-     current_app, request
+    current_app, request
 from ._compat import string_types, text_type
 
 
@@ -481,12 +481,14 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
            and isinstance(filename, string_types):
-            warn(DeprecationWarning('The filename support for file objects '
+            warn(DeprecationWarning(
+                'The filename support for file objects '
                 'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
                 stacklevel=2)
         if add_etags:
-            warn(DeprecationWarning('In future flask releases etags will no '
+            warn(DeprecationWarning(
+                'In future flask releases etags will no '
                 'longer be generated for file objects passed to the send_file '
                 'function because this behavior was unreliable.  Pass '
                 'filenames instead if possible, otherwise attach an etag '
@@ -797,11 +799,13 @@ class _PackageBoundObject(object):
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
     static_folder = property(_get_static_folder, _set_static_folder, doc='''
     The absolute path to the configured static folder.
     ''')
+
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
@@ -809,6 +813,7 @@ class _PackageBoundObject(object):
             return self._static_url_path
         if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
     static_url_path = property(_get_static_url_path, _set_static_url_path)

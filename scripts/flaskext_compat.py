@@ -34,9 +34,9 @@ class ExtensionImporter(object):
 
     def __eq__(self, other):
         return self.__class__.__module__ == other.__class__.__module__ and \
-               self.__class__.__name__ == other.__class__.__name__ and \
-               self.wrapper_module == other.wrapper_module and \
-               self.module_choices == other.module_choices
+            self.__class__.__name__ == other.__class__.__name__ and \
+            self.wrapper_module == other.wrapper_module and \
+            self.module_choices == other.module_choices
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -113,7 +113,7 @@ class ExtensionImporter(object):
         filename = os.path.abspath(tb.tb_frame.f_code.co_filename)
         test_string = os.path.sep + important_module.replace('.', os.path.sep)
         return test_string + '.py' in filename or \
-               test_string + os.path.sep + '__init__.py' in filename
+            test_string + os.path.sep + '__init__.py' in filename
 
 
 def activate():

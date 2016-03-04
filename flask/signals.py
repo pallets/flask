@@ -28,6 +28,7 @@ except ImportError:
         def __init__(self, name, doc=None):
             self.name = name
             self.__doc__ = doc
+
         def _fail(self, *args, **kwargs):
             raise RuntimeError('signalling support is unavailable '
                                'because the blinker library is '

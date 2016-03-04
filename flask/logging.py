@@ -15,7 +15,7 @@ import sys
 
 from werkzeug.local import LocalProxy
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, \
-     DEBUG, ERROR
+    DEBUG, ERROR
 from .globals import _request_ctx_stack
 
 
