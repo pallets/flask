@@ -307,12 +307,8 @@ def test_missing_session():
     app = flask.Flask(__name__)
 
     def expect_exception(f, *args, **kwargs):
-        try:
-            f(*args, **kwargs)
-        except RuntimeError as e:
-            assert e.args and 'session is unavailable' in e.args[0]
-        else:
-            assert False, 'expected exception'
+        e = pytest.raises(RuntimeError, f, *args, **kwargs)
+        assert e.value.args and 'session is unavailable' in e.value.args[0]
     with app.test_request_context():
         assert flask.session.get('missing_key') is None
         expect_exception(flask.session.__setitem__, 'foo', 42)
@@ -853,12 +849,9 @@ def test_trapping_of_bad_request_key_errors():
 
     app.config['TRAP_BAD_REQUEST_ERRORS'] = True
     c = app.test_client()
-    try:
-        c.get('/fail')
-    except KeyError as e:
-        assert isinstance(e, BadRequest)
-    else:
-        assert False, 'Expected exception'
+    with pytest.raises(KeyError) as e:
+        c.get("/fail")
+    assert e.errisinstance(BadRequest)
 
 
 def test_trapping_of_all_http_exceptions():
@@ -888,13 +881,10 @@ def test_enctype_debug_helper():
     # stack otherwise and we want to ensure that this is not the case
     # to not negatively affect other tests.
     with app.test_client() as c:
-        try:
+        with pytest.raises(DebugFilesKeyError) as e:
             c.post('/fail', data={'foo': 'index.txt'})
-        except DebugFilesKeyError as e:
-            assert 'no file contents were transmitted' in str(e)
-            assert 'This was submitted: "index.txt"' in str(e)
-        else:
-            assert False, 'Expected exception'
+        assert 'no file contents were transmitted' in str(e.value)
+        assert 'This was submitted: "index.txt"' in str(e.value)
 
 
 def test_response_creation():
@@ -1203,12 +1193,8 @@ def test_exception_propagation():
         c = app.test_client()
         if config_key is not None:
             app.config[config_key] = True
-            try:
+            with pytest.raises(Exception):
                 c.get('/')
-            except Exception:
-                pass
-            else:
-                assert False, 'expected exception'
         else:
             assert c.get('/').status_code == 500
 
@@ -1345,14 +1331,11 @@ def test_debug_mode_complains_after_first_request():
         return 'Awesome'
     assert not app.got_first_request
     assert app.test_client().get('/').data == b'Awesome'
-    try:
+    with pytest.raises(AssertionError) as e:
         @app.route('/foo')
         def broken():
             return 'Meh'
-    except AssertionError as e:
-        assert 'A setup function was called' in str(e)
-    else:
-        assert False, 'Expected exception'
+    assert 'A setup function was called' in str(e)
 
     app.debug = False
 
@@ -1408,14 +1391,11 @@ def test_routing_redirect_debugging():
     def foo():
         return 'success'
     with app.test_client() as c:
-        try:
+        with pytest.raises(AssertionError) as e:
             c.post('/foo', data={})
-        except AssertionError as e:
-            assert 'http://localhost/foo/' in str(e)
-            assert ('Make sure to directly send '
-                    'your POST-request to this URL') in str(e)
-        else:
-            assert False, 'Expected exception'
+        assert 'http://localhost/foo/' in str(e)
+        assert ('Make sure to directly send '
+                'your POST-request to this URL') in str(e)
 
         rv = c.get('/foo', data={}, follow_redirects=True)
         assert rv.data == b'success'
