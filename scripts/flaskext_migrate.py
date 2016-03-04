@@ -97,7 +97,7 @@ def _get_modules(module):
     """
     modules_string = [cur + ', ' if cur.isalnum() and next.isalnum()
                       else cur
-                      for (cur, next) in zip(module, module[1:]+[''])]
+                      for (cur, next) in zip(module, module[1:] + [''])]
 
     return ''.join(modules_string)
 
