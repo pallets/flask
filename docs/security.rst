@@ -73,7 +73,7 @@ them knowing.
 Say you have a specific URL that, when you sent ``POST`` requests to will
 delete a user's profile (say ``http://example.com/user/delete``).  If an
 attacker now creates a page that sends a post request to that page with
-some JavaScript they just has to trick some users to load that page and
+some JavaScript they just have to trick some users to load that page and
 their profiles will end up being deleted.
 
 Imagine you were to run Facebook with millions of concurrent users and
