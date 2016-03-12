@@ -33,6 +33,6 @@ $ py.test
 
 ## Where can I get help?
 
-Either use the #pocoo IRC channel on *irc.freenode.net* or ask on the mailinglist: [http://flask.pocoo.org/mailinglist/](http://flask.pocoo.org/mailinglist/)
+Either use the *#pocoo* IRC channel on *irc.freenode.net* or ask on the mailinglist: [http://flask.pocoo.org/mailinglist/](http://flask.pocoo.org/mailinglist/)
 
 See [http://flask.pocoo.org/community/](http://flask.pocoo.org/community/) for more resources.
