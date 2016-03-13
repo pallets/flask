@@ -1,0 +1,46 @@
+sudo: false
+language: python
+
+python:
+  - "2.6"
+  - "2.7"
+  - "pypy"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+env:
+  - REQUIREMENTS=lowest
+  - REQUIREMENTS=release
+  - REQUIREMENTS=devel
+
+matrix:
+  exclude:
+    # Python 3 support currently does not work with lowest requirements
+    - python: "3.3"
+      env: REQUIREMENTS=lowest
+    - python: "3.4"
+      env: REQUIREMENTS=lowest
+    - python: "3.5"
+      env: REQUIREMENTS=lowest
+
+
+install:
+    - pip install tox
+
+script:
+    - tox -e py-$REQUIREMENTS
+
+branches:
+  except:
+    - website
+
+notifications:
+  email: false
+  irc:
+    channels:
+      - "chat.freenode.net#pocoo"
+    on_success: change
+    on_failure: always
+    use_notice: true
+    skip_join: true

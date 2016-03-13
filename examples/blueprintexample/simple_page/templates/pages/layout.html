@@ -1,0 +1,20 @@
+<!doctype html>
+<title>Simple Page Blueprint</title>
+<div class="page">
+  <h1>This is blueprint example</h1>
+  <p>
+    A simple page blueprint is registered under / and /pages
+    you can access it using this URLs:
+  <ul>
+    <li><a href="{{ url_for('simple_page.show', page='hello') }}">/hello</a>
+    <li><a href="{{ url_for('simple_page.show', page='world') }}">/world</a>
+  </ul>
+  <p>
+    Also you can register the same blueprint under another path
+  <ul>
+    <li><a href="/pages/hello">/pages/hello</a>
+    <li><a href="/pages/world">/pages/world</a>
+  </ul>
+
+  {% block body %}{% endblock %}
+</div>
