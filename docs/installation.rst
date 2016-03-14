@@ -162,7 +162,7 @@ and :command:`python` which will run those things, but this might not automatica
 on Windows, because it doesn't know where those executables are (give either a try!).
 
 To fix this, you should be able to navigate to your Python install directory
-(e.g :file:`C:\Python27`), then go to :file:`Tools`, then :file:`Scripts`; then find the
+(e.g :file:`C:\Python27`), then go to :file:`Tools`, then :file:`Scripts`, then find the
 :file:`win_add2path.py` file and run that. Open a **new** Command Prompt and
 check that you can now just type :command:`python` to bring up the interpreter.
 
