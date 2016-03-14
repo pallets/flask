@@ -683,11 +683,11 @@ class TestStreaming(object):
         @app.route('/')
         def index():
             @flask.stream_with_context
-            def generate():
-                yield 'Hello '
+            def generate(hello):
+                yield hello
                 yield flask.request.args['name']
                 yield '!'
-            return flask.Response(generate())
+            return flask.Response(generate('Hello '))
         c = app.test_client()
         rv = c.get('/?name=World')
         assert rv.data == b'Hello World!'
