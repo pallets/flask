@@ -172,5 +172,5 @@ Finally, to install `virtualenv`_, you can simply run::
 
 Then you can be off on your way following the installation instructions above.
 
-.. _get-pip.py: https://raw.githubusercontent.com/pypa/pip/master/contrib/get-pip.py
+.. _get-pip.py: https://bootstrap.pypa.io/get-pip.py
 .. _ez_setup.py: https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
