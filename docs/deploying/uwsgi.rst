@@ -31,12 +31,6 @@ Given a flask application in myapp.py, use the following command:
 
     $ uwsgi -s /tmp/uwsgi.sock --manage-script-name --mount /yourapplication=myapp:app
 
-Or, if you prefer:
-
-.. sourcecode:: text
-
-    $ uwsgi -s /tmp/uwsgi.sock --manage-script-name --mount /yourapplication=myapp:app
-
 The ``--manage-script-name`` will move the handling of ``SCRIPT_NAME`` to
 uwsgi, since its smarter about that. It is used together with the ``--mount``
 directive which will make requests to ``/yourapplication`` be directed to

@@ -321,7 +321,7 @@ You have no idea what an HTTP method is?  Worry not, here is a quick
 introduction to HTTP methods and why they matter:
 
 The HTTP method (also often called "the verb") tells the server what the
-clients wants to *do* with the requested page.  The following methods are
+client wants to *do* with the requested page.  The following methods are
 very common:
 
 ``GET``

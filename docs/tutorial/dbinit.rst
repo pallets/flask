@@ -38,12 +38,12 @@ add this function below the `connect_db` function in :file:`flaskr.py`::
 
 The ``app.cli.command()`` decorator registers a new command with the
 :command:`flask` script.  When the command executes, Flask will automatically
-create a application context for us bound to the right application.
+create an application context for us bound to the right application.
 Within the function, we can then access :attr:`flask.g` and other things as
 we would expect.  When the script ends, the application context tears down
 and the database connection is released.
 
-We want to keep an actual functions around that initializes the database,
+We want to keep an actual function around that initializes the database,
 though, so that we can easily create databases in unit tests later on.  (For
 more information see :ref:`testing`.)
 

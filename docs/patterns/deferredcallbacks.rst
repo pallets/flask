@@ -56,9 +56,9 @@ this the following function needs to be registered as
 A Practical Example
 -------------------
 
-Now we can easily at any point in time register a function to be called at
-the end of this particular request.  For example you can remember the
-current language of the user in a cookie in the before-request function::
+At any time during a request, we can register a function to be called at the
+end of the request.  For example you can remember the current language of the
+user in a cookie in the before-request function::
 
     from flask import request
 

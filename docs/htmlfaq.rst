@@ -30,7 +30,7 @@ the (X)HTML generation on the web is based on non-XML template engines
 (such as Jinja, the one used in Flask) which do not protect you from
 accidentally creating invalid XHTML.  There are XML based template engines,
 such as Kid and the popular Genshi, but they often come with a larger
-runtime overhead and, are not as straightforward to use because they have
+runtime overhead and are not as straightforward to use because they have
 to obey XML rules.
 
 The majority of users, however, assumed they were properly using XHTML.
