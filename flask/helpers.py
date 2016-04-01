@@ -621,9 +621,7 @@ def send_from_directory(directory, filename, **options):
     try:
         if not os.path.isfile(filename):
             raise NotFound()
-    except TypeError:
-        raise BadRequest()
-    except ValueError:
+    except (TypeError, ValueError):
         raise BadRequest()
     options.setdefault('conditional', True)
     return send_file(filename, **options)

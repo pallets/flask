@@ -511,12 +511,9 @@ class TestSendfile(object):
         app.root_path = os.path.join(os.path.dirname(__file__),
                                      'test_apps', 'subdomaintestmodule')
         with app.test_request_context():
-            try:
+            with pytest.raises(BadRequest):
                 rv = flask.send_from_directory('static', 'bad\x00')
                 rv.close()
-                assert False
-            except BadRequest:
-                pass
 
 class TestLogging(object):
 
