@@ -15,6 +15,7 @@ import os
 import datetime
 import flask
 from logging import StreamHandler
+from werkzeug.exceptions import BadRequest
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
@@ -504,6 +505,18 @@ class TestSendfile(object):
             assert rv.data.strip() == b'Hello Subdomain'
             rv.close()
 
+    def test_send_from_directory_bad_request(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.root_path = os.path.join(os.path.dirname(__file__),
+                                     'test_apps', 'subdomaintestmodule')
+        with app.test_request_context():
+            try:
+                rv = flask.send_from_directory('static', 'bad\x00')
+                rv.close()
+                assert False
+            except BadRequest:
+                pass
 
 class TestLogging(object):
 
