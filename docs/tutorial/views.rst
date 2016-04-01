@@ -12,11 +12,11 @@ Show Entries
 This view shows all the entries stored in the database.  It listens on the
 root of the application and will select title and text from the database.
 The one with the highest id (the newest entry) will be on top.  The rows
-returned from the cursor look a bit like tuples because we are using
+returned from the cursor look a bit like dictionaries because we are using
 the :class:`sqlite3.Row` row factory.
 
-The view function will pass the entries as dictionaries to the
-:file:`show_entries.html` template and return the rendered one::
+The view function will pass the entries to the :file:`show_entries.html`
+template and return the rendered one::
 
     @app.route('/')
     def show_entries():

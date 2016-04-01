@@ -330,7 +330,7 @@ there are alternative ways as well.  For example you could use imports or
 subclassing.
 
 What is very popular in the Django world is to make the import explicit in
-the config file by adding an ``from yourapplication.default_settings
+the config file by adding ``from yourapplication.default_settings
 import *`` to the top of the file and then overriding the changes by hand.
 You could also inspect an environment variable like
 ``YOURAPPLICATION_MODE`` and set that to `production`, `development` etc

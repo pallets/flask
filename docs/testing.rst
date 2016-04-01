@@ -223,8 +223,8 @@ there does not seem to be a good way to do that, consider switching to
 application factories (see :ref:`app-factories`).
 
 Note however that if you are using a test request context, the
-:meth:`~flask.Flask.before_request` functions are not automatically called
-same for :meth:`~flask.Flask.after_request` functions.  However
+:meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`
+functions are not called automatically.  However
 :meth:`~flask.Flask.teardown_request` functions are indeed executed when
 the test request context leaves the ``with`` block.  If you do want the
 :meth:`~flask.Flask.before_request` functions to be called as well, you

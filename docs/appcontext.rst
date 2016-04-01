@@ -26,8 +26,8 @@ In contrast, during request handling, a couple of other rules exist:
 
 There is a third state which is sitting in between a little bit.
 Sometimes you are dealing with an application in a way that is similar to
-how you interact with applications during request handling just that there
-is no request active.  Consider for instance that you're sitting in an
+how you interact with applications during request handling; just that there
+is no request active.  Consider, for instance, that you're sitting in an
 interactive Python shell and interacting with the application, or a
 command line application.
 

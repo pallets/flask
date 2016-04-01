@@ -59,13 +59,14 @@ you with a function to call on your whim (and in tests).  Note that
 are interchangeable when handed to the registration methods or decorator
 (``BadRequest.code == 400``).
 
-You are however not limited to a :exc:`~werkzeug.exceptions.HTTPException`
-or its code but can register a handler for every exception class you like.
+You are however not limited to :exc:`~werkzeug.exceptions.HTTPException`
+or HTTP status codes but can register a handler for every exception class you
+like.
 
 .. versionchanged:: 1.0
 
-   Errorhandlers are now prioritized by specifity instead of the order they're
-   registered in.
+   Errorhandlers are now prioritized by specificity of the exception classes
+   they are registered for instead of the order they are registered in.
 
 Handling
 ````````
@@ -74,7 +75,7 @@ Once an exception instance is raised, its class hierarchy is traversed,
 and searched for in the exception classes for which handlers are registered.
 The most specific handler is selected.
 
-E.g. if a instance of :exc:`ConnectionRefusedError` is raised, and a handler
+E.g. if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
 is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
 the more specific :exc:`ConnectionRefusedError` handler is called on the
 exception instance, and its response is shown to the user.
