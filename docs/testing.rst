@@ -24,7 +24,7 @@ the :ref:`tutorial`.  If you don't have that application yet, get the
 sources from `the examples`_.
 
 .. _the examples:
-   https://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
+   https://github.com/pallets/flask/tree/master/examples/flaskr/
 
 The Testing Skeleton
 --------------------
@@ -194,7 +194,7 @@ suite.
 
 
 .. _MiniTwit Example:
-   https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/
+   https://github.com/pallets/flask/tree/master/examples/minitwit/
 
 
 Other Testing Tricks
