@@ -73,6 +73,7 @@ Version 1.0
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).
+- ``flask.ext`` is now deprecated (pull request ``#1484``).
 
 Version 0.10.2
 --------------
