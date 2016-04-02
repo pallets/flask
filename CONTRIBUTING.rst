@@ -45,7 +45,7 @@ install it with::
 
 Clone this repository::
 
-    git clone https://github.com/mitsuhiko/flask.git
+    git clone https://github.com/pallets/flask.git
 
 Install Flask as an editable package using the current source::
 
