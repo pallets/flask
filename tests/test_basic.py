@@ -1616,3 +1616,44 @@ def test_run_server_port(monkeypatch):
     hostname, port = 'localhost', 8000
     app.run(hostname, port, debug=True)
     assert rv['result'] == 'running on %s:%s ...' % (hostname, port)
+
+
+def test_disable_automatic_options():
+    # Issue 1488: Add support for a kwarg to add_url_rule to disable the auto OPTIONS response
+    app = flask.Flask(__name__)
+
+    def index():
+        return flask.request.method
+
+    def more():
+        return flask.request.method
+
+    app.add_url_rule('/', 'index', index, provide_automatic_options=False)
+    app.add_url_rule('/more', 'more', more, methods=['GET', 'POST'], provide_automatic_options=False)
+
+    c = app.test_client()
+    assert c.get('/').data == b'GET'
+    rv = c.post('/')
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ['GET', 'HEAD']
+    # Older versions of Werkzeug.test.Client don't have an options method
+    if hasattr(c, 'options'):
+        rv = c.options('/')
+    else:
+        rv = c.open('/', method='OPTIONS')
+    assert rv.status_code == 405
+
+    rv = c.head('/')
+    assert rv.status_code == 200
+    assert not rv.data  # head truncates
+    assert c.post('/more').data == b'POST'
+    assert c.get('/more').data == b'GET'
+    rv = c.delete('/more')
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
+    # Older versions of Werkzeug.test.Client don't have an options method
+    if hasattr(c, 'options'):
+        rv = c.options('/more')
+    else:
+        rv = c.open('/more', method='OPTIONS')
+    assert rv.status_code == 405

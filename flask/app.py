@@ -953,7 +953,8 @@ class Flask(_PackageBoundObject):
         return iter(self._blueprint_order)
 
     @setupmethod
-    def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+    def add_url_rule(self, rule, endpoint=None, view_func=None,
+                     provide_automatic_options=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
         endpoint.
@@ -993,6 +994,10 @@ class Flask(_PackageBoundObject):
                          endpoint
         :param view_func: the function to call when serving a request to the
                           provided endpoint
+        :param provide_automatic_options: controls whether ``OPTIONS`` should
+                                          be provided automatically. If this
+                                          is not set, will check attributes on
+                                          the view or list of methods.
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object.  A change
                         to Werkzeug is handling of method options.  methods
@@ -1022,8 +1027,9 @@ class Flask(_PackageBoundObject):
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
-        provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+        if provide_automatic_options is None:
+            provide_automatic_options = getattr(view_func,
+                'provide_automatic_options', None)
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
