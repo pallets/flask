@@ -74,6 +74,8 @@ Version 1.0
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).
 - ``flask.ext`` is now deprecated (pull request ``#1484``).
+- ``send_from_directory`` now raises BadRequest if the filename is invalid on
+  the server OS (pull request ``#1763``).
 
 Version 0.10.2
 --------------
