@@ -512,8 +512,7 @@ class TestSendfile(object):
                                      'test_apps', 'subdomaintestmodule')
         with app.test_request_context():
             with pytest.raises(BadRequest):
-                rv = flask.send_from_directory('static', 'bad\x00')
-                rv.close()
+                flask.send_from_directory('static', 'bad\x00')
 
 class TestLogging(object):
 
