@@ -24,10 +24,16 @@ installation, make sure to pass it the :option:`-U` parameter::
 Version 1.0
 -----------
 
+Debugging
++++++++++
+
 Flask 1.0 removed the ``debug_log_format`` attribute from Flask
 applications.  Instead the new ``LOGGER_HANDLER_POLICY`` configuration can
 be used to disable the default log handlers and custom log handlers can be
 set up.
+
+Error handling
+++++++++++++++
 
 The behavior of error handlers was changed.
 The precedence of handlers used to be based on the decoration/call order of
@@ -37,9 +43,7 @@ Now the inheritance hierarchy takes precedence and handlers for more
 specific exception classes are executed instead of more general ones.
 See :ref:`error-handlers` for specifics.
 
-The :func:`~flask.templating.render_template_string` function has changed to
-autoescape template variables by default. This better matches the behavior
-of :func:`~flask.templating.render_template`.
+Trying to register a handler on an instance now raises :exc:`ValueError`.
 
 .. note::
 
@@ -47,8 +51,16 @@ of :func:`~flask.templating.render_template`.
     only for exception *instances*. This was unintended and plain wrong,
     and therefore was replaced with the intended behavior of registering
     handlers only using exception classes and HTTP error codes.
+
+Templating
+++++++++++
+
+The :func:`~flask.templating.render_template_string` function has changed to
+autoescape template variables by default. This better matches the behavior
+of :func:`~flask.templating.render_template`.
     
-Trying to register a handler on an instance now raises :exc:`ValueError`.
+Extension imports
++++++++++++++++++
 
 Extension imports of the form ``flask.ext.foo`` are deprecated, you should use
 ``flask_foo``.
