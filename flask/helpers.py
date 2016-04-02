@@ -27,7 +27,7 @@ except ImportError:
     from urlparse import quote as url_quote
 
 from werkzeug.datastructures import Headers
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import BadRequest, NotFound
 
 # this was moved in 0.7
 try:
@@ -618,8 +618,11 @@ def send_from_directory(directory, filename, **options):
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
-    if not os.path.isfile(filename):
-        raise NotFound()
+    try:
+        if not os.path.isfile(filename):
+            raise NotFound()
+    except (TypeError, ValueError):
+        raise BadRequest()
     options.setdefault('conditional', True)
     return send_file(filename, **options)
 
