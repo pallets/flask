@@ -46,4 +46,4 @@ exist and you can start importing from there.
 
 
 .. _Flask Extension Registry: http://flask.pocoo.org/extensions/
-.. _flaskext_compat.py: https://raw.githubusercontent.com/mitsuhiko/flask/master/scripts/flaskext_compat.py
+.. _flaskext_compat.py: https://raw.githubusercontent.com/pallets/flask/master/scripts/flaskext_compat.py

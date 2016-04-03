@@ -15,7 +15,7 @@ If you want the full source code in advance or for comparison, check out
 the `example source`_.
 
 .. _example source:
-   https://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
+   https://github.com/pallets/flask/tree/master/examples/flaskr/
 
 .. toctree::
    :maxdepth: 2
