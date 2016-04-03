@@ -39,7 +39,7 @@ Links
 * `website <http://flask.pocoo.org/>`_
 * `documentation <http://flask.pocoo.org/docs/>`_
 * `development version
-  <http://github.com/mitsuhiko/flask/zipball/master#egg=Flask-dev>`_
+  <http://github.com/pallets/flask/zipball/master#egg=Flask-dev>`_
 
 """
 import re
@@ -57,7 +57,7 @@ with open('flask/__init__.py', 'rb') as f:
 setup(
     name='Flask',
     version=version,
-    url='http://github.com/mitsuhiko/flask/',
+    url='http://github.com/pallets/flask/',
     license='BSD',
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',

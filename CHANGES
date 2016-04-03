@@ -60,7 +60,7 @@ Version 1.0
 - JSON responses are now terminated with a newline character, because it is a
   convention that UNIX text files end with a newline and some clients don't
   deal well when this newline is missing. See
-  https://github.com/mitsuhiko/flask/pull/1262 -- this came up originally as a
+  https://github.com/pallets/flask/pull/1262 -- this came up originally as a
   part of https://github.com/kennethreitz/httpbin/issues/168
 - The automatically provided ``OPTIONS`` method is now correctly disabled if
   the user registered an overriding rule with the lowercase-version
