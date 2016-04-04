@@ -84,12 +84,37 @@ The request context internally works like a stack: The topmost level on
 the stack is the current active request.
 :meth:`~flask.ctx.RequestContext.push` adds the context to the stack on
 the very top, :meth:`~flask.ctx.RequestContext.pop` removes it from the
-stack again.  On popping the application's
+stack again.  On popping, the application's
 :func:`~flask.Flask.teardown_request` functions are also executed.
 
-Another thing of note is that the request context will automatically also
-create an :ref:`application context <app-context>` when it's pushed and
-there is no application context for that application so far.
+.. _request-context-and-app-context:
+
+How the Request Context and Application Context Work Together
+-------------------------------------------------------------
+
+Normally, when a request context is pushed, the request context pushes an
+application context as well.  Then, when the request context is popped, it
+pops the application context as well, which executes the
+:func:`~flask.Flask.teardown_appcontext` functions.
+
+However, if a request context is pushed and there's already an application
+context (for the request context's app) on the stack, the request context
+*won't* push a new app context but will reuse the existing one.  The request
+context will also remember not to pop that app context when it itself is
+popped.
+
+This behavior has some nice characteristics.  For example, suppose you are
+running integration tests and want to insert some test data in the database
+before issuing a test request.  You don't have to commit to make this data
+available to the test request, since when the test request context is pushed,
+it will reuse the existing app context and the corresponding DB connection.
+
+However, it also means that if an app context isn't popped when it should be,
+not only will it stay on the stack forever and leak memory/files, it'll be
+reused by later requests.  This can cause very surprising behavior, like all
+subsequent requests on the same thread using the same DB connection.  Make
+sure you follow the instructions in :ref:`ensuring-teardown-callbacks-succeed`
+to prevent this.
 
 .. _callbacks-and-errors:
 
@@ -174,6 +199,45 @@ before-request callbacks were not executed yet but an exception happened.
 Certain parts of the test system might also temporarily create a request
 context without calling the before-request handlers.  Make sure to write
 your teardown-request handlers in a way that they will never fail.
+
+.. _ensuring-teardown-callbacks-succeed:
+
+Ensuring teardown callbacks succeed
+-----------------------------------
+
+.. admonition:: Watch Out
+
+    Teardown callbacks must never raise. If they do, teardown callbacks that
+    haven't run yet won't run, and request/app contexts won't pop, which will
+    cause memory/file leaks at best and context persisting into later requests
+    at worst.
+
+    Note that extensions can register teardown callbacks, and those callbacks
+    must not fail either. Therefore, the only way to guarantee teardown
+    callbacks won't raise is to wrap them programmatically.
+
+The following is an example recipe. It should go in your application factory,
+and must come after you're sure all teardown callbacks have been registered::
+
+    def wrap_teardown_func(teardown_func):
+        @wraps(teardown_func)
+        def log_teardown_error(*args, **kwargs):
+            try:
+                teardown_func(*args, **kwargs)
+            except Exception as exc:
+                app.logger.exception(exc)
+        return log_teardown_error
+
+    if app.teardown_request_funcs:
+        for bp, func_list in app.teardown_request_funcs.items():
+            for i, func in enumerate(func_list):
+                app.teardown_request_funcs[bp][i] = wrap_teardown_func(func)
+    if app.teardown_appcontext_funcs:
+        for i, func in enumerate(app.teardown_appcontext_funcs):
+            app.teardown_appcontext_funcs[i] = wrap_teardown_func(func)
+
+Alternatively, you could override :meth:`~flask.Flask.teardown_request` and
+:meth:`~flask.Flask.teardown_appcontext` to wrap at registration time.
 
 .. _notes-on-proxies:
 
