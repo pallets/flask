@@ -68,7 +68,7 @@ Extension imports of the form ``flask.ext.foo`` are deprecated, you should use
 The old form still works, but Flask will issue a
 ``flask.exthook.ExtDeprecationWarning`` for each extension you import the old
 way. We also provide a migration utility called `flask-ext-migrate
-<https://github.com/pocoo/flask-ext-migrate>`_ that is supposed to
+<https://github.com/pallets/flask-ext-migrate>`_ that is supposed to
 automatically rewrite your imports for this.
 
 .. _upgrading-to-010:
