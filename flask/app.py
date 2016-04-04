@@ -779,8 +779,13 @@ class Flask(_PackageBoundObject):
         return rv
 
     def run(self, host=None, port=None, debug=None, **options):
-        """Runs the application on a local development server.  If the
-        :attr:`debug` flag is set the server will automatically reload
+        """Runs the application on a local development server.
+
+        Do not use ``run()`` in a production setting. It is not intended to
+        meet security and performance requirements for a production server.
+        Instead, see :ref:`deployment` for WSGI server recommendations.
+
+        If the :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
 
         If you want to run the application in debug mode, but disable the
