@@ -94,5 +94,11 @@ if the user was logged in.
         session.pop('logged_in', None)
         flash('You were logged out')
         return redirect(url_for('show_entries'))
+        
+Note that it is not a good idea to store passwords in plain text. You want to
+protect login credentials if someone happens to have access to your database.
+One way to do this is to use Security Helpers from Werkzeug to hash the
+password. However, the emphasis of this tutorial is to demonstrate the basics
+of Flask and plain text passwords are used for simplicity.
 
 Continue with :ref:`tutorial-templates`.
