@@ -727,3 +727,13 @@ class TestStreaming(object):
         rv = c.get('/?name=World')
         assert rv.data == b'Hello World!'
         assert called == [42]
+
+
+class TestGetRootPath(object):
+
+    def test_static_string_passed(self):
+        """
+        Should just return the current working directory.
+        """
+        reported_path = flask.helpers.get_root_path("testing")
+        assert os.path.realpath(".") == reported_path
