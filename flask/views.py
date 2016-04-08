@@ -48,7 +48,7 @@ class View(object):
     generated view function!
     """
 
-    #: A for which methods this pluggable view can handle.
+    #: A list of methods this view can handle.
     methods = None
 
     #: The canonical way to decorate class-based views is to decorate the
