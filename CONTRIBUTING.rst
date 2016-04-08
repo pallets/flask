@@ -10,7 +10,7 @@ Support questions
 Please, don't use the issue tracker for this. Check whether the ``#pocoo`` IRC
 channel on Freenode can help with your issue. If your problem is not strictly
 Werkzeug or Flask specific, ``#python`` is generally more active.
-`StackOverflow <https://stackoverflow.com/>`_ is also worth considering.
+`Stack Overflow <https://stackoverflow.com/>`_ is also worth considering.
 
 Reporting issues
 ================
