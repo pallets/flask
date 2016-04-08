@@ -183,6 +183,7 @@ The following configuration values are used internally by Flask:
                                   if they are not requested by an
                                   XMLHttpRequest object (controlled by
                                   the ``X-Requested-With`` header)
+``JSONIFY_MIMETYPE``              MIME type used for jsonify responses.
 ``TEMPLATES_AUTO_RELOAD``         Whether to check for modifications of
                                   the template source and reload it
                                   automatically. By default the value is

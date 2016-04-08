@@ -1019,6 +1019,18 @@ def test_jsonify_prettyprint():
         assert rv.data == pretty_response
 
 
+def test_jsonify_mimetype():
+    app = flask.Flask(__name__)
+    app.config.update({"JSONIFY_MIMETYPE": 'application/vnd.api+json'})
+    with app.test_request_context():
+        msg = {
+            "msg": {"submsg": "W00t"},
+        }
+        rv = flask.make_response(
+            flask.jsonify(msg), 200)
+        assert rv.mimetype == 'application/vnd.api+json'
+
+
 def test_url_generation():
     app = flask.Flask(__name__)
 
