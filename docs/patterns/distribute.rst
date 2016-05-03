@@ -4,10 +4,9 @@ Deploying with Setuptools
 =========================
 
 `Setuptools`_, is an extension library that is commonly used to
-(like the name says) distribute Python libraries and
-extensions. It extends distutils, a basic module installation system
-shipped with Python to also support various more complex constructs that
-make larger applications easier to distribute:
+distribute Python libraries and extensions. It extends distutils, a basic
+module installation system shipped with Python to also support various more
+complex constructs that make larger applications easier to distribute:
 
 - **support for dependencies**: a library or application can declare a
   list of other libraries it depends on which will be installed
@@ -16,15 +15,15 @@ make larger applications easier to distribute:
   Python installation.  This makes it possible to query information
   provided by one package from another package.  The best known feature of
   this system is the entry point support which allows one package to
-  declare an "entry point" another package can hook into to extend the
+  declare an "entry point" that another package can hook into to extend the
   other package.
-- **installation manager**: :command:`easy_install`, which comes with distribute
-  can install other libraries for you.  You can also use `pip`_ which
+- **installation manager**: :command:`easy_install`, which comes with setuptools
+  can install other libraries for you.  You can also use :command:`pip`_ which
   sooner or later will replace :command:`easy_install` which does more than just
   installing packages for you.
 
-Flask itself, and all the libraries you can find on the cheeseshop
-are distributed with either distribute, the older setuptools or distutils.
+Flask itself, and all the libraries you can find on PyPI are distributed with
+either setuptools or distutils.
 
 In this case we assume your application is called
 :file:`yourapplication.py` and you are not using a module, but a :ref:`package
@@ -32,7 +31,7 @@ In this case we assume your application is called
 a package, head over to the :ref:`larger-applications` pattern to see
 how this can be done.
 
-A working deployment with distribute is the first step into more complex
+A working deployment with setuptools is the first step into more complex
 and more automated deployment scenarios.  If you want to fully automate
 the process, also read the :ref:`fabric-deployment` chapter.
 
@@ -66,7 +65,7 @@ A basic :file:`setup.py` file for a Flask application looks like this::
     )
 
 Please keep in mind that you have to list subpackages explicitly.  If you
-want distribute to lookup the packages for you automatically, you can use
+want setuptools to lookup the packages for you automatically, you can use
 the `find_packages` function::
 
     from setuptools import setup, find_packages
@@ -78,7 +77,7 @@ the `find_packages` function::
 
 Most parameters to the `setup` function should be self explanatory,
 `include_package_data` and `zip_safe` might not be.
-`include_package_data` tells distribute to look for a :file:`MANIFEST.in` file
+`include_package_data` tells setuptools to look for a :file:`MANIFEST.in` file
 and install all the entries that match as package data.  We will use this
 to distribute the static files and templates along with the Python module
 (see :ref:`distributing-resources`).  The `zip_safe` flag can be used to
@@ -94,7 +93,7 @@ Distributing Resources
 
 If you try to install the package you just created, you will notice that
 folders like :file:`static` or :file:`templates` are not installed for you.  The
-reason for this is that distribute does not know which files to add for
+reason for this is that setuptools does not know which files to add for
 you.  What you should do, is to create a :file:`MANIFEST.in` file next to your
 :file:`setup.py` file.  This file lists all the files that should be added to
 your tarball::
@@ -110,7 +109,7 @@ parameter of the `setup` function to ``True``!
 Declaring Dependencies
 ----------------------
 
-Dependencies are declared in the `install_requires` parameter as list.
+Dependencies are declared in the `install_requires` parameter as a list.
 Each item in that list is the name of a package that should be pulled from
 PyPI on installation.  By default it will always use the most recent
 version, but you can also provide minimum and maximum version
@@ -125,15 +124,15 @@ requirements.  Here some examples::
 As mentioned earlier, dependencies are pulled from PyPI.  What if you
 want to depend on a package that cannot be found on PyPI and won't be
 because it is an internal package you don't want to share with anyone?
-Just still do as if there was a PyPI entry for it and provide a list of
-alternative locations where distribute should look for tarballs::
+Just do it as if there was a PyPI entry and provide a list of
+alternative locations where setuptools should look for tarballs::
 
     dependency_links=['http://example.com/yourfiles']
 
 Make sure that page has a directory listing and the links on the page are
 pointing to the actual tarballs with their correct filenames as this is
-how distribute will find the files.  If you have an internal company
-server that contains the packages, provide the URL to that server there.
+how setuptools will find the files.  If you have an internal company
+server that contains the packages, provide the URL to that server.
 
 
 Installing / Developing
