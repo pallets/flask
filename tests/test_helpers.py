@@ -422,6 +422,25 @@ class TestSendfile(object):
             # etags
             assert len(captured) == 1
 
+        # e.g. GridFS
+        app.use_x_sendfile = False
+        with catch_deprecation_warnings() as captured:
+            with app.test_request_context():
+                f = StringIO('Test')
+                try:
+                    setattr(f, 'name', 'file_name')
+                except AttributeError:
+                    pass
+                rv = flask.send_file(filename_or_fp=f,
+                    mimetype='application/octet-stream',
+                    file_object=True,
+                    add_etags=False)
+                rv.direct_passthrough = False
+                assert rv.data == b'Test'
+                assert rv.mimetype == 'application/octet-stream'
+                rv.close()
+            assert len(captured) == 0
+
     def test_attachment(self, catch_deprecation_warnings):
         app = flask.Flask(__name__)
         with catch_deprecation_warnings() as captured:

@@ -414,7 +414,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
-              cache_timeout=None, conditional=False):
+              cache_timeout=None, conditional=False, file_object=False):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -467,6 +467,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
                           :data:`~flask.current_app`.
+    :param file_object:   specify file like object
     """
     mtime = None
     if isinstance(filename_or_fp, string_types):
@@ -492,9 +493,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
-    if filename is not None:
-        if not os.path.isabs(filename):
-            filename = os.path.join(current_app.root_path, filename)
+    if not file_object:
+        if filename is not None:
+            if not os.path.isabs(filename):
+                filename = os.path.join(current_app.root_path, filename)
     if mimetype is None and (filename or attachment_filename):
         mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
     if mimetype is None:
