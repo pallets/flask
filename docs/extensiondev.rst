@@ -35,7 +35,7 @@ called ``flask_something`` users would import it as
 ``flask.ext.something``.  This is done to transition from the old
 namespace packages.  See :ref:`ext-import-transition` for more details.
 
-But how do extensions look like themselves?  An extension has to ensure
+But what do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
 a requirement because many people will use patterns like the
 :ref:`app-factories` pattern to create their application as needed to aid
