@@ -17,10 +17,11 @@ complex constructs that make larger applications easier to distribute:
   this system is the entry point support which allows one package to
   declare an "entry point" that another package can hook into to extend the
   other package.
-- **installation manager**: :command:`easy_install`, which comes with setuptools
-  can install other libraries for you.  You can also use :command:`pip`_ which
-  sooner or later will replace :command:`easy_install` which does more than just
-  installing packages for you.
+- **installation manager**: :command:`pip` can install other libraries for you.
+
+If you have Python 2 (>=2.7.9) or Python 3 (>=3.4) installed from python.org,
+you will already have pip and setuptools on your system.  Otherwise, you
+will need to install them yourself.
 
 Flask itself, and all the libraries you can find on PyPI are distributed with
 either setuptools or distutils.
@@ -156,5 +157,4 @@ the code without having to run `install` again after each change.
 
 
 .. _pip: https://pypi.python.org/pypi/pip
-.. _ez_setup.py: https://bootstrap.pypa.io/ez_setup.py
 .. _Setuptools: https://pythonhosted.org/setuptools
