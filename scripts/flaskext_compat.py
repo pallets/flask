@@ -12,7 +12,7 @@
         flaskext_compat.activate()
         from flask.ext import foo
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 import types

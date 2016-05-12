@@ -5,7 +5,7 @@
 
     This module implements the central WSGI application object.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 import os

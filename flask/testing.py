@@ -6,7 +6,7 @@
     Implements test support helpers.  This module is lazily imported
     and usually not used in production environments.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 

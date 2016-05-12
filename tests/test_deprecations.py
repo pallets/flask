@@ -5,7 +5,7 @@
 
     Tests deprecation support. Not used currently.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 

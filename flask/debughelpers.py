@@ -5,7 +5,7 @@
 
     Various helpers to make the development experience better.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 from ._compat import implements_to_string, text_type

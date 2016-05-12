@@ -6,7 +6,7 @@
     Test that certain behavior of flask can be customized by
     subclasses.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 import flask

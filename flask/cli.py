@@ -5,7 +5,7 @@
 
     A simple command line application to run flask apps.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) Armin Ronacher and contributors.
     :license: BSD, see LICENSE for more details.
 """
 
