@@ -546,7 +546,7 @@ class Flask(_PackageBoundObject):
         #: provided by Flask itself and can be overridden.
         #:
         #: This is an instance of a :class:`click.Group` object.
-        self.cli = cli.AppGroup(self)
+        self.cli = cli.AppGroup(self.name)
 
     def _get_error_handlers(self):
         from warnings import warn

@@ -22,6 +22,12 @@ from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_best_app, locate_app, script_info_option, with_appcontext
 
 
+def test_cli_name(test_apps):
+    "Make sure the CLI object's name is the app's name and not the app itself"
+    from cliapp.app import testapp
+    assert testapp.cli.name == testapp.name
+
+
 def test_find_best_app(test_apps):
     """Test of find_best_app."""
     class mod:
