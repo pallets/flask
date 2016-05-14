@@ -496,7 +496,7 @@ def send_file(filename_or_fp, x_accel_uri=None,
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
-    if filename is not None and not current_app.use_x_sendfile:
+    if filename is not None and not current_app.use_x_accel:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
     if mimetype is None and (filename or attachment_filename):
