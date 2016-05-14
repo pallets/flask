@@ -266,6 +266,15 @@ class Flask(_PackageBoundObject):
     #: ``USE_X_SENDFILE`` configuration key.  Defaults to ``False``.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
+    #: Enable this if you want to use Nginx's X-Accel feature.
+    #: This only affects files sent with the :func:`send_file` method.
+    #:
+    #: .. versionadded:: 0.10
+    #:
+    #: This attribute can also be configured from the config with the
+    #: ``USE_X_ACCEL`` configuration key.  Defaults to ``False``.
+    use_x_accel = ConfigAttribute('USE_X_ACCEL')
+
     #: The name of the logger to use.  By default the logger name is the
     #: package name passed to the constructor.
     #:
@@ -296,6 +305,7 @@ class Flask(_PackageBoundObject):
         'SECRET_KEY':                           None,
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
+        'USE_X_ACCEL':                          False, # kula
         'LOGGER_NAME':                          None,
         'LOGGER_HANDLER_POLICY':               'always',
         'SERVER_NAME':                          None,

@@ -412,7 +412,8 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     return flashes
 
 
-def send_file(filename_or_fp, mimetype=None, as_attachment=False,
+def send_file(filename_or_fp, x_accel_uri=None,
+              mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
               cache_timeout=None, conditional=False):
     """Sends the contents of a file to the client.  This will use the
@@ -454,6 +455,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            back to the traditional method.  Make sure that the
                            file pointer is positioned at the start of data to
                            send before calling :func:`send_file`.
+
+    :param x_accel_uri: The internal uri to send the file to. This setting is
+                        active only if USE_X_ACCEL is set to ``True``.
     :param mimetype: the mimetype of the file if provided, otherwise
                      auto detection happens.
     :param as_attachment: set to ``True`` if you want to send this file with
@@ -492,7 +496,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
-    if filename is not None:
+    if filename is not None and not current_app.use_x_sendfile:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
     if mimetype is None and (filename or attachment_filename):
@@ -515,6 +519,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             file.close()
         headers['X-Sendfile'] = filename
         headers['Content-Length'] = os.path.getsize(filename)
+        data = None
+    elif current_app.use_x_accel and filename and x_accel_uri.endswith('/'):
+        if file is not None:
+            file.close()
+        headers['X-Accel-Redirect'] = x_accel_uri + filename
         data = None
     else:
         if file is None:
