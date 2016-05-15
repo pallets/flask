@@ -521,14 +521,15 @@ def send_file(filename_or_fp, x_accel_uri=None,
         headers['X-Sendfile'] = filename
         headers['Content-Length'] = os.path.getsize(filename)
         data = None
-    elif current_app.use_x_accel and filename and x_accel_uri.endswith('/'):
-        if file is not None:
-            file.close()
-        # pass only the filename, split any paths.
-        # eg: if `files/1.zip` was passed, add only `1.zip` to `x_accel_uri`
-        headers['X-Accel-Redirect'] = x_accel_uri + filename.split('/')[-1]
-        headers['Content-Length'] = os.path.getsize(filename)
-        data = None
+    elif current_app.use_x_accel and filename and x_accel_uri is not None:
+        if x_accel_uri.startswith('/') and x_accel_uri.endswith('/'):
+            if file is not None:
+                file.close()
+            # pass only the filename, split any paths.
+            # eg: if `files/1.zip` was passed, add only `1.zip` to `x_accel_uri`
+            headers['X-Accel-Redirect'] = x_accel_uri + filename.split('/')[-1]
+            headers['Content-Length'] = os.path.getsize(filename)
+            data = None
     else:
         if file is None:
             file = open(filename, 'rb')
