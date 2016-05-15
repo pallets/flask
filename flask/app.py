@@ -305,7 +305,7 @@ class Flask(_PackageBoundObject):
         'SECRET_KEY':                           None,
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
-        'USE_X_ACCEL':                          False, # kula
+        'USE_X_ACCEL':                          False,
         'LOGGER_NAME':                          None,
         'LOGGER_HANDLER_POLICY':               'always',
         'SERVER_NAME':                          None,
