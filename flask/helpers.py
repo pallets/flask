@@ -526,6 +526,7 @@ def send_file(filename_or_fp, x_accel_uri=None,
         if file is not None:
             file.close()
         headers['X-Accel-Redirect'] = x_accel_uri + _filename
+        headers['Content-Length'] = os.path.getsize(filename)
         data = None
     else:
         if file is None:
