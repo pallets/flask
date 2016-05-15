@@ -496,7 +496,6 @@ def send_file(filename_or_fp, x_accel_uri=None,
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
-    _filename = filename
     if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
@@ -525,7 +524,9 @@ def send_file(filename_or_fp, x_accel_uri=None,
     elif current_app.use_x_accel and filename and x_accel_uri.endswith('/'):
         if file is not None:
             file.close()
-        headers['X-Accel-Redirect'] = x_accel_uri + _filename
+        # pass only the filename, split any paths.
+        # eg: if `files/1.zip` was passed, add only `1.zip` to `x_accel_uri`
+        headers['X-Accel-Redirect'] = x_accel_uri + filename.split('/')[-1]
         headers['Content-Length'] = os.path.getsize(filename)
         data = None
     else:
