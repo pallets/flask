@@ -496,10 +496,12 @@ def send_file(filename_or_fp, x_accel_uri=None,
                 'filenames instead if possible, otherwise attach an etag '
                 'yourself based on another value'), stacklevel=2)
 
-    if filename is not None and not current_app.use_x_accel:
+    _filename = filename
+    if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
     if mimetype is None and (filename or attachment_filename):
+        filename = os.path.join(current_app.root_path, filename)
         mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
     if mimetype is None:
         mimetype = 'application/octet-stream'
@@ -523,7 +525,7 @@ def send_file(filename_or_fp, x_accel_uri=None,
     elif current_app.use_x_accel and filename and x_accel_uri.endswith('/'):
         if file is not None:
             file.close()
-        headers['X-Accel-Redirect'] = x_accel_uri + filename
+        headers['X-Accel-Redirect'] = x_accel_uri + _filename
         data = None
     else:
         if file is None:
@@ -546,6 +548,11 @@ def send_file(filename_or_fp, x_accel_uri=None,
     if cache_timeout is not None:
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
+
+    # if use_x_accel is True, it is unnecessary to add etags since nginx
+    # automatically adds it.
+    if current_app.use_x_accel:
+        return rv
 
     if add_etags and filename is not None:
         try:
