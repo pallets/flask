@@ -935,8 +935,19 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def register_blueprint(self, blueprint, **options):
         """Registers a blueprint on the application.
-
-        .. versionadded:: 0.7
+	Blueprint name is passed in as first argument	
+	options passed as additional keyword arguments
+	and forwarded to blueprints in the 'options' dict.
+	options include:
+		subdomain, url_prefix, url_defaults, 
+		static_folder, static_url_path,	
+		template_folder, root_path
+	All options set to None by default, (i.e. 
+	static_folder=None, etc) and are handled by
+	blueprints.py 
+	see :ref:blueprints for option usage
+        
+	.. versionadded:: 0.7
         """
         first_registration = False
         if blueprint.name in self.blueprints:
