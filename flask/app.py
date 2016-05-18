@@ -949,22 +949,19 @@ class Flask(_PackageBoundObject):
 	Keyword arguments:
 	subdomain -- sets a subdomain for the blueprint
 	url_prefix -- sets the prefix for all URLs defined on the blueprint.
-		(url_prefix='/<lang code>')
-        url_defaults -- a dictionary with URL default that is added to each 
-			and every URL defined with this blueprint 
-			(url_defalts={'endpoint':'value'})
+			(url_prefix='/<lang code>')
+	url_defaults -- a dictionary with URL default that is added to each 
+			and every URL defined with this blueprint
 	static_folder -- adds a static folder to urls for this blueprint
 	static_url_path -- adds static url path to urls in this blueprint
-	template_folder -- sets an alternate template folder for pages from
-			this blueprint
+	template_folder -- sets an alternate template folder
 			defaults to app template folder
-	root_path -- sets an alternate root path for pages from this blueprint
-		defaults to app root path
+	root_path -- sets an alternate root path for this blueprint
+			defaults to app root path
 
 	.. versionadded:: 0.7
         """
         first_registration = False
-
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, \
                 'A blueprint\'s name collision occurred between %r and ' \
