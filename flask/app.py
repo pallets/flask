@@ -934,22 +934,37 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def register_blueprint(self, blueprint, **options):
-        """Registers a blueprint on the application.
+        """Registers a blueprint on the application. For information about 
+	blueprints head over to :ref: 'blueprints'.
+
 	Blueprint name is passed in as first argument	
-	options passed as additional keyword arguments
-	and forwarded to blueprints in the 'options' dict.
+	Options are passed as additional keyword arguments and forwarded to 
+	blueprints in the 'options' dict.
 	options include:
 		subdomain, url_prefix, url_defaults, 
 		static_folder, static_url_path,	
 		template_folder, root_path
-	All options set to None by default, (i.e. 
-	static_folder=None, etc) and are handled by
-	blueprints.py 
-	see :ref:blueprints for option usage
-        
+	All options set to None by default, (i.e. static_folder=None, 
+	root_path=None, etc) and are handled by blueprints.py 
+	Keyword arguments:
+	subdomain -- sets a subdomain for the blueprint
+	url_prefix -- sets the prefix for all URLs defined on the blueprint.
+		(url_prefix='/<lang code>')
+        url_defaults -- a dictionary with URL default that is added to each 
+			and every URL defined with this blueprint 
+			(url_defalts={'endpoint':'value'})
+	static_folder -- adds a static folder to urls for this blueprint
+	static_url_path -- adds static url path to urls in this blueprint
+	template_folder -- sets an alternate template folder for pages from
+			this blueprint
+			defaults to app template folder
+	root_path -- sets an alternate root path for pages from this blueprint
+		defaults to app root path
+
 	.. versionadded:: 0.7
         """
         first_registration = False
+
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, \
                 'A blueprint\'s name collision occurred between %r and ' \
