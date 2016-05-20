@@ -934,30 +934,22 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def register_blueprint(self, blueprint, **options):
-        """Registers a blueprint on the application. For information about 
-	blueprints head over to :ref: 'blueprints'.
+        """Register a blueprint on the application. For information about 
+        blueprints head over to :ref: `blueprints`.
 
-	Blueprint name is passed in as first argument	
-	Options are passed as additional keyword arguments and forwarded to 
-	blueprints in the 'options' dict.
-	options include:
-		subdomain, url_prefix, url_defaults, 
-		static_folder, static_url_path,	
-		template_folder, root_path
-	All options set to None by default, (i.e. static_folder=None, 
-	root_path=None, etc) and are handled by blueprints.py 
-	Keyword arguments:
-	subdomain -- sets a subdomain for the blueprint
-	url_prefix -- sets the prefix for all URLs defined on the blueprint.
-			(url_prefix='/<lang code>')
-	url_defaults -- a dictionary with URL default that is added to each 
-			and every URL defined with this blueprint
-	static_folder -- adds a static folder to urls for this blueprint
-	static_url_path -- adds static url path to urls in this blueprint
-	template_folder -- sets an alternate template folder
-			defaults to app template folder
-	root_path -- sets an alternate root path for this blueprint
-			defaults to app root path
+        The blueprint name is passed in as the first argument.	
+        Options are passed as additional keyword arguments and forwarded to 
+        `blueprints` in an "options" dictionary.
+
+        :param subdomain: set a subdomain for the blueprint
+        :param url_prefix: set the prefix for all URLs defined on the blueprint.
+        ``(url_prefix='/<lang code>')``
+        :param url_defaults: a dictionary with URL defaults that is added to 
+            each and every URL defined with this blueprint
+        :param static_folder: add a static folder to urls in this blueprint
+        :param static_url_path: add a static url path to urls in this blueprint
+        :param template_folder: set an alternate template folder
+        :param root_path: set an alternate root path for this blueprint
 
 	.. versionadded:: 0.7
         """
