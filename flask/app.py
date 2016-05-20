@@ -943,15 +943,15 @@ class Flask(_PackageBoundObject):
 
         :param subdomain: set a subdomain for the blueprint
         :param url_prefix: set the prefix for all URLs defined on the blueprint.
-        ``(url_prefix='/<lang code>')``
+                            ``(url_prefix='/<lang code>')``
         :param url_defaults: a dictionary with URL defaults that is added to 
-            each and every URL defined with this blueprint
+                            each and every URL defined with this blueprint
         :param static_folder: add a static folder to urls in this blueprint
         :param static_url_path: add a static url path to urls in this blueprint
         :param template_folder: set an alternate template folder
         :param root_path: set an alternate root path for this blueprint
 
-	.. versionadded:: 0.7
+        .. versionadded:: 0.7
         """
         first_registration = False
         if blueprint.name in self.blueprints:
