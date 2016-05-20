@@ -112,7 +112,7 @@ RESULT_TEMPATE = u'''\
 
 
 def log(msg, *args):
-    print '[EXTTEST]', msg % args
+    print('[EXTTEST] ' + (msg % args))
 
 
 class TestResult(object):
@@ -302,7 +302,7 @@ def main():
     if args.browse:
         import webbrowser
         webbrowser.open('file:///' + filename.lstrip('/'))
-    print 'Results written to', filename
+    print('Results written to {}'.format(filename))
 
 
 if __name__ == '__main__':
