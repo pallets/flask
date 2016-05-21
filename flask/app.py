@@ -935,7 +935,7 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def register_blueprint(self, blueprint, **options):
         """Register a blueprint on the application. For information about 
-        blueprints head over to :ref: `blueprints`.
+        blueprints head over to :ref:`blueprints`.
 
         The blueprint name is passed in as the first argument.	
         Options are passed as additional keyword arguments and forwarded to 
