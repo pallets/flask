@@ -300,14 +300,23 @@ def url_for(endpoint, **values):
     scheme = values.pop('_scheme', None)
     appctx.app.inject_url_defaults(endpoint, values)
 
+    # This is not the best way to deal with this but currently the
+    # underlying Werkzeug router does not support overriding the scheme on
+    # a per build call basis.
+    old_scheme = None
     if scheme is not None:
         if not external:
             raise ValueError('When specifying _scheme, _external must be True')
+        old_scheme = url_adapter.url_scheme
         url_adapter.url_scheme = scheme
 
     try:
-        rv = url_adapter.build(endpoint, values, method=method,
-                               force_external=external)
+        try:
+            rv = url_adapter.build(endpoint, values, method=method,
+                                   force_external=external)
+        finally:
+            if old_scheme is not None:
+                url_adapter.url_scheme = old_scheme
     except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
