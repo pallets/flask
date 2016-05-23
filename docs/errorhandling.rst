@@ -63,7 +63,7 @@ You are however not limited to :exc:`~werkzeug.exceptions.HTTPException`
 or HTTP status codes but can register a handler for every exception class you
 like.
 
-.. versionchanged:: 1.0
+.. versionchanged:: 0.11
 
    Errorhandlers are now prioritized by specificity of the exception classes
    they are registered for instead of the order they are registered in.

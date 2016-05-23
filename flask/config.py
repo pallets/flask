@@ -176,7 +176,7 @@ class Config(dict):
         :param silent: set to ``True`` if you want silent failure for missing
                        files.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         filename = os.path.join(self.root_path, filename)
 
@@ -194,7 +194,7 @@ class Config(dict):
         """Updates the config like :meth:`update` ignoring items with non-upper
         keys.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         mappings = []
         if len(mapping) == 1:
@@ -239,7 +239,7 @@ class Config(dict):
         :param trim_namespace: a flag indicating if the keys of the resulting
                           dictionary should not include the namespace
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         rv = {}
         for k, v in iteritems(self):

@@ -113,7 +113,7 @@ class Request(RequestBase):
         is considered to include JSON data if the mimetype is
         :mimetype:`application/json` or :mimetype:`application/*+json`.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         mt = self.mimetype
         if mt == 'application/json':

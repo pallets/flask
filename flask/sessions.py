@@ -263,7 +263,7 @@ class SessionInterface(object):
 
         This check is usually skipped if sessions get deleted.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         if session.modified:
             return True

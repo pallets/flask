@@ -235,7 +235,7 @@ def jsonify(*args, **kwargs):
         }
 
 
-    .. versionchanged:: 1.0
+    .. versionchanged:: 0.11
        Added support for serializing top-level arrays. This introduces a
        security risk in ancient browsers. See :ref:`json-security` for details.
 

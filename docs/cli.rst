@@ -3,7 +3,7 @@
 Command Line Interface
 ======================
 
-.. versionadded:: 1.0
+.. versionadded:: 0.11
 
 .. currentmodule:: flask
 
