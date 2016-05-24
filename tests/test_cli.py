@@ -23,7 +23,7 @@ from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
 
 
 def test_cli_name(test_apps):
-    "Make sure the CLI object's name is the app's name and not the app itself"
+    """Make sure the CLI object's name is the app's name and not the app itself"""
     from cliapp.app import testapp
     assert testapp.cli.name == testapp.name
 
