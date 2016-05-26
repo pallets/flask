@@ -146,3 +146,25 @@ def test_context_refcounts():
     assert res.status_code == 200
     assert res.data == b''
     assert called == ['request', 'app']
+
+
+def test_clean_pop():
+    called = []
+    app = flask.Flask(__name__)
+
+    @app.teardown_request
+    def teardown_req(error=None):
+        1 / 0
+
+    @app.teardown_appcontext
+    def teardown_app(error=None):
+        called.append('TEARDOWN')
+
+    try:
+        with app.test_request_context():
+            called.append(flask.current_app.name)
+    except ZeroDivisionError:
+        pass
+
+    assert called == ['test_appctx', 'TEARDOWN']
+    assert not flask.current_app
