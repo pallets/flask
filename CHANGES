@@ -77,6 +77,8 @@ Version 0.11
 - ``send_from_directory`` now raises BadRequest if the filename is invalid on
   the server OS (pull request ``#1763``).
 - Added the ``JSONIFY_MIMETYPE`` configuration variable (pull request ``#1728``).
+- Exceptions during teardown handling will no longer leave bad application
+  contexts lingering around.
 
 Version 0.10.2
 --------------

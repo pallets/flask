@@ -181,12 +181,14 @@ class AppContext(object):
 
     def pop(self, exc=_sentinel):
         """Pops the app context."""
-        self._refcnt -= 1
-        if self._refcnt <= 0:
-            if exc is _sentinel:
-                exc = sys.exc_info()[1]
-            self.app.do_teardown_appcontext(exc)
-        rv = _app_ctx_stack.pop()
+        try:
+            self._refcnt -= 1
+            if self._refcnt <= 0:
+                if exc is _sentinel:
+                    exc = sys.exc_info()[1]
+                self.app.do_teardown_appcontext(exc)
+        finally:
+            rv = _app_ctx_stack.pop()
         assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
             % (rv, self)
         appcontext_popped.send(self.app)
@@ -341,38 +343,40 @@ class RequestContext(object):
         """
         app_ctx = self._implicit_app_ctx_stack.pop()
 
-        clear_request = False
-        if not self._implicit_app_ctx_stack:
-            self.preserved = False
-            self._preserved_exc = None
-            if exc is _sentinel:
-                exc = sys.exc_info()[1]
-            self.app.do_teardown_request(exc)
+        try:
+            clear_request = False
+            if not self._implicit_app_ctx_stack:
+                self.preserved = False
+                self._preserved_exc = None
+                if exc is _sentinel:
+                    exc = sys.exc_info()[1]
+                self.app.do_teardown_request(exc)
 
-            # If this interpreter supports clearing the exception information
-            # we do that now.  This will only go into effect on Python 2.x,
-            # on 3.x it disappears automatically at the end of the exception
-            # stack.
-            if hasattr(sys, 'exc_clear'):
-                sys.exc_clear()
+                # If this interpreter supports clearing the exception information
+                # we do that now.  This will only go into effect on Python 2.x,
+                # on 3.x it disappears automatically at the end of the exception
+                # stack.
+                if hasattr(sys, 'exc_clear'):
+                    sys.exc_clear()
 
-            request_close = getattr(self.request, 'close', None)
-            if request_close is not None:
-                request_close()
-            clear_request = True
+                request_close = getattr(self.request, 'close', None)
+                if request_close is not None:
+                    request_close()
+                clear_request = True
+        finally:
+            rv = _request_ctx_stack.pop()
 
-        rv = _request_ctx_stack.pop()
-        assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
-            % (rv, self)
+            # get rid of circular dependencies at the end of the request
+            # so that we don't require the GC to be active.
+            if clear_request:
+                rv.request.environ['werkzeug.request'] = None
 
-        # get rid of circular dependencies at the end of the request
-        # so that we don't require the GC to be active.
-        if clear_request:
-            rv.request.environ['werkzeug.request'] = None
+            # Get rid of the app as well if necessary.
+            if app_ctx is not None:
+                app_ctx.pop(exc)
 
-        # Get rid of the app as well if necessary.
-        if app_ctx is not None:
-            app_ctx.pop(exc)
+            assert rv is self, 'Popped wrong request context.  ' \
+                '(%r instead of %r)' % (rv, self)
 
     def auto_pop(self, exc):
         if self.request.environ.get('flask._preserve_context') or \
