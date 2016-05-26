@@ -7,7 +7,7 @@ Command Line Interface
 
 .. currentmodule:: flask
 
-One of the nice new features in Flask 1.0 is the built-in integration of
+One of the nice new features in Flask 0.11 is the built-in integration of
 the `click <http://click.pocoo.org/>`_ command line interface.  This
 enables a wide range of new features for the Flask ecosystem and your own
 applications.

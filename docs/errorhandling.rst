@@ -131,7 +131,7 @@ Logging to a File
 
 Even if you get mails, you probably also want to log warnings.  It's a
 good idea to keep as much information around that might be required to
-debug a problem.  By default as of Flask 1.0, errors are logged to your
+debug a problem.  By default as of Flask 0.11, errors are logged to your
 webserver's log automatically.  Warnings however are not.  Please note
 that Flask itself will not issue any warnings in the core system, so it's
 your responsibility to warn in the code if something seems odd.
