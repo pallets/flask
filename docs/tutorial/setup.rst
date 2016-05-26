@@ -91,13 +91,16 @@ tuples.
         return rv
 
 With that out of the way, you should be able to start up the application
-without problems.  Do this with the following command::
+without problems.  Do this with the following commands::
 
-    flask --app=flaskr --debug run
+    export FLASK_APP=flaskr
+    export FLASK_DEBUG=1
+    flask run
 
-The :option:`--debug` flag enables or disables the interactive debugger.  *Never
-leave debug mode activated in a production system*, because it will allow
-users to execute code on the server!
+(In case you are on Windows you need to use `set` instead of `export`).
+The :envvar:`FLASK_DEBUG` flag enables or disables the interactive debugger.
+*Never leave debug mode activated in a production system*, because it will
+allow users to execute code on the server!
 
 You will see a message telling you that server has started along with
 the address at which you can access it.

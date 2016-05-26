@@ -99,7 +99,8 @@ an application::
 
 It can then be used with the :command:`flask` command::
 
-    flask --app=exampleapp run
+    export FLASK_APP=exampleapp
+    flask run
 
 Factory Improvements
 --------------------

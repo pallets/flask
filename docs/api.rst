@@ -892,13 +892,6 @@ Command Line Interface
    Marks a function so that an instance of :class:`ScriptInfo` is passed
    as first argument to the click callback.
 
-.. autofunction:: script_info_option
-
-   A special decorator that informs a click callback to be passed the
-   script info object as first argument.  This is normally not useful
-   unless you implement very special commands like the run command which
-   does not want the application to be loaded yet.
-
 .. autodata:: run_command
 
 .. autodata:: shell_command

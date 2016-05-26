@@ -165,7 +165,10 @@ class DispatchingApp(object):
 class ScriptInfo(object):
     """Help object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
-    to click.
+    to click.  In future versions of Flask this object will most likely play
+    a bigger role.  Typically it's created automatically by the
+    :class:`FlaskGroup` but you can also manually create it and pass it
+    onwards as click object.
     """
 
     def __init__(self, app_import_path=None, create_app=None):
@@ -174,7 +177,10 @@ class ScriptInfo(object):
                 app_import_path = find_default_import_path()
             self.app_import_path = app_import_path
         else:
-            self.app_import_path = None
+            app_import_path = None
+
+        #: Optionally the import path for the Flask application.
+        self.app_import_path = app_import_path
         #: Optionally a function that is passed the script info to create
         #: the instance of the application.
         self.create_app = create_app
@@ -194,10 +200,12 @@ class ScriptInfo(object):
         if self.create_app is not None:
             rv = self.create_app(self)
         else:
-            if self.app_import_path is None:
-                raise NoAppException('Could not locate Flask application. '
-                                     'You did not provide the FLASK_APP '
-                                     'environment variable.')
+            if not self.app_import_path:
+                raise NoAppException(
+                    'Could not locate Flask application. You did not provide '
+                    'the FLASK_APP environment variable.\n\nFor more '
+                    'information see '
+                    'http://flask.pocoo.org/docs/latest/quickstart/')
             rv = locate_app(self.app_import_path)
         debug = get_debug_flag()
         if debug is not None:
@@ -369,6 +377,8 @@ def run_command(info, host, port, reload, debugger, eager_loading,
         # we won't print anything.
         if info.app_import_path is not None:
             print(' * Serving Flask app "%s"' % info.app_import_path)
+        if debug is not None:
+            print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
 
     run_simple(host, port, app, use_reloader=reload,
                use_debugger=debugger, threaded=with_threads)

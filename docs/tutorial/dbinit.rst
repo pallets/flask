@@ -60,7 +60,7 @@ databases will not commit unless you explicitly tell it to.
 
 Now, it is possible to create a database with the :command:`flask` script::
 
-    flask --app=flaskr initdb
+    flask initdb
     Initialized the database.
 
 .. admonition:: Troubleshooting
