@@ -22,7 +22,8 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
      MethodNotAllowed, BadRequest, default_exceptions
 
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-     locked_cached_property, _endpoint_from_view_func, find_package
+     locked_cached_property, _endpoint_from_view_func, find_package, \
+     get_debug_flag
 from . import json, cli
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
@@ -289,7 +290,7 @@ class Flask(_PackageBoundObject):
 
     #: Default configuration parameters.
     default_config = ImmutableDict({
-        'DEBUG':                                False,
+        'DEBUG':                                get_debug_flag(default=False),
         'TESTING':                              False,
         'PROPAGATE_EXCEPTIONS':                 None,
         'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
