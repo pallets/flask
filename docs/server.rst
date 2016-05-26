@@ -5,7 +5,7 @@ Development Server
 
 .. currentmodule:: flask
 
-Starting with Flask 1.0 there are multiple built-in ways to run a
+Starting with Flask 0.11 there are multiple built-in ways to run a
 development server.  The best one is the :command:`flask` command line utility
 but you can also continue using the :meth:`Flask.run` method.
 

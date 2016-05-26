@@ -408,8 +408,8 @@ Flask 0.8 introduced a redirect import system as a compatibility aid for app
 developers: Importing ``flask.ext.foo`` would try ``flask_foo`` and
 ``flaskext.foo`` in that order.
 
-As of Flask 1.0, most Flask extensions have transitioned to the new naming
-schema. The ``flask.ext.foo`` compatibility alias is still in Flask 1.0 but is
+As of Flask 0.11, most Flask extensions have transitioned to the new naming
+schema. The ``flask.ext.foo`` compatibility alias is still in Flask 0.11 but is
 now deprecated -- you should use ``flask_foo``.
 
 

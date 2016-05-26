@@ -21,13 +21,23 @@ installation, make sure to pass it the :option:`-U` parameter::
 
 .. _upgrading-to-10:
 
-Version 1.0
------------
+Version 0.11
+------------
+
+0.11 is an odd release in the Flask release cycle because it was supposed
+to be the 1.0 release.  However because there was such a long lead time up
+to the release we decided to push out a 0.11 release first with some
+changes removed to make the transition easier.  If you have been tracking
+the master branch which was 1.0 you might see some unexpected changes.
+
+In case you did track the master branch you will notice that `flask --app`
+is removed now.  You need to use the environment variable to specify an
+application.
 
 Debugging
 `````````
 
-Flask 1.0 removed the ``debug_log_format`` attribute from Flask
+Flask 0.11 removed the ``debug_log_format`` attribute from Flask
 applications.  Instead the new ``LOGGER_HANDLER_POLICY`` configuration can
 be used to disable the default log handlers and custom log handlers can be
 set up.
@@ -206,7 +216,7 @@ before, you should catch them with :exc:`RuntimeError` now.
 
 Additionally the :func:`~flask.send_file` function is now issuing
 deprecation warnings if you depend on functionality that will be removed
-in Flask 1.0.  Previously it was possible to use etags and mimetypes
+in Flask 0.11.  Previously it was possible to use etags and mimetypes
 when file objects were passed.  This was unreliable and caused issues
 for a few setups.  If you get a deprecation warning, make sure to
 update your application to work with either filenames there or disable
