@@ -282,7 +282,24 @@ class FlaskGroup(AppGroup):
             self.add_command(run_command)
             self.add_command(shell_command)
 
+        self._loaded_plugin_commands = False
+
+    def _load_plugin_commands(self):
+        if self._loaded_plugin_commands:
+            return
+        try:
+            import pkg_resources
+        except ImportError:
+            self._loaded_plugin_commands = True
+            return
+
+        for ep in pkg_resources.iter_entry_points('flask.commands'):
+            self.add_command(ep.load(), ep.name)
+        self._loaded_plugin_commands = True
+
     def get_command(self, ctx, name):
+        self._load_plugin_commands()
+
         # We load built-in commands first as these should always be the
         # same no matter what the app does.  If the app does want to
         # override this it needs to make a custom instance of this group
@@ -303,6 +320,8 @@ class FlaskGroup(AppGroup):
             pass
 
     def list_commands(self, ctx):
+        self._load_plugin_commands()
+
         # The commands available is the list of both the application (if
         # available) plus the builtin commands.
         rv = set(click.Group.list_commands(self, ctx))
