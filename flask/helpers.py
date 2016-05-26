@@ -14,7 +14,6 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
-from datetime import timedelta
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -52,6 +51,13 @@ _missing = object()
 # able to access files from outside the filesystem.
 _os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
                     if sep not in (None, '/'))
+
+
+def get_debug_flag(default=None):
+    val = os.environ.get('FLASK_DEBUG')
+    if not val:
+        return default
+    return val not in ('0', 'false', 'no')
 
 
 def _endpoint_from_view_func(view_func):

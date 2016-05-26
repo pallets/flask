@@ -19,7 +19,7 @@ from click.testing import CliRunner
 from flask import Flask, current_app
 
 from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
-    find_best_app, locate_app, script_info_option, with_appcontext
+    find_best_app, locate_app, with_appcontext
 
 
 def test_cli_name(test_apps):
@@ -123,7 +123,6 @@ def test_flaskgroup():
         return Flask("flaskgroup")
 
     @click.group(cls=FlaskGroup, create_app=create_app)
-    @script_info_option('--config', script_info_key='config')
     def cli(**params):
         pass
 
