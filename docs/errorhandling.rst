@@ -28,6 +28,46 @@ exception to the :attr:`~flask.Flask.logger`.
 But there is more you can do, and we will cover some better setups to deal
 with errors.
 
+Error Logging Tools
+-------------------
+
+Sending error mails, even if just for critical ones, can become
+overwhelming if enough users are hitting the error and log files are
+typically never looked at. This is why we recommend using `Sentry
+<http://www.getsentry.com/>`_ for dealing with application errors.  It's
+available as an Open Source project `on GitHub
+<github.com/getsentry/sentry>`__ and is also available as a `hosted version
+<https://getsentry.com/signup/>`_ which you can try for free. Sentry
+aggregates duplicate errors, captures the full stack trace and local
+variables for debugging, and sends you mails based on new errors or
+frequency thresholds.
+
+To use Sentry you need to install the `raven` client::
+
+    $ pip install raven
+
+And then add this to your Flask app::
+
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(app, dsn='YOUR_DSN_HERE')
+
+Of if you are using factories you can also init it later::
+
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(dsn='YOUR_DSN_HERE')
+
+    def create_app():
+        app = Flask(__name__)
+        sentry.init_app(app)
+        ...
+        return app
+
+The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
+from your Sentry installation.
+
+Afterwards failures are automatically reported to Sentry and from there
+you can receive error notifications.
+
 .. _error-handlers:
 
 Error handlers
