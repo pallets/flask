@@ -37,9 +37,9 @@ So what did that code do?
    particular function, and returns the message we want to display in the
    user's browser.
 
-Just save it as :file:`hello.py` (or something similar) and run it with your Python
-interpreter.  Make sure to not call your application :file:`flask.py` because this
-would conflict with Flask itself.
+Just save it as :file:`hello.py` or something similar. Make sure to not call
+your application :file:`flask.py` because this would conflict with Flask
+itself.
 
 To run the application you can either use the :command:`flask` command or
 python's :option:`-m` switch with Flask.  Before you can do that you need
