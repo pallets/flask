@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Flask release.
 Version 0.11
 ------------
 
-(release date to be announced, codename to be selected)
+Released on May 29th 2016, codename Absinthe.
 
 - Added support to serializing top-level arrays to :func:`flask.jsonify`. This
   introduces a security risk in ancient browsers. See
