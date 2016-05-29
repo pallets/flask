@@ -449,7 +449,7 @@ The most useful commands are the "run" and "shell" command.
 Example usage:
 
 \b
-  %(prefix)s%(cmd)s FLASK_APP=hello
+  %(prefix)s%(cmd)s FLASK_APP=hello.py
   %(prefix)s%(cmd)s FLASK_DEBUG=1
   %(prefix)sflask run
 """ % {
