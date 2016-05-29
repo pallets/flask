@@ -250,7 +250,7 @@ intersphinx_mapping = {
     'http://click.pocoo.org/': None,
     'http://jinja.pocoo.org/docs/': None,
     'http://www.sqlalchemy.org/docs/': None,
-    'https://wtforms.readthedocs.org/en/latest/': None,
+    'https://wtforms.readthedocs.io/en/latest/': None,
     'https://pythonhosted.org/blinker/': None
 }
 
