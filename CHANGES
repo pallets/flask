@@ -26,7 +26,7 @@ Released on May 29th 2016, codename Absinthe.
   from a view function.
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
-- Added :meth:`flask.config.Config.get_namespace`.
+- Added :meth:`flask.Config.get_namespace`.
 - Templates are no longer automatically reloaded outside of debug mode. This
   can be configured with the new ``TEMPLATES_AUTO_RELOAD`` config key.
 - Added a workaround for a limitation in Python 3.3's namespace loader.
