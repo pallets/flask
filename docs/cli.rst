@@ -237,7 +237,7 @@ Example `setup.py`::
         ''',
     )
 
-Inside `mypackage/comamnds.py` you can then export a Click object::
+Inside `mypackage/commands.py` you can then export a Click object::
 
     import click
 
