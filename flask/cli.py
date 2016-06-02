@@ -18,7 +18,7 @@ import click
 
 from ._compat import iteritems, reraise
 from .helpers import get_debug_flag
-
+from . import __version__
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -107,6 +107,22 @@ def find_default_import_path():
         return prepare_exec_for_file(app)
     return app
 
+
+def get_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    message = 'Flask %(version)s\nPython %(python_version)s'
+    click.echo(message % {
+        'version': __version__,
+        'python_version': sys.version,
+    }, color=ctx.color)
+    ctx.exit()
+
+version_option = click.Option(['--version'],
+                              help='Show the flask version',
+                              expose_value=False,
+                              callback=get_version,
+                              is_flag=True, is_eager=True)
 
 class DispatchingApp(object):
     """Special application that dispatches to a flask application which
@@ -270,12 +286,19 @@ class FlaskGroup(AppGroup):
 
     :param add_default_commands: if this is True then the default run and
                                  shell commands wil be added.
+    :param add_version_option: adds the :option:`--version` option.
     :param create_app: an optional callback that is passed the script info
                        and returns the loaded app.
     """
 
-    def __init__(self, add_default_commands=True, create_app=None, **extra):
-        AppGroup.__init__(self, **extra)
+    def __init__(self, add_default_commands=True, create_app=None,
+                 add_version_option=True, **extra):
+        params = list(extra.pop('params', None) or ())
+
+        if add_version_option:
+            params.append(version_option)
+
+        AppGroup.__init__(self, params=params, **extra)
         self.create_app = create_app
 
         if add_default_commands:
