@@ -101,7 +101,7 @@ def stream_with_context(generator_or_function):
                 yield '!'
             return Response(stream_with_context(generate()))
 
-    .. versionadded:: 0.9
+    .. #versionadded:: 0.9
     """
     try:
         gen = iter(generator_or_function)
@@ -181,7 +181,7 @@ def make_response(*args):
     -   if more than one argument is passed, the arguments are passed
         to the :meth:`flask.Flask.make_response` function as tuple.
 
-    .. versionadded:: 0.6
+    .. #versionadded:: 0.6
     """
     if not args:
         return current_app.response_class()
@@ -242,10 +242,10 @@ def url_for(endpoint, **values):
     .. versionadded:: 0.10
        The `_scheme` parameter was added.
 
-    .. versionadded:: 0.9
+    .. #versionadded:: 0.9
        The `_anchor` and `_method` parameters were added.
 
-    .. versionadded:: 0.9
+    .. #versionadded:: 0.9
        Calls :meth:`Flask.handle_build_error` on
        :exc:`~werkzeug.routing.BuildError`.
 
@@ -350,7 +350,7 @@ def get_template_attribute(template_name, attribute):
         hello = get_template_attribute('_cider.html', 'hello')
         return hello('World')
 
-    .. versionadded:: 0.2
+    .. #versionadded:: 0.2
 
     :param template_name: the name of the template
     :param attribute: the name of the variable of macro to access
@@ -364,7 +364,7 @@ def flash(message, category='message'):
     flashed message from the session and to display it to the user,
     the template has to call :func:`get_flashed_messages`.
 
-    .. versionchanged:: 0.3
+    .. #versionchanged:: 0.3
        `category` parameter added.
 
     :param message: the message to be flashed.
@@ -407,10 +407,10 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
     See :ref:`message-flashing-pattern` for examples.
 
-    .. versionchanged:: 0.3
+    .. #versionchanged:: 0.3
        `with_categories` parameter added.
 
-    .. versionchanged:: 0.9
+    .. #versionchanged:: 0.9
         `category_filter` parameter added.
 
     :param with_categories: set to ``True`` to also receive categories.
@@ -446,19 +446,19 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
 
-    .. versionadded:: 0.2
+    .. #versionadded:: 0.2
 
-    .. versionadded:: 0.5
+    .. #versionadded:: 0.5
        The `add_etags`, `cache_timeout` and `conditional` parameters were
        added.  The default behavior is now to attach etags.
 
-    .. versionchanged:: 0.7
+    .. #versionchanged:: 0.7
        mimetype guessing and etag support for file objects was
        deprecated because it was unreliable.  Pass a filename if you are
        able to, otherwise attach an etag yourself.  This functionality
        will be removed in Flask 1.0
 
-    .. versionchanged:: 0.9
+    .. #versionchanged:: 0.9
        cache_timeout pulls its default from application config, when None.
 
     :param filename_or_fp: the filename of the file to send in `latin-1`.
@@ -622,7 +622,7 @@ def send_from_directory(directory, filename, **options):
        to serve files for the given path on its own without calling into the
        web application for improved performance.
 
-    .. versionadded:: 0.5
+    .. #versionadded:: 0.5
 
     :param directory: the directory where all the files are stored.
     :param filename: the filename relative to that directory to
@@ -837,7 +837,7 @@ class _PackageBoundObject(object):
         """This is ``True`` if the package bound object's container has a
         folder for static files.
 
-        .. versionadded:: 0.5
+        .. #versionadded:: 0.5
         """
         return self.static_folder is not None
 
@@ -845,7 +845,7 @@ class _PackageBoundObject(object):
     def jinja_loader(self):
         """The Jinja loader for this package bound object.
 
-        .. versionadded:: 0.5
+        .. #versionadded:: 0.5
         """
         if self.template_folder is not None:
             return FileSystemLoader(os.path.join(self.root_path,
@@ -873,7 +873,7 @@ class _PackageBoundObject(object):
                         return 60
                     return flask.Flask.get_send_file_max_age(self, name)
 
-        .. versionadded:: 0.9
+        .. #versionadded:: 0.9
         """
         return total_seconds(current_app.send_file_max_age_default)
 
@@ -881,7 +881,7 @@ class _PackageBoundObject(object):
         """Function used internally to send static files from the static
         folder to the browser.
 
-        .. versionadded:: 0.5
+        .. #versionadded:: 0.5
         """
         if not self.has_static_folder:
             raise RuntimeError('No static folder for this object')

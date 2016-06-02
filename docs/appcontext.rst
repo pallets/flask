@@ -3,7 +3,7 @@
 The Application Context
 =======================
 
-.. versionadded:: 0.9
+.. #versionadded:: 0.9
 
 One of the design ideas behind Flask is that there are two different
 “states” in which code is executed.  The application setup state in which

@@ -3,7 +3,7 @@
 Working with the Shell
 ======================
 
-.. versionadded:: 0.3
+.. #versionadded:: 0.3
 
 One of the reasons everybody loves Python is the interactive shell.  It
 basically allows you to execute Python commands in real time and
