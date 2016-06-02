@@ -190,7 +190,24 @@ def make_response(*args):
     return current_app.make_response(args)
 
 
-def url_for(endpoint, **values):
+def url_for(*args, **kwargs):
+    """
+    wrapper based on https://github.com/miguelgrinberg/flack/blob/master/flack/utils.py
+    that also covers the case where application context exists with SERVER_NAME defined.
+    """
+
+    reqctx = _request_ctx_stack.top
+    appctx = _app_ctx_stack.top
+    if reqctx is None and (appctx is None or appctx.url_adapter is None):
+        if kwargs.get('_external', False):
+            raise RuntimeError('Cannot generate external URLs without a '
+                               'request context.')
+        with current_app.test_request_context():
+            return _url_for(*args, **kwargs)
+    return _url_for(*args, **kwargs)
+
+
+def _url_for(endpoint, **values):
     """Generates a URL to the given endpoint with the method provided.
 
     Variable arguments that are unknown to the target endpoint are appended
@@ -294,11 +311,13 @@ def url_for(endpoint, **values):
     # the URLs external by default.
     else:
         url_adapter = appctx.url_adapter
+        # Due to the new url_for wrapper, url_adapter will never be None here
         if url_adapter is None:
             raise RuntimeError('Application was not able to create a URL '
                                'adapter for request independent URL generation. '
                                'You might be able to fix this by setting '
                                'the SERVER_NAME config variable.')
+
         external = values.pop('_external', True)
 
     anchor = values.pop('_anchor', None)
