@@ -19,6 +19,10 @@ from werkzeug.exceptions import BadRequest
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
+try:
+    import simplejson
+except ImportError:
+    import json as simplejson
 
 
 def has_encoding(name):
@@ -113,6 +117,10 @@ class TestJSON(object):
             rv = c.get(url)
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data) == d
+
+    def test_simplejson_does_not_escape_slashes(self):
+        """Test that \\/ is no longer standard behavior."""
+        assert '\\/' not in simplejson.dumps('/')
 
     def test_jsonify_dicts(self):
         """Test jsonify with dicts and kwargs unpacking."""
