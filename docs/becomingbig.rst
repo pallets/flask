@@ -35,7 +35,7 @@ Subclass.
 The :class:`~flask.Flask` class has many methods designed for subclassing. You
 can quickly add or customize behavior by subclassing :class:`~flask.Flask` (see
 the linked method docs) and using that subclass wherever you instantiate an
-application class. This works well with :ref:`app-factories`.
+application class. This works well with :ref:`app-factories`. See :doc:`/patterns/subclassing` for an example.
 
 Wrap with middleware.
 ---------------------
