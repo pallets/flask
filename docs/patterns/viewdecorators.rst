@@ -39,7 +39,12 @@ logged in::
 
 So how would you use that decorator now?  Apply it as innermost decorator
 to a view function.  When applying further decorators, always remember
-that the :meth:`~flask.Flask.route` decorator is the outermost::
+that the :meth:`~flask.Flask.route` decorator is the outermost.
+
+While the ``next`` value may exist in ``request.args`` after a ``GET`` request for
+the login form, you'll have to pass it along when sending the ``POST`` request
+from the login form. You can do this with a hidden input tag and ``requests.values``
+or ``requests.form``.::
 
     @app.route('/secret_page')
     @login_required
