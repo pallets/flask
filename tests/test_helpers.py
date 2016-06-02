@@ -18,7 +18,7 @@ from logging import StreamHandler
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
-from flask._compat import StringIO, text_type
+from flask._compat import StringIO, text_type, PY2
 
 
 def has_encoding(name):
@@ -347,6 +347,17 @@ class TestSendfile(object):
             assert rv.headers['x-sendfile'] == \
                 os.path.join(app.root_path, 'static/index.html')
             assert rv.mimetype == 'text/html'
+            rv.close()
+
+    def test_send_file_last_modified(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            dtm = datetime.datetime.now()
+            rv = flask.send_file('static/index.html', last_modified=dtm)
+            if PY2:
+                assert rv.last_modified == int(dtm.strftime("%s"))
+            else:
+                assert rv.last_modified == dtm.timestamp()
             rv.close()
 
     def test_send_file_object(self):
