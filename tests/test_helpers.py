@@ -329,7 +329,7 @@ class TestSendfile(object):
     def test_send_file_regular(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
-            rv = flask.send_file('static/index.html')
+            rv = flask.send_file('static/index.html', mimetype='text/html')
             assert rv.direct_passthrough
             assert rv.mimetype == 'text/html'
             with app.open_resource('static/index.html') as f:
@@ -341,7 +341,7 @@ class TestSendfile(object):
         app = flask.Flask(__name__)
         app.use_x_sendfile = True
         with app.test_request_context():
-            rv = flask.send_file('static/index.html')
+            rv = flask.send_file('static/index.html', mimetype='text/html')
             assert rv.direct_passthrough
             assert 'x-sendfile' in rv.headers
             assert rv.headers['x-sendfile'] == \
@@ -351,88 +351,69 @@ class TestSendfile(object):
 
     def test_send_file_object(self, catch_deprecation_warnings):
         app = flask.Flask(__name__)
-        with catch_deprecation_warnings() as captured:
-            with app.test_request_context():
-                f = open(os.path.join(app.root_path, 'static/index.html'), mode='rb')
-                rv = flask.send_file(f)
-                rv.direct_passthrough = False
-                with app.open_resource('static/index.html') as f:
-                    assert rv.data == f.read()
-                assert rv.mimetype == 'text/html'
-                rv.close()
-            # mimetypes + etag
-            assert len(captured) == 2
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'), mode='rb')
+            rv = flask.send_file(f, mimetype='text/html')
+            rv.direct_passthrough = False
+            with app.open_resource('static/index.html') as f:
+                assert rv.data == f.read()
+            assert rv.mimetype == 'text/html'
+            rv.close()
 
         app.use_x_sendfile = True
-        with catch_deprecation_warnings() as captured:
-            with app.test_request_context():
-                f = open(os.path.join(app.root_path, 'static/index.html'))
-                rv = flask.send_file(f)
-                assert rv.mimetype == 'text/html'
-                assert 'x-sendfile' in rv.headers
-                assert rv.headers['x-sendfile'] == \
-                    os.path.join(app.root_path, 'static/index.html')
-                rv.close()
-            # mimetypes + etag
-            assert len(captured) == 2
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'))
+            rv = flask.send_file(f, mimetype='text/html')
+            assert rv.mimetype == 'text/html'
+            assert 'x-sendfile' in rv.headers
+            assert rv.headers['x-sendfile'] == \
+                os.path.join(app.root_path, 'static/index.html')
+            rv.close()
 
         app.use_x_sendfile = False
         with app.test_request_context():
-            with catch_deprecation_warnings() as captured:
-                f = StringIO('Test')
-                rv = flask.send_file(f)
-                rv.direct_passthrough = False
-                assert rv.data == b'Test'
-                assert rv.mimetype == 'application/octet-stream'
-                rv.close()
-            # etags
-            assert len(captured) == 1
-            with catch_deprecation_warnings() as captured:
-                class PyStringIO(object):
-                    def __init__(self, *args, **kwargs):
-                        self._io = StringIO(*args, **kwargs)
-                    def __getattr__(self, name):
-                        return getattr(self._io, name)
-                f = PyStringIO('Test')
-                f.name = 'test.txt'
-                rv = flask.send_file(f)
-                rv.direct_passthrough = False
-                assert rv.data == b'Test'
-                assert rv.mimetype == 'text/plain'
-                rv.close()
-            # attachment_filename and etags
-            assert len(captured) == 3
-            with catch_deprecation_warnings() as captured:
-                f = StringIO('Test')
-                rv = flask.send_file(f, mimetype='text/plain')
-                rv.direct_passthrough = False
-                assert rv.data == b'Test'
-                assert rv.mimetype == 'text/plain'
-                rv.close()
-            # etags
-            assert len(captured) == 1
+            f = StringIO('Test')
+            rv = flask.send_file(f)
+            rv.direct_passthrough = False
+            assert rv.data == b'Test'
+            assert rv.mimetype == 'application/octet-stream'
+            rv.close()
+
+            class PyStringIO(object):
+                def __init__(self, *args, **kwargs):
+                    self._io = StringIO(*args, **kwargs)
+                def __getattr__(self, name):
+                    return getattr(self._io, name)
+            f = PyStringIO('Test')
+            f.name = 'test.txt'
+            rv = flask.send_file(f, attachment_filename=f.name)
+            rv.direct_passthrough = False
+            assert rv.data == b'Test'
+            assert rv.mimetype == 'text/plain'
+            rv.close()
+
+            f = StringIO('Test')
+            rv = flask.send_file(f, mimetype='text/plain')
+            rv.direct_passthrough = False
+            assert rv.data == b'Test'
+            assert rv.mimetype == 'text/plain'
+            rv.close()
 
         app.use_x_sendfile = True
-        with catch_deprecation_warnings() as captured:
-            with app.test_request_context():
-                f = StringIO('Test')
-                rv = flask.send_file(f)
-                assert 'x-sendfile' not in rv.headers
-                rv.close()
-            # etags
-            assert len(captured) == 1
+        with app.test_request_context():
+            f = StringIO('Test')
+            rv = flask.send_file(f)
+            assert 'x-sendfile' not in rv.headers
+            rv.close()
 
     def test_attachment(self, catch_deprecation_warnings):
         app = flask.Flask(__name__)
-        with catch_deprecation_warnings() as captured:
-            with app.test_request_context():
-                f = open(os.path.join(app.root_path, 'static/index.html'))
-                rv = flask.send_file(f, as_attachment=True)
-                value, options = parse_options_header(rv.headers['Content-Disposition'])
-                assert value == 'attachment'
-                rv.close()
-            # mimetypes + etag
-            assert len(captured) == 2
+        with app.test_request_context():
+            f = open(os.path.join(app.root_path, 'static/index.html'))
+            rv = flask.send_file(f, as_attachment=True, mimetype='text/html')
+            value, options = parse_options_header(rv.headers['Content-Disposition'])
+            assert value == 'attachment'
+            rv.close()
 
         with app.test_request_context():
             assert options['filename'] == 'index.html'
@@ -444,8 +425,7 @@ class TestSendfile(object):
 
         with app.test_request_context():
             rv = flask.send_file(StringIO('Test'), as_attachment=True,
-                                 attachment_filename='index.txt',
-                                 add_etags=False)
+                                 attachment_filename='index.txt')
             assert rv.mimetype == 'text/plain'
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             assert value == 'attachment'
