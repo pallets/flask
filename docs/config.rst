@@ -310,6 +310,7 @@ that experience:
     limit yourself to request-only accesses to the configuration you can
     reconfigure the object later on as needed.
 
+.. _config-dev-prod:
 
 Development / Production
 ------------------------
