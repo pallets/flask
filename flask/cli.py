@@ -398,6 +398,8 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     The reloader and debugger are by default enabled if the debug flag of
     Flask is enabled and disabled otherwise.
     """
+    import sys
+    sys.path.append('.')
     from werkzeug.serving import run_simple
 
     debug = get_debug_flag()
