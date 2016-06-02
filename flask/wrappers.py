@@ -194,11 +194,13 @@ class Request(RequestBase):
 
 class Response(ResponseBase):
     """The response object that is used by default in Flask.  Works like the
-    response object from Werkzeug but is set to have an HTML mimetype by
-    default.  Quite often you don't have to create this object yourself because
+    :class:`~werkzeug.wrappers.Response` object from Werkzeug but is set to
+    have an HTML mimetype by default.  Quite often you don't have to create
+    this object yourself because
     :meth:`~flask.Flask.make_response` will take care of that for you.
 
     If you want to replace the response object used you can subclass this and
     set :attr:`~flask.Flask.response_class` to your subclass.
+
     """
     default_mimetype = 'text/html'

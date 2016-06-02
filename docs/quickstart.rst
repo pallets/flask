@@ -59,7 +59,7 @@ Alternatively you can use `python -m flask`::
      * Running on http://127.0.0.1:5000/
 
 This launches a very simple builtin server, which is good enough for testing
-but probably not what you want to use in production. For deployment options see
+but **not** what you want to use in production. For deployment options see
 :ref:`deployment`.
 
 Now head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, and you
@@ -146,6 +146,10 @@ There are more parameters that are explained in the :ref:`server` docs.
    allows the execution of arbitrary code. This makes it a major security risk
    and therefore it **must never be used on production machines**.
 
+   The interactive debugger used in Flask is provided by Werkzeug, you can head
+   over to their documentation to fully `learn how to effectively use
+   the debugger <http://werkzeug.pocoo.org/docs/dev/debug/#using-the-debugger>`_.
+
 Screenshot of the debugger in action:
 
 .. image:: _static/debugger.png
@@ -185,7 +189,8 @@ Variable Rules
 To add variable parts to a URL you can mark these special sections as
 ``<variable_name>``.  Such a part is then passed as a keyword argument to your
 function.  Optionally a converter can be used by specifying a rule with
-``<converter:variable_name>``.  Here are some nice examples::
+``<converter:variable_name>``.  If you don't specify a specific converter
+Flask with default to expect a string. Here are some nice examples::
 
     @app.route('/user/<username>')
     def show_user_profile(username):
@@ -197,18 +202,39 @@ function.  Optionally a converter can be used by specifying a rule with
         # show the post with the given id, the id is an integer
         return 'Post %d' % post_id
 
-The following converters exist:
+Flask builds on the routing system provided by Werkzeug which provides
+the following converters to be used in your application's routes:
 
-=========== ===============================================
-`string`    accepts any text without a slash (the default)
-`int`       accepts integers
-`float`     like `int` but for floating point values
-`path`      like the default but also accepts slashes
-`any`       matches one of the items provided
-`uuid`      accepts UUID strings
-=========== ===============================================
+========================================================  ===============================================
+`string` (:class:`~werkzeug.routing.UnicodeConverter`)    accepts any text without a slash (the default)
+`int` (:class:`~werkzeug.routing.IntegerConverter`)       accepts integers
+`float` (:class:`~werkzeug.routing.FloatConverter`)       like `int` but for floating point values
+`path` (:class:`~werkzeug.routing.PathConverter`)         like the default but also accepts slashes
+`any` (:class:`~werkzeug.routing.AnyConverter`)           matches one of the items provided
+`uuid` (:class:`~werkzeug.routing.UUIDConverter`)         accepts UUID strings
+========================================================  ===============================================
 
-.. admonition:: Unique URLs / Redirection Behavior
+Building custom converters is also possible by subclassing
+the :class:`~werkzeug.routing.BaseConverter` then registering your
+custom converter against :meth:`flask.Flask.url_map.converters`::
+
+    from werkzeug.routing import BaseConverter
+    class ListConverter(BaseConverter):
+
+        def to_python(self, value):
+            return value.split(',')
+
+        def to_url(self, values):
+            return ','.join(
+                BaseConverter.to_url(value) for value in values
+            )
+
+        app = Flask(__name__)
+        app.url_map.converters['list'] = ListConverter
+
+
+Unique URLs / Redirection Behavior
+``````````````````````````````````
 
    Flask's URL rules are based on Werkzeug's routing module.  The idea
    behind that module is to ensure beautiful and unique URLs based on
@@ -715,7 +741,7 @@ About Responses
 The return value from a view function is automatically converted into a
 response object for you.  If the return value is a string it's converted
 into a response object with the string as response body, a ``200 OK``
-status code and a :mimetype:`text/html` mimetype.  The logic that Flask applies to
+status code and a :mimetype:`text/html` MIME type.  The logic that Flask applies to
 converting return values into response objects is as follows:
 
 1.  If a response object of the correct type is returned it's directly
