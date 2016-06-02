@@ -55,10 +55,10 @@ def prepare_exec_for_file(filename):
     module = []
 
     # Chop off file extensions or package markers
-    if filename.endswith('.py'):
-        filename = filename[:-3]
-    elif os.path.split(filename)[1] == '__init__.py':
+    if os.path.split(filename)[1] == '__init__.py':
         filename = os.path.dirname(filename)
+    elif filename.endswith('.py'):
+        filename = filename[:-3]
     else:
         raise NoAppException('The file provided (%s) does exist but is not a '
                              'valid Python file.  This means that it cannot '

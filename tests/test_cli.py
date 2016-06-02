@@ -19,7 +19,7 @@ from click.testing import CliRunner
 from flask import Flask, current_app
 
 from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
-    find_best_app, locate_app, with_appcontext
+    find_best_app, locate_app, with_appcontext, prepare_exec_for_file
 
 
 def test_cli_name(test_apps):
@@ -47,6 +47,13 @@ def test_find_best_app(test_apps):
         myapp2 = Flask('appname2')
 
     pytest.raises(NoAppException, find_best_app, mod)
+
+
+def test_prepare_exec_for_file(test_apps):
+    assert prepare_exec_for_file('test.py') == 'test'
+    assert prepare_exec_for_file('/usr/share/__init__.py') == 'share'
+    with pytest.raises(NoAppException):
+        prepare_exec_for_file('test.txt')
 
 
 def test_locate_app(test_apps):
