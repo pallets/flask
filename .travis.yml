@@ -11,8 +11,11 @@ python:
 
 env:
   - REQUIREMENTS=lowest
+  - REQUIREMENTS=lowest-simplejson
   - REQUIREMENTS=release
+  - REQUIREMENTS=release-simplejson
   - REQUIREMENTS=devel
+  - REQUIREMENTS=devel-simplejson
 
 matrix:
   exclude:
