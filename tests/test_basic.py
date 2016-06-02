@@ -1116,7 +1116,7 @@ def test_static_files():
     rv.close()
 
 
-def test_static_path_depricated():
+def test_static_path_deprecated():
     with pytest.deprecated_call():
         app = flask.Flask(__name__, static_path='/foo')
     app.testing = True
