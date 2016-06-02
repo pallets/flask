@@ -39,7 +39,7 @@ from jinja2 import FileSystemLoader
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type
+from ._compat import string_types, text_type, PY2
 
 
 # sentinel
@@ -429,7 +429,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
-              cache_timeout=None, conditional=False):
+              cache_timeout=None, conditional=False, last_modified=None):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -483,6 +483,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
                           :data:`~flask.current_app`.
+    :param last_modified: the Datetime object representing timestamp for when
+                          the input file was last modified.
     """
     mtime = None
     if isinstance(filename_or_fp, string_types):
@@ -528,7 +530,12 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     # if we know the file modification date, we can store it as
     # the time of the last modification.
-    if mtime is not None:
+    if last_modified is not None:
+        if PY2:
+            rv.last_modified = int(last_modified.strftime("%s"))
+        else:
+            rv.last_modified = last_modified.timestamp()
+    elif mtime is not None:
         rv.last_modified = int(mtime)
 
     rv.cache_control.public = True
