@@ -114,7 +114,7 @@ def get_version(ctx, param, value):
     message = 'Flask %(version)s\nPython %(python_version)s'
     click.echo(message % {
         'version': __version__,
-        'python_version': sys.version[:3],
+        'python_version': sys.version,
     }, color=ctx.color)
     ctx.exit()
 
