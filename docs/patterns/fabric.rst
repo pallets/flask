@@ -156,6 +156,25 @@ location where it's expected (eg: :file:`/var/www/yourapplication`).
 Either way, in our case here we only expect one or two servers and we can
 upload them ahead of time by hand.
 
+Configuring egg_info
+--------------------
+If you need to configure your fabric build with tags, you can create a `setup.cfg`
+file in the root of your app. An example would be:
+
+    [egg_info]
+    tag_svn_revision = 1
+    tag_build = .dev
+    tag_date = 1
+
+    [aliases]
+    release = egg_info -RDb ''
+
+And now when running `python setup.py sdist ...`  in your fabric file, it will
+pick up on these settings and tag appropriately. And when making a release build
+it will ignore these build tags as expected.
+
+
+
 First Deployment
 ----------------
 
