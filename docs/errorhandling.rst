@@ -3,8 +3,6 @@
 Application Errors
 ==================
 
-.. versionadded:: 0.3
-
 Applications fail, servers fail.  Sooner or later you will see an exception
 in production.  Even if your code is 100% correct, you will still see
 exceptions from time to time.  Why?  Because everything else involved will

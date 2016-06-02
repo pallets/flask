@@ -69,8 +69,6 @@ def after_this_request(f):
     This is more useful if a function other than the view function wants to
     modify a response.  For instance think of a decorator that wants to add
     some headers without converting the return value into a response object.
-
-    .. versionadded:: 0.9
     """
     _request_ctx_stack.top._after_request_functions.append(f)
     return f
@@ -137,8 +135,6 @@ def has_request_context():
                 if remote_addr is None and request:
                     remote_addr = request.remote_addr
                 self.remote_addr = remote_addr
-
-    .. versionadded:: 0.7
     """
     return _request_ctx_stack.top is not None
 
@@ -147,8 +143,6 @@ def has_app_context():
     """Works like :func:`has_request_context` but for the application
     context.  You can also just do a boolean check on the
     :data:`current_app` object instead.
-
-    .. versionadded:: 0.9
     """
     return _app_ctx_stack.top is not None
 
@@ -337,9 +331,6 @@ class RequestContext(object):
         """Pops the request context and unbinds it by doing that.  This will
         also trigger the execution of functions registered by the
         :meth:`~flask.Flask.teardown_request` decorator.
-
-        .. versionchanged:: 0.9
-           Added the `exc` argument.
         """
         app_ctx = self._implicit_app_ctx_stack.pop()
 

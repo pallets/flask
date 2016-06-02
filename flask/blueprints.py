@@ -82,8 +82,6 @@ class Blueprint(_PackageBoundObject):
     :class:`~flask.blueprints.BlueprintSetupState` later to register functions
     or other things on the main application.  See :ref:`blueprints` for more
     information.
-
-    .. versionadded:: 0.7
     """
 
     warn_on_modifications = False

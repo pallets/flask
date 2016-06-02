@@ -463,13 +463,6 @@ Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
 >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
 u'Marked up \xbb HTML'
 
-.. versionchanged:: 0.5
-
-   Autoescaping is no longer enabled for all templates.  The following
-   extensions for templates trigger autoescaping: ``.html``, ``.htm``,
-   ``.xml``, ``.xhtml``.  Templates loaded from a string will have
-   autoescaping disabled.
-
 .. [#] Unsure what that :class:`~flask.g` object is? It's something in which
    you can store information for your own needs, check the documentation of
    that object (:class:`~flask.g`) and the :ref:`sqlite3` for more
@@ -840,8 +833,6 @@ for a full example.
 
 Logging
 -------
-
-.. versionadded:: 0.3
 
 Sometimes you might be in a situation where you deal with data that
 should be correct, but actually is not.  For example you may have some client-side

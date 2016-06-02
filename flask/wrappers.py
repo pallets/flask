@@ -41,8 +41,6 @@ class Request(RequestBase):
     #: The internal URL rule that matched the request.  This can be
     #: useful to inspect which methods are allowed for the URL from
     #: a before/after handler (``request.url_rule.methods``) etc.
-    #:
-    #: .. versionadded:: 0.6
     url_rule = None
 
     #: A dict of view arguments that matched the request.  If an exception
@@ -172,8 +170,6 @@ class Request(RequestBase):
            Removed buggy previous behavior of generating a random JSON
            response.  If you want that behavior back you can trivially
            add it by subclassing.
-
-        .. versionadded:: 0.8
         """
         ctx = _request_ctx_stack.top
         if ctx is not None and ctx.app.config.get('DEBUG', False):

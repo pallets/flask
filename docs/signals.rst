@@ -3,8 +3,6 @@
 Signals
 =======
 
-.. versionadded:: 0.6
-
 Starting with Flask 0.6, there is integrated support for signalling in
 Flask.  This support is provided by the excellent `blinker`_ library and
 will gracefully fall back if it is not available.

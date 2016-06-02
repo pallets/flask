@@ -3,8 +3,6 @@
 Working with the Shell
 ======================
 
-.. versionadded:: 0.3
-
 One of the reasons everybody loves Python is the interactive shell.  It
 basically allows you to execute Python commands in real time and
 immediately get results back.  Flask itself does not come with an

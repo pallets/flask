@@ -1,8 +1,6 @@
 Using URL Processors
 ====================
 
-.. versionadded:: 0.7
-
 Flask 0.7 introduces the concept of URL processors.  The idea is that you
 might have a bunch of resources with common parts in the URL that you
 don't always explicitly want to provide.  For instance you might have a
