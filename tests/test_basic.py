@@ -1031,6 +1031,14 @@ def test_jsonify_mimetype():
         assert rv.mimetype == 'application/vnd.api+json'
 
 
+def test_jsonify_args_and_kwargs_check():
+    app = flask.Flask(__name__)
+    with app.test_request_context():
+        with pytest.raises(TypeError) as e:
+            flask.jsonify('fake args', kwargs='fake')
+        assert 'behavior undefined' in str(e.value)
+
+
 def test_url_generation():
     app = flask.Flask(__name__)
 
