@@ -126,8 +126,7 @@ def purge_module(request):
     return inner
 
 
-@pytest.fixture
-def catch_deprecation_warnings():
-    import warnings
-    warnings.simplefilter('default', category=DeprecationWarning)
-    return lambda: warnings.catch_warnings(record=True)
+@pytest.yield_fixture(autouse=True)
+def catch_deprecation_warnings(recwarn):
+    yield
+    assert not recwarn.list
