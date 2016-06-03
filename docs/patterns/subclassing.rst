@@ -3,20 +3,15 @@ Subclassing Flask
 
 The :class:`~flask.Flask` class is designed for subclassing.
 
-One reason to subclass would be customizing the Jinja2 :class:`~jinja2.Environment`. For example, to add a new global template variable::
+For example, you may want to override how request parameters are handled to preserve their order::
 
-    from flask import Flask
-    from datetime import datetime
-
+    from flask import Flask, Request
+    from werkzeug.datastructures import ImmutableOrderedMultiDict
+    class MyRequest(Request):
+        """Request subclass to override request parameter storage"""
+        parameter_storage_class = ImmutableOrderedMultiDict
     class MyFlask(Flask):
-        """ Flask with more global template vars """
-
-        def create_jinja_environment(self):
-            """ Initialize my custom Jinja environment. """
-            jinja_env = super(MyFlask, self).create_jinja_environment(self)
-            jinja_env.globals.update(
-                current_time = datetime.datetime.now()
-            )
-            return jinja_env
+        """Flask subclass using the custom request class"""
+        request_class = MyRequest
 
 This is the recommended approach for overriding or augmenting Flask's internal functionality.
