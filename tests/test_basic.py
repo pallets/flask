@@ -1116,6 +1116,25 @@ def test_static_files():
     rv.close()
 
 
+def test_static_path_deprecated():
+    with pytest.deprecated_call():
+        app = flask.Flask(__name__, static_path='/foo')
+    app.testing = True
+    rv = app.test_client().get('/foo/index.html')
+    assert rv.status_code == 200
+    with app.test_request_context():
+        assert flask.url_for('static', filename='index.html') == '/foo/index.html'
+
+
+def test_static_url_path():
+    app = flask.Flask(__name__, static_url_path='/foo')
+    app.testing = True
+    rv = app.test_client().get('/foo/index.html')
+    assert rv.status_code == 200
+    with app.test_request_context():
+        assert flask.url_for('static', filename='index.html') == '/foo/index.html'
+
+
 def test_none_response():
     app = flask.Flask(__name__)
     app.testing = True
