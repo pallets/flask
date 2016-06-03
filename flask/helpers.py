@@ -437,11 +437,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     to ``True`` to directly emit an ``X-Sendfile`` header.  This however
     requires support of the underlying webserver for ``X-Sendfile``.
 
-    By default it will try to guess the mimetype for you, but you can
-    also explicitly provide one.  For extra security you probably want
-    to send certain files as attachment (HTML for instance).  The mimetype
-    guessing requires a `filename` or an `attachment_filename` to be
-    provided.
+    You must explicitly provide the mimetype for the filename or file object.
 
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
@@ -460,6 +456,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. versionchanged:: 0.9
        cache_timeout pulls its default from application config, when None.
+
+    .. versionchanged:: 1.0
+       mimetype guessing and etag support removed for file objects.
+       If no mimetype or attachment_filename is provided, application/octet-stream
+       will be used.
 
     :param filename_or_fp: the filename of the file to send in `latin-1`.
                            This is relative to the :attr:`~Flask.root_path`
@@ -488,24 +489,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         filename = filename_or_fp
         file = None
     else:
-        from warnings import warn
         file = filename_or_fp
         filename = getattr(file, 'name', None)
-
-        # XXX: this behavior is now deprecated because it was unreliable.
-        # removed in Flask 1.0
-        if not attachment_filename and not mimetype \
-           and isinstance(filename, string_types):
-            warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is now deprecated.  Pass an '
-                'attach_filename if you want mimetypes to be guessed.'),
-                stacklevel=2)
-        if add_etags:
-            warn(DeprecationWarning('In future flask releases etags will no '
-                'longer be generated for file objects passed to the send_file '
-                'function because this behavior was unreliable.  Pass '
-                'filenames instead if possible, otherwise attach an etag '
-                'yourself based on another value'), stacklevel=2)
 
     if filename is not None:
         if not os.path.isabs(filename):
@@ -553,7 +538,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
 
-    if add_etags and filename is not None:
+    if add_etags and filename is not None and file is None:
+        from warnings import warn
+
         try:
             rv.set_etag('%s-%s-%s' % (
                 os.path.getmtime(filename),
