@@ -362,8 +362,8 @@ class TestSendfile(object):
             rv.close()
 
         # mimetypes + etag
-        assert len(recwarn.list) == 2
-        recwarn.clear()
+        recwarn.pop(DeprecationWarning)
+        recwarn.pop(DeprecationWarning)
 
         app.use_x_sendfile = True
 
@@ -377,8 +377,8 @@ class TestSendfile(object):
             rv.close()
 
         # mimetypes + etag
-        recwarn.pop()
-        recwarn.pop()
+        recwarn.pop(DeprecationWarning)
+        recwarn.pop(DeprecationWarning)
 
         app.use_x_sendfile = False
         with app.test_request_context():
@@ -390,7 +390,7 @@ class TestSendfile(object):
             rv.close()
 
             # etags
-            recwarn.pop()
+            recwarn.pop(DeprecationWarning)
 
             class PyStringIO(object):
                 def __init__(self, *args, **kwargs):
@@ -406,9 +406,9 @@ class TestSendfile(object):
             rv.close()
 
             # attachment_filename and etags
-            recwarn.pop()
-            recwarn.pop()
-            recwarn.pop()
+            a = recwarn.pop(DeprecationWarning)
+            b = recwarn.pop(DeprecationWarning)
+            c = recwarn.pop(UserWarning)  # file not found
 
             f = StringIO('Test')
             rv = flask.send_file(f, mimetype='text/plain')
@@ -418,7 +418,7 @@ class TestSendfile(object):
             rv.close()
 
             # etags
-            recwarn.pop()
+            recwarn.pop(DeprecationWarning)
 
         app.use_x_sendfile = True
 
@@ -429,7 +429,7 @@ class TestSendfile(object):
             rv.close()
 
         # etags
-        recwarn.pop()
+        recwarn.pop(DeprecationWarning)
 
     def test_attachment(self, recwarn):
         app = flask.Flask(__name__)
