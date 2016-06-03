@@ -7,6 +7,7 @@
     :license: BSD, see LICENSE for more details.
 """
 import flask
+import gc
 import os
 import sys
 import pkgutil
@@ -129,4 +130,5 @@ def purge_module(request):
 @pytest.yield_fixture(autouse=True)
 def catch_deprecation_warnings(recwarn):
     yield
+    gc.collect()
     assert not recwarn.list

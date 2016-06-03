@@ -1123,6 +1123,8 @@ def test_static_path_deprecated(recwarn):
     app.testing = True
     rv = app.test_client().get('/foo/index.html')
     assert rv.status_code == 200
+    rv.close()
+
     with app.test_request_context():
         assert flask.url_for('static', filename='index.html') == '/foo/index.html'
 
@@ -1132,6 +1134,8 @@ def test_static_url_path():
     app.testing = True
     rv = app.test_client().get('/foo/index.html')
     assert rv.status_code == 200
+    rv.close()
+
     with app.test_request_context():
         assert flask.url_for('static', filename='index.html') == '/foo/index.html'
 
