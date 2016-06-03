@@ -3,8 +3,6 @@
 Pluggable Views
 ===============
 
-.. versionadded:: 0.7
-
 Flask 0.7 introduces pluggable views inspired by the generic views from
 Django which are based on classes instead of functions.  The main
 intention is that you can replace parts of the implementations and this

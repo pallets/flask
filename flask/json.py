@@ -244,8 +244,6 @@ def jsonify(*args, **kwargs):
     the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
     Compressed (not pretty) formatting currently means no indents and no
     spaces after separators.
-
-    .. versionadded:: 0.2
     """
 
     indent = None

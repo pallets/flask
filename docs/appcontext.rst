@@ -3,8 +3,6 @@
 The Application Context
 =======================
 
-.. versionadded:: 0.9
-
 One of the design ideas behind Flask is that there are two different
 “states” in which code is executed.  The application setup state in which
 the application implicitly is on the module level.  It starts when the

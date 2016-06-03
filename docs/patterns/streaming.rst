@@ -63,8 +63,6 @@ might want to buffer up a few items in the template which you can do with
 Streaming with Context
 ----------------------
 
-.. versionadded:: 0.9
-
 Note that when you stream data, the request context is already gone the
 moment the function executes.  Flask 0.9 provides you with a helper that
 can keep the request context around during the execution of the

@@ -134,8 +134,6 @@ If you now run the application everything should work as expected.
 Improving Uploads
 -----------------
 
-.. versionadded:: 0.6
-
 So how exactly does Flask handle uploads?  Well it will store them in the
 webserver's memory if the files are reasonable small otherwise in a
 temporary location (as returned by :func:`tempfile.gettempdir`).  But how

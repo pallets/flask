@@ -58,8 +58,6 @@ class View(object):
     #:
     #: You can place one or more decorators in this list and whenever the
     #: view function is created the result is automatically decorated.
-    #:
-    #: .. versionadded:: 0.8
     decorators = ()
 
     def dispatch_request(self):
