@@ -29,24 +29,27 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    """Test of find_best_app."""
-    class mod:
+    """Test if `find_best_app` behaves as expected with different combinations of input."""
+    class Module:
         app = Flask('appname')
-    assert find_best_app(mod) == mod.app
+    assert find_best_app(Module) == Module.app
 
-    class mod:
+    class Module:
         application = Flask('appname')
-    assert find_best_app(mod) == mod.application
+    assert find_best_app(Module) == Module.application
 
-    class mod:
+    class Module:
         myapp = Flask('appname')
-    assert find_best_app(mod) == mod.myapp
+    assert find_best_app(Module) == Module.myapp
 
-    class mod:
-        myapp = Flask('appname')
+    class Module:
+        pass
+    pytest.raises(NoAppException, find_best_app, Module)
+
+    class Module:
+        myapp1 = Flask('appname1')
         myapp2 = Flask('appname2')
-
-    pytest.raises(NoAppException, find_best_app, mod)
+    pytest.raises(NoAppException, find_best_app, Module)
 
 
 def test_prepare_exec_for_file(test_apps):
