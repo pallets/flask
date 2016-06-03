@@ -353,13 +353,13 @@ class TestSendfile(object):
         app = flask.Flask(__name__)
 
         with app.test_request_context():
-            f = open(os.path.join(app.root_path, 'static/index.html'), mode='rb')
-            rv = flask.send_file(f)
-            rv.direct_passthrough = False
-            with app.open_resource('static/index.html') as f:
-                assert rv.data == f.read()
-            assert rv.mimetype == 'text/html'
-            rv.close()
+            with open(os.path.join(app.root_path, 'static/index.html'), mode='rb') as f:
+                rv = flask.send_file(f)
+                rv.direct_passthrough = False
+                with app.open_resource('static/index.html') as f:
+                    assert rv.data == f.read()
+                assert rv.mimetype == 'text/html'
+                rv.close()
 
         # mimetypes + etag
         recwarn.pop(DeprecationWarning)
@@ -368,13 +368,13 @@ class TestSendfile(object):
         app.use_x_sendfile = True
 
         with app.test_request_context():
-            f = open(os.path.join(app.root_path, 'static/index.html'))
-            rv = flask.send_file(f)
-            assert rv.mimetype == 'text/html'
-            assert 'x-sendfile' in rv.headers
-            assert rv.headers['x-sendfile'] == \
-                os.path.join(app.root_path, 'static/index.html')
-            rv.close()
+            with open(os.path.join(app.root_path, 'static/index.html')) as f:
+                rv = flask.send_file(f)
+                assert rv.mimetype == 'text/html'
+                assert 'x-sendfile' in rv.headers
+                assert rv.headers['x-sendfile'] == \
+                    os.path.join(app.root_path, 'static/index.html')
+                rv.close()
 
         # mimetypes + etag
         recwarn.pop(DeprecationWarning)
@@ -434,11 +434,12 @@ class TestSendfile(object):
     def test_attachment(self, recwarn):
         app = flask.Flask(__name__)
         with app.test_request_context():
-            f = open(os.path.join(app.root_path, 'static/index.html'))
-            rv = flask.send_file(f, as_attachment=True)
-            value, options = parse_options_header(rv.headers['Content-Disposition'])
-            assert value == 'attachment'
-            rv.close()
+            with open(os.path.join(app.root_path, 'static/index.html')) as f:
+                rv = flask.send_file(f, as_attachment=True)
+                value, options = \
+                    parse_options_header(rv.headers['Content-Disposition'])
+                assert value == 'attachment'
+                rv.close()
 
         # mimetypes + etag
         assert len(recwarn.list) == 2
