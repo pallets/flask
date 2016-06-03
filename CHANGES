@@ -10,6 +10,14 @@ Version 0.12
 - Mimetype guessing for ``send_file`` has been removed, as per issue ``#104``.
   See pull request ``#1849``.
 
+Version 0.11.1
+--------------
+
+Bugfix release, unreleased.
+
+- Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. See
+  pull request ``#1872``.
+
 Version 0.11
 ------------
 
