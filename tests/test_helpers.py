@@ -12,6 +12,7 @@
 import pytest
 
 import os
+import uuid
 import datetime
 import flask
 from logging import StreamHandler
@@ -99,6 +100,22 @@ class TestJSON(object):
             rv = flask.json.dumps(u'\N{SNOWMAN}')
             assert rv == u'"\u2603"'
 
+    def test_json_dump_to_file(self):
+        app = flask.Flask(__name__)
+
+        test_data = {'lol': 'wut'}
+
+        with app.app_context():
+            t_fh = open('test_json_dump_file', 'w')
+            flask.json.dump(test_data, t_fh)
+            t_fh.close()
+
+            t_fh = open('test_json_dump_file', 'r')
+            rv = flask.json.load(t_fh)
+            assert rv == test_data
+            t_fh.close()
+            os.remove('test_json_dump_file')
+
     def test_jsonify_basic_types(self):
         """Test jsonify with basic types."""
         # Should be able to use pytest parametrize on this, but I couldn't
@@ -171,6 +188,18 @@ class TestJSON(object):
             rv = c.get(url)
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
+
+    def test_jsonify_uuid_types(self):
+        """Test jsonify with uuid.UUID types"""
+        test_uuid = uuid.UUID(bytes=b'\xDE\xAD\xBE\xEF'*4)
+
+        app = flask.Flask(__name__)
+        c = app.test_client()
+        url = '/uuid_test'
+        app.add_url_rule(url, 'uuid_test', lambda val=test_uuid: flask.jsonify(x=val))
+        rv = c.get(url)
+        assert rv.mimetype == 'application/json'
+        assert flask.json.loads(rv.data)['x'] == str(test_uuid)
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
