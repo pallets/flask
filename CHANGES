@@ -3,6 +3,14 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.11.1
+--------------
+
+Bugfix release, unreleased.
+
+- Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. See
+  pull request ``#1872``.
+
 Version 0.11
 ------------
 
