@@ -7,6 +7,7 @@
     :license: BSD, see LICENSE for more details.
 """
 import flask
+import gc
 import os
 import sys
 import pkgutil
@@ -126,8 +127,8 @@ def purge_module(request):
     return inner
 
 
-@pytest.fixture
-def catch_deprecation_warnings():
-    import warnings
-    warnings.simplefilter('default', category=DeprecationWarning)
-    return lambda: warnings.catch_warnings(record=True)
+@pytest.yield_fixture(autouse=True)
+def catch_deprecation_warnings(recwarn):
+    yield
+    gc.collect()
+    assert not recwarn.list
