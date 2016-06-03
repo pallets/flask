@@ -37,6 +37,8 @@
 
         $ py.test
 
+      Details on contributing can be found in CONTRIBUTING.rst
+
     ~ Where can I get help?
 
       Either use the #pocoo IRC channel on irc.freenode.net or

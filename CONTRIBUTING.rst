@@ -68,3 +68,22 @@ of ``pytest``. You can install it with::
 
 The ``tox`` command will then run all tests against multiple combinations
 Python versions and dependency versions.
+
+Running test coverage
+---------------------
+Generating a report of lines that do not have unit test coverage can indicate where
+to start contributing.  ``pytest`` integrates with ``coverage.py``, using the ``pytest-cov``
+plugin.  This assumes you have already run the testsuite (see previous section)::
+
+    pip install pytest-cov
+
+After this has been installed, you can output a report to the command line using this command::
+
+    py.test --cov=flask tests/
+
+Generate a HTML report can be done using this command::
+
+    py.test --cov-report html --cov=flask tests/
+
+Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
+
