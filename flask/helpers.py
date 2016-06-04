@@ -563,8 +563,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     return rv
 
 
-def safe_join(directory, filename):
-    """Safely join `directory` and `filename`.
+def safe_join(directory, *pathnames):
+    """Safely join `directory` and zero or more untrusted `pathnames`
+    components.
 
     Example usage::
 
@@ -574,20 +575,23 @@ def safe_join(directory, filename):
             with open(filename, 'rb') as fd:
                 content = fd.read()  # Read and process the file content...
 
-    :param directory: the base directory.
-    :param filename: the untrusted filename relative to that directory.
-    :raises: :class:`~werkzeug.exceptions.NotFound` if the resulting path
-             would fall out of `directory`.
+    :param directory: the trusted base directory.
+    :param pathnames: the untrusted pathnames relative to that directory.
+    :raises: :class:`~werkzeug.exceptions.NotFound` if one or more passed
+            paths fall out of its boundaries.
     """
-    filename = posixpath.normpath(filename)
-    for sep in _os_alt_seps:
-        if sep in filename:
+    for filename in pathnames:
+        if filename != '':
+            filename = posixpath.normpath(filename)
+        for sep in _os_alt_seps:
+            if sep in filename:
+                raise NotFound()
+        if os.path.isabs(filename) or \
+           filename == '..' or \
+           filename.startswith('../'):
             raise NotFound()
-    if os.path.isabs(filename) or \
-       filename == '..' or \
-       filename.startswith('../'):
-        raise NotFound()
-    return os.path.join(directory, filename)
+        directory = os.path.join(directory, filename)
+    return directory
 
 
 def send_from_directory(directory, filename, **options):
