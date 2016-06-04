@@ -15,7 +15,7 @@ import os
 import datetime
 import flask
 from logging import StreamHandler
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
@@ -722,3 +722,45 @@ class TestStreaming(object):
         rv = c.get('/?name=World')
         assert rv.data == b'Hello World!'
         assert called == [42]
+
+
+class TestSafeJoin(object):
+
+    def test_safe_join(self):
+        # Valid combinations of *args and expected joined paths.
+        passing = (
+            (('a/b/c', ), 'a/b/c'),
+            (('/', 'a/', 'b/', 'c/', ), '/a/b/c'),
+            (('a', 'b', 'c', ), 'a/b/c'),
+            (('/a', 'b/c', ), '/a/b/c'),
+            (('a/b', 'X/../c'), 'a/b/c', ),
+            (('/a/b', 'c/X/..'), '/a/b/c', ),
+            # If last path is '' add a slash
+            (('/a/b/c', '', ), '/a/b/c/', ),
+            # Preserve dot slash
+            (('/a/b/c', './', ), '/a/b/c/.', ),
+            (('a/b/c', 'X/..'), 'a/b/c/.', ),
+            # Base directory is always considered safe
+            (('../', 'a/b/c'), '../a/b/c'),
+            (('/..', ), '/..'),
+        )
+
+        for args, expected in passing:
+            assert flask.safe_join(*args) == expected
+
+    def test_safe_join_exceptions(self):
+        # Should raise werkzeug.exceptions.NotFound on unsafe joins.
+        failing = (
+            # path.isabs and ``..'' checks
+            ('/a', 'b', '/c'),
+            ('/a', '../b/c', ),
+            ('/a', '..', 'b/c'),
+            # Boundaries violations after path normalization
+            ('/a', 'b/../b/../../c', ),
+            ('/a', 'b', 'c/../..'),
+            ('/a', 'b/../../c', ),
+        )
+
+        for args in failing:
+            with pytest.raises(NotFound):
+                print(flask.safe_join(*args))
