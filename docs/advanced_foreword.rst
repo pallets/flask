@@ -47,9 +47,9 @@ Flask is no different from any other framework in that you the developer must
 build with caution, watching for exploits when building to your requirements.
 
 Python 3 Support in Flask
-----------------------
+-------------------------
 
-If you think of using Flask with Python 3 have a look at the
-:ref:`python3-support` page.
+Flask, its dependencies, and most Flask extensions all support Python 3.
+If you want to use Flask with Python 3 have a look at the :ref:`python3-support` page.
 
 Continue to :ref:`installation` or the :ref:`quickstart`.
