@@ -483,8 +483,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
                           :data:`~flask.current_app`.
-    :param last_modified: the Datetime object representing timestamp for when
-                          the input file was last modified.
+    :param last_modified: set the ``Last-Modified`` header to this value,
+        a :class:`~datetime.datetime` or timestamp.
+        If a file was passed, this overrides its mtime.
     """
     mtime = None
     if isinstance(filename_or_fp, string_types):
@@ -528,15 +529,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
 
-    # if we know the file modification date, we can store it as
-    # the time of the last modification.
     if last_modified is not None:
-        if PY2:
-            rv.last_modified = int(last_modified.strftime("%s"))
-        else:
-            rv.last_modified = last_modified.timestamp()
+        rv.last_modified = last_modified
     elif mtime is not None:
-        rv.last_modified = int(mtime)
+        rv.last_modified = mtime
 
     rv.cache_control.public = True
     if cache_timeout is None:

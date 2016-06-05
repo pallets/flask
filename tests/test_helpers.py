@@ -351,14 +351,15 @@ class TestSendfile(object):
 
     def test_send_file_last_modified(self):
         app = flask.Flask(__name__)
-        with app.test_request_context():
-            dtm = datetime.datetime.now()
-            rv = flask.send_file('static/index.html', last_modified=dtm)
-            if PY2:
-                assert rv.last_modified == int(dtm.strftime("%s"))
-            else:
-                assert rv.last_modified == dtm.timestamp()
-            rv.close()
+        last_modified = datetime.datetime(1999, 1, 1)
+
+        @app.route('/')
+        def index():
+            return flask.send_file(StringIO("party like it's"), last_modified=last_modified)
+
+        c = app.test_client()
+        rv = c.get('/')
+        assert rv.last_modified == last_modified
 
     def test_send_file_object(self):
         app = flask.Flask(__name__)
