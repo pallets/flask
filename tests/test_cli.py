@@ -12,6 +12,8 @@
 # Copyright (C) 2015 CERN.
 #
 from __future__ import absolute_import, print_function
+import os
+import sys
 
 import click
 import pytest
@@ -50,10 +52,23 @@ def test_find_best_app(test_apps):
 
 
 def test_prepare_exec_for_file(test_apps):
-    assert prepare_exec_for_file('test.py') == 'test'
-    assert prepare_exec_for_file('/usr/share/__init__.py') == 'share'
+    """Expect the correct path to be set and the correct module name to be returned.
+
+    :func:`prepare_exec_for_file` has a side effect, where
+    the parent directory of given file is added to `sys.path`.
+    """
+    realpath = os.path.realpath('/tmp/share/test.py')
+    dirname = os.path.dirname(realpath)
+    assert prepare_exec_for_file('/tmp/share/test.py') == 'test'
+    assert dirname in sys.path
+
+    realpath = os.path.realpath('/tmp/share/__init__.py')
+    dirname = os.path.dirname(os.path.dirname(realpath))
+    assert prepare_exec_for_file('/tmp/share/__init__.py') == 'share'
+    assert dirname in sys.path
+
     with pytest.raises(NoAppException):
-        prepare_exec_for_file('test.txt')
+        prepare_exec_for_file('/tmp/share/test.txt')
 
 
 def test_locate_app(test_apps):
