@@ -87,6 +87,25 @@ your packages to be installed as zip files because some tools do not
 support them and they make debugging a lot harder.
 
 
+Tagging Builds
+--------------
+
+It is useful to distinguish between release and development builds.  Add a
+:file:`setup.cfg` file to configure these options.
+
+    [egg_info]
+    tag_build = .dev
+    tag_date = 1
+
+    [aliases]
+    release = egg_info -RDb ''
+
+Running ``python setup.py sdist`` will create a development package
+with ".dev" and the current date appended: ``flaskr-1.0.dev20160314.tar.gz``.
+Running ``python setup.py release sdist`` will create a release package
+with only the version: ``flaskr-1.0.tar.gz``.
+
+
 .. _distributing-resources:
 
 Distributing Resources
