@@ -12,11 +12,10 @@ You need to use Python 3.3 or higher.  3.2 and older are *not* supported.
 You should use the latest versions of all Flask-related packages.
 Flask 0.10 and Werkzeug 0.9 were the first versions to introduce Python 3 support.
 
-Python 3 changed how unicode and bytes are handled,
-which complicated how low level code handles HTTP data.
-This mainly affects WSGI middleware interacting with the WSGI ``environ`` data.
-Werkzeug wraps that information in high-level helpers,
-so encoding issues should not effect you.
+Python 3 changed how unicode and bytes are handled, which complicates how low
+level code handles HTTP data.  This mainly affects WSGI middleware interacting
+with the WSGI ``environ`` data.  Werkzeug wraps that information in high-level
+helpers, so encoding issues should not affect you.
 
 The majority of the upgrade work is in the lower-level libraries like
 Flask and Werkzeug, not the high-level application code.
