@@ -36,7 +36,7 @@ overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
 <http://www.getsentry.com/>`_ for dealing with application errors.  It's
 available as an Open Source project `on GitHub
-<github.com/getsentry/sentry>`__ and is also available as a `hosted version
+<https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
 <https://getsentry.com/signup/>`_ which you can try for free. Sentry
 aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
