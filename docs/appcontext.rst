@@ -74,7 +74,7 @@ The application context is also used by the :func:`~flask.url_for`
 function in case a ``SERVER_NAME`` was configured.  This allows you to
 generate URLs even in the absence of a request.
 
-If a request context has not been pushed and an application context has 
+If no request context has been pushed and an application context has 
 not been explicitly set, a ``RuntimeError`` will be raised.
 ::
     RuntimeError: Working outside of application context.
