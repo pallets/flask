@@ -15,7 +15,7 @@ Version 0.12
 Version 0.11.1
 --------------
 
-Bugfix release, unreleased.
+Bugfix release, released on June 7th 2016.
 
 - Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. See
   pull request ``#1872``.
