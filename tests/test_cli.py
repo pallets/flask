@@ -21,7 +21,8 @@ from click.testing import CliRunner
 from flask import Flask, current_app
 
 from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
-    find_best_app, locate_app, with_appcontext, prepare_exec_for_file
+    find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
+    find_default_import_path
 
 
 def test_cli_name(test_apps):
@@ -77,6 +78,19 @@ def test_locate_app(test_apps):
     assert locate_app("cliapp.app:testapp").name == "testapp"
     assert locate_app("cliapp.multiapp:app1").name == "app1"
     pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
+
+
+def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
+    """Test of find_default_import_path."""
+    monkeypatch.delitem(os.environ, 'FLASK_APP', raising=False)
+    assert find_default_import_path() == None
+    monkeypatch.setitem(os.environ, 'FLASK_APP', 'notanapp')
+    assert find_default_import_path() == 'notanapp'
+    tmpfile = tmpdir.join('testapp.py')
+    tmpfile.write('')
+    monkeypatch.setitem(os.environ, 'FLASK_APP', str(tmpfile))
+    expect_rv = prepare_exec_for_file(str(tmpfile))
+    assert find_default_import_path() == expect_rv
 
 
 def test_scriptinfo(test_apps):
