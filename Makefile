@@ -7,7 +7,12 @@ test:
 	FLASK_DEBUG= py.test tests examples
 
 tox-test:
+	pip install -r test-requirements.txt -q
 	tox
+
+cov:
+	pip install -r test-requirements.txt -q
+	FLASK_DEBUG= py.test --cov-report term --cov-report html --cov=flask --cov=examples tests examples
 
 audit:
 	python setup.py audit

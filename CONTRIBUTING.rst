@@ -31,17 +31,11 @@ Submitting patches
 - Try to follow `PEP8 <http://legacy.python.org/dev/peps/pep-0008/>`_, but you
   may ignore the line-length-limit if following it would make the code uglier.
 
-
-Running the testsuite
----------------------
+Getting Started
+===============
 
 You probably want to set up a `virtualenv
 <https://virtualenv.readthedocs.io/en/latest/index.html>`_.
-
-The minimal requirement for running the testsuite is ``py.test``.  You can
-install it with::
-
-    pip install pytest
 
 Clone this repository::
 
@@ -52,11 +46,21 @@ Install Flask as an editable package using the current source::
     cd flask
     pip install --editable .
 
+Running the testsuite
+---------------------
+
+The minimal requirement for running the testsuite is ``pytest``.  You can
+install it with::
+
+    pip install pytest
+
 Then you can run the testsuite with::
 
     py.test
 
-With only py.test installed, a large part of the testsuite will get skipped
+**Shortcut**: ``make test`` will ensure ``pytest`` is installed, and run it.
+
+With only pytest installed, a large part of the testsuite will get skipped
 though.  Whether this is relevant depends on which part of Flask you're working
 on.  Travis is set up to run the full testsuite when you submit your pull
 request anyways.
@@ -68,6 +72,8 @@ of ``pytest``. You can install it with::
 
 The ``tox`` command will then run all tests against multiple combinations
 Python versions and dependency versions.
+
+**Shortcut**: ``make tox-test`` will ensure ``tox`` is installed, and run it.
 
 Running test coverage
 ---------------------
@@ -87,3 +93,4 @@ Generate a HTML report can be done using this command::
 
 Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
 
+**Shortcut**: ``make cov`` will ensure ``pytest-cov`` is installed, run it, display the results, *and* save the HTML report.

@@ -11,3 +11,5 @@ _mailinglist
 .tox
 .cache/
 .idea/
+.coverage
+htmlcov
