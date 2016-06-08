@@ -90,12 +90,12 @@ class TestJSON(object):
         app = flask.Flask(__name__)
 
         app.config['JSON_AS_ASCII'] = True
-        with app.test_request_context():
+        with app.app_context():
             rv = flask.json.dumps(u'\N{SNOWMAN}')
             assert rv == '"\\u2603"'
 
         app.config['JSON_AS_ASCII'] = False
-        with app.test_request_context():
+        with app.app_context():
             rv = flask.json.dumps(u'\N{SNOWMAN}')
             assert rv == u'"\u2603"'
 
