@@ -839,6 +839,8 @@ class Flask(_PackageBoundObject):
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
         options.setdefault('passthrough_errors', True)
+        if debug:
+            self.jinja_env.auto_reload = True
         try:
             run_simple(host, port, self, **options)
         finally:
