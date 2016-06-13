@@ -3,6 +3,13 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.11.2
+--------------
+
+Bugfix release, unreleased
+
+- Fix crash when running under PyPy3, see pull request ``#1814``.
+
 Version 0.11.1
 --------------
 
