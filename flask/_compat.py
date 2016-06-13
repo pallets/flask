@@ -75,7 +75,10 @@ if hasattr(sys, 'pypy_version_info'):
         def __enter__(self):
             return self
         def __exit__(self, *args):
-            sys.exc_clear()
+            try:
+                sys.exc_clear()
+            except:
+                pass
     try:
         try:
             with _Mgr():
