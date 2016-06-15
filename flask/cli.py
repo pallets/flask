@@ -103,6 +103,8 @@ def find_default_import_path():
     app = os.environ.get('FLASK_APP')
     if app is None:
         return
+    if not app.endswith('.py'):
+        app += '.py'
     if os.path.isfile(app):
         return prepare_exec_for_file(app)
     return app
