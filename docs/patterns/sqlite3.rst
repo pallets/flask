@@ -84,18 +84,17 @@ This will make the sqlite3 module return dicts for this database connection, whi
 
     db.row_factory = sqlite3.Row
 
-This would use Row objects rather than dicts to return the results of queries. These are `namedtuple` s, so we can access them either by index or by key. For example, assuming we have a ``sqlite3.Row`` called ``r`` for the rows id, FirstName, LastName, and MiddleInitial::
+This would use Row objects rather than dicts to return the results of queries. These are ``namedtuple`` s, so we can access them either by index or by key. For example, assuming we have a ``sqlite3.Row`` called ``r`` for the rows ``id``, ``FirstName``, ``LastName``, and ``MiddleInitial``::
 
-    >>> tuple(r) # returns a real tuple
-    (1, 'John', 'Doe', 'M')
-    >>> r.keys()
-    ['id', 'FirstName', 'LastName', 'MiddleInitial']
-    >>> r['id']
-    1
+    >>> # You can get values based on the row's name
+    >>> r['FirstName']
+    John
+    >>> # Or, you can get them based on index
     >>> r[1]
     John
-    >>> for value in r: # iterable
-    ...     print(member)
+    # Row objects are also iterable:
+    >>> for value in r:
+    ...     print(value)
     1
     John
     Doe
