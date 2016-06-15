@@ -349,11 +349,9 @@ def test_templates_auto_reload():
 
 def test_templates_auto_reload_debug_run(monkeypatch):
     # debug is None in config, config option is None, app.run(debug=True)
-    rv = {}
-
     # Mocks werkzeug.serving.run_simple method
     def run_simple_mock(*args, **kwargs):
-        rv['passthrough_errors'] = kwargs.get('passthrough_errors')
+        pass
 
     app = flask.Flask(__name__)
     monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
