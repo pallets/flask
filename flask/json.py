@@ -19,10 +19,7 @@ from jinja2 import Markup
 
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
-try:
-    from itsdangerous import simplejson as _json
-except ImportError:
-    from itsdangerous import json as _json
+from itsdangerous import json as _json
 
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
