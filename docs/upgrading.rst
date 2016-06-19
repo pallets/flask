@@ -14,10 +14,10 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
-If you want to use the :command:`easy_install` command to upgrade your Flask
-installation, make sure to pass it the :option:`-U` parameter::
+Use the :command:`pip` command to upgrade your existing Flask installation by
+providing the :option:`--upgrade` parameter::
 
-    $ easy_install -U Flask
+    $ pip install --upgrade Flask
 
 .. _upgrading-to-10:
 
