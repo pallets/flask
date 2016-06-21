@@ -23,8 +23,8 @@ specifically added for the Python 3 support and are quite new.
 Unless you require absolute compatibility, you should be fine with Python 3
 nowadays. Most libraries and Flask extensions have been ported by now and
 using Flask with Python 3 is generally a smooth ride. However, keep in mind
-that most libraries (including Werkzeug and Flask) might not quite as stable
-on Python 3 yet. You might therefore sometimes run into bugs that are
+that most libraries (including Werkzeug and Flask) might not be quite as 
+stable on Python 3 yet. You might therefore sometimes run into bugs that are
 usually encoding-related.
 
 The majority of the upgrade pain is in the lower-level libraries like
