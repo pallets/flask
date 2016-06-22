@@ -784,7 +784,7 @@ sessions work::
             session['username'] = request.form['username']
             return redirect(url_for('index'))
         return '''
-            <form action="" method="post">
+            <form method="post">
                 <p><input type=text name=username>
                 <p><input type=submit value=Login>
             </form>
