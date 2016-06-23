@@ -423,7 +423,8 @@ def run_command(info, host, port, reload, debugger, eager_loading,
             print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
 
     run_simple(host, port, app, use_reloader=reload,
-               use_debugger=debugger, threaded=with_threads)
+               use_debugger=debugger, threaded=with_threads,
+               passthrough_exceptions=True)
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
