@@ -1,0 +1,4 @@
+recursive-include flaskr/templates *
+recursive-include flaskr/static *
+include flaskr/flaskr.db
+include flaskr/schema.sql
