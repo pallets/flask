@@ -1797,16 +1797,18 @@ class Flask(_PackageBoundObject):
         raise error
 
     def preprocess_request(self):
-        """Called before the actual request dispatching and will
-        call each :meth:`before_request` decorated function, passing no
-        arguments.
-        If any of these functions returns a value, it's handled as
-        if it was the return value from the view and further
-        request handling is stopped.
+        """Called before the request dispatching.
 
-        This also triggers the :meth:`url_value_processor` functions before
-        the actual :meth:`before_request` functions are called.
+        Triggers two set of hook functions that should be invoked prior to request dispatching:
+        :attr:`url_value_preprocessors` and :attr:`before_request_funcs`
+        (the latter are functions decorated with :meth:`before_request` decorator).
+        In both cases, the method triggers only the functions that are either global
+        or registered to the current blueprint.
+
+        If any function in :attr:`before_request_funcs` returns a value, it's handled as if it was
+        the return value from the view function, and further request handling is stopped.
         """
+
         bp = _request_ctx_stack.top.request.blueprint
 
         funcs = self.url_value_preprocessors.get(None, ())
