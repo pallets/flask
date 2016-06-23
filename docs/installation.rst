@@ -40,24 +40,20 @@ installations of Python, one for each project.  It doesn't actually install
 separate copies of Python, but it does provide a clever way to keep different
 project environments isolated.  Let's see how virtualenv works.
 
-If you are on Mac OS X or Linux, chances are that one of the following two
-commands will work for you::
-
-    $ sudo easy_install virtualenv
-
-or even better::
+If you are on Mac OS X or Linux, the following
+command will work for you::
 
     $ sudo pip install virtualenv
 
-One of these will probably install virtualenv on your system.  Maybe it's even
+This will probably install virtualenv on your system.  Maybe it's even
 in your package manager.  If you use Ubuntu, try::
 
     $ sudo apt-get install python-virtualenv
 
-If you are on Windows and don't have the :command:`easy_install` command, you must
-install it first.  Check the :ref:`windows-easy-install` section for more
+If you are on Windows and don't have the :command:`pip` command, you must
+install it first.  Check the :ref:`windows-pip-install` section for more
 information about how to do that.  Once you have it installed, run the same
-commands as above, but without the :command:`sudo` prefix.
+command as above, but without the :command:`sudo` prefix.
 
 Once you have virtualenv installed, just fire up a shell and create
 your own environment.  I usually create a project folder and a :file:`venv`
@@ -132,7 +128,7 @@ version inside the virtualenv.  Then all you have to do is run ``git pull
 origin`` to update to the latest version.
 
 
-.. _windows-easy-install:
+.. _windows-pip-install:
 
 `pip` and `setuptools` on Windows
 ---------------------------------
