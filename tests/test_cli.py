@@ -25,6 +25,11 @@ from flask.cli import cli, AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_default_import_path
 
 
+@pytest.fixture
+def runner():
+    return CliRunner()
+
+
 def test_cli_name(test_apps):
     """Make sure the CLI object's name is the app's name and not the app itself"""
     from cliapp.app import testapp
@@ -108,7 +113,7 @@ def test_scriptinfo(test_apps):
     assert obj.load_app() == app
 
 
-def test_with_appcontext():
+def test_with_appcontext(runner):
     """Test of with_appcontext."""
     @click.command()
     @with_appcontext
@@ -117,13 +122,12 @@ def test_with_appcontext():
 
     obj = ScriptInfo(create_app=lambda info: Flask("testapp"))
 
-    runner = CliRunner()
     result = runner.invoke(testcmd, obj=obj)
     assert result.exit_code == 0
     assert result.output == 'testapp\n'
 
 
-def test_appgroup():
+def test_appgroup(runner):
     """Test of with_appcontext."""
     @click.group(cls=AppGroup)
     def cli():
@@ -143,7 +147,6 @@ def test_appgroup():
 
     obj = ScriptInfo(create_app=lambda info: Flask("testappgroup"))
 
-    runner = CliRunner()
     result = runner.invoke(cli, ['test'], obj=obj)
     assert result.exit_code == 0
     assert result.output == 'testappgroup\n'
@@ -153,7 +156,7 @@ def test_appgroup():
     assert result.output == 'testappgroup\n'
 
 
-def test_flaskgroup():
+def test_flaskgroup(runner):
     """Test FlaskGroup."""
     def create_app(info):
         return Flask("flaskgroup")
@@ -166,16 +169,14 @@ def test_flaskgroup():
     def test():
         click.echo(current_app.name)
 
-    runner = CliRunner()
     result = runner.invoke(cli, ['test'])
     assert result.exit_code == 0
     assert result.output == 'flaskgroup\n'
 
 
 class TestRoutes:
-    def test_no_route(self, monkeypatch):
+    def test_no_route(self, runner, monkeypatch):
         monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:noroute_app')
-        runner = CliRunner()
         result = runner.invoke(cli, ['routes'], catch_exceptions=False)
         assert result.exit_code == 0
         assert result.output == """\
@@ -184,9 +185,8 @@ Route                    Endpoint  Methods
 /static/<path:filename>  static    HEAD, OPTIONS, GET
 """
 
-    def test_simple_route(self, monkeypatch):
+    def test_simple_route(self, runner, monkeypatch):
         monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:simpleroute_app')
-        runner = CliRunner()
         result = runner.invoke(cli, ['routes'], catch_exceptions=False)
         assert result.exit_code == 0
         assert result.output == """\
@@ -196,9 +196,8 @@ Route                    Endpoint  Methods
 /static/<path:filename>  static    HEAD, OPTIONS, GET
 """
 
-    def test_only_POST_route(self, monkeypatch):
+    def test_only_POST_route(self, runner, monkeypatch):
         monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:only_POST_route_app')
-        runner = CliRunner()
         result = runner.invoke(cli, ['routes'], catch_exceptions=False)
         assert result.exit_code == 0
         assert result.output == """\
