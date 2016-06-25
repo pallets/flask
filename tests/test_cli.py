@@ -20,7 +20,7 @@ import pytest
 from click.testing import CliRunner
 from flask import Flask, current_app
 
-from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
+from flask.cli import cli, AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
     find_default_import_path
 
@@ -170,3 +170,40 @@ def test_flaskgroup():
     result = runner.invoke(cli, ['test'])
     assert result.exit_code == 0
     assert result.output == 'flaskgroup\n'
+
+
+class TestRoutes:
+    def test_no_route(self, monkeypatch):
+        monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:noroute_app')
+        runner = CliRunner()
+        result = runner.invoke(cli, ['routes'], catch_exceptions=False)
+        assert result.exit_code == 0
+        assert result.output == """\
+Route                    Endpoint  Methods           
+-----------------------------------------------------
+/static/<path:filename>  static    HEAD, OPTIONS, GET
+"""
+
+    def test_simple_route(self, monkeypatch):
+        monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:simpleroute_app')
+        runner = CliRunner()
+        result = runner.invoke(cli, ['routes'], catch_exceptions=False)
+        assert result.exit_code == 0
+        assert result.output == """\
+Route                    Endpoint  Methods           
+-----------------------------------------------------
+/simpleroute             simple    HEAD, OPTIONS, GET
+/static/<path:filename>  static    HEAD, OPTIONS, GET
+"""
+
+    def test_only_POST_route(self, monkeypatch):
+        monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:only_POST_route_app')
+        runner = CliRunner()
+        result = runner.invoke(cli, ['routes'], catch_exceptions=False)
+        assert result.exit_code == 0
+        assert result.output == """\
+Route                    Endpoint   Methods           
+------------------------------------------------------
+/only-post               only_post  POST, OPTIONS     
+/static/<path:filename>  static     HEAD, OPTIONS, GET
+"""
