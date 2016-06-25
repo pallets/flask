@@ -476,8 +476,11 @@ def routes_command(order_by):
     sorted_rules = sorted(app.url_map.iter_rules(), key=order_key)
 
     max_rule = max(len(rule.rule) for rule in sorted_rules)
+    max_rule = max(max_rule, len('Route'))
     max_ep = max(len(rule.endpoint) for rule in sorted_rules)
+    max_ep = max(max_ep, len('Endpoint'))
     max_meth = max(len(', '.join(rule.methods)) for rule in sorted_rules)
+    max_meth = max(max_meth, len('Methods'))
 
     columnformat = '{:<%s}  {:<%s}  {:<%s}' % (max_rule, max_ep, max_meth)
     click.echo(columnformat.format('Route', 'Endpoint', 'Methods'))
