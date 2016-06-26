@@ -143,8 +143,8 @@ packages you will need are setuptools and pip - these will let you install
 anything else (like virtualenv). Fortunately there are two "bootstrap scripts"
 you can run to install either.
 
-If you don't currently have either, then `get-pip.py` will install both for you
-(you won't need to run ez_setup.py).
+If you don't currently have either, then :file:`get-pip.py` will install both for you
+(you won't need to run :file:`ez_setup.py`).
 
 `get-pip.py`_
 

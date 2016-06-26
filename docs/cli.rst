@@ -32,7 +32,7 @@ Python module that contains a Flask application.
 
 In that imported file the name of the app needs to be called ``app`` or
 optionally be specified after a colon.  For instance
-`mymodule:application` would tell it to use the `application` object in
+``mymodule:application`` would tell it to use the `application` object in
 the :file:`mymodule.py` file.
 
 Given a :file:`hello.py` file with the application in it named ``app``
@@ -218,13 +218,13 @@ step.
 CLI Plugins
 -----------
 
-Flask extensions can always patch the `Flask.cli` instance with more
+Flask extensions can always patch the :attr:`Flask.cli` instance with more
 commands if they want.  However there is a second way to add CLI plugins
-to Flask which is through `setuptools`.  If you make a Python package that
-should export a Flask command line plugin you can ship a `setup.py` file
+to Flask which is through ``setuptools``.  If you make a Python package that
+should export a Flask command line plugin you can ship a :file:`setup.py` file
 that declares an entrypoint that points to a click command:
 
-Example `setup.py`::
+Example :file:`setup.py`::
 
     from setuptools import setup
 
@@ -237,7 +237,7 @@ Example `setup.py`::
         ''',
     )
 
-Inside `mypackage/commands.py` you can then export a Click object::
+Inside :file:`mypackage/commands.py` you can then export a Click object::
 
     import click
 
