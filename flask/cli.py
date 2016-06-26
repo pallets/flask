@@ -286,7 +286,7 @@ class FlaskGroup(AppGroup):
 
     :param add_default_commands: if this is True then the default run and
                                  shell commands wil be added.
-    :param add_version_option: adds the :option:`--version` option.
+    :param add_version_option: adds the ``--version`` option.
     :param create_app: an optional callback that is passed the script info
                        and returns the loaded app.
     """
@@ -410,7 +410,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
-    # Extra startup messages.  This depends a but on Werkzeug internals to
+    # Extra startup messages.  This depends a bit on Werkzeug internals to
     # not double execute when the reloader kicks in.
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
         # If we have an import path we can print it out now which can help
