@@ -1804,7 +1804,7 @@ class Flask(_PackageBoundObject):
         if it was the return value from the view and further
         request handling is stopped.
 
-        This also triggers the :meth:`url_value_processor` functions before
+        This also triggers the :meth:`url_value_preprocessor` functions before
         the actual :meth:`before_request` functions are called.
         """
         bp = _request_ctx_stack.top.request.blueprint
