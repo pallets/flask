@@ -102,12 +102,16 @@ class View(object):
         return view
 
 
+def get_methods(cls):
+    return getattr(cls, 'methods', []) or []
+
+
 class MethodViewType(type):
 
     def __new__(cls, name, bases, d):
         rv = type.__new__(cls, name, bases, d)
         if 'methods' not in d:
-            methods = set(rv.methods or [])
+            methods = set(m for b in bases for m in get_methods(b))
             for key in d:
                 if key in http_method_funcs:
                     methods.add(key.upper())
