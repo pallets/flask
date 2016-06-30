@@ -16,7 +16,7 @@
 
       2. tell flask about the right application:
 
-         export FLASK_APP=minitwit
+         export FLASK_APP=minitwit.py
 
       2. fire up a shell and run this:
 
