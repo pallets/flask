@@ -121,7 +121,20 @@ class Request(RequestBase):
         if mt.startswith('application/') and mt.endswith('+json'):
             return True
         return False
+    
+    @property
+    def is_body_json(self):
+        """
+            Validates wether the body consists valid json or not.
+        """
+        request_charset = self.mimetype_params.get('charset')
+        try:
+            json.loads(request_charset)
+        except ValueError, e:
+            return False
+        return True    
 
+    
     def get_json(self, force=False, silent=False, cache=True):
         """Parses the incoming JSON request data and returns it.  By default
         this function will return ``None`` if the mimetype is not
