@@ -151,12 +151,11 @@ class Request(RequestBase):
         try:
             data = _get_data(self, cache)
             
-            if not data and not force:
+            if self.method == 'GET' and not data and not force:
                 # Some clients will send a MIME-type of "application/json"
-                # with an empty message body by default, even on empty
-                # get requests. This behaviour can cause loading to fail
-                # with a ValueError although RFC2616 does not explicitly
-                # forbid such requests.
+                # with an empty message body on empty get requests. 
+                # This can cause loading to fail with a ValueError
+                # although RFC2616 does not explicitly forbid such requests.
                 rv = None
             elif request_charset is not None:
                 rv = json.loads(data, encoding=request_charset)
