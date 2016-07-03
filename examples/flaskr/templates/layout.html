@@ -1,17 +1,64 @@
 <!doctype html>
-<title>Flaskr</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-<div class="page">
-  <h1>Flaskr</h1>
-  <div class="metanav">
-  {% if not session.logged_in %}
-    <a href="{{ url_for('login') }}">log in</a>
-  {% else %}
-    <a href="{{ url_for('logout') }}">log out</a>
-  {% endif %}
-  </div>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
-</div>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>FlaskrBS3</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+<body>
+
+    <nav role="navigation" class="navbar navbar-default">
+        <div class="container">
+        <div class="navbar-header">
+            {% if request.endpoint != 'login' %}{# remove this 'if' when you have some nav items #}
+            <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {% endif %}
+            <a href="/" class="navbar-brand">Flaskr</a>
+        </div>
+
+        <div id="navbarCollapse" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                {# place nav items here like: <li><a href="/search">Search</a></li> #}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.endpoint == 'login' %}
+                    {# pass - no login button on the login page #}
+                {% elif session.logged_in %}
+                    <li class="text-center"><button type="button" class="btn btn-default navbar-btn" onclick="document.location.href = '{{ url_for('logout') }}';">Log out</button></li>
+                {% else %}
+                    <li class="text-center"><button type="button" class="btn btn-default navbar-btn" onclick="document.location.href = '{{ url_for('login') }}';">Log in</button></li>
+                {% endif %}
+            </ul>
+        </div>
+        </div>
+    </nav>
+
+    <div class="container content-container">
+
+        {% if get_flashed_messages() %}
+            <div class="row messages-container">
+                <div class="col-sm-12">
+                {% for message in get_flashed_messages() %}
+                    <h4 class="bg-info message-item">{{ message }}</h4>
+                {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% block body %}{% endblock %}
+
+    </div>
+
+</body>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</html>
