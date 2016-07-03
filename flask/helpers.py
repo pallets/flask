@@ -521,10 +521,12 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         data = None
     else:
         if file is None:
-            file = open(filename, 'rb')
+            with open(filename, "rb") as file:
+                data = wrap_file(request.environ, file)
             mtime = os.path.getmtime(filename)
             headers['Content-Length'] = os.path.getsize(filename)
-        data = wrap_file(request.environ, file)
+        else:
+            data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
