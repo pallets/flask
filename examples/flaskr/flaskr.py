@@ -14,10 +14,11 @@ import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
-
+from flask_cli import FlaskCLI
 
 # create our little application :)
 app = Flask(__name__)
+FlaskCLI(app)
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
