@@ -105,6 +105,9 @@ def find_default_import_path():
         return
     if os.path.isfile(app):
         return prepare_exec_for_file(app)
+    alt = app + '.py'
+    if os.path.isfile(alt):
+        return prepare_exec_for_file(alt)
     return app
 
 
