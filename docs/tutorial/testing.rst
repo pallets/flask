@@ -24,11 +24,22 @@ One possible and recommended project structure is::
             static/
             templates/
         tests/
+            context.py
             test_flaskr.py
         setup.py
         MANIFEST.in
 
-For now go ahead a create the :file:`tests/` directory.
+For now go ahead a create the :file:`tests/` directory as well as the
+:file:`context.py` and :file:`test_flaskr.py` files, if you haven't
+already. The context file is used as an import helper. The contents
+of that file are::
+
+    import sys, os
+
+    basedir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, basedir + '/../')
+
+    from flaskr import flaskr
 
 Testing + Setuptools
 ====================
