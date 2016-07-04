@@ -10,11 +10,10 @@
 """
 
 import pytest
-
 import os
-from flaskr import flaskr
 import tempfile
 
+from context import flaskr
 
 @pytest.fixture
 def client(request):
