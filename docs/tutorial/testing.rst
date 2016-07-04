@@ -24,13 +24,11 @@ One possible and recommended project structure is::
             static/
             templates/
         tests/
-            __init__.py
             test_flaskr.py
         setup.py
         MANIFEST.in
 
-For now go ahead a create the :file:`tests/` directory, as well as an
-empty :file:`__init__.py`.
+For now go ahead a create the :file:`tests/` directory.
 
 Testing + Setuptools
 ====================
