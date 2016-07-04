@@ -12,7 +12,7 @@
 import pytest
 
 import os
-from . import flaskr
+from flaskr import flaskr
 import tempfile
 
 
