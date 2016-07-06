@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import re
 import uuid
 import hashlib
 from base64 import b64encode, b64decode
@@ -208,7 +209,7 @@ class SessionInterface(object):
             # Google chrome does not like cookies set to .localhost, so
             # we just go with no domain then.  Flask documents anyways that
             # cross domain cookies need a fully qualified domain name
-            if rv == '.localhost':
+            if rv == '.localhost' or re.match('^\.127\.\d+\.\d+\.\d+$', rv):
                 rv = None
 
             # If we infer the cookie domain from the server name we need
