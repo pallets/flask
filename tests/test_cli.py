@@ -80,6 +80,8 @@ def test_locate_app(test_apps):
     assert locate_app("cliapp.app").name == "testapp"
     assert locate_app("cliapp.app:testapp").name == "testapp"
     assert locate_app("cliapp.multiapp:app1").name == "app1"
+    pytest.raises(NoAppException, locate_app, "notanpp.py")
+    pytest.raises(NoAppException, locate_app, "cliapp/app")
     pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
 
 
