@@ -3,7 +3,7 @@
 Introducing Flaskr
 ==================
 
-This tutorial will demonstrate a blogging application named Flaskr, but feel
+This tutorial will build a blogging application named Flaskr, but feel
 free to choose your own less Web-2.0-ish name ;)  Essentially, it will do the
 following things:
 
