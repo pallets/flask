@@ -390,3 +390,12 @@ def test_custom_jinja_env():
 
     app = CustomFlask(__name__)
     assert isinstance(app.jinja_env, CustomEnvironment)
+
+def test_blueprint_template_isolation(test_apps):
+    from blueprintapp import app
+
+    rv1 = app.test_client().get('/admin/admin')
+    rv2 = app.test_client().get('/frontend')
+
+    assert rv1.data == b'admin'
+    assert rv2.data == b'frontend'

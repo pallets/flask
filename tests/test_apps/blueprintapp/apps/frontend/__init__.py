@@ -8,6 +8,11 @@ def index():
     return render_template('frontend/index.html')
 
 
+@frontend.route('/frontend')
+def frontend_control():
+    return render_template('index.html')
+
+
 @frontend.route('/missing')
 def missing_template():
     return render_template('missing_template.html')

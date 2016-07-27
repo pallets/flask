@@ -10,6 +10,11 @@ def index():
     return render_template('admin/index.html')
 
 
+@admin.route('/admin')
+def admin_control():
+    return render_template('index.html')
+
+
 @admin.route('/index2')
 def index2():
     return render_template('./admin/index.html')

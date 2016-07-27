@@ -89,7 +89,10 @@ class DispatchingJinjaLoader(BaseLoader):
         if loader is not None:
             yield self.app, loader
 
+        blueprint_name = _request_ctx_stack.top.request.blueprint
         for blueprint in self.app.iter_blueprints():
+            if blueprint.name != blueprint_name:
+                continue
             loader = blueprint.jinja_loader
             if loader is not None:
                 yield blueprint, loader
