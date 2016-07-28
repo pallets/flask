@@ -60,7 +60,7 @@ At any time during a request, we can register a function to be called at the
 end of the request.  For example you can remember the current language of the
 user in a cookie in the before-request function::
 
-    from flask import request
+    from flask import request, after_this_request
 
     @app.before_request
     def detect_user_language():
