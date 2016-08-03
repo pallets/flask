@@ -84,7 +84,7 @@ class View(object):
             return self.dispatch_request(*args, **kwargs)
 
         if cls.decorators:
-            view.__name__ = name
+            view.__qualname__ = view.__name__ = name
             view.__module__ = cls.__module__
             for decorator in cls.decorators:
                 view = decorator(view)
@@ -95,7 +95,7 @@ class View(object):
         # the view class so you can actually replace it with something else
         # for testing purposes and debugging.
         view.view_class = cls
-        view.__name__ = name
+        view.__qualname__ = view.__name__ = name
         view.__doc__ = cls.__doc__
         view.__module__ = cls.__module__
         view.methods = cls.methods
