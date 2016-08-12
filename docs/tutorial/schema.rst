@@ -4,8 +4,8 @@ Step 1: Database Schema
 =======================
 
 In this step, you will create the database schema.  Only a single table is
-needed for this application and it will only support SQLite.  Start by
-putting the following contents into a file named :file:`schema.sql` in the
+needed for this application and it will only support SQLite.  All you need to do
+is put the following contents into a file named :file:`schema.sql` in the
 :file:`flaskr/flaskr` folder:
 
 .. sourcecode:: sql

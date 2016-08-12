@@ -4,16 +4,19 @@ Bonus: Testing the Application
 ==============================
 
 Now that you have finished the application and everything works as
-expected, it's a good idea to add automated tests to simplify
+expected, it's probably not a bad idea to add automated tests to simplify
 modifications in the future.  The application above is used as a basic
 example of how to perform unit testing in the :ref:`testing` section of the
-documentation.  Go there to see how to test Flask applications.
+documentation.  Go there to see how easy it is to test Flask applications.
 
 Adding Tests to flaskr
 ======================
 
-You might be wondering about ways to organize the project to include 
-tests. One possible project structure is::
+Assuming you have seen the testing section above and have either written
+your own tests for ``flaskr`` or have followed along with the examples
+provided, you might be wondering about ways to organize the project.
+
+One possible and recommended project structure is::
 
     flaskr/
         flaskr/
@@ -21,38 +24,29 @@ tests. One possible project structure is::
             static/
             templates/
         tests/
+            context.py
             test_flaskr.py
         setup.py
         MANIFEST.in
 
-For now go ahead a create the :file:`tests/` directory and 
-:file:`test_flaskr.py`. If you unsure of what to add in order to 
-start testing the application, take a look here: :ref:`testing`. 
+For now go ahead a create the :file:`tests/` directory as well as the
+:file:`context.py` and :file:`test_flaskr.py` files, if you haven't
+already. The context file is used as an import helper. The contents
+of that file are::
 
-Running the Tests
-=================
+    import sys, os
 
-At this point you can run the tests. Here ``pytest`` will be 
-used. Here are the commands to do that. This code example is 
-run within the top-level :file:`flaskr/` directory)::
+    basedir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, basedir + '/../')
 
-    pip install --editable . 
-    pip install pytest
-    py.test
-
-At this point you can run the tests and they should all pass. This
-application structure follows ``pytests`` "good integration practices".
-It's worth taking a look at. Note: These tests passing require that 
-your application be installed in the same virtualenv as pytest. Otherwise
-the import statement `from flaskr import flaskr`, in 
-:file:`test_flaskr.py` will fail.
+    from flaskr import flaskr
 
 Testing + Setuptools
 ====================
 
-One way to handle testing is to integrate it with ``setuptools``. Here 
-that requires is adding a couple of lines to the :file:`setup.py` file 
-and creating a new file :file:`setup.cfg`. Go ahead and update the
+One way to handle testing is to integrate it with ``setuptools``. All it
+requires is adding a couple of lines to the :file:`setup.py` file and
+creating a new file :file:`setup.cfg`. Go ahead and update the
 :file:`setup.py` to contain::
 
     from setuptools import setup
@@ -78,8 +72,7 @@ Now create :file:`setup.cfg` in the project root (alongside
     [aliases]
     test=pytest
 
-Now you can run the tests with (within top-level :file:`flaskr` 
-directory)::
+Now you can run::
 
     python setup.py test
 

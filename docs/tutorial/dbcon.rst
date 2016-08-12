@@ -8,7 +8,7 @@ You now have a function for establishing a database connection with
 closing database connections all the time is very inefficient, so you will
 need to keep it around for longer.  Because database connections
 encapsulate a transaction, you will need to make sure that only one
-request at a time uses the connection. One way to do this is by
+request at a time uses the connection. An elegant way to do this is by
 utilizing the *application context*.
 
 Flask provides two contexts: the *application context* and the
