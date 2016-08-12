@@ -86,7 +86,13 @@ def locate_app(app_id):
         module = app_id
         app_obj = None
 
-    __import__(module)
+    try:
+        __import__(module)
+    except ImportError:
+        raise NoAppException('The file/path provided (%s) does not appear to '
+                             'exist.  Please verify the path is correct.  If '
+                             'app is not on PYTHONPATH, ensure the extension '
+                             'is .py' % module)
     mod = sys.modules[module]
     if app_obj is None:
         app = find_best_app(mod)
