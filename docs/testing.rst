@@ -152,13 +152,13 @@ invalid credentials.  Add this new test to the class::
 
    def test_login_logout(self):
        rv = self.login('admin', 'default')
-       assert 'You were logged in' in rv.data
+       assert b'You were logged in' in rv.data
        rv = self.logout()
-       assert 'You were logged out' in rv.data
+       assert b'You were logged out' in rv.data
        rv = self.login('adminx', 'default')
-       assert 'Invalid username' in rv.data
+       assert b'Invalid username' in rv.data
        rv = self.login('admin', 'defaultx')
-       assert 'Invalid password' in rv.data
+       assert b'Invalid password' in rv.data
 
 Test Adding Messages
 --------------------
@@ -172,9 +172,9 @@ like this::
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
-        assert 'No entries here so far' not in rv.data
-        assert '&lt;Hello&gt;' in rv.data
-        assert '<strong>HTML</strong> allowed here' in rv.data
+        assert b'No entries here so far' not in rv.data
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
 
 Here we check that HTML is allowed in the text but not in the title,
 which is the intended behavior.
