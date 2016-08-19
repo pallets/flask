@@ -21,7 +21,7 @@ except ImportError:
     from urlparse import urlsplit as url_parse
 
 
-def make_test_environ_builder(app, path='/', base_url=None, json=None, *args, **kwargs):
+def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
     """Creates a new test builder with some application defaults thrown in."""
     http_host = app.config.get('SERVER_NAME')
     app_root = app.config.get('APPLICATION_ROOT')
@@ -35,10 +35,10 @@ def make_test_environ_builder(app, path='/', base_url=None, json=None, *args, **
             if url.query:
                 path += '?' + url.query
 
-    if json is not None:
+    if 'json' in kwargs:
         if 'data' in kwargs:
             raise ValueError('Client cannot provide both `json` and `data`')
-        kwargs['data'] = json_dumps(json)
+        kwargs['data'] = json_dumps(kwargs['json'])
 
         # Only set Content-Type when not explicitly provided
         if 'content_type' not in kwargs:
