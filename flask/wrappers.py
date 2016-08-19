@@ -208,10 +208,3 @@ class Response(ResponseBase, JSONMixin):
     set :attr:`~flask.Flask.response_class` to your subclass.
     """
     default_mimetype = 'text/html'
-
-    def _get_data_for_json(self, cache):
-        getter = getattr(self, 'get_data', None)
-        if getter is not None:
-            # Ignore the cache flag since response doesn't support it
-            return getter()
-        return self.data
