@@ -35,7 +35,7 @@ just below the `connect_db` function in :file:`flaskr.py`::
     def initdb_command():
         """Initializes the database."""
         init_db()
-        print 'Initialized the database.'
+        print('Initialized the database.')
 
 The ``app.cli.command()`` decorator registers a new command with the
 :command:`flask` script.  When the command executes, Flask will automatically
