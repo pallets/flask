@@ -22,7 +22,7 @@ from flask import Flask, current_app
 
 from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
-    find_default_import_path
+    find_default_import_path, get_version
 
 
 def test_cli_name(test_apps):
@@ -96,6 +96,21 @@ def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
     monkeypatch.setitem(os.environ, 'FLASK_APP', str(tmpfile))
     expect_rv = prepare_exec_for_file(str(tmpfile))
     assert find_default_import_path() == expect_rv
+
+
+def test_get_version(test_apps, capsys):
+    """Test of get_version."""
+    from flask import __version__ as flask_ver
+    from sys import version as py_ver
+    class MockCtx(object):
+        resilient_parsing = False
+        color = None
+        def exit(self): return
+    ctx = MockCtx()
+    get_version(ctx, None, "test")
+    out, err = capsys.readouterr()
+    assert flask_ver in out
+    assert py_ver in out
 
 
 def test_scriptinfo(test_apps):
