@@ -19,7 +19,7 @@ from logging import StreamHandler
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
-from flask._compat import StringIO, text_type, PY2
+from flask._compat import StringIO, text_type
 
 
 def has_encoding(name):
@@ -102,19 +102,14 @@ class TestJSON(object):
 
     def test_json_dump_to_file(self):
         app = flask.Flask(__name__)
-
-        test_data = {'lol': 'wut'}
+        test_data = {'name': 'Flask'}
+        out = StringIO()
 
         with app.app_context():
-            t_fh = open('test_json_dump_file', 'w')
-            flask.json.dump(test_data, t_fh)
-            t_fh.close()
-
-            t_fh = open('test_json_dump_file', 'r')
-            rv = flask.json.load(t_fh)
+            flask.json.dump(test_data, out)
+            out.seek(0)
+            rv = flask.json.load(out)
             assert rv == test_data
-            t_fh.close()
-            os.remove('test_json_dump_file')
 
     def test_jsonify_basic_types(self):
         """Test jsonify with basic types."""
@@ -191,15 +186,20 @@ class TestJSON(object):
 
     def test_jsonify_uuid_types(self):
         """Test jsonify with uuid.UUID types"""
+
         test_uuid = uuid.UUID(bytes=b'\xDE\xAD\xBE\xEF'*4)
 
         app = flask.Flask(__name__)
-        c = app.test_client()
         url = '/uuid_test'
-        app.add_url_rule(url, 'uuid_test', lambda val=test_uuid: flask.jsonify(x=val))
+        app.add_url_rule(url, url, lambda: flask.jsonify(x=test_uuid))
+
+        c = app.test_client()
         rv = c.get(url)
-        assert rv.mimetype == 'application/json'
-        assert flask.json.loads(rv.data)['x'] == str(test_uuid)
+
+        rv_x = flask.json.loads(rv.data)['x']
+        assert rv_x == str(test_uuid)
+        rv_uuid = uuid.UUID(rv_x)
+        assert rv_uuid == test_uuid
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
