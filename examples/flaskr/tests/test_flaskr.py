@@ -9,11 +9,11 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
 import os
 import tempfile
+import pytest
+from flaskr import flaskr
 
-from context import flaskr
 
 @pytest.fixture
 def client(request):
