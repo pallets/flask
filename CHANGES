@@ -11,6 +11,7 @@ Version 0.12
   See pull request ``#1849``.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
+- Disable logger propagation by default for the app logger.
 
 Version 0.11.2
 --------------
