@@ -437,7 +437,14 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     to ``True`` to directly emit an ``X-Sendfile`` header.  This however
     requires support of the underlying webserver for ``X-Sendfile``.
 
-    You must explicitly provide the mimetype for the filename or file object.
+    By default it will try to guess the mimetype for you, but you can
+    also explicitly provide one.  For extra security you probably want
+    to send certain files as attachment (HTML for instance).  The mimetype
+    guessing requires a `filename` or an `attachment_filename` to be
+    provided.
+
+    ETags will also be attached automatically if a `filename` is provided. You
+    can turn this off by setting `add_etags=False`.
 
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
@@ -458,9 +465,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
        cache_timeout pulls its default from application config, when None.
 
     .. versionchanged:: 0.12
-       mimetype guessing and etag support removed for file objects.
-       If no mimetype or attachment_filename is provided, application/octet-stream
-       will be used.
+       The filename is no longer automatically inferred from file objects. If
+       you want to use automatic mimetype and etag support, pass a filepath via
+       `filename_or_fp` or `attachment_filename`.
+
+    .. versionchanged:: 0.12
+       The `attachment_filename` is preferred over `filename` for MIME-type
+       detection.
 
     :param filename_or_fp: the filename of the file to send in `latin-1`.
                            This is relative to the :attr:`~Flask.root_path`
@@ -470,8 +481,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            back to the traditional method.  Make sure that the
                            file pointer is positioned at the start of data to
                            send before calling :func:`send_file`.
-    :param mimetype: the mimetype of the file if provided, otherwise
-                     auto detection happens.
+    :param mimetype: the mimetype of the file if provided. If a file path is
+                     given, auto detection happens as fallback, otherwise an
+                     error will be raised.
     :param as_attachment: set to ``True`` if you want to send this file with
                           a ``Content-Disposition: attachment`` header.
     :param attachment_filename: the filename for the attachment if it
@@ -490,26 +502,36 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     mtime = None
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
-        file = None
-    else:
-        file = filename_or_fp
-        filename = getattr(file, 'name', None)
-
-    if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
-    if mimetype is None and (filename or attachment_filename):
-        mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+        file = None
+        if attachment_filename is None:
+            attachment_filename = os.path.basename(filename)
+    else:
+        file = filename_or_fp
+        filename = None
+
     if mimetype is None:
-        mimetype = 'application/octet-stream'
+        if attachment_filename is not None:
+            mimetype = mimetypes.guess_type(attachment_filename)[0]
+
+        if mimetype is None:
+            if attachment_filename is not None:
+                raise ValueError(
+                    'Unable to infer MIME-type from filename {!r}, please '
+                    'pass one explicitly.'.format(mimetype_filename)
+                )
+            raise ValueError(
+                'Unable to infer MIME-type because no filename is available. '
+                'Please set either `attachment_filename`, pass a filepath to '
+                '`filename_or_fp` or set your own MIME-type via `mimetype`.'
+            )
 
     headers = Headers()
     if as_attachment:
         if attachment_filename is None:
-            if filename is None:
-                raise TypeError('filename unavailable, required for '
-                                'sending as attachment')
-            attachment_filename = os.path.basename(filename)
+            raise TypeError('filename unavailable, required for '
+                            'sending as attachment')
         headers.add('Content-Disposition', 'attachment',
                     filename=attachment_filename)
 
