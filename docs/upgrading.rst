@@ -53,6 +53,10 @@ The reason for this is that some file-like objects have a invalid or even
 misleading ``name`` attribute. Silently swallowing errors in such cases was not
 a satisfying solution.
 
+Additionally the default of falling back to ``application/octet-stream`` has
+been removed. If Flask can't guess one or the user didn't provide one, the
+function fails.
+
 .. _upgrading-to-011:
 
 Version 0.11
