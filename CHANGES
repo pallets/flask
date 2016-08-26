@@ -7,8 +7,10 @@ Version 0.12
 ------------
 
 - the cli command now responds to `--version`.
-- Mimetype guessing for ``send_file`` has been removed, as per issue ``#104``.
-  See pull request ``#1849``.
+- Mimetype guessing and ETag generation for file-like objects in ``send_file``
+  has been removed, as per issue ``#104``.  See pull request ``#1849``.
+- Mimetype guessing in ``send_file`` now fails loudly and doesn't fall back to
+  ``application/octet-stream``. See pull request ``#1988``.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
 
