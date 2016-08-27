@@ -430,7 +430,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
     run_simple(host, port, app, use_reloader=reload,
                use_debugger=debugger, threaded=with_threads,
-               passthrough_errors=True)
+               passthrough_errors=app.config['PROPAGATE_EXCEPTIONS'])
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
