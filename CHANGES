@@ -327,7 +327,7 @@ Released on September 29th 2011, codename Rakija
 - Applications now not only have a root path where the resources and modules
   are located but also an instance path which is the designated place to
   drop files that are modified at runtime (uploads etc.).  Also this is
-  conceptionally only instance depending and outside version control so it's
+  conceptually only instance depending and outside version control so it's
   the perfect place to put configuration files etc.  For more information
   see :ref:`instance-folders`.
 - Added the ``APPLICATION_ROOT`` configuration variable.

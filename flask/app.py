@@ -844,7 +844,7 @@ class Flask(_PackageBoundObject):
             run_simple(host, port, self, **options)
         finally:
             # reset the first request information if the development server
-            # resetted normally.  This makes it possible to restart the server
+            # reset normally.  This makes it possible to restart the server
             # without reloader and that stuff from an interactive shell.
             self._got_first_request = False
 
