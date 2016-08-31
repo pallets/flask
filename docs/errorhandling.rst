@@ -51,7 +51,7 @@ And then add this to your Flask app::
     from raven.contrib.flask import Sentry
     sentry = Sentry(app, dsn='YOUR_DSN_HERE')
 
-Of if you are using factories you can also init it later::
+Or if you are using factories you can also init it later::
 
     from raven.contrib.flask import Sentry
     sentry = Sentry(dsn='YOUR_DSN_HERE')
