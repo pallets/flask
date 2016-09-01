@@ -9,19 +9,23 @@ tutorial you will see exactly how to extend the ``flask`` command line
 interface (CLI).
 
 A useful pattern to manage a Flask application is to install your app
-using `setuptools`_.  This involves creating a :file:`setup.py`
-in the projects root directory.  You also need to add an empty
-:file:`__init__.py` file to make the :file:`flaskr/flaskr` directory
-a package.  The code structure at this point should be::
+using `setuptools`_.  This involves creating two new files; 
+:file:`setup.py` and :file:`MANIFEST.in` in the projects root directory.  
+You also need to add an :file:`__init__.py` file to make the 
+:file:`flaskr/flaskr` directory a package.  After these changes, your 
+code structure should be::
 
     /flaskr
         /flaskr
             __init__.py
             /static
             /templates
+            flaskr.py
+            schema.sql
         setup.py
+        MANIFEST.in
 
-The content of the ``setup.py`` file for ``flaskr`` is:
+The content of the ``setup.py`` file for ``flaskr`` will be:
 
 .. sourcecode:: python
 
@@ -46,6 +50,16 @@ following lines::
     graft flaskr/static
     include flaskr/schema.sql
 
+In order to properly install the application it is necessary to add the 
+following import statement into this file, :file:`flaskr/__init__.py`:
+
+.. sourcecode:: python
+
+    from flaskr import app
+
+.. note:: This import statement brings the application instance into the 
+    top-level of the application package.
+
 At this point you should be able to install the application.  As usual, it
 is recommended to install your Flask application within a `virtualenv`_.
 With that said, go ahead and install the application with::
@@ -55,13 +69,14 @@ With that said, go ahead and install the application with::
 .. note:: The above installation command assumes that it is run within the
     projects root directory, `flaskr/`.  Also, the `editable` flag allows
     editing source code without having to reinstall the Flask app each time
-    you make changes.
+    you make changes.  The flaskr app is now installed in your virtualenv 
+    (see output of ``pip freeze``).
 
 With that out of the way, you should be able to start up the application.
 Do this with the following commands::
 
-    export FLASK_APP=flaskr.flaskr
-    export FLASK_DEBUG=1
+    export FLASK_APP=flaskr
+    export FLASK_DEBUG=true
     flask run
 
 (In case you are on Windows you need to use `set` instead of `export`).

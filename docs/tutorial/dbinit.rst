@@ -44,6 +44,9 @@ Within the function, you can then access :attr:`flask.g` and other things as
 you might expect.  When the script ends, the application context tears down
 and the database connection is released.
 
+.. note:: In order to use the newly created ``flask initdb`` command, the 
+    application must be re-installed using ``pip install -e .``
+
 You will want to keep an actual function around that initializes the database,
 though, so that we can easily create databases in unit tests later on.  (For
 more information see :ref:`testing`.)
