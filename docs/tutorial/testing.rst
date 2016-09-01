@@ -10,7 +10,7 @@ example of how to perform unit testing in the :ref:`testing` section of the
 documentation.  Go there to see how easy it is to test Flask applications.
 
 Adding tests to flaskr
-======================
+----------------------
 
 Assuming you have seen the :ref:`testing` section and have either written
 your own tests for ``flaskr`` or have followed along with the examples
@@ -32,7 +32,7 @@ For now go ahead a create the :file:`tests/` directory as well as the
 :file:`test_flaskr.py` file.
 
 Running the tests
-=================
+-----------------
 
 At this point you can run the tests. Here ``pytest`` will be used. 
 
@@ -49,7 +49,7 @@ directory as::
     py.test
 
 Testing + setuptools
-====================
+--------------------
 
 One way to handle testing is to integrate it with ``setuptools``. Here
 that requires adding a couple of lines to the :file:`setup.py` file and
