@@ -518,8 +518,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if mimetype is None:
             if attachment_filename is not None:
                 raise ValueError(
-                    'Unable to infer MIME-type from filename {!r}, please '
-                    'pass one explicitly.'.format(mimetype_filename)
+                    'Unable to infer MIME-type from filename {0!r}, please '
+                    'pass one explicitly.'.format(attachment_filename)
                 )
             raise ValueError(
                 'Unable to infer MIME-type because no filename is available. '

@@ -398,9 +398,13 @@ class TestSendfile(object):
         with app.test_request_context():
             with pytest.raises(ValueError) as excinfo:
                 flask.send_file(StringIO("LOL"))
-
             assert 'Unable to infer MIME-type' in str(excinfo)
             assert 'no filename is available' in str(excinfo)
+
+        with app.test_request_context():
+            with pytest.raises(ValueError) as excinfo:
+                flask.send_file(StringIO("LOL"), attachment_filename='filename')
+            assert "Unable to infer MIME-type from filename 'filename'" in str(excinfo)
 
     def test_send_file_object(self):
         app = flask.Flask(__name__)
