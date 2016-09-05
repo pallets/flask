@@ -878,9 +878,9 @@ class Flask(_PackageBoundObject):
             from flask.testing import FlaskClient
 
             class CustomClient(FlaskClient):
-                def __init__(self, authentication=None, *args, **kwargs):
-                    FlaskClient.__init__(*args, **kwargs)
-                    self._authentication = authentication
+                def __init__(self, *args, **kwargs):
+                    self._authentication = kwargs.pop("authentication")
+                    super(CustomClient,self).__init__( *args, **kwargs)
 
             app.test_client_class = CustomClient
             client = app.test_client(authentication='Basic ....')
