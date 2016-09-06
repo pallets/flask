@@ -29,7 +29,7 @@ Incoming Request Data
 ---------------------
 
 .. autoclass:: Request
-   :members:
+   :members: is_json, get_json
 
    .. attribute:: form
 
@@ -141,7 +141,7 @@ Response Objects
 ----------------
 
 .. autoclass:: flask.Response
-   :members: set_cookie, data, mimetype
+   :members: set_cookie, data, mimetype, is_json, get_json
 
    .. attribute:: headers
 

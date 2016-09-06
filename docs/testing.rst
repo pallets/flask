@@ -353,3 +353,35 @@ independently of the session backend used::
 Note that in this case you have to use the ``sess`` object instead of the
 :data:`flask.session` proxy.  The object however itself will provide the
 same interface.
+
+
+Testing JSON APIs
+-----------------
+
+.. versionadded:: 1.0
+
+Flask has great support for JSON, and is a popular choice for building REST
+APIs. Testing both JSON requests and responses using the test client is very
+convenient::
+
+    from flask import jsonify
+
+    @app.route('/api/auth')
+    def auth():
+        json_data = request.get_json()
+        email = json_data['email']
+        password = json_data['password']
+
+        return jsonify(token=generate_token(email, password))
+
+    with app.test_client() as c:
+        email = 'john@example.com'
+        password = 'secret'
+        resp = c.post('/api/auth', json={'login': email, 'password': password})
+
+        json_data = resp.get_json()
+        assert verify_token(email, json_data['token'])
+
+Note that if the ``json`` argument is provided then the test client will put
+JSON-serialized data in the request body, and also set the
+``Content-Type: application/json`` HTTP header.

@@ -13,6 +13,11 @@ Version 0.12
   ``application/octet-stream``. See pull request ``#1988``.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
+- Added `json` keyword argument to :meth:`flask.testing.FlaskClient.open`
+  (and related ``get``, ``post``, etc.), which makes it more convenient to
+  send JSON requests from the test client.
+- Added ``is_json`` and ``get_json`` to :class:``flask.wrappers.Response``
+  in order to make it easier to build assertions when testing JSON responses.
 
 Version 0.11.2
 --------------
