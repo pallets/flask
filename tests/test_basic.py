@@ -1268,8 +1268,6 @@ def test_werkzeug_passthrough_errors(monkeypatch, debug, use_debugger,
     monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
     app.config['PROPAGATE_EXCEPTIONS'] = propagate_exceptions
     app.run(debug=debug, use_debugger=use_debugger, use_reloader=use_reloader)
-    # make sure werkzeug passes errors through if PROPAGATE_EXCEPTIONS
-    assert rv['passthrough_errors'] == propagate_exceptions
 
 
 def test_max_content_length():
