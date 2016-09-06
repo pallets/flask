@@ -1,7 +1,7 @@
-.. _tutorial-setuptools:
+.. _tutorial-packaging:
 
-Step 3: Installing flaskr with setuptools
-=========================================
+Step 3: Installing flaskr as a Package
+======================================
 
 Flask is now shipped with built-in support for `Click`_.  Click provides
 Flask with enhanced and extensible command line utilities.  Later in this
@@ -9,11 +9,11 @@ tutorial you will see exactly how to extend the ``flask`` command line
 interface (CLI).
 
 A useful pattern to manage a Flask application is to install your app
-using `setuptools`_.  This involves creating two new files; 
-:file:`setup.py` and :file:`MANIFEST.in` in the projects root directory.  
-You also need to add an :file:`__init__.py` file to make the 
-:file:`flaskr/flaskr` directory a package.  After these changes, your 
-code structure should be::
+following the `Python Packaging Guide`_.  Presently this involves 
+creating two new files; :file:`setup.py` and :file:`MANIFEST.in` in the 
+projects root directory.  You also need to add an :file:`__init__.py` 
+file to make the :file:`flaskr/flaskr` directory a package.  After these 
+changes, your code structure should be::
 
     /flaskr
         /flaskr
@@ -100,5 +100,5 @@ but first, you should get the database working.
 Continue with :ref:`tutorial-dbcon`.
 
 .. _Click: http://click.pocoo.org
-.. _setuptools: https://setuptools.readthedocs.io
+.. _Python Packaging Guide: https://packaging.python.org
 .. _virtualenv: https://virtualenv.pypa.io
