@@ -16,7 +16,7 @@ Assuming you have seen the :ref:`testing` section and have either written
 your own tests for ``flaskr`` or have followed along with the examples
 provided, you might be wondering about ways to organize the project.
 
-One possible project structure is::
+One possible and recommended project structure is::
 
     flaskr/
         flaskr/

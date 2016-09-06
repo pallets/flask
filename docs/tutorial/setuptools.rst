@@ -25,7 +25,7 @@ code structure should be::
         setup.py
         MANIFEST.in
 
-The content of the ``setup.py`` file for ``flaskr`` will be:
+The content of the ``setup.py`` file for ``flaskr`` is:
 
 .. sourcecode:: python
 
