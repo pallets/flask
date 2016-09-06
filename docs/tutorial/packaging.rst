@@ -50,15 +50,19 @@ following lines::
     graft flaskr/static
     include flaskr/schema.sql
 
-In order to properly install the application it is necessary to add the 
-following import statement into this file, :file:`flaskr/__init__.py`:
+To simplify locating the application, add the following import statement 
+into this file, :file:`flaskr/__init__.py`:
 
 .. sourcecode:: python
 
     from flaskr import app
 
-.. note:: This import statement brings the application instance into the 
-    top-level of the application package.
+This import statement brings the application instance into the top-level 
+of the application package.  When it is time to run the application, the 
+Flask development server needs the location of the app instance.  This 
+import statement simplifies the location process.  Without it the export 
+statement a few steps below would need to be 
+``export FLASK_APP=flaskr.flaskr``.
 
 At this point you should be able to install the application.  As usual, it
 is recommended to install your Flask application within a `virtualenv`_.
@@ -66,11 +70,11 @@ With that said, go ahead and install the application with::
 
     pip install --editable .
 
-.. note:: The above installation command assumes that it is run within the
-    projects root directory, `flaskr/`.  Also, the `editable` flag allows
-    editing source code without having to reinstall the Flask app each time
-    you make changes.  The flaskr app is now installed in your virtualenv 
-    (see output of ``pip freeze``).
+The above installation command assumes that it is run within the projects 
+root directory, `flaskr/`.  The `editable` flag allows editing 
+source code without having to reinstall the Flask app each time you make 
+changes.  The flaskr app is now installed in your virtualenv (see output 
+of ``pip freeze``).
 
 With that out of the way, you should be able to start up the application.
 Do this with the following commands::
