@@ -13,6 +13,8 @@ Version 0.12
   ``application/octet-stream``. See pull request ``#1988``.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
+- Revert a behavior change that made the dev server crash instead of returning
+  a Internal Server Error (pull request ``#2006``).
 
 Version 0.11.2
 --------------
