@@ -75,7 +75,8 @@ class Flask(_PackageBoundObject):
     The name of the package is used to resolve resources from inside the
     package or the folder the module is contained in depending on if the
     package parameter resolves to an actual python package (a folder with
-    an :file:`__init__.py` file inside) or a standard module (just a ``.py`` file).
+    an :file:`__init__.py` file inside) or a standard module
+    (just a ``.py`` file).
 
     For more information about resource loading, see :func:`open_resource`.
 
@@ -97,7 +98,7 @@ class Flask(_PackageBoundObject):
         using a package, it's usually recommended to hardcode the name of
         your package there.
 
-        For example if your application is defined in :file:`yourapplication/app.py`
+        e.g. if your application is defined in :file:`yourapplication/app.py`
         you should create it with one of the two versions below::
 
             app = Flask('yourapplication')
@@ -182,6 +183,7 @@ class Flask(_PackageBoundObject):
     # Backwards compatibility support
     def _get_request_globals_class(self):
         return self.app_ctx_globals_class
+
     def _set_request_globals_class(self, value):
         from warnings import warn
         warn(DeprecationWarning('request_globals_class attribute is now '
@@ -273,7 +275,7 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.4
     logger_name = ConfigAttribute('LOGGER_NAME')
 
-    #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
+    #: The JSON encoder class to use. Defaults to :class:`~flask.json.JSONEncoder`.
     #:
     #: .. versionadded:: 0.10
     json_encoder = json.JSONEncoder
@@ -827,7 +829,7 @@ class Flask(_PackageBoundObject):
         """
         from werkzeug.serving import run_simple
         if host is None:
-            host = '127.0.0.1'
+            host = 'localhost'
         if port is None:
             server_name = self.config['SERVER_NAME']
             if server_name and ':' in server_name:
