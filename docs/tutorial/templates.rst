@@ -1,6 +1,6 @@
 .. _tutorial-templates:
 
-Step 8: The Templates
+Step 7: The Templates
 =====================
 
 Now it is time to start working on the templates.  As you may have
