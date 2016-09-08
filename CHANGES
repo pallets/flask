@@ -15,6 +15,8 @@ Version 0.12
   (pull request ``#1730``).
 - Revert a behavior change that made the dev server crash instead of returning
   a Internal Server Error (pull request ``#2006``).
+- Correctly invoke response handlers for both regular request dispatching as
+  well as error handlers.
 
 Version 0.11.2
 --------------
