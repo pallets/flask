@@ -24,7 +24,7 @@ the `example source`_.
    folders
    schema
    setup
-   setuptools
+   packaging
    dbcon
    dbinit
    views

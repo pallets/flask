@@ -9,10 +9,10 @@ modifications in the future.  The application above is used as a basic
 example of how to perform unit testing in the :ref:`testing` section of the
 documentation.  Go there to see how easy it is to test Flask applications.
 
-Adding Tests to flaskr
-======================
+Adding tests to flaskr
+----------------------
 
-Assuming you have seen the testing section above and have either written
+Assuming you have seen the :ref:`testing` section and have either written
 your own tests for ``flaskr`` or have followed along with the examples
 provided, you might be wondering about ways to organize the project.
 
@@ -24,30 +24,38 @@ One possible and recommended project structure is::
             static/
             templates/
         tests/
-            context.py
             test_flaskr.py
         setup.py
         MANIFEST.in
 
-For now go ahead a create the :file:`tests/` directory as well as the
-:file:`context.py` and :file:`test_flaskr.py` files, if you haven't
-already. The context file is used as an import helper. The contents
-of that file are::
+For now go ahead a create the :file:`tests/` directory as well as the 
+:file:`test_flaskr.py` file.
 
-    import sys, os
+Running the tests
+-----------------
 
-    basedir = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, basedir + '/../')
+At this point you can run the tests. Here ``pytest`` will be used. 
 
-    from flaskr import flaskr
+.. note:: Make sure that ``pytest`` is installed in the same virtualenv 
+    as flaskr. Otherwise ``pytest`` test will not be able to import the 
+    required components to test the application::
 
-Testing + Setuptools
-====================
+        pip install -e .
+        pip install pytest 
 
-One way to handle testing is to integrate it with ``setuptools``. All it
-requires is adding a couple of lines to the :file:`setup.py` file and
-creating a new file :file:`setup.cfg`. Go ahead and update the
-:file:`setup.py` to contain::
+Run and watch the tests pass, within the top-level :file:`flaskr/` 
+directory as::
+
+    py.test
+
+Testing + setuptools
+--------------------
+
+One way to handle testing is to integrate it with ``setuptools``. Here
+that requires adding a couple of lines to the :file:`setup.py` file and
+creating a new file :file:`setup.cfg`. One benefit of running the tests 
+this way is that you do not have to install ``pytest``. Go ahead and 
+update the :file:`setup.py` file to contain::
 
     from setuptools import setup
 
@@ -58,7 +66,6 @@ creating a new file :file:`setup.cfg`. Go ahead and update the
         install_requires=[
             'flask',
         ],
-    )
         setup_requires=[
             'pytest-runner',
         ],
@@ -66,6 +73,7 @@ creating a new file :file:`setup.cfg`. Go ahead and update the
             'pytest',
         ],
     )
+
 Now create :file:`setup.cfg` in the project root (alongside
 :file:`setup.py`)::
 

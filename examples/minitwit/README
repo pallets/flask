@@ -31,5 +31,5 @@
 
     ~ Is it tested?
 
-      You betcha.  Run the `test_minitwit.py` file to
+      You betcha.  Run the `python setup.py test` file to
       see the tests pass.

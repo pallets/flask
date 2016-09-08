@@ -1,6 +1,6 @@
 .. _tutorial-views:
 
-Step 7: The View Functions
+Step 6: The View Functions
 ==========================
 
 Now that the database connections are working, you can start writing the
