@@ -94,4 +94,4 @@ tuples.
 
 In the next section you will see how to run the application.
 
-Continue with :ref:`tutorial-setuptools`.
+Continue with :ref:`tutorial-packaging`.
