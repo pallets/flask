@@ -19,7 +19,7 @@
 
       3. Instruct flask to use the right application
 
-         export FLASK_APP=flaskr.flaskr
+         export FLASK_APP=flaskr
 
       4. initialize the database with this command:
 

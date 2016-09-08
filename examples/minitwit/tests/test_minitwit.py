@@ -9,9 +9,9 @@
     :license: BSD, see LICENSE for more details.
 """
 import os
-import minitwit
 import tempfile
 import pytest
+from minitwit import minitwit
 
 
 @pytest.fixture
