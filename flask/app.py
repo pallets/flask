@@ -1115,7 +1115,7 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def errorhandler(self, code_or_exception):
-        """A decorator that is used to register a function give a given
+        """A decorator that is used to register a function given an
         error code.  Example::
 
             @app.errorhandler(404)
