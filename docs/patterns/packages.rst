@@ -8,9 +8,9 @@ module.  That is quite simple.  Imagine a small application looks like
 this::
 
     /yourapplication
-        /yourapplication.py
+        yourapplication.py
         /static
-            /style.css
+            style.css
         /templates
             layout.html
             index.html
@@ -29,9 +29,9 @@ You should then end up with something like that::
 
     /yourapplication
         /yourapplication
-            /__init__.py
+            __init__.py
             /static
-                /style.css
+                style.css
             /templates
                 layout.html
                 index.html
@@ -77,12 +77,12 @@ And this is what :file:`views.py` would look like::
 You should then end up with something like that::
 
     /yourapplication
-        /runserver.py
+        runserver.py
         /yourapplication
-            /__init__.py
-            /views.py
+            __init__.py
+            views.py
             /static
-                /style.css
+                style.css
             /templates
                 layout.html
                 index.html
