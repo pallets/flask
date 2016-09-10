@@ -513,7 +513,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     if mimetype is None:
         if attachment_filename is not None:
-            mimetype = mimetypes.guess_type(attachment_filename)[0]
+            mimetype = mimetypes.guess_type(attachment_filename)[0] \
+                or 'application/octet-stream'
 
         if mimetype is None:
             if attachment_filename is not None:
