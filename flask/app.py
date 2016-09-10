@@ -1555,7 +1555,7 @@ class Flask(_PackageBoundObject):
         self.log_exception((exc_type, exc_value, tb))
         if handler is None:
             return InternalServerError()
-        return handler(e)
+        return self.finalize_request(handler(e), from_error_handler=True)
 
     def log_exception(self, exc_info):
         """Logs an exception.  This is called by :meth:`handle_exception`
@@ -1623,9 +1623,30 @@ class Flask(_PackageBoundObject):
                 rv = self.dispatch_request()
         except Exception as e:
             rv = self.handle_user_exception(e)
+        return self.finalize_request(rv)
+
+    def finalize_request(self, rv, from_error_handler=False):
+        """Given the return value from a view function this finalizes
+        the request by converting it into a repsonse and invoking the
+        postprocessing functions.  This is invoked for both normal
+        request dispatching as well as error handlers.
+
+        Because this means that it might be called as a result of a
+        failure a special safe mode is available which can be enabled
+        with the `from_error_handler` flag.  If enabled failures in
+        response processing will be logged and otherwise ignored.
+
+        :internal:
+        """
         response = self.make_response(rv)
-        response = self.process_response(response)
-        request_finished.send(self, response=response)
+        try:
+            response = self.process_response(response)
+            request_finished.send(self, response=response)
+        except Exception:
+            if not from_error_handler:
+                raise
+            self.logger.exception('Request finalizing failed with an '
+                                  'error while handling an error')
         return response
 
     def try_trigger_before_first_request_functions(self):
@@ -1972,7 +1993,7 @@ class Flask(_PackageBoundObject):
                 response = self.full_dispatch_request()
             except Exception as e:
                 error = e
-                response = self.make_response(self.handle_exception(e))
+                response = self.handle_exception(e)
             return response(environ, start_response)
         finally:
             if self.should_ignore_error(error):
