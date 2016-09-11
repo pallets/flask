@@ -517,11 +517,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                 or 'application/octet-stream'
 
         if mimetype is None:
-            if attachment_filename is not None:
-                raise ValueError(
-                    'Unable to infer MIME-type from filename {0!r}, please '
-                    'pass one explicitly.'.format(attachment_filename)
-                )
             raise ValueError(
                 'Unable to infer MIME-type because no filename is available. '
                 'Please set either `attachment_filename`, pass a filepath to '
