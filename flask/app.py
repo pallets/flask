@@ -1627,13 +1627,13 @@ class Flask(_PackageBoundObject):
 
     def finalize_request(self, rv, from_error_handler=False):
         """Given the return value from a view function this finalizes
-        the request by converting it into a repsonse and invoking the
+        the request by converting it into a response and invoking the
         postprocessing functions.  This is invoked for both normal
         request dispatching as well as error handlers.
 
         Because this means that it might be called as a result of a
         failure a special safe mode is available which can be enabled
-        with the `from_error_handler` flag.  If enabled failures in
+        with the `from_error_handler` flag.  If enabled, failures in
         response processing will be logged and otherwise ignored.
 
         :internal:
