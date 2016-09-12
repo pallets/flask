@@ -54,8 +54,8 @@ misleading ``name`` attribute. Silently swallowing errors in such cases was not
 a satisfying solution.
 
 Additionally the default of falling back to ``application/octet-stream`` has
-been removed. If Flask can't guess one or the user didn't provide one, the
-function fails.
+been restricted. If Flask can't guess one or the user didn't provide one, the
+function fails if no filename information was provided.
 
 .. _upgrading-to-011:
 
