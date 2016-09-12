@@ -17,6 +17,7 @@ Version 0.12
   a Internal Server Error (pull request ``#2006``).
 - Correctly invoke response handlers for both regular request dispatching as
   well as error handlers.
+- Disable logger propagation by default for the app logger.
 
 Version 0.11.2
 --------------
