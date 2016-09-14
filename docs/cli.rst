@@ -61,9 +61,7 @@ Debug Flag
 
 The :command:`flask` script can also be instructed to enable the debug
 mode of the application automatically by exporting ``FLASK_DEBUG``.  If
-set to ``1`` debug is enabled or ``0`` disables it.
-
-Or with a filename::
+set to ``1`` debug is enabled or ``0`` disables it::
 
     export FLASK_DEBUG=1
 
