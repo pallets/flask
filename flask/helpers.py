@@ -39,7 +39,7 @@ from jinja2 import FileSystemLoader
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type, PY2
+from ._compat import string_types, text_type
 
 
 # sentinel
