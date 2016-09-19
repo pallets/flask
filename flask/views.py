@@ -123,7 +123,7 @@ class MethodViewType(type):
 class MethodView(with_metaclass(MethodViewType, View)):
     """Like a regular class-based view but that dispatches requests to
     particular methods.  For instance if you implement a method called
-    :meth:`get` it means you will response to ``'GET'`` requests and
+    :meth:`get` it means it will respond to ``'GET'`` requests and
     the :meth:`dispatch_request` implementation will automatically
     forward your request to that.  Also :attr:`options` is set for you
     automatically::
