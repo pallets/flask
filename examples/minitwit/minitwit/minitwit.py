@@ -17,7 +17,7 @@ from flask import Flask, request, session, url_for, redirect, \
      render_template, abort, g, flash, _app_ctx_stack
 from werkzeug import check_password_hash, generate_password_hash
 
-
+this is the version edited by mayank gupta
 # configuration
 DATABASE = '/tmp/minitwit.db'
 PER_PAGE = 30
