@@ -22,22 +22,30 @@ def test_explicit_instance_paths(modules_tmpdir):
     app = flask.Flask(__name__, instance_path=str(modules_tmpdir))
     assert app.instance_path == str(modules_tmpdir)
 
-
 def test_main_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join('main_app.py')
-    app.write('import flask\n\napp = flask.Flask("__main__")')
+    app.write(
+        'import os\n'
+        'import flask\n'
+        'app = flask.Flask("__main__")\n'
+    )
+
     purge_module('main_app')
 
     from main_app import app
-    here = os.path.abspath(os.getcwd())
-    assert app.instance_path == os.path.join(here, 'instance')
-
+    here = os.getcwd()
+    sys_prefix = os.path.abspath(sys.prefix)
+    
+    if here.startswith(sys_prefix):
+        suffix = 'var/' + app.name + '-instance'
+        assert app.instance_path == os.path.join(sys_prefix, suffix)
+    else:
+        assert app.instance_path == os.path.join(here, 'instance')
 
 def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join('config_module_app.py').write(
         'import os\n'
         'import flask\n'
-        'here = os.path.abspath(os.path.dirname(__file__))\n'
         'app = flask.Flask(__name__)\n'
     )
     purge_module('config_module_app')
@@ -52,7 +60,6 @@ def test_uninstalled_package_paths(modules_tmpdir, purge_module):
     init.write(
         'import os\n'
         'import flask\n'
-        'here = os.path.abspath(os.path.dirname(__file__))\n'
         'app = flask.Flask(__name__)\n'
     )
     purge_module('config_package_app')
