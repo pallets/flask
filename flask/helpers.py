@@ -25,7 +25,7 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
-from werkzeug.datastructures import Headers
+from werkzeug.datastructures import Headers, Range
 from werkzeug.exceptions import BadRequest, NotFound, \
     RequestedRangeNotSatisfiable
 
@@ -506,7 +506,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     """
     mtime = None
     fsize = None
-    close_on_416 = False
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
         if not os.path.isabs(filename):
@@ -551,7 +550,6 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
             headers['Content-Length'] = fsize
-            close_on_416 = True
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
@@ -586,16 +584,17 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                  'headers' % filename, stacklevel=2)
 
     if conditional:
-        try:
-            # Added in werkzeug 0.12
-            rv = rv.make_conditional(request, accept_ranges=True,
-                                     complete_length=fsize)
-        except TypeError:
-            rv = rv.make_conditional(request)
-        except RequestedRangeNotSatisfiable:
-            if close_on_416:
+        if callable(getattr(Range, 'to_content_range_header', None)):
+            # Werkzeug supports Range Requests
+            # Remove this test when support for Werkzeug <0.12 is dropped
+            try:
+                rv = rv.make_conditional(request, accept_ranges=True,
+                                         complete_length=fsize)
+            except RequestedRangeNotSatisfiable:
                 file.close()
-            raise
+                raise
+        else:
+            rv = rv.make_conditional(request)
         # make sure we don't send x-sendfile for servers that
         # ignore the 304 status code for x-sendfile.
         if rv.status_code == 304:
