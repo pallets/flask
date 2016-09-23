@@ -130,12 +130,12 @@ to httpd 2.4 syntax
     Require all granted
 
 
-For more information consult the `mod_wsgi wiki`_.
+For more information consult the `mod_wsgi documentation`_.
 
-.. _mod_wsgi: http://code.google.com/p/modwsgi/
-.. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
+.. _mod_wsgi: https://github.com/GrahamDumpleton/mod_wsgi
+.. _installation instructions: http://modwsgi.readthedocs.io/en/develop/installation.html
 .. _virtual python: https://pypi.python.org/pypi/virtualenv
-.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/w/list
+.. _mod_wsgi documentation: http://modwsgi.readthedocs.io/en/develop/index.html
 
 Troubleshooting
 ---------------
