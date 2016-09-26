@@ -25,8 +25,9 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
-from werkzeug.datastructures import Headers
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.datastructures import Headers, Range
+from werkzeug.exceptions import BadRequest, NotFound, \
+    RequestedRangeNotSatisfiable
 
 # this was moved in 0.7
 try:
@@ -446,6 +447,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     ETags will also be attached automatically if a `filename` is provided. You
     can turn this off by setting `add_etags=False`.
 
+    If `conditional=True` and `filename` is provided, this method will try to
+    upgrade the response stream to support range requests.  This will allow
+    the request to be answered with partial content response.
+
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
 
@@ -500,6 +505,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         If a file was passed, this overrides its mtime.
     """
     mtime = None
+    fsize = None
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
         if not os.path.isabs(filename):
@@ -535,13 +541,15 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if file is not None:
             file.close()
         headers['X-Sendfile'] = filename
-        headers['Content-Length'] = os.path.getsize(filename)
+        fsize = os.path.getsize(filename)
+        headers['Content-Length'] = fsize
         data = None
     else:
         if file is None:
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
-            headers['Content-Length'] = os.path.getsize(filename)
+            fsize = os.path.getsize(filename)
+            headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
@@ -575,12 +583,22 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             warn('Access %s failed, maybe it does not exist, so ignore etags in '
                  'headers' % filename, stacklevel=2)
 
-        if conditional:
+    if conditional:
+        if callable(getattr(Range, 'to_content_range_header', None)):
+            # Werkzeug supports Range Requests
+            # Remove this test when support for Werkzeug <0.12 is dropped
+            try:
+                rv = rv.make_conditional(request, accept_ranges=True,
+                                         complete_length=fsize)
+            except RequestedRangeNotSatisfiable:
+                file.close()
+                raise
+        else:
             rv = rv.make_conditional(request)
-            # make sure we don't send x-sendfile for servers that
-            # ignore the 304 status code for x-sendfile.
-            if rv.status_code == 304:
-                rv.headers.pop('x-sendfile', None)
+        # make sure we don't send x-sendfile for servers that
+        # ignore the 304 status code for x-sendfile.
+        if rv.status_code == 304:
+            rv.headers.pop('x-sendfile', None)
     return rv
 
 
