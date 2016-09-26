@@ -14,8 +14,10 @@ import pytest
 import os
 import uuid
 import datetime
+
 import flask
 from logging import StreamHandler
+from werkzeug.datastructures import Range
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
@@ -461,6 +463,69 @@ class TestSendfile(object):
             rv = flask.send_file(f, mimetype='text/html')
             assert 'x-sendfile' not in rv.headers
             rv.close()
+
+    @pytest.mark.skipif(
+        not callable(getattr(Range, 'to_content_range_header', None)),
+        reason="not implement within werkzeug"
+    )
+    def test_send_file_range_request(self):
+        app = flask.Flask(__name__)
+
+        @app.route('/')
+        def index():
+            return flask.send_file('static/index.html', conditional=True)
+
+        c = app.test_client()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-15'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[4:16]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[4:]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-1000'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[4:]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=-10'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[-10:]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=1000-'})
+        assert rv.status_code == 416
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=-'})
+        assert rv.status_code == 416
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'somethingsomething'})
+        assert rv.status_code == 416
+        rv.close()
+
+        last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(
+            os.path.join(app.root_path, 'static/index.html'))).replace(
+            microsecond=0)
+
+        rv = c.get('/', headers={'Range': 'bytes=4-15',
+                                 'If-Range': http_date(last_modified)})
+        assert rv.status_code == 206
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-15', 'If-Range': http_date(
+            datetime.datetime(1999, 1, 1))})
+        assert rv.status_code == 200
+        rv.close()
 
     def test_attachment(self):
         app = flask.Flask(__name__)
