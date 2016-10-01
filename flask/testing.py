@@ -110,7 +110,10 @@ class FlaskClient(Client):
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)
         follow_redirects = kwargs.pop('follow_redirects', False)
-        builder = make_test_environ_builder(self.application, *args, **kwargs)
+        environ_base = kwargs.get(environ_base, None) or self.environ_base
+        builder = make_test_environ_builder(self.application,
+                                            environ_base=environ_base,
+                                            *args, **kwargs)
 
         return Client.open(self, builder,
                            as_tuple=as_tuple,
