@@ -469,7 +469,7 @@ def shell_command():
 cli = FlaskGroup(help="""\
 This shell command acts as general utility script for Flask applications.
 
-It loads the application configured (either through the FLASK_APP environment
+It loads the application configured (through the FLASK_APP environment
 variable) and then provides commands either provided by the application or
 Flask itself.
 
