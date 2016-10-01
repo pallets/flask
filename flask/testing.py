@@ -48,6 +48,11 @@ class FlaskClient(Client):
 
     preserve_context = False
 
+    def __init__(self, *args, **kwargs):
+        environ_base = kwargs.pop("environ_base", None)
+        super(FlaskClient, self).__init__(*args, **kwargs)
+        self.environ_base = environ_base
+
     @contextmanager
     def session_transaction(self, *args, **kwargs):
         """When used in combination with a ``with`` statement this opens a
