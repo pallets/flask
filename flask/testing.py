@@ -44,6 +44,22 @@ class FlaskClient(Client):
     information about how to use this class refer to
     :class:`werkzeug.test.Client`.
 
+    Uses default environment values
+
+    ::
+    
+        {
+            "REMOTE_ADDR": "127.0.0.1",
+            "HTTP_USER_AGENT": "werkzeug/" + werkzeug.__version__
+        }
+
+    that can be set after instantiation of the `FlaskClient` object
+
+    ::
+
+        client = FlaskClient()
+        client.environ_base = ...
+
     Basic usage is outlined in the :ref:`testing` chapter.
     """
 
