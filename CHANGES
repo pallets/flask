@@ -19,6 +19,8 @@ Version 0.12
   well as error handlers.
 - Disable logger propagation by default for the app logger.
 - Add support for range requests in ``send_file``.
+- Default environment can be set in ``app.test_client`` instead of per
+  ``app.test_client.get`` request
 
 Version 0.11.2
 --------------
