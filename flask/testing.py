@@ -44,8 +44,10 @@ class FlaskClient(Client):
     information about how to use this class refer to
     :class:`werkzeug.test.Client`.
 
-    Default environment values can be set after instantiation of the
-    `app.test_client()` object in `client.environ_base`.
+    .. versionchanged:: 0.12
+       `app.test_client()` includes preset default environment, which can be
+       set after instantiation of the `app.test_client()` object in
+       `client.environ_base`.
 
     Basic usage is outlined in the :ref:`testing` chapter.
     """
