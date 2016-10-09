@@ -190,3 +190,16 @@ def test_flaskgroup():
     result = runner.invoke(cli, ['test'])
     assert result.exit_code == 0
     assert result.output == 'flaskgroup\n'
+
+def test_override_builtin_cli():
+    cli = FlaskGroup(create_app=lambda info: Flask('override_builtin'))
+
+    @cli.command('run', help="foo")
+    def run():
+        click.echo(current_app.name)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['run'])
+    assert result.exit_code == 0
+    assert result.output == 'override_builtin\n'
+
