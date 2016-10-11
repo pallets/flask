@@ -44,7 +44,7 @@ This is all that is necessary to properly integrate Celery with Flask::
             abstract = True
             def __call__(self, *args, **kwargs):
                 with app.app_context():
-                    return TaskBase.__call__(self, *args, **kwargs)
+                    return self.run(*args, **kwargs)
         celery.Task = ContextTask
         return celery
 
