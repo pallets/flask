@@ -2,6 +2,8 @@
 
 ##**Integrated Masters in Informatics and Computer Engineering**
 
+![flask image](http://flask.pocoo.org/static/logo/flask.png)
+
 ###**Brief description of Flask**
 
 [*Flask*](http://flask.pocoo.org/) is a micro Python web framework created by Armin Ronacher and based on Werkzeug toolkit  and Jinja2 template engine. Launched in 2010, this framework has the flexibility of Python which enables a simple model for web development.
