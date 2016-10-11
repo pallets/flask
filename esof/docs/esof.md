@@ -48,7 +48,7 @@ Currently, Flask is considered almost complete in terms of major features. Never
 
 ####**Project Structure**
 
-Since this project is open-source and as result it is build by a big community and as so it is not easy to keep a well defined structure (related to the incremental development process). Despite this the project is well documented, what makes it easier to newcomers to integrate the project.
+Since this project is open-source,it is build by a big community and as so it is not easy to keep a well defined structure (related to the incremental development process). Despite this, the project is well documented, what makes it easier to newcomers to integrate the project.
 
 ####**Project Development**
 
