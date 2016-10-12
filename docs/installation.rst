@@ -72,7 +72,7 @@ corresponding environment.  On OS X and Linux, do the following::
 
 If you are a Windows user, the following command is for you::
 
-    $ venv\scripts\activate
+    $ venv\Scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
