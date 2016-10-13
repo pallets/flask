@@ -37,9 +37,9 @@ The repository is divided in several branches and the main categories are :
 -   feature
 -   master
 
-This organization allows:
-simultaneous working in different areas
-support to applications that uses a old version of this framework.
+This organization allows :
+-   simultaneous working in different areas
+-   support to applications that uses a old version of this framework.
 
 This structure design is been kept organised by the founder of the project.  
 
