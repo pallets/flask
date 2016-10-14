@@ -87,3 +87,28 @@ Generate a HTML report can be done using this command::
 
 Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
 
+Caution
+=======
+pushing
+-------
+This repository contains several zero-padded file modes that may cause issues when pushing this repository to git hosts other than github. Fixing this is destructive to the commit history, so we suggest ignoring these warnings. If it fails to push and you're using a self-hosted git service like Gitlab, you can turn off repository checks in the admin panel.
+
+
+cloning
+-------
+The zero-padded file modes files above can cause issues while cloning, too. If you have
+
+::
+
+    [fetch]
+    fsckobjects = true
+
+or
+
+::
+
+    [receive]
+    fsckObjects = true
+
+
+set in your git configuration file, cloning this repository will fail. The only solution is to set both of the above settings to false while cloning, and then setting them back to true after the cloning is finished.
