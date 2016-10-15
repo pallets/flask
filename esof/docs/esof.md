@@ -28,11 +28,11 @@ Recently, the design transitioned to **Incremental Development and Delivery** ai
 
 ####**Contributions**
 
-To contribute to the project is necessary to create a fork and make the changes to the code there. When the modifications are implemented make a *pull request* and the original owner of the repository will accept or not the changes.
+To contribute to the project is necessary to create a fork and make the changes to the code there. When the modifications are implemented make a *pull request* and the original owner of the repository will accept or not the changes. The project also have a [section](https://github.com/pallets/flask/issues) were you can find some known issues and feature requests, usually both of them are well described and have a specific discussion area.
 
 ####**Repository structure**
 
-The repository is divided in several branches and the main categories are :
+The repository is divided in several branches and the main categories are:
 -   maintenance
 -   feature
 -   master
