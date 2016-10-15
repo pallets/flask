@@ -21,10 +21,10 @@ Flask is a project available under [BSD license](http://flask.pocoo.org/docs/0.1
 
 ####**Software Development**
 
-In a open-source project is hard to implement a traditional software development method, because of the lack of true management in the project. Nevertheless,  it's still possible to see some traces of it.
+In an open-source project is hard to implement a traditional software development method, because of the lack of true management in the project. Nevertheless,  it's still possible to see some traces of it.
 The project in the early stages followed a **Software Prototyping** design to develop some concepts behind Flask and also to try out some design options. The developed prototype was then presented to the community as an April’s Fool joke, to evaluate the acceptance of the community. As this showed to be a great success, and with the growing community attention on Flask, more several early functional prototypes were released to get more precise requirements of the project <sup>3,4</sup>.
 
-Recently, the design transitioned to **Incremental Development and Delivery** aiming to build a final product over the early prototypes through the incremental adding of requested features and correction of bugs. This can be particularly seen by the number of functional releases of the the project since the first version <sup>4</sup>.
+Recently, the design transitioned to **Incremental Development and Delivery** aiming to build a final product over the early prototypes through the incremental adding of requested features and correction of bugs. This can be particularly seen by the number of functional releases of the project since the first version <sup>4</sup>.
 
 ####**Contributions**
 
