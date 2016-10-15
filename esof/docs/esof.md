@@ -47,11 +47,11 @@ This structure design is been kept organised by the founder of the project.
 
 ####**Project activity**
 
-Currently, Flask is considered almost complete in terms of major features. Nevertheless, the project is still full of activity with near 400 contributors and with currently around 100 open issues, with some of them tagged as beginner friendly, which encourages newest people in programming to contribute to the project.
+Currently, Flask is considered almost complete in terms of major features. Nevertheless, the project is still full of activity with near 400 contributors and with currently around 100 open issues, with some of them tagged as beginner friendly, which encourages the newest people in programming to contribute to the project.
 
 ####**Project Structure**
 
-Since this project is open-source,it is build by a big community and as so it is not easy to keep a well defined structure (related to the incremental development process). Despite this, the project is well documented, what makes it easier to newcomers to integrate the project.
+Since this project is open-source, it is build by a big community and as so it is not easy to keep a well defined structure (related to the incremental development process). Despite this, the project is well documented, what makes it easier to newcomers to integrate the project.
 
 ####**Project Development**
 
