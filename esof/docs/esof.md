@@ -55,7 +55,7 @@ Since this project is open-source, it is build by a big community and as so it i
 
 ####**Project Development**
 
-We believe that the methods **Software Prototype** and **Incremental Development** and Delivery are the ones that best fits Flask. It's very hard to keep a good structure on code when the project is open source and this processes help. Also, thse processes allow the developers to go back to a previous phase, something not possible in other processes like Waterfall don’t. Returning to a previous phase, sometimes, can occur because on the beginning of the project the requirements are rarely gathered. Instead of that, they are based on early releases (“release early, release often”) creating a tight feedback loop between developers and testers or users, contrary to a feature-based release strategy. Also, since this project is developed by several people, with minimum communication between them, it can lead to repetition of code, minimizing the code reuse and sometimes there can be repeated code <sup>4</sup>.
+We believe that the methods **Software Prototype** and **Incremental Development** and Delivery are the ones that best fits Flask. It's very hard to keep a good structure on code when the project is open source and this processes help. Also, these processes allow the developers to go back to a previous phase, something not possible in other processes like Waterfall. Returning to a previous phase, sometimes, can occur because on the beginning of the project the requirements are rarely gathered. Instead of that, they are based on early releases (“Release early. Release often. And listen to your customers” <sup>5</sup>) creating a tight feedback loop between developers and testers or users, contrary to a feature-based release strategy. Also, since this project is developed by several people, with minimum communication between them, it can lead to repetition of code, minimizing the code reuse and sometimes there can be repeated code <sup>4</sup>.
 
 ###**Group Contribution**
 
@@ -85,6 +85,8 @@ We believe that the methods **Software Prototype** and **Incremental Development
 
 <sup>4</sup>  Whiten, Jeffrey L; Lonnie D. Bentley, Selecting a Development Approach, System Analysis and Design Methods 6th Edition, 2003
 Whitten, Jeffrey L.; Lonnie D. Bentley, Kevin C. Dittman.
+
+<sup>5</sup> Raymond, Eric (1997-05-27). Release Early, Release Often. The Cathedral and the Bazaar: Musings on Linux and Open Source by an Accidental Revolutionary. 
 
 ###**External links**
 
