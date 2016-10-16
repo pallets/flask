@@ -47,15 +47,15 @@ This structure design is been kept organised by the founder of the project.
 
 ####**Project activity**
 
-Currently, Flask is considered almost complete in terms of major features. Nevertheless, the project is still full of activity with near 400 contributors and with currently around 100 open issues, with some of them tagged as beginner friendly, which encourages the newest people in programming to contribute to the project.
+Currently, Flask is considered almost complete in terms of major features. Nevertheless, the project is still full of activity with near 400 contributors and with currently around 100 open issues. Actually, some of these issues are tagged as beginner friendly, which encourages the newest people in programming to contribute to the project.
 
 ####**Project Structure**
 
-Since this project is open-source, it is build by a big community and as so it is not easy to keep a well defined structure (related to the incremental development process). Despite this, the project is well documented, what makes it easier to newcomers to integrate the project.
+Since this project is open-source, it is build by a big community and as so it is not easy to keep a well defined structure (related to the incremental development process). Despite this, the project is well documented, which makes it easier to newcomers to integrate the project.
 
 ####**Project Development**
 
-We believe that the methods **Software Prototype** and **Incremental Development** and Delivery are the ones that best fits Flask. It's very hard to maintain a good structure on code when the project is open source and this processes help, they also allow us to go back to a previous phase, what others like Waterfall don’t. Returning to a previous phase, sometimes, can occur because on the beginning of the project the requirements are rarely gathered, instead of that, they are based on early releases (“Release early, release often”) this way we can collect the feedback and shape our project around that. Also since this project is developed by several people, with minimum communication between them, it can lead to repetition of code, minimizing the code reuse and sometimes there can be repeated code <sup>4</sup>.
+We believe that the methods **Software Prototype** and **Incremental Development** and Delivery are the ones that best fits Flask. It's very hard to keep a good structure on code when the project is open source and this processes help. Also, thse processes allow the developers to go back to a previous phase, something not possible in other processes like Waterfall don’t. Returning to a previous phase, sometimes, can occur because on the beginning of the project the requirements are rarely gathered. Instead of that, they are based on early releases (“release early, release often”) creating a tight feedback loop between developers and testers or users, contrary to a feature-based release strategy. Also, since this project is developed by several people, with minimum communication between them, it can lead to repetition of code, minimizing the code reuse and sometimes there can be repeated code <sup>4</sup>.
 
 ###**Group Contribution**
 
