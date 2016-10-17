@@ -903,9 +903,6 @@ class TestSafeJoin(object):
             ('/a', 'b/../b/../../c', ),
             ('/a', 'b', 'c/../..'),
             ('/a', 'b/../../c', ),
-
-            # base directories which are no longer considered safe in the windows env
-            ('..\\', 'a\\b\\c'),
         )
 
         for args in failing:
