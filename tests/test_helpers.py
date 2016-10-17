@@ -12,6 +12,7 @@
 import pytest
 
 import os
+import sys
 import uuid
 import datetime
 
@@ -845,6 +846,8 @@ class TestStreaming(object):
 
 class TestSafeJoin(object):
 
+    @pytest.mark.skipif(sys.platform == 'win32',
+                    reason="this test is for windows paths")
     def test_safe_join(self):
         # Valid combinations of *args and expected joined paths.
         passing = (
@@ -867,6 +870,28 @@ class TestSafeJoin(object):
         for args, expected in passing:
             assert flask.safe_join(*args) == expected
 
+    @pytest.mark.skipif(sys.platform != 'win32',
+                    reason="this test is for windows paths")
+    def test_safe_join_windows(self):
+        # Valid combinations of *args and expected joined paths.
+        passing = (
+            (('a\\b\\c', ), 'a\\b\\c'),
+            (('\\\\', 'a\\', 'b\\', 'c\\', ), '\\\\a\\b\\c'),
+            (('a', 'b', 'c', ), 'a\\b\\c'),
+            (('a\\b', 'X\\..\\c'), 'a\\b\\c', ),
+            (('\\\\a\\b', 'c/X/..'), '\\\\a\\b\\c', ),
+            # If last path is '' add a slash
+            (('\\\\a\\b\\c', '', ), '\\\\a\\b\\c\\', ),
+            # Preserve dot slash
+            (('\\\\a\\b\\c', './', ), '\\\\a\\b\\c\\.', ),
+            (('a\\b\\c', 'X/..'), 'a\\b\\c\\.', ),
+            # Base directory is always considered safe
+            (('/..', ), '/..'),
+        )
+
+        for args, expected in passing:
+            assert flask.safe_join(*args) == expected
+
     def test_safe_join_exceptions(self):
         # Should raise werkzeug.exceptions.NotFound on unsafe joins.
         failing = (
@@ -878,6 +903,9 @@ class TestSafeJoin(object):
             ('/a', 'b/../b/../../c', ),
             ('/a', 'b', 'c/../..'),
             ('/a', 'b/../../c', ),
+
+            # base directories which are no longer considered safe in the windows env
+            ('..\\', 'a\\b\\c'),
         )
 
         for args in failing:

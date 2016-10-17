@@ -13,6 +13,7 @@ import os
 import sys
 import pkgutil
 import posixpath
+import ntpath
 import mimetypes
 from time import time
 from zlib import adler32
@@ -621,7 +622,10 @@ def safe_join(directory, *pathnames):
     """
     for filename in pathnames:
         if filename != '':
-            filename = posixpath.normpath(filename)
+            if sys.platform == 'win32':
+                filename = ntpath.normpath(filename)
+            else:
+                filename = posixpath.normpath(filename)
         for sep in _os_alt_seps:
             if sep in filename:
                 raise NotFound()
