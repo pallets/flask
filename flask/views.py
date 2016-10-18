@@ -81,7 +81,7 @@ class View(object):
         """
         def view(*args, **kwargs):
             self = view.view_class(*class_args, **class_kwargs)
-            return self.dispatch_request(*args, **kwargs)
+            return self.dispatch_request()
 
         if cls.decorators:
             view.__name__ = name
