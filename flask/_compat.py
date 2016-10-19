@@ -25,7 +25,7 @@ if not PY2:
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
 
-
+    from io import StringIO
 
     def reraise(tp, value, tb=None):
         if value.__traceback__ is not tb:
@@ -43,7 +43,7 @@ else:
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
 
-
+    from cStringIO import StringIO
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 
