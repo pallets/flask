@@ -18,6 +18,9 @@ Version 0.12
 - Correctly invoke response handlers for both regular request dispatching as
   well as error handlers.
 - Disable logger propagation by default for the app logger.
+- Add support for range requests in ``send_file``.
+- ``app.test_client`` includes preset default environment, which can now be
+  directly set, instead of per ``client.get``.
 
 Version 0.11.2
 --------------
