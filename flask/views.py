@@ -62,7 +62,7 @@ class View(object):
     #: .. versionadded:: 0.8
     decorators = ()
 
-    def dispatch_request(self):
+    def dispatch_request(self, *args, **kwargs):
         """Subclasses have to override this method to implement the
         actual view function code.  This method is called with all
         the arguments from the URL rule.
