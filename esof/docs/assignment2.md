@@ -6,7 +6,7 @@
 ![flask image](http://flask.pocoo.org/static/logo/flask.png)
 
 <a name="index"/>
-## Index
+##**Index**
 1. [Brief description of Requirements Elicitation](#elicitation)
 2. [Specific Requirements and Features](#specific)
 3. [Use Cases](#usecases)
@@ -15,14 +15,28 @@
 6. [Group Members](#members)
 
 <a name="elicitation"/>
-###**1. Brief description of Requirements Elicitation**
+##**Brief description of Requirements Elicitation**
+###Introduction
+
+
+###Purpose
+
+
+###Scope
+
+
+
+###Description
+
+
+
 
 
 
 
 
 <a name="specific"/>
-###**2. Specific Requirements and Features**
+##**Specific Requirements and Features**
 
 
 
@@ -31,7 +45,7 @@
 
 
 <a name="usecases"/>
-###**3. Use Cases**
+##**Use Cases**
 
 
 
@@ -40,7 +54,7 @@
 
 
 <a name="domainmodel"/>
-###**4. Domain Model**
+##**Domain Model**
 
 
 
@@ -49,7 +63,7 @@
 
 
 <a name="contribution"/>
-###**5. Group Contribution**
+##**Group Contribution**
 
 |Name|Contribution|
 | :---: | :---: |
@@ -59,7 +73,7 @@
 |Pedro Dias| |
 
 <a name="members"/>
-###**6. Group Members**
+###**Group Members**
 
 |Name|Number|
 | :---: | :---: |
