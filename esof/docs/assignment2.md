@@ -53,10 +53,10 @@
 
 |Name|Contribution|
 | :---: | :---: |
-|José Oliveira|25%|
-|Manuel Gomes|25%|
-|Marcelo Ferreira|25%|
-|Pedro Dias|25%|
+|José Oliveira| |
+|Manuel Gomes| |
+|Marcelo Ferreira| |
+|Pedro Dias| |
 
 <a name="members"/>
 ###**6. Group Members**
