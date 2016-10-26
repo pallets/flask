@@ -1994,6 +1994,7 @@ class Flask(_PackageBoundObject):
             except Exception as e:
                 error = e
                 response = self.handle_exception(e)
+                response = self.finalize_request(response, from_error_handler=True)
             return response(environ, start_response)
         finally:
             if self.should_ignore_error(error):
