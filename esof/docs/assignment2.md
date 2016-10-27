@@ -24,12 +24,13 @@
 <a name="introduction"/>
 ###Introduction
 
+Flask is a micro Python web framework based on Wekzeug toolkit and Jinja2 template engine. Flask is called a micro framework because it keeps a simple core, but extensible, allowing to add new functionalities as if they were impelemented in Flask itself. Some other Flask features are development server and debugger, integrated support for unit testing, support for secure cookies and a very extensive documentation, allowing newcomers do quickly familiarize with the framework.
+
 <a name="purpose"/>
 ###Purpose
 
 <a name="scope"/>
 ###Scope
-
 
 <a name="description"/>
 ###Description
