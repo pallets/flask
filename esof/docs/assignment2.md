@@ -82,9 +82,10 @@ Stickers
 
 
 // TODO - Completar
+
 We can have two types of requirements:
-	->Functional, describes features and sevices of the program;
-	->Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
+ *  Functional, describes features and sevices of the program;
+ *  Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
 
 
 In Flask, we have:
