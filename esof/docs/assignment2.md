@@ -34,10 +34,10 @@
 <a name="scope"/>
 ###Scope
 
-IDEIAS:
+// TODO - IDEIAS:
 
-Flask powers multiple  web applications development around the world.
-Delivers a simple solution to the most commom problems  of a web-application dev.
+Flask powers multiple web applications development around the world.
+Delivers a simple solution to the most commom problems of a web-application development.
 For more specific solutions it's possible to install extensions.
 
 
@@ -62,8 +62,8 @@ Stickers
 
 // TODO - FALTA TERMINAR
 
-  Flask is supported by a growing and active community, suppoted by a strong open-source spirit. Therefore, the process of evolution of Flask based on the requirements elicatation is relatively simple and informal, involving not only the Flask main contributors, but also all the surrounding community.
-  The associated developers work to implement the established funcionality requirements, and also to fix the issues listed by contributors in the repository. Actually, Flask project provides a simple [Issue Tracker](https://github.com/pallets/flask/issues) where is possible propose bug fixes as well feature requests. Some of the issues are tagged as begginner friendly so that newcomers can easily contribute to the project.
+  Flask is supported by a growing and active community, supported by a strong open-source spirit. Therefore, the process of evolution of Flask based on the requirements elicitation is relatively simple and informal, involving not only the Flask main contributors, but also all the surrounding community.
+  The associated developers work to implement the established funcionality requirements, and also to fix the issues listed by contributors in the repository. Actually, Flask project provides a simple [Issue Tracker](https://github.com/pallets/flask/issues) where is possible to propose bug fixes as well feature requests. Some of the issues are tagged as begginner friendly so that newcomers can easily contribute to the project.
 
 
 
@@ -82,10 +82,9 @@ Stickers
 
 
 // TODO - Completar
-
 We can have two types of requirements:
- *  Functional, describes features and sevices of the program;
- *  Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
+	->Functional, describes features and sevices of the program;
+	->Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
 
 
 In Flask, we have:
