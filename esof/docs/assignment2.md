@@ -24,6 +24,7 @@
 ###Introduction
 
   // TODO - COMEÇAR LOGO AQUI A FALAR DE REQUIREMENTS ELICITATION??
+ // Flask is called a micro framework because it keeps a simple core, but extensible, esta frase já é cancro, foi usada vezes a mais xD
   
   Flask is a micro web framework written in Python and based on Werkzeug toolkit and Jinja2 template engine. Flask is called a micro framework because it keeps a simple core, but extensible, allowing to add new functionalities as if they were impelemented in Flask itself. Some other Flask features are development server and debugger, integrated support for unit testing, support for secure cookies and a very extensive documentation, allowing newcomers to quickly familiarize with the framework.
 
@@ -44,7 +45,7 @@
 
 Flask is supported by an active, helpful community. Get involved by joining the mailing list and IRC channel. Discussion for developers using Flask as well as working on the core is welcome.
 
-If you want to spread the word, there is also a selection of badges and logos you can use on your own website. There are also shirts and mugs available at the Flask store, and stickers too.
+If someone want to spread the word, there is also a selection of badges and logos on Flask website. There are also shirts and mugs available at the Flask store, and stickers too.
 
 Issues Tracker - for bugs and feature requests
 Mailing List - for help and long term discussion
