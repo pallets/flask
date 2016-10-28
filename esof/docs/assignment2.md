@@ -34,10 +34,11 @@
 <a name="scope"/>
 ###Scope
 
+IDEIAS:
 
-
-
-
+Flask powers multiple  web applications development around the world.
+Delivers a simple solution to the most commom problems  of a web-application dev.
+For more specific solutions it's possible to install extensions.
 
 
 
@@ -85,8 +86,6 @@ Stickers
 
 
 
-
-
 <a name="usecases"/>
 ##**Use Cases**
 
@@ -100,13 +99,13 @@ A Flask project is usually structered like the following tree folder:
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/flasktree.png">
 </p>
 
-<p align="center">
-  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/useCase.png">
-</p>
+
 
 This type of structure has the advantange of separating the static files like CSS or Javascript files, from the templates ones, usually written in HTML. The later ones are used in the routing implementation of Flask, allowing the reutilization of a template file for several script actions.
 
-
+<p align="center">
+  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/useCase.png">
+</p>
 
 
 <a name="domainmodel"/>
