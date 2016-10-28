@@ -81,9 +81,23 @@ Stickers
 ##**Specific Requirements and Features**
 
 
-// TODO - FALTA FAZER
+// TODO - Completar
+We can have two types of requirements:
+	->Functional, describes features and sevices of the program;
+	->Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
 
 
+In Flask, we have:
+1 Functional:
+
+
+
+
+2 Non-Functional:
+	1 - OpenSource
+	2 - Tests
+	3 - Documentation
+ 	
 
 
 <a name="usecases"/>
