@@ -23,11 +23,11 @@
 
 <a name="introduction"/>
 ###Introduction
-
-Flask is a micro Python web framework based on Wekzeug toolkit and Jinja2 template engine. Flask is called a micro framework because it keeps a simple core, but extensible, allowing to add new functionalities as if they were impelemented in Flask itself. Some other Flask features are development server and debugger, integrated support for unit testing, support for secure cookies and a very extensive documentation, allowing newcomers do quickly familiarize with the framework.
+  Flask is a micro web framework written in Python and based on Werkzeug toolkit and Jinja2 template engine. Flask is called a micro framework because it keeps a simple core, but extensible, allowing to add new functionalities as if they were impelemented in Flask itself. Some other Flask features are development server and debugger, integrated support for unit testing, support for secure cookies and a very extensive documentation, allowing newcomers to quickly familiarize with the framework.
 
 <a name="purpose"/>
 ###Purpose
+  The purpose of this document is to provide a quick overview of the funcionality of Flask in particular for developers and newcomers. The document will particulary detail the requirement elication in the project, as well as the use cases and the domain model behind Flask.
 
 <a name="scope"/>
 ###Scope
