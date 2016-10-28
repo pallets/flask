@@ -16,7 +16,6 @@
 3. [Use Cases](#usecases)
 4. [Domain Model](#domainmodel)
 5. [Group Contribution](#contribution)
-6. [Group Members](#members)
 
 <a name="elicitation"/>
 ##**Requirements Elicitation**
@@ -24,13 +23,13 @@
 ###Introduction
 
   // TODO - COMEÇAR LOGO AQUI A FALAR DE REQUIREMENTS ELICITATION??
- // Flask is called a micro framework because it keeps a simple core, but extensible, esta frase já é cancro, foi usada vezes a mais xD
-  
-  Flask is a micro web framework written in Python and based on Werkzeug toolkit and Jinja2 template engine. Flask is called a micro framework because it keeps a simple core, but extensible, allowing to add new functionalities as if they were impelemented in Flask itself. Some other Flask features are development server and debugger, integrated support for unit testing, support for secure cookies and a very extensive documentation, allowing newcomers to quickly familiarize with the framework.
+
+
+
 
 <a name="purpose"/>
 ###Purpose
-  The purpose of this document is to provide a quick overview of the funcionality of Flask in particular for developers and newcomers. The document will particulary detail the requirement elication in the project, as well as the use cases and the domain model behind Flask.
+  The purpose of this document is to provide a quick overview of the funcionality of Flask in particular for developers and stackholders. The document will particulary detail the requirements elicitation and specification of the project, as well as the use cases and the domain model behind Flask.
 
 <a name="scope"/>
 ###Scope
@@ -87,6 +86,12 @@ Stickers
 
 
 
+
+<a name="usecases"/>
+##**Use Cases**
+
+
+
 // TODO -  COLOCAR ESTA PARTE ABAIXO NO USE MODEL COMO "INTRODUÇAO"??
 
 A Flask project is usually structered like the following tree folder:
@@ -96,12 +101,6 @@ A Flask project is usually structered like the following tree folder:
 </p>
 
 This type of structure has the advantange of separating the static files like CSS or Javascript files, from the templates ones, usually written in HTML. The later ones are used in the routing implementation of Flask, allowing the reutilization of a template file for several script actions.
-
-<a name="usecases"/>
-##**Use Cases**
-
-
-
 
 
 
@@ -117,20 +116,9 @@ This type of structure has the advantange of separating the static files like CS
 
 <a name="contribution"/>
 ##**Group Contribution**
-
-|Name|Contribution|
-| :---: | :---: |
-|José Oliveira| |
-|Manuel Gomes| |
-|Marcelo Ferreira| |
-|Pedro Dias| |
-
-<a name="members"/>
-###**Group Members**
-
-|Name|Number|
-| :---: | :---: |
+|Name|Number|Contribution|
+| :---: | :---: |:---: |
 |José Oliveira|up201406208|
-|Manuel Gomes|up201402679 |
+|Manuel Gomes|up201402679|
 |Marcelo Ferreira|up201405323|
 |Pedro Dias|up201404178|
