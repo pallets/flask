@@ -88,15 +88,16 @@ We can have two types of requirements:
 
 
 In Flask, we have:
-1 Functional:
+
+1. Functional:
 
 
 
 
-2 Non-Functional:
-	1 - OpenSource
-	2 - Tests
-	3 - Documentation
+2. Non-Functional:
+  * OpenSource
+  * Tests
+  * Documentation
  	
 
 
