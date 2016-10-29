@@ -99,7 +99,78 @@ A Flask project is usually structered like the following tree folder:
 This type of structure has the advantange of separating the static files like CSS or Javascript files, from the templates ones, usually written in HTML. The later ones are used in the routing implementation of Flask, allowing the reutilization of a template file for several script actions.
 
 <p align="center">
-  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/useCase.png">
+  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/ext.png">
+</p>
+
+User case :  Install Extensions
+Actors: Developer
+
+Goal description: Add aditional features to Flask framework
+
+Reference to Requirements:
+	
+Pre-conditions: Extensions should be compatible with used Flask version
+
+Description: 
+	1. The developer need to solve a problem that Flask core doesn’t solve
+	2. He search and install  a developed solution.
+ 
+Post-conditions:
+
+1.  System will have the package installed.
+
+Variations:
+Exceptions:
+
+<p align="center">
+  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/test.png">
+</p>
+
+User Case : Test in built-in development server
+Actors: Developer
+Goal description: Test developed project in local machine 
+Reference to Requirements:
+Pre-conditions:
+Description: 
+	1. Developer has a prototype to test.
+	2. The prototype is loaded into the server.
+	3. Developer  interact with prototype.
+Post-conditions:
+Variations:
+Exceptions:
+
+User Case : User server debug mode
+Actors: Developer
+Goal description:
+Reference to Requirements:
+Pre-conditions:
+Description:
+Post-conditions:
+Variations:
+Exceptions:
+
+User Case : Run automated Test
+Actors: Developer
+Goal description:
+Reference to Requirements:
+Pre-conditions:
+Description:
+Post-conditions:
+Variations:
+Exceptions:
+
+User Case : Implement automated test
+Actors: Developer
+Goal description:
+Reference to Requirements:
+Pre-conditions:
+Description:
+Post-conditions:
+Variations:
+Exceptions:
+
+<p align="center">
+  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/dev.png">
 </p>
 
 
