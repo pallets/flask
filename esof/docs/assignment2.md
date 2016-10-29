@@ -102,72 +102,108 @@ This type of structure has the advantange of separating the static files like CS
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/ext.png">
 </p>
 
-User case :  Install Extensions
-Actors: Developer
+**User case** :  Install Extensions
 
-Goal description: Add aditional features to Flask framework
+**Actors**: Developer
 
-Reference to Requirements:
+**Goal description**: Add aditional features to Flask framework
+
+**Reference to Requirements**:
 	
-Pre-conditions: Extensions should be compatible with used Flask version
+**Pre-conditions**: Extensions should be compatible with Flask version used
 
-Description: 
+**Description**: 
 	1. The developer need to solve a problem that Flask core doesn’t solve
 	2. He search and install  a developed solution.
  
-Post-conditions:
+**Post-conditions**:
 
 1.  System will have the package installed.
 
-Variations:
-Exceptions:
+**Variations**:
+
+**Exceptions**:
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/test.png">
 </p>
 
-User Case : Test in built-in development server
-Actors: Developer
-Goal description: Test developed project in local machine 
-Reference to Requirements:
-Pre-conditions:
-Description: 
+**User Case**: Test in built-in development server 
+
+**Actors**: Developer
+
+**Goal description**: Test developed project in local machine 
+
+**Reference to Requirements**:
+
+**Pre-conditions**:
+
+**Description** 
 	1. Developer has a prototype to test.
 	2. The prototype is loaded into the server.
 	3. Developer  interact with prototype.
-Post-conditions:
-Variations:
-Exceptions:
 
-User Case : User server debug mode
-Actors: Developer
-Goal description:
-Reference to Requirements:
-Pre-conditions:
-Description:
-Post-conditions:
-Variations:
-Exceptions:
+**Post-conditions**:
 
-User Case : Run automated Test
-Actors: Developer
-Goal description:
-Reference to Requirements:
-Pre-conditions:
-Description:
-Post-conditions:
-Variations:
-Exceptions:
+**Variations**:
 
-User Case : Implement automated test
-Actors: Developer
-Goal description:
-Reference to Requirements:
-Pre-conditions:
-Description:
-Post-conditions:
-Variations:
-Exceptions:
+**Exceptions**:
+
+**User Case **: User server debug mode
+
+**Actors**: Developer
+
+**Goal description**:
+
+**Reference to Requirements**:
+
+**Pre-conditions**:
+
+**Description**:
+
+**Post-conditions**:
+
+**Variations**:
+
+**Exceptions**:
+
+**User Case** : Run automated Test
+
+**Actors**: Developer
+
+**Goal description**:
+
+**Reference to Requirements**:
+
+**Pre-conditions**:
+
+**Description**:
+
+**Post-conditions**:
+
+**Variations**:
+
+**Exceptions**:
+
+
+**User Case **: Implement automated test
+
+**Actors**: Developer
+
+**Goal description**:
+
+**Reference to Requirements**:
+
+**Pre-conditions**:
+
+**Description**:
+
+**Post-conditions**:
+
+**Variations**:
+
+**Exceptions**:
+
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/dev.png">
