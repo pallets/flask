@@ -68,16 +68,14 @@ We can have two types of requirements:
 In Flask, we have:
 
 1. Functional:
-  *  
-  *
-  * 
-  *
-  *
+  *  Provide an extendable core of functionality
+  *  takes the data from the DB (by querying it with SQL) and put the acquired information into other formats (by using Jinja 2) that can actually be used by a browser to display your web site.
 
 2. Non-Functional:
   * OpenSource
   * Tests
   * Documentation
+  * Support for secure cookies
   * Continues  integration
   * Compatible with Phyton
  	
