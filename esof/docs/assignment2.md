@@ -54,26 +54,6 @@ Requirements elicitaiton and analysis involves first collecting as many potentia
   
 The [Mailing List](http://flask.pocoo.org/mailinglist/) and [IRC Channel](http://flask.pocoo.org/community/irc/) are mainly used for brainstorming of new ideas, as well as discuss some features suggested, in a more informal way. After some discussion and maturation of some new idea, if this achieves a mature where it can have an improvement impact of Flask, the idea is moved for a more formal place of discussion called [Issues Tracker](https://github.com/pallets/flask/issues). This simple tool is where the community can propose new features to be added, as well as make bug fixes requests. This track system allows to tag the issues based on scope, language or difficulty, providing better follow-up of the open issues. For example, some of the issues are tagged as begginner friendly so that newcomers can easily contribute to the project. After an issue is open, a discussion is started for further understanding of the issue, as well as, decide to about its viability.
 
-<a name="description"/>
-###Description
-
-// TODO - FALTA TERMINAR
-
-  Flask is supported by a growing and active community, supported by a strong open-source spirit. Therefore, the process of evolution of Flask based on the requirements elicitation is relatively simple and informal, involving not only the Flask main contributors, but also all the surrounding community.
-  The associated developers work to implement the established funcionality requirements, and also to fix the issues listed by contributors in the repository. Actually, Flask project provides a simple [Issue Tracker](https://github.com/pallets/flask/issues) where is possible to propose bug fixes as well feature requests. Some of the issues are tagged as begginner friendly so that newcomers can easily contribute to the project.
-
-
-
-
-
-
-
-
-
-
-
-
-
 <a name="specific"/>
 ##**Specific Requirements and Features**
 
