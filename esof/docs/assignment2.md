@@ -32,8 +32,7 @@ The development of Flask is made in a really simple and opened way. The big comm
 Requirements elicitaiton and analysis involves first collecting as many potential requirements as possible, then refining them to form a complete, concise and consistent set of high-quality functional and non-functional requirements, and then analyzing them to start forming a preliminary model of the system to be developed. Functional requirements are often modeled wih the aid of use-cases and scenarios, while the analysis step starts to identify some of the candidate objects / classes that will be needed in the system.
 
 
-
-//TODO How those the proposal of a new requirement works?
+//TODO How those the proposal of a new requirement works? 
 
 
 <a name="purpose"/>
@@ -80,9 +79,10 @@ The [Mailing List](http://flask.pocoo.org/mailinglist/) and [IRC Channel](http:/
 
 
 // TODO - Completar
+
 We can have two types of requirements:
-	->Functional, describes features and sevices of the program;
-	->Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
+ *  Functional, describes features and sevices of the program;
+ *  Non-Functional, sets properties and restrictions of the sistem (example: security, space, ...);
 
 
 In Flask, we have:
