@@ -78,6 +78,9 @@ In Flask, we have:
   * Support for secure cookies
   * Continues  integration
   * Compatible with Phyton
+  * RESTful
+  * WSGI compliant
+  * Unicode based
  	
 
 
