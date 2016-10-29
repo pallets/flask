@@ -24,12 +24,16 @@
 
   // TODO - FALAR
 
+The development of Flask is made in a really simple and opened way. The big community that exists around Flask (???????) and the core of developers are the main responsible by the resolution of the issues and the implementation of the defined requirements as well as propose and introduce new ones.
+
   Requirements elicitation and analysis involves first collecting as many potentional requirements as possible, then refining them to form a complete, concise and consistent set of high-quality functional and non-functional requirements, and then analyzing them to start a preliminary model of the system to be developed. Functional requirementsare often modeled with the aid of use cases
 
 
 Requirements elicitaiton and analysis involves first collecting as many potential requirements as possible, then refining them to form a complete, concise and consistent set of high-quality functional and non-functional requirements, and then analyzing them to start forming a preliminary model of the system to be developed. Functional requirements are often modeled wih the aid of use-cases and scenarios, while the analysis step starts to identify some of the candidate objects / classes that will be needed in the system.
 
 
+
+//TODO How those the proposal of a new requirement works?
 
 
 <a name="purpose"/>
