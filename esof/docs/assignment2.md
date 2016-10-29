@@ -68,14 +68,18 @@ We can have two types of requirements:
 In Flask, we have:
 
 1. Functional:
-
-
-
+  *  
+  *
+  * 
+  *
+  *
 
 2. Non-Functional:
   * OpenSource
   * Tests
   * Documentation
+  * Continues  integration
+  * Compatible with Phyton
  	
 
 
