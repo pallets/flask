@@ -214,6 +214,7 @@ This type of structure has the advantange of separating the static files like CS
 ##**Domain Model**
 
 
+  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/domain_model_1st_sketch.png">
 
 
 
