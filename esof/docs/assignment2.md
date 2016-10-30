@@ -393,8 +393,9 @@ ________________________________________________________________________________
 <a name="domainmodel"/>
 ##**Domain Model**
 
-
-  <img src="https://github.com/rodavoce/flask/blob/development/esof/res/domain_model_1st_sketch.png">
+  <img src="https://raw.githubusercontent.com/rodavoce/flask/development/esof/res/flask_domain_model.png">
+  
+  The domain model is based in the representation of conceptual classes in which consists the internal operations of the system.
 
 
 
