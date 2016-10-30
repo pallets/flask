@@ -212,6 +212,133 @@ This type of structure has the advantange of separating the static files like CS
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/dev.png">
 </p>
 
+**User Case **: Develop or Build  Project !?!
+**Actors**: Developer
+**Goal description**:   Make the desired product !?!
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:
+	 The develpor has set the requirements for his project and started using Flask features.  
+**Post-conditions**:
+**Variations**:
+	The developer  fixing or upgrading the project.
+**Exceptions**:
+
+
+
+**User Case** :  Route URL’s
+**Actors**: Developer
+**Goal description**:   Beautify and make more user friendly URL’s
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:
+	 The develpor has made a set  of rule to determinate URL’s  to make them user friendly
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+**User Case**:  Set Application context
+**Actors**: Developer
+**Goal description**:  Define  one or more applications that in run in this python process
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:
+	 The develpor create a certain number of applications context 
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+**User Case**:  Set Templates
+**Actors**: Developer
+**Goal description**:   Define multiple HTML  templates   
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:
+	 The developer made  HTML templates to use. 
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+**User Case** :  Set Signals & handlers  (MUDAR NA IMAGEM )
+**Actors**: Developer
+**Goal description**:   Define applicantions subscriptions
+**Reference to Requirements**:
+**Pre-condition**s:
+**Description**:
+	The developer set applications subscriptions like email notifications or temporary subscriptions in interactions between server and application.
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+
+**User Case** :  Set Database 
+**Actors**: Developer
+**Goal description**:   Structure the database
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:
+	The developer choose the database type and structure has we likes.
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+**User Case** :  Set Views 
+**Actors**: Developer
+**Goal description**: Define pre-consults to the database
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:  The developer choose how to expose the data in the database
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+**User Case** :  Define user previleges 
+**Actors**: Developer
+**Goal description**:  Set what a user can do.
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:  The developer choose what  a  type of user can do in the application 
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+**User Case**:  Set request object ( MUDAR O SET COOKIE )
+**Actors**: Developer
+**Goal description**: Define  user  local data that is sent to server
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:  The developer set what information  from user data is storaged and send 
+	   that  to server as forms, cookies , files or other things
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+**User Case** :  Set sessions 
+**Actors**: Developer
+**Goal description**:
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
+
+
+**User Case** :  Set request context 
+**Actors**: Developer
+**Goal description**: Define what resources the aplication context need.
+**Reference to Requirements**:
+**Pre-conditions**:
+**Description**:  The developer analyse and set what are the resources used by the application.
+**Post-conditions**:
+**Variations**:
+**Exceptions**:
 
 <a name="domainmodel"/>
 ##**Domain Model**
