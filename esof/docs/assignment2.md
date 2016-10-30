@@ -95,323 +95,339 @@ This type of structure has the advantange of separating the static files like CS
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/ext.png">
 </p>
 
+________________________________________________________________________________________________________________________________________
+
+
 **User case** :  Install Extensions
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**: Add aditional features to Flask framework
+* **Goal description**: Add aditional features to Flask framework
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 	
-**Pre-conditions**: Extensions should be compatible with Flask version used
+* **Pre-conditions**: Extensions should be compatible with Flask version used
 
-**Description**: 
+* **Description**: 
 	1. The developer need to solve a problem that Flask core doesn’t solve
 	2. He search and install  a developed solution.
  
-**Post-conditions**:
+* **Post-conditions**:
 
 1.  System will have the package installed.
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/test.png">
 </p>
 
+________________________________________________________________________________________________________________________________________
+
 **User Case**: Test in built-in development server 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**: Test developed project in local machine 
+* **Goal description**: Test developed project in local machine 
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description** 
+* **Description** 
 	1. Developer has a prototype to test.
 	2. The prototype is loaded into the server.
 	3. Developer  interact with the project running.
 
 <br />
+________________________________________________________________________________________________________________________________________
 
 **User Case **: Use server debug mode
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**: Developer activate and use debug mode
+* **Goal description**: Developer activate and use debug mode
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 	1. 
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
+________________________________________________________________________________________________________________________________________
 
 **User Case** : Run automated Test
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:
+* **Goal description**:
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
+________________________________________________________________________________________________________________________________________
 
+**User Case**: Implement automated test
 
-**User Case **: Implement automated test
+* **Actors**: Developer
 
-**Actors**: Developer
+* **Goal description**:
 
-**Goal description**:
+* **Reference to Requirements**:
 
-**Reference to Requirements**:
+* **Pre-conditions**:
 
-**Pre-conditions**:
+* **Description**:
 
-**Description**:
+* **Post-conditions**:
 
-**Post-conditions**:
+* **Variations**:
 
-**Variations**:
-
-**Exceptions**:
+* **Exceptions**:
 
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/dev.png">
 </p>
 
+________________________________________________________________________________________________________________________________________
+
 **User Case **: Develop   Project
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:   Make the desired product
+* **Goal description**:   Make the desired product
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 	 The develpor has set the requirements for his project and started using Flask features to build the product. 
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 	The developer  fixing or upgrading the project.
-**Exceptions**:
+* **Exceptions**:
 
-
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Route URL’s
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:   Beautify and make more user friendly URL’s
+* **Goal description**:   Beautify and make more user friendly URL’s
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 	 The develpor has made a set  of rule to determinate URL’s  to make them user friendly
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
+
+________________________________________________________________________________________________________________________________________
 
 **User Case**:  Set Application context
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:  Define  one or more applications that in run in this python process
+* **Goal description**:  Define  one or more applications that in run in this python process
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 	 The develpor create a certain number of applications context 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
+________________________________________________________________________________________________________________________________________
 
 **User Case**:  Set Templates
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:   Define multiple HTML  templates  and their style  
+* **Goal description**:   Define multiple HTML  templates  and their style  
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 	The developer made  HTML templates to use in the application 
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
-
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set signals 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:   Define applicantions subscriptions
+* **Goal description**:   Define applicantions subscriptions
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-condition**s:
+* **Pre-condition**s:
 
-**Description**:
+* **Description**:
 	The developer set applications subscriptions like email notifications or temporary subscriptions in interactions between server and application.
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
-
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set Database 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:   Structure the database
+* **Goal description**:   Structure the database
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 	The developer choose the database type and structure has we likes.
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set Views 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**: Define pre-consults to the database
+* **Goal description**: Define pre-consults to the database
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:  The developer choose how to expose the data in the database
+* **Description**:  The developer choose how to expose the data in the database
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Define user previleges 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:  Set what a user can do.
+* **Goal description**:  Set what a user can do.
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:  The developer choose what  a  type of user can do in the application 
+* **Description**:  The developer choose what  a  type of user can do in the application 
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
+________________________________________________________________________________________________________________________________________
 
 **User Case**:  Set request object ( MUDAR O SET COOKIE )
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**: Define  user  local data that is sent to server
+* **Goal description**: Define  user  local data that is sent to server
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:  The developer set what information  from user data is storaged and send 
+* **Description**:  The developer set what information  from user data is storaged and send 
 that  to server as forms, cookies , files or other things
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set sessions 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**:
+* **Goal description**:
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:
+* **Description**:
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
-
+________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set request context 
 
-**Actors**: Developer
+* **Actors**: Developer
 
-**Goal description**: Define what resources the aplication context need.
+* **Goal description**: Define what resources the aplication context need.
 
-**Reference to Requirements**:
+* **Reference to Requirements**:
 
-**Pre-conditions**:
+* **Pre-conditions**:
 
-**Description**:  The developer analyse and set what are the resources used by the application.
+* **Description**:  The developer analyse and set what are the resources used by the application.
 
-**Post-conditions**:
+* **Post-conditions**:
 
-**Variations**:
+* **Variations**:
 
-**Exceptions**:
+* **Exceptions**:
 
 
 <a name="domainmodel"/>
