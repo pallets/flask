@@ -110,16 +110,14 @@ ________________________________________________________________________________
 * **Pre-conditions**: Extensions should be compatible with Flask version used
 
 * **Description**: 
-	1. The developer need to solve a problem that Flask core doesn’t solve
-	2. He search and install  a developed solution.
+
+1. The developer need to solve a problem that Flask core doesn’t solve
+2. He search and install  a developed solution.
  
 * **Post-conditions**:
 
-1.  Flask will have the package installed.
+1.  Flask has the package installed.
 
-* **Variations**:
-
-* **Exceptions**:
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/test.png">
@@ -135,14 +133,13 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Tests
 
-* **Pre-conditions**:
-
 * **Description** 
-	1. Developer has a prototype to test.
-	2. The prototype is loaded into the server.
-	3. Developer  interact with the project running.
+	
+1. Developer has a prototype to test.
+2. The prototype is loaded into the server.
+3. Developer  interact with the project running.
 
-<br />
+
 ________________________________________________________________________________________________________________________________________
 
 **User Case **: Use server debug mode
@@ -155,11 +152,13 @@ ________________________________________________________________________________
 
 * **Description**:
 
-1. Developer set to 1 debug mode flag.
+1. Developer set to 1 debug mode flag
 2. Test in built-in server
 3. See back trace report
 
 * **Post-conditions**:
+
+1. Developer gets more detailed information about errors
 
 ________________________________________________________________________________________________________________________________________
 
@@ -189,20 +188,14 @@ ________________________________________________________________________________
 
 * **Goal description**: Implement automated tests
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Tests
 
 * **Pre-conditions**:
+ 	Tests need to be a python script
 
 * **Description**:
 
 	Developer implements tests in python to ensure quality in developed project
-
-* **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
-
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/dev.png">
