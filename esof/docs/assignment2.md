@@ -176,10 +176,11 @@ ________________________________________________________________________________
 
 * **Description**:
 
-	Developer run test in python shell to check project status
+1. Developer run test in python shell to check project status
 
 * **Post-conditions**:
-	Developer know how sucesfully test runned.
+
+1. Developer know how sucesfully test runned.
 ________________________________________________________________________________________________________________________________________
 
 **User Case**: Implement automated test
@@ -191,11 +192,12 @@ ________________________________________________________________________________
 * **Reference to Requirements**: Tests
 
 * **Pre-conditions**:
- 	Tests need to be a python script
+ 
+1. Tests need to be a python script
 
 * **Description**:
 
-	Developer implements tests in python to ensure quality in developed project
+1. Developer implements tests in python to ensure quality in developed project
 
 ________________________________________________________________________________________________________________________________________
 
@@ -212,12 +214,13 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Provides an extendable core of functionality
 
-* **Description**:
-	 The develpor has set the requirements for his project and started using Flask features to build the product. 
+* **Description**: 
 
-* **Variations**:
-	The developer  fixing or upgrading the project.
+1. The develpor has set the requirements for his project and started using Flask features to build the product. 
 
+* **Variations**: The developer  fixing or upgrading the project.
+	
+* **Post-conditions**:
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Route URL’s
@@ -228,12 +231,15 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Routing for selection of paths of the network
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
 * **Description**:
-	 The develpor has made a set  of rule to determinate URL’s  to make them user friendly
+
+1. The developer has made a set  of rule to determinate URL’s  to make them user friendly
+
 * **Post-conditions**:
 
+1. Application has more user friendly URL's
 ________________________________________________________________________________________________________________________________________
 
 **User Case**:  Set Application context
@@ -244,11 +250,15 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Provides an extendable core of functionality
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
 * **Description**:
-	 The develpor create a certain number of applications context 
+	
+1.	The develpor create a certain number of applications context 
+	
 * **Post-conditions**:
+
+1.      Sub-aplications that will run in  are defined.
 
 ________________________________________________________________________________________________________________________________________
 
@@ -260,14 +270,15 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Provides an extendable core of functionality
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
 * **Description**:
-	The developer made  HTML templates to use in the application 
+
+1.	The developer made  HTML templates to use in the application 
 
 * **Post-conditions**:
 
-
+1.  	The projects has a defined GUI. 
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set signals 
@@ -278,12 +289,14 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Provides an extendable core of functionality
 
-* **Pre-condition**s:
+* **Pre-conditions**: none
 
 * **Description**:
-	The developer set applications subscriptions like email notifications or temporary subscriptions in interactions between server and application.
+1. The developer set applications subscriptions like email notifications or temporary subscriptions in interactions between server and application
 
 * **Post-conditions**:
+
+1. Application and server are able to receive and send subscriptions
 
 ________________________________________________________________________________________________________________________________________
 
@@ -295,11 +308,15 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Provides an extendable core of functionality and Takes the data from the Database and put the acquired information into other formats  that can actually be used by a browser to display the web site.
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
 * **Description**:
-	The developer choose the database type and structure has he likes.
+
+1. The developer choose the database type and structure has he likes
+
 * **Post-conditions**:
+
+1. The server has a fuctional database
 
 ________________________________________________________________________________________________________________________________________
 
@@ -313,9 +330,15 @@ ________________________________________________________________________________
 
 * **Pre-conditions**:
 
-* **Description**:  The developer choose how to expose the data in the database
+1. Set Database 
+
+* **Description**: 
+
+1. The developer choose how to expose the data in the database
 
 * **Post-conditions**:
+
+
 
 ________________________________________________________________________________________________________________________________________
 
@@ -327,11 +350,14 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**: Provides an extendable core of functionality 
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
-* **Description**:  The developer choose what  a  type of user can do in the application 
+* **Description**:  
+
+1. The developer choose what  a  type of user can do in the application 
 
 * **Post-conditions**:
+1.
 
 ________________________________________________________________________________________________________________________________________
 
@@ -343,7 +369,7 @@ ________________________________________________________________________________
 
 * **Reference to Requirements**:  Provides an extendable core of functionality and Support for secure cookies
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
 * **Description**:  The developer set what information is tramited between server and application
 ________________________________________________________________________________________________________________________________________
@@ -358,13 +384,13 @@ ________________________________________________________________________________
 
 * **Pre-conditions**:
 
-* **Description**:  
+* **Description**:   
+
+1. Developer define the conection between  the client and the server
 
 * **Post-conditions**:
 
-* **Variations**:
-
-* **Exceptions**:
+1. Aplication is able to comunicate with server
 
 ________________________________________________________________________________________________________________________________________
 
@@ -374,17 +400,16 @@ ________________________________________________________________________________
 
 * **Goal description**: Define what resources the aplication context need.
 
-* **Reference to Requirements**: 
+* **Reference to Requirements**: Provides an extendable core of functionality
 
-* **Pre-conditions**:
+* **Pre-conditions**: none
 
-* **Description**:  The developer analyse and set what are the resources used by the application and process comunication between server and application
+* **Description**:
+1. The developer analyse and set what are the resources used by the application and process comunication between server and applicationl.
 
 * **Post-conditions**:
 
-* **Variations**:
 
-* **Exceptions**:
 
 
 <a name="domainmodel"/>
