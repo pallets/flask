@@ -406,7 +406,7 @@ ________________________________________________________________________________
 ##**Group Contribution**
 |Name|Number|Contribution|
 | :---: | :---: |:---: |
-|José Oliveira|up201406208|
-|Manuel Gomes|up201402679|
-|Marcelo Ferreira|up201405323|
-|Pedro Dias|up201404178|
+|José Oliveira|up201406208|25%|
+|Manuel Gomes|up201402679|25%|
+|Marcelo Ferreira|up201405323|25%|
+|Pedro Dias|up201404178|25%|
