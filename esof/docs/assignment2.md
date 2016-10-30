@@ -317,29 +317,6 @@ ________________________________________________________________________________
 * **Post-conditions**:
 
 1. The server has a fuctional database
-
-________________________________________________________________________________________________________________________________________
-
-**User Case** :  Set Views 
-
-* **Actors**: Developer
-
-* **Goal description**: Define pre-consults to the database
-
-* **Reference to Requirements**:  Provides an extendable core of functionality 
-
-* **Pre-conditions**:
-
-1. Set Database 
-
-* **Description**: 
-
-1. The developer choose how to expose the data in the database
-
-* **Post-conditions**:
-
-
-
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Define user previleges 
@@ -357,7 +334,7 @@ ________________________________________________________________________________
 1. The developer choose what  a  type of user can do in the application 
 
 * **Post-conditions**:
-1.
+1. User is now limited in what he can do 
 
 ________________________________________________________________________________________________________________________________________
 
@@ -390,7 +367,7 @@ ________________________________________________________________________________
 
 * **Post-conditions**:
 
-1. Aplication is able to comunicate with server
+1. Client  and server are now able to comunicate.
 
 ________________________________________________________________________________________________________________________________________
 
@@ -405,11 +382,12 @@ ________________________________________________________________________________
 * **Pre-conditions**: none
 
 * **Description**:
+
 1. The developer analyse and set what are the resources used by the application and process comunication between server and applicationl.
 
 * **Post-conditions**:
 
-
+1. Application is now able to get what resource need from local ou external source
 
 
 <a name="domainmodel"/>
