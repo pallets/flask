@@ -65,7 +65,8 @@ About the functional and non-functional requirements, the following can be found
 * ***Functional***:
   *  Provides an extendable core of functionality;
   *  Routing for selection of paths of the network;
-  *  Takes the data from the Database (by querying it with SQL) and put the acquired information into other formats (by using Jinja 2) that can actually be used by a browser to display the web site.
+  *  Takes the data from the Database (by querying it with SQL) and put the acquired information into other formats (by using Jinja 2) that can actually be used by a browser to display the web site;
+  
   
 * ***Non-Functional***:
   * Open source;
@@ -114,7 +115,7 @@ ________________________________________________________________________________
  
 * **Post-conditions**:
 
-1.  System will have the package installed.
+1.  Flask will have the package installed.
 
 * **Variations**:
 
@@ -132,7 +133,7 @@ ________________________________________________________________________________
 
 * **Goal description**: Test developed project in local machine 
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Tests
 
 * **Pre-conditions**:
 
@@ -150,9 +151,7 @@ ________________________________________________________________________________
 
 * **Goal description**:  Activate and use debug mode
 
-* **Reference to Requirements**:
-
-* **Pre-conditions**:
+* **Reference to Requirements**: Tests
 
 * **Description**:
 
@@ -162,9 +161,6 @@ ________________________________________________________________________________
 
 * **Post-conditions**:
 
-* **Variations**:
-
-* **Exceptions**:
 ________________________________________________________________________________________________________________________________________
 
 **User Case** : Run automated Test
@@ -173,7 +169,7 @@ ________________________________________________________________________________
 
 * **Goal description**:  Run implemented tests 
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Tests
 
 * **Pre-conditions**:
 
@@ -181,13 +177,10 @@ ________________________________________________________________________________
 
 * **Description**:
 
-Developer run test in python shell to check project status
+	Developer run test in python shell to check project status
 
 * **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
+	Developer know how sucesfully test runned.
 ________________________________________________________________________________________________________________________________________
 
 **User Case**: Implement automated test
@@ -202,7 +195,7 @@ ________________________________________________________________________________
 
 * **Description**:
 
-Developer implements tests in python to ensure quality in developed project
+	Developer implements tests in python to ensure quality in developed project
 
 * **Post-conditions**:
 
