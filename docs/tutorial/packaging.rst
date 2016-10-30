@@ -55,7 +55,7 @@ into this file, :file:`flaskr/__init__.py`:
 
 .. sourcecode:: python
 
-    from flaskr import app
+    from .flaskr import app
 
 This import statement brings the application instance into the top-level 
 of the application package.  When it is time to run the application, the 
