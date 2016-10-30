@@ -397,8 +397,9 @@ ________________________________________________________________________________
   
   The domain model is based in the representation of conceptual classes in which consists the internal operations of the system.
 
-
-
+  The applications can run various applications, defined in the application context, which is one of the pillars of Flask’s design.
+  Then this applications need to have a way to work with the server, this is done using the request context which in turn needs to have a initialized session to communicate with the server.
+  
 
 
 <a name="contribution"/>
