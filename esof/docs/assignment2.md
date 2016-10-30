@@ -335,32 +335,30 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________________________________________________________________
 
-**User Case**:  Set request object ( MUDAR O SET COOKIE )
+**User Case**:  Set request and response object
 
 * **Actors**: Developer
 
-* **Goal description**: Define  user  local data that is sent to server
+* **Goal description**: Define  comunication between server and application 
 
 * **Reference to Requirements**:  Provides an extendable core of functionality and Support for secure cookies
 
 * **Pre-conditions**:
 
-* **Description**:  The developer set what information  from user data is storaged and send 
-that  to server as forms, cookies , files or other things
-
+* **Description**:  The developer set what information is tramited between server and application
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set sessions 
 
 * **Actors**: Developer
 
-* **Goal description**:
+* **Goal description**: Define connection between the client and  the server
 
-* **Reference to Requirements**:
+* **Reference to Requirements**:  Provides an extendable core of functionality and Support for secure cookies
 
 * **Pre-conditions**:
 
-* **Description**:
+* **Description**:  
 
 * **Post-conditions**:
 
@@ -380,7 +378,7 @@ ________________________________________________________________________________
 
 * **Pre-conditions**:
 
-* **Description**:  The developer analyse and set what are the resources used by the application.
+* **Description**:  The developer analyse and set what are the resources used by the application and process comunication between server and application
 
 * **Post-conditions**:
 
