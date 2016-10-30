@@ -96,8 +96,6 @@ This type of structure has the advantange of separating the static files like CS
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/ext.png">
 </p>
 
-________________________________________________________________________________________________________________________________________
-
 
 **User case** :  Install Extensions
 
@@ -118,12 +116,14 @@ ________________________________________________________________________________
 
 1.  Flask has the package installed.
 
+________________________________________________________________________________________________________________________________________
+
 
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/test.png">
 </p>
 
-________________________________________________________________________________________________________________________________________
+
 
 **User Case**: Test in built-in development server 
 
@@ -142,7 +142,7 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________________________________________________________________
 
-**User Case **: Use server debug mode
+**User Case**: Use server debug mode
 
 * **Actors**: Developer
 
@@ -197,30 +197,26 @@ ________________________________________________________________________________
 
 	Developer implements tests in python to ensure quality in developed project
 
+________________________________________________________________________________________________________________________________________
+
 <p align="center">
   <img src="https://github.com/rodavoce/flask/blob/development/esof/res/dev.png">
 </p>
 
-________________________________________________________________________________________________________________________________________
 
-**User Case **: Develop   Project
+**User Case**: Develop   Project
 
 * **Actors**: Developer
 
-* **Goal description**:   Make the desired product
+* **Goal description**: Make the desired product
 
-* **Reference to Requirements**:
-
-* **Pre-conditions**:
+* **Reference to Requirements**: Provides an extendable core of functionality
 
 * **Description**:
 	 The develpor has set the requirements for his project and started using Flask features to build the product. 
 
-* **Post-conditions**:
-
 * **Variations**:
 	The developer  fixing or upgrading the project.
-* **Exceptions**:
 
 ________________________________________________________________________________________________________________________________________
 
@@ -228,19 +224,15 @@ ________________________________________________________________________________
 
 * **Actors**: Developer
 
-* **Goal description**:   Beautify and make more user friendly URL’s
+* **Goal description**: Beautify and make more user friendly URL’s
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Routing for selection of paths of the network
 
 * **Pre-conditions**:
 
 * **Description**:
 	 The develpor has made a set  of rule to determinate URL’s  to make them user friendly
 * **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
 
 ________________________________________________________________________________________________________________________________________
 
@@ -250,17 +242,13 @@ ________________________________________________________________________________
 
 * **Goal description**:  Define  one or more applications that in run in this python process
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Provides an extendable core of functionality
 
 * **Pre-conditions**:
 
 * **Description**:
 	 The develpor create a certain number of applications context 
 * **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
 
 ________________________________________________________________________________________________________________________________________
 
@@ -270,7 +258,7 @@ ________________________________________________________________________________
 
 * **Goal description**:   Define multiple HTML  templates  and their style  
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Provides an extendable core of functionality
 
 * **Pre-conditions**:
 
@@ -279,9 +267,6 @@ ________________________________________________________________________________
 
 * **Post-conditions**:
 
-* **Variations**:
-
-* **Exceptions**:
 
 ________________________________________________________________________________________________________________________________________
 
@@ -291,7 +276,7 @@ ________________________________________________________________________________
 
 * **Goal description**:   Define applicantions subscriptions
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Provides an extendable core of functionality
 
 * **Pre-condition**s:
 
@@ -300,29 +285,21 @@ ________________________________________________________________________________
 
 * **Post-conditions**:
 
-* **Variations**:
-
-* **Exceptions**:
-
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set Database 
 
 * **Actors**: Developer
 
-* **Goal description**:   Structure the database
+* **Goal description**: Structure the database
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Provides an extendable core of functionality and Takes the data from the Database and put the acquired information into other formats  that can actually be used by a browser to display the web site.
 
 * **Pre-conditions**:
 
 * **Description**:
-	The developer choose the database type and structure has we likes.
+	The developer choose the database type and structure has he likes.
 * **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
 
 ________________________________________________________________________________________________________________________________________
 
@@ -332,7 +309,7 @@ ________________________________________________________________________________
 
 * **Goal description**: Define pre-consults to the database
 
-* **Reference to Requirements**:
+* **Reference to Requirements**:  Provides an extendable core of functionality 
 
 * **Pre-conditions**:
 
@@ -340,29 +317,21 @@ ________________________________________________________________________________
 
 * **Post-conditions**:
 
-* **Variations**:
-
-* **Exceptions**:
-
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Define user previleges 
 
 * **Actors**: Developer
 
-* **Goal description**:  Set what a user can do.
+* **Goal description**:  Set what an user can do.
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: Provides an extendable core of functionality 
 
 * **Pre-conditions**:
 
 * **Description**:  The developer choose what  a  type of user can do in the application 
 
 * **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
 
 ________________________________________________________________________________________________________________________________________
 
@@ -372,18 +341,13 @@ ________________________________________________________________________________
 
 * **Goal description**: Define  user  local data that is sent to server
 
-* **Reference to Requirements**:
+* **Reference to Requirements**:  Provides an extendable core of functionality and Support for secure cookies
 
 * **Pre-conditions**:
 
 * **Description**:  The developer set what information  from user data is storaged and send 
 that  to server as forms, cookies , files or other things
 
-* **Post-conditions**:
-
-* **Variations**:
-
-* **Exceptions**:
 ________________________________________________________________________________________________________________________________________
 
 **User Case** :  Set sessions 
