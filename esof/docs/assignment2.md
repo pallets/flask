@@ -66,7 +66,7 @@ About the functional and non-functional requirements, the following can be found
   *  Provides an extendable core of functionality;
   *  Routing for selection of paths of the network;
   *  Takes the data from the Database (by querying it with SQL) and put the acquired information into other formats (by using Jinja 2) that can actually be used by a browser to display the web site.
-
+  
 * ***Non-Functional***:
   * Open source;
   * Tests;
@@ -104,7 +104,7 @@ ________________________________________________________________________________
 
 * **Goal description**: Add aditional features to Flask framework
 
-* **Reference to Requirements**:
+* **Reference to Requirements**:Provides an extendable core of functionality
 	
 * **Pre-conditions**: Extensions should be compatible with Flask version used
 
@@ -148,14 +148,17 @@ ________________________________________________________________________________
 
 * **Actors**: Developer
 
-* **Goal description**: Developer activate and use debug mode
+* **Goal description**:  Activate and use debug mode
 
 * **Reference to Requirements**:
 
 * **Pre-conditions**:
 
 * **Description**:
-	1. 
+
+1. Developer set to 1 debug mode flag.
+2. Test in built-in server
+3. See back trace report
 
 * **Post-conditions**:
 
@@ -168,13 +171,17 @@ ________________________________________________________________________________
 
 * **Actors**: Developer
 
-* **Goal description**:
+* **Goal description**:  Run implemented tests 
 
 * **Reference to Requirements**:
 
 * **Pre-conditions**:
 
+1. Have Implementd automated test
+
 * **Description**:
+
+Developer run test in python shell to check project status
 
 * **Post-conditions**:
 
@@ -187,13 +194,15 @@ ________________________________________________________________________________
 
 * **Actors**: Developer
 
-* **Goal description**:
+* **Goal description**: Implement automated tests
 
 * **Reference to Requirements**:
 
 * **Pre-conditions**:
 
 * **Description**:
+
+Developer implements tests in python to ensure quality in developed project
 
 * **Post-conditions**:
 
@@ -417,7 +426,7 @@ ________________________________________________________________________________
 
 * **Goal description**: Define what resources the aplication context need.
 
-* **Reference to Requirements**:
+* **Reference to Requirements**: 
 
 * **Pre-conditions**:
 
