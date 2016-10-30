@@ -27,7 +27,7 @@
 
 In requirements engineering, ***requirements elicitation*** is the practice of collecting the requirements of a system from users, customers and others stakeholders. Before requirements can be analyzed, modeled, or specified, they must be gathered through an elicitation process.
 ***Requirements elicitation*** and ***analysis*** involves collecting as many potential requirements as possible, then refining them to form a complete, concise and consistent set of high-quality requirements, and then analyzing them to start forming a preliminary set of features to be developed. 
-The most common practices used in ***requirments elicitation*** includes interviews, questionnaires, user observation, workshops, brainstorming, use cases, role playing and prototyping.
+The most common practices used in ***requirements elicitation*** includes interviews, questionnaires, user observation, workshops, brainstorming, use cases, role playing and prototyping.
 
 <a name="purpose"/>
 ###Purpose
@@ -41,7 +41,7 @@ The most common practices used in ***requirments elicitation*** includes intervi
 ###Description
   Flask is supported by a growing and active community, with a strong open-source spirit. Therefore, the process of evolution of Flask based on the requirements elicitation is relatively simple and informal, involving not only the Flask core developers, as well as all the surrounding community.
   In the beggining, the authors started for implementing the established funcionality requirements, creating a prototype. After that, the project has been undergoing an incremental software process with several new features and bug fixes being made. 
-  The requirements elicitation in Flask is possible through the following tools:
+  The ***requirements elicitation*** in Flask is possible through the following tools:
 * [Issues Tracker](https://github.com/pallets/flask/issues): for bugs and feature requests;
 * [Mailing List](http://flask.pocoo.org/mailinglist/): for help and long term discussion;
 * [IRC Channel](http://flask.pocoo.org/community/irc/): for general help and discussion.
@@ -56,7 +56,7 @@ A brief description of the differences between funcional and non-functional requ
 *  ***Functional***: describes what the system must do. They can often be derived from "stories" about how the system will be used, which may be in the form of scenarios, use-cases, or just a simple description of operations;
 *  ***Non-Functional***: describes other properties or characteristics that the system must have, other than its basic functionality. Because non-functional requirements are generally more difficult to identify, checklists of some kind are often used to make sure that developers consider all possibilities and do not leave out anything important.
 
-The software requirements specification document enlists enough and necessary requirements that are required for the project development. To derive the requirements becomes necessary to have clear and thorough understanding of the products to be developed or being developed. This is achieved and refined with detailed and continuous communications with the project team and customer until the completion of the software.
+The ***software requirements specification*** document enlists enough and necessary requirements that are required for the project development. To derive the requirements becomes necessary to have clear and thorough understanding of the products to be developed or being developed. This is achieved and refined with detailed and continuous communications with the project team and customer until the completion of the software.
 
 
 Although Flask doesn't own a ***SRS***, it has a lot of documentation supporting the operation of the framework, helping developers and contributors to better undertanding the functionalities of Flask.
