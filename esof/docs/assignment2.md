@@ -60,7 +60,7 @@ The ***software requirements specification*** document enlists enough and necess
 
 
 Although Flask doesn't own a ***SRS***, it has a lot of documentation supporting the operation of the framework, helping developers and contributors to better undertanding the functionalities of Flask.
-ABout the functional and non-functional requirements, the following can be found in Flask:
+About the functional and non-functional requirements, the following can be found in Flask:
 
 * ***Functional***:
   *  Provides an extendable core of functionality;
@@ -80,9 +80,6 @@ ABout the functional and non-functional requirements, the following can be found
 <a name="usecases"/>
 ##**Use Cases**
 
-
-
-// TODO -  COLOCAR ESTA PARTE ABAIXO NO USE MODEL COMO "INTRODUÇAO"??
 
 A Flask project is usually structered like the following tree folder:
 
