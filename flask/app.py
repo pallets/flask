@@ -1153,7 +1153,8 @@ class Flask(_PackageBoundObject):
            that do not necessarily have to be a subclass of the
            :class:`~werkzeug.exceptions.HTTPException` class.
 
-        :param code: the code as integer for the handler
+        :param code_or_exception: the code as integer for the handler, or
+                                  an arbitrary exception
         """
         def decorator(f):
             self._register_error_handler(None, code_or_exception, f)
