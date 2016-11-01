@@ -14,7 +14,6 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
-from collections import deque
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
@@ -1437,23 +1436,12 @@ class Flask(_PackageBoundObject):
         def find_handler(handler_map):
             if not handler_map:
                 return
-            queue = deque(exc_class.__mro__)
-            # Protect from geniuses who might create circular references in
-            # __mro__
-            done = set()
-
-            while queue:
-                cls = queue.popleft()
-                if cls in done:
-                    continue
-                done.add(cls)
+            for cls in exc_class.__mro__:
                 handler = handler_map.get(cls)
                 if handler is not None:
                     # cache for next time exc_class is raised
                     handler_map[exc_class] = handler
                     return handler
-
-                queue.extend(cls.__mro__)
 
         # try blueprint handlers
         handler = find_handler(self.error_handler_spec
