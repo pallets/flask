@@ -15,6 +15,9 @@ import os
 import uuid
 import datetime
 
+import hypothesis
+import hypothesis.strategies
+import hypothesis.extra.datetime as dt
 import flask
 from logging import StreamHandler
 from werkzeug.datastructures import Range
@@ -22,9 +25,6 @@ from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
-from hypothesis import given
-from hypothesis.strategies import uuids
-from hypothesis.extra.datetime import datetimes
 
 
 def has_encoding(name):
@@ -168,7 +168,7 @@ class TestJSON(object):
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data) == l
 
-    @given(datetimes())
+    @hypothesis.given(dt.datetimes())
     def test_jsonify_date_types(self, test_value):
         """Test jsonify with datetime.date and datetime.datetime types."""
         app = flask.Flask(__name__)
@@ -180,7 +180,7 @@ class TestJSON(object):
         assert rv.mimetype == 'application/json'
         assert flask.json.loads(rv.data)['x'] == http_date(test_value.timetuple())
 
-    @given(uuids())
+    @hypothesis.given(hypothesis.strategies.uuids())
     def test_jsonify_uuid_types(self, test_uuid):
         """Test jsonify with uuid.UUID types"""
 
