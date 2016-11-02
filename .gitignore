@@ -17,6 +17,3 @@ htmlcov
 .coverage
 .coverage.*
 *,cover
-
-# Hypothesis
-.hypothesis
