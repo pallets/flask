@@ -54,9 +54,11 @@ can be a different error: a handler for internal server errors will be
 passed other exception instances as well if they are uncaught.
 
 An error handler is registered with the :meth:`~flask.Flask.errorhandler`
-decorator and the error code of the exception.  Keep in mind that Flask
-will *not* set the error code for you, so make sure to also provide the
-HTTP status code when returning a response.
+decorator and the error code of the exception (alternatively, you can use the
+:meth:`~flask.Flask.register_error_handler` function, e.g., when you're
+registering error handlers as part of your Application Factory).  Keep in mind
+that Flask will *not* set the error code for you, so make sure to also provide
+the HTTP status code when returning a response.delete_cookie.
 
 Please note that if you add an error handler for "500 Internal Server
 Error", Flask will not trigger it if it's running in Debug mode.
@@ -68,6 +70,18 @@ Here an example implementation for a "404 Page Not Found" exception::
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('404.html'), 404
+
+And, using an application factory pattern (see :ref:`app-factories`)::
+
+    from flask import Flask, render_template
+    
+    def page_not_found(e):
+      return render_template('404.html'), 404
+    
+    def create_app(config_filename):
+        app = Flask(__name__)
+        # ...
+        app.register_error_handler(404, page_not_found)
 
 An example template might be this:
 
