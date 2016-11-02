@@ -119,8 +119,8 @@ class TestJSON(object):
         app = flask.Flask(__name__)
         c = app.test_client()
 
-        url = '/jsonify_basic_types{0}'.format(0)
-        app.add_url_rule(url, '0', lambda x=test_value: flask.jsonify(x))
+        url = '/jsonify_basic_types'
+        app.add_url_rule(url, url, lambda x=test_value: flask.jsonify(x))
         rv = c.get(url)
         assert rv.mimetype == 'application/json'
         assert flask.json.loads(rv.data) == test_value
