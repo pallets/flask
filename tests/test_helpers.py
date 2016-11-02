@@ -15,9 +15,6 @@ import os
 import uuid
 import datetime
 
-import hypothesis
-import hypothesis.strategies
-import hypothesis.extra.datetime as dt
 import flask
 from logging import StreamHandler
 from werkzeug.datastructures import Range
@@ -168,22 +165,26 @@ class TestJSON(object):
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data) == l
 
-    @hypothesis.given(dt.datetimes())
-    def test_jsonify_date_types(self, test_value):
+    def test_jsonify_date_types(self):
         """Test jsonify with datetime.date and datetime.datetime types."""
+        test_dates = (
+            datetime.datetime(1973, 3, 11, 6, 30, 45),
+            datetime.date(1975, 1, 5)
+        )
         app = flask.Flask(__name__)
         c = app.test_client()
 
-        url = '/datetest{0}'.format(0)
-        app.add_url_rule(url, str(0), lambda val=test_value: flask.jsonify(x=val))
-        rv = c.get(url)
-        assert rv.mimetype == 'application/json'
-        assert flask.json.loads(rv.data)['x'] == http_date(test_value.timetuple())
+        for i, d in enumerate(test_dates):
+            url = '/datetest{0}'.format(i)
+            app.add_url_rule(url, str(i), lambda val=d: flask.jsonify(x=val))
+            rv = c.get(url)
+            assert rv.mimetype == 'application/json'
+            assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
 
-    @hypothesis.given(hypothesis.strategies.uuids())
-    def test_jsonify_uuid_types(self, test_uuid):
+    def test_jsonify_uuid_types(self):
         """Test jsonify with uuid.UUID types"""
 
+        test_uuid = uuid.UUID(bytes=b'\xDE\xAD\xBE\xEF' * 4)
         app = flask.Flask(__name__)
         url = '/uuid_test'
         app.add_url_rule(url, url, lambda: flask.jsonify(x=test_uuid))
