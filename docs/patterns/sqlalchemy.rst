@@ -135,7 +135,7 @@ Here is an example :file:`database.py` module for your application::
     def init_db():
         metadata.create_all(bind=engine)
 
-As for the declarative approach you need to close the session after
+As in the declarative approach, you need to close the session after
 each request or application context shutdown.  Put this into your
 application module::
 
