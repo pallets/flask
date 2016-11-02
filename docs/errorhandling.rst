@@ -216,7 +216,7 @@ A formatter can be instantiated with a format string.  Note that
 tracebacks are appended to the log entry automatically.  You don't have to
 do that in the log formatter format string.
 
-Here some example setups:
+Here are some example setups:
 
 Email
 `````
