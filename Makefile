@@ -3,11 +3,8 @@
 all: clean-pyc test
 
 test:
-	pip install -r test-requirements.txt -q
-	FLASK_DEBUG= py.test tests examples
-
-tox-test:
-	tox
+	pip install -r test-requirements.txt
+	tox -e py-release
 
 audit:
 	python setup.py audit
