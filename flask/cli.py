@@ -131,9 +131,9 @@ version_option = click.Option(['--version'],
                               is_flag=True, is_eager=True)
 
 class DispatchingApp(object):
-    """Special application that dispatches to a flask application which
+    """Special application that dispatches to a Flask application which
     is imported by name in a background thread.  If an error happens
-    it is is recorded and shows as part of the WSGI handling which in case
+    it is recorded and shown as part of the WSGI handling which in case
     of the Werkzeug debugger means that it shows up in the browser.
     """
 
