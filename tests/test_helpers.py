@@ -113,20 +113,17 @@ class TestJSON(object):
             rv = flask.json.load(out)
             assert rv == test_data
 
-    def test_jsonify_basic_types(self):
+    @pytest.mark.parametrize('test_value', [0, -1, 1, 23, 3.14, 's', "longer string", True, False, None])
+    def test_jsonify_basic_types(self, test_value):
         """Test jsonify with basic types."""
-        # Should be able to use pytest parametrize on this, but I couldn't
-        # figure out the correct syntax
-        # https://pytest.org/latest/parametrize.html#pytest-mark-parametrize-parametrizing-test-functions
-        test_data = (0, 1, 23, 3.14, 's', "longer string", True, False,)
         app = flask.Flask(__name__)
         c = app.test_client()
-        for i, d in enumerate(test_data):
-            url = '/jsonify_basic_types{0}'.format(i)
-            app.add_url_rule(url, str(i), lambda x=d: flask.jsonify(x))
-            rv = c.get(url)
-            assert rv.mimetype == 'application/json'
-            assert flask.json.loads(rv.data) == d
+
+        url = '/jsonify_basic_types'
+        app.add_url_rule(url, url, lambda x=test_value: flask.jsonify(x))
+        rv = c.get(url)
+        assert rv.mimetype == 'application/json'
+        assert flask.json.loads(rv.data) == test_value
 
     def test_jsonify_dicts(self):
         """Test jsonify with dicts and kwargs unpacking."""
@@ -170,12 +167,10 @@ class TestJSON(object):
 
     def test_jsonify_date_types(self):
         """Test jsonify with datetime.date and datetime.datetime types."""
-
         test_dates = (
             datetime.datetime(1973, 3, 11, 6, 30, 45),
             datetime.date(1975, 1, 5)
         )
-
         app = flask.Flask(__name__)
         c = app.test_client()
 
@@ -189,8 +184,7 @@ class TestJSON(object):
     def test_jsonify_uuid_types(self):
         """Test jsonify with uuid.UUID types"""
 
-        test_uuid = uuid.UUID(bytes=b'\xDE\xAD\xBE\xEF'*4)
-
+        test_uuid = uuid.UUID(bytes=b'\xDE\xAD\xBE\xEF' * 4)
         app = flask.Flask(__name__)
         url = '/uuid_test'
         app.add_url_rule(url, url, lambda: flask.jsonify(x=test_uuid))
