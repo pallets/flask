@@ -1444,14 +1444,20 @@ class Flask(_PackageBoundObject):
                     return handler
 
         # try blueprint handlers
-        handler = find_handler(self.error_handler_spec
-                               .get(request.blueprint, {})
-                               .get(code))
+        handler_map = self.error_handler_spec.get(request.blueprint, {}).get(code)
+        if handler_map is None:
+            self.error_handler_spec.get(request.blueprint, {}).get(None)
+
+        handler = find_handler(handler_map)
+
         if handler is not None:
             return handler
 
         # fall back to app handlers
-        return find_handler(self.error_handler_spec[None].get(code))
+        handler_map = self.error_handler_spec.get(request.blueprint, {}).get(None)
+        if handler_map is None:
+            self.error_handler_spec.get(None, {}).get(None)
+        return find_handler(handler_map)
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the
