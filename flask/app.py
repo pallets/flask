@@ -1454,7 +1454,7 @@ class Flask(_PackageBoundObject):
             return handler
 
         # fall back to app handlers
-        handler_map = self.error_handler_spec.get(request.blueprint, {}).get(None)
+        handler_map = self.error_handler_spec.get(None, {}).get(code)
         if handler_map is None:
             self.error_handler_spec.get(None, {}).get(None)
         return find_handler(handler_map)
