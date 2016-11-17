@@ -35,6 +35,14 @@ def has_encoding(name):
 
 class TestJSON(object):
 
+    def test_ignore_cached_json(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context('/', method='POST', data='malformed',
+                                      content_type='application/json'):
+            assert flask.request.get_json(silent=True, cache=True) is None
+            with pytest.raises(BadRequest):
+                flask.request.get_json(silent=False, cache=False)
+
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = True
