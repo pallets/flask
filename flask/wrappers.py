@@ -116,11 +116,7 @@ class Request(RequestBase):
         .. versionadded:: 0.11
         """
         mt = self.mimetype
-        if mt == 'application/json':
-            return True
-        if mt.startswith('application/') and mt.endswith('+json'):
-            return True
-        return False
+        return mt == 'application/json' or mt.startswith('application/') and mt.endswith('+json')
 
     def get_json(self, force=False, silent=False, cache=True):
         """Parses the incoming JSON request data and returns it.  By default
