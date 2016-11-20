@@ -310,6 +310,7 @@ class FlaskGroup(AppGroup):
         if add_default_commands:
             self.add_command(run_command)
             self.add_command(shell_command)
+            self.add_command(routes_command)
 
         self._loaded_plugin_commands = False
 
@@ -464,6 +465,36 @@ def shell_command():
     ctx.update(app.make_shell_context())
 
     code.interact(banner=banner, local=ctx)
+
+
+@click.command('routes', short_help='Show application routes.')
+@with_appcontext
+def routes_command():
+    """Prints all the given routes for an application"""
+    from flask.globals import _app_ctx_stack
+
+    app = _app_ctx_stack.top.app
+    routes = []
+    ignored_methods = set(['HEAD', 'OPTIONS'])
+    sorted_rules = sorted(app.url_map.iter_rules(), key=lambda rule: rule.endpoint)
+
+    for rule in sorted_rules:
+        methods = ', '.join(rule.methods.difference(ignored_methods))
+        routes.append([rule.endpoint, methods, rule.rule])
+
+    cols = zip(*routes)
+    col_widths = [max(len(value) for value in col) for col in cols]
+    line = ' '.join(['%%-%ds' % width for width in col_widths])
+
+    previous_endpoint = None
+    for route in routes:
+        current_endpoint = route[0]
+        if previous_endpoint == current_endpoint:
+            current_endpoint = ''
+
+        previous_endpoint = route[0]
+
+        print(line % tuple([current_endpoint] + route[1:]))
 
 
 cli = FlaskGroup(help="""\
