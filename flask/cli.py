@@ -479,7 +479,8 @@ def routes_command():
     sorted_rules = sorted(app.url_map.iter_rules(), key=lambda rule: rule.endpoint)
 
     for rule in sorted_rules:
-        methods = ', '.join(rule.methods - ignored_methods)
+        sorted_methods = sorted(rule.methods - ignored_methods)
+        methods = ', '.join(sorted_methods)
         routes.append([rule.endpoint, methods, rule.rule])
 
     cols = zip(*routes)

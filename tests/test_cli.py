@@ -224,7 +224,7 @@ def test_routes():
     output = [line.strip() for line in result.output.split('\n')]
 
     assert result.exit_code == 0
-    assert output[0] == 'routes_blueprint.posts_routes  PUT, DELETE, GET /posts/<post_id>'
+    assert output[0] == 'routes_blueprint.posts_routes  DELETE, GET, PUT /posts/<post_id>'
     assert output[1] == 'routes_blueprint.user_id_route DELETE, GET      /users/<user_id>'
     assert output[2] == 'routes_blueprint.users_route   GET              /users'
     assert output[3] == 'static                         GET              /static/<path:filename>'
