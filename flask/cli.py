@@ -13,6 +13,7 @@ import os
 import sys
 from threading import Lock, Thread
 from functools import update_wrapper
+from operator import attrgetter
 
 import click
 
@@ -476,7 +477,7 @@ def routes_command():
     app = _app_ctx_stack.top.app
     routes = []
     ignored_methods = set(['HEAD', 'OPTIONS'])
-    sorted_rules = sorted(app.url_map.iter_rules(), key=lambda rule: rule.endpoint)
+    sorted_rules = sorted(app.url_map.iter_rules(), key=attrgetter('endpoint'))
 
     for rule in sorted_rules:
         sorted_methods = sorted(rule.methods - ignored_methods)
