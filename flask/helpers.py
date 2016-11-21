@@ -845,6 +845,7 @@ class _PackageBoundObject(object):
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
     static_folder = property(_get_static_folder, _set_static_folder, doc='''
@@ -857,6 +858,7 @@ class _PackageBoundObject(object):
             return self._static_url_path
         if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
     static_url_path = property(_get_static_url_path, _set_static_url_path)
