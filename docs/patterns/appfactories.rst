@@ -7,7 +7,7 @@ If you are already using packages and blueprints for your application
 (:ref:`blueprints`) there are a couple of really nice ways to further improve
 the experience.  A common pattern is creating the application object when
 the blueprint is imported.  But if you move the creation of this object,
-into a function, you can then create multiple instances of this and later.
+into a function, you can then create multiple instances of this app later.
 
 So why would you want to do this?
 
@@ -99,7 +99,8 @@ an application::
 
 It can then be used with the :command:`flask` command::
 
-    flask --app=exampleapp run
+    export FLASK_APP=exampleapp
+    flask run
 
 Factory Improvements
 --------------------

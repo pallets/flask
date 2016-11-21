@@ -10,6 +10,7 @@
 import pytest
 
 import os
+from datetime import timedelta
 import flask
 
 
@@ -88,12 +89,9 @@ def test_config_from_envvar():
     try:
         os.environ = {}
         app = flask.Flask(__name__)
-        try:
+        with pytest.raises(RuntimeError) as e:
             app.config.from_envvar('FOO_SETTINGS')
-        except RuntimeError as e:
-            assert "'FOO_SETTINGS' is not set" in str(e)
-        else:
-            assert 0, 'expected exception'
+        assert "'FOO_SETTINGS' is not set" in str(e.value)
         assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
 
         os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
@@ -107,16 +105,13 @@ def test_config_from_envvar_missing():
     env = os.environ
     try:
         os.environ = {'FOO_SETTINGS': 'missing.cfg'}
-        try:
+        with pytest.raises(IOError) as e:
             app = flask.Flask(__name__)
             app.config.from_envvar('FOO_SETTINGS')
-        except IOError as e:
-            msg = str(e)
-            assert msg.startswith('[Errno 2] Unable to load configuration '
-                                  'file (No such file or directory):')
-            assert msg.endswith("missing.cfg'")
-        else:
-            assert False, 'expected IOError'
+        msg = str(e.value)
+        assert msg.startswith('[Errno 2] Unable to load configuration '
+                              'file (No such file or directory):')
+        assert msg.endswith("missing.cfg'")
         assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
     finally:
         os.environ = env
@@ -124,29 +119,23 @@ def test_config_from_envvar_missing():
 
 def test_config_missing():
     app = flask.Flask(__name__)
-    try:
+    with pytest.raises(IOError) as e:
         app.config.from_pyfile('missing.cfg')
-    except IOError as e:
-        msg = str(e)
-        assert msg.startswith('[Errno 2] Unable to load configuration '
-                              'file (No such file or directory):')
-        assert msg.endswith("missing.cfg'")
-    else:
-        assert 0, 'expected config'
+    msg = str(e.value)
+    assert msg.startswith('[Errno 2] Unable to load configuration '
+                          'file (No such file or directory):')
+    assert msg.endswith("missing.cfg'")
     assert not app.config.from_pyfile('missing.cfg', silent=True)
 
 
 def test_config_missing_json():
     app = flask.Flask(__name__)
-    try:
+    with pytest.raises(IOError) as e:
         app.config.from_json('missing.json')
-    except IOError as e:
-        msg = str(e)
-        assert msg.startswith('[Errno 2] Unable to load configuration '
-                              'file (No such file or directory):')
-        assert msg.endswith("missing.json'")
-    else:
-        assert 0, 'expected config'
+    msg = str(e.value)
+    assert msg.startswith('[Errno 2] Unable to load configuration '
+                          'file (No such file or directory):')
+    assert msg.endswith("missing.json'")
     assert not app.config.from_json('missing.json', silent=True)
 
 
@@ -166,6 +155,14 @@ def test_session_lifetime():
     app = flask.Flask(__name__)
     app.config['PERMANENT_SESSION_LIFETIME'] = 42
     assert app.permanent_session_lifetime.seconds == 42
+
+
+def test_send_file_max_age():
+    app = flask.Flask(__name__)
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+    assert app.send_file_max_age_default.seconds == 3600
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(hours=2)
+    assert app.send_file_max_age_default.seconds == 7200
 
 
 def test_get_namespace():

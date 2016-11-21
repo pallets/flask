@@ -17,12 +17,9 @@ from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 from ._compat import iteritems, text_type
+from .helpers import total_seconds
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
-
-
-def total_seconds(td):
-    return td.days * 60 * 60 * 24 + td.seconds
 
 
 class SessionMixin(object):
@@ -171,7 +168,7 @@ class SessionInterface(object):
     null_session_class = NullSession
 
     #: A flag that indicates if the session interface is pickle based.
-    #: This can be used by flask extensions to make a decision in regards
+    #: This can be used by Flask extensions to make a decision in regards
     #: to how to deal with the session object.
     #:
     #: .. versionadded:: 0.10
@@ -266,7 +263,7 @@ class SessionInterface(object):
 
         This check is usually skipped if sessions get deleted.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         if session.modified:
             return True

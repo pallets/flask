@@ -1,11 +1,12 @@
 .. _tutorial-templates:
 
-Step 6: The Templates
+Step 7: The Templates
 =====================
 
-Now we should start working on the templates.  If we were to request the URLs
-now, we would only get an exception that Flask cannot find the templates.  The
-templates are using `Jinja2`_ syntax and have autoescaping enabled by
+Now it is time to start working on the templates.  As you may have
+noticed, if you make requests with the app running, you will get
+an exception that Flask cannot find the templates.  The templates
+are using `Jinja2`_ syntax and have autoescaping enabled by
 default.  This means that unless you mark a value in the code with
 :class:`~flask.Markup` or with the ``|safe`` filter in the template,
 Jinja2 will ensure that special characters such as ``<`` or ``>`` are
@@ -57,9 +58,9 @@ show_entries.html
 
 This template extends the :file:`layout.html` template from above to display the
 messages.  Note that the ``for`` loop iterates over the messages we passed
-in with the :func:`~flask.render_template` function.  We also tell the
-form to submit to your `add_entry` function and use ``POST`` as HTTP
-method:
+in with the :func:`~flask.render_template` function.  Notice that the form is
+configured to to submit to the `add_entry` view function and use ``POST`` as
+HTTP method:
 
 .. sourcecode:: html+jinja
 

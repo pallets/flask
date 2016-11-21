@@ -289,7 +289,7 @@ thing, like it does for :class:`request` and :class:`session`.
    It's now also possible to use the ``in`` operator on it to see if an
    attribute is defined and it yields all keys on iteration.
 
-   As of 1.0 you can use :meth:`pop` and :meth:`setdefault` in the same
+   As of 0.11 you can use :meth:`pop` and :meth:`setdefault` in the same
    way you would use them on a dictionary.
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
@@ -316,13 +316,7 @@ Useful Functions and Classes
 
 .. autofunction:: url_for
 
-.. function:: abort(code)
-
-   Raises an :exc:`~werkzeug.exceptions.HTTPException` for the given
-   status code.  For example to abort request handling with a page not
-   found exception, you would call ``abort(404)``.
-
-   :param code: the HTTP error code.
+.. autofunction:: abort
 
 .. autofunction:: redirect
 
@@ -751,6 +745,8 @@ The following converters are available:
 `int`       accepts integers
 `float`     like `int` but for floating point values
 `path`      like the default but also accepts slashes
+`any`       matches one of the items provided
+`uuid`      accepts UUID strings
 =========== ===============================================
 
 Custom converters can be defined using :attr:`flask.Flask.url_map`.
@@ -889,13 +885,6 @@ Command Line Interface
 
    Marks a function so that an instance of :class:`ScriptInfo` is passed
    as first argument to the click callback.
-
-.. autofunction:: script_info_option
-
-   A special decorator that informs a click callback to be passed the
-   script info object as first argument.  This is normally not useful
-   unless you implement very special commands like the run command which
-   does not want the application to be loaded yet.
 
 .. autodata:: run_command
 

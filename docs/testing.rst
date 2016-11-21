@@ -24,7 +24,7 @@ the :ref:`tutorial`.  If you don't have that application yet, get the
 sources from `the examples`_.
 
 .. _the examples:
-   https://github.com/mitsuhiko/flask/tree/master/examples/flaskr/
+   https://github.com/pallets/flask/tree/master/examples/flaskr/
 
 The Testing Skeleton
 --------------------
@@ -152,13 +152,13 @@ invalid credentials.  Add this new test to the class::
 
    def test_login_logout(self):
        rv = self.login('admin', 'default')
-       assert 'You were logged in' in rv.data
+       assert b'You were logged in' in rv.data
        rv = self.logout()
-       assert 'You were logged out' in rv.data
+       assert b'You were logged out' in rv.data
        rv = self.login('adminx', 'default')
-       assert 'Invalid username' in rv.data
+       assert b'Invalid username' in rv.data
        rv = self.login('admin', 'defaultx')
-       assert 'Invalid password' in rv.data
+       assert b'Invalid password' in rv.data
 
 Test Adding Messages
 --------------------
@@ -172,9 +172,9 @@ like this::
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
-        assert 'No entries here so far' not in rv.data
-        assert '&lt;Hello&gt;' in rv.data
-        assert '<strong>HTML</strong> allowed here' in rv.data
+        assert b'No entries here so far' not in rv.data
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
 
 Here we check that HTML is allowed in the text but not in the title,
 which is the intended behavior.
@@ -194,7 +194,7 @@ suite.
 
 
 .. _MiniTwit Example:
-   https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/
+   https://github.com/pallets/flask/tree/master/examples/minitwit/
 
 
 Other Testing Tricks
@@ -223,8 +223,8 @@ there does not seem to be a good way to do that, consider switching to
 application factories (see :ref:`app-factories`).
 
 Note however that if you are using a test request context, the
-:meth:`~flask.Flask.before_request` functions are not automatically called
-same for :meth:`~flask.Flask.after_request` functions.  However
+:meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`
+functions are not called automatically.  However
 :meth:`~flask.Flask.teardown_request` functions are indeed executed when
 the test request context leaves the ``with`` block.  If you do want the
 :meth:`~flask.Flask.before_request` functions to be called as well, you

@@ -14,18 +14,22 @@
          export an MINITWIT_SETTINGS environment variable
          pointing to a configuration file.
 
+      2. tell flask about the right application:
+
+         export FLASK_APP=minitwit
+
       2. fire up a shell and run this:
 
-         flask --app=minitwit initdb
+         flask initdb
 
       3. now you can run minitwit:
 
-         flask --app=minitwit run
+         flask run
 
          the application will greet you on
          http://localhost:5000/
 
     ~ Is it tested?
 
-      You betcha.  Run the `test_minitwit.py` file to
+      You betcha.  Run the `python setup.py test` file to
       see the tests pass.

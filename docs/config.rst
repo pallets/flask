@@ -130,8 +130,9 @@ The following configuration values are used internally by Flask:
 ``SEND_FILE_MAX_AGE_DEFAULT``     Default cache control max age to use with
                                   :meth:`~flask.Flask.send_static_file` (the
                                   default static file handler) and
-                                  :func:`~flask.send_file`, in
-                                  seconds. Override this value on a per-file
+                                  :func:`~flask.send_file`, as
+                                  :class:`datetime.timedelta` or as seconds.
+                                  Override this value on a per-file
                                   basis using the
                                   :meth:`~flask.Flask.get_send_file_max_age`
                                   hook on :class:`~flask.Flask` or
@@ -176,12 +177,13 @@ The following configuration values are used internally by Flask:
                                   behavior by changing this variable.
                                   This is not recommended but might give
                                   you a performance improvement on the
-                                  cost of cachability.
+                                  cost of cacheability.
 ``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
                                   jsonify responses will be pretty printed
                                   if they are not requested by an
                                   XMLHttpRequest object (controlled by
                                   the ``X-Requested-With`` header)
+``JSONIFY_MIMETYPE``              MIME type used for jsonify responses.
 ``TEMPLATES_AUTO_RELOAD``         Whether to check for modifications of
                                   the template source and reload it
                                   automatically. By default the value is
@@ -239,7 +241,7 @@ The following configuration values are used internally by Flask:
 .. versionadded:: 0.10
    ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``, ``JSONIFY_PRETTYPRINT_REGULAR``
 
-.. versionadded:: 1.0
+.. versionadded:: 0.11
    ``SESSION_REFRESH_EACH_REQUEST``, ``TEMPLATES_AUTO_RELOAD``,
    ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
 
@@ -260,7 +262,7 @@ So a common pattern is this::
 
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
-with the contents of the file the :envvar:``YOURAPPLICATION_SETTINGS``
+with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
 environment variable points to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::
@@ -308,6 +310,7 @@ that experience:
     limit yourself to request-only accesses to the configuration you can
     reconfigure the object later on as needed.
 
+.. _config-dev-prod:
 
 Development / Production
 ------------------------
@@ -329,7 +332,7 @@ there are alternative ways as well.  For example you could use imports or
 subclassing.
 
 What is very popular in the Django world is to make the import explicit in
-the config file by adding an ``from yourapplication.default_settings
+the config file by adding ``from yourapplication.default_settings
 import *`` to the top of the file and then overriding the changes by hand.
 You could also inspect an environment variable like
 ``YOURAPPLICATION_MODE`` and set that to `production`, `development` etc

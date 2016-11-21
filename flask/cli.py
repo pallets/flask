@@ -17,7 +17,8 @@ from functools import update_wrapper
 import click
 
 from ._compat import iteritems, reraise
-
+from .helpers import get_debug_flag
+from . import __version__
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -54,10 +55,10 @@ def prepare_exec_for_file(filename):
     module = []
 
     # Chop off file extensions or package markers
-    if filename.endswith('.py'):
-        filename = filename[:-3]
-    elif os.path.split(filename)[1] == '__init__.py':
+    if os.path.split(filename)[1] == '__init__.py':
         filename = os.path.dirname(filename)
+    elif filename.endswith('.py'):
+        filename = filename[:-3]
     else:
         raise NoAppException('The file provided (%s) does exist but is not a '
                              'valid Python file.  This means that it cannot '
@@ -85,7 +86,13 @@ def locate_app(app_id):
         module = app_id
         app_obj = None
 
-    __import__(module)
+    try:
+        __import__(module)
+    except ImportError:
+        raise NoAppException('The file/path provided (%s) does not appear to '
+                             'exist.  Please verify the path is correct.  If '
+                             'app is not on PYTHONPATH, ensure the extension '
+                             'is .py' % module)
     mod = sys.modules[module]
     if app_obj is None:
         app = find_best_app(mod)
@@ -98,10 +105,35 @@ def locate_app(app_id):
     return app
 
 
+def find_default_import_path():
+    app = os.environ.get('FLASK_APP')
+    if app is None:
+        return
+    if os.path.isfile(app):
+        return prepare_exec_for_file(app)
+    return app
+
+
+def get_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    message = 'Flask %(version)s\nPython %(python_version)s'
+    click.echo(message % {
+        'version': __version__,
+        'python_version': sys.version,
+    }, color=ctx.color)
+    ctx.exit()
+
+version_option = click.Option(['--version'],
+                              help='Show the flask version',
+                              expose_value=False,
+                              callback=get_version,
+                              is_flag=True, is_eager=True)
+
 class DispatchingApp(object):
-    """Special application that dispatches to a flask application which
+    """Special application that dispatches to a Flask application which
     is imported by name in a background thread.  If an error happens
-    it is is recorded and shows as part of the WSGI handling which in case
+    it is recorded and shown as part of the WSGI handling which in case
     of the Werkzeug debugger means that it shows up in the browser.
     """
 
@@ -155,15 +187,22 @@ class DispatchingApp(object):
 class ScriptInfo(object):
     """Help object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
-    to click.
+    to click.  In future versions of Flask this object will most likely play
+    a bigger role.  Typically it's created automatically by the
+    :class:`FlaskGroup` but you can also manually create it and pass it
+    onwards as click object.
     """
 
-    def __init__(self, app_import_path=None, debug=None, create_app=None):
-        #: The application import path
+    def __init__(self, app_import_path=None, create_app=None):
+        if create_app is None:
+            if app_import_path is None:
+                app_import_path = find_default_import_path()
+            self.app_import_path = app_import_path
+        else:
+            app_import_path = None
+
+        #: Optionally the import path for the Flask application.
         self.app_import_path = app_import_path
-        #: The debug flag.  If this is not None, the application will
-        #: automatically have it's debug flag overridden with this value.
-        self.debug = debug
         #: Optionally a function that is passed the script info to create
         #: the instance of the application.
         self.create_app = create_app
@@ -183,13 +222,16 @@ class ScriptInfo(object):
         if self.create_app is not None:
             rv = self.create_app(self)
         else:
-            if self.app_import_path is None:
-                raise NoAppException('Could not locate Flask application. '
-                                     'You did not provide FLASK_APP or the '
-                                     '--app parameter.')
+            if not self.app_import_path:
+                raise NoAppException(
+                    'Could not locate Flask application. You did not provide '
+                    'the FLASK_APP environment variable.\n\nFor more '
+                    'information see '
+                    'http://flask.pocoo.org/docs/latest/quickstart/')
             rv = locate_app(self.app_import_path)
-        if self.debug is not None:
-            rv.debug = self.debug
+        debug = get_debug_flag()
+        if debug is not None:
+            rv.debug = debug
         self._loaded_app = rv
         return rv
 
@@ -208,29 +250,6 @@ def with_appcontext(f):
         with __ctx.ensure_object(ScriptInfo).load_app().app_context():
             return __ctx.invoke(f, *args, **kwargs)
     return update_wrapper(decorator, f)
-
-
-def set_debug_value(ctx, param, value):
-    ctx.ensure_object(ScriptInfo).debug = value
-
-
-def set_app_value(ctx, param, value):
-    if value is not None:
-        if os.path.isfile(value):
-            value = prepare_exec_for_file(value)
-        elif '.' not in sys.path:
-            sys.path.insert(0, '.')
-    ctx.ensure_object(ScriptInfo).app_import_path = value
-
-
-debug_option = click.Option(['--debug/--no-debug'],
-    help='Enable or disable debug mode.',
-    default=None, callback=set_debug_value)
-
-
-app_option = click.Option(['-a', '--app'],
-    help='The application to run',
-    callback=set_app_value, is_eager=True)
 
 
 class AppGroup(click.Group):
@@ -273,23 +292,17 @@ class FlaskGroup(AppGroup):
 
     :param add_default_commands: if this is True then the default run and
                                  shell commands wil be added.
-    :param add_app_option: adds the default :option:`--app` option.  This gets
-                           automatically disabled if a `create_app`
-                           callback is defined.
-    :param add_debug_option: adds the default :option:`--debug` option.
+    :param add_version_option: adds the ``--version`` option.
     :param create_app: an optional callback that is passed the script info
                        and returns the loaded app.
     """
 
-    def __init__(self, add_default_commands=True, add_app_option=None,
-                 add_debug_option=True, create_app=None, **extra):
+    def __init__(self, add_default_commands=True, create_app=None,
+                 add_version_option=True, **extra):
         params = list(extra.pop('params', None) or ())
-        if add_app_option is None:
-            add_app_option = create_app is None
-        if add_app_option:
-            params.append(app_option)
-        if add_debug_option:
-            params.append(debug_option)
+
+        if add_version_option:
+            params.append(version_option)
 
         AppGroup.__init__(self, params=params, **extra)
         self.create_app = create_app
@@ -298,7 +311,24 @@ class FlaskGroup(AppGroup):
             self.add_command(run_command)
             self.add_command(shell_command)
 
+        self._loaded_plugin_commands = False
+
+    def _load_plugin_commands(self):
+        if self._loaded_plugin_commands:
+            return
+        try:
+            import pkg_resources
+        except ImportError:
+            self._loaded_plugin_commands = True
+            return
+
+        for ep in pkg_resources.iter_entry_points('flask.commands'):
+            self.add_command(ep.load(), ep.name)
+        self._loaded_plugin_commands = True
+
     def get_command(self, ctx, name):
+        self._load_plugin_commands()
+
         # We load built-in commands first as these should always be the
         # same no matter what the app does.  If the app does want to
         # override this it needs to make a custom instance of this group
@@ -319,6 +349,8 @@ class FlaskGroup(AppGroup):
             pass
 
     def list_commands(self, ctx):
+        self._load_plugin_commands()
+
         # The commands available is the list of both the application (if
         # available) plus the builtin commands.
         rv = set(click.Group.list_commands(self, ctx))
@@ -340,33 +372,6 @@ class FlaskGroup(AppGroup):
         kwargs['obj'] = obj
         kwargs.setdefault('auto_envvar_prefix', 'FLASK')
         return AppGroup.main(self, *args, **kwargs)
-
-
-def script_info_option(*args, **kwargs):
-    """This decorator works exactly like :func:`click.option` but is eager
-    by default and stores the value in the :attr:`ScriptInfo.data`.  This
-    is useful to further customize an application factory in very complex
-    situations.
-
-    :param script_info_key: this is a mandatory keyword argument which
-                            defines under which data key the value should
-                            be stored.
-    """
-    try:
-        key = kwargs.pop('script_info_key')
-    except LookupError:
-        raise TypeError('script_info_key not provided.')
-
-    real_callback = kwargs.get('callback')
-    def callback(ctx, param, value):
-        if real_callback is not None:
-            value = real_callback(ctx, value)
-        ctx.ensure_object(ScriptInfo).data[key] = value
-        return value
-
-    kwargs['callback'] = callback
-    kwargs.setdefault('is_eager', True)
-    return click.option(*args, **kwargs)
 
 
 @click.command('run', short_help='Runs a development server.')
@@ -400,16 +405,18 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     Flask is enabled and disabled otherwise.
     """
     from werkzeug.serving import run_simple
+
+    debug = get_debug_flag()
     if reload is None:
-        reload = info.debug
+        reload = bool(debug)
     if debugger is None:
-        debugger = info.debug
+        debugger = bool(debug)
     if eager_loading is None:
         eager_loading = not reload
 
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
-    # Extra startup messages.  This depends a but on Werkzeug internals to
+    # Extra startup messages.  This depends a bit on Werkzeug internals to
     # not double execute when the reloader kicks in.
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
         # If we have an import path we can print it out now which can help
@@ -418,8 +425,8 @@ def run_command(info, host, port, reload, debugger, eager_loading,
         # we won't print anything.
         if info.app_import_path is not None:
             print(' * Serving Flask app "%s"' % info.app_import_path)
-        if info.debug is not None:
-            print(' * Forcing debug %s' % (info.debug and 'on' or 'off'))
+        if debug is not None:
+            print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
 
     run_simple(host, port, app, use_reloader=reload,
                use_debugger=debugger, threaded=with_threads)
@@ -462,16 +469,22 @@ def shell_command():
 cli = FlaskGroup(help="""\
 This shell command acts as general utility script for Flask applications.
 
-It loads the application configured (either through the FLASK_APP environment
-variable or the --app parameter) and then provides commands either provided
-by the application or Flask itself.
+It loads the application configured (through the FLASK_APP environment
+variable) and then provides commands either provided by the application or
+Flask itself.
 
 The most useful commands are the "run" and "shell" command.
 
 Example usage:
 
-  flask --app=hello --debug run
-""")
+\b
+  %(prefix)s%(cmd)s FLASK_APP=hello.py
+  %(prefix)s%(cmd)s FLASK_DEBUG=1
+  %(prefix)sflask run
+""" % {
+    'cmd': os.name == 'posix' and 'export' or 'set',
+    'prefix': os.name == 'posix' and '$ ' or '',
+})
 
 
 def main(as_module=False):

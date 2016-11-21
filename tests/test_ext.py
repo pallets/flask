@@ -21,6 +21,18 @@ from flask._compat import PY2
 
 
 @pytest.fixture(autouse=True)
+def disable_extwarnings(request, recwarn):
+    from flask.exthook import ExtDeprecationWarning
+
+    def inner():
+        assert set(w.category for w in recwarn.list) \
+            <= set([ExtDeprecationWarning])
+        recwarn.clear()
+
+    request.addfinalizer(inner)
+
+
+@pytest.fixture(autouse=True)
 def importhook_setup(monkeypatch, request):
     # we clear this out for various reasons.  The most important one is
     # that a real flaskext could be in there which would disable our
