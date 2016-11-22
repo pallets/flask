@@ -94,7 +94,7 @@ Further Improving the Shell Experience
 --------------------------------------
 
 If you like the idea of experimenting in a shell, create yourself a module
-with stuff you want to star import into your interactive session.  There
+with stuff you want to start import into your interactive session.  There
 you could also define some more helper methods for common things such as
 initializing the database, dropping tables etc.
 
