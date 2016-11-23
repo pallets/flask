@@ -825,6 +825,10 @@ class Flask(_PackageBoundObject):
                         information.
         """
         from werkzeug.serving import run_simple
+        if host is None and port is None and \
+                self.config['SERVER_NAME'] is not None:
+            (host, _, _port) = self.config['SERVER_NAME'].partition(':')
+            port = int(_port)
         if host is None:
             host = '127.0.0.1'
         if port is None:
