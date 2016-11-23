@@ -100,85 +100,85 @@ def oldext_package(modules_tmpdir):
 def flaskext_broken(modules_tmpdir):
     ext = modules_tmpdir.mkdir('flask_broken')
     ext.join('b.py').write('\n')
-    ext.join('__init__.py').write('import flask.ext.broken.b\n'
+    ext.join('__init__.py').write('import flask_broken.b\n'
                                   'import missing_module')
 
 
 def test_flaskext_new_simple_import_normal(newext_simple):
-    from flask.ext.newext_simple import ext_id
+    from flask_newext_simple import ext_id
     assert ext_id == 'newext_simple'
 
 
 def test_flaskext_new_simple_import_module(newext_simple):
-    from flask.ext import newext_simple
+    from flask import newext_simple
     assert newext_simple.ext_id == 'newext_simple'
     assert newext_simple.__name__ == 'flask_newext_simple'
 
 
 def test_flaskext_new_package_import_normal(newext_package):
-    from flask.ext.newext_package import ext_id
+    from flask_newext_package import ext_id
     assert ext_id == 'newext_package'
 
 
 def test_flaskext_new_package_import_module(newext_package):
-    from flask.ext import newext_package
+    from flask import newext_package
     assert newext_package.ext_id == 'newext_package'
     assert newext_package.__name__ == 'flask_newext_package'
 
 
 def test_flaskext_new_package_import_submodule_function(newext_package):
-    from flask.ext.newext_package.submodule import test_function
+    from flask_newext_package.submodule import test_function
     assert test_function() == 42
 
 
 def test_flaskext_new_package_import_submodule(newext_package):
-    from flask.ext.newext_package import submodule
+    from flask_newext_package import submodule
     assert submodule.__name__ == 'flask_newext_package.submodule'
     assert submodule.test_function() == 42
 
 
 def test_flaskext_old_simple_import_normal(oldext_simple):
-    from flask.ext.oldext_simple import ext_id
+    from flask_oldext_simple import ext_id
     assert ext_id == 'oldext_simple'
 
 
 def test_flaskext_old_simple_import_module(oldext_simple):
-    from flask.ext import oldext_simple
+    from flask import oldext_simple
     assert oldext_simple.ext_id == 'oldext_simple'
     assert oldext_simple.__name__ == 'flaskext.oldext_simple'
 
 
 def test_flaskext_old_package_import_normal(oldext_package):
-    from flask.ext.oldext_package import ext_id
+    from flask_oldext_package import ext_id
     assert ext_id == 'oldext_package'
 
 
 def test_flaskext_old_package_import_module(oldext_package):
-    from flask.ext import oldext_package
+    from flask import oldext_package
     assert oldext_package.ext_id == 'oldext_package'
     assert oldext_package.__name__ == 'flaskext.oldext_package'
 
 
 def test_flaskext_old_package_import_submodule(oldext_package):
-    from flask.ext.oldext_package import submodule
+    from flask_oldext_package import submodule
     assert submodule.__name__ == 'flaskext.oldext_package.submodule'
     assert submodule.test_function() == 42
 
 
 def test_flaskext_old_package_import_submodule_function(oldext_package):
-    from flask.ext.oldext_package.submodule import test_function
+    from flask_oldext_package.submodule import test_function
     assert test_function() == 42
 
 
 def test_flaskext_broken_package_no_module_caching(flaskext_broken):
     for x in range(2):
         with pytest.raises(ImportError):
-            import flask.ext.broken
+            import flask_broken
 
 
 def test_no_error_swallowing(flaskext_broken):
     with pytest.raises(ImportError) as excinfo:
-        import flask.ext.broken
+        import flask_broken
 
     assert excinfo.type is ImportError
     if PY2:
