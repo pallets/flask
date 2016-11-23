@@ -85,7 +85,7 @@ class Config(dict):
         dict.__init__(self, defaults or {})
         self.root_path = root_path
 
-    def from_envvar(self, variable_name, silent=False):
+    def from_envvar(self, variable_name, silent=False, encoding=None):
         """Loads a configuration from an environment variable pointing to
         a configuration file.  This is basically just a shortcut with nicer
         error messages for this line of code::
@@ -106,9 +106,9 @@ class Config(dict):
                                'loaded.  Set this variable and make it '
                                'point to a configuration file' %
                                variable_name)
-        return self.from_pyfile(rv, silent=silent)
+        return self.from_pyfile(rv, silent=silent, encoding=encoding)
 
-    def from_pyfile(self, filename, silent=False):
+    def from_pyfile(self, filename, silent=False, encoding=None):
         """Updates the values in the config from a Python file.  This function
         behaves as if the file was imported as module with the
         :meth:`from_object` function.
@@ -126,7 +126,7 @@ class Config(dict):
         d = types.ModuleType('config')
         d.__file__ = filename
         try:
-            with open(filename) as config_file:
+            with open(filename, encoding) as config_file:
                 exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
         except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
