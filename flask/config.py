@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import io
 import os
 import types
 import errno
@@ -126,7 +127,7 @@ class Config(dict):
         d = types.ModuleType('config')
         d.__file__ = filename
         try:
-            with open(filename) as config_file:
+            with io.open(filename, "rb") as config_file:
                 exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
         except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
