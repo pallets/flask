@@ -11,13 +11,14 @@
 
 import uuid
 import hashlib
+from warnings import warn
 from base64 import b64encode, b64decode
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 from ._compat import iteritems, text_type
-from .helpers import total_seconds
+from .helpers import total_seconds, is_ip
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
@@ -336,6 +337,9 @@ class SecureCookieSessionInterface(SessionInterface):
 
     def save_session(self, app, session, response):
         domain = self.get_cookie_domain(app)
+        if domain is not None:
+            if is_ip(domain):
+                warnings.warn("IP introduced in SESSION_COOKIE_DOMAIN", RuntimeWarning)
         path = self.get_cookie_path(app)
 
         # Delete case.  If there is no session we bail early.
