@@ -25,8 +25,9 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
-from werkzeug.datastructures import Headers
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.datastructures import Headers, Range
+from werkzeug.exceptions import BadRequest, NotFound, \
+    RequestedRangeNotSatisfiable
 
 # this was moved in 0.7
 try:
@@ -429,7 +430,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
-              cache_timeout=None, conditional=False):
+              cache_timeout=None, conditional=False, last_modified=None):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -442,6 +443,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     to send certain files as attachment (HTML for instance).  The mimetype
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
+
+    ETags will also be attached automatically if a `filename` is provided. You
+    can turn this off by setting `add_etags=False`.
+
+    If `conditional=True` and `filename` is provided, this method will try to
+    upgrade the response stream to support range requests.  This will allow
+    the request to be answered with partial content response.
 
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
@@ -461,6 +469,15 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionchanged:: 0.9
        cache_timeout pulls its default from application config, when None.
 
+    .. versionchanged:: 0.12
+       The filename is no longer automatically inferred from file objects. If
+       you want to use automatic mimetype and etag support, pass a filepath via
+       `filename_or_fp` or `attachment_filename`.
+
+    .. versionchanged:: 0.12
+       The `attachment_filename` is preferred over `filename` for MIME-type
+       detection.
+
     :param filename_or_fp: the filename of the file to send in `latin-1`.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
@@ -469,8 +486,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            back to the traditional method.  Make sure that the
                            file pointer is positioned at the start of data to
                            send before calling :func:`send_file`.
-    :param mimetype: the mimetype of the file if provided, otherwise
-                     auto detection happens.
+    :param mimetype: the mimetype of the file if provided. If a file path is
+                     given, auto detection happens as fallback, otherwise an
+                     error will be raised.
     :param as_attachment: set to ``True`` if you want to send this file with
                           a ``Content-Disposition: attachment`` header.
     :param attachment_filename: the filename for the attachment if it
@@ -482,46 +500,40 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
                           :data:`~flask.current_app`.
+    :param last_modified: set the ``Last-Modified`` header to this value,
+        a :class:`~datetime.datetime` or timestamp.
+        If a file was passed, this overrides its mtime.
     """
     mtime = None
+    fsize = None
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
-        file = None
-    else:
-        from warnings import warn
-        file = filename_or_fp
-        filename = getattr(file, 'name', None)
-
-        # XXX: this behavior is now deprecated because it was unreliable.
-        # removed in Flask 1.0
-        if not attachment_filename and not mimetype \
-           and isinstance(filename, string_types):
-            warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is now deprecated.  Pass an '
-                'attach_filename if you want mimetypes to be guessed.'),
-                stacklevel=2)
-        if add_etags:
-            warn(DeprecationWarning('In future flask releases etags will no '
-                'longer be generated for file objects passed to the send_file '
-                'function because this behavior was unreliable.  Pass '
-                'filenames instead if possible, otherwise attach an etag '
-                'yourself based on another value'), stacklevel=2)
-
-    if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
-    if mimetype is None and (filename or attachment_filename):
-        mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+        file = None
+        if attachment_filename is None:
+            attachment_filename = os.path.basename(filename)
+    else:
+        file = filename_or_fp
+        filename = None
+
     if mimetype is None:
-        mimetype = 'application/octet-stream'
+        if attachment_filename is not None:
+            mimetype = mimetypes.guess_type(attachment_filename)[0] \
+                or 'application/octet-stream'
+
+        if mimetype is None:
+            raise ValueError(
+                'Unable to infer MIME-type because no filename is available. '
+                'Please set either `attachment_filename`, pass a filepath to '
+                '`filename_or_fp` or set your own MIME-type via `mimetype`.'
+            )
 
     headers = Headers()
     if as_attachment:
         if attachment_filename is None:
-            if filename is None:
-                raise TypeError('filename unavailable, required for '
-                                'sending as attachment')
-            attachment_filename = os.path.basename(filename)
+            raise TypeError('filename unavailable, required for '
+                            'sending as attachment')
         headers.add('Content-Disposition', 'attachment',
                     filename=attachment_filename)
 
@@ -529,22 +541,24 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if file is not None:
             file.close()
         headers['X-Sendfile'] = filename
-        headers['Content-Length'] = os.path.getsize(filename)
+        fsize = os.path.getsize(filename)
+        headers['Content-Length'] = fsize
         data = None
     else:
         if file is None:
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
-            headers['Content-Length'] = os.path.getsize(filename)
+            fsize = os.path.getsize(filename)
+            headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
 
-    # if we know the file modification date, we can store it as
-    # the time of the last modification.
-    if mtime is not None:
-        rv.last_modified = int(mtime)
+    if last_modified is not None:
+        rv.last_modified = last_modified
+    elif mtime is not None:
+        rv.last_modified = mtime
 
     rv.cache_control.public = True
     if cache_timeout is None:
@@ -554,6 +568,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.expires = int(time() + cache_timeout)
 
     if add_etags and filename is not None:
+        from warnings import warn
+
         try:
             rv.set_etag('%s-%s-%s' % (
                 os.path.getmtime(filename),
@@ -567,17 +583,28 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             warn('Access %s failed, maybe it does not exist, so ignore etags in '
                  'headers' % filename, stacklevel=2)
 
-        if conditional:
+    if conditional:
+        if callable(getattr(Range, 'to_content_range_header', None)):
+            # Werkzeug supports Range Requests
+            # Remove this test when support for Werkzeug <0.12 is dropped
+            try:
+                rv = rv.make_conditional(request, accept_ranges=True,
+                                         complete_length=fsize)
+            except RequestedRangeNotSatisfiable:
+                file.close()
+                raise
+        else:
             rv = rv.make_conditional(request)
-            # make sure we don't send x-sendfile for servers that
-            # ignore the 304 status code for x-sendfile.
-            if rv.status_code == 304:
-                rv.headers.pop('x-sendfile', None)
+        # make sure we don't send x-sendfile for servers that
+        # ignore the 304 status code for x-sendfile.
+        if rv.status_code == 304:
+            rv.headers.pop('x-sendfile', None)
     return rv
 
 
-def safe_join(directory, filename):
-    """Safely join `directory` and `filename`.
+def safe_join(directory, *pathnames):
+    """Safely join `directory` and zero or more untrusted `pathnames`
+    components.
 
     Example usage::
 
@@ -587,20 +614,23 @@ def safe_join(directory, filename):
             with open(filename, 'rb') as fd:
                 content = fd.read()  # Read and process the file content...
 
-    :param directory: the base directory.
-    :param filename: the untrusted filename relative to that directory.
-    :raises: :class:`~werkzeug.exceptions.NotFound` if the resulting path
-             would fall out of `directory`.
+    :param directory: the trusted base directory.
+    :param pathnames: the untrusted pathnames relative to that directory.
+    :raises: :class:`~werkzeug.exceptions.NotFound` if one or more passed
+            paths fall out of its boundaries.
     """
-    filename = posixpath.normpath(filename)
-    for sep in _os_alt_seps:
-        if sep in filename:
+    for filename in pathnames:
+        if filename != '':
+            filename = posixpath.normpath(filename)
+        for sep in _os_alt_seps:
+            if sep in filename:
+                raise NotFound()
+        if os.path.isabs(filename) or \
+           filename == '..' or \
+           filename.startswith('../'):
             raise NotFound()
-    if os.path.isabs(filename) or \
-       filename == '..' or \
-       filename.startswith('../'):
-        raise NotFound()
-    return os.path.join(directory, filename)
+        directory = os.path.join(directory, filename)
+    return directory
 
 
 def send_from_directory(directory, filename, **options):

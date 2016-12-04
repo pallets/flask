@@ -14,12 +14,50 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
-If you want to use the :command:`easy_install` command to upgrade your Flask
-installation, make sure to pass it the :option:`-U` parameter::
+Use the :command:`pip` command to upgrade your existing Flask installation by
+providing the ``--upgrade`` parameter::
 
-    $ easy_install -U Flask
+    $ pip install --upgrade Flask
 
-.. _upgrading-to-10:
+.. _upgrading-to-012:
+
+Version 0.12
+------------
+
+Changes to send_file
+````````````````````
+
+The ``filename`` is no longer automatically inferred from file-like objects.
+This means that the following code will no longer automatically have
+``X-Sendfile`` support, etag generation or MIME-type guessing::
+
+    response = send_file(open('/path/to/file.txt'))
+
+Any of the following is functionally equivalent::
+
+    fname = '/path/to/file.txt'
+
+    # Just pass the filepath directly
+    response = send_file(fname)
+
+    # Set the MIME-type and ETag explicitly
+    response = send_file(open(fname), mimetype='text/plain')
+    response.set_etag(...)
+
+    # Set `attachment_filename` for MIME-type guessing
+    # ETag still needs to be manually set
+    response = send_file(open(fname), attachment_filename=fname)
+    response.set_etag(...)
+
+The reason for this is that some file-like objects have a invalid or even
+misleading ``name`` attribute. Silently swallowing errors in such cases was not
+a satisfying solution.
+
+Additionally the default of falling back to ``application/octet-stream`` has
+been restricted. If Flask can't guess one or the user didn't provide one, the
+function fails if no filename information was provided.
+
+.. _upgrading-to-011:
 
 Version 0.11
 ------------
@@ -30,7 +68,7 @@ to the release we decided to push out a 0.11 release first with some
 changes removed to make the transition easier.  If you have been tracking
 the master branch which was 1.0 you might see some unexpected changes.
 
-In case you did track the master branch you will notice that `flask --app`
+In case you did track the master branch you will notice that :command:`flask --app`
 is removed now.  You need to use the environment variable to specify an
 application.
 
@@ -68,7 +106,7 @@ Templating
 The :func:`~flask.templating.render_template_string` function has changed to
 autoescape template variables by default. This better matches the behavior
 of :func:`~flask.templating.render_template`.
-    
+
 Extension imports
 `````````````````
 
@@ -133,7 +171,7 @@ Version 0.8
 -----------
 
 Flask introduced a new session interface system.  We also noticed that
-there was a naming collision between `flask.session` the module that
+there was a naming collision between ``flask.session`` the module that
 implements sessions and :data:`flask.session` which is the global session
 object.  With that introduction we moved the implementation details for
 the session system into a new module called :mod:`flask.sessions`.  If you
@@ -199,7 +237,7 @@ Please note that deprecation warnings are disabled by default starting
 with Python 2.7.  In order to see the deprecation warnings that might be
 emitted you have to enabled them with the :mod:`warnings` module.
 
-If you are working with windows and you lack the `patch` command line
+If you are working with windows and you lack the ``patch`` command line
 utility you can get it as part of various Unix runtime environments for
 windows including cygwin, msysgit or ming32.  Also source control systems
 like svn, hg or git have builtin support for applying unified diffs as
@@ -316,7 +354,7 @@ to upgrade.  What changed?
     runtime.
 -   Blueprints have an inverse behavior for :meth:`url_for`.  Previously
     ``.foo`` told :meth:`url_for` that it should look for the endpoint
-    `foo` on the application.  Now it means “relative to current module”.
+    ``foo`` on the application.  Now it means “relative to current module”.
     The script will inverse all calls to :meth:`url_for` automatically for
     you.  It will do this in a very eager way so you might end up with
     some unnecessary leading dots in your code if you're not using
@@ -334,7 +372,7 @@ to upgrade.  What changed?
     name into that folder if you want :file:`blueprintname/template.html` as
     the template name.
 
-If you continue to use the `Module` object which is deprecated, Flask will
+If you continue to use the ``Module`` object which is deprecated, Flask will
 restore the previous behavior as good as possible.  However we strongly
 recommend upgrading to the new blueprints as they provide a lot of useful
 improvement such as the ability to attach a blueprint multiple times,
@@ -354,7 +392,7 @@ change the order.
 
 Another change that breaks backwards compatibility is that context
 processors will no longer override values passed directly to the template
-rendering function.  If for example `request` is as variable passed
+rendering function.  If for example ``request`` is as variable passed
 directly to the template, the default context processor will not override
 it with the current request object.  This makes it easier to extend
 context processors later to inject additional variables without breaking
@@ -380,7 +418,7 @@ The following changes may be relevant to your application:
     for this feature.  Removing support for this makes the Flask internal
     code easier to understand and fixes a couple of small issues that make
     debugging harder than necessary.
--   The `create_jinja_loader` function is gone.  If you want to customize
+-   The ``create_jinja_loader`` function is gone.  If you want to customize
     the Jinja loader now, use the
     :meth:`~flask.Flask.create_jinja_environment` method instead.
 

@@ -25,7 +25,7 @@ For example, to run a Flask application with 4 worker processes (``-w
 
 .. _Gunicorn: http://gunicorn.org/
 .. _eventlet: http://eventlet.net/
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
 
 Gevent
 -------
@@ -41,7 +41,7 @@ event loop::
     http_server.serve_forever()
 
 .. _Gevent: http://www.gevent.org/
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
 .. _libev: http://software.schmorp.de/pkg/libev.html
 
 Twisted Web

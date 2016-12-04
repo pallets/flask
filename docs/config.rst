@@ -177,7 +177,7 @@ The following configuration values are used internally by Flask:
                                   behavior by changing this variable.
                                   This is not recommended but might give
                                   you a performance improvement on the
-                                  cost of cachability.
+                                  cost of cacheability.
 ``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
                                   jsonify responses will be pretty printed
                                   if they are not requested by an
@@ -262,7 +262,7 @@ So a common pattern is this::
 
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
-with the contents of the file the :envvar:``YOURAPPLICATION_SETTINGS``
+with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
 environment variable points to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::
@@ -310,6 +310,7 @@ that experience:
     limit yourself to request-only accesses to the configuration you can
     reconfigure the object later on as needed.
 
+.. _config-dev-prod:
 
 Development / Production
 ------------------------

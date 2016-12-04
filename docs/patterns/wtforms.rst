@@ -108,7 +108,7 @@ takes advantage of the :file:`_formhelpers.html` template:
 .. sourcecode:: html+jinja
 
     {% from "_formhelpers.html" import render_field %}
-    <form method=post action="/register">
+    <form method=post>
       <dl>
         {{ render_field(form.username) }}
         {{ render_field(form.email) }}
@@ -122,5 +122,5 @@ takes advantage of the :file:`_formhelpers.html` template:
 For more information about WTForms, head over to the `WTForms
 website`_.
 
-.. _WTForms: http://wtforms.readthedocs.org/
-.. _WTForms website: http://wtforms.readthedocs.org/
+.. _WTForms: https://wtforms.readthedocs.io/
+.. _WTForms website: https://wtforms.readthedocs.io/

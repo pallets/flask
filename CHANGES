@@ -3,6 +3,25 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.12
+------------
+
+- the cli command now responds to `--version`.
+- Mimetype guessing and ETag generation for file-like objects in ``send_file``
+  has been removed, as per issue ``#104``.  See pull request ``#1849``.
+- Mimetype guessing in ``send_file`` now fails loudly and doesn't fall back to
+  ``application/octet-stream``. See pull request ``#1988``.
+- Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
+  (pull request ``#1730``).
+- Revert a behavior change that made the dev server crash instead of returning
+  a Internal Server Error (pull request ``#2006``).
+- Correctly invoke response handlers for both regular request dispatching as
+  well as error handlers.
+- Disable logger propagation by default for the app logger.
+- Add support for range requests in ``send_file``.
+- ``app.test_client`` includes preset default environment, which can now be
+  directly set, instead of per ``client.get``.
+
 Version 0.11.2
 --------------
 
@@ -41,7 +60,7 @@ Released on May 29th 2016, codename Absinthe.
   from a view function.
 - Added :meth:`flask.Config.from_json`.
 - Added :attr:`flask.Flask.config_class`.
-- Added :meth:`flask.config.Config.get_namespace`.
+- Added :meth:`flask.Config.get_namespace`.
 - Templates are no longer automatically reloaded outside of debug mode. This
   can be configured with the new ``TEMPLATES_AUTO_RELOAD`` config key.
 - Added a workaround for a limitation in Python 3.3's namespace loader.
@@ -316,7 +335,7 @@ Released on September 29th 2011, codename Rakija
 - Applications now not only have a root path where the resources and modules
   are located but also an instance path which is the designated place to
   drop files that are modified at runtime (uploads etc.).  Also this is
-  conceptionally only instance depending and outside version control so it's
+  conceptually only instance depending and outside version control so it's
   the perfect place to put configuration files etc.  For more information
   see :ref:`instance-folders`.
 - Added the ``APPLICATION_ROOT`` configuration variable.

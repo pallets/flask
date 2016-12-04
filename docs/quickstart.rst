@@ -26,7 +26,7 @@ So what did that code do?
    class will be our WSGI application.
 2. Next we create an instance of this class. The first argument is the name of
    the application's module or package.  If you are using a single module (as
-   in this example), you should use `__name__` because depending on if it's
+   in this example), you should use ``__name__`` because depending on if it's
    started as application or imported as module the name will be different
    (``'__main__'`` versus the actual import name). This is needed so that
    Flask knows where to look for templates, static files, and so on. For more
@@ -42,17 +42,17 @@ your application :file:`flask.py` because this would conflict with Flask
 itself.
 
 To run the application you can either use the :command:`flask` command or
-python's :option:`-m` switch with Flask.  Before you can do that you need
+python's ``-m`` switch with Flask.  Before you can do that you need
 to tell your terminal the application to work with by exporting the
-`FLASK_APP` environment variable::
+``FLASK_APP`` environment variable::
 
     $ export FLASK_APP=hello.py
     $ flask run
      * Running on http://127.0.0.1:5000/
 
-If you are on Windows you need to use `set` instead of `export`.
+If you are on Windows you need to use ``set`` instead of ``export``.
 
-Alternatively you can use `python -m flask`::
+Alternatively you can use :command:`python -m flask`::
 
     $ export FLASK_APP=hello.py
     $ python -m flask run
@@ -86,7 +86,7 @@ should see your hello world greeting.
 What to do if the Server does not Start
 ---------------------------------------
 
-In case the ``python -m flask`` fails or :command:`flask` does not exist,
+In case the :command:`python -m flask` fails or :command:`flask` does not exist,
 there are multiple reasons this might be the case.  First of all you need
 to look at the error message.
 
@@ -95,17 +95,17 @@ Old Version of Flask
 
 Versions of Flask older than 0.11 use to have different ways to start the
 application.  In short, the :command:`flask` command did not exist, and
-neither did ``python -m flask``.  In that case you have two options:
+neither did :command:`python -m flask`.  In that case you have two options:
 either upgrade to newer Flask versions or have a look at the :ref:`server`
 docs to see the alternative method for running a server.
 
 Invalid Import Name
 ```````````````````
 
-The :option:`-a` argument to :command:`flask` is the name of the module to
-import.  In case that module is incorrectly named you will get an import
-error upon start (or if debug is enabled when you navigate to the
-application).  It will tell you what it tried to import and why it failed.
+The ``FLASK_APP`` environment variable is the name of the module to import at 
+:command:`flask run`. In case that module is incorrectly named you will get an 
+import error upon start (or if debug is enabled when you navigate to the 
+application). It will tell you what it tried to import and why it failed.
 
 The most common reason is a typo or because you did not actually create an
 ``app`` object.
@@ -123,13 +123,13 @@ That is not very nice and Flask can do better.  If you enable debug
 support the server will reload itself on code changes, and it will also
 provide you with a helpful debugger if things go wrong.
 
-To enable debug mode you can export the `FLASK_DEBUG` environment variable
+To enable debug mode you can export the ``FLASK_DEBUG`` environment variable
 before running the server::
 
     $ export FLASK_DEBUG=1
     $ flask run
 
-(On Windows you need to use `set` instead of `export`).
+(On Windows you need to use ``set`` instead of ``export``).
 
 This does the following things:
 
@@ -202,7 +202,7 @@ The following converters exist:
 =========== ===============================================
 `string`    accepts any text without a slash (the default)
 `int`       accepts integers
-`float`     like `int` but for floating point values
+`float`     like ``int`` but for floating point values
 `path`      like the default but also accepts slashes
 `any`       matches one of the items provided
 `uuid`      accepts UUID strings
@@ -226,7 +226,7 @@ The following converters exist:
 
    Though they look rather similar, they differ in their use of the trailing
    slash in the URL *definition*.  In the first case, the canonical URL for the
-   `projects` endpoint has a trailing slash.  In that sense, it is similar to
+   ``projects`` endpoint has a trailing slash.  In that sense, it is similar to
    a folder on a filesystem.  Accessing it without a trailing slash will cause
    Flask to redirect to the canonical URL with the trailing slash.
 
@@ -250,29 +250,29 @@ build a URL to a specific function you can use the :func:`~flask.url_for`
 function.  It accepts the name of the function as first argument and a number
 of keyword arguments, each corresponding to the variable part of the URL rule.
 Unknown variable parts are appended to the URL as query parameters.  Here are
-some examples:
+some examples::
 
->>> from flask import Flask, url_for
->>> app = Flask(__name__)
->>> @app.route('/')
-... def index(): pass
-...
->>> @app.route('/login')
-... def login(): pass
-...
->>> @app.route('/user/<username>')
-... def profile(username): pass
-...
->>> with app.test_request_context():
-...  print url_for('index')
-...  print url_for('login')
-...  print url_for('login', next='/')
-...  print url_for('profile', username='John Doe')
-...
-/
-/login
-/login?next=/
-/user/John%20Doe
+    >>> from flask import Flask, url_for
+    >>> app = Flask(__name__)
+    >>> @app.route('/')
+    ... def index(): pass
+    ...
+    >>> @app.route('/login')
+    ... def login(): pass
+    ...
+    >>> @app.route('/user/<username>')
+    ... def profile(username): pass
+    ...
+    >>> with app.test_request_context():
+    ...  print url_for('index')
+    ...  print url_for('login')
+    ...  print url_for('login', next='/')
+    ...  print url_for('profile', username='John Doe')
+    ...
+    /
+    /login
+    /login?next=/
+    /user/John%20Doe
 
 (This also uses the :meth:`~flask.Flask.test_request_context` method, explained
 below.  It tells Flask to behave as though it is handling a request, even
@@ -288,8 +288,8 @@ There are three good reasons for this:
    remember to change URLs all over the place.
 2. URL building will handle escaping of special characters and Unicode
    data transparently for you, so you don't have to deal with them.
-3. If your application is placed outside the URL root (say, in
-   ``/myapplication`` instead of ``/``), :func:`~flask.url_for` will handle
+3. If your application is placed outside the URL root - say, in
+   ``/myapplication`` instead of ``/`` - :func:`~flask.url_for` will handle
    that properly for you.
 
 
@@ -298,7 +298,7 @@ HTTP Methods
 
 HTTP (the protocol web applications are speaking) knows different methods for
 accessing URLs.  By default, a route only answers to ``GET`` requests, but that
-can be changed by providing the `methods` argument to the
+can be changed by providing the ``methods`` argument to the
 :meth:`~flask.Flask.route` decorator.  Here are some examples::
 
     from flask import request
@@ -446,22 +446,22 @@ know how that works, head over to the :ref:`template-inheritance` pattern
 documentation.  Basically template inheritance makes it possible to keep
 certain elements on each page (like header, navigation and footer).
 
-Automatic escaping is enabled, so if `name` contains HTML it will be escaped
+Automatic escaping is enabled, so if ``name`` contains HTML it will be escaped
 automatically.  If you can trust a variable and you know that it will be
 safe HTML (for example because it came from a module that converts wiki
 markup to HTML) you can mark it as safe by using the
 :class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
 
-Here is a basic introduction to how the :class:`~jinja2.Markup` class works:
+Here is a basic introduction to how the :class:`~jinja2.Markup` class works::
 
->>> from flask import Markup
->>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
-Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
->>> Markup.escape('<blink>hacker</blink>')
-Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
->>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-u'Marked up \xbb HTML'
+    >>> from flask import Markup
+    >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
+    Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
+    >>> Markup.escape('<blink>hacker</blink>')
+    Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
+    >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
+    u'Marked up \xbb HTML'
 
 .. versionchanged:: 0.5
 
@@ -540,7 +540,7 @@ The Request Object
 The request object is documented in the API section and we will not cover
 it here in detail (see :class:`~flask.request`). Here is a broad overview of
 some of the most common operations.  First of all you have to import it from
-the `flask` module::
+the ``flask`` module::
 
     from flask import request
 
@@ -563,7 +563,7 @@ attributes mentioned above::
         # was GET or the credentials were invalid
         return render_template('login.html', error=error)
 
-What happens if the key does not exist in the `form` attribute?  In that
+What happens if the key does not exist in the ``form`` attribute?  In that
 case a special :exc:`KeyError` is raised.  You can catch it like a
 standard :exc:`KeyError` but if you don't do that, a HTTP 400 Bad Request
 error page is shown instead.  So for many situations you don't have to
@@ -725,17 +725,15 @@ converting return values into response objects is as follows:
 3.  If a tuple is returned the items in the tuple can provide extra
     information.  Such tuples have to be in the form ``(response, status,
     headers)`` or ``(response, headers)`` where at least one item has
-    to be in the tuple.  The `status` value will override the status code
-    and `headers` can be a list or dictionary of additional header values.
+    to be in the tuple.  The ``status`` value will override the status code
+    and ``headers`` can be a list or dictionary of additional header values.
 4.  If none of that works, Flask will assume the return value is a
     valid WSGI application and convert that into a response object.
 
 If you want to get hold of the resulting response object inside the view
 you can use the :func:`~flask.make_response` function.
 
-Imagine you have a view like this:
-
-.. sourcecode:: python
+Imagine you have a view like this::
 
     @app.errorhandler(404)
     def not_found(error):
@@ -743,9 +741,7 @@ Imagine you have a view like this:
 
 You just need to wrap the return expression with
 :func:`~flask.make_response` and get the response object to modify it, then
-return it:
-
-.. sourcecode:: python
+return it::
 
     @app.errorhandler(404)
     def not_found(error):
@@ -784,7 +780,7 @@ sessions work::
             session['username'] = request.form['username']
             return redirect(url_for('index'))
         return '''
-            <form action="" method="post">
+            <form method="post">
                 <p><input type=text name=username>
                 <p><input type=submit value=Login>
             </form>
@@ -807,13 +803,13 @@ not using the template engine (as in this example).
    The problem with random is that it's hard to judge what is truly random.  And
    a secret key should be as random as possible.  Your operating system
    has ways to generate pretty random stuff based on a cryptographic
-   random generator which can be used to get such a key:
+   random generator which can be used to get such a key::
 
-   >>> import os
-   >>> os.urandom(24)
-   '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+       >>> import os
+       >>> os.urandom(24)
+       '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 
-   Just take that thing and copy/paste it into your code and you're done.
+       Just take that thing and copy/paste it into your code and you're done.
 
 A note on cookie-based sessions: Flask will take the values you put into the
 session object and serialize them into a cookie.  If you are finding some
@@ -821,6 +817,9 @@ values do not persist across requests, cookies are indeed enabled, and you are
 not getting a clear error message, check the size of the cookie in your page
 responses compared to the size supported by web browsers.
 
+Besides the default client-side based sessions, if you want to handle
+sessions on the server-side instead, there are several
+Flask extensions that support this.
 
 Message Flashing
 ----------------

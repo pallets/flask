@@ -18,7 +18,7 @@ import click
 
 from ._compat import iteritems, reraise
 from .helpers import get_debug_flag
-
+from . import __version__
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -86,7 +86,13 @@ def locate_app(app_id):
         module = app_id
         app_obj = None
 
-    __import__(module)
+    try:
+        __import__(module)
+    except ImportError:
+        raise NoAppException('The file/path provided (%s) does not appear to '
+                             'exist.  Please verify the path is correct.  If '
+                             'app is not on PYTHONPATH, ensure the extension '
+                             'is .py' % module)
     mod = sys.modules[module]
     if app_obj is None:
         app = find_best_app(mod)
@@ -108,10 +114,26 @@ def find_default_import_path():
     return app
 
 
+def get_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    message = 'Flask %(version)s\nPython %(python_version)s'
+    click.echo(message % {
+        'version': __version__,
+        'python_version': sys.version,
+    }, color=ctx.color)
+    ctx.exit()
+
+version_option = click.Option(['--version'],
+                              help='Show the flask version',
+                              expose_value=False,
+                              callback=get_version,
+                              is_flag=True, is_eager=True)
+
 class DispatchingApp(object):
-    """Special application that dispatches to a flask application which
+    """Special application that dispatches to a Flask application which
     is imported by name in a background thread.  If an error happens
-    it is is recorded and shows as part of the WSGI handling which in case
+    it is recorded and shown as part of the WSGI handling which in case
     of the Werkzeug debugger means that it shows up in the browser.
     """
 
@@ -270,12 +292,19 @@ class FlaskGroup(AppGroup):
 
     :param add_default_commands: if this is True then the default run and
                                  shell commands wil be added.
+    :param add_version_option: adds the ``--version`` option.
     :param create_app: an optional callback that is passed the script info
                        and returns the loaded app.
     """
 
-    def __init__(self, add_default_commands=True, create_app=None, **extra):
-        AppGroup.__init__(self, **extra)
+    def __init__(self, add_default_commands=True, create_app=None,
+                 add_version_option=True, **extra):
+        params = list(extra.pop('params', None) or ())
+
+        if add_version_option:
+            params.append(version_option)
+
+        AppGroup.__init__(self, params=params, **extra)
         self.create_app = create_app
 
         if add_default_commands:
@@ -387,7 +416,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
-    # Extra startup messages.  This depends a but on Werkzeug internals to
+    # Extra startup messages.  This depends a bit on Werkzeug internals to
     # not double execute when the reloader kicks in.
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
         # If we have an import path we can print it out now which can help
@@ -440,7 +469,7 @@ def shell_command():
 cli = FlaskGroup(help="""\
 This shell command acts as general utility script for Flask applications.
 
-It loads the application configured (either through the FLASK_APP environment
+It loads the application configured (through the FLASK_APP environment
 variable) and then provides commands either provided by the application or
 Flask itself.
 
@@ -449,7 +478,7 @@ The most useful commands are the "run" and "shell" command.
 Example usage:
 
 \b
-  %(prefix)s%(cmd)s FLASK_APP=hello
+  %(prefix)s%(cmd)s FLASK_APP=hello.py
   %(prefix)s%(cmd)s FLASK_DEBUG=1
   %(prefix)sflask run
 """ % {

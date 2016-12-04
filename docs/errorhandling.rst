@@ -36,7 +36,7 @@ overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
 <http://www.getsentry.com/>`_ for dealing with application errors.  It's
 available as an Open Source project `on GitHub
-<github.com/getsentry/sentry>`__ and is also available as a `hosted version
+<https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
 <https://getsentry.com/signup/>`_ which you can try for free. Sentry
 aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
@@ -51,7 +51,7 @@ And then add this to your Flask app::
     from raven.contrib.flask import Sentry
     sentry = Sentry(app, dsn='YOUR_DSN_HERE')
 
-Of if you are using factories you can also init it later::
+Or if you are using factories you can also init it later::
 
     from raven.contrib.flask import Sentry
     sentry = Sentry(dsn='YOUR_DSN_HERE')
@@ -77,7 +77,7 @@ You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
 Error handlers are normal :ref:`views` but instead of being registered for
-routes they are registered for exceptions that are rised while trying to
+routes, they are registered for exceptions that are raised while trying to
 do something else.
 
 Registering
@@ -216,7 +216,7 @@ A formatter can be instantiated with a format string.  Note that
 tracebacks are appended to the log entry automatically.  You don't have to
 do that in the log formatter format string.
 
-Here some example setups:
+Here are some example setups:
 
 Email
 `````
@@ -276,8 +276,9 @@ that this list is not complete, consult the official documentation of the
 | ``%(lineno)d``   | Source line number where the logging call was      |
 |                  | issued (if available).                             |
 +------------------+----------------------------------------------------+
-| ``%(asctime)s``  | Human-readable time when the LogRecord` was        |
-|                  | created.  By default this is of the form           |
+| ``%(asctime)s``  | Human-readable time when the                       |
+|                  | :class:`~logging.LogRecord` was created.           |
+|                  | By default this is of the form                     |
 |                  | ``"2003-07-08 16:49:45,896"`` (the numbers after   |
 |                  | the comma are millisecond portion of the time).    |
 |                  | This can be changed by subclassing the formatter   |

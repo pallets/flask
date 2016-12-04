@@ -12,6 +12,8 @@
 # Copyright (C) 2015 CERN.
 #
 from __future__ import absolute_import, print_function
+import os
+import sys
 
 import click
 import pytest
@@ -19,7 +21,8 @@ from click.testing import CliRunner
 from flask import Flask, current_app
 
 from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
-    find_best_app, locate_app, with_appcontext, prepare_exec_for_file
+    find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
+    find_default_import_path, get_version
 
 
 def test_cli_name(test_apps):
@@ -29,31 +32,47 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    """Test of find_best_app."""
-    class mod:
+    """Test if `find_best_app` behaves as expected with different combinations of input."""
+    class Module:
         app = Flask('appname')
-    assert find_best_app(mod) == mod.app
+    assert find_best_app(Module) == Module.app
 
-    class mod:
+    class Module:
         application = Flask('appname')
-    assert find_best_app(mod) == mod.application
+    assert find_best_app(Module) == Module.application
 
-    class mod:
+    class Module:
         myapp = Flask('appname')
-    assert find_best_app(mod) == mod.myapp
+    assert find_best_app(Module) == Module.myapp
 
-    class mod:
-        myapp = Flask('appname')
+    class Module:
+        pass
+    pytest.raises(NoAppException, find_best_app, Module)
+
+    class Module:
+        myapp1 = Flask('appname1')
         myapp2 = Flask('appname2')
-
-    pytest.raises(NoAppException, find_best_app, mod)
+    pytest.raises(NoAppException, find_best_app, Module)
 
 
 def test_prepare_exec_for_file(test_apps):
-    assert prepare_exec_for_file('test.py') == 'test'
-    assert prepare_exec_for_file('/usr/share/__init__.py') == 'share'
+    """Expect the correct path to be set and the correct module name to be returned.
+
+    :func:`prepare_exec_for_file` has a side effect, where
+    the parent directory of given file is added to `sys.path`.
+    """
+    realpath = os.path.realpath('/tmp/share/test.py')
+    dirname = os.path.dirname(realpath)
+    assert prepare_exec_for_file('/tmp/share/test.py') == 'test'
+    assert dirname in sys.path
+
+    realpath = os.path.realpath('/tmp/share/__init__.py')
+    dirname = os.path.dirname(os.path.dirname(realpath))
+    assert prepare_exec_for_file('/tmp/share/__init__.py') == 'share'
+    assert dirname in sys.path
+
     with pytest.raises(NoAppException):
-        prepare_exec_for_file('test.txt')
+        prepare_exec_for_file('/tmp/share/test.txt')
 
 
 def test_locate_app(test_apps):
@@ -61,7 +80,37 @@ def test_locate_app(test_apps):
     assert locate_app("cliapp.app").name == "testapp"
     assert locate_app("cliapp.app:testapp").name == "testapp"
     assert locate_app("cliapp.multiapp:app1").name == "app1"
+    pytest.raises(NoAppException, locate_app, "notanpp.py")
+    pytest.raises(NoAppException, locate_app, "cliapp/app")
     pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
+
+
+def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
+    """Test of find_default_import_path."""
+    monkeypatch.delitem(os.environ, 'FLASK_APP', raising=False)
+    assert find_default_import_path() == None
+    monkeypatch.setitem(os.environ, 'FLASK_APP', 'notanapp')
+    assert find_default_import_path() == 'notanapp'
+    tmpfile = tmpdir.join('testapp.py')
+    tmpfile.write('')
+    monkeypatch.setitem(os.environ, 'FLASK_APP', str(tmpfile))
+    expect_rv = prepare_exec_for_file(str(tmpfile))
+    assert find_default_import_path() == expect_rv
+
+
+def test_get_version(test_apps, capsys):
+    """Test of get_version."""
+    from flask import __version__ as flask_ver
+    from sys import version as py_ver
+    class MockCtx(object):
+        resilient_parsing = False
+        color = None
+        def exit(self): return
+    ctx = MockCtx()
+    get_version(ctx, None, "test")
+    out, err = capsys.readouterr()
+    assert flask_ver in out
+    assert py_ver in out
 
 
 def test_scriptinfo(test_apps):

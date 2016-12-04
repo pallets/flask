@@ -39,10 +39,8 @@ the process, also read the :ref:`fabric-deployment` chapter.
 Basic Setup Script
 ------------------
 
-Because you have Flask running, you have setuptools available on your system anyways.
-Flask already depends upon setuptools. If you do not, fear not, there is a
-script to install it for you: `ez_setup.py`_.  Just download and
-run with your Python interpreter.
+Because you have Flask installed, you have setuptools available on your system.
+Flask already depends upon setuptools.
 
 Standard disclaimer applies: :ref:`you better use a virtualenv
 <virtualenv>`.
@@ -67,7 +65,7 @@ A basic :file:`setup.py` file for a Flask application looks like this::
 
 Please keep in mind that you have to list subpackages explicitly.  If you
 want setuptools to lookup the packages for you automatically, you can use
-the `find_packages` function::
+the ``find_packages`` function::
 
     from setuptools import setup, find_packages
 
@@ -76,15 +74,34 @@ the `find_packages` function::
         packages=find_packages()
     )
 
-Most parameters to the `setup` function should be self explanatory,
-`include_package_data` and `zip_safe` might not be.
-`include_package_data` tells setuptools to look for a :file:`MANIFEST.in` file
+Most parameters to the ``setup`` function should be self explanatory,
+``include_package_data`` and ``zip_safe`` might not be.
+``include_package_data`` tells setuptools to look for a :file:`MANIFEST.in` file
 and install all the entries that match as package data.  We will use this
 to distribute the static files and templates along with the Python module
-(see :ref:`distributing-resources`).  The `zip_safe` flag can be used to
+(see :ref:`distributing-resources`).  The ``zip_safe`` flag can be used to
 force or prevent zip Archive creation.  In general you probably don't want
 your packages to be installed as zip files because some tools do not
 support them and they make debugging a lot harder.
+
+
+Tagging Builds
+--------------
+
+It is useful to distinguish between release and development builds.  Add a
+:file:`setup.cfg` file to configure these options.
+
+    [egg_info]
+    tag_build = .dev
+    tag_date = 1
+
+    [aliases]
+    release = egg_info -RDb ''
+
+Running ``python setup.py sdist`` will create a development package
+with ".dev" and the current date appended: ``flaskr-1.0.dev20160314.tar.gz``.
+Running ``python setup.py release sdist`` will create a release package
+with only the version: ``flaskr-1.0.tar.gz``.
 
 
 .. _distributing-resources:
@@ -104,13 +121,13 @@ your tarball::
 
 Don't forget that even if you enlist them in your :file:`MANIFEST.in` file, they
 won't be installed for you unless you set the `include_package_data`
-parameter of the `setup` function to ``True``!
+parameter of the ``setup`` function to ``True``!
 
 
 Declaring Dependencies
 ----------------------
 
-Dependencies are declared in the `install_requires` parameter as a list.
+Dependencies are declared in the ``install_requires`` parameter as a list.
 Each item in that list is the name of a package that should be pulled from
 PyPI on installation.  By default it will always use the most recent
 version, but you can also provide minimum and maximum version
@@ -140,20 +157,20 @@ Installing / Developing
 -----------------------
 
 To install your application (ideally into a virtualenv) just run the
-:file:`setup.py` script with the `install` parameter.  It will install your
+:file:`setup.py` script with the ``install`` parameter.  It will install your
 application into the virtualenv's site-packages folder and also download
 and install all dependencies::
 
     $ python setup.py install
 
 If you are developing on the package and also want the requirements to be
-installed, you can use the `develop` command instead::
+installed, you can use the ``develop`` command instead::
 
     $ python setup.py develop
 
 This has the advantage of just installing a link to the site-packages
 folder instead of copying the data over.  You can then continue to work on
-the code without having to run `install` again after each change.
+the code without having to run ``install`` again after each change.
 
 
 .. _pip: https://pypi.python.org/pypi/pip

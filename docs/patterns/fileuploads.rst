@@ -47,7 +47,7 @@ the file and redirects the user to the URL for the uploaded file::
 
     def allowed_file(filename):
         return '.' in filename and \
-               filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     @app.route('/', methods=['GET', 'POST'])
     def upload_file():
@@ -71,7 +71,7 @@ the file and redirects the user to the URL for the uploaded file::
         <!doctype html>
         <title>Upload new File</title>
         <h1>Upload new File</h1>
-        <form action="" method=post enctype=multipart/form-data>
+        <form method=post enctype=multipart/form-data>
           <p><input type=file name=file>
              <input type=submit value=Upload>
         </form>
@@ -104,9 +104,9 @@ before storing it directly on the filesystem.
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files. In the 
-:func:`upload_file()` we redirect the user to 
-``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``. 
+Now one last thing is missing: the serving of the uploaded files. In the
+:func:`upload_file()` we redirect the user to
+``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``.
 So we write the :func:`uploaded_file` function to return the file of that name. As
 of Flask 0.5 we can use a function that does that for us::
 

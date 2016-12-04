@@ -16,7 +16,7 @@ import flask
 
 class TestRequestDeprecation(object):
 
-    def test_request_json(self, catch_deprecation_warnings):
+    def test_request_json(self, recwarn):
         """Request.json is deprecated"""
         app = flask.Flask(__name__)
         app.testing = True
@@ -27,13 +27,11 @@ class TestRequestDeprecation(object):
             print(flask.request.json)
             return 'OK'
 
-        with catch_deprecation_warnings() as captured:
-            c = app.test_client()
-            c.post('/', data='{"spam": 42}', content_type='application/json')
+        c = app.test_client()
+        c.post('/', data='{"spam": 42}', content_type='application/json')
+        recwarn.pop(DeprecationWarning)
 
-        assert len(captured) == 1
-
-    def test_request_module(self, catch_deprecation_warnings):
+    def test_request_module(self, recwarn):
         """Request.module is deprecated"""
         app = flask.Flask(__name__)
         app.testing = True
@@ -43,8 +41,6 @@ class TestRequestDeprecation(object):
             assert flask.request.module is None
             return 'OK'
 
-        with catch_deprecation_warnings() as captured:
-            c = app.test_client()
-            c.get('/')
-
-        assert len(captured) == 1
+        c = app.test_client()
+        c.get('/')
+        recwarn.pop(DeprecationWarning)

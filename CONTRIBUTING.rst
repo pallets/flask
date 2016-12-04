@@ -36,7 +36,7 @@ Running the testsuite
 ---------------------
 
 You probably want to set up a `virtualenv
-<http://virtualenv.readthedocs.org/en/latest/index.html>`_.
+<https://virtualenv.readthedocs.io/en/latest/index.html>`_.
 
 The minimal requirement for running the testsuite is ``py.test``.  You can
 install it with::
@@ -68,3 +68,47 @@ of ``pytest``. You can install it with::
 
 The ``tox`` command will then run all tests against multiple combinations
 Python versions and dependency versions.
+
+Running test coverage
+---------------------
+Generating a report of lines that do not have unit test coverage can indicate where
+to start contributing.  ``pytest`` integrates with ``coverage.py``, using the ``pytest-cov``
+plugin.  This assumes you have already run the testsuite (see previous section)::
+
+    pip install pytest-cov
+
+After this has been installed, you can output a report to the command line using this command::
+
+    py.test --cov=flask tests/
+
+Generate a HTML report can be done using this command::
+
+    py.test --cov-report html --cov=flask tests/
+
+Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
+
+Caution
+=======
+pushing
+-------
+This repository contains several zero-padded file modes that may cause issues when pushing this repository to git hosts other than github. Fixing this is destructive to the commit history, so we suggest ignoring these warnings. If it fails to push and you're using a self-hosted git service like Gitlab, you can turn off repository checks in the admin panel.
+
+
+cloning
+-------
+The zero-padded file modes files above can cause issues while cloning, too. If you have
+
+::
+
+    [fetch]
+    fsckobjects = true
+
+or
+
+::
+
+    [receive]
+    fsckObjects = true
+
+
+set in your git configuration file, cloning this repository will fail. The only solution is to set both of the above settings to false while cloning, and then setting them back to true after the cloning is finished.

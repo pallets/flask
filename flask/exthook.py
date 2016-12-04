@@ -68,7 +68,7 @@ class ExtensionImporter(object):
 
         warnings.warn(
             "Importing flask.ext.{x} is deprecated, use flask_{x} instead."
-            .format(x=modname), ExtDeprecationWarning
+            .format(x=modname), ExtDeprecationWarning, stacklevel=2
         )
 
         for path in self.module_choices:

@@ -14,7 +14,6 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
-from collections import deque
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
@@ -519,7 +518,7 @@ class Flask(_PackageBoundObject):
         #:        def to_python(self, value):
         #:            return value.split(',')
         #:        def to_url(self, values):
-        #:            return ','.join(BaseConverter.to_url(value)
+        #:            return ','.join(super(ListConverter, self).to_url(value)
         #:                            for value in values)
         #:
         #:    app = Flask(__name__)
@@ -838,12 +837,11 @@ class Flask(_PackageBoundObject):
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
-        options.setdefault('passthrough_errors', True)
         try:
             run_simple(host, port, self, **options)
         finally:
             # reset the first request information if the development server
-            # resetted normally.  This makes it possible to restart the server
+            # reset normally.  This makes it possible to restart the server
             # without reloader and that stuff from an interactive shell.
             self._got_first_request = False
 
@@ -877,9 +875,9 @@ class Flask(_PackageBoundObject):
             from flask.testing import FlaskClient
 
             class CustomClient(FlaskClient):
-                def __init__(self, authentication=None, *args, **kwargs):
-                    FlaskClient.__init__(*args, **kwargs)
-                    self._authentication = authentication
+                def __init__(self, *args, **kwargs):
+                    self._authentication = kwargs.pop("authentication")
+                    super(CustomClient,self).__init__( *args, **kwargs)
 
             app.test_client_class = CustomClient
             client = app.test_client(authentication='Basic ....')
@@ -935,22 +933,7 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def register_blueprint(self, blueprint, **options):
-        """Register a blueprint on the application. For information about 
-        blueprints head over to :ref:`blueprints`.
-
-        The blueprint name is passed in as the first argument.	
-        Options are passed as additional keyword arguments and forwarded to 
-        `blueprints` in an "options" dictionary.
-
-        :param subdomain: set a subdomain for the blueprint
-        :param url_prefix: set the prefix for all URLs defined on the blueprint.
-                            ``(url_prefix='/<lang code>')``
-        :param url_defaults: a dictionary with URL defaults that is added to 
-                            each and every URL defined with this blueprint
-        :param static_folder: add a static folder to urls in this blueprint
-        :param static_url_path: add a static url path to urls in this blueprint
-        :param template_folder: set an alternate template folder
-        :param root_path: set an alternate root path for this blueprint
+        """Registers a blueprint on the application.
 
         .. versionadded:: 0.7
         """
@@ -1131,7 +1114,7 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def errorhandler(self, code_or_exception):
-        """A decorator that is used to register a function give a given
+        """A decorator that is used to register a function given an
         error code.  Example::
 
             @app.errorhandler(404)
@@ -1169,7 +1152,8 @@ class Flask(_PackageBoundObject):
            that do not necessarily have to be a subclass of the
            :class:`~werkzeug.exceptions.HTTPException` class.
 
-        :param code: the code as integer for the handler
+        :param code_or_exception: the code as integer for the handler, or
+                                  an arbitrary exception
         """
         def decorator(f):
             self._register_error_handler(None, code_or_exception, f)
@@ -1452,23 +1436,12 @@ class Flask(_PackageBoundObject):
         def find_handler(handler_map):
             if not handler_map:
                 return
-            queue = deque(exc_class.__mro__)
-            # Protect from geniuses who might create circular references in
-            # __mro__
-            done = set()
-
-            while queue:
-                cls = queue.popleft()
-                if cls in done:
-                    continue
-                done.add(cls)
+            for cls in exc_class.__mro__:
                 handler = handler_map.get(cls)
                 if handler is not None:
                     # cache for next time exc_class is raised
                     handler_map[exc_class] = handler
                     return handler
-
-                queue.extend(cls.__mro__)
 
         # try blueprint handlers
         handler = find_handler(self.error_handler_spec
@@ -1571,7 +1544,7 @@ class Flask(_PackageBoundObject):
         self.log_exception((exc_type, exc_value, tb))
         if handler is None:
             return InternalServerError()
-        return handler(e)
+        return self.finalize_request(handler(e), from_error_handler=True)
 
     def log_exception(self, exc_info):
         """Logs an exception.  This is called by :meth:`handle_exception`
@@ -1639,9 +1612,30 @@ class Flask(_PackageBoundObject):
                 rv = self.dispatch_request()
         except Exception as e:
             rv = self.handle_user_exception(e)
+        return self.finalize_request(rv)
+
+    def finalize_request(self, rv, from_error_handler=False):
+        """Given the return value from a view function this finalizes
+        the request by converting it into a response and invoking the
+        postprocessing functions.  This is invoked for both normal
+        request dispatching as well as error handlers.
+
+        Because this means that it might be called as a result of a
+        failure a special safe mode is available which can be enabled
+        with the `from_error_handler` flag.  If enabled, failures in
+        response processing will be logged and otherwise ignored.
+
+        :internal:
+        """
         response = self.make_response(rv)
-        response = self.process_response(response)
-        request_finished.send(self, response=response)
+        try:
+            response = self.process_response(response)
+            request_finished.send(self, response=response)
+        except Exception:
+            if not from_error_handler:
+                raise
+            self.logger.exception('Request finalizing failed with an '
+                                  'error while handling an error')
         return response
 
     def try_trigger_before_first_request_functions(self):
@@ -1819,7 +1813,7 @@ class Flask(_PackageBoundObject):
         if it was the return value from the view and further
         request handling is stopped.
 
-        This also triggers the :meth:`url_value_processor` functions before
+        This also triggers the :meth:`url_value_preprocessor` functions before
         the actual :meth:`before_request` functions are called.
         """
         bp = _request_ctx_stack.top.request.blueprint
@@ -1988,7 +1982,7 @@ class Flask(_PackageBoundObject):
                 response = self.full_dispatch_request()
             except Exception as e:
                 error = e
-                response = self.make_response(self.handle_exception(e))
+                response = self.handle_exception(e)
             return response(environ, start_response)
         finally:
             if self.should_ignore_error(error):

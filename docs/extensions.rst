@@ -25,6 +25,13 @@ importable from ``flask_foo``::
 
     import flask_foo
 
+Building Extensions
+-------------------
+
+While `Flask Extension Registry`_ contains many Flask extensions, you may not find
+an extension that fits your need. If this is the case, you can always create your own. 
+Consider reading :ref:`extension-dev` to develop your own Flask extension.
+
 Flask Before 0.8
 ----------------
 

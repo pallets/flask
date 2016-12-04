@@ -40,24 +40,20 @@ installations of Python, one for each project.  It doesn't actually install
 separate copies of Python, but it does provide a clever way to keep different
 project environments isolated.  Let's see how virtualenv works.
 
-If you are on Mac OS X or Linux, chances are that one of the following two
-commands will work for you::
-
-    $ sudo easy_install virtualenv
-
-or even better::
+If you are on Mac OS X or Linux, chances are that the following
+command will work for you::
 
     $ sudo pip install virtualenv
 
-One of these will probably install virtualenv on your system.  Maybe it's even
+It will probably install virtualenv on your system.  Maybe it's even
 in your package manager.  If you use Ubuntu, try::
 
     $ sudo apt-get install python-virtualenv
 
-If you are on Windows and don't have the :command:`easy_install` command, you must
+If you are on Windows and don't have the ``easy_install`` command, you must
 install it first.  Check the :ref:`windows-easy-install` section for more
 information about how to do that.  Once you have it installed, run the same
-commands as above, but without the :command:`sudo` prefix.
+commands as above, but without the ``sudo`` prefix.
 
 Once you have virtualenv installed, just fire up a shell and create
 your own environment.  I usually create a project folder and a :file:`venv`
@@ -76,7 +72,7 @@ corresponding environment.  On OS X and Linux, do the following::
 
 If you are a Windows user, the following command is for you::
 
-    $ venv\scripts\activate
+    $ venv\Scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
@@ -99,19 +95,19 @@ System-Wide Installation
 ------------------------
 
 This is possible as well, though I do not recommend it.  Just run
-:command:`pip` with root privileges::
+``pip`` with root privileges::
 
     $ sudo pip install Flask
 
 (On Windows systems, run it in a command-prompt window with administrator
-privileges, and leave out :command:`sudo`.)
+privileges, and leave out ``sudo``.)
 
 
 Living on the Edge
 ------------------
 
 If you want to work with the latest version of Flask, there are two ways: you
-can either let :command:`pip` pull in the development version, or you can tell
+can either let ``pip`` pull in the development version, or you can tell
 it to operate on a git checkout.  Either way, virtualenv is recommended.
 
 Get the git checkout in a new virtualenv and run in development mode::
@@ -131,40 +127,34 @@ This will pull in the dependencies and activate the git head as the current
 version inside the virtualenv.  Then all you have to do is run ``git pull
 origin`` to update to the latest version.
 
-
 .. _windows-easy-install:
 
 `pip` and `setuptools` on Windows
 ---------------------------------
 
-Sometimes getting the standard "Python packaging tools" like *pip*, *setuptools*
-and *virtualenv* can be a little trickier, but nothing very hard. The two crucial
-packages you will need are setuptools and pip - these will let you install
-anything else (like virtualenv). Fortunately there are two "bootstrap scripts"
-you can run to install either.
+Sometimes getting the standard "Python packaging tools" like ``pip``, ``setuptools``
+and ``virtualenv`` can be a little trickier, but nothing very hard. The crucial
+package you will need is pip - this will let you install
+anything else (like virtualenv). Fortunately there is a "bootstrap script"
+you can run to install.
 
-If you don't currently have either, then `get-pip.py` will install both for you
-(you won't need to run ez_setup.py).
+If you don't currently have ``pip``, then `get-pip.py` will install it for you.
 
 `get-pip.py`_
 
-To install the latest setuptools, you can use its bootstrap file:
-
-`ez_setup.py`_
-
-Either should be double-clickable once you download them. If you already have pip,
+It should be double-clickable once you download it. If you already have ``pip``,
 you can upgrade them by running::
 
     > pip install --upgrade pip setuptools
 
-Most often, once you pull up a command prompt you want to be able to type :command:`pip`
-and :command:`python` which will run those things, but this might not automatically happen
+Most often, once you pull up a command prompt you want to be able to type ``pip``
+and ``python`` which will run those things, but this might not automatically happen
 on Windows, because it doesn't know where those executables are (give either a try!).
 
 To fix this, you should be able to navigate to your Python install directory
 (e.g :file:`C:\Python27`), then go to :file:`Tools`, then :file:`Scripts`, then find the
 :file:`win_add2path.py` file and run that. Open a **new** Command Prompt and
-check that you can now just type :command:`python` to bring up the interpreter.
+check that you can now just type ``python`` to bring up the interpreter.
 
 Finally, to install `virtualenv`_, you can simply run::
 
@@ -173,4 +163,3 @@ Finally, to install `virtualenv`_, you can simply run::
 Then you can be off on your way following the installation instructions above.
 
 .. _get-pip.py: https://bootstrap.pypa.io/get-pip.py
-.. _ez_setup.py: https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py

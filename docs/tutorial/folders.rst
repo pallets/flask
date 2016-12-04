@@ -19,7 +19,7 @@ creating the database schema as well as the main module.
 
 As a quick side note, the files inside of the :file:`static` folder are
 available to users of the application via HTTP.  This is the place where CSS and
-Javascript files go.  Inside the :file:`templates` folder, Flask will look for
+JavaScript files go.  Inside the :file:`templates` folder, Flask will look for
 `Jinja2`_ templates.  You will see examples of this later on.
 
 For now you should continue with :ref:`tutorial-schema`.

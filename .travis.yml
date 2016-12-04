@@ -11,18 +11,27 @@ python:
 
 env:
   - REQUIREMENTS=lowest
+  - REQUIREMENTS=lowest-simplejson
   - REQUIREMENTS=release
+  - REQUIREMENTS=release-simplejson
   - REQUIREMENTS=devel
+  - REQUIREMENTS=devel-simplejson
 
 matrix:
   exclude:
     # Python 3 support currently does not work with lowest requirements
     - python: "3.3"
       env: REQUIREMENTS=lowest
+    - python: "3.3"
+      env: REQUIREMENTS=lowest-simplejson
     - python: "3.4"
       env: REQUIREMENTS=lowest
+    - python: "3.4"
+      env: REQUIREMENTS=lowest-simplejson
     - python: "3.5"
       env: REQUIREMENTS=lowest
+    - python: "3.5"
+      env: REQUIREMENTS=lowest-simplejson
 
 
 install:
