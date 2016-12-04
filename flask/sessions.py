@@ -17,7 +17,7 @@ from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 from ._compat import iteritems, text_type
-from .helpers import total_seconds
+from .helpers import total_seconds, is_IP
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
@@ -332,6 +332,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
     def save_session(self, app, session, response):
         domain = self.get_cookie_domain(app)
+        is_IP(domain)
         path = self.get_cookie_path(app)
 
         # Delete case.  If there is no session we bail early.
