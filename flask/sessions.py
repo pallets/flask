@@ -332,7 +332,8 @@ class SecureCookieSessionInterface(SessionInterface):
 
     def save_session(self, app, session, response):
         domain = self.get_cookie_domain(app)
-        is_IP(domain, "SESSION_COOKIE_DOMAIN")
+        if domain != None:
+            is_ip(domain, "SESSION_COOKIE_DOMAIN", self)
         path = self.get_cookie_path(app)
 
         # Delete case.  If there is no session we bail early.

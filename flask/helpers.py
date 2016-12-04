@@ -14,6 +14,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
+import warnings
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -959,7 +960,7 @@ def total_seconds(td):
     """
     return td.days * 60 * 60 * 24 + td.seconds
 
-def is_IP(string, var_name):
+def is_ip(string, var_name):
     """Returns the if the string received is an IP or not.
 
     :param string: the string to check if it an IP or not
