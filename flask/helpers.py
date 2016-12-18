@@ -972,4 +972,4 @@ def is_ascii(string):
     :returns: True if string is fully ASCII encoded, False if not
     :rtype: boolean
     """
-    return all(ord(char) < 128 for char in string):
+    return all(ord(char) < 128 for char in string);
