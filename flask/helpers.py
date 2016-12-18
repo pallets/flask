@@ -504,6 +504,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         a :class:`~datetime.datetime` or timestamp.
         If a file was passed, this overrides its mtime.
     """
+    import warnings
+    if type(filename_or_fp) is str:
+        if not is_ascii(filename_or_fp):
+            warnings.warn("Non-ASCII filename is being used in send_file", UnicodeWarning)
+
     mtime = None
     fsize = None
     if isinstance(filename_or_fp, string_types):
@@ -958,3 +963,16 @@ def total_seconds(td):
     :rtype: int
     """
     return td.days * 60 * 60 * 24 + td.seconds
+
+def is_ascii(string_to_test):
+    """Returns if a string object is fully ASCII encoded.
+
+    :param string string_to_test: the string to be evaluated
+
+    :returns: True if string_to_test is fully ASCII encoded, False if not
+    :rtype: boolean
+    """
+    if all(ord(char) < 128 for char in string_to_test):
+        return True
+    else:
+        return False
