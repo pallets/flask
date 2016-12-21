@@ -6,6 +6,8 @@ Here you can see the full list of changes between each Flask release.
 Version 0.12
 ------------
 
+Released on December 21st 2016, codename Punsch.
+
 - the cli command now responds to `--version`.
 - Mimetype guessing and ETag generation for file-like objects in ``send_file``
   has been removed, as per issue ``#104``.  See pull request ``#1849``.
