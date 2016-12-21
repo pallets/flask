@@ -139,8 +139,8 @@ This could be a file named :file:`autoapp.py` with these contents::
     from yourapplication import create_app
     app = create_app(os.environ['YOURAPPLICATION_CONFIG'])
 
-Once this has happened you can make the flask command automatically pick
-it up::
+Once this has happened you can make the :command:`flask` command automatically
+pick it up::
 
     export YOURAPPLICATION_CONFIG=/path/to/config.cfg
     export FLASK_APP=/path/to/autoapp.py
