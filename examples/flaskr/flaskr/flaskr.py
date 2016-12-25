@@ -52,6 +52,11 @@ def initdb_command():
     print('Initialized the database.')
 
 
+@app.cli.command('run')
+def run_command():
+    app.run()
+
+
 def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -108,3 +113,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
+
+
+if __name__ == "__main__":
+    app.cli()
