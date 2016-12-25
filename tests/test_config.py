@@ -195,7 +195,7 @@ def test_get_namespace():
 def test_from_pyfile_weird_encoding(tmpdir, encoding):
     f = tmpdir.join('my_config.py')
     f.write_binary(textwrap.dedent(u'''
-    # -*- coding: {} -*-
+    # -*- coding: {0} -*-
     TEST_VALUE = "föö"
     '''.format(encoding)).encode(encoding))
     app = flask.Flask(__name__)
