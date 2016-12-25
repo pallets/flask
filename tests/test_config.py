@@ -13,6 +13,7 @@ import os
 import textwrap
 
 import flask
+from flask._compat import PY2
 import pytest
 
 
@@ -200,4 +201,7 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     '''.format(encoding)).encode(encoding))
     app = flask.Flask(__name__)
     app.config.from_pyfile(str(f))
-    assert app.config['TEST_VALUE'] == 'föö'
+    value = app.config['TEST_VALUE']
+    if PY2:
+        value = value.decode(encoding)
+    assert value == u'föö'
