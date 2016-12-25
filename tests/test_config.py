@@ -7,11 +7,13 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
 
-import os
 from datetime import timedelta
+import os
+import textwrap
+
 import flask
+import pytest
 
 
 # config keys used for the TestConfig
@@ -187,3 +189,15 @@ def test_get_namespace():
     assert 2 == len(bar_options)
     assert 'bar stuff 1' == bar_options['BAR_STUFF_1']
     assert 'bar stuff 2' == bar_options['BAR_STUFF_2']
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-15', 'latin-1'])
+def test_from_pyfile_weird_encoding(tmpdir, encoding):
+    f = tmpdir.join('my_config.py')
+    f.write_binary(textwrap.dedent(u'''
+    # -*- coding: {} -*-
+    TEST_VALUE = "föö"
+    '''.format(encoding)).encode(encoding))
+    app = flask.Flask(__name__)
+    app.config.from_pyfile(str(f))
+    assert app.config['TEST_VALUE'] == 'föö'
