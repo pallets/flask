@@ -126,7 +126,7 @@ class Config(dict):
         d = types.ModuleType('config')
         d.__file__ = filename
         try:
-            with open(filename) as config_file:
+            with open(filename, mode='rb') as config_file:
                 exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
         except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
