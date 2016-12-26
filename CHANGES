@@ -8,6 +8,9 @@ Version 0.12.1
 
 Bugfix release, unreleased
 
+- Fix encoding behavior of ``app.config.from_pyfile`` for Python 3. Fix
+  ``#2118``.
+
 Version 0.12
 ------------
 
