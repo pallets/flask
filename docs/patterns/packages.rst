@@ -114,6 +114,10 @@ You should then end up with something like that::
                 login.html
                 ...
 
+If you find yourself stuck on something, feel free
+to take a look at the source code for this example.
+You'll find it located under ``flask/examples/largerapp``.
+
 .. admonition:: Circular Imports
 
    Every Python programmer hates them, and yet we just added some:
