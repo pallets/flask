@@ -89,10 +89,16 @@ def locate_app(app_id):
     try:
         __import__(module)
     except ImportError:
-        raise NoAppException('The file/path provided (%s) does not appear to '
-                             'exist.  Please verify the path is correct.  If '
-                             'app is not on PYTHONPATH, ensure the extension '
-                             'is .py' % module)
+        # Reraise the ImportError if it occurred within the imported module.
+        # Determine this by checking whether the trace has a depth > 1.
+        if sys.exc_info()[-1].tb_next:
+            raise
+        else:
+            raise NoAppException('The file/path provided (%s) does not appear'
+                                 ' to exist.  Please verify the path is '
+                                 'correct.  If app is not on PYTHONPATH, '
+                                 'ensure the extension is .py' % module)
+
     mod = sys.modules[module]
     if app_obj is None:
         app = find_best_app(mod)
