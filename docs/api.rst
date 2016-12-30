@@ -33,9 +33,12 @@ Incoming Request Data
 
    .. attribute:: form
 
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from ``POST``
-      or ``PUT`` requests.  Please keep in mind that file uploads will not
+      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from requests
+      that contained a ``Content-Type`` header.  Please keep in mind that file uploads will not
       end up here,  but instead in the :attr:`files` attribute.
+
+      Note that with Werkzeug<0.9, this is only filled for ``POST``, ``PUT`` and ``PATCH``
+      requests.
 
    .. attribute:: args
 
