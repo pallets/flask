@@ -13,6 +13,8 @@ Version 0.12.1
 
 Bugfix release, unreleased
 
+- Prevent `flask run` from showing a NoAppException when an ImportError occurs
+  within the imported application module.
 - Fix encoding behavior of ``app.config.from_pyfile`` for Python 3. Fix
   ``#2118``.
 

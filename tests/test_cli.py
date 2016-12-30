@@ -83,6 +83,7 @@ def test_locate_app(test_apps):
     pytest.raises(NoAppException, locate_app, "notanpp.py")
     pytest.raises(NoAppException, locate_app, "cliapp/app")
     pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
+    pytest.raises(ImportError, locate_app, "cliapp.importerrorapp")
 
 
 def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
