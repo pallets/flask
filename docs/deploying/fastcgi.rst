@@ -144,7 +144,7 @@ A basic FastCGI configuration for lighttpd looks like that::
     )
 
     alias.url = (
-        "/static/" => "/path/to/your/static"
+        "/static/" => "/path/to/your/static/"
     )
 
     url.rewrite-once = (
