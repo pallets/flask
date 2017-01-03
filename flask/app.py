@@ -813,7 +813,7 @@ class Flask(_PackageBoundObject):
 
         :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
                      have the server available externally as well. Defaults to
-                     ``'127.0.0.1'``.
+                     ``'localhost'``.
         :param port: the port of the webserver. Defaults to ``5000`` or the
                      port defined in the ``SERVER_NAME`` config variable if
                      present.
@@ -826,7 +826,7 @@ class Flask(_PackageBoundObject):
         """
         from werkzeug.serving import run_simple
         if host is None:
-            host = '127.0.0.1'
+            host = 'localhost'
         if port is None:
             server_name = self.config['SERVER_NAME']
             if server_name and ':' in server_name:
