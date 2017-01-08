@@ -1484,7 +1484,16 @@ class Flask(_PackageBoundObject):
             return handler
 
         # fall back to app handlers
-        return find_handler(self.error_handler_spec[None].get(code))
+        handler = find_handler(self.error_handler_spec[None].get(code))
+        if handler is not None:
+            return handler
+
+        try:
+            handler = find_handler(self.error_handler_spec[None][None])
+        except KeyError:
+            handler = None
+
+        return handler
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the

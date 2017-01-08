@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from werkzeug.exceptions import Forbidden, InternalServerError
+from werkzeug.exceptions import Forbidden, InternalServerError, HTTPException, NotFound
 import flask
 
 
@@ -30,6 +30,29 @@ def test_error_handler_no_match():
 
     assert c.get('/custom').data == b'custom'
     assert c.get('/keyerror').data == b'KeyError'
+
+
+def test_default_error_handler():
+    app = flask.Flask(__name__)
+
+    @app.errorhandler(HTTPException)
+    def catchall_errorhandler(e):
+        assert isinstance(e, HTTPException)
+        assert isinstance(e, NotFound)
+        return 'default'
+
+    @app.errorhandler(Forbidden)
+    def catchall_errorhandler(e):
+        assert isinstance(e, Forbidden)
+        return 'forbidden'
+
+    @app.route('/forbidden')
+    def forbidden():
+        raise Forbidden()
+
+    c = app.test_client()
+    assert c.get('/undefined').data == b'default'
+    assert c.get('/forbidden').data == b'forbidden'
 
 
 def test_error_handler_subclass():
