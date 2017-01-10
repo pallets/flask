@@ -29,12 +29,6 @@ be something like "Flask-SimpleXML".  Make sure to include the name
 This is how users can then register dependencies to your extension in
 their :file:`setup.py` files.
 
-Flask sets up a redirect package called :data:`flask.ext` where users
-should import the extensions from.  If you for instance have a package
-called ``flask_something`` users would import it as
-``flask.ext.something``.  This is done to transition from the old
-namespace packages.  See :ref:`ext-import-transition` for more details.
-
 But what do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
 a requirement because many people will use patterns like the
@@ -392,8 +386,6 @@ extension to be approved you have to follow these guidelines:
 10. An extension currently has to support Python 2.6 as well as
     Python 2.7
 
-
-.. _ext-import-transition:
 
 Extension Import Transition
 ---------------------------
