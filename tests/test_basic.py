@@ -333,7 +333,7 @@ def test_session_expiration():
     client = app.test_client()
     rv = client.get('/')
     assert 'set-cookie' in rv.headers
-    match = re.search(r'\bexpires=([^;]+)(?i)', rv.headers['set-cookie'])
+    match = re.search(r'(?i)\bexpires=([^;]+)', rv.headers['set-cookie'])
     expires = parse_date(match.group())
     expected = datetime.utcnow() + app.permanent_session_lifetime
     assert expires.year == expected.year
