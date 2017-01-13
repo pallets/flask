@@ -11,10 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 from __future__ import print_function
-from datetime import datetime
 import os
 import sys
 import pkg_resources
+import time
+import datetime
+
+BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -49,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Flask'
-copyright = u'2010 - {0}, Armin Ronacher'.format(datetime.utcnow().year)
+copyright = u'2010 - {0}, Armin Ronacher'.format(BUILD_DATE.year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
