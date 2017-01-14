@@ -538,16 +538,16 @@ The Request Object
 ``````````````````
 
 The request object is documented in the API section and we will not cover
-it here in detail (see :class:`~flask.request`). Here is a broad overview of
+it here in detail (see :class:`~flask.Request`). Here is a broad overview of
 some of the most common operations.  First of all you have to import it from
 the ``flask`` module::
 
     from flask import request
 
 The current request method is available by using the
-:attr:`~flask.request.method` attribute.  To access form data (data
+:attr:`~flask.Request.method` attribute.  To access form data (data
 transmitted in a ``POST`` or ``PUT`` request) you can use the
-:attr:`~flask.request.form` attribute.  Here is a full example of the two
+:attr:`~flask.Request.form` attribute.  Here is a full example of the two
 attributes mentioned above::
 
     @app.route('/login', methods=['POST', 'GET'])
@@ -570,7 +570,7 @@ error page is shown instead.  So for many situations you don't have to
 deal with that problem.
 
 To access parameters submitted in the URL (``?key=value``) you can use the
-:attr:`~flask.request.args` attribute::
+:attr:`~flask.Request.args` attribute::
 
     searchword = request.args.get('key', '')
 
@@ -579,7 +579,7 @@ We recommend accessing URL parameters with `get` or by catching the
 bad request page in that case is not user friendly.
 
 For a full list of methods and attributes of the request object, head over
-to the :class:`~flask.request` documentation.
+to the :class:`~flask.Request` documentation.
 
 
 File Uploads
