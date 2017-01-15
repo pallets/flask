@@ -17,6 +17,10 @@ this::
             login.html
             ...
 
+If you find yourself stuck on something, feel free
+to take a look at the source code for this example.
+You'll find `the full src for this example here`_.
+
 Simple Packages
 ---------------
 
@@ -130,6 +134,7 @@ You should then end up with something like that::
 
 
 .. _working-with-modules:
+.. _the full src for this example here: https://github.com/pallets/flask/tree/master/examples/patterns/largerapp
 
 Working with Blueprints
 -----------------------
