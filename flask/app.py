@@ -825,14 +825,15 @@ class Flask(_PackageBoundObject):
                         information.
         """
         from werkzeug.serving import run_simple
-        if host is None:
-            host = '127.0.0.1'
-        if port is None:
-            server_name = self.config['SERVER_NAME']
-            if server_name and ':' in server_name:
-                port = int(server_name.rsplit(':', 1)[1])
-            else:
-                port = 5000
+
+        _host = '127.0.0.1'
+        _port = 5000
+        server_name = self.config.get("SERVER_NAME", None)
+        if server_name:
+            _host, _port = servername.split(':', 1)
+        host = host or _host
+        if _port:
+            port = port or int(_port)
         if debug is not None:
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
