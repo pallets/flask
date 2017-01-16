@@ -830,7 +830,7 @@ class Flask(_PackageBoundObject):
         _port = 5000
         server_name = self.config.get("SERVER_NAME", None)
         if server_name:
-            _host, _port = server_name.split(':', 1)
+            _host, _, _port = server_name.partition(':')
         host = host or _host
         if _port:
             port = port or int(_port)
