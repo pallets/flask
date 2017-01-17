@@ -828,12 +828,11 @@ class Flask(_PackageBoundObject):
 
         _host = '127.0.0.1'
         _port = 5000
-        server_name = self.config.get("SERVER_NAME", None)
+        server_name = self.config.get("SERVER_NAME")
         if server_name:
-            _host, _, _port = server_name.partition(':')
-        host = host or _host
-        if _port:
-            port = port or int(_port)
+            sn_host, _, sn_port = server_name.partition(':')
+        host = host or sn_host or _host
+        port = int(port or sn_port or _port)
         if debug is not None:
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
