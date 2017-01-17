@@ -58,7 +58,7 @@ def get_debug_flag(default=None):
     val = os.environ.get('FLASK_DEBUG')
     if not val:
         return default
-    return val not in ('0', 'False', 'false', 'No', 'no')
+    return val.lower() not in ('0', 'false', 'no')
 
 
 def _endpoint_from_view_func(view_func):
