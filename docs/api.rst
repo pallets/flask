@@ -66,7 +66,7 @@ Incoming Request Data
       ============= ======================================================
 
 
-.. class:: request
+.. attribute:: request
 
    To access incoming request data, you can use the global `request`
    object.  Flask parses incoming request data for you and gives you
