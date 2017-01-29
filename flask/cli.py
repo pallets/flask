@@ -11,6 +11,7 @@
 
 import os
 import sys
+from pkg_resources import iter_entry_points
 from threading import Lock, Thread
 from functools import update_wrapper
 
@@ -503,6 +504,7 @@ Example usage:
 def main(as_module=False):
     this_module = __package__ + '.cli'
     args = sys.argv[1:]
+    obj = None
 
     if as_module:
         if sys.version_info >= (2, 7):
@@ -516,8 +518,26 @@ def main(as_module=False):
         sys.argv = ['-m', this_module] + sys.argv[1:]
     else:
         name = None
+        cli_name = os.path.basename(os.path.realpath(sys.argv[0]))
+        if cli_name != 'flask':
+            loader = _lookup_app_loader(cli_name)
+            obj = ScriptInfo(create_app=lambda si: loader())
 
-    cli.main(args=args, prog_name=name)
+    cli.main(args=args, prog_name=name, obj=obj)
+
+
+def _lookup_app_loader(cli_name):
+    from flask import Flask
+    ep = next(iter_entry_points(group='flask.cli_apps', name=cli_name), None)
+    if ep is None:
+        print("No app registered for console script '%s'" % cli_name)
+        sys.exit(1)
+
+    def _loader():
+        factory_or_app = ep.load()
+        return factory_or_app if isinstance(factory_or_app, Flask) else factory_or_app()
+
+    return _loader
 
 
 if __name__ == '__main__':

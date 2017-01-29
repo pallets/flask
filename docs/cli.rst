@@ -147,6 +147,46 @@ pick it up::
 
 From this point onwards :command:`flask` will find your application.
 
+Custom Script Names
+-------------------
+
+Especially in bigger applications it may be preferable to provide a CLI script
+named like the app. While :ref:`custom-scripts` already allow doing this, it is
+somewhat complicated and when using the dev server it is also easy to end up
+with a script that does not survive reloading code which has a syntax error or
+any other exception raised while importing/creating the app.
+
+However, there is a much easier way to define a custom script using nothing but
+:file:`setup.py` features. Additionally, this way lets you tell flask how to
+load the app for this script instead of having to set ``FLASK_APP``::
+
+    setup(
+        name='Fancy App',
+        ...,
+        entry_points={
+            'console_scripts': [
+                'fancyapp = flask.cli:main'
+            ],
+            'flask.cli_apps': [
+                'fancyapp = fancyapp.app:make_app'
+            ]
+        }
+    )
+
+The ``console_scripts`` entry point creates the :command:`fancyapp` command in
+the environment's bin dir and points to Flask's cli endpoint. While this could
+also be achieved with a symlink, using the entry point ensures the script is
+created when the package is installed.
+
+In ``flask.cli_apps`` you define the location of your app or app factory.  The
+name of the entry must match the name in ``console_scripts``. The import path
+can reference anything inside your package, after the ``:`` the app or app
+factory is specified. In case of a factory (anything that is not a
+:class:`Flask` instance is considered a factory), it is called with no
+arguments.
+
+
+
 .. _custom-scripts:
 
 Custom Scripts

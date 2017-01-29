@@ -11,6 +11,8 @@ Major release, unreleased
 - Make `app.run()` into a noop if a Flask application is run from the
   development server on the command line.  This avoids some behavior that
   was confusing to debug for newcomers.
+- Add support for custom cli scripts which automatically create an app without
+  the need for an environment variable.  ``#2163``
 
 Version 0.12.1
 --------------
