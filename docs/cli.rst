@@ -28,7 +28,10 @@ register more commands there if they desire so.
 For the :command:`flask` script to work, an application needs to be
 discovered.  This is achieved by exporting the ``FLASK_APP`` environment
 variable.  It can be either set to an import path or to a filename of a
-Python module that contains a Flask application.
+Python module that contains a Flask application.  Additionally the
+:command:`flask` command as of 0.13 will look for a ``.env`` file in the
+current folder or any higher folder and automatically load all environment
+variables from it.
 
 In that imported file the name of the app needs to be called ``app`` or
 optionally be specified after a colon.  For instance
@@ -47,6 +50,12 @@ Or with a filename::
 
     export FLASK_APP=/path/to/hello.py
     flask run
+
+If you use Flask 0.13 or later you can also set the environment variables
+in a ``.env`` file.  For instance like this::
+
+    FLASK_APP=/path/to/hello.py
+    FLASK_DEBUG=1
 
 Virtualenv Integration
 ----------------------

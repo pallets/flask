@@ -16,7 +16,7 @@ from functools import update_wrapper
 
 import click
 
-from ._compat import iteritems, reraise
+from ._compat import iteritems, reraise, text_type, PY2
 from .helpers import get_debug_flag
 from . import __version__
 
@@ -120,6 +120,47 @@ def find_default_import_path():
     return app
 
 
+def find_dotenv():
+    here = os.getcwd()
+    while 1:
+        path = os.path.join(here, '.env')
+        if os.path.isfile(path):
+            return path
+        there = os.path.dirname(here)
+        if there == here:
+            break
+        here = there
+
+
+def _set_env(key, value):
+    if PY2:
+        if isinstance(value, text_type):
+            value = value.encode('utf-8')
+    else:
+        key = key.decode('utf-8', 'surrogateescape')
+        if isinstance(value, bytes):
+            value = value.decode('utf-8', 'surrogateescape')
+    os.environ[key] = value
+
+
+def load_dotenv():
+    """Loads a dotenv file for flask."""
+    path = find_dotenv()
+    if path is None:
+        return
+    os.chdir(os.path.dirname(path))
+    with open(path, 'rb') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line[:1] == '#' or '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            _set_env(key, value)
+
+
+_load_dotenv = load_dotenv
+
+
 def get_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
@@ -199,7 +240,17 @@ class ScriptInfo(object):
     onwards as click object.
     """
 
-    def __init__(self, app_import_path=None, create_app=None):
+    def __init__(self, app_import_path=None, create_app=None,
+                 load_dotenv=True):
+        # Set a global flag that indicates that we were invoked from the
+        # command line interface.  This is detected by Flask.run to make
+        # the call into a no-op.  This is necessary to avoid ugly errors
+        # when the script that is loaded here also attempts to start a
+        # server.
+        os.environ['FLASK_RUN_FROM_CLI'] = '1'
+
+        if load_dotenv:
+            _load_dotenv()
         if create_app is None:
             if app_import_path is None:
                 app_import_path = find_default_import_path()
@@ -411,13 +462,6 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     Flask is enabled and disabled otherwise.
     """
     from werkzeug.serving import run_simple
-
-    # Set a global flag that indicates that we were invoked from the
-    # command line interface provided server command.  This is detected
-    # by Flask.run to make the call into a no-op.  This is necessary to
-    # avoid ugly errors when the script that is loaded here also attempts
-    # to start a server.
-    os.environ['FLASK_RUN_FROM_CLI_SERVER'] = '1'
 
     debug = get_debug_flag()
     if reload is None:
