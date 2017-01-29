@@ -143,6 +143,15 @@ def _set_env(key, value):
     os.environ[key] = value
 
 
+def _unquote(s):
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in '"\'':
+        return s[1:-1] \
+            .decode('utf-8', 'replace') \
+            .encode('utf-8', 'unicode-escape') \
+            .decode('unicode-escape')
+    return s
+
+
 def load_dotenv():
     """Loads a dotenv file for flask."""
     path = find_dotenv()
@@ -152,10 +161,11 @@ def load_dotenv():
     with open(path, 'rb') as f:
         for line in f:
             line = line.strip()
-            if not line or line[:1] == '#' or '=' not in line:
+            if not line or line[:1] == b'#' or b'=' not in line:
                 continue
-            key, value = line.split('=', 1)
-            _set_env(key, value)
+            key, value = line.split(b'=', 1)
+            value = _unquote(value.strip())
+            _set_env(key.strip(), value)
 
 
 _load_dotenv = load_dotenv
