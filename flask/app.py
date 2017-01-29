@@ -824,6 +824,13 @@ class Flask(_PackageBoundObject):
                         :func:`werkzeug.serving.run_simple` for more
                         information.
         """
+        # Change this into a no-op if the server is invoked from the
+        # command line.  Have a look at cli.py for more information.
+        if os.environ.get('FLASK_RUN_FROM_CLI_SERVER') == '1':
+            from .debughelpers import explain_ignored_app_run
+            explain_ignored_app_run()
+            return
+
         from werkzeug.serving import run_simple
         _host = '127.0.0.1'
         _port = 5000
