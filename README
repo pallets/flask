@@ -35,7 +35,7 @@
       tests/ folder.  To run the tests use the
       `py.test` testing tool:
 
-        $ py.test
+        $ py.test tests/
 
       Details on contributing can be found in CONTRIBUTING.rst
 
