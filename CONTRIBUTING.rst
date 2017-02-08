@@ -38,7 +38,7 @@ Running the testsuite
 You probably want to set up a `virtualenv
 <https://virtualenv.readthedocs.io/en/latest/index.html>`_.
 
-The minimal requirement for running the testsuite is ``py.test``.  You can
+The minimal requirement for running the testsuite is ``pytest``.  You can
 install it with::
 
     pip install pytest
@@ -54,9 +54,9 @@ Install Flask as an editable package using the current source::
 
 Then you can run the testsuite with::
 
-    py.test
+    pytest
 
-With only py.test installed, a large part of the testsuite will get skipped
+With only pytest installed, a large part of the testsuite will get skipped
 though.  Whether this is relevant depends on which part of Flask you're working
 on.  Travis is set up to run the full testsuite when you submit your pull
 request anyways.
@@ -79,11 +79,11 @@ plugin.  This assumes you have already run the testsuite (see previous section):
 
 After this has been installed, you can output a report to the command line using this command::
 
-    py.test --cov=flask tests/
+    pytest --cov=flask tests/
 
 Generate a HTML report can be done using this command::
 
-    py.test --cov-report html --cov=flask tests/
+    pytest --cov-report html --cov=flask tests/
 
 Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
 
