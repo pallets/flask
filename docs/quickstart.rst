@@ -306,9 +306,9 @@ can be changed by providing the ``methods`` argument to the
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
-            do_the_login()
+            return do_the_login()
         else:
-            show_the_login_form()
+            return show_the_login_form()
 
 If ``GET`` is present, ``HEAD`` will be added automatically for you.  You
 don't have to deal with that.  It will also make sure that ``HEAD`` requests
