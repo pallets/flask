@@ -34,7 +34,7 @@ Error Logging Tools
 Sending error mails, even if just for critical ones, can become
 overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
-<http://www.getsentry.com/>`_ for dealing with application errors.  It's
+<https://www.getsentry.com/>`_ for dealing with application errors.  It's
 available as an Open Source project `on GitHub
 <https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
 <https://getsentry.com/signup/>`_ which you can try for free. Sentry
@@ -89,7 +89,7 @@ Register error handlers using :meth:`~flask.Flask.errorhandler` or
     @app.errorhandler(werkzeug.exceptions.BadRequest)
     def handle_bad_request(e):
         return 'bad request!'
-    
+
     app.register_error_handler(400, lambda e: 'bad request!')
 
 Those two ways are equivalent, but the first one is more clear and leaves

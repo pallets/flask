@@ -102,9 +102,9 @@ docs to see the alternative method for running a server.
 Invalid Import Name
 ```````````````````
 
-The ``FLASK_APP`` environment variable is the name of the module to import at 
-:command:`flask run`. In case that module is incorrectly named you will get an 
-import error upon start (or if debug is enabled when you navigate to the 
+The ``FLASK_APP`` environment variable is the name of the module to import at
+:command:`flask run`. In case that module is incorrectly named you will get an
+import error upon start (or if debug is enabled when you navigate to the
 application). It will tell you what it tried to import and why it failed.
 
 The most common reason is a typo or because you did not actually create an
@@ -367,7 +367,7 @@ HTTP has become quite popular lately and browsers are no longer the only
 clients that are using HTTP. For instance, many revision control systems
 use it.
 
-.. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
+.. _HTTP RFC: https://www.ietf.org/rfc/rfc2068.txt
 
 Static Files
 ------------
