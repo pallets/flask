@@ -60,7 +60,7 @@ Factories & Extensions
 It's preferable to create your extensions and app factories so that the
 extension object does not initially get bound to the application.
 
-Using `Flask-SQLAlchemy <http://pythonhosted.org/Flask-SQLAlchemy/>`_,
+Using `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/>`_,
 as an example, you should not do something along those lines::
 
     def create_app(config_filename):

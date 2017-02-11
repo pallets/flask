@@ -28,7 +28,7 @@ Submitting patches
   clearly under which circumstances the bug happens. Make sure the test fails
   without your patch.
 
-- Try to follow `PEP8 <http://legacy.python.org/dev/peps/pep-0008/>`_, but you
+- Try to follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, but you
   may ignore the line-length-limit if following it would make the code uglier.
 
 
