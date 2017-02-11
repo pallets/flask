@@ -143,7 +143,7 @@ when there is no request context yet but an application context.  The old
 ``flask.Flask.request_globals_class`` attribute was renamed to
 :attr:`flask.Flask.app_ctx_globals_class`.
 
-.. _Flask-OldSessions: http://pythonhosted.org/Flask-OldSessions/
+.. _Flask-OldSessions: https://pythonhosted.org/Flask-OldSessions/
 
 Version 0.9
 -----------

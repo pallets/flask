@@ -405,6 +405,6 @@ schema. The ``flask.ext.foo`` compatibility alias is still in Flask 0.11 but is
 now deprecated -- you should use ``flask_foo``.
 
 
-.. _OAuth extension: http://pythonhosted.org/Flask-OAuth/
+.. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/

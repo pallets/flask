@@ -112,7 +112,7 @@ it to operate on a git checkout.  Either way, virtualenv is recommended.
 
 Get the git checkout in a new virtualenv and run in development mode::
 
-    $ git clone http://github.com/pallets/flask.git
+    $ git clone https://github.com/pallets/flask.git
     Initialized empty Git repository in ~/dev/flask/.git/
     $ cd flask
     $ virtualenv venv

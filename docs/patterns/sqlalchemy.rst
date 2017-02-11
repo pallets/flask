@@ -108,9 +108,9 @@ Querying is simple as well:
 >>> User.query.filter(User.name == 'admin').first()
 <User u'admin'>
 
-.. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _SQLAlchemy: https://www.sqlalchemy.org/
 .. _declarative:
-   http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
+   https://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
 
 Manual Object Relational Mapping
 --------------------------------
@@ -215,4 +215,4 @@ You can also pass strings of SQL statements to the
 (1, u'admin', u'admin@localhost')
 
 For more information about SQLAlchemy, head over to the
-`website <http://www.sqlalchemy.org/>`_.
+`website <https://www.sqlalchemy.org/>`_.

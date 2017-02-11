@@ -260,7 +260,7 @@ intersphinx_mapping = {
     'werkzeug': ('http://werkzeug.pocoo.org/docs/', None),
     'click': ('http://click.pocoo.org/', None),
     'jinja': ('http://jinja.pocoo.org/docs/', None),
-    'sqlalchemy': ('http://docs.sqlalchemy.org/en/latest/', None),
+    'sqlalchemy': ('https://docs.sqlalchemy.org/en/latest/', None),
     'wtforms': ('https://wtforms.readthedocs.io/en/latest/', None),
     'blinker': ('https://pythonhosted.org/blinker/', None)
 }

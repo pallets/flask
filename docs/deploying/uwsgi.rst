@@ -66,7 +66,7 @@ to have it in the URL root its a bit simpler::
         uwsgi_pass unix:/tmp/yourapplication.sock;
     }
 
-.. _nginx: http://nginx.org/
-.. _lighttpd: http://www.lighttpd.net/
+.. _nginx: https://nginx.org/
+.. _lighttpd: https://www.lighttpd.net/
 .. _cherokee: http://cherokee-project.com/
 .. _uwsgi: http://projects.unbit.it/uwsgi/
