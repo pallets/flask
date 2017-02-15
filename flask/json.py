@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    flask.jsonimpl
-    ~~~~~~~~~~~~~~
+    flask.json
+    ~~~~~~~~~~
 
     Implementation helpers for the JSON support in Flask.
 
