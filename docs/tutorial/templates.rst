@@ -59,7 +59,7 @@ show_entries.html
 This template extends the :file:`layout.html` template from above to display the
 messages.  Note that the ``for`` loop iterates over the messages we passed
 in with the :func:`~flask.render_template` function.  Notice that the form is
-configured to to submit to the `add_entry` view function and use ``POST`` as
+configured to submit to the `add_entry` view function and use ``POST`` as
 HTTP method:
 
 .. sourcecode:: html+jinja
