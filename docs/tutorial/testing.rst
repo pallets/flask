@@ -77,7 +77,7 @@ update the :file:`setup.py` file to contain::
 Now create :file:`setup.cfg` in the project root (alongside
 :file:`setup.py`)::
 
-    [aliases]
+    [tool:pytest]
     test=pytest
 
 Now you can run::
