@@ -357,6 +357,23 @@ class TestJSON(object):
         except AssertionError:
             assert lines == sorted_by_str
 
+    def test_json_encode_override_kwargs(self):
+        app = flask.Flask(__name__)
+        app.config['JSON_ENCODE_KWARGS'] = {'separators': (',,', '::')}
+        with app.app_context():
+            rv = flask.json.dumps({
+                'a': 3,
+                'b': 4
+            })
+            assert rv == '{"a"::3,,"b"::4}'
+
+    def test_json_decode_override_kwargs(self):
+        app = flask.Flask(__name__)
+        app.config['JSON_DECODE_KWARGS'] = {'parse_float': str}
+        with app.app_context():
+            rv = flask.json.loads('{"x": 3.4}')
+            assert rv['x'] == '3.4'
+
 class TestSendfile(object):
 
     def test_send_file_regular(self):

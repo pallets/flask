@@ -95,6 +95,8 @@ def _dump_arg_defaults(kwargs):
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
         kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
+        for key, val in current_app.config['JSON_ENCODE_KWARGS'].items():
+            kwargs.setdefault(key, val)
     else:
         kwargs.setdefault('sort_keys', True)
         kwargs.setdefault('cls', JSONEncoder)
@@ -104,6 +106,8 @@ def _load_arg_defaults(kwargs):
     """Inject default arguments for load functions."""
     if current_app:
         kwargs.setdefault('cls', current_app.json_decoder)
+        for key, val in current_app.config['JSON_DECODE_KWARGS'].items():
+            kwargs.setdefault(key, val)
     else:
         kwargs.setdefault('cls', JSONDecoder)
 
