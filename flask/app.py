@@ -1349,15 +1349,15 @@ class Flask(_PackageBoundObject):
         stack of active contexts.  This becomes relevant if you are using
         such constructs in tests.
 
-        Generally teardown functions must take every necessary step to avoid
-        that they will fail.  If they do execute code that might fail they
-        will have to surround the execution of these code by try/except
-        statements and log occurring errors.
-
         When a teardown function was called because of a exception it will
         be passed an error object.
 
         The return values of teardown functions are ignored.
+
+        .. admonition:: Watch Out
+
+            Teardown callbacks must never raise.  See
+            :ref:`ensuring-teardown-callbacks-succeed`.
 
         .. admonition:: Debug Note
 
@@ -1394,6 +1394,11 @@ class Flask(_PackageBoundObject):
         be passed an error object.
 
         The return values of teardown functions are ignored.
+
+        .. admonition:: Watch Out
+
+            Teardown callbacks must never raise.  See
+            :ref:`ensuring-teardown-callbacks-succeed`.
 
         .. versionadded:: 0.9
         """
