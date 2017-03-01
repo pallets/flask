@@ -178,11 +178,9 @@ The following configuration values are used internally by Flask:
                                   This is not recommended but might give
                                   you a performance improvement on the
                                   cost of cacheability.
-``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
-                                  jsonify responses will be pretty printed
-                                  if they are not requested by an
-                                  XMLHttpRequest object (controlled by
-                                  the ``X-Requested-With`` header)
+``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` or Flask app
+                                  is running in debug mode, jsonify responses
+                                  will be pretty printed.
 ``JSONIFY_MIMETYPE``              MIME type used for jsonify responses.
 ``TEMPLATES_AUTO_RELOAD``         Whether to check for modifications of
                                   the template source and reload it

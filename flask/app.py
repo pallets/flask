@@ -314,7 +314,7 @@ class Flask(_PackageBoundObject):
         'PREFERRED_URL_SCHEME':                 'http',
         'JSON_AS_ASCII':                        True,
         'JSON_SORT_KEYS':                       True,
-        'JSONIFY_PRETTYPRINT_REGULAR':          True,
+        'JSONIFY_PRETTYPRINT_REGULAR':          False,
         'JSONIFY_MIMETYPE':                     'application/json',
         'TEMPLATES_AUTO_RELOAD':                None,
     })
