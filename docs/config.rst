@@ -44,6 +44,21 @@ method::
         SECRET_KEY='...'
     )
 
+.. admonition:: Debug Mode with the ``flask`` Script
+
+   If you use the :command:`flask` script to start a local development
+   server, to enable the debug mode, you need to export the ``FLASK_DEBUG``
+   environment variable before running the server::
+
+    $ export FLASK_DEBUG=1
+    $ flask run
+
+   (On Windows you need to use ``set`` instead of ``export``).
+   
+   ``app.debug`` and ``app.config['DEBUG']`` are not compatible with 
+   the :command:`flask` script. They only worked when use ``Flask.run()``
+   method.
+   
 Builtin Configuration Values
 ----------------------------
 
@@ -52,7 +67,8 @@ The following configuration values are used internally by Flask:
 .. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
 
 ================================= =========================================
-``DEBUG``                         enable/disable debug mode
+``DEBUG``                         enable/disable debug mode when use 
+                                  ``Flask.run()`` method to start server
 ``TESTING``                       enable/disable testing mode
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
                                   propagation of exceptions.  If not set or
