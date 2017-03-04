@@ -56,7 +56,7 @@ method::
    (On Windows you need to use ``set`` instead of ``export``).
    
    ``app.debug`` and ``app.config['DEBUG']`` are not compatible with 
-   the :command:`flask` script. They only worked when use ``Flask.run()``
+   the :command:`flask` script. They only worked when using ``Flask.run()``
    method.
    
 Builtin Configuration Values
