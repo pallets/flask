@@ -67,7 +67,7 @@ The following configuration values are used internally by Flask:
 .. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
 
 ================================= =========================================
-``DEBUG``                         enable/disable debug mode when use 
+``DEBUG``                         enable/disable debug mode when using 
                                   ``Flask.run()`` method to start server
 ``TESTING``                       enable/disable testing mode
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
