@@ -501,10 +501,14 @@ Example usage:
 })
 
 
+custom_cli = FlaskGroup()
+
+
 def main(as_module=False):
     this_module = __package__ + '.cli'
     args = sys.argv[1:]
     obj = None
+    cli_instance = cli
 
     if as_module:
         if sys.version_info >= (2, 7):
@@ -522,8 +526,9 @@ def main(as_module=False):
         if cli_name != 'flask':
             loader = _lookup_app_loader(cli_name)
             obj = ScriptInfo(create_app=lambda si: loader())
+            cli_instance = custom_cli
 
-    cli.main(args=args, prog_name=name, obj=obj)
+    cli_instance.main(args=args, prog_name=name, obj=obj)
 
 
 def _lookup_app_loader(cli_name):
