@@ -21,7 +21,7 @@ Bugfix release, unreleased
   within the imported application module.
 - Fix encoding behavior of ``app.config.from_pyfile`` for Python 3. Fix
   ``#2118``.
-- Use the``SERVER_NAME`` config if it is present as default values for
+- Use the ``SERVER_NAME`` config if it is present as default values for
   ``app.run``. ``#2109``, ``#2152``
 
 Version 0.12
