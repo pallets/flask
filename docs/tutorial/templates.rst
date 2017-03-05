@@ -79,9 +79,9 @@ HTTP method:
       {% endif %}
       <ul class=entries>
       {% for entry in entries %}
-        <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+        <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>
       {% else %}
-        <li><em>Unbelievable.  No entries here so far</em>
+        <li><em>Unbelievable.  No entries here so far</em></li>
       {% endfor %}
       </ul>
     {% endblock %}
