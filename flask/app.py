@@ -391,7 +391,7 @@ class Flask(_PackageBoundObject):
         #: is the class for the instance check and the second the error handler
         #: function.
         #:
-        #: To register a error handler, use the :meth:`errorhandler`
+        #: To register an error handler, use the :meth:`errorhandler`
         #: decorator.
         self.error_handler_spec = {None: self._error_handlers}
 
@@ -1354,7 +1354,7 @@ class Flask(_PackageBoundObject):
         will have to surround the execution of these code by try/except
         statements and log occurring errors.
 
-        When a teardown function was called because of a exception it will
+        When a teardown function was called because of an exception it will
         be passed an error object.
 
         The return values of teardown functions are ignored.
