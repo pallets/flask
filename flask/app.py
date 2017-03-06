@@ -826,7 +826,8 @@ class Flask(_PackageBoundObject):
         """
         # Change this into a no-op if the server is invoked from the
         # command line.  Have a look at cli.py for more information.
-        if os.environ.get('FLASK_RUN_FROM_CLI_SERVER') == '1':
+        # After the first call we unset the variable however.
+        if os.environ.pop('FLASK_RUN_FROM_CLI', None) == '1':
             from .debughelpers import explain_ignored_app_run
             explain_ignored_app_run()
             return

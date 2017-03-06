@@ -11,6 +11,9 @@ Major release, unreleased
 - Make `app.run()` into a noop if a Flask application is run from the
   development server on the command line.  This avoids some behavior that
   was confusing to debug for newcomers.
+- The `flask` command line tool now loads a `.env` file when it discovers
+  one.  When it finds one it will change into that folder before starting
+  and load environment variables from it.
 
 Version 0.12.1
 --------------
