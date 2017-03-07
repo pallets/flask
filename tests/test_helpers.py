@@ -289,6 +289,8 @@ class TestJSON(object):
     def test_json_key_sorting(self):
         app = flask.Flask(__name__)
         app.testing = True
+        app.debug = True
+
         assert app.config['JSON_SORT_KEYS'] == True
         d = dict.fromkeys(range(20), 'foo')
 

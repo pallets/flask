@@ -995,7 +995,7 @@ def test_make_response_with_response_instance():
         rv = flask.make_response(
             flask.jsonify({'msg': 'W00t'}), 400)
         assert rv.status_code == 400
-        assert rv.data == b'{\n  "msg": "W00t"\n}\n'
+        assert rv.data == b'{"msg":"W00t"}\n'
         assert rv.mimetype == 'application/json'
 
         rv = flask.make_response(
