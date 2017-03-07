@@ -11,6 +11,9 @@ Major release, unreleased
 - Make `app.run()` into a noop if a Flask application is run from the
   development server on the command line.  This avoids some behavior that
   was confusing to debug for newcomers.
+- Change default configuration `JSONIFY_PRETTYPRINT_REGULAR=False`. jsonify()
+  method returns compressed response by default, and pretty response in
+  debug mode.
 
 Version 0.12.1
 --------------
