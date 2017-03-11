@@ -813,7 +813,8 @@ class Flask(_PackageBoundObject):
 
         :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
                      have the server available externally as well. Defaults to
-                     ``'127.0.0.1'``.
+                     ``'127.0.0.1'`` or the host in the ``SERVER_NAME`` config
+                     variable if present.
         :param port: the port of the webserver. Defaults to ``5000`` or the
                      port defined in the ``SERVER_NAME`` config variable if
                      present.
