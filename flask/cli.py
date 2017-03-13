@@ -316,6 +316,7 @@ class FlaskGroup(AppGroup):
         if add_default_commands:
             self.add_command(run_command)
             self.add_command(shell_command)
+            self.add_command(routes_command)
 
         self._loaded_plugin_commands = False
 
@@ -477,6 +478,36 @@ def shell_command():
     ctx.update(app.make_shell_context())
 
     code.interact(banner=banner, local=ctx)
+
+
+@click.command('routes', short_help='Show routes for the app.')
+@click.option('-r', 'order_by', flag_value='rule', default=True, help='Order by route')
+@click.option('-e', 'order_by', flag_value='endpoint', help='Order by endpoint')
+@click.option('-m', 'order_by', flag_value='methods', help='Order by methods')
+@with_appcontext
+def routes_command(order_by):
+    """Show all routes with endpoints and methods."""
+    from flask.globals import _app_ctx_stack
+    app = _app_ctx_stack.top.app
+
+    order_key = lambda rule: getattr(rule, order_by)
+    sorted_rules = sorted(app.url_map.iter_rules(), key=order_key)
+
+    max_rule = max(len(rule.rule) for rule in sorted_rules)
+    max_rule = max(max_rule, len('Route'))
+    max_ep = max(len(rule.endpoint) for rule in sorted_rules)
+    max_ep = max(max_ep, len('Endpoint'))
+    max_meth = max(len(', '.join(rule.methods)) for rule in sorted_rules)
+    max_meth = max(max_meth, len('Methods'))
+
+    columnformat = '{:<%s}  {:<%s}  {:<%s}' % (max_rule, max_ep, max_meth)
+    click.echo(columnformat.format('Route', 'Endpoint', 'Methods'))
+    under_count = max_rule + max_ep + max_meth + 4
+    click.echo('-' * under_count)
+
+    for rule in sorted_rules:
+        methods = ', '.join(rule.methods)
+        click.echo(columnformat.format(rule.rule, rule.endpoint, methods))
 
 
 cli = FlaskGroup(help="""\
