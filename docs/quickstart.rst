@@ -142,9 +142,9 @@ There are more parameters that are explained in the :ref:`server` docs.
 .. admonition:: Attention
 
    Even though the interactive debugger does not work in forking environments
-   (which makes it nearly impossible to use on production servers), it still
-   allows the execution of arbitrary code. This makes it a major security risk
-   and therefore it **must never be used on production machines**.
+   (which makes it nearly impossible to use on production servers), and it is 
+   additionally protected (not 100%) by a PIN (Werkzeug>=0.11), it still has a 
+   huge security risk. **Never enable the debugger in production.**
 
 Screenshot of the debugger in action:
 
