@@ -191,3 +191,20 @@ def test_flaskgroup():
     result = runner.invoke(cli, ['test'])
     assert result.exit_code == 0
     assert result.output == 'flaskgroup\n'
+
+
+def test_print_exceptions():
+    """Print the stacktrace if the CLI."""
+    def create_app(info):
+        raise Exception("oh no")
+        return Flask("flaskgroup")
+
+    @click.group(cls=FlaskGroup, create_app=create_app)
+    def cli(**params):
+        pass
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['--help'])
+    assert result.exit_code == 0
+    assert 'Exception: oh no' in result.output
+    assert 'Traceback' in result.output
