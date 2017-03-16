@@ -372,7 +372,6 @@ class FlaskGroup(AppGroup):
             # However, we will not do so silently because that would confuse
             # users.
             traceback.print_exc()
-            pass
         return sorted(rv)
 
     def main(self, *args, **kwargs):
