@@ -11,6 +11,7 @@
 
 import os
 import sys
+import traceback
 from threading import Lock, Thread
 from functools import update_wrapper
 
@@ -368,6 +369,9 @@ class FlaskGroup(AppGroup):
             # want the help page to break if the app does not exist.
             # If someone attempts to use the command we try to create
             # the app again and this will give us the error.
+            # However, we will not do so silently because that would confuse
+            # users.
+            traceback.print_exc()
             pass
         return sorted(rv)
 
