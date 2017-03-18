@@ -1171,6 +1171,16 @@ def test_static_url_path():
         assert flask.url_for('static', filename='index.html') == '/foo/index.html'
 
 
+def test_static_route_with_host_matching():
+    app = flask.Flask(__name__, static_host='example.com')
+    assert app.url_map.host_matching, 'passing static_host implies host_matching = True'
+    c = app.test_client()
+    assert c.get('http://example.com/static/index.html').status_code == 200
+    with app.test_request_context():
+       rv = flask.url_for('static', filename='index.html', _external=True)
+       assert rv == 'http://example.com/static/index.html'
+
+
 def test_none_response():
     app = flask.Flask(__name__)
     app.testing = True

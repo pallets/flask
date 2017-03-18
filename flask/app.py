@@ -130,6 +130,9 @@ class Flask(_PackageBoundObject):
     :param static_folder: the folder with static files that should be served
                           at `static_url_path`.  Defaults to the ``'static'``
                           folder in the root path of the application.
+    :param static_host: the host to use when adding the static route.
+                        Defaults to None. Setting this implicitly causes
+                        ``app.url_map.host_matching`` to be set to True.
     :param template_folder: the folder that contains the templates that should
                             be used by the application.  Defaults to
                             ``'templates'`` folder in the root path of the
@@ -337,7 +340,8 @@ class Flask(_PackageBoundObject):
     session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', template_folder='templates',
+                 static_folder='static', static_host=None,
+                 template_folder='templates',
                  instance_path=None, instance_relative_config=False,
                  root_path=None):
         _PackageBoundObject.__init__(self, import_name,
@@ -530,14 +534,17 @@ class Flask(_PackageBoundObject):
         self._got_first_request = False
         self._before_request_lock = Lock()
 
-        # register the static folder for the application.  Do that even
-        # if the folder does not exist.  First of all it might be created
-        # while the server is running (usually happens during development)
-        # but also because google appengine stores static files somewhere
+        # Register the static folder for the application if one is configured.
+        # Note we do this without checking if the configured folder exists.
+        # For one, it might be created while the server is running (e.g. during
+        # development). Also, Google App Engine stores static files somewhere
         # else when mapped with the .yml file.
         if self.has_static_folder:
+            if static_host:  # Passing static_host implies host_matching = True.
+                # Must be set before adding the url rule or else it won't match.
+                self.url_map.host_matching = True
             self.add_url_rule(self.static_url_path + '/<path:filename>',
-                              endpoint='static',
+                              endpoint='static', host=static_host,
                               view_func=self.send_static_file)
 
         #: The click command line context for this application.  Commands
