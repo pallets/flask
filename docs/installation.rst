@@ -40,6 +40,12 @@ installations of Python, one for each project.  It doesn't actually install
 separate copies of Python, but it does provide a clever way to keep different
 project environments isolated.  Let's see how virtualenv works.
 
+
+.. admonition:: A note on python3 and virtualenv
+
+    If you are planning on using python3 with the virtualenv, you don't need to
+    install ``virtualenv``. Python3 has built-in support for virtual environments.
+
 If you are on Mac OS X or Linux, chances are that the following
 command will work for you::
 
@@ -55,24 +61,43 @@ install it first.  Check the :ref:`windows-easy-install` section for more
 information about how to do that.  Once you have it installed, run the same
 commands as above, but without the ``sudo`` prefix.
 
+Creating a virtual environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Once you have virtualenv installed, just fire up a shell and create
-your own environment.  I usually create a project folder and a :file:`venv`
+your own environment.  I usually create a project folder and a :file:`virtenv`
 folder within::
 
     $ mkdir myproject
     $ cd myproject
-    $ virtualenv venv
-    New python executable in venv/bin/python
+
+There is a little change in how you create a virtualenv depending on which python-version you are currently using.
+
+**Python2**
+
+::
+
+    $ virtualenv virtenv
+    New python executable in virtenv/bin/python
     Installing setuptools, pip............done.
+
+**Python 3.6 and above**
+
+::
+
+    $ python3 -m venv virtenv
+
+Activating a virtual environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now, whenever you want to work on a project, you only have to activate the
 corresponding environment.  On OS X and Linux, do the following::
 
-    $ . venv/bin/activate
+    $ . virtenv/bin/activate
 
 If you are a Windows user, the following command is for you::
 
-    $ venv\Scripts\activate
+    $ virtenv\Scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
@@ -115,10 +140,10 @@ Get the git checkout in a new virtualenv and run in development mode::
     $ git clone https://github.com/pallets/flask.git
     Initialized empty Git repository in ~/dev/flask/.git/
     $ cd flask
-    $ virtualenv venv
-    New python executable in venv/bin/python
+    $ virtualenv virtenv
+    New python executable in virtenv/bin/python
     Installing setuptools, pip............done.
-    $ . venv/bin/activate
+    $ . virtenv/bin/activate
     $ python setup.py develop
     ...
     Finished processing dependencies for Flask
