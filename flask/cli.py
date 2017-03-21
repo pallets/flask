@@ -93,7 +93,9 @@ def locate_app(app_id):
         # Reraise the ImportError if it occurred within the imported module.
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[-1].tb_next:
-            raise
+            stack_trace = traceback.format_exc()
+            raise NoAppException('There was an error trying to import'
+                    ' the app (%s):\n%s' % (module, stack_trace))
         else:
             raise NoAppException('The file/path provided (%s) does not appear'
                                  ' to exist.  Please verify the path is '
