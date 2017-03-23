@@ -800,11 +800,8 @@ def test_baseexception_error_handling():
         raise KeyboardInterrupt()
 
     with app.test_client() as c:
-        try:
+        with pytest.raises(KeyboardInterrupt):
             c.get('/')
-            raise AssertionError("KeyboardInterrupt should have been raised")
-        except KeyboardInterrupt:
-            pass
 
         ctx = flask._request_ctx_stack.top
         assert ctx.preserved
