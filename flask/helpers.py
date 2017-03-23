@@ -41,6 +41,7 @@ from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
 from ._compat import string_types, text_type
+from unidecode import unidecode
 
 
 # sentinel
@@ -534,8 +535,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if attachment_filename is None:
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
+        filename_dict = {
+            'filename': unidecode(attachment_filename),
+            'filename*': "UTF-8''%s" % url_quote(attachment_filename)}
         headers.add('Content-Disposition', 'attachment',
-                    filename=attachment_filename)
+                    **filename_dict)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:

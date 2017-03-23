@@ -75,6 +75,7 @@ setup(
         'Jinja2>=2.4',
         'itsdangerous>=0.21',
         'click>=2.0',
+        'unidecode',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

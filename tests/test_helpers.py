@@ -560,6 +560,17 @@ class TestSendfile(object):
             assert options['filename'] == 'index.txt'
             rv.close()
 
+    def test_attachment_with_utf8_filename(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            with open(os.path.join(app.root_path, 'static/index.html')) as f:
+                rv = flask.send_file(f, as_attachment=True,
+                                     attachment_filename='Ñandú／pingüino.txt')
+                value, options = \
+                    parse_options_header(rv.headers['Content-Disposition'])
+                assert options == {'filename': 'Nandu/pinguino.txt', 'filename*': "UTF-8''%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt"}
+                rv.close()
+
     def test_static_file(self):
         app = flask.Flask(__name__)
         # default cache timeout is 12 hours
