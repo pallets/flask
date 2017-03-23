@@ -1173,7 +1173,7 @@ def test_static_url_path():
 
 def test_static_route_with_host_matching():
     app = flask.Flask(__name__, static_host='example.com')
-    assert app.url_map.host_matching, 'passing static_host implies host_matching = True'
+    app.url_map.host_matching = True
     c = app.test_client()
     assert c.get('http://example.com/static/index.html').status_code == 200
     with app.test_request_context():
