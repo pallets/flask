@@ -545,7 +545,6 @@ class Flask(_PackageBoundObject):
         # user may set app.url_map.host_matching to True after the app has
         # been initialized, and host_matching needs to be checked for at the
         # time the route is added for requests to be routed correctly.
-        self._should_add_static_route = self.has_static_folder
         def add_static_route():
             assert not static_host or self.url_map.host_matching, (
                 'Expected app.url_map.host_matching to be True when static_host provided')
@@ -1998,9 +1997,8 @@ class Flask(_PackageBoundObject):
                                exception context to start the response
         """
         with self._before_request_lock:
-            if not self._got_first_request and self._should_add_static_route:
+            if not self._got_first_request and self.has_static_folder:
                 self._add_static_route()
-                self._should_add_static_route = False
         ctx = self.request_context(environ)
         ctx.push()
         error = None
