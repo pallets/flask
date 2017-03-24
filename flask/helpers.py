@@ -536,7 +536,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
         filename_dict = {
-            'filename': unidecode(attachment_filename),
+            'filename': unidecode(text_type(attachment_filename)),
             'filename*': "UTF-8''%s" % url_quote(attachment_filename)}
         headers.add('Content-Disposition', 'attachment',
                     **filename_dict)
