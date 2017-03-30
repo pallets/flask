@@ -14,6 +14,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
+import unicodedata
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -41,7 +42,6 @@ from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
 from ._compat import string_types, text_type
-from unidecode import unidecode
 
 
 # sentinel
@@ -536,7 +536,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
         filename_dict = {
-            'filename': unidecode(text_type(attachment_filename)),
+            'filename': (unicodedata.normalize('NFKD',
+                         text_type(attachment_filename)).encode('ascii',
+                                                                'ignore')),
             'filename*': "UTF-8''%s" % url_quote(attachment_filename)}
         headers.add('Content-Disposition', 'attachment',
                     **filename_dict)
