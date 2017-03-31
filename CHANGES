@@ -18,7 +18,7 @@ Major release, unreleased
 Version 0.12.1
 --------------
 
-Bugfix release, unreleased
+Bugfix release, released on March 31st 2017
 
 - Prevent `flask run` from showing a NoAppException when an ImportError occurs
   within the imported application module.
