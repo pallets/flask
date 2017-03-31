@@ -18,7 +18,7 @@ Major release, unreleased
 Version 0.12.1
 --------------
 
-Bugfix release, unreleased
+Bugfix release, released on March 31st 2017
 
 - Prevent `flask run` from showing a NoAppException when an ImportError occurs
   within the imported application module.
@@ -26,6 +26,9 @@ Bugfix release, unreleased
   ``#2118``.
 - Use the ``SERVER_NAME`` config if it is present as default values for
   ``app.run``. ``#2109``, ``#2152``
+- Call `ctx.auto_pop` with the exception object instead of `None`, in the
+  event that a `BaseException` such as `KeyboardInterrupt` is raised in a
+  request handler.
 
 Version 0.12
 ------------
