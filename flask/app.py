@@ -1983,6 +1983,9 @@ class Flask(_PackageBoundObject):
             except Exception as e:
                 error = e
                 response = self.handle_exception(e)
+            except:
+                error = sys.exc_info()[1]
+                raise
             return response(environ, start_response)
         finally:
             if self.should_ignore_error(error):
