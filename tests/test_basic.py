@@ -791,6 +791,23 @@ def test_error_handling_processing():
         assert resp.data == b'internal server error'
 
 
+def test_baseexception_error_handling():
+    app = flask.Flask(__name__)
+    app.config['LOGGER_HANDLER_POLICY'] = 'never'
+
+    @app.route('/')
+    def broken_func():
+        raise KeyboardInterrupt()
+
+    with app.test_client() as c:
+        with pytest.raises(KeyboardInterrupt):
+            c.get('/')
+
+        ctx = flask._request_ctx_stack.top
+        assert ctx.preserved
+        assert type(ctx._preserved_exc) is KeyboardInterrupt
+
+
 def test_before_request_and_routing_errors():
     app = flask.Flask(__name__)
 

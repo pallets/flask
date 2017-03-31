@@ -14,6 +14,9 @@ Major release, unreleased
 - Change default configuration `JSONIFY_PRETTYPRINT_REGULAR=False`. jsonify()
   method returns compressed response by default, and pretty response in
   debug mode.
+- Call `ctx.auto_pop` with the exception object instead of `None`, in the
+  event that a `BaseException` such as `KeyboardInterrupt` is raised in a
+  request handler.
 
 Version 0.12.1
 --------------
