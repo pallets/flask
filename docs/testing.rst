@@ -33,22 +33,22 @@ In order to test the application, we add a second module
 (:file:`flaskr_tests.py`) and create a unittest skeleton there::
 
     import os
-    import flaskr
+    import flask
     import unittest
     import tempfile
 
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-            flaskr.app.config['TESTING'] = True
-            self.app = flaskr.app.test_client()
-            with flaskr.app.app_context():
-                flaskr.init_db()
+            self.db_fd, flask.app.config['DATABASE'] = tempfile.mkstemp()
+            flask.app.config['TESTING'] = True
+            self.app = flask.app.test_client()
+            with flask.app.app_context():
+                flask.init_db()
 
         def tearDown(self):
             os.close(self.db_fd)
-            os.unlink(flaskr.app.config['DATABASE'])
+            os.unlink(flask.app.config['DATABASE'])
 
     if __name__ == '__main__':
         unittest.main()
@@ -82,7 +82,7 @@ If we now run the test suite, we should see the following output::
 
     OK
 
-Even though it did not run any actual tests, we already know that our flaskr
+Even though it did not run any actual tests, we already know that our flask
 application is syntactically valid, otherwise the import would have died
 with an exception.
 
@@ -97,13 +97,13 @@ test method to our class, like this::
     class FlaskrTestCase(unittest.TestCase):
 
         def setUp(self):
-            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-            self.app = flaskr.app.test_client()
-            flaskr.init_db()
+            self.db_fd, flask.app.config['DATABASE'] = tempfile.mkstemp()
+            self.app = flask.app.test_client()
+            flask.init_db()
 
         def tearDown(self):
             os.close(self.db_fd)
-            os.unlink(flaskr.app.config['DATABASE'])
+            os.unlink(flask.app.config['DATABASE'])
 
         def test_empty_db(self):
             rv = self.app.get('/')
