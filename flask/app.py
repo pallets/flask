@@ -419,6 +419,11 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.8
         self.before_first_request_funcs = []
 
+        #: A list of functions that should be called before the first request
+        #: context is created.  To register a function here, use the
+        #: :meth:`before_first_request_context` decorator.
+        self.before_first_request_context_funcs = []
+
         #: A dictionary with lists of functions that should be called after
         #: each request.  The key of the dictionary is the name of the blueprint
         #: this function is active for, ``None`` for all requests.  This can for
@@ -529,6 +534,11 @@ class Flask(_PackageBoundObject):
         # request.
         self._got_first_request = False
         self._before_request_lock = Lock()
+
+        # same as above, but even earlier, before the RequestContext is
+        # created.
+        self._got_first_request_context = False
+        self._before_request_context_lock = Lock()
 
         # register the static folder for the application.  Do that even
         # if the folder does not exist.  First of all it might be created
@@ -1318,6 +1328,17 @@ class Flask(_PackageBoundObject):
         return f
 
     @setupmethod
+    def before_first_request_context(self, f):
+        """Registers a function to be run before the first request context
+        of the first request is created.
+
+        The function will be called without any arguments and its return
+        value is ignored.
+        """
+        self.before_first_request_context_funcs.append(f)
+        return f
+
+    @setupmethod
     def after_request(self, f):
         """Register a function to be run after each request.
 
@@ -1943,7 +1964,24 @@ class Flask(_PackageBoundObject):
 
         :param environ: a WSGI environment
         """
+        self.try_trigger_before_first_request_context_functions()
         return RequestContext(self, environ)
+
+    def try_trigger_before_first_request_context_functions(self):
+        """Called before each request and will ensure that it triggers
+        the :attr:`before_first_request_funcs` and only exactly once per
+        application instance (which means process usually).
+
+        :internal:
+        """
+        if self._got_first_request_context:
+            return
+        with self._before_request_context_lock:
+            if self._got_first_request_context:
+                return
+            for func in self.before_first_request_context_funcs:
+                func()
+            self._got_first_request_context = True
 
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
