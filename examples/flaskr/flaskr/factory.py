@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+"""
+    Flaskr
+    ~~~~~~
+
+    A microblog example application written as Flask tutorial with
+    Flask and sqlite3.
+
+    :copyright: (c) 2015 by Armin Ronacher.
+    :license: BSD, see LICENSE for more details.
+"""
+
 import os
 from flask import Flask, g
 from werkzeug.utils import find_modules, import_string
