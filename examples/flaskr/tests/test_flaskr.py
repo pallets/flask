@@ -12,20 +12,24 @@
 import os
 import tempfile
 import pytest
-from flaskr import flaskr
+from flaskr.factory import create_app
+from flaskr.blueprints.flaskr import init_db
+
+
+test_app = create_app()
 
 
 @pytest.fixture
 def client(request):
-    db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-    flaskr.app.config['TESTING'] = True
-    client = flaskr.app.test_client()
-    with flaskr.app.app_context():
-        flaskr.init_db()
+    db_fd, test_app.config['DATABASE'] = tempfile.mkstemp()
+    test_app.config['TESTING'] = True
+    client = test_app.test_client()
+    with test_app.app_context():
+        init_db()
 
     def teardown():
         os.close(db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
+        os.unlink(test_app.config['DATABASE'])
     request.addfinalizer(teardown)
 
     return client
@@ -50,23 +54,23 @@ def test_empty_db(client):
 
 def test_login_logout(client):
     """Make sure login and logout works"""
-    rv = login(client, flaskr.app.config['USERNAME'],
-               flaskr.app.config['PASSWORD'])
+    rv = login(client, test_app.config['USERNAME'],
+               test_app.config['PASSWORD'])
     assert b'You were logged in' in rv.data
     rv = logout(client)
     assert b'You were logged out' in rv.data
-    rv = login(client, flaskr.app.config['USERNAME'] + 'x',
-               flaskr.app.config['PASSWORD'])
+    rv = login(client,test_app.config['USERNAME'] + 'x',
+               test_app.config['PASSWORD'])
     assert b'Invalid username' in rv.data
-    rv = login(client, flaskr.app.config['USERNAME'],
-               flaskr.app.config['PASSWORD'] + 'x')
+    rv = login(client, test_app.config['USERNAME'],
+               test_app.config['PASSWORD'] + 'x')
     assert b'Invalid password' in rv.data
 
 
 def test_messages(client):
     """Test that messages work"""
-    login(client, flaskr.app.config['USERNAME'],
-          flaskr.app.config['PASSWORD'])
+    login(client, test_app.config['USERNAME'],
+          test_app.config['PASSWORD'])
     rv = client.post('/add', data=dict(
         title='<Hello>',
         text='<strong>HTML</strong> allowed here'
