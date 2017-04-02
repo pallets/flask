@@ -16,20 +16,31 @@ from flaskr.factory import create_app
 from flaskr.blueprints.flaskr import init_db
 
 
-test_app = create_app()
+@pytest.fixture
+def app(request):
+
+    db_fd, temp_db_location = tempfile.mkstemp()
+    config = {
+        'DATABASE': temp_db_location,
+        'TESTING': True,
+        'DB_FD': db_fd
+    }
+
+    app = create_app(config=config)
+
+    with app.app_context():
+        init_db()
+        yield app
 
 
 @pytest.fixture
-def client(request):
-    db_fd, test_app.config['DATABASE'] = tempfile.mkstemp()
-    test_app.config['TESTING'] = True
-    client = test_app.test_client()
-    with test_app.app_context():
-        init_db()
+def client(request, app):
+
+    client = app.test_client()
 
     def teardown():
-        os.close(db_fd)
-        os.unlink(test_app.config['DATABASE'])
+        os.close(app.config['DB_FD'])
+        os.unlink(app.config['DATABASE'])
     request.addfinalizer(teardown)
 
     return client
@@ -52,25 +63,25 @@ def test_empty_db(client):
     assert b'No entries here so far' in rv.data
 
 
-def test_login_logout(client):
+def test_login_logout(client, app):
     """Make sure login and logout works"""
-    rv = login(client, test_app.config['USERNAME'],
-               test_app.config['PASSWORD'])
+    rv = login(client, app.config['USERNAME'],
+               app.config['PASSWORD'])
     assert b'You were logged in' in rv.data
     rv = logout(client)
     assert b'You were logged out' in rv.data
-    rv = login(client,test_app.config['USERNAME'] + 'x',
-               test_app.config['PASSWORD'])
+    rv = login(client,app.config['USERNAME'] + 'x',
+               app.config['PASSWORD'])
     assert b'Invalid username' in rv.data
-    rv = login(client, test_app.config['USERNAME'],
-               test_app.config['PASSWORD'] + 'x')
+    rv = login(client, app.config['USERNAME'],
+               app.config['PASSWORD'] + 'x')
     assert b'Invalid password' in rv.data
 
 
-def test_messages(client):
+def test_messages(client, app):
     """Test that messages work"""
-    login(client, test_app.config['USERNAME'],
-          test_app.config['PASSWORD'])
+    login(client, app.config['USERNAME'],
+          app.config['PASSWORD'])
     rv = client.post('/add', data=dict(
         title='<Hello>',
         text='<strong>HTML</strong> allowed here'
