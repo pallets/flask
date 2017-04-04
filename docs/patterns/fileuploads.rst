@@ -21,7 +21,7 @@ specific upload folder and displays a file to the user.  Let's look at the
 bootstrapping code for our application::
 
     import os
-    from flask import Flask, request, redirect, url_for
+    from flask import Flask, flash, request, redirect, url_for
     from werkzeug.utils import secure_filename
 
     UPLOAD_FOLDER = '/path/to/the/uploads'
