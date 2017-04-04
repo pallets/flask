@@ -14,6 +14,11 @@ Major release, unreleased
 - Change default configuration `JSONIFY_PRETTYPRINT_REGULAR=False`. jsonify()
   method returns compressed response by default, and pretty response in
   debug mode.
+- Change Flask.__init__ to accept two new keyword arguments, ``host_matching``
+  and ``static_host``. This enables ``host_matching`` to be set properly by the
+  time the constructor adds the static route, and enables the static route to
+  be properly associated with the required host. (``#1559``)
+
 
 Version 0.12.1
 --------------
