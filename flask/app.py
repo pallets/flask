@@ -130,6 +130,9 @@ class Flask(_PackageBoundObject):
     :param static_folder: the folder with static files that should be served
                           at `static_url_path`.  Defaults to the ``'static'``
                           folder in the root path of the application.
+    :param static_host: the host to use when adding the static route.
+                        Defaults to None. Only use if setting
+                        ``app.url_map.host_matching`` to True.
     :param template_folder: the folder that contains the templates that should
                             be used by the application.  Defaults to
                             ``'templates'`` folder in the root path of the
@@ -337,7 +340,8 @@ class Flask(_PackageBoundObject):
     session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', template_folder='templates',
+                 static_folder='static', static_host=None,
+                 template_folder='templates',
                  instance_path=None, instance_relative_config=False,
                  root_path=None):
         _PackageBoundObject.__init__(self, import_name,
@@ -530,15 +534,25 @@ class Flask(_PackageBoundObject):
         self._got_first_request = False
         self._before_request_lock = Lock()
 
-        # register the static folder for the application.  Do that even
-        # if the folder does not exist.  First of all it might be created
-        # while the server is running (usually happens during development)
-        # but also because google appengine stores static files somewhere
+        # Create a callback that adds a route for static requests using the
+        # provided static_url_path, static_host, and static_folder,
+        # iff there is a configured static_folder.
+        # Note we do this without checking if static_folder exists.
+        # For one, it might be created while the server is running (e.g. during
+        # development). Also, Google App Engine stores static files somewhere
         # else when mapped with the .yml file.
-        if self.has_static_folder:
+        # This is deferred until right before the first request, because the
+        # user may set app.url_map.host_matching to True after the app has
+        # been initialized, and host_matching needs to be checked for at the
+        # time the route is added for requests to be routed correctly.
+        def add_static_route():
+            assert not static_host or self.url_map.host_matching, (
+                'Expected app.url_map.host_matching to be True when static_host provided')
             self.add_url_rule(self.static_url_path + '/<path:filename>',
-                              endpoint='static',
+                              endpoint='static', host=static_host,
                               view_func=self.send_static_file)
+
+        self._add_static_route = add_static_route
 
         #: The click command line context for this application.  Commands
         #: registered here show up in the :command:`flask` command once the
@@ -1982,6 +1996,9 @@ class Flask(_PackageBoundObject):
                                a list of headers and an optional
                                exception context to start the response
         """
+        with self._before_request_lock:
+            if not self._got_first_request and self.has_static_folder:
+                self._add_static_route()
         ctx = self.request_context(environ)
         ctx.push()
         error = None
