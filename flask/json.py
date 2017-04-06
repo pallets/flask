@@ -236,11 +236,10 @@ def jsonify(*args, **kwargs):
        Added support for serializing top-level arrays. This introduces a
        security risk in ancient browsers. See :ref:`json-security` for details.
 
-    This function's response will be pretty printed if it was not requested
-    with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
-    the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
-    Compressed (not pretty) formatting currently means no indents and no
-    spaces after separators.
+    This function's response will be pretty printed if the
+    ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to True or the
+    Flask app is running in debug mode. Compressed (not pretty) formatting
+    currently means no indents and no spaces after separators.
 
     .. versionadded:: 0.2
     """
