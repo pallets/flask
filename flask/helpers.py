@@ -14,7 +14,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
-import unicodedata
+from unicodedata import normalize
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -535,13 +535,22 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if attachment_filename is None:
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
-        filename_dict = {
-            'filename': (unicodedata.normalize('NFKD',
-                         text_type(attachment_filename)).encode('ascii',
-                                                                'ignore')),
-            'filename*': "UTF-8''%s" % url_quote(attachment_filename)}
+        normalized = normalize('NFKD', text_type(attachment_filename))
+
+        try:
+            normalized.encode('ascii')
+        except UnicodeEncodeError:
+            filenames = {
+                'filename': normalized.encode('ascii', 'ignore'),
+                'filename*': "UTF-8''%s" % url_quote(attachment_filename),
+            }
+        else:
+            filenames = {
+                'filename': attachment_filename,
+            }
+
         headers.add('Content-Disposition', 'attachment',
-                    **filename_dict)
+                    **filenames)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:
