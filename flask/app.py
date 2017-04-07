@@ -123,6 +123,9 @@ class Flask(_PackageBoundObject):
     .. versionadded:: 0.11
        The `root_path` parameter was added.
 
+    .. versionadded:: 0.13
+       The `host_matching` and `static_host` parameters were added.
+
     :param import_name: the name of the application package
     :param static_url_path: can be used to specify a different path for the
                             static files on the web.  Defaults to the name
@@ -130,6 +133,13 @@ class Flask(_PackageBoundObject):
     :param static_folder: the folder with static files that should be served
                           at `static_url_path`.  Defaults to the ``'static'``
                           folder in the root path of the application.
+                          folder in the root path of the application. Defaults
+                          to None.
+    :param host_matching: sets the app's ``url_map.host_matching`` to the given
+                          given value. Defaults to False.
+    :param static_host: the host to use when adding the static route. Defaults
+                        to None. Required when using ``host_matching=True``
+                        with a ``static_folder`` configured.
     :param template_folder: the folder that contains the templates that should
                             be used by the application.  Defaults to
                             ``'templates'`` folder in the root path of the
@@ -337,7 +347,8 @@ class Flask(_PackageBoundObject):
     session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', template_folder='templates',
+                 static_folder='static', static_host=None,
+                 host_matching=False, template_folder='templates',
                  instance_path=None, instance_relative_config=False,
                  root_path=None):
         _PackageBoundObject.__init__(self, import_name,
@@ -525,19 +536,22 @@ class Flask(_PackageBoundObject):
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
+        self.url_map.host_matching = host_matching
+
         # tracks internally if the application already handled at least one
         # request.
         self._got_first_request = False
         self._before_request_lock = Lock()
 
-        # register the static folder for the application.  Do that even
-        # if the folder does not exist.  First of all it might be created
-        # while the server is running (usually happens during development)
-        # but also because google appengine stores static files somewhere
-        # else when mapped with the .yml file.
+        # Add a static route using the provided static_url_path, static_host,
+        # and static_folder iff there is a configured static_folder.
+        # Note we do this without checking if static_folder exists.
+        # For one, it might be created while the server is running (e.g. during
+        # development). Also, Google App Engine stores static files somewhere
         if self.has_static_folder:
+            assert bool(static_host) == host_matching, 'Invalid static_host/host_matching combination'
             self.add_url_rule(self.static_url_path + '/<path:filename>',
-                              endpoint='static',
+                              endpoint='static', host=static_host,
                               view_func=self.send_static_file)
 
         #: The click command line context for this application.  Commands
