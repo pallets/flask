@@ -56,16 +56,16 @@ If you are constantly working with a virtualenv you can also put the
 bottom of the file.  That way every time you activate your virtualenv you
 automatically also activate the correct application name.
 
-Edit the activate script for the shell you use, for example:
+Edit the activate script for the shell you use. For example:
 
 Unix Bash: ``venv/bin/activate``::
 
-    FLASK_APP=foo.py
+    FLASK_APP=hello
     export FLASK_APP
 
 Windows CMD.exe: ``venv\Scripts\activate.bat``::
 
-    set "FLASK_APP=foo.py"
+    set "FLASK_APP=hello"
     :END
 
 Debug Flag
