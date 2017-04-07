@@ -56,7 +56,7 @@ If you are constantly working with a virtualenv you can also put the
 bottom of the file.  That way every time you activate your virtualenv you
 automatically also activate the correct application name.
 
-You need to edit the specific activate script for different shell, for example:
+Edit the activate script for the shell you use, for example:
 
 Unix Bash: ``venv/bin/activate``::
 
