@@ -598,6 +598,56 @@ def test_request_preprocessing_early_return():
     assert rv == b'hello'
     assert evts == [1, 2]
 
+def test_assertion_on_two_routes_same_function_name():
+    app = flask.Flask(__name__)
+    app.testing = True
+
+    with pytest.raises(AssertionError):
+        @app.route("/testing")
+        def index():
+            return "test"
+
+        @app.route("/testing2")
+        def index():
+            return "test"
+
+def test_assertion_on_two_routes_same_url():
+    app = flask.Flask(__name__)
+    app.testing = True
+
+    with pytest.raises(AssertionError):
+        @app.route("/testing")
+        def index():
+            return "test"
+
+        @app.route("/testing")
+        def index2():
+            return "test"
+
+def test_assertion_on_two_routes_same_url_overlapping_methods():
+    app = flask.Flask(__name__)
+    app.testing = True
+
+    with pytest.raises(AssertionError):
+        @app.route("/testing", methods=["GET", "POST"])
+        def index():
+            return "test"
+
+        @app.route("/testing", methods=["POST", "PUTS"])
+        def index2():
+            return "test"
+
+def test_no_assertion_on_two_routes_same_url_different_methods():
+    app = flask.Flask(__name__)
+    app.testing = True
+
+    @app.route("/testing", methods=["GET"])
+    def index():
+        return "test"
+
+    @app.route("/testing", methods=["POST"])
+    def index2():
+        return "test"
 
 def test_after_request_processing():
     app = flask.Flask(__name__)

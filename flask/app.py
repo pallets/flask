@@ -525,6 +525,10 @@ class Flask(_PackageBoundObject):
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
+        # tracks internally if the application is adding a new rule that has
+        # already been added previously.
+        self.prior_rules = {}
+
         # tracks internally if the application already handled at least one
         # request.
         self._got_first_request = False
@@ -1050,6 +1054,32 @@ class Flask(_PackageBoundObject):
 
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
+
+        # a bound subdomain's null value is '' and a unbound is None.
+        current_subdomain = rule.subdomain
+        if current_subdomain is None:
+            # Normalizing.
+            current_subdomain = ''
+        prior_rule_check = (rule.rule, current_subdomain)
+        if prior_rule_check in self.prior_rules:
+            # static/<path:filename> is added once per blueprint. Ignoring for
+            # this check.
+            if rule.rule != "/static/<path:filename>":
+                prior_rule_methods = self.prior_rules.get(
+                    prior_rule_check,
+                    None)
+                # Flask adds non-specified methods to routes. Removing the
+                # required methods so we don't get false positives.
+                intersection_minus_required = bool(
+                    (rule.methods & prior_rule_methods) - required_methods)
+                if intersection_minus_required:
+                    error = ('View function mapping is overwriting an existing '
+                            'URL Rule: path: %s,  method: %s' % (
+                                rule,
+                                intersection_minus_required))
+                    raise AssertionError(error)
+        else:
+            self.prior_rules[prior_rule_check] = rule.methods
 
         self.url_map.add(rule)
         if view_func is not None:
