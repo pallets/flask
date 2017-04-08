@@ -17,6 +17,7 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+import unicodedata
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
@@ -477,6 +478,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionchanged:: 0.12
        The `attachment_filename` is preferred over `filename` for MIME-type
        detection.
+       
+    .. versionchanged:: 0.13
+        UTF-8 filenames, as specified in `RFC 2231`_, are supported.
+        
+    .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
 
     :param filename_or_fp: the filename of the file to send in `latin-1`.
                            This is relative to the :attr:`~Flask.root_path`
@@ -534,8 +540,22 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if attachment_filename is None:
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
-        headers.add('Content-Disposition', 'attachment',
-                    filename=attachment_filename)
+
+        normalized = unicodedata.normalize(
+            'NFKD', text_type(attachment_filename)
+        )
+
+        try:
+            normalized.encode('ascii')
+        except UnicodeEncodeError:
+            filenames = {
+                'filename': normalized.encode('ascii', 'ignore'),
+                'filename*': "UTF-8''%s" % url_quote(attachment_filename),
+            }
+        else:
+            filenames = {'filename': attachment_filename}
+
+        headers.add('Content-Disposition', 'attachment', **filenames)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:
