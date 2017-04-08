@@ -18,7 +18,9 @@ Major release, unreleased
   and ``static_host``. This enables ``host_matching`` to be set properly by the
   time the constructor adds the static route, and enables the static route to
   be properly associated with the required host. (``#1559``)
+- ``send_file`` supports Unicode in ``attachment_filename``. (`#2223`_)
 
+.. _#2223: https://github.com/pallets/flask/pull/2223
 
 Version 0.12.1
 --------------
