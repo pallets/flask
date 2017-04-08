@@ -541,7 +541,7 @@ class TestSendfile(object):
                     parse_options_header(rv.headers['Content-Disposition'])
                 assert value == 'attachment'
                 assert options['filename'] == 'index.html'
-                assert 'filename*' not in options
+                assert 'filename*' not in rv.headers['Content-Disposition']
                 rv.close()
 
         with app.test_request_context():
@@ -565,19 +565,14 @@ class TestSendfile(object):
         app = flask.Flask(__name__)
 
         with app.test_request_context():
-            rv = flask.send_file(
-                'static/index.html', as_attachment=True,
-                attachment_filename=u'Ñandú／pingüino.txt'
-            )
-            value, options = parse_options_header(
-                rv.headers['Content-Disposition']
-            )
+            rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=u'Ñandú／pingüino.txt')
+            content_disposition = set(rv.headers['Content-Disposition'].split('; '))
+            assert content_disposition == set((
+                'attachment',
+                'filename="Nandu/pinguino.txt"',
+                "filename*=UTF-8''%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt"
+            ))
             rv.close()
-
-        assert value == 'attachment'
-        assert sorted(options.keys()) == ('filename', 'filename*')
-        assert options['filename'] == 'Nandu/pinguino.txt'
-        assert options['filename*'] == 'UTF-8''%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt'
 
     def test_static_file(self):
         app = flask.Flask(__name__)
