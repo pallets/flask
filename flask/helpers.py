@@ -484,7 +484,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         
     .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
 
-    :param filename_or_fp: the filename of the file to send in `latin-1`.
+    :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
                            Alternatively a file object might be provided in
@@ -541,15 +541,12 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
 
-        normalized = unicodedata.normalize(
-            'NFKD', text_type(attachment_filename)
-        )
-
         try:
-            normalized.encode('ascii')
+            attachment_filename = attachment_filename.encode('latin-1')
         except UnicodeEncodeError:
             filenames = {
-                'filename': normalized.encode('ascii', 'ignore'),
+                'filename': unicodedata.normalize(
+                    'NFKD', attachment_filename).encode('latin-1', 'ignore'),
                 'filename*': "UTF-8''%s" % url_quote(attachment_filename),
             }
         else:
