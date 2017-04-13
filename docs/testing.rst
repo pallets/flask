@@ -41,7 +41,7 @@ In order to test the application, we add a second module
 
         def setUp(self):
             self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-            flaskr.app.config['TESTING'] = True
+            flaskr.app.testing = True
             self.app = flaskr.app.test_client()
             with flaskr.app.app_context():
                 flaskr.init_db()
@@ -98,8 +98,10 @@ test method to our class, like this::
 
         def setUp(self):
             self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+            flaskr.app.testing = True
             self.app = flaskr.app.test_client()
-            flaskr.init_db()
+            with flaskr.app.app_context():
+                flaskr.init_db()
 
         def tearDown(self):
             os.close(self.db_fd)
@@ -208,7 +210,7 @@ temporarily.  With this you can access the :class:`~flask.request`,
 functions.  Here is a full example that demonstrates this approach::
 
     import flask
-    
+
     app = flask.Flask(__name__)
 
     with app.test_request_context('/?name=Peter'):
