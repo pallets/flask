@@ -517,7 +517,7 @@ class TestSendfile(object):
         assert rv.status_code == 416
         rv.close()
 
-        last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(
+        last_modified = datetime.datetime.utcfromtimestamp(os.path.getmtime(
             os.path.join(app.root_path, 'static/index.html'))).replace(
             microsecond=0)
 
