@@ -580,9 +580,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     rv.cache_control.public = True
     if cache_timeout is None:
         cache_timeout = current_app.get_send_file_max_age(filename)
-    if cache_timeout is not None:
+    if cache_timeout > 0:
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
+    else:
+        rv.cache_control.public = False
+        rv.cache_control.no_store = True
+        rv.cache_control.no_cache = True
 
     if add_etags and filename is not None:
         from warnings import warn
