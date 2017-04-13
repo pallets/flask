@@ -505,7 +505,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     :param cache_timeout: the timeout in seconds for the headers. When ``None``
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
-                          :data:`~flask.current_app`.
+                          :data:`~flask.current_app`. When `<= 0`, will
+                          no-cache, no-store
     :param last_modified: set the ``Last-Modified`` header to this value,
         a :class:`~datetime.datetime` or timestamp.
         If a file was passed, this overrides its mtime.
