@@ -77,7 +77,7 @@ An example template might be this:
    {% block title %}Page Not Found{% endblock %}
    {% block body %}
      <h1>Page Not Found</h1>
-     <p>What you were looking for is just not there.
-     <p><a href="{{ url_for('index') }}">go somewhere nice</a>
+     <p>What you were looking for is just not there.</p>
+     <p><a href="{{ url_for('index') }}">go somewhere nice</a></p>
    {% endblock %}
 
