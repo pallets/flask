@@ -31,6 +31,16 @@ class View(object):
 
         app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
 
+    You can dosomething before View init::
+
+        def dosomething():
+            # you can return a Response then View will not init
+            # return None to continue
+            return None
+
+        view_func=MyView.as_view('myview', before_init=dosomething)
+        app.add_url_rule('/hello/<name>', view_func=view_func)
+
     When you want to decorate a pluggable view you will have to either do that
     when the view function is created (by wrapping the return value of
     :meth:`as_view`) or you can use the :attr:`decorators` attribute::
@@ -70,7 +80,7 @@ class View(object):
         raise NotImplementedError()
 
     @classmethod
-    def as_view(cls, name, *class_args, **class_kwargs):
+    def as_view(cls, name, before_init=None, *class_args, **class_kwargs):
         """Converts the class into an actual view function that can be used
         with the routing system.  Internally this generates a function on the
         fly which will instantiate the :class:`View` on each request and call
@@ -80,6 +90,10 @@ class View(object):
         constructor of the class.
         """
         def view(*args, **kwargs):
+            if before_init:
+                resp = before_init()
+                if resp is not None:
+                    return resp
             self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
 
