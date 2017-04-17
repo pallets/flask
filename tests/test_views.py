@@ -160,3 +160,24 @@ def test_endpoint_override():
 
     # But these tests should still pass. We just log a warning.
     common_test(app)
+
+def test_methods():
+    class Index(flask.views.MethodView):
+        def get(self):
+            return 'GET'
+
+    assert Index.methods == ['GET', 'HEAD']
+    assert Index().methods == ['GET', 'HEAD']
+
+    class Index2(flask.views.MethodView):
+        methods = ['DELETE']
+
+    assert Index2.methods == ['DELETE']
+    assert Index2().methods == ['DELETE']
+
+    class Index3(flask.views.MethodView):
+        def post(self):
+            return 'POST'
+
+    assert Index3.methods == ['POST']
+    assert Index3().methods == ['POST']
