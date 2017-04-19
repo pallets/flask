@@ -160,3 +160,16 @@ def test_endpoint_override():
 
     # But these tests should still pass. We just log a warning.
     common_test(app)
+
+def test_view_name():
+    app = flask.Flask(__name__)
+
+    class Index(flask.views.View):
+        methods = ['GET', 'POST']
+        def dispatch_request(self):
+            return flask.request.method
+
+    view_func = Index.as_view('index')
+
+    assert view_func.__name__ == 'index'
+    assert view_func.__qualname__ == 'index'
