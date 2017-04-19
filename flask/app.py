@@ -305,6 +305,7 @@ class Flask(_PackageBoundObject):
         'JSONIFY_PRETTYPRINT_REGULAR':          False,
         'JSONIFY_MIMETYPE':                     'application/json',
         'TEMPLATES_AUTO_RELOAD':                None,
+        'MAX_COOKIE_SIZE': 4093,
     })
 
     #: The rule object to use for URL rules created.  This is used by

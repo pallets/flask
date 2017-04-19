@@ -85,7 +85,7 @@ Response Objects
 ----------------
 
 .. autoclass:: flask.Response
-   :members: set_cookie, data, mimetype, is_json, get_json
+   :members: set_cookie, max_cookie_size, data, mimetype, is_json, get_json
 
    .. attribute:: headers
 
