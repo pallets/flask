@@ -544,7 +544,7 @@ class Flask(_PackageBoundObject):
         self._before_request_lock = Lock()
 
         # Add a static route using the provided static_url_path, static_host,
-        # and static_folder iff there is a configured static_folder.
+        # and static_folder if there is a configured static_folder.
         # Note we do this without checking if static_folder exists.
         # For one, it might be created while the server is running (e.g. during
         # development). Also, Google App Engine stores static files somewhere
