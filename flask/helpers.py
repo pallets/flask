@@ -331,6 +331,7 @@ def url_for(endpoint, **values):
         values['_external'] = external
         values['_anchor'] = anchor
         values['_method'] = method
+        values['_scheme'] = scheme
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
