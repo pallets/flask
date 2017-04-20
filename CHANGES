@@ -19,7 +19,10 @@ Major release, unreleased
   time the constructor adds the static route, and enables the static route to
   be properly associated with the required host. (``#1559``)
 - ``send_file`` supports Unicode in ``attachment_filename``. (`#2223`_)
+- Pass ``_scheme`` argument from ``url_for`` to ``handle_build_error``.
+  (`#2017`_)
 
+.. _#2017: https://github.com/pallets/flask/pull/2017
 .. _#2223: https://github.com/pallets/flask/pull/2223
 
 Version 0.12.1
