@@ -19,7 +19,45 @@ providing the ``--upgrade`` parameter::
 
     $ pip install --upgrade Flask
 
-.. _upgrading-to-10:
+.. _upgrading-to-012:
+
+Version 0.12
+------------
+
+Changes to send_file
+````````````````````
+
+The ``filename`` is no longer automatically inferred from file-like objects.
+This means that the following code will no longer automatically have
+``X-Sendfile`` support, etag generation or MIME-type guessing::
+
+    response = send_file(open('/path/to/file.txt'))
+
+Any of the following is functionally equivalent::
+
+    fname = '/path/to/file.txt'
+
+    # Just pass the filepath directly
+    response = send_file(fname)
+
+    # Set the MIME-type and ETag explicitly
+    response = send_file(open(fname), mimetype='text/plain')
+    response.set_etag(...)
+
+    # Set `attachment_filename` for MIME-type guessing
+    # ETag still needs to be manually set
+    response = send_file(open(fname), attachment_filename=fname)
+    response.set_etag(...)
+
+The reason for this is that some file-like objects have an invalid or even
+misleading ``name`` attribute. Silently swallowing errors in such cases was not
+a satisfying solution.
+
+Additionally the default of falling back to ``application/octet-stream`` has
+been restricted. If Flask can't guess one or the user didn't provide one, the
+function fails if no filename information was provided.
+
+.. _upgrading-to-011:
 
 Version 0.11
 ------------
@@ -105,7 +143,7 @@ when there is no request context yet but an application context.  The old
 ``flask.Flask.request_globals_class`` attribute was renamed to
 :attr:`flask.Flask.app_ctx_globals_class`.
 
-.. _Flask-OldSessions: http://pythonhosted.org/Flask-OldSessions/
+.. _Flask-OldSessions: https://pythonhosted.org/Flask-OldSessions/
 
 Version 0.9
 -----------
@@ -160,7 +198,7 @@ applications with Flask.  Because we want to make upgrading as easy as
 possible we tried to counter the problems arising from these changes by
 providing a script that can ease the transition.
 
-The script scans your whole application and generates an unified diff with
+The script scans your whole application and generates a unified diff with
 changes it assumes are safe to apply.  However as this is an automated
 tool it won't be able to find all use cases and it might miss some.  We
 internally spread a lot of deprecation warnings all over the place to make

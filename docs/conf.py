@@ -11,10 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 from __future__ import print_function
-from datetime import datetime
 import os
 import sys
 import pkg_resources
+import time
+import datetime
+
+BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -49,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Flask'
-copyright = u'2010 - {0}, Armin Ronacher'.format(datetime.utcnow().year)
+copyright = u'2010 - {0}, Armin Ronacher'.format(BUILD_DATE.year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -231,7 +234,7 @@ latex_additional_files = ['flaskstyle.sty', 'logo.pdf']
 # The scheme of the identifier. Typical schemes are ISBN or URL.
 #epub_scheme = ''
 
-# The unique identifier of the text. This can be a ISBN number
+# The unique identifier of the text. This can be an ISBN number
 # or the project homepage.
 #epub_identifier = ''
 
@@ -257,7 +260,7 @@ intersphinx_mapping = {
     'werkzeug': ('http://werkzeug.pocoo.org/docs/', None),
     'click': ('http://click.pocoo.org/', None),
     'jinja': ('http://jinja.pocoo.org/docs/', None),
-    'sqlalchemy': ('http://docs.sqlalchemy.org/en/latest/', None),
+    'sqlalchemy': ('https://docs.sqlalchemy.org/en/latest/', None),
     'wtforms': ('https://wtforms.readthedocs.io/en/latest/', None),
     'blinker': ('https://pythonhosted.org/blinker/', None)
 }

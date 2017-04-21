@@ -15,7 +15,7 @@ it JavaScript) into the context of a website.  To remedy this, developers
 have to properly escape text so that it cannot include arbitrary HTML
 tags.  For more information on that have a look at the Wikipedia article
 on `Cross-Site Scripting
-<http://en.wikipedia.org/wiki/Cross-site_scripting>`_.
+<https://en.wikipedia.org/wiki/Cross-site_scripting>`_.
 
 Flask configures Jinja2 to automatically escape all values unless
 explicitly told otherwise.  This should rule out all XSS problems caused

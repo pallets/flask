@@ -8,6 +8,7 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.6"
 
 env:
   - REQUIREMENTS=lowest
@@ -32,7 +33,10 @@ matrix:
       env: REQUIREMENTS=lowest
     - python: "3.5"
       env: REQUIREMENTS=lowest-simplejson
-
+    - python: "3.6"
+      env: REQUIREMENTS=lowest
+    - python: "3.6"
+      env: REQUIREMENTS=lowest-simplejson
 
 install:
     - pip install tox

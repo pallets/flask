@@ -13,15 +13,19 @@
          export an FLASKR_SETTINGS environment variable
          pointing to a configuration file.
 
-      2. Instruct flask to use the right application
+      2. install the app from the root of the project directory
+
+         pip install --editable .
+
+      3. Instruct flask to use the right application
 
          export FLASK_APP=flaskr
 
-      3. initialize the database with this command:
+      4. initialize the database with this command:
 
          flask initdb
 
-      4. now you can run flaskr:
+      5. now you can run flaskr:
 
          flask run
 
@@ -30,5 +34,5 @@
 
     ~ Is it tested?
 
-      You betcha.  Run the `test_flaskr.py` file to see
+      You betcha.  Run `python setup.py test` to see
       the tests pass.

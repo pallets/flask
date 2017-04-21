@@ -14,7 +14,6 @@ from threading import Lock
 from datetime import timedelta
 from itertools import chain
 from functools import update_wrapper
-from collections import deque
 
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
@@ -124,6 +123,9 @@ class Flask(_PackageBoundObject):
     .. versionadded:: 0.11
        The `root_path` parameter was added.
 
+    .. versionadded:: 0.13
+       The `host_matching` and `static_host` parameters were added.
+
     :param import_name: the name of the application package
     :param static_url_path: can be used to specify a different path for the
                             static files on the web.  Defaults to the name
@@ -131,6 +133,13 @@ class Flask(_PackageBoundObject):
     :param static_folder: the folder with static files that should be served
                           at `static_url_path`.  Defaults to the ``'static'``
                           folder in the root path of the application.
+                          folder in the root path of the application. Defaults
+                          to None.
+    :param host_matching: sets the app's ``url_map.host_matching`` to the given
+                          given value. Defaults to False.
+    :param static_host: the host to use when adding the static route. Defaults
+                        to None. Required when using ``host_matching=True``
+                        with a ``static_folder`` configured.
     :param template_folder: the folder that contains the templates that should
                             be used by the application.  Defaults to
                             ``'templates'`` folder in the root path of the
@@ -315,7 +324,7 @@ class Flask(_PackageBoundObject):
         'PREFERRED_URL_SCHEME':                 'http',
         'JSON_AS_ASCII':                        True,
         'JSON_SORT_KEYS':                       True,
-        'JSONIFY_PRETTYPRINT_REGULAR':          True,
+        'JSONIFY_PRETTYPRINT_REGULAR':          False,
         'JSONIFY_MIMETYPE':                     'application/json',
         'TEMPLATES_AUTO_RELOAD':                None,
     })
@@ -338,7 +347,8 @@ class Flask(_PackageBoundObject):
     session_interface = SecureCookieSessionInterface()
 
     def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', template_folder='templates',
+                 static_folder='static', static_host=None,
+                 host_matching=False, template_folder='templates',
                  instance_path=None, instance_relative_config=False,
                  root_path=None):
         _PackageBoundObject.__init__(self, import_name,
@@ -392,7 +402,7 @@ class Flask(_PackageBoundObject):
         #: is the class for the instance check and the second the error handler
         #: function.
         #:
-        #: To register a error handler, use the :meth:`errorhandler`
+        #: To register an error handler, use the :meth:`errorhandler`
         #: decorator.
         self.error_handler_spec = {None: self._error_handlers}
 
@@ -519,26 +529,29 @@ class Flask(_PackageBoundObject):
         #:        def to_python(self, value):
         #:            return value.split(',')
         #:        def to_url(self, values):
-        #:            return ','.join(BaseConverter.to_url(value)
+        #:            return ','.join(super(ListConverter, self).to_url(value)
         #:                            for value in values)
         #:
         #:    app = Flask(__name__)
         #:    app.url_map.converters['list'] = ListConverter
         self.url_map = Map()
 
+        self.url_map.host_matching = host_matching
+
         # tracks internally if the application already handled at least one
         # request.
         self._got_first_request = False
         self._before_request_lock = Lock()
 
-        # register the static folder for the application.  Do that even
-        # if the folder does not exist.  First of all it might be created
-        # while the server is running (usually happens during development)
-        # but also because google appengine stores static files somewhere
-        # else when mapped with the .yml file.
+        # Add a static route using the provided static_url_path, static_host,
+        # and static_folder if there is a configured static_folder.
+        # Note we do this without checking if static_folder exists.
+        # For one, it might be created while the server is running (e.g. during
+        # development). Also, Google App Engine stores static files somewhere
         if self.has_static_folder:
+            assert bool(static_host) == host_matching, 'Invalid static_host/host_matching combination'
             self.add_url_rule(self.static_url_path + '/<path:filename>',
-                              endpoint='static',
+                              endpoint='static', host=static_host,
                               view_func=self.send_static_file)
 
         #: The click command line context for this application.  Commands
@@ -814,7 +827,8 @@ class Flask(_PackageBoundObject):
 
         :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
                      have the server available externally as well. Defaults to
-                     ``'127.0.0.1'``.
+                     ``'127.0.0.1'`` or the host in the ``SERVER_NAME`` config
+                     variable if present.
         :param port: the port of the webserver. Defaults to ``5000`` or the
                      port defined in the ``SERVER_NAME`` config variable if
                      present.
@@ -825,25 +839,31 @@ class Flask(_PackageBoundObject):
                         :func:`werkzeug.serving.run_simple` for more
                         information.
         """
+        # Change this into a no-op if the server is invoked from the
+        # command line.  Have a look at cli.py for more information.
+        if os.environ.get('FLASK_RUN_FROM_CLI_SERVER') == '1':
+            from .debughelpers import explain_ignored_app_run
+            explain_ignored_app_run()
+            return
+
         from werkzeug.serving import run_simple
-        if host is None:
-            host = '127.0.0.1'
-        if port is None:
-            server_name = self.config['SERVER_NAME']
-            if server_name and ':' in server_name:
-                port = int(server_name.rsplit(':', 1)[1])
-            else:
-                port = 5000
+        _host = '127.0.0.1'
+        _port = 5000
+        server_name = self.config.get("SERVER_NAME")
+        sn_host, sn_port = None, None
+        if server_name:
+            sn_host, _, sn_port = server_name.partition(':')
+        host = host or sn_host or _host
+        port = int(port or sn_port or _port)
         if debug is not None:
             self.debug = bool(debug)
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
-        options.setdefault('passthrough_errors', True)
         try:
             run_simple(host, port, self, **options)
         finally:
             # reset the first request information if the development server
-            # resetted normally.  This makes it possible to restart the server
+            # reset normally.  This makes it possible to restart the server
             # without reloader and that stuff from an interactive shell.
             self._got_first_request = False
 
@@ -877,9 +897,9 @@ class Flask(_PackageBoundObject):
             from flask.testing import FlaskClient
 
             class CustomClient(FlaskClient):
-                def __init__(self, authentication=None, *args, **kwargs):
-                    FlaskClient.__init__(*args, **kwargs)
-                    self._authentication = authentication
+                def __init__(self, *args, **kwargs):
+                    self._authentication = kwargs.pop("authentication")
+                    super(CustomClient,self).__init__( *args, **kwargs)
 
             app.test_client_class = CustomClient
             client = app.test_client(authentication='Basic ....')
@@ -960,7 +980,7 @@ class Flask(_PackageBoundObject):
         return iter(self._blueprint_order)
 
     @setupmethod
-    def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+    def add_url_rule(self, rule, endpoint=None, view_func=None, provide_automatic_options=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
         endpoint.
@@ -1000,6 +1020,10 @@ class Flask(_PackageBoundObject):
                          endpoint
         :param view_func: the function to call when serving a request to the
                           provided endpoint
+        :param provide_automatic_options: controls whether the ``OPTIONS``
+            method should be added automatically. This can also be controlled
+            by setting the ``view_func.provide_automatic_options = False``
+            before adding the rule.
         :param options: the options to be forwarded to the underlying
                         :class:`~werkzeug.routing.Rule` object.  A change
                         to Werkzeug is handling of method options.  methods
@@ -1029,8 +1053,9 @@ class Flask(_PackageBoundObject):
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
-        provide_automatic_options = getattr(view_func,
-            'provide_automatic_options', None)
+        if provide_automatic_options is None:
+            provide_automatic_options = getattr(view_func,
+                'provide_automatic_options', None)
 
         if provide_automatic_options is None:
             if 'OPTIONS' not in methods:
@@ -1116,7 +1141,7 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def errorhandler(self, code_or_exception):
-        """A decorator that is used to register a function give a given
+        """A decorator that is used to register a function given an
         error code.  Example::
 
             @app.errorhandler(404)
@@ -1154,7 +1179,8 @@ class Flask(_PackageBoundObject):
            that do not necessarily have to be a subclass of the
            :class:`~werkzeug.exceptions.HTTPException` class.
 
-        :param code: the code as integer for the handler
+        :param code_or_exception: the code as integer for the handler, or
+                                  an arbitrary exception
         """
         def decorator(f):
             self._register_error_handler(None, code_or_exception, f)
@@ -1348,7 +1374,7 @@ class Flask(_PackageBoundObject):
         will have to surround the execution of these code by try/except
         statements and log occurring errors.
 
-        When a teardown function was called because of a exception it will
+        When a teardown function was called because of an exception it will
         be passed an error object.
 
         The return values of teardown functions are ignored.
@@ -1437,23 +1463,12 @@ class Flask(_PackageBoundObject):
         def find_handler(handler_map):
             if not handler_map:
                 return
-            queue = deque(exc_class.__mro__)
-            # Protect from geniuses who might create circular references in
-            # __mro__
-            done = set()
-
-            while queue:
-                cls = queue.popleft()
-                if cls in done:
-                    continue
-                done.add(cls)
+            for cls in exc_class.__mro__:
                 handler = handler_map.get(cls)
                 if handler is not None:
                     # cache for next time exc_class is raised
                     handler_map[exc_class] = handler
                     return handler
-
-                queue.extend(cls.__mro__)
 
         # try blueprint handlers
         handler = find_handler(self.error_handler_spec
@@ -1556,7 +1571,7 @@ class Flask(_PackageBoundObject):
         self.log_exception((exc_type, exc_value, tb))
         if handler is None:
             return InternalServerError()
-        return handler(e)
+        return self.finalize_request(handler(e), from_error_handler=True)
 
     def log_exception(self, exc_info):
         """Logs an exception.  This is called by :meth:`handle_exception`
@@ -1624,9 +1639,30 @@ class Flask(_PackageBoundObject):
                 rv = self.dispatch_request()
         except Exception as e:
             rv = self.handle_user_exception(e)
+        return self.finalize_request(rv)
+
+    def finalize_request(self, rv, from_error_handler=False):
+        """Given the return value from a view function this finalizes
+        the request by converting it into a response and invoking the
+        postprocessing functions.  This is invoked for both normal
+        request dispatching as well as error handlers.
+
+        Because this means that it might be called as a result of a
+        failure a special safe mode is available which can be enabled
+        with the `from_error_handler` flag.  If enabled, failures in
+        response processing will be logged and otherwise ignored.
+
+        :internal:
+        """
         response = self.make_response(rv)
-        response = self.process_response(response)
-        request_finished.send(self, response=response)
+        try:
+            response = self.process_response(response)
+            request_finished.send(self, response=response)
+        except Exception:
+            if not from_error_handler:
+                raise
+            self.logger.exception('Request finalizing failed with an '
+                                  'error while handling an error')
         return response
 
     def try_trigger_before_first_request_functions(self):
@@ -1973,7 +2009,10 @@ class Flask(_PackageBoundObject):
                 response = self.full_dispatch_request()
             except Exception as e:
                 error = e
-                response = self.make_response(self.handle_exception(e))
+                response = self.handle_exception(e)
+            except:
+                error = sys.exc_info()[1]
+                raise
             return response(environ, start_response)
         finally:
             if self.should_ignore_error(error):
