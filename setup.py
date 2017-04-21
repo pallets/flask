@@ -33,13 +33,15 @@ And run it:
     $ python hello.py
      * Running on http://localhost:5000/
 
+ Ready for production? `Read this first <http://flask.pocoo.org/docs/deploying/>`.
+
 Links
 `````
 
 * `website <http://flask.pocoo.org/>`_
 * `documentation <http://flask.pocoo.org/docs/>`_
 * `development version
-  <http://github.com/mitsuhiko/flask/zipball/master#egg=Flask-dev>`_
+  <https://github.com/pallets/flask/zipball/master#egg=Flask-dev>`_
 
 """
 import re
@@ -57,7 +59,7 @@ with open('flask/__init__.py', 'rb') as f:
 setup(
     name='Flask',
     version=version,
-    url='http://github.com/mitsuhiko/flask/',
+    url='https://github.com/pallets/flask/',
     license='BSD',
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',
@@ -81,7 +83,13 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],

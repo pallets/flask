@@ -21,6 +21,18 @@ from flask._compat import PY2
 
 
 @pytest.fixture(autouse=True)
+def disable_extwarnings(request, recwarn):
+    from flask.exthook import ExtDeprecationWarning
+
+    def inner():
+        assert set(w.category for w in recwarn.list) \
+            <= set([ExtDeprecationWarning])
+        recwarn.clear()
+
+    request.addfinalizer(inner)
+
+
+@pytest.fixture(autouse=True)
 def importhook_setup(monkeypatch, request):
     # we clear this out for various reasons.  The most important one is
     # that a real flaskext could be in there which would disable our
@@ -167,8 +179,8 @@ def test_flaskext_broken_package_no_module_caching(flaskext_broken):
 def test_no_error_swallowing(flaskext_broken):
     with pytest.raises(ImportError) as excinfo:
         import flask.ext.broken
-
-    assert excinfo.type is ImportError
+    # python3.6 raises a subclass of ImportError: 'ModuleNotFoundError'
+    assert issubclass(excinfo.type, ImportError)
     if PY2:
         message = 'No module named missing_module'
     else:

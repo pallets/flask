@@ -25,7 +25,7 @@ For example, to run a Flask application with 4 worker processes (``-w
 
 .. _Gunicorn: http://gunicorn.org/
 .. _eventlet: http://eventlet.net/
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
 
 Gevent
 -------
@@ -41,7 +41,7 @@ event loop::
     http_server.serve_forever()
 
 .. _Gevent: http://www.gevent.org/
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
 .. _libev: http://software.schmorp.de/pkg/libev.html
 
 Twisted Web
@@ -97,9 +97,10 @@ localhost at port 8000, setting appropriate headers:
             proxy_pass         http://127.0.0.1:8000/;
             proxy_redirect     off;
 
-            proxy_set_header   Host             $host;
-            proxy_set_header   X-Real-IP        $remote_addr;
-            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+            proxy_set_header   Host                 $host;
+            proxy_set_header   X-Real-IP            $remote_addr;
+            proxy_set_header   X-Forwarded-For      $proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Proto    $scheme;
         }
     }
 

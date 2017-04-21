@@ -69,7 +69,7 @@ find a piece of code that looks very much like this::
         with self.request_context(environ):
             try:
                 response = self.full_dispatch_request()
-            except Exception, e:
+            except Exception as e:
                 response = self.make_response(self.handle_exception(e))
             return response(environ, start_response)
 

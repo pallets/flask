@@ -3,15 +3,16 @@
 Step 2: Application Setup Code
 ==============================
 
-Now that we have the schema in place, we can create the application module.
-Let's call it ``flaskr.py``. We will place this file inside the ``flaskr``
-folder. We will begin by adding the imports we need and by adding the config
-section.  For small applications, it is possible to drop the configuration
-directly into the module, and this is what we will be doing here. However,
-a cleaner solution would be to create a separate ``.ini`` or ``.py`` file,
-load that, and import the values from there.
+Now that the schema is in place, you can create the application module,
+:file:`flaskr.py`.  This file should be placed inside of the
+:file:`flaskr/flaskr` folder.  The first several lines of code in the
+application module are the needed import statements.  After that there will be a
+few lines of configuration code. For small applications like ``flaskr``, it is
+possible to drop the configuration directly into the module.  However, a cleaner
+solution is to create a separate ``.ini`` or ``.py`` file, load that, and
+import the values from there.
 
-First, we add the imports in :file:`flaskr.py`::
+Here are the import statements (in :file:`flaskr.py`)::
 
     # all the imports
     import os
@@ -19,12 +20,13 @@ First, we add the imports in :file:`flaskr.py`::
     from flask import Flask, request, session, g, redirect, url_for, abort, \
          render_template, flash
 
-Next, we can create our actual application and initialize it with the
-config from the same file in :file:`flaskr.py`::
+The next couple lines will create the actual application instance and
+initialize it with the config from the same file in :file:`flaskr.py`:
 
-    # create our little application :)
-    app = Flask(__name__)
-    app.config.from_object(__name__)
+.. sourcecode:: python
+
+    app = Flask(__name__) # create the application instance :)
+    app.config.from_object(__name__) # load config from this file , flaskr.py
 
     # Load default config and override config from an environment variable
     app.config.update(dict(
@@ -35,8 +37,8 @@ config from the same file in :file:`flaskr.py`::
     ))
     app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-The :class:`~flask.Config` object works similarly to a dictionary so we
-can update it with new values.
+The :class:`~flask.Config` object works similarly to a dictionary, so it can be
+updated with new values.
 
 .. admonition:: Database Path
 
@@ -55,10 +57,10 @@ can update it with new values.
 
 Usually, it is a good idea to load a separate, environment-specific
 configuration file.  Flask allows you to import multiple configurations and it
-will use the setting defined in the last import. This enables robust
+will use the setting defined in the last import.  This enables robust
 configuration setups.  :meth:`~flask.Config.from_envvar` can help achieve this.
 
-.. code-block:: python
+.. sourcecode:: python
 
    app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
@@ -74,15 +76,15 @@ that in all cases, only variable names that are uppercase are considered.
 The ``SECRET_KEY`` is needed to keep the client-side sessions secure.
 Choose that key wisely and as hard to guess and complex as possible.
 
-We will also add a method that allows for easy connections to the
-specified database. This can be used to open a connection on request and
+Lastly, you will add a method that allows for easy connections to the
+specified database.  This can be used to open a connection on request and
 also from the interactive Python shell or a script.  This will come in
-handy later.  We create a simple database connection through SQLite and
+handy later.  You can create a simple database connection through SQLite and
 then tell it to use the :class:`sqlite3.Row` object to represent rows.
-This allows us to treat the rows as if they were dictionaries instead of
+This allows the rows to be treated as if they were dictionaries instead of
 tuples.
 
-::
+.. sourcecode:: python
 
     def connect_db():
         """Connects to the specific database."""
@@ -90,26 +92,6 @@ tuples.
         rv.row_factory = sqlite3.Row
         return rv
 
-With that out of the way, you should be able to start up the application
-without problems.  Do this with the following command::
+In the next section you will see how to run the application.
 
-    flask --app=flaskr --debug run
-
-The :option:`--debug` flag enables or disables the interactive debugger.  *Never
-leave debug mode activated in a production system*, because it will allow
-users to execute code on the server!
-
-You will see a message telling you that server has started along with
-the address at which you can access it.
-
-When you head over to the server in your browser, you will get a 404 error
-because we don't have any views yet.  We will focus on that a little later,
-but first, we should get the database working.
-
-.. admonition:: Externally Visible Server
-
-   Want your server to be publicly available?  Check out the
-   :ref:`externally visible server <public-server>` section for more
-   information.
-
-Continue with :ref:`tutorial-dbcon`.
+Continue with :ref:`tutorial-packaging`.
