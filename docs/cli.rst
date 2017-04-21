@@ -56,14 +56,24 @@ If you are constantly working with a virtualenv you can also put the
 bottom of the file.  That way every time you activate your virtualenv you
 automatically also activate the correct application name.
 
+Edit the activate script for the shell you use. For example:
+
+Unix Bash: ``venv/bin/activate``::
+
+    FLASK_APP=hello
+    export FLASK_APP
+
+Windows CMD.exe: ``venv\Scripts\activate.bat``::
+
+    set "FLASK_APP=hello"
+    :END
+
 Debug Flag
 ----------
 
 The :command:`flask` script can also be instructed to enable the debug
 mode of the application automatically by exporting ``FLASK_DEBUG``.  If
-set to ``1`` debug is enabled or ``0`` disables it.
-
-Or with a filename::
+set to ``1`` debug is enabled or ``0`` disables it::
 
     export FLASK_DEBUG=1
 
@@ -141,8 +151,8 @@ This could be a file named :file:`autoapp.py` with these contents::
     from yourapplication import create_app
     app = create_app(os.environ['YOURAPPLICATION_CONFIG'])
 
-Once this has happened you can make the flask command automatically pick
-it up::
+Once this has happened you can make the :command:`flask` command automatically
+pick it up::
 
     export YOURAPPLICATION_CONFIG=/path/to/config.cfg
     export FLASK_APP=/path/to/autoapp.py

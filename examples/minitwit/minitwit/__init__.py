@@ -1,0 +1,1 @@
+from .minitwit import app

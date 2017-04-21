@@ -102,10 +102,10 @@ docs to see the alternative method for running a server.
 Invalid Import Name
 ```````````````````
 
-The ``-a`` argument to :command:`flask` is the name of the module to
-import.  In case that module is incorrectly named you will get an import
-error upon start (or if debug is enabled when you navigate to the
-application).  It will tell you what it tried to import and why it failed.
+The ``FLASK_APP`` environment variable is the name of the module to import at
+:command:`flask run`. In case that module is incorrectly named you will get an
+import error upon start (or if debug is enabled when you navigate to the
+application). It will tell you what it tried to import and why it failed.
 
 The most common reason is a typo or because you did not actually create an
 ``app`` object.
@@ -264,10 +264,10 @@ some examples::
     ... def profile(username): pass
     ...
     >>> with app.test_request_context():
-    ...  print url_for('index')
-    ...  print url_for('login')
-    ...  print url_for('login', next='/')
-    ...  print url_for('profile', username='John Doe')
+    ...  print(url_for('index'))
+    ...  print(url_for('login'))
+    ...  print(url_for('login', next='/'))
+    ...  print(url_for('profile', username='John Doe'))
     ...
     /
     /login
@@ -306,9 +306,9 @@ can be changed by providing the ``methods`` argument to the
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
-            do_the_login()
+            return do_the_login()
         else:
-            show_the_login_form()
+            return show_the_login_form()
 
 If ``GET`` is present, ``HEAD`` will be added automatically for you.  You
 don't have to deal with that.  It will also make sure that ``HEAD`` requests
@@ -367,7 +367,7 @@ HTTP has become quite popular lately and browsers are no longer the only
 clients that are using HTTP. For instance, many revision control systems
 use it.
 
-.. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
+.. _HTTP RFC: https://www.ietf.org/rfc/rfc2068.txt
 
 Static Files
 ------------
@@ -538,16 +538,16 @@ The Request Object
 ``````````````````
 
 The request object is documented in the API section and we will not cover
-it here in detail (see :class:`~flask.request`). Here is a broad overview of
+it here in detail (see :class:`~flask.Request`). Here is a broad overview of
 some of the most common operations.  First of all you have to import it from
 the ``flask`` module::
 
     from flask import request
 
 The current request method is available by using the
-:attr:`~flask.request.method` attribute.  To access form data (data
+:attr:`~flask.Request.method` attribute.  To access form data (data
 transmitted in a ``POST`` or ``PUT`` request) you can use the
-:attr:`~flask.request.form` attribute.  Here is a full example of the two
+:attr:`~flask.Request.form` attribute.  Here is a full example of the two
 attributes mentioned above::
 
     @app.route('/login', methods=['POST', 'GET'])
@@ -570,7 +570,7 @@ error page is shown instead.  So for many situations you don't have to
 deal with that problem.
 
 To access parameters submitted in the URL (``?key=value``) you can use the
-:attr:`~flask.request.args` attribute::
+:attr:`~flask.Request.args` attribute::
 
     searchword = request.args.get('key', '')
 
@@ -579,7 +579,7 @@ We recommend accessing URL parameters with `get` or by catching the
 bad request page in that case is not user friendly.
 
 For a full list of methods and attributes of the request object, head over
-to the :class:`~flask.request` documentation.
+to the :class:`~flask.Request` documentation.
 
 
 File Uploads
@@ -817,6 +817,9 @@ values do not persist across requests, cookies are indeed enabled, and you are
 not getting a clear error message, check the size of the cookie in your page
 responses compared to the size supported by web browsers.
 
+Besides the default client-side based sessions, if you want to handle
+sessions on the server-side instead, there are several
+Flask extensions that support this.
 
 Message Flashing
 ----------------

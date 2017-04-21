@@ -50,7 +50,7 @@ def test_options_on_multiple_rules():
     assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
 
 
-def test_options_handling_disabled():
+def test_provide_automatic_options_attr():
     app = flask.Flask(__name__)
 
     def index():
@@ -68,6 +68,54 @@ def test_options_handling_disabled():
     app.route('/', methods=['OPTIONS'])(index2)
     rv = app.test_client().open('/', method='OPTIONS')
     assert sorted(rv.allow) == ['OPTIONS']
+
+
+def test_provide_automatic_options_kwarg():
+    app = flask.Flask(__name__)
+
+    def index():
+        return flask.request.method
+
+    def more():
+        return flask.request.method
+
+    app.add_url_rule('/', view_func=index, provide_automatic_options=False)
+    app.add_url_rule(
+        '/more', view_func=more, methods=['GET', 'POST'],
+        provide_automatic_options=False
+    )
+
+    c = app.test_client()
+    assert c.get('/').data == b'GET'
+
+    rv = c.post('/')
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ['GET', 'HEAD']
+
+    # Older versions of Werkzeug.test.Client don't have an options method
+    if hasattr(c, 'options'):
+        rv = c.options('/')
+    else:
+        rv = c.open('/', method='OPTIONS')
+
+    assert rv.status_code == 405
+
+    rv = c.head('/')
+    assert rv.status_code == 200
+    assert not rv.data  # head truncates
+    assert c.post('/more').data == b'POST'
+    assert c.get('/more').data == b'GET'
+
+    rv = c.delete('/more')
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
+
+    if hasattr(c, 'options'):
+        rv = c.options('/more')
+    else:
+        rv = c.open('/more', method='OPTIONS')
+
+    assert rv.status_code == 405
 
 
 def test_request_dispatching():
@@ -333,7 +381,7 @@ def test_session_expiration():
     client = app.test_client()
     rv = client.get('/')
     assert 'set-cookie' in rv.headers
-    match = re.search(r'\bexpires=([^;]+)(?i)', rv.headers['set-cookie'])
+    match = re.search(r'(?i)\bexpires=([^;]+)', rv.headers['set-cookie'])
     expires = parse_date(match.group())
     expected = datetime.utcnow() + app.permanent_session_lifetime
     assert expires.year == expected.year
@@ -768,6 +816,46 @@ def test_error_handling():
     assert b'forbidden' == rv.data
 
 
+def test_error_handling_processing():
+    app = flask.Flask(__name__)
+    app.config['LOGGER_HANDLER_POLICY'] = 'never'
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        return 'internal server error', 500
+
+    @app.route('/')
+    def broken_func():
+        1 // 0
+
+    @app.after_request
+    def after_request(resp):
+        resp.mimetype = 'text/x-special'
+        return resp
+
+    with app.test_client() as c:
+        resp = c.get('/')
+        assert resp.mimetype == 'text/x-special'
+        assert resp.data == b'internal server error'
+
+
+def test_baseexception_error_handling():
+    app = flask.Flask(__name__)
+    app.config['LOGGER_HANDLER_POLICY'] = 'never'
+
+    @app.route('/')
+    def broken_func():
+        raise KeyboardInterrupt()
+
+    with app.test_client() as c:
+        with pytest.raises(KeyboardInterrupt):
+            c.get('/')
+
+        ctx = flask._request_ctx_stack.top
+        assert ctx.preserved
+        assert type(ctx._preserved_exc) is KeyboardInterrupt
+
+
 def test_before_request_and_routing_errors():
     app = flask.Flask(__name__)
 
@@ -972,7 +1060,7 @@ def test_make_response_with_response_instance():
         rv = flask.make_response(
             flask.jsonify({'msg': 'W00t'}), 400)
         assert rv.status_code == 400
-        assert rv.data == b'{\n  "msg": "W00t"\n}\n'
+        assert rv.data == b'{"msg":"W00t"}\n'
         assert rv.mimetype == 'application/json'
 
         rv = flask.make_response(
@@ -1091,6 +1179,23 @@ def test_build_error_handler_reraise():
         pytest.raises(BuildError, flask.url_for, 'not.existing')
 
 
+def test_url_for_passes_special_values_to_build_error_handler():
+    app = flask.Flask(__name__)
+
+    @app.url_build_error_handlers.append
+    def handler(error, endpoint, values):
+        assert values == {
+            '_external': False,
+            '_anchor': None,
+            '_method': None,
+            '_scheme': None,
+        }
+        return 'handled'
+
+    with app.test_request_context():
+        flask.url_for('/')
+
+
 def test_custom_converters():
     from werkzeug.routing import BaseConverter
 
@@ -1146,6 +1251,25 @@ def test_static_url_path():
 
     with app.test_request_context():
         assert flask.url_for('static', filename='index.html') == '/foo/index.html'
+
+
+def test_static_route_with_host_matching():
+    app = flask.Flask(__name__, host_matching=True, static_host='example.com')
+    c = app.test_client()
+    rv = c.get('http://example.com/static/index.html')
+    assert rv.status_code == 200
+    rv.close()
+    with app.test_request_context():
+       rv = flask.url_for('static', filename='index.html', _external=True)
+       assert rv == 'http://example.com/static/index.html'
+    # Providing static_host without host_matching=True should error.
+    with pytest.raises(Exception):
+        flask.Flask(__name__, static_host='example.com')
+    # Providing host_matching=True with static_folder but without static_host should error.
+    with pytest.raises(Exception):
+        flask.Flask(__name__, host_matching=True)
+    # Providing host_matching=True without static_host but with static_folder=None should not error.
+    flask.Flask(__name__, host_matching=True, static_folder=None)
 
 
 def test_none_response():
@@ -1268,8 +1392,6 @@ def test_werkzeug_passthrough_errors(monkeypatch, debug, use_debugger,
     monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
     app.config['PROPAGATE_EXCEPTIONS'] = propagate_exceptions
     app.run(debug=debug, use_debugger=use_debugger, use_reloader=use_reloader)
-    # make sure werkzeug always passes errors through
-    assert rv['passthrough_errors']
 
 
 def test_max_content_length():
@@ -1660,3 +1782,20 @@ def test_run_server_port(monkeypatch):
     hostname, port = 'localhost', 8000
     app.run(hostname, port, debug=True)
     assert rv['result'] == 'running on %s:%s ...' % (hostname, port)
+
+
+@pytest.mark.parametrize('host,port,expect_host,expect_port', (
+    (None, None, 'pocoo.org', 8080),
+    ('localhost', None, 'localhost', 8080),
+    (None, 80, 'pocoo.org', 80),
+    ('localhost', 80, 'localhost', 80),
+))
+def test_run_from_config(monkeypatch, host, port, expect_host, expect_port):
+    def run_simple_mock(hostname, port, *args, **kwargs):
+        assert hostname == expect_host
+        assert port == expect_port
+
+    monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
+    app = flask.Flask(__name__)
+    app.config['SERVER_NAME'] = 'pocoo.org:8080'
+    app.run(host, port)
