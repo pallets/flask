@@ -21,7 +21,11 @@ Major release, unreleased
 - ``send_file`` supports Unicode in ``attachment_filename``. (`#2223`_)
 - Pass ``_scheme`` argument from ``url_for`` to ``handle_build_error``.
   (`#2017`_)
+- Add support for ``provide_automatic_options`` in ``add_url_rule`` to disable
+  adding OPTIONS method when the ``view_func`` argument is not a class.
+  (`#1489`_).
 
+.. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#2017: https://github.com/pallets/flask/pull/2017
 .. _#2223: https://github.com/pallets/flask/pull/2223
 
@@ -146,9 +150,6 @@ Released on May 29th 2016, codename Absinthe.
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).
-- Added support for `provide_automatic_options` in :meth:`add_url_rule` to
-  turn off automatic OPTIONS when the `view_func` argument is not a class
-  (pull request ``#1489``).
 - ``flask.ext`` is now deprecated (pull request ``#1484``).
 - ``send_from_directory`` now raises BadRequest if the filename is invalid on
   the server OS (pull request ``#1763``).
