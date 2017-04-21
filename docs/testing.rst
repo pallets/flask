@@ -33,7 +33,7 @@ In order to test the application, we add a second module
 (:file:`flaskr_tests.py`) and create a unittest skeleton there::
 
     import os
-    import flaskr
+    from flaskr import flaskr
     import unittest
     import tempfile
 
