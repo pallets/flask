@@ -10,6 +10,7 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import print_function
 import sys
 import os
 import re
@@ -80,22 +81,17 @@ def set_init_version(version):
     set_filename_version('flask/__init__.py', version, '__version__')
 
 
-def set_setup_version(version):
-    info('Setting setup.py version to %s', version)
-    set_filename_version('setup.py', version, 'version')
-
-
 def build_and_upload():
-    Popen([sys.executable, 'setup.py', 'release', 'sdist', 'upload']).wait()
+    Popen([sys.executable, 'setup.py', 'release', 'sdist', 'bdist_wheel', 'upload']).wait()
 
 
 def fail(message, *args):
-    print >> sys.stderr, 'Error:', message % args
+    print('Error:', message % args, file=sys.stderr)
     sys.exit(1)
 
 
 def info(message, *args):
-    print >> sys.stderr, message % args
+    print(message % args, file=sys.stderr)
 
 
 def get_git_tags():
@@ -140,12 +136,10 @@ def main():
         fail('You have uncommitted changes in git')
 
     set_init_version(version)
-    set_setup_version(version)
     make_git_commit('Bump version number to %s', version)
     make_git_tag(version)
     build_and_upload()
     set_init_version(dev_version)
-    set_setup_version(dev_version)
 
 
 if __name__ == '__main__':

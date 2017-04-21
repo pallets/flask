@@ -17,12 +17,9 @@ from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 from ._compat import iteritems, text_type
+from .helpers import total_seconds
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
-
-
-def total_seconds(td):
-    return td.days * 60 * 60 * 24 + td.seconds
 
 
 class SessionMixin(object):
@@ -87,21 +84,25 @@ class TaggedJSONSerializer(object):
     def dumps(self, value):
         return json.dumps(_tag(value), separators=(',', ':'))
 
+    LOADS_MAP = {
+        ' t': tuple,
+        ' u': uuid.UUID,
+        ' b': b64decode,
+        ' m': Markup,
+        ' d': parse_date,
+    }
+
     def loads(self, value):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
             the_key, the_value = next(iteritems(obj))
-            if the_key == ' t':
-                return tuple(the_value)
-            elif the_key == ' u':
-                return uuid.UUID(the_value)
-            elif the_key == ' b':
-                return b64decode(the_value)
-            elif the_key == ' m':
-                return Markup(the_value)
-            elif the_key == ' d':
-                return parse_date(the_value)
+            # Check the key for a corresponding function
+            return_function = self.LOADS_MAP.get(the_key)
+            if return_function:
+                # Pass the value to the function
+                return return_function(the_value)
+            # Didn't find a function for this object
             return obj
         return json.loads(value, object_hook=object_hook)
 
@@ -171,7 +172,7 @@ class SessionInterface(object):
     null_session_class = NullSession
 
     #: A flag that indicates if the session interface is pickle based.
-    #: This can be used by flask extensions to make a decision in regards
+    #: This can be used by Flask extensions to make a decision in regards
     #: to how to deal with the session object.
     #:
     #: .. versionadded:: 0.10
@@ -266,7 +267,7 @@ class SessionInterface(object):
 
         This check is usually skipped if sessions get deleted.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         if session.modified:
             return True

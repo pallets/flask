@@ -29,7 +29,7 @@ chapter of the documentation first.
 Command Line Interface
 ----------------------
 
-Starting with Flask 1.0 the recommended way to work with the shell is the
+Starting with Flask 0.11 the recommended way to work with the shell is the
 ``flask shell`` command which does a lot of this automatically for you.
 For instance the shell is automatically initialized with a loaded
 application context.

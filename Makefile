@@ -3,10 +3,8 @@
 all: clean-pyc test
 
 test:
-	py.test tests examples
-
-tox-test:
-	tox
+	pip install -r test-requirements.txt
+	tox -e py-release
 
 audit:
 	python setup.py audit
