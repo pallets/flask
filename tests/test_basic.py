@@ -50,7 +50,7 @@ def test_options_on_multiple_rules():
     assert sorted(rv.allow) == ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
 
 
-def test_options_handling_disabled():
+def test_provide_automatic_options_attr():
     app = flask.Flask(__name__)
 
     def index():
@@ -68,6 +68,54 @@ def test_options_handling_disabled():
     app.route('/', methods=['OPTIONS'])(index2)
     rv = app.test_client().open('/', method='OPTIONS')
     assert sorted(rv.allow) == ['OPTIONS']
+
+
+def test_provide_automatic_options_kwarg():
+    app = flask.Flask(__name__)
+
+    def index():
+        return flask.request.method
+
+    def more():
+        return flask.request.method
+
+    app.add_url_rule('/', view_func=index, provide_automatic_options=False)
+    app.add_url_rule(
+        '/more', view_func=more, methods=['GET', 'POST'],
+        provide_automatic_options=False
+    )
+
+    c = app.test_client()
+    assert c.get('/').data == b'GET'
+
+    rv = c.post('/')
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ['GET', 'HEAD']
+
+    # Older versions of Werkzeug.test.Client don't have an options method
+    if hasattr(c, 'options'):
+        rv = c.options('/')
+    else:
+        rv = c.open('/', method='OPTIONS')
+
+    assert rv.status_code == 405
+
+    rv = c.head('/')
+    assert rv.status_code == 200
+    assert not rv.data  # head truncates
+    assert c.post('/more').data == b'POST'
+    assert c.get('/more').data == b'GET'
+
+    rv = c.delete('/more')
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ['GET', 'HEAD', 'POST']
+
+    if hasattr(c, 'options'):
+        rv = c.options('/more')
+    else:
+        rv = c.open('/more', method='OPTIONS')
+
+    assert rv.status_code == 405
 
 
 def test_request_dispatching():
