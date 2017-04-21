@@ -24,8 +24,10 @@ Major release, unreleased
 - Add support for ``provide_automatic_options`` in ``add_url_rule`` to disable
   adding OPTIONS method when the ``view_func`` argument is not a class.
   (`#1489`_).
+- ``MethodView`` can inherit method handlers from base classes. (`#1936`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
+.. _#1936: https://github.com/pallets/flask/pull/1936
 .. _#2017: https://github.com/pallets/flask/pull/2017
 .. _#2223: https://github.com/pallets/flask/pull/2223
 
