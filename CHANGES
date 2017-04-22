@@ -25,11 +25,14 @@ Major release, unreleased
   adding OPTIONS method when the ``view_func`` argument is not a class.
   (`#1489`_).
 - ``MethodView`` can inherit method handlers from base classes. (`#1936`_)
+- Errors caused while opening the session at the beginning of the request are
+  handled by the app's error handlers. (`#2254`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1936: https://github.com/pallets/flask/pull/1936
 .. _#2017: https://github.com/pallets/flask/pull/2017
 .. _#2223: https://github.com/pallets/flask/pull/2223
+.. _#2254: https://github.com/pallets/flask/pull/2254
 
 Version 0.12.1
 --------------
