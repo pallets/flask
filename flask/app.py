@@ -2002,10 +2002,10 @@ class Flask(_PackageBoundObject):
                                exception context to start the response
         """
         ctx = self.request_context(environ)
-        ctx.push()
         error = None
         try:
             try:
+                ctx.push()
                 response = self.full_dispatch_request()
             except Exception as e:
                 error = e
