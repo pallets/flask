@@ -358,6 +358,7 @@ def test_missing_session():
         e = pytest.raises(RuntimeError, f, *args, **kwargs)
         assert e.value.args and 'session is unavailable' in e.value.args[0]
     with app.test_request_context():
+        app.ctx_open_session()
         assert flask.session.get('missing_key') is None
         expect_exception(flask.session.__setitem__, 'foo', 42)
         expect_exception(flask.session.pop, 'foo')
@@ -498,6 +499,7 @@ def test_flashes():
     app.secret_key = 'testkey'
 
     with app.test_request_context():
+        app.ctx_open_session()
         assert not flask.session.modified
         flask.flash('Zap')
         flask.session.modified = False

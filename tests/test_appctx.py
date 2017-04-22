@@ -43,6 +43,34 @@ def test_request_context_means_app_context():
         assert flask.current_app._get_current_object() == app
     assert flask._app_ctx_stack.top is None
 
+def test_request_context_reset_correctly():
+    app = flask.Flask(__name__)
+
+    class BadSessionInterface(object):
+
+        """Fails once."""
+        fail = True
+
+        def open_session(self, *args, **kwargs):
+            if self.fail:
+                setattr(flask.g, "test_g_attr", 1)
+                self.fail = False
+                raise Exception()
+        def make_null_session(self, *args, **kwargs):
+            return None
+
+    app.session_interface = BadSessionInterface()
+
+    try:
+        with app.test_request_context():
+            app.ctx_open_session()
+    except:
+        pass
+
+    with app.test_request_context():
+        app.ctx_open_session()
+        assert getattr(flask.g, "test_g_attr", None) is None
+
 def test_app_context_provides_current_app():
     app = flask.Flask(__name__)
     with app.app_context():
