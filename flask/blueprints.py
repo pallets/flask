@@ -90,10 +90,10 @@ class Blueprint(_PackageBoundObject):
     _got_registered_once = False
 
     #: Blueprint local JSON decoder class to use.
-    # Set to None to use the :class:`~flask.app.Flask.json_encoder`.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
     json_encoder = None
     #: Blueprint local JSON decoder class to use.
-    # Set to None to use the :class:`~flask.app.Flask.json_decoder`.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
     json_decoder = None
 
     def __init__(self, name, import_name, static_folder=None,
