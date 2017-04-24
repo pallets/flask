@@ -975,7 +975,7 @@ def test_enctype_debug_helper():
         assert 'This was submitted: "index.txt"' in str(e.value)
 
 
-def test_response_creation():
+def test_response_creation_from_text():
     app = flask.Flask(__name__)
 
     @app.route('/unicode')
@@ -986,53 +986,76 @@ def test_response_creation():
     def from_string():
         return u'Hällo Wörld'.encode('utf-8')
 
-    @app.route('/args')
-    def from_tuple():
+    c = app.test_client()
+    assert c.get('/unicode').data == u'Hällo Wörld'.encode('utf-8')
+    assert c.get('/string').data == u'Hällo Wörld'.encode('utf-8')
+
+
+def test_response_creation_from_tuple():
+    app = flask.Flask(__name__)
+    app.testing = True  # among other things this makes the test client propagate exceptions.
+
+    @app.route('/tuple1')
+    def from_tuple_of_three_with_str_body():
         return 'Meh', 400, {
             'X-Foo': 'Testing',
             'Content-Type': 'text/plain; charset=utf-8'
         }
 
-    @app.route('/two_args')
-    def from_two_args_tuple():
+    @app.route('/tuple2')
+    def from_tuple_of_two_with_str_body():
         return 'Hello', {
             'X-Foo': 'Test',
             'Content-Type': 'text/plain; charset=utf-8'
         }
 
-    @app.route('/args_status')
-    def from_status_tuple():
+    @app.route('/tuple3')
+    def from_tuple_of_two_with_str_body_and_status():
         return 'Hi, status!', 400
 
-    @app.route('/args_header')
-    def from_response_instance_status_tuple():
+    @app.route('/tuple4')
+    def from_tuple_of_two_with_response_object_and_headers():
         return flask.Response('Hello world', 404), {
             "X-Foo": "Bar",
             "X-Bar": "Foo"
         }
 
-    c = app.test_client()
-    assert c.get('/unicode').data == u'Hällo Wörld'.encode('utf-8')
-    assert c.get('/string').data == u'Hällo Wörld'.encode('utf-8')
-    rv = c.get('/args')
-    assert rv.data == b'Meh'
-    assert rv.headers['X-Foo'] == 'Testing'
-    assert rv.status_code == 400
-    assert rv.mimetype == 'text/plain'
-    rv2 = c.get('/two_args')
-    assert rv2.data == b'Hello'
-    assert rv2.headers['X-Foo'] == 'Test'
-    assert rv2.status_code == 200
-    assert rv2.mimetype == 'text/plain'
-    rv3 = c.get('/args_status')
-    assert rv3.data == b'Hi, status!'
-    assert rv3.status_code == 400
-    assert rv3.mimetype == 'text/html'
-    rv4 = c.get('/args_header')
-    assert rv4.data == b'Hello world'
-    assert rv4.headers['X-Foo'] == 'Bar'
-    assert rv4.headers['X-Bar'] == 'Foo'
-    assert rv4.status_code == 404
+    @app.route('/tuple5')
+    def from_illegal_tuple():
+        return ('Breakin de law',)
+
+    client = app.test_client()
+
+    response1 = client.get('/tuple1')
+    assert response1.data == b'Meh'
+    assert response1.status_code == 400
+    assert response1.status == '400 BAD REQUEST'
+    assert response1.headers['X-Foo'] == 'Testing'
+
+    response2 = client.get('/tuple2')
+    assert response2.data == b'Hello'
+    assert response2.headers['X-Foo'] == 'Test'
+    assert response2.status == '200 OK'
+    assert response2.status_code == 200
+    assert response2.mimetype == 'text/plain'
+
+    response3 = client.get('/tuple3')
+    assert response3.data == b'Hi, status!'
+    assert response1.status == '400 BAD REQUEST'
+    assert response3.status_code == 400
+    assert response3.mimetype == 'text/html'
+
+    response4 = client.get('/tuple4')
+    assert response4.data == b'Hello world'
+    assert response4.headers['X-Foo'] == 'Bar'
+    assert response4.headers['X-Bar'] == 'Foo'
+    assert response4.status == '404 NOT FOUND'
+    assert response4.status_code == 404
+
+    with pytest.raises(ValueError) as exc_info:
+        client.get('/tuple5')
+    assert 'Tuples returned from view functions must be composed as one of the following options' \
+           in str(exc_info.value)
 
 
 def test_make_response():
@@ -1056,6 +1079,7 @@ def test_make_response():
 
 def test_make_response_with_response_instance():
     app = flask.Flask(__name__)
+
     with app.test_request_context():
         rv = flask.make_response(
             flask.jsonify({'msg': 'W00t'}), 400)

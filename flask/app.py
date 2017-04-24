@@ -1714,11 +1714,11 @@ class Flask(_PackageBoundObject):
         """
         return False
 
-    def make_response(self, rv):
+    def make_response(self, view_func_rv):
         """Converts the return value from a view function to a real
         response object that is an instance of :attr:`response_class`.
 
-        The following types are allowed for `rv`:
+        The following types are allowed for `view_func_rv`:
 
         .. tabularcolumns:: |p{3.5cm}|p{9.5cm}|
 
@@ -1730,51 +1730,65 @@ class Flask(_PackageBoundObject):
                                 string encoded to utf-8 as body
         a WSGI function         the function is called as WSGI application
                                 and buffered as response object
-        :class:`tuple`          A tuple in the form ``(response, status,
-                                headers)`` or ``(response, headers)``
+        :class:`tuple`          A tuple in the form ``(response, status, headers)``,
+                                ``(response, status) or ``(response, headers)``,
                                 where `response` is any of the
-                                types defined here, `status` is a string
-                                or an integer and `headers` is a list or
-                                a dictionary with header values.
+                                types defined here, `status` is a string or an integer
+                                and `headers` is a dictionary of header values, or
+                                a list of tuples, e.g. [('X-Foo', 'bar')].
+                                If a :attr:`response_class` object is used as `response`
+                                and a status is specified both in the `response` object and in
+                                in the tuple, the status from the tuple is preferred.
+                                Also if a :attr:`response_class` object is used as `response`
+                                and headers are present both in the `response` object and in the tuple,
+                                the headers from both sources are included in the resulting response.
         ======================= ===========================================
 
-        :param rv: the return value from the view function
+        :param view_func_rv: the return value from the view function
 
         .. versionchanged:: 0.9
            Previously a tuple was interpreted as the arguments for the
            response object.
         """
-        status_or_headers = headers = None
-        if isinstance(rv, tuple):
-            rv, status_or_headers, headers = rv + (None,) * (3 - len(rv))
-
-        if rv is None:
+        if view_func_rv is None:
             raise ValueError('View function did not return a response')
 
-        if isinstance(status_or_headers, (dict, list)):
-            headers, status_or_headers = status_or_headers, None
+        if isinstance(view_func_rv, self.response_class):
+            return view_func_rv
+        elif isinstance(view_func_rv, (text_type, bytes, bytearray)):
+            return self.response_class(view_func_rv)
+        elif isinstance(view_func_rv, tuple):
+            return self._make_response_from_tuple(view_func_rv)
+        else:
+            return self.response_class.force_type(view_func_rv, request.environ)
 
-        if not isinstance(rv, self.response_class):
-            # When we create a response object directly, we let the constructor
-            # set the headers and status.  We do this because there can be
-            # some extra logic involved when creating these objects with
-            # specific values (like default content type selection).
-            if isinstance(rv, (text_type, bytes, bytearray)):
-                rv = self.response_class(rv, headers=headers,
-                                         status=status_or_headers)
-                headers = status_or_headers = None
+    def _make_response_from_tuple(self, view_func_rv):
+        if len(view_func_rv) == 3:
+            response_body, status, headers = view_func_rv
+        elif len(view_func_rv) == 2:
+            response_body = view_func_rv[0]
+
+            second_param_is_headers = isinstance(view_func_rv[1], (list, dict))
+            if second_param_is_headers:
+                headers, status = view_func_rv[1], None
             else:
-                rv = self.response_class.force_type(rv, request.environ)
+                headers, status = [], view_func_rv[1]
+        else:
+            raise ValueError('Tuples returned from view functions must be composed as one '
+                             'of the following options: (response_body, status, headers), '
+                             '(response_body, status) or (response_body, headers).')
 
-        if status_or_headers is not None:
-            if isinstance(status_or_headers, string_types):
-                rv.status = status_or_headers
-            else:
-                rv.status_code = status_or_headers
-        if headers:
-            rv.headers.extend(headers)
+        if isinstance(response_body, self.response_class):
+            if status is None:
+                status = response_body.status
+            if response_body.headers:
+                # Headers.extend can take a dict, or any iterable that yields key and value pairs.
+                # so this will work whether headers is a dict or a list
+                response_body.headers.extend(headers)
+                headers = response_body.headers
+            response_body = response_body.response
 
-        return rv
+        return self.response_class(response=response_body, status=status, headers=headers)
 
     def create_url_adapter(self, request):
         """Creates a URL adapter for the given request.  The URL adapter
