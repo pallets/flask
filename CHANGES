@@ -29,6 +29,9 @@ Major release, unreleased
   handled by the app's error handlers. (`#2254`_)
 - Blueprints gained ``json_encoder`` and ``json_decoder`` attributes to
   override the app's encoder and decoder. (`#1898`_)
+- ``Flask.make_response`` raises ``TypeError`` instead of ``ValueError`` for
+  bad response types. The error messages have been improved to describe why the
+  type is invalid. (`#2256`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1898: https://github.com/pallets/flask/pull/1898
@@ -36,6 +39,7 @@ Major release, unreleased
 .. _#2017: https://github.com/pallets/flask/pull/2017
 .. _#2223: https://github.com/pallets/flask/pull/2223
 .. _#2254: https://github.com/pallets/flask/pull/2254
+.. _#2256: https://github.com/pallets/flask/pull/2256
 
 Version 0.12.1
 --------------

@@ -10,30 +10,30 @@
 """
 import os
 import sys
-from threading import Lock
 from datetime import timedelta
-from itertools import chain
 from functools import update_wrapper
+from itertools import chain
+from threading import Lock
 
-from werkzeug.datastructures import ImmutableDict
-from werkzeug.routing import Map, Rule, RequestRedirect, BuildError
-from werkzeug.exceptions import HTTPException, InternalServerError, \
-     MethodNotAllowed, BadRequest, default_exceptions
+from werkzeug.datastructures import ImmutableDict, Headers
+from werkzeug.exceptions import BadRequest, HTTPException, \
+    InternalServerError, MethodNotAllowed, default_exceptions
+from werkzeug.routing import BuildError, Map, RequestRedirect, Rule
 
-from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
-     locked_cached_property, _endpoint_from_view_func, find_package, \
-     get_debug_flag
-from . import json, cli
-from .wrappers import Request, Response
-from .config import ConfigAttribute, Config
-from .ctx import RequestContext, AppContext, _AppCtxGlobals
-from .globals import _request_ctx_stack, request, session, g
+from . import cli, json
+from ._compat import integer_types, reraise, string_types, text_type
+from .config import Config, ConfigAttribute
+from .ctx import AppContext, RequestContext, _AppCtxGlobals
+from .globals import _request_ctx_stack, g, request, session
+from .helpers import _PackageBoundObject, \
+    _endpoint_from_view_func, find_package, get_debug_flag, \
+    get_flashed_messages, locked_cached_property, url_for
 from .sessions import SecureCookieSessionInterface
+from .signals import appcontext_tearing_down, got_request_exception, \
+    request_finished, request_started, request_tearing_down
 from .templating import DispatchingJinjaLoader, Environment, \
-     _default_template_ctx_processor
-from .signals import request_started, request_finished, got_request_exception, \
-     request_tearing_down, appcontext_tearing_down
-from ._compat import reraise, string_types, text_type, integer_types
+    _default_template_ctx_processor
+from .wrappers import Request, Response
 
 # a lock used for logger initialization
 _logger_lock = Lock()
@@ -1715,62 +1715,106 @@ class Flask(_PackageBoundObject):
         return False
 
     def make_response(self, rv):
-        """Converts the return value from a view function to a real
-        response object that is an instance of :attr:`response_class`.
+        """Convert the return value from a view function to an instance of
+        :attr:`response_class`.
 
-        The following types are allowed for `rv`:
+        :param rv: the return value from the view function. The view function
+            must return a response. Returning ``None``, or the view ending
+            without returning, is not allowed. The following types are allowed
+            for ``view_rv``:
 
-        .. tabularcolumns:: |p{3.5cm}|p{9.5cm}|
-
-        ======================= ===========================================
-        :attr:`response_class`  the object is returned unchanged
-        :class:`str`            a response object is created with the
-                                string as body
-        :class:`unicode`        a response object is created with the
-                                string encoded to utf-8 as body
-        a WSGI function         the function is called as WSGI application
-                                and buffered as response object
-        :class:`tuple`          A tuple in the form ``(response, status,
-                                headers)`` or ``(response, headers)``
-                                where `response` is any of the
-                                types defined here, `status` is a string
-                                or an integer and `headers` is a list or
-                                a dictionary with header values.
-        ======================= ===========================================
-
-        :param rv: the return value from the view function
+            ``str`` (``unicode`` in Python 2)
+                A response object is created with the string encoded to UTF-8
+                as the body.
+                
+            ``bytes`` (``str`` in Python 2)
+                A response object is created with the bytes as the body.
+                
+            ``tuple``
+                Either ``(body, status, headers)``, ``(body, status)``, or
+                ``(body, headers)``, where ``body`` is any of the other types
+                allowed here, ``status`` is a string or an integer, and
+                ``headers`` is a dictionary or a list of ``(key, value)``
+                tuples. If ``body`` is a :attr:`response_class` instance,
+                ``status`` overwrites the exiting value and ``headers`` are
+                extended.
+    
+            :attr:`response_class`
+                The object is returned unchanged.
+            
+            other :class:`~werkzeug.wrappers.Response` class
+                The object is coerced to :attr:`response_class`.
+                
+            :func:`callable`
+                The function is called as a WSGI application. The result is
+                used to create a response object.
 
         .. versionchanged:: 0.9
            Previously a tuple was interpreted as the arguments for the
            response object.
         """
-        status_or_headers = headers = None
-        if isinstance(rv, tuple):
-            rv, status_or_headers, headers = rv + (None,) * (3 - len(rv))
 
+        status = headers = None
+
+        # unpack tuple returns
+        if isinstance(rv, (tuple, list)):
+            len_rv = len(rv)
+
+            # a 3-tuple is unpacked directly
+            if len_rv == 3:
+                rv, status, headers = rv
+            # decide if a 2-tuple has status or headers
+            elif len_rv == 2:
+                if isinstance(rv[1], (Headers, dict, tuple, list)):
+                    rv, headers = rv
+                else:
+                    rv, status = rv
+            # other sized tuples are not allowed
+            else:
+                raise TypeError(
+                    'The view function did not return a valid response tuple.'
+                    ' The tuple must have the form (body, status, headers),'
+                    ' (body, status), or (body, headers).'
+                )
+
+        # the body must not be None
         if rv is None:
-            raise ValueError('View function did not return a response')
+            raise TypeError(
+                'The view function did not return a valid response. The'
+                ' function either returned None or ended without a return'
+                ' statement.'
+            )
 
-        if isinstance(status_or_headers, (dict, list)):
-            headers, status_or_headers = status_or_headers, None
-
+        # make sure the body is an instance of the response class
         if not isinstance(rv, self.response_class):
-            # When we create a response object directly, we let the constructor
-            # set the headers and status.  We do this because there can be
-            # some extra logic involved when creating these objects with
-            # specific values (like default content type selection).
             if isinstance(rv, (text_type, bytes, bytearray)):
-                rv = self.response_class(rv, headers=headers,
-                                         status=status_or_headers)
-                headers = status_or_headers = None
+                # let the response class set the status and headers instead of
+                # waiting to do it manually, so that the class can handle any
+                # special logic
+                rv = self.response_class(rv, status=status, headers=headers)
+                status = headers = None
             else:
-                rv = self.response_class.force_type(rv, request.environ)
+                # evaluate a WSGI callable, or coerce a different response
+                # class to the correct type
+                try:
+                    rv = self.response_class.force_type(rv, request.environ)
+                except TypeError as e:
+                    new_error = TypeError(
+                        '{e}\nThe view function did not return a valid'
+                        ' response. The return type must be a string, tuple,'
+                        ' Response instance, or WSGI callable, but it was a'
+                        ' {rv.__class__.__name__}.'.format(e=e, rv=rv)
+                    )
+                    reraise(TypeError, new_error, sys.exc_info()[2])
 
-        if status_or_headers is not None:
-            if isinstance(status_or_headers, string_types):
-                rv.status = status_or_headers
+        # prefer the status if it was provided
+        if status is not None:
+            if isinstance(status, (text_type, bytes, bytearray)):
+                rv.status = status
             else:
-                rv.status_code = status_or_headers
+                rv.status_code = status
+
+        # extend existing headers with provided headers
         if headers:
             rv.headers.extend(headers)
 
