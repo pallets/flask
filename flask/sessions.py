@@ -84,21 +84,25 @@ class TaggedJSONSerializer(object):
     def dumps(self, value):
         return json.dumps(_tag(value), separators=(',', ':'))
 
+    LOADS_MAP = {
+        ' t': tuple,
+        ' u': uuid.UUID,
+        ' b': b64decode,
+        ' m': Markup,
+        ' d': parse_date,
+    }
+
     def loads(self, value):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
             the_key, the_value = next(iteritems(obj))
-            if the_key == ' t':
-                return tuple(the_value)
-            elif the_key == ' u':
-                return uuid.UUID(the_value)
-            elif the_key == ' b':
-                return b64decode(the_value)
-            elif the_key == ' m':
-                return Markup(the_value)
-            elif the_key == ' d':
-                return parse_date(the_value)
+            # Check the key for a corresponding function
+            return_function = self.LOADS_MAP.get(the_key)
+            if return_function:
+                # Pass the value to the function
+                return return_function(the_value)
+            # Didn't find a function for this object
             return obj
         return json.loads(value, object_hook=object_hook)
 

@@ -35,6 +35,14 @@ def has_encoding(name):
 
 class TestJSON(object):
 
+    def test_ignore_cached_json(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context('/', method='POST', data='malformed',
+                                      content_type='application/json'):
+            assert flask.request.get_json(silent=True, cache=True) is None
+            with pytest.raises(BadRequest):
+                flask.request.get_json(silent=False, cache=False)
+
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = True
@@ -259,6 +267,47 @@ class TestJSON(object):
         }), content_type='application/json')
         assert rv.data == b'"<42>"'
 
+    def test_blueprint_json_customization(self):
+        class X(object):
+            def __init__(self, val):
+                self.val = val
+
+        class MyEncoder(flask.json.JSONEncoder):
+            def default(self, o):
+                if isinstance(o, X):
+                    return '<%d>' % o.val
+
+                return flask.json.JSONEncoder.default(self, o)
+
+        class MyDecoder(flask.json.JSONDecoder):
+            def __init__(self, *args, **kwargs):
+                kwargs.setdefault('object_hook', self.object_hook)
+                flask.json.JSONDecoder.__init__(self, *args, **kwargs)
+
+            def object_hook(self, obj):
+                if len(obj) == 1 and '_foo' in obj:
+                    return X(obj['_foo'])
+
+                return obj
+
+        bp = flask.Blueprint('bp', __name__)
+        bp.json_encoder = MyEncoder
+        bp.json_decoder = MyDecoder
+
+        @bp.route('/bp', methods=['POST'])
+        def index():
+            return flask.json.dumps(flask.request.get_json()['x'])
+
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.register_blueprint(bp)
+
+        c = app.test_client()
+        rv = c.post('/bp', data=flask.json.dumps({
+            'x': {'_foo': 42}
+        }), content_type='application/json')
+        assert rv.data == b'"<42>"'
+
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
@@ -281,6 +330,8 @@ class TestJSON(object):
     def test_json_key_sorting(self):
         app = flask.Flask(__name__)
         app.testing = True
+        app.debug = True
+
         assert app.config['JSON_SORT_KEYS'] == True
         d = dict.fromkeys(range(20), 'foo')
 
@@ -507,7 +558,7 @@ class TestSendfile(object):
         assert rv.status_code == 416
         rv.close()
 
-        last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(
+        last_modified = datetime.datetime.utcfromtimestamp(os.path.getmtime(
             os.path.join(app.root_path, 'static/index.html'))).replace(
             microsecond=0)
 
@@ -530,10 +581,11 @@ class TestSendfile(object):
                 value, options = \
                     parse_options_header(rv.headers['Content-Disposition'])
                 assert value == 'attachment'
+                assert options['filename'] == 'index.html'
+                assert 'filename*' not in rv.headers['Content-Disposition']
                 rv.close()
 
         with app.test_request_context():
-            assert options['filename'] == 'index.html'
             rv = flask.send_file('static/index.html', as_attachment=True)
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             assert value == 'attachment'
@@ -548,6 +600,19 @@ class TestSendfile(object):
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             assert value == 'attachment'
             assert options['filename'] == 'index.txt'
+            rv.close()
+
+    def test_attachment_with_utf8_filename(self):
+        app = flask.Flask(__name__)
+
+        with app.test_request_context():
+            rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=u'Ñandú／pingüino.txt')
+            content_disposition = set(rv.headers['Content-Disposition'].split('; '))
+            assert content_disposition == set((
+                'attachment',
+                'filename="Nandu/pinguino.txt"',
+                "filename*=UTF-8''%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt"
+            ))
             rv.close()
 
     def test_static_file(self):

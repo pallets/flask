@@ -167,7 +167,7 @@ Docstring conventions:
         """
 
 Module header:
-  The module header consists of an utf-8 encoding declaration (if non
+  The module header consists of a utf-8 encoding declaration (if non
   ASCII letters are used, but it is recommended all the time) and a
   standard docstring::
 
