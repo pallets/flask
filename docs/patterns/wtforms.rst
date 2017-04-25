@@ -19,7 +19,7 @@ forms.
    fun.  You can get it from `PyPI
    <https://pypi.python.org/pypi/Flask-WTF>`_.
 
-.. _Flask-WTF: http://pythonhosted.org/Flask-WTF/
+.. _Flask-WTF: https://flask-wtf.readthedocs.io/en/stable/
 
 The Forms
 ---------
@@ -32,11 +32,11 @@ This is an example form for a typical registration page::
         username = StringField('Username', [validators.Length(min=4, max=25)])
         email = StringField('Email Address', [validators.Length(min=6, max=35)])
         password = PasswordField('New Password', [
-            validators.Required(),
+            validators.DataRequired(),
             validators.EqualTo('confirm', message='Passwords must match')
         ])
         confirm = PasswordField('Repeat Password')
-        accept_tos = BooleanField('I accept the TOS', [validators.Required()])
+        accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
 
 In the View
 -----------
@@ -108,7 +108,7 @@ takes advantage of the :file:`_formhelpers.html` template:
 .. sourcecode:: html+jinja
 
     {% from "_formhelpers.html" import render_field %}
-    <form method=post action="/register">
+    <form method=post>
       <dl>
         {{ render_field(form.username) }}
         {{ render_field(form.email) }}
@@ -122,5 +122,5 @@ takes advantage of the :file:`_formhelpers.html` template:
 For more information about WTForms, head over to the `WTForms
 website`_.
 
-.. _WTForms: http://wtforms.readthedocs.org/
-.. _WTForms website: http://wtforms.readthedocs.org/
+.. _WTForms: https://wtforms.readthedocs.io/
+.. _WTForms website: https://wtforms.readthedocs.io/

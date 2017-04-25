@@ -16,15 +16,13 @@ Login Required Decorator
 ------------------------
 
 So let's implement such a decorator.  A decorator is a function that
-returns a function.  Pretty simple actually.  The only thing you have to
-keep in mind when implementing something like this is to update the
-`__name__`, `__module__` and some other attributes of a function.  This is
-often forgotten, but you don't have to do that by hand, there is a
-function for that that is used like a decorator (:func:`functools.wraps`).
+wraps and replaces another function.  Since the original function is
+replaced, you need to remember to copy the original function's information
+to the new function.  Use :func:`functools.wraps` to handle this for you.
 
 This example assumes that the login page is called ``'login'`` and that
-the current user is stored as `g.user` and ``None`` if there is no-one
-logged in::
+the current user is stored in ``g.user`` and is ``None`` if there is no-one
+logged in. ::
 
     from functools import wraps
     from flask import g, request, redirect, url_for
@@ -37,14 +35,23 @@ logged in::
             return f(*args, **kwargs)
         return decorated_function
 
-So how would you use that decorator now?  Apply it as innermost decorator
-to a view function.  When applying further decorators, always remember
-that the :meth:`~flask.Flask.route` decorator is the outermost::
+To use the decorator, apply it as innermost decorator to a view function.
+When applying further decorators, always remember
+that the :meth:`~flask.Flask.route` decorator is the outermost. ::
 
     @app.route('/secret_page')
     @login_required
     def secret_page():
         pass
+
+.. note::
+    The ``next`` value will exist in ``request.args`` after a ``GET`` request for
+    the login page.  You'll have to pass it along when sending the ``POST`` request
+    from the login form.  You can do this with a hidden input tag, then retrieve it
+    from ``request.form`` when logging the user in. ::
+
+        <input type="hidden" value="{{ request.args.get('next', '') }}"/>
+
 
 Caching Decorator
 -----------------

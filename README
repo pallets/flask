@@ -33,9 +33,11 @@
 
       Good that you're asking.  The tests are in the
       tests/ folder.  To run the tests use the
-      `py.test` testing tool:
+      `pytest` testing tool:
 
-        $ py.test
+        $ pytest
+
+      Details on contributing can be found in CONTRIBUTING.rst
 
     ~ Where can I get help?
 

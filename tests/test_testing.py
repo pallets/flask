@@ -11,6 +11,7 @@
 import pytest
 
 import flask
+import werkzeug
 
 from flask._compat import text_type
 
@@ -42,6 +43,40 @@ def test_environ_defaults():
     with app.test_client() as c:
         rv = c.get('/')
         assert rv.data == b'http://localhost/'
+
+def test_environ_base_default():
+    app = flask.Flask(__name__)
+    app.testing = True
+    @app.route('/')
+    def index():
+        flask.g.user_agent = flask.request.headers["User-Agent"]
+        return flask.request.remote_addr
+
+    with app.test_client() as c:
+        rv = c.get('/')
+        assert rv.data == b'127.0.0.1'
+        assert flask.g.user_agent == 'werkzeug/' + werkzeug.__version__
+
+def test_environ_base_modified():
+    app = flask.Flask(__name__)
+    app.testing = True
+    @app.route('/')
+    def index():
+        flask.g.user_agent = flask.request.headers["User-Agent"]
+        return flask.request.remote_addr
+
+    with app.test_client() as c:
+        c.environ_base['REMOTE_ADDR'] = '0.0.0.0'
+        c.environ_base['HTTP_USER_AGENT'] = 'Foo'
+        rv = c.get('/')
+        assert rv.data == b'0.0.0.0'
+        assert flask.g.user_agent == 'Foo'
+
+        c.environ_base['REMOTE_ADDR'] = '0.0.0.1'
+        c.environ_base['HTTP_USER_AGENT'] = 'Bar'
+        rv = c.get('/')
+        assert rv.data == b'0.0.0.1'
+        assert flask.g.user_agent == 'Bar'
 
 def test_redirect_keep_session():
     app = flask.Flask(__name__)
@@ -100,13 +135,10 @@ def test_session_transactions_no_null_sessions():
     app.testing = True
 
     with app.test_client() as c:
-        try:
+        with pytest.raises(RuntimeError) as e:
             with c.session_transaction() as sess:
                 pass
-        except RuntimeError as e:
-            assert 'Session backend did not open a session' in str(e)
-        else:
-            assert False, 'Expected runtime error'
+        assert 'Session backend did not open a session' in str(e.value)
 
 def test_session_transactions_keep_context():
     app = flask.Flask(__name__)
@@ -124,13 +156,10 @@ def test_session_transaction_needs_cookies():
     app = flask.Flask(__name__)
     app.testing = True
     c = app.test_client(use_cookies=False)
-    try:
+    with pytest.raises(RuntimeError) as e:
         with c.session_transaction() as s:
             pass
-    except RuntimeError as e:
-        assert 'cookies' in str(e)
-    else:
-        assert False, 'Expected runtime error'
+    assert 'cookies' in str(e.value)
 
 def test_test_client_context_binding():
     app = flask.Flask(__name__)

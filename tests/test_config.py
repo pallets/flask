@@ -7,11 +7,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
 
-import os
 from datetime import timedelta
+import os
+import textwrap
+
 import flask
+from flask._compat import PY2
+import pytest
 
 
 # config keys used for the TestConfig
@@ -89,12 +92,9 @@ def test_config_from_envvar():
     try:
         os.environ = {}
         app = flask.Flask(__name__)
-        try:
+        with pytest.raises(RuntimeError) as e:
             app.config.from_envvar('FOO_SETTINGS')
-        except RuntimeError as e:
-            assert "'FOO_SETTINGS' is not set" in str(e)
-        else:
-            assert 0, 'expected exception'
+        assert "'FOO_SETTINGS' is not set" in str(e.value)
         assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
 
         os.environ = {'FOO_SETTINGS': __file__.rsplit('.', 1)[0] + '.py'}
@@ -108,16 +108,13 @@ def test_config_from_envvar_missing():
     env = os.environ
     try:
         os.environ = {'FOO_SETTINGS': 'missing.cfg'}
-        try:
+        with pytest.raises(IOError) as e:
             app = flask.Flask(__name__)
             app.config.from_envvar('FOO_SETTINGS')
-        except IOError as e:
-            msg = str(e)
-            assert msg.startswith('[Errno 2] Unable to load configuration '
-                                  'file (No such file or directory):')
-            assert msg.endswith("missing.cfg'")
-        else:
-            assert False, 'expected IOError'
+        msg = str(e.value)
+        assert msg.startswith('[Errno 2] Unable to load configuration '
+                              'file (No such file or directory):')
+        assert msg.endswith("missing.cfg'")
         assert not app.config.from_envvar('FOO_SETTINGS', silent=True)
     finally:
         os.environ = env
@@ -125,29 +122,23 @@ def test_config_from_envvar_missing():
 
 def test_config_missing():
     app = flask.Flask(__name__)
-    try:
+    with pytest.raises(IOError) as e:
         app.config.from_pyfile('missing.cfg')
-    except IOError as e:
-        msg = str(e)
-        assert msg.startswith('[Errno 2] Unable to load configuration '
-                              'file (No such file or directory):')
-        assert msg.endswith("missing.cfg'")
-    else:
-        assert 0, 'expected config'
+    msg = str(e.value)
+    assert msg.startswith('[Errno 2] Unable to load configuration '
+                          'file (No such file or directory):')
+    assert msg.endswith("missing.cfg'")
     assert not app.config.from_pyfile('missing.cfg', silent=True)
 
 
 def test_config_missing_json():
     app = flask.Flask(__name__)
-    try:
+    with pytest.raises(IOError) as e:
         app.config.from_json('missing.json')
-    except IOError as e:
-        msg = str(e)
-        assert msg.startswith('[Errno 2] Unable to load configuration '
-                              'file (No such file or directory):')
-        assert msg.endswith("missing.json'")
-    else:
-        assert 0, 'expected config'
+    msg = str(e.value)
+    assert msg.startswith('[Errno 2] Unable to load configuration '
+                          'file (No such file or directory):')
+    assert msg.endswith("missing.json'")
     assert not app.config.from_json('missing.json', silent=True)
 
 
@@ -199,3 +190,18 @@ def test_get_namespace():
     assert 2 == len(bar_options)
     assert 'bar stuff 1' == bar_options['BAR_STUFF_1']
     assert 'bar stuff 2' == bar_options['BAR_STUFF_2']
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-15', 'latin-1'])
+def test_from_pyfile_weird_encoding(tmpdir, encoding):
+    f = tmpdir.join('my_config.py')
+    f.write_binary(textwrap.dedent(u'''
+    # -*- coding: {0} -*-
+    TEST_VALUE = "föö"
+    '''.format(encoding)).encode(encoding))
+    app = flask.Flask(__name__)
+    app.config.from_pyfile(str(f))
+    value = app.config['TEST_VALUE']
+    if PY2:
+        value = value.decode(encoding)
+    assert value == u'föö'
