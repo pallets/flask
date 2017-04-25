@@ -975,64 +975,129 @@ def test_enctype_debug_helper():
         assert 'This was submitted: "index.txt"' in str(e.value)
 
 
-def test_response_creation():
+def test_response_types():
     app = flask.Flask(__name__)
+    app.testing = True
 
-    @app.route('/unicode')
-    def from_unicode():
+    @app.route('/text')
+    def from_text():
         return u'Hällo Wörld'
 
-    @app.route('/string')
-    def from_string():
+    @app.route('/bytes')
+    def from_bytes():
         return u'Hällo Wörld'.encode('utf-8')
 
-    @app.route('/args')
-    def from_tuple():
+    @app.route('/full_tuple')
+    def from_full_tuple():
         return 'Meh', 400, {
             'X-Foo': 'Testing',
             'Content-Type': 'text/plain; charset=utf-8'
         }
 
-    @app.route('/two_args')
-    def from_two_args_tuple():
+    @app.route('/text_headers')
+    def from_text_headers():
         return 'Hello', {
             'X-Foo': 'Test',
             'Content-Type': 'text/plain; charset=utf-8'
         }
 
-    @app.route('/args_status')
-    def from_status_tuple():
+    @app.route('/text_status')
+    def from_text_status():
         return 'Hi, status!', 400
 
-    @app.route('/args_header')
-    def from_response_instance_status_tuple():
-        return flask.Response('Hello world', 404), {
+    @app.route('/response_headers')
+    def from_response_headers():
+        return flask.Response('Hello world', 404, {'X-Foo': 'Baz'}), {
             "X-Foo": "Bar",
             "X-Bar": "Foo"
         }
 
+    @app.route('/response_status')
+    def from_response_status():
+        return app.response_class('Hello world', 400), 500
+
+    @app.route('/wsgi')
+    def from_wsgi():
+        return NotFound()
+
     c = app.test_client()
-    assert c.get('/unicode').data == u'Hällo Wörld'.encode('utf-8')
-    assert c.get('/string').data == u'Hällo Wörld'.encode('utf-8')
-    rv = c.get('/args')
+
+    assert c.get('/text').data == u'Hällo Wörld'.encode('utf-8')
+    assert c.get('/bytes').data == u'Hällo Wörld'.encode('utf-8')
+
+    rv = c.get('/full_tuple')
     assert rv.data == b'Meh'
     assert rv.headers['X-Foo'] == 'Testing'
     assert rv.status_code == 400
     assert rv.mimetype == 'text/plain'
-    rv2 = c.get('/two_args')
-    assert rv2.data == b'Hello'
-    assert rv2.headers['X-Foo'] == 'Test'
-    assert rv2.status_code == 200
-    assert rv2.mimetype == 'text/plain'
-    rv3 = c.get('/args_status')
-    assert rv3.data == b'Hi, status!'
-    assert rv3.status_code == 400
-    assert rv3.mimetype == 'text/html'
-    rv4 = c.get('/args_header')
-    assert rv4.data == b'Hello world'
-    assert rv4.headers['X-Foo'] == 'Bar'
-    assert rv4.headers['X-Bar'] == 'Foo'
-    assert rv4.status_code == 404
+
+    rv = c.get('/text_headers')
+    assert rv.data == b'Hello'
+    assert rv.headers['X-Foo'] == 'Test'
+    assert rv.status_code == 200
+    assert rv.mimetype == 'text/plain'
+
+    rv = c.get('/text_status')
+    assert rv.data == b'Hi, status!'
+    assert rv.status_code == 400
+    assert rv.mimetype == 'text/html'
+
+    rv = c.get('/response_headers')
+    assert rv.data == b'Hello world'
+    assert rv.headers.getlist('X-Foo') == ['Baz', 'Bar']
+    assert rv.headers['X-Bar'] == 'Foo'
+    assert rv.status_code == 404
+
+    rv = c.get('/response_status')
+    assert rv.data == b'Hello world'
+    assert rv.status_code == 500
+
+    rv = c.get('/wsgi')
+    assert b'Not Found' in rv.data
+    assert rv.status_code == 404
+
+
+def test_response_type_errors():
+    app = flask.Flask(__name__)
+    app.testing = True
+
+    @app.route('/none')
+    def from_none():
+        pass
+
+    @app.route('/small_tuple')
+    def from_small_tuple():
+        return 'Hello',
+
+    @app.route('/large_tuple')
+    def from_large_tuple():
+        return 'Hello', 234, {'X-Foo': 'Bar'}, '???'
+
+    @app.route('/bad_type')
+    def from_bad_type():
+        return True
+
+    @app.route('/bad_wsgi')
+    def from_bad_wsgi():
+        return lambda: None
+
+    c = app.test_client()
+
+    with pytest.raises(TypeError) as e:
+        c.get('/none')
+        assert 'returned None' in str(e)
+
+    with pytest.raises(TypeError) as e:
+        c.get('/small_tuple')
+        assert 'tuple must have the form' in str(e)
+
+    pytest.raises(TypeError, c.get, '/large_tuple')
+
+    with pytest.raises(TypeError) as e:
+        c.get('/bad_type')
+        assert 'it was a bool' in str(e)
+
+    pytest.raises(TypeError, c.get, '/bad_wsgi')
 
 
 def test_make_response():
@@ -1270,22 +1335,6 @@ def test_static_route_with_host_matching():
         flask.Flask(__name__, host_matching=True)
     # Providing host_matching=True without static_host but with static_folder=None should not error.
     flask.Flask(__name__, host_matching=True, static_folder=None)
-
-
-def test_none_response():
-    app = flask.Flask(__name__)
-    app.testing = True
-
-    @app.route('/')
-    def test():
-        return None
-    try:
-        app.test_client().get('/')
-    except ValueError as e:
-        assert str(e) == 'View function did not return a response'
-        pass
-    else:
-        assert "Expected ValueError"
 
 
 def test_request_locals():
