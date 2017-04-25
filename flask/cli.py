@@ -12,14 +12,17 @@
 import os
 import sys
 import traceback
-from threading import Lock, Thread
 from functools import update_wrapper
+from operator import attrgetter
+from threading import Lock, Thread
 
 import click
 
-from ._compat import iteritems, reraise
-from .helpers import get_debug_flag
 from . import __version__
+from ._compat import iteritems, reraise
+from .globals import current_app
+from .helpers import get_debug_flag
+
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -485,34 +488,51 @@ def shell_command():
     code.interact(banner=banner, local=ctx)
 
 
-@click.command('routes', short_help='Show routes for the app.')
-@click.option('-r', 'order_by', flag_value='rule', default=True, help='Order by route')
-@click.option('-e', 'order_by', flag_value='endpoint', help='Order by endpoint')
-@click.option('-m', 'order_by', flag_value='methods', help='Order by methods')
+@click.command('routes', short_help='Show the routes for the app.')
+@click.option(
+    '--sort', '-s',
+    type=click.Choice(('endpoint', 'methods', 'rule', 'match')),
+    default='endpoint',
+    help=(
+        'Method to sort routes by. "match" is the order that Flask will match '
+        'routes when dispatching a request.'
+    )
+)
+@click.option(
+    '--all-methods',
+    is_flag=True,
+    help="Show HEAD and OPTIONS methods."
+)
 @with_appcontext
-def routes_command(order_by):
-    """Show all routes with endpoints and methods."""
-    from flask.globals import _app_ctx_stack
-    app = _app_ctx_stack.top.app
+def routes_command(sort, all_methods):
+    """Show all registered routes with endpoints and methods."""
 
-    order_key = lambda rule: getattr(rule, order_by)
-    sorted_rules = sorted(app.url_map.iter_rules(), key=order_key)
+    rules = list(current_app.url_map.iter_rules())
+    ignored_methods = set(() if all_methods else ('HEAD', 'OPTIONS'))
 
-    max_rule = max(len(rule.rule) for rule in sorted_rules)
-    max_rule = max(max_rule, len('Route'))
-    max_ep = max(len(rule.endpoint) for rule in sorted_rules)
-    max_ep = max(max_ep, len('Endpoint'))
-    max_meth = max(len(', '.join(rule.methods)) for rule in sorted_rules)
-    max_meth = max(max_meth, len('Methods'))
+    if sort in ('endpoint', 'rule'):
+        rules = sorted(rules, key=attrgetter(sort))
+    elif sort == 'methods':
+        rules = sorted(rules, key=lambda rule: sorted(rule.methods))
 
-    columnformat = '{:<%s}  {:<%s}  {:<%s}' % (max_rule, max_ep, max_meth)
-    click.echo(columnformat.format('Route', 'Endpoint', 'Methods'))
-    under_count = max_rule + max_ep + max_meth + 4
-    click.echo('-' * under_count)
+    rule_methods = [
+        ', '.join(sorted(rule.methods - ignored_methods)) for rule in rules
+    ]
 
-    for rule in sorted_rules:
-        methods = ', '.join(rule.methods)
-        click.echo(columnformat.format(rule.rule, rule.endpoint, methods))
+    headers = ('Endpoint', 'Methods', 'Rule')
+    widths = (
+        max(len(rule.endpoint) for rule in rules),
+        max(len(methods) for methods in rule_methods),
+        max(len(rule.rule) for rule in rules),
+    )
+    widths = [max(len(h), w) for h, w in zip(headers, widths)]
+    row = '{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}'.format(*widths)
+
+    click.echo(row.format(*headers).strip())
+    click.echo(row.format(*('-' * width for width in widths)))
+
+    for rule, methods in zip(rules, rule_methods):
+        click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
 
 
 cli = FlaskGroup(help="""\
