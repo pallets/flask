@@ -1,25 +1,23 @@
 .. _tutorial-dbcon:
 
-Step 3: Database Connections
+Step 4: Database Connections
 ----------------------------
 
-We have created a function for establishing a database connection with
-`connect_db`, but by itself, that's not particularly useful.  Creating and
-closing database connections all the time is very inefficient, so we want
-to keep it around for longer.  Because database connections encapsulate a
-transaction, we also need to make sure that only one request at the time
-uses the connection. How can we elegantly do that with Flask?
+You currently have a function for establishing a database connection with
+`connect_db`, but by itself, it is not particularly useful.  Creating and
+closing database connections all the time is very inefficient, so you will
+need to keep it around for longer.  Because database connections
+encapsulate a transaction, you will need to make sure that only one
+request at a time uses the connection. An elegant way to do this is by
+utilizing the *application context*.
 
-This is where the application context comes into play, so let's start
-there.
-
-Flask provides us with two contexts: the application context and the
-request context.  For the time being, all you have to know is that there
+Flask provides two contexts: the *application context* and the
+*request context*.  For the time being, all you have to know is that there
 are special variables that use these.  For instance, the
 :data:`~flask.request` variable is the request object associated with
 the current request, whereas :data:`~flask.g` is a general purpose
-variable associated with the current application context.  We will go into
-the details of this a bit later.
+variable associated with the current application context.  The tutorial
+will cover some more details of this later on.
 
 For the time being, all you have to know is that you can store information
 safely on the :data:`~flask.g` object.
@@ -37,7 +35,7 @@ already established connection::
             g.sqlite_db = connect_db()
         return g.sqlite_db
 
-So now we know how to connect, but how do we properly disconnect?  For
+Now you know how to connect, but how can you properly disconnect?  For
 that, Flask provides us with the :meth:`~flask.Flask.teardown_appcontext`
 decorator.  It's executed every time the application context tears down::
 

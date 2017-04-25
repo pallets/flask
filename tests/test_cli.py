@@ -22,7 +22,7 @@ from flask import Flask, current_app
 
 from flask.cli import cli, AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
-    find_default_import_path
+    find_default_import_path, get_version
 
 
 @pytest.fixture
@@ -37,24 +37,27 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    """Test of find_best_app."""
-    class mod:
+    """Test if `find_best_app` behaves as expected with different combinations of input."""
+    class Module:
         app = Flask('appname')
-    assert find_best_app(mod) == mod.app
+    assert find_best_app(Module) == Module.app
 
-    class mod:
+    class Module:
         application = Flask('appname')
-    assert find_best_app(mod) == mod.application
+    assert find_best_app(Module) == Module.application
 
-    class mod:
+    class Module:
         myapp = Flask('appname')
-    assert find_best_app(mod) == mod.myapp
+    assert find_best_app(Module) == Module.myapp
 
-    class mod:
-        myapp = Flask('appname')
+    class Module:
+        pass
+    pytest.raises(NoAppException, find_best_app, Module)
+
+    class Module:
+        myapp1 = Flask('appname1')
         myapp2 = Flask('appname2')
-
-    pytest.raises(NoAppException, find_best_app, mod)
+    pytest.raises(NoAppException, find_best_app, Module)
 
 
 def test_prepare_exec_for_file(test_apps):
@@ -82,7 +85,10 @@ def test_locate_app(test_apps):
     assert locate_app("cliapp.app").name == "testapp"
     assert locate_app("cliapp.app:testapp").name == "testapp"
     assert locate_app("cliapp.multiapp:app1").name == "app1"
+    pytest.raises(NoAppException, locate_app, "notanpp.py")
+    pytest.raises(NoAppException, locate_app, "cliapp/app")
     pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
+    pytest.raises(NoAppException, locate_app, "cliapp.importerrorapp")
 
 
 def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
@@ -96,6 +102,21 @@ def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
     monkeypatch.setitem(os.environ, 'FLASK_APP', str(tmpfile))
     expect_rv = prepare_exec_for_file(str(tmpfile))
     assert find_default_import_path() == expect_rv
+
+
+def test_get_version(test_apps, capsys):
+    """Test of get_version."""
+    from flask import __version__ as flask_ver
+    from sys import version as py_ver
+    class MockCtx(object):
+        resilient_parsing = False
+        color = None
+        def exit(self): return
+    ctx = MockCtx()
+    get_version(ctx, None, "test")
+    out, err = capsys.readouterr()
+    assert flask_ver in out
+    assert py_ver in out
 
 
 def test_scriptinfo(test_apps):
@@ -172,6 +193,23 @@ def test_flaskgroup(runner):
     result = runner.invoke(cli, ['test'])
     assert result.exit_code == 0
     assert result.output == 'flaskgroup\n'
+
+
+def test_print_exceptions():
+    """Print the stacktrace if the CLI."""
+    def create_app(info):
+        raise Exception("oh no")
+        return Flask("flaskgroup")
+
+    @click.group(cls=FlaskGroup, create_app=create_app)
+    def cli(**params):
+        pass
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['--help'])
+    assert result.exit_code == 0
+    assert 'Exception: oh no' in result.output
+    assert 'Traceback' in result.output
 
 
 class TestRoutes:

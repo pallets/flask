@@ -355,6 +355,25 @@ def test_route_decorator_custom_endpoint_with_dots():
     rv = c.get('/py/bar/123')
     assert rv.status_code == 404
 
+
+def test_endpoint_decorator():
+    from werkzeug.routing import Rule
+    app = flask.Flask(__name__)
+    app.url_map.add(Rule('/foo', endpoint='bar'))
+
+    bp = flask.Blueprint('bp', __name__)
+
+    @bp.endpoint('bar')
+    def foobar():
+        return flask.request.endpoint
+
+    app.register_blueprint(bp, url_prefix='/bp_prefix')
+
+    c = app.test_client()
+    assert c.get('/foo').data == b'bar'
+    assert c.get('/bp_prefix/bar').status_code == 404
+
+
 def test_template_filter():
     bp = flask.Blueprint('bp', __name__)
     @bp.app_template_filter()

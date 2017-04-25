@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import werkzeug
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
@@ -43,10 +44,22 @@ class FlaskClient(Client):
     information about how to use this class refer to
     :class:`werkzeug.test.Client`.
 
+    .. versionchanged:: 0.12
+       `app.test_client()` includes preset default environment, which can be
+       set after instantiation of the `app.test_client()` object in
+       `client.environ_base`.
+
     Basic usage is outlined in the :ref:`testing` chapter.
     """
 
     preserve_context = False
+
+    def __init__(self, *args, **kwargs):
+        super(FlaskClient, self).__init__(*args, **kwargs)
+        self.environ_base = {
+            "REMOTE_ADDR": "127.0.0.1",
+            "HTTP_USER_AGENT": "werkzeug/" + werkzeug.__version__
+        }
 
     @contextmanager
     def session_transaction(self, *args, **kwargs):
@@ -101,6 +114,7 @@ class FlaskClient(Client):
     def open(self, *args, **kwargs):
         kwargs.setdefault('environ_overrides', {}) \
             ['flask._preserve_context'] = self.preserve_context
+        kwargs.setdefault('environ_base', self.environ_base)
 
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)
