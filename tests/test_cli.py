@@ -14,6 +14,7 @@
 from __future__ import absolute_import, print_function
 import os
 import sys
+from functools import partial
 
 import click
 import pytest
@@ -195,7 +196,7 @@ def test_flaskgroup(runner):
     assert result.output == 'flaskgroup\n'
 
 
-def test_print_exceptions():
+def test_print_exceptions(runner):
     """Print the stacktrace if the CLI."""
     def create_app(info):
         raise Exception("oh no")
@@ -205,7 +206,6 @@ def test_print_exceptions():
     def cli(**params):
         pass
 
-    runner = CliRunner()
     result = runner.invoke(cli, ['--help'])
     assert result.exit_code == 0
     assert 'Exception: oh no' in result.output
@@ -213,34 +213,58 @@ def test_print_exceptions():
 
 
 class TestRoutes:
-    def test_no_route(self, runner, monkeypatch):
-        monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:noroute_app')
-        result = runner.invoke(cli, ['routes'], catch_exceptions=False)
-        assert result.exit_code == 0
-        assert result.output == """\
-Route                    Endpoint  Methods           
------------------------------------------------------
-/static/<path:filename>  static    HEAD, OPTIONS, GET
-"""
+    @pytest.fixture
+    def invoke(self, runner):
+        def create_app(info):
+            app = Flask(__name__)
+            app.testing = True
 
-    def test_simple_route(self, runner, monkeypatch):
-        monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:simpleroute_app')
-        result = runner.invoke(cli, ['routes'], catch_exceptions=False)
-        assert result.exit_code == 0
-        assert result.output == """\
-Route                    Endpoint  Methods           
------------------------------------------------------
-/simpleroute             simple    HEAD, OPTIONS, GET
-/static/<path:filename>  static    HEAD, OPTIONS, GET
-"""
+            @app.route('/get_post/<int:x>/<int:y>', methods=['GET', 'POST'])
+            def yyy_get_post(x, y):
+                pass
 
-    def test_only_POST_route(self, runner, monkeypatch):
-        monkeypatch.setitem(os.environ, 'FLASK_APP', 'cliapp.routesapp:only_POST_route_app')
-        result = runner.invoke(cli, ['routes'], catch_exceptions=False)
+            @app.route('/zzz_post', methods=['POST'])
+            def aaa_post():
+                pass
+
+            return app
+
+        cli = FlaskGroup(create_app=create_app)
+        return partial(runner.invoke, cli)
+
+    def expect_order(self, order, output):
+        # skip the header and match the start of each row
+        for expect, line in zip(order, output.splitlines()[2:]):
+            # do this instead of startswith for nicer pytest output
+            assert line[:len(expect)] == expect
+
+    def test_simple(self, invoke):
+        result = invoke(['routes'])
         assert result.exit_code == 0
-        assert result.output == """\
-Route                    Endpoint   Methods           
-------------------------------------------------------
-/only-post               only_post  POST, OPTIONS     
-/static/<path:filename>  static     HEAD, OPTIONS, GET
-"""
+        self.expect_order(
+            ['aaa_post', 'static', 'yyy_get_post'],
+            result.output
+        )
+
+    def test_sort(self, invoke):
+        default_output = invoke(['routes']).output
+        endpoint_output = invoke(['routes', '-s', 'endpoint']).output
+        assert default_output == endpoint_output
+        self.expect_order(
+            ['static', 'yyy_get_post', 'aaa_post'],
+            invoke(['routes', '-s', 'methods']).output
+        )
+        self.expect_order(
+            ['yyy_get_post', 'static', 'aaa_post'],
+            invoke(['routes', '-s', 'rule']).output
+        )
+        self.expect_order(
+            ['aaa_post', 'yyy_get_post', 'static'],
+            invoke(['routes', '-s', 'match']).output
+        )
+
+    def test_all_methods(self, invoke):
+        output = invoke(['routes']).output
+        assert 'GET, HEAD, OPTIONS, POST' not in output
+        output = invoke(['routes', '--all-methods']).output
+        assert 'GET, HEAD, OPTIONS, POST' in output
