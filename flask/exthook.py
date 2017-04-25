@@ -21,7 +21,14 @@
 """
 import sys
 import os
+import warnings
 from ._compat import reraise
+
+
+class ExtDeprecationWarning(DeprecationWarning):
+    pass
+
+warnings.simplefilter('always', ExtDeprecationWarning)
 
 
 class ExtensionImporter(object):
@@ -49,13 +56,21 @@ class ExtensionImporter(object):
         sys.meta_path[:] = [x for x in sys.meta_path if self != x] + [self]
 
     def find_module(self, fullname, path=None):
-        if fullname.startswith(self.prefix):
+        if fullname.startswith(self.prefix) and \
+           fullname != 'flask.ext.ExtDeprecationWarning':
             return self
 
     def load_module(self, fullname):
         if fullname in sys.modules:
             return sys.modules[fullname]
+
         modname = fullname.split('.', self.prefix_cutoff)[self.prefix_cutoff]
+
+        warnings.warn(
+            "Importing flask.ext.{x} is deprecated, use flask_{x} instead."
+            .format(x=modname), ExtDeprecationWarning, stacklevel=2
+        )
+
         for path in self.module_choices:
             realname = path % modname
             try:
@@ -83,6 +98,14 @@ class ExtensionImporter(object):
             module = sys.modules[fullname] = sys.modules[realname]
             if '.' not in modname:
                 setattr(sys.modules[self.wrapper_module], modname, module)
+
+            if realname.startswith('flaskext.'):
+                warnings.warn(
+                    "Detected extension named flaskext.{x}, please rename it "
+                    "to flask_{x}. The old form is deprecated."
+                    .format(x=modname), ExtDeprecationWarning
+                )
+
             return module
         raise ImportError('No module named %s' % fullname)
 

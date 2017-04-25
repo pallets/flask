@@ -28,6 +28,46 @@ exception to the :attr:`~flask.Flask.logger`.
 But there is more you can do, and we will cover some better setups to deal
 with errors.
 
+Error Logging Tools
+-------------------
+
+Sending error mails, even if just for critical ones, can become
+overwhelming if enough users are hitting the error and log files are
+typically never looked at. This is why we recommend using `Sentry
+<https://www.getsentry.com/>`_ for dealing with application errors.  It's
+available as an Open Source project `on GitHub
+<https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
+<https://getsentry.com/signup/>`_ which you can try for free. Sentry
+aggregates duplicate errors, captures the full stack trace and local
+variables for debugging, and sends you mails based on new errors or
+frequency thresholds.
+
+To use Sentry you need to install the `raven` client::
+
+    $ pip install raven
+
+And then add this to your Flask app::
+
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(app, dsn='YOUR_DSN_HERE')
+
+Or if you are using factories you can also init it later::
+
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(dsn='YOUR_DSN_HERE')
+
+    def create_app():
+        app = Flask(__name__)
+        sentry.init_app(app)
+        ...
+        return app
+
+The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
+from your Sentry installation.
+
+Afterwards failures are automatically reported to Sentry and from there
+you can receive error notifications.
+
 .. _error-handlers:
 
 Error handlers
@@ -37,7 +77,7 @@ You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
 Error handlers are normal :ref:`views` but instead of being registered for
-routes they are registered for exceptions that are rised while trying to
+routes, they are registered for exceptions that are raised while trying to
 do something else.
 
 Registering
@@ -49,23 +89,24 @@ Register error handlers using :meth:`~flask.Flask.errorhandler` or
     @app.errorhandler(werkzeug.exceptions.BadRequest)
     def handle_bad_request(e):
         return 'bad request!'
-    
+
     app.register_error_handler(400, lambda e: 'bad request!')
 
 Those two ways are equivalent, but the first one is more clear and leaves
 you with a function to call on your whim (and in tests).  Note that
 :exc:`werkzeug.exceptions.HTTPException` subclasses like
 :exc:`~werkzeug.exceptions.BadRequest` from the example and their HTTP codes
-are interchangable when handed to the registration methods or decorator
+are interchangeable when handed to the registration methods or decorator
 (``BadRequest.code == 400``).
 
-You are however not limited to a :exc:`~werkzeug.exceptions.HTTPException`
-or its code but can register a handler for every exception class you like.
+You are however not limited to :exc:`~werkzeug.exceptions.HTTPException`
+or HTTP status codes but can register a handler for every exception class you
+like.
 
-.. versionchanged:: 1.0
+.. versionchanged:: 0.11
 
-   Errorhandlers are now prioritized by specifity instead of the order they're
-   registered in.
+   Errorhandlers are now prioritized by specificity of the exception classes
+   they are registered for instead of the order they are registered in.
 
 Handling
 ````````
@@ -74,7 +115,7 @@ Once an exception instance is raised, its class hierarchy is traversed,
 and searched for in the exception classes for which handlers are registered.
 The most specific handler is selected.
 
-E.g. if a instance of :exc:`ConnectionRefusedError` is raised, and a handler
+E.g. if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
 is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
 the more specific :exc:`ConnectionRefusedError` handler is called on the
 exception instance, and its response is shown to the user.
@@ -130,7 +171,7 @@ Logging to a File
 
 Even if you get mails, you probably also want to log warnings.  It's a
 good idea to keep as much information around that might be required to
-debug a problem.  By default as of Flask 1.0, errors are logged to your
+debug a problem.  By default as of Flask 0.11, errors are logged to your
 webserver's log automatically.  Warnings however are not.  Please note
 that Flask itself will not issue any warnings in the core system, so it's
 your responsibility to warn in the code if something seems odd.
@@ -175,7 +216,7 @@ A formatter can be instantiated with a format string.  Note that
 tracebacks are appended to the log entry automatically.  You don't have to
 do that in the log formatter format string.
 
-Here some example setups:
+Here are some example setups:
 
 Email
 `````
@@ -235,8 +276,9 @@ that this list is not complete, consult the official documentation of the
 | ``%(lineno)d``   | Source line number where the logging call was      |
 |                  | issued (if available).                             |
 +------------------+----------------------------------------------------+
-| ``%(asctime)s``  | Human-readable time when the LogRecord` was        |
-|                  | created.  By default this is of the form           |
+| ``%(asctime)s``  | Human-readable time when the                       |
+|                  | :class:`~logging.LogRecord` was created.           |
+|                  | By default this is of the form                     |
 |                  | ``"2003-07-08 16:49:45,896"`` (the numbers after   |
 |                  | the comma are millisecond portion of the time).    |
 |                  | This can be changed by subclassing the formatter   |

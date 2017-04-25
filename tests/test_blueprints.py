@@ -174,12 +174,9 @@ def test_templates_and_static(test_apps):
         assert flask.url_for('admin.static', filename='test.txt') == '/admin/static/test.txt'
 
     with app.test_request_context():
-        try:
+        with pytest.raises(TemplateNotFound) as e:
             flask.render_template('missing.html')
-        except TemplateNotFound as e:
-            assert e.name == 'missing.html'
-        else:
-            assert 0, 'expected exception'
+        assert e.value.name == 'missing.html'
 
     with flask.Flask(__name__).test_request_context():
         assert flask.render_template('nested/nested.txt') == 'I\'m nested'
@@ -357,6 +354,25 @@ def test_route_decorator_custom_endpoint_with_dots():
     assert rv.status_code == 404
     rv = c.get('/py/bar/123')
     assert rv.status_code == 404
+
+
+def test_endpoint_decorator():
+    from werkzeug.routing import Rule
+    app = flask.Flask(__name__)
+    app.url_map.add(Rule('/foo', endpoint='bar'))
+
+    bp = flask.Blueprint('bp', __name__)
+
+    @bp.endpoint('bar')
+    def foobar():
+        return flask.request.endpoint
+
+    app.register_blueprint(bp, url_prefix='/bp_prefix')
+
+    c = app.test_client()
+    assert c.get('/foo').data == b'bar'
+    assert c.get('/bp_prefix/bar').status_code == 404
+
 
 def test_template_filter():
     bp = flask.Blueprint('bp', __name__)

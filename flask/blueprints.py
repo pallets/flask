@@ -89,6 +89,13 @@ class Blueprint(_PackageBoundObject):
     warn_on_modifications = False
     _got_registered_once = False
 
+    #: Blueprint local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    json_encoder = None
+    #: Blueprint local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    json_decoder = None
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
@@ -407,7 +414,7 @@ class Blueprint(_PackageBoundObject):
         application-wide function of the :class:`~flask.Flask` object but
         for error handlers limited to this blueprint.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         self.record_once(lambda s: s.app._register_error_handler(
             self.name, code_or_exception, f))

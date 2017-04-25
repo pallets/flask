@@ -6,7 +6,7 @@ Application Factories
 If you are already using packages and blueprints for your application
 (:ref:`blueprints`) there are a couple of really nice ways to further improve
 the experience.  A common pattern is creating the application object when
-the blueprint is imported.  But if you move the creation of this object,
+the blueprint is imported.  But if you move the creation of this object
 into a function, you can then create multiple instances of this app later.
 
 So why would you want to do this?
@@ -60,7 +60,7 @@ Factories & Extensions
 It's preferable to create your extensions and app factories so that the
 extension object does not initially get bound to the application.
 
-Using `Flask-SQLAlchemy <http://pythonhosted.org/Flask-SQLAlchemy/>`_,
+Using `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/>`_,
 as an example, you should not do something along those lines::
 
     def create_app(config_filename):
@@ -99,7 +99,8 @@ an application::
 
 It can then be used with the :command:`flask` command::
 
-    flask --app=exampleapp run
+    export FLASK_APP=exampleapp
+    flask run
 
 Factory Improvements
 --------------------

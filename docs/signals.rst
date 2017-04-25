@@ -19,9 +19,9 @@ more.  Also keep in mind that signals are intended to notify subscribers
 and should not encourage subscribers to modify data.  You will notice that
 there are signals that appear to do the same thing like some of the
 builtin decorators do (eg: :data:`~flask.request_started` is very similar
-to :meth:`~flask.Flask.before_request`).  There are however difference in
-how they work.  The core :meth:`~flask.Flask.before_request` handler for
-example is executed in a specific order and is able to abort the request
+to :meth:`~flask.Flask.before_request`).  However, there are differences in
+how they work.  The core :meth:`~flask.Flask.before_request` handler, for
+example, is executed in a specific order and is able to abort the request
 early by returning a response.  In contrast all signal handlers are
 executed in undefined order and do not modify any data.
 

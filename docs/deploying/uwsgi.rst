@@ -29,20 +29,16 @@ Given a flask application in myapp.py, use the following command:
 
 .. sourcecode:: text
 
-    $ uwsgi -s /tmp/uwsgi.sock --manage-script-name --mount /yourapplication=myapp:app
+    $ uwsgi -s /tmp/yourapplication.sock --manage-script-name --mount /yourapplication=myapp:app
 
-Or, if you prefer:
-
-.. sourcecode:: text
-
-    $ uwsgi -s /tmp/uwsgi.sock --manage-script-name --mount /yourapplication=myapp:app
-
-The ``--manage-script-name`` will move the handling of ``SCRIPT_NAME`` to
-uwsgi, since its smarter about that. It is used together with the ``--mount``
-directive which will make requests to ``/yourapplication`` be directed to
-``myapp:app``, where ``myapp`` refers to the name of the file of your flask
-application (without extension). ``app`` is the callable inside of your
-application (usually the line reads ``app = Flask(__name__)``.
+The ``--manage-script-name`` will move the handling of ``SCRIPT_NAME`` to uwsgi,
+since its smarter about that. It is used together with the ``--mount`` directive
+which will make requests to ``/yourapplication`` be directed to ``myapp:app``.
+If your application is accessible at root level, you can use a single ``/``
+instead of ``/yourapplication``. ``myapp`` refers to the name of the file of
+your flask application (without extension) or the module which provides ``app``.
+``app`` is the callable inside of your application (usually the line reads
+``app = Flask(__name__)``.
 
 If you want to deploy your flask application inside of a virtual environment,
 you need to also add ``--virtualenv /path/to/virtual/environment``. You might
@@ -70,7 +66,7 @@ to have it in the URL root its a bit simpler::
         uwsgi_pass unix:/tmp/yourapplication.sock;
     }
 
-.. _nginx: http://nginx.org/
-.. _lighttpd: http://www.lighttpd.net/
+.. _nginx: https://nginx.org/
+.. _lighttpd: https://www.lighttpd.net/
 .. _cherokee: http://cherokee-project.com/
 .. _uwsgi: http://projects.unbit.it/uwsgi/
