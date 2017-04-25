@@ -32,11 +32,14 @@ Major release, unreleased
 - ``Flask.make_response`` raises ``TypeError`` instead of ``ValueError`` for
   bad response types. The error messages have been improved to describe why the
   type is invalid. (`#2256`_)
+- Add ``flask routes`` command to show a table of all routes registered on the
+  application. (`#2092`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1898: https://github.com/pallets/flask/pull/1898
 .. _#1936: https://github.com/pallets/flask/pull/1936
 .. _#2017: https://github.com/pallets/flask/pull/2017
+.. _#2092: https://github.com/pallets/flask/pull/2092
 .. _#2223: https://github.com/pallets/flask/pull/2223
 .. _#2254: https://github.com/pallets/flask/pull/2254
 .. _#2256: https://github.com/pallets/flask/pull/2256

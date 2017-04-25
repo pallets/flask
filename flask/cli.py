@@ -19,6 +19,7 @@ from operator import attrgetter
 import click
 
 from ._compat import iteritems, reraise
+from .globals import current_app
 from .helpers import get_debug_flag
 from . import __version__
 
@@ -486,18 +487,20 @@ def shell_command():
     code.interact(banner=banner, local=ctx)
 
 
-@click.command('routes', short_help='Show application routes.')
+@click.command('routes', short_help="Show the application's routes.")
+@click.option('--sort', type=click.Choice(('endpoint', 'match')), default='endpoint')
 @with_appcontext
-def routes_command():
-    """Prints all the given routes for an application"""
-    from flask.globals import _app_ctx_stack
+def routes_command(sort):
+    """Output a table of all the routes registered on the application."""
 
-    app = _app_ctx_stack.top.app
     routes = []
     ignored_methods = set(['HEAD', 'OPTIONS'])
-    sorted_rules = sorted(app.url_map.iter_rules(), key=attrgetter('endpoint'))
+    rules = current_app.url_map.iter_rules()
 
-    for rule in sorted_rules:
+    if sort == 'endpoint':
+        rules = sorted(rules, key=attrgetter('endpoint'))
+
+    for rule in rules:
         sorted_methods = sorted(rule.methods - ignored_methods)
         methods = ', '.join(sorted_methods)
         routes.append([rule.endpoint, methods, rule.rule])
@@ -505,16 +508,16 @@ def routes_command():
     cols = zip(*routes)
     col_widths = [max(len(value) for value in col) for col in cols]
     line = ' '.join(['%%-%ds' % width for width in col_widths])
-
     previous_endpoint = None
+
     for route in routes:
         current_endpoint = route[0]
+
         if previous_endpoint == current_endpoint:
-            current_endpoint = ''
+            route[0] = ''
 
-        previous_endpoint = route[0]
-
-        print(line % tuple([current_endpoint] + route[1:]))
+        previous_endpoint = current_endpoint
+        click.echo(line % tuple(route))
 
 
 cli = FlaskGroup(help="""\
