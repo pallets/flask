@@ -33,7 +33,7 @@ In order to test the application, we add a second module
 (:file:`flaskr_tests.py`) and create a unittest skeleton there::
 
     import os
-    import flaskr
+    from flaskr import flaskr
     import unittest
     import tempfile
 
@@ -41,7 +41,7 @@ In order to test the application, we add a second module
 
         def setUp(self):
             self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-            flaskr.app.config['TESTING'] = True
+            flaskr.app.testing = True
             self.app = flaskr.app.test_client()
             with flaskr.app.app_context():
                 flaskr.init_db()
@@ -98,8 +98,10 @@ test method to our class, like this::
 
         def setUp(self):
             self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+            flaskr.app.testing = True
             self.app = flaskr.app.test_client()
-            flaskr.init_db()
+            with flaskr.app.app_context():
+                flaskr.init_db()
 
         def tearDown(self):
             os.close(self.db_fd)
@@ -152,13 +154,13 @@ invalid credentials.  Add this new test to the class::
 
    def test_login_logout(self):
        rv = self.login('admin', 'default')
-       assert 'You were logged in' in rv.data
+       assert b'You were logged in' in rv.data
        rv = self.logout()
-       assert 'You were logged out' in rv.data
+       assert b'You were logged out' in rv.data
        rv = self.login('adminx', 'default')
-       assert 'Invalid username' in rv.data
+       assert b'Invalid username' in rv.data
        rv = self.login('admin', 'defaultx')
-       assert 'Invalid password' in rv.data
+       assert b'Invalid password' in rv.data
 
 Test Adding Messages
 --------------------
@@ -172,9 +174,9 @@ like this::
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
-        assert 'No entries here so far' not in rv.data
-        assert '&lt;Hello&gt;' in rv.data
-        assert '<strong>HTML</strong> allowed here' in rv.data
+        assert b'No entries here so far' not in rv.data
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
 
 Here we check that HTML is allowed in the text but not in the title,
 which is the intended behavior.
@@ -208,7 +210,7 @@ temporarily.  With this you can access the :class:`~flask.request`,
 functions.  Here is a full example that demonstrates this approach::
 
     import flask
-    
+
     app = flask.Flask(__name__)
 
     with app.test_request_context('/?name=Peter'):

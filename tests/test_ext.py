@@ -179,8 +179,8 @@ def test_flaskext_broken_package_no_module_caching(flaskext_broken):
 def test_no_error_swallowing(flaskext_broken):
     with pytest.raises(ImportError) as excinfo:
         import flask.ext.broken
-
-    assert excinfo.type is ImportError
+    # python3.6 raises a subclass of ImportError: 'ModuleNotFoundError'
+    assert issubclass(excinfo.type, ImportError)
     if PY2:
         message = 'No module named missing_module'
     else:

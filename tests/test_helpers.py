@@ -12,13 +12,16 @@
 import pytest
 
 import os
+import uuid
 import datetime
+
 import flask
 from logging import StreamHandler
+from werkzeug.datastructures import Range
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
-from flask._compat import StringIO, text_type, PY2
+from flask._compat import StringIO, text_type
 
 
 def has_encoding(name):
@@ -31,6 +34,14 @@ def has_encoding(name):
 
 
 class TestJSON(object):
+
+    def test_ignore_cached_json(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context('/', method='POST', data='malformed',
+                                      content_type='application/json'):
+            assert flask.request.get_json(silent=True, cache=True) is None
+            with pytest.raises(BadRequest):
+                flask.request.get_json(silent=False, cache=False)
 
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self):
         app = flask.Flask(__name__)
@@ -99,20 +110,28 @@ class TestJSON(object):
             rv = flask.json.dumps(u'\N{SNOWMAN}')
             assert rv == u'"\u2603"'
 
-    def test_jsonify_basic_types(self):
+    def test_json_dump_to_file(self):
+        app = flask.Flask(__name__)
+        test_data = {'name': 'Flask'}
+        out = StringIO()
+
+        with app.app_context():
+            flask.json.dump(test_data, out)
+            out.seek(0)
+            rv = flask.json.load(out)
+            assert rv == test_data
+
+    @pytest.mark.parametrize('test_value', [0, -1, 1, 23, 3.14, 's', "longer string", True, False, None])
+    def test_jsonify_basic_types(self, test_value):
         """Test jsonify with basic types."""
-        # Should be able to use pytest parametrize on this, but I couldn't
-        # figure out the correct syntax
-        # https://pytest.org/latest/parametrize.html#pytest-mark-parametrize-parametrizing-test-functions
-        test_data = (0, 1, 23, 3.14, 's', "longer string", True, False,)
         app = flask.Flask(__name__)
         c = app.test_client()
-        for i, d in enumerate(test_data):
-            url = '/jsonify_basic_types{0}'.format(i)
-            app.add_url_rule(url, str(i), lambda x=d: flask.jsonify(x))
-            rv = c.get(url)
-            assert rv.mimetype == 'application/json'
-            assert flask.json.loads(rv.data) == d
+
+        url = '/jsonify_basic_types'
+        app.add_url_rule(url, url, lambda x=test_value: flask.jsonify(x))
+        rv = c.get(url)
+        assert rv.mimetype == 'application/json'
+        assert flask.json.loads(rv.data) == test_value
 
     def test_jsonify_dicts(self):
         """Test jsonify with dicts and kwargs unpacking."""
@@ -156,12 +175,10 @@ class TestJSON(object):
 
     def test_jsonify_date_types(self):
         """Test jsonify with datetime.date and datetime.datetime types."""
-
         test_dates = (
             datetime.datetime(1973, 3, 11, 6, 30, 45),
             datetime.date(1975, 1, 5)
         )
-
         app = flask.Flask(__name__)
         c = app.test_client()
 
@@ -171,6 +188,22 @@ class TestJSON(object):
             rv = c.get(url)
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
+
+    def test_jsonify_uuid_types(self):
+        """Test jsonify with uuid.UUID types"""
+
+        test_uuid = uuid.UUID(bytes=b'\xDE\xAD\xBE\xEF' * 4)
+        app = flask.Flask(__name__)
+        url = '/uuid_test'
+        app.add_url_rule(url, url, lambda: flask.jsonify(x=test_uuid))
+
+        c = app.test_client()
+        rv = c.get(url)
+
+        rv_x = flask.json.loads(rv.data)['x']
+        assert rv_x == str(test_uuid)
+        rv_uuid = uuid.UUID(rv_x)
+        assert rv_uuid == test_uuid
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
@@ -234,6 +267,47 @@ class TestJSON(object):
         }), content_type='application/json')
         assert rv.data == b'"<42>"'
 
+    def test_blueprint_json_customization(self):
+        class X(object):
+            def __init__(self, val):
+                self.val = val
+
+        class MyEncoder(flask.json.JSONEncoder):
+            def default(self, o):
+                if isinstance(o, X):
+                    return '<%d>' % o.val
+
+                return flask.json.JSONEncoder.default(self, o)
+
+        class MyDecoder(flask.json.JSONDecoder):
+            def __init__(self, *args, **kwargs):
+                kwargs.setdefault('object_hook', self.object_hook)
+                flask.json.JSONDecoder.__init__(self, *args, **kwargs)
+
+            def object_hook(self, obj):
+                if len(obj) == 1 and '_foo' in obj:
+                    return X(obj['_foo'])
+
+                return obj
+
+        bp = flask.Blueprint('bp', __name__)
+        bp.json_encoder = MyEncoder
+        bp.json_decoder = MyDecoder
+
+        @bp.route('/bp', methods=['POST'])
+        def index():
+            return flask.json.dumps(flask.request.get_json()['x'])
+
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.register_blueprint(bp)
+
+        c = app.test_client()
+        rv = c.post('/bp', data=flask.json.dumps({
+            'x': {'_foo': 42}
+        }), content_type='application/json')
+        assert rv.data == b'"<42>"'
+
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
@@ -256,6 +330,8 @@ class TestJSON(object):
     def test_json_key_sorting(self):
         app = flask.Flask(__name__)
         app.testing = True
+        app.debug = True
+
         assert app.config['JSON_SORT_KEYS'] == True
         d = dict.fromkeys(range(20), 'foo')
 
@@ -355,18 +431,32 @@ class TestSendfile(object):
 
         @app.route('/')
         def index():
-            return flask.send_file(StringIO("party like it's"), last_modified=last_modified)
+            return flask.send_file(StringIO("party like it's"),
+                                   last_modified=last_modified,
+                                   mimetype='text/plain')
 
         c = app.test_client()
         rv = c.get('/')
         assert rv.last_modified == last_modified
+
+    def test_send_file_object_without_mimetype(self):
+        app = flask.Flask(__name__)
+
+        with app.test_request_context():
+            with pytest.raises(ValueError) as excinfo:
+                flask.send_file(StringIO("LOL"))
+            assert 'Unable to infer MIME-type' in str(excinfo)
+            assert 'no filename is available' in str(excinfo)
+
+        with app.test_request_context():
+            flask.send_file(StringIO("LOL"), attachment_filename='filename')
 
     def test_send_file_object(self):
         app = flask.Flask(__name__)
 
         with app.test_request_context():
             with open(os.path.join(app.root_path, 'static/index.html'), mode='rb') as f:
-                rv = flask.send_file(f)
+                rv = flask.send_file(f, mimetype='text/html')
                 rv.direct_passthrough = False
                 with app.open_resource('static/index.html') as f:
                     assert rv.data == f.read()
@@ -377,17 +467,15 @@ class TestSendfile(object):
 
         with app.test_request_context():
             with open(os.path.join(app.root_path, 'static/index.html')) as f:
-                rv = flask.send_file(f)
+                rv = flask.send_file(f, mimetype='text/html')
                 assert rv.mimetype == 'text/html'
-                assert 'x-sendfile' in rv.headers
-                assert rv.headers['x-sendfile'] == \
-                    os.path.join(app.root_path, 'static/index.html')
+                assert 'x-sendfile' not in rv.headers
                 rv.close()
 
         app.use_x_sendfile = False
         with app.test_request_context():
             f = StringIO('Test')
-            rv = flask.send_file(f)
+            rv = flask.send_file(f, mimetype='application/octet-stream')
             rv.direct_passthrough = False
             assert rv.data == b'Test'
             assert rv.mimetype == 'application/octet-stream'
@@ -400,7 +488,7 @@ class TestSendfile(object):
                     return getattr(self._io, name)
             f = PyStringIO('Test')
             f.name = 'test.txt'
-            rv = flask.send_file(f)
+            rv = flask.send_file(f, attachment_filename=f.name)
             rv.direct_passthrough = False
             assert rv.data == b'Test'
             assert rv.mimetype == 'text/plain'
@@ -417,22 +505,87 @@ class TestSendfile(object):
 
         with app.test_request_context():
             f = StringIO('Test')
-            rv = flask.send_file(f)
+            rv = flask.send_file(f, mimetype='text/html')
             assert 'x-sendfile' not in rv.headers
             rv.close()
+
+    @pytest.mark.skipif(
+        not callable(getattr(Range, 'to_content_range_header', None)),
+        reason="not implement within werkzeug"
+    )
+    def test_send_file_range_request(self):
+        app = flask.Flask(__name__)
+
+        @app.route('/')
+        def index():
+            return flask.send_file('static/index.html', conditional=True)
+
+        c = app.test_client()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-15'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[4:16]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[4:]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-1000'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[4:]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=-10'})
+        assert rv.status_code == 206
+        with app.open_resource('static/index.html') as f:
+            assert rv.data == f.read()[-10:]
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=1000-'})
+        assert rv.status_code == 416
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=-'})
+        assert rv.status_code == 416
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'somethingsomething'})
+        assert rv.status_code == 416
+        rv.close()
+
+        last_modified = datetime.datetime.utcfromtimestamp(os.path.getmtime(
+            os.path.join(app.root_path, 'static/index.html'))).replace(
+            microsecond=0)
+
+        rv = c.get('/', headers={'Range': 'bytes=4-15',
+                                 'If-Range': http_date(last_modified)})
+        assert rv.status_code == 206
+        rv.close()
+
+        rv = c.get('/', headers={'Range': 'bytes=4-15', 'If-Range': http_date(
+            datetime.datetime(1999, 1, 1))})
+        assert rv.status_code == 200
+        rv.close()
 
     def test_attachment(self):
         app = flask.Flask(__name__)
         with app.test_request_context():
             with open(os.path.join(app.root_path, 'static/index.html')) as f:
-                rv = flask.send_file(f, as_attachment=True)
+                rv = flask.send_file(f, as_attachment=True,
+                                     attachment_filename='index.html')
                 value, options = \
                     parse_options_header(rv.headers['Content-Disposition'])
                 assert value == 'attachment'
+                assert options['filename'] == 'index.html'
+                assert 'filename*' not in rv.headers['Content-Disposition']
                 rv.close()
 
         with app.test_request_context():
-            assert options['filename'] == 'index.html'
             rv = flask.send_file('static/index.html', as_attachment=True)
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             assert value == 'attachment'
@@ -447,6 +600,19 @@ class TestSendfile(object):
             value, options = parse_options_header(rv.headers['Content-Disposition'])
             assert value == 'attachment'
             assert options['filename'] == 'index.txt'
+            rv.close()
+
+    def test_attachment_with_utf8_filename(self):
+        app = flask.Flask(__name__)
+
+        with app.test_request_context():
+            rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=u'Ñandú／pingüino.txt')
+            content_disposition = set(rv.headers['Content-Disposition'].split('; '))
+            assert content_disposition == set((
+                'attachment',
+                'filename="Nandu/pinguino.txt"',
+                "filename*=UTF-8''%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt"
+            ))
             rv.close()
 
     def test_static_file(self):

@@ -12,7 +12,7 @@ Flask started in part to demonstrate how to build your own framework on top of
 existing well-used tools Werkzeug (WSGI) and Jinja (templating), and as it
 developed, it became useful to a wide audience.  As you grow your codebase,
 don't just use Flask -- understand it.  Read the source.  Flask's code is
-written to be read; it's documentation is published so you can use its internal
+written to be read; its documentation is published so you can use its internal
 APIs.  Flask sticks to documented APIs in upstream libraries, and documents its
 internal utilities so that you can find the hook points needed for your
 project.

@@ -28,7 +28,7 @@ Submitting patches
   clearly under which circumstances the bug happens. Make sure the test fails
   without your patch.
 
-- Try to follow `PEP8 <http://legacy.python.org/dev/peps/pep-0008/>`_, but you
+- Try to follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, but you
   may ignore the line-length-limit if following it would make the code uglier.
 
 
@@ -38,7 +38,7 @@ Running the testsuite
 You probably want to set up a `virtualenv
 <https://virtualenv.readthedocs.io/en/latest/index.html>`_.
 
-The minimal requirement for running the testsuite is ``py.test``.  You can
+The minimal requirement for running the testsuite is ``pytest``.  You can
 install it with::
 
     pip install pytest
@@ -54,9 +54,9 @@ Install Flask as an editable package using the current source::
 
 Then you can run the testsuite with::
 
-    py.test
+    pytest
 
-With only py.test installed, a large part of the testsuite will get skipped
+With only pytest installed, a large part of the testsuite will get skipped
 though.  Whether this is relevant depends on which part of Flask you're working
 on.  Travis is set up to run the full testsuite when you submit your pull
 request anyways.
@@ -79,11 +79,36 @@ plugin.  This assumes you have already run the testsuite (see previous section):
 
 After this has been installed, you can output a report to the command line using this command::
 
-    py.test --cov=flask tests/
+    pytest --cov=flask tests/
 
 Generate a HTML report can be done using this command::
 
-    py.test --cov-report html --cov=flask tests/
+    pytest --cov-report html --cov=flask tests/
 
 Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
 
+Caution
+=======
+pushing
+-------
+This repository contains several zero-padded file modes that may cause issues when pushing this repository to git hosts other than github. Fixing this is destructive to the commit history, so we suggest ignoring these warnings. If it fails to push and you're using a self-hosted git service like Gitlab, you can turn off repository checks in the admin panel.
+
+
+cloning
+-------
+The zero-padded file modes files above can cause issues while cloning, too. If you have
+
+::
+
+    [fetch]
+    fsckobjects = true
+
+or
+
+::
+
+    [receive]
+    fsckObjects = true
+
+
+set in your git configuration file, cloning this repository will fail. The only solution is to set both of the above settings to false while cloning, and then setting them back to true after the cloning is finished.
