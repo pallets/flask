@@ -415,17 +415,16 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.9
         self.url_build_error_handlers = []
 
-        #: A dictionary with lists of functions that should be called at the
-        #: beginning of the request.  The key of the dictionary is the name of
-        #: the blueprint this function is active for, ``None`` for all requests.
-        #: This can for example be used to open database connections or
-        #: getting hold of the currently logged in user.  To register a
-        #: function here, use the :meth:`before_request` decorator.
+        #: A dictionary with lists of functions that will be called at the
+        #: beginning of each request. The key of the dictionary is the name of
+        #: the blueprint this function is active for, or ``None`` for all
+        #: requests. To register a function, use the :meth:`before_request`
+        #: decorator.
         self.before_request_funcs = {}
 
-        #: A lists of functions that should be called at the beginning of the
-        #: first request to this instance.  To register a function here, use
-        #: the :meth:`before_first_request` decorator.
+        #: A list of functions that will be called at the beginning of the
+        #: first request to this instance. To register a function, use the
+        #: :meth:`before_first_request` decorator.
         #:
         #: .. versionadded:: 0.8
         self.before_first_request_funcs = []
@@ -457,12 +456,11 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.9
         self.teardown_appcontext_funcs = []
 
-        #: A dictionary with lists of functions that can be used as URL
-        #: value processor functions.  Whenever a URL is built these functions
-        #: are called to modify the dictionary of values in place.  The key
-        #: ``None`` here is used for application wide
-        #: callbacks, otherwise the key is the name of the blueprint.
-        #: Each of these functions has the chance to modify the dictionary
+        #: A dictionary with lists of functions that are called before the
+        #: :attr:`before_request_funcs` functions. The key of the dictionary is
+        #: the name of the blueprint this function is active for, or ``None``
+        #: for all requests. To register a function, use
+        #: :meth:`url_value_preprocessor`.
         #:
         #: .. versionadded:: 0.7
         self.url_value_preprocessors = {}
@@ -1314,11 +1312,13 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def before_request(self, f):
         """Registers a function to run before each request.
+        
+        For example, this can be used to open a database connection, or to load
+        the logged in user from the session.
 
-        The function will be called without any arguments.
-        If the function returns a non-None value, it's handled as
-        if it was the return value from the view and further
-        request handling is stopped.
+        The function will be called without any arguments. If it returns a
+        non-None value, the value is handled as if it was the return value from
+        the view, and further request handling is stopped.
         """
         self.before_request_funcs.setdefault(None, []).append(f)
         return f
@@ -1437,9 +1437,17 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def url_value_preprocessor(self, f):
-        """Registers a function as URL value preprocessor for all view
-        functions of the application.  It's called before the view functions
-        are called and can modify the url values provided.
+        """Register a URL value preprocessor function for all view
+        functions in the application. These functions will be called before the
+        :meth:`before_request` functions.
+        
+        The function can modify the values captured from the matched url before
+        they are passed to the view. For example, this can be used to pop a
+        common language code value and place it in ``g`` rather than pass it to
+        every view.
+        
+        The function is passed the endpoint name and values dict. The return
+        value is ignored.
         """
         self.url_value_preprocessors.setdefault(None, []).append(f)
         return f
@@ -1877,16 +1885,14 @@ class Flask(_PackageBoundObject):
         raise error
 
     def preprocess_request(self):
-        """Called before the request dispatching.
-
-        Triggers two set of hook functions that should be invoked prior to request dispatching:
-        :attr:`url_value_preprocessors` and :attr:`before_request_funcs`
-        (the latter are functions decorated with :meth:`before_request` decorator).
-        In both cases, the method triggers only the functions that are either global
-        or registered to the current blueprint.
-
-        If any function in :attr:`before_request_funcs` returns a value, it's handled as if it was
-        the return value from the view function, and further request handling is stopped.
+        """Called before the request is dispatched. Calls
+        :attr:`url_value_preprocessors` registered with the app and the
+        current blueprint (if any). Then calls :attr:`before_request_funcs`
+        registered with the app and the blueprint.
+        
+        If any :meth:`before_request` handler returns a non-None value, the
+        value is handled as if it was the return value from the view, and
+        further request handling is stopped.
         """
 
         bp = _request_ctx_stack.top.request.blueprint
