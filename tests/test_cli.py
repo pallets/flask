@@ -18,7 +18,7 @@ import sys
 import click
 import pytest
 from click.testing import CliRunner
-from flask import Flask, current_app
+from flask import Flask, current_app, Blueprint
 
 from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
@@ -208,3 +208,41 @@ def test_print_exceptions():
     assert result.exit_code == 0
     assert 'Exception: oh no' in result.output
     assert 'Traceback' in result.output
+
+
+def test_routes():
+    """Test Routes"""
+    def create_app(info):
+        app = Flask('routes_app')
+        blueprint = Blueprint('routes_blueprint', __name__)
+
+        @blueprint.route('/users')
+        def users_route():
+            pass
+
+        @blueprint.route('/users/<user_id>', methods=['GET', 'DELETE'])
+        def user_id_route():
+            pass
+
+        @blueprint.route('/posts/<post_id>', methods=['GET', 'DELETE', 'PUT'])
+        def posts_routes():
+            pass
+
+        app.register_blueprint(blueprint)
+
+        return app
+
+    @click.group(cls=FlaskGroup, create_app=create_app)
+    def cli(**params):
+        pass
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['routes'])
+
+    output = [line.strip() for line in result.output.split('\n')]
+
+    assert result.exit_code == 0
+    assert output[0] == 'routes_blueprint.posts_routes  DELETE, GET, PUT /posts/<post_id>'
+    assert output[1] == 'routes_blueprint.user_id_route DELETE, GET      /users/<user_id>'
+    assert output[2] == 'routes_blueprint.users_route   GET              /users'
+    assert output[3] == 'static                         GET              /static/<path:filename>'
