@@ -14,7 +14,7 @@ import sys
 
 PY2 = sys.version_info[0] == 2
 
-PY3.6 = sys.version_info[0] == 3 and sys.version_info[1] == 6
+PY36 = sys.version_info[0] == 3 and sys.version_info[1] == 6
 
 _identity = lambda x: x
 
