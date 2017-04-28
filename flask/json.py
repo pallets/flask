@@ -12,7 +12,7 @@ import io
 import uuid
 from datetime import date
 from .globals import current_app, request
-from ._compat import text_type, PY2, PY36
+from ._compat import text_type, PY2, PY36PLUS
 from .ctx import has_request_context
 
 from werkzeug.http import http_date
@@ -154,7 +154,7 @@ def loads(s, **kwargs):
     application on the stack.
     """
     _load_arg_defaults(kwargs)
-    if not PY36:
+    if not PY36PLUS:
         if isinstance(s, bytes):
             s = s.decode(kwargs.pop('encoding', None) or 'utf-8')
     return _json.loads(s, **kwargs)
