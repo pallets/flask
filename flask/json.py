@@ -22,6 +22,8 @@ from jinja2 import Markup
 # depend anyways.
 from itsdangerous import json as _json
 
+#Check if itsdangerous json package is simplejson or standard json
+SIMPLEJSON = _json.__name__ == 'simplejson'
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
@@ -154,7 +156,7 @@ def loads(s, **kwargs):
     application on the stack.
     """
     _load_arg_defaults(kwargs)
-    if not PY36PLUS:
+    if not (PY36PLUS and SIMPLEJSON): #If  python 3.6+ and simple json skip
         if isinstance(s, bytes):
             s = s.decode(kwargs.pop('encoding', None) or 'utf-8')
     return _json.loads(s, **kwargs)
