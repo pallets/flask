@@ -160,3 +160,45 @@ def test_endpoint_override():
 
     # But these tests should still pass. We just log a warning.
     common_test(app)
+
+def test_multiple_inheritance():
+    app = flask.Flask(__name__)
+
+    class GetView(flask.views.MethodView):
+        def get(self):
+            return 'GET'
+
+    class DeleteView(flask.views.MethodView):
+        def delete(self):
+            return 'DELETE'
+
+    class GetDeleteView(GetView, DeleteView):
+        pass
+
+    app.add_url_rule('/', view_func=GetDeleteView.as_view('index'))
+
+    c = app.test_client()
+    assert c.get('/').data == b'GET'
+    assert c.delete('/').data == b'DELETE'
+    assert sorted(GetDeleteView.methods) == ['DELETE', 'GET']
+
+def test_remove_method_from_parent():
+    app = flask.Flask(__name__)
+
+    class GetView(flask.views.MethodView):
+        def get(self):
+            return 'GET'
+
+    class OtherView(flask.views.MethodView):
+        def post(self):
+            return 'POST'
+
+    class View(GetView, OtherView):
+        methods = ['GET']
+
+    app.add_url_rule('/', view_func=View.as_view('index'))
+
+    c = app.test_client()
+    assert c.get('/').data == b'GET'
+    assert c.post('/').status_code == 405
+    assert sorted(View.methods) == ['GET']

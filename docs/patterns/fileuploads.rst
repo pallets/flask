@@ -21,7 +21,7 @@ specific upload folder and displays a file to the user.  Let's look at the
 bootstrapping code for our application::
 
     import os
-    from flask import Flask, request, redirect, url_for
+    from flask import Flask, flash, request, redirect, url_for
     from werkzeug.utils import secure_filename
 
     UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -58,7 +58,7 @@ the file and redirects the user to the URL for the uploaded file::
                 return redirect(request.url)
             file = request.files['file']
             # if user does not select file, browser also
-            # submit a empty part without filename
+            # submit an empty part without filename
             if file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
@@ -72,8 +72,8 @@ the file and redirects the user to the URL for the uploaded file::
         <title>Upload new File</title>
         <h1>Upload new File</h1>
         <form method=post enctype=multipart/form-data>
-          <p><input type=file name=file>
-             <input type=submit value=Upload>
+          <input type=file name=file>
+          <input type=submit value=Upload>
         </form>
         '''
 
@@ -181,4 +181,4 @@ applications dealing with uploads, there is also a Flask extension called
 blacklisting of extensions and more.
 
 .. _jQuery: https://jquery.com/
-.. _Flask-Uploads: http://pythonhosted.org/Flask-Uploads/
+.. _Flask-Uploads: https://pythonhosted.org/Flask-Uploads/

@@ -3,8 +3,66 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+Version 0.13
+------------
+
+Major release, unreleased
+
+- Make `app.run()` into a noop if a Flask application is run from the
+  development server on the command line.  This avoids some behavior that
+  was confusing to debug for newcomers.
+- Change default configuration `JSONIFY_PRETTYPRINT_REGULAR=False`. jsonify()
+  method returns compressed response by default, and pretty response in
+  debug mode.
+- Change Flask.__init__ to accept two new keyword arguments, ``host_matching``
+  and ``static_host``. This enables ``host_matching`` to be set properly by the
+  time the constructor adds the static route, and enables the static route to
+  be properly associated with the required host. (``#1559``)
+- ``send_file`` supports Unicode in ``attachment_filename``. (`#2223`_)
+- Pass ``_scheme`` argument from ``url_for`` to ``handle_build_error``.
+  (`#2017`_)
+- Add support for ``provide_automatic_options`` in ``add_url_rule`` to disable
+  adding OPTIONS method when the ``view_func`` argument is not a class.
+  (`#1489`_).
+- ``MethodView`` can inherit method handlers from base classes. (`#1936`_)
+- Errors caused while opening the session at the beginning of the request are
+  handled by the app's error handlers. (`#2254`_)
+- Blueprints gained ``json_encoder`` and ``json_decoder`` attributes to
+  override the app's encoder and decoder. (`#1898`_)
+- ``Flask.make_response`` raises ``TypeError`` instead of ``ValueError`` for
+  bad response types. The error messages have been improved to describe why the
+  type is invalid. (`#2256`_)
+- Add ``routes`` CLI command to output routes registered on the application.
+  (`#2259`_)
+
+.. _#1489: https://github.com/pallets/flask/pull/1489
+.. _#1898: https://github.com/pallets/flask/pull/1898
+.. _#1936: https://github.com/pallets/flask/pull/1936
+.. _#2017: https://github.com/pallets/flask/pull/2017
+.. _#2223: https://github.com/pallets/flask/pull/2223
+.. _#2254: https://github.com/pallets/flask/pull/2254
+.. _#2256: https://github.com/pallets/flask/pull/2256
+.. _#2259: https://github.com/pallets/flask/pull/2259
+
+Version 0.12.1
+--------------
+
+Bugfix release, released on March 31st 2017
+
+- Prevent `flask run` from showing a NoAppException when an ImportError occurs
+  within the imported application module.
+- Fix encoding behavior of ``app.config.from_pyfile`` for Python 3. Fix
+  ``#2118``.
+- Use the ``SERVER_NAME`` config if it is present as default values for
+  ``app.run``. ``#2109``, ``#2152``
+- Call `ctx.auto_pop` with the exception object instead of `None`, in the
+  event that a `BaseException` such as `KeyboardInterrupt` is raised in a
+  request handler.
+
 Version 0.12
 ------------
+
+Released on December 21st 2016, codename Punsch.
 
 - the cli command now responds to `--version`.
 - Mimetype guessing and ETag generation for file-like objects in ``send_file``
@@ -19,6 +77,8 @@ Version 0.12
   well as error handlers.
 - Disable logger propagation by default for the app logger.
 - Add support for range requests in ``send_file``.
+- ``app.test_client`` includes preset default environment, which can now be
+  directly set, instead of per ``client.get``.
 
 Version 0.11.2
 --------------

@@ -13,7 +13,7 @@ If you are using the `Apache`_ webserver, consider using `mod_wsgi`_.
    not called because this will always start a local WSGI server which
    we do not want if we deploy that application to mod_wsgi.
 
-.. _Apache: http://httpd.apache.org/
+.. _Apache: https://httpd.apache.org/
 
 Installing `mod_wsgi`
 ---------------------
@@ -114,7 +114,7 @@ refuse to run with the above configuration. On a Windows system, eliminate those
 
 Note: There have been some changes in access control configuration for `Apache 2.4`_.
 
-.. _Apache 2.4: http://httpd.apache.org/docs/trunk/upgrading.html
+.. _Apache 2.4: https://httpd.apache.org/docs/trunk/upgrading.html
 
 Most notably, the syntax for directory permissions has changed from httpd 2.2
 
@@ -133,9 +133,9 @@ to httpd 2.4 syntax
 For more information consult the `mod_wsgi documentation`_.
 
 .. _mod_wsgi: https://github.com/GrahamDumpleton/mod_wsgi
-.. _installation instructions: http://modwsgi.readthedocs.io/en/develop/installation.html
+.. _installation instructions: https://modwsgi.readthedocs.io/en/develop/installation.html
 .. _virtual python: https://pypi.python.org/pypi/virtualenv
-.. _mod_wsgi documentation: http://modwsgi.readthedocs.io/en/develop/index.html
+.. _mod_wsgi documentation: https://modwsgi.readthedocs.io/en/develop/index.html
 
 Troubleshooting
 ---------------

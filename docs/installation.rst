@@ -72,7 +72,7 @@ corresponding environment.  On OS X and Linux, do the following::
 
 If you are a Windows user, the following command is for you::
 
-    $ venv\scripts\activate
+    $ venv\Scripts\activate
 
 Either way, you should now be using your virtualenv (notice how the prompt of
 your shell has changed to show the active environment).
@@ -112,7 +112,7 @@ it to operate on a git checkout.  Either way, virtualenv is recommended.
 
 Get the git checkout in a new virtualenv and run in development mode::
 
-    $ git clone http://github.com/pallets/flask.git
+    $ git clone https://github.com/pallets/flask.git
     Initialized empty Git repository in ~/dev/flask/.git/
     $ cd flask
     $ virtualenv venv

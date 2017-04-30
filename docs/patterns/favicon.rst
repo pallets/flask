@@ -49,5 +49,5 @@ web server's documentation.
 See also
 --------
 
-* The `Favicon <http://en.wikipedia.org/wiki/Favicon>`_ article on
+* The `Favicon <https://en.wikipedia.org/wiki/Favicon>`_ article on
   Wikipedia

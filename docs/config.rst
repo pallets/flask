@@ -44,6 +44,21 @@ method::
         SECRET_KEY='...'
     )
 
+.. admonition:: Debug Mode with the ``flask`` Script
+
+   If you use the :command:`flask` script to start a local development
+   server, to enable the debug mode, you need to export the ``FLASK_DEBUG``
+   environment variable before running the server::
+
+    $ export FLASK_DEBUG=1
+    $ flask run
+
+   (On Windows you need to use ``set`` instead of ``export``).
+   
+   ``app.debug`` and ``app.config['DEBUG']`` are not compatible with 
+   the :command:`flask` script. They only worked when using ``Flask.run()``
+   method.
+   
 Builtin Configuration Values
 ----------------------------
 
@@ -52,7 +67,8 @@ The following configuration values are used internally by Flask:
 .. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
 
 ================================= =========================================
-``DEBUG``                         enable/disable debug mode
+``DEBUG``                         enable/disable debug mode when using 
+                                  ``Flask.run()`` method to start server
 ``TESTING``                       enable/disable testing mode
 ``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
                                   propagation of exceptions.  If not set or
@@ -178,11 +194,9 @@ The following configuration values are used internally by Flask:
                                   This is not recommended but might give
                                   you a performance improvement on the
                                   cost of cacheability.
-``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` (the default)
-                                  jsonify responses will be pretty printed
-                                  if they are not requested by an
-                                  XMLHttpRequest object (controlled by
-                                  the ``X-Requested-With`` header)
+``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` or the Flask app
+                                  is running in debug mode, jsonify responses
+                                  will be pretty printed.
 ``JSONIFY_MIMETYPE``              MIME type used for jsonify responses.
 ``TEMPLATES_AUTO_RELOAD``         Whether to check for modifications of
                                   the template source and reload it
@@ -262,7 +276,7 @@ So a common pattern is this::
 
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
-with the contents of the file the :envvar:``YOURAPPLICATION_SETTINGS``
+with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
 environment variable points to.  This environment variable can be set on
 Linux or OS X with the export command in the shell before starting the
 server::

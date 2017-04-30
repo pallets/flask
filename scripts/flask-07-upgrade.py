@@ -5,7 +5,7 @@
     ~~~~~~~~~~~~~~~~
 
     This command line script scans a whole application tree and attempts to
-    output an unified diff with all the changes that are necessary to easily
+    output a unified diff with all the changes that are necessary to easily
     upgrade the application to 0.7 and to not yield deprecation warnings.
 
     This will also attempt to find `after_request` functions that don't modify
