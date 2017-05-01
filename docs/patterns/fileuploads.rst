@@ -24,7 +24,9 @@ bootstrapping code for our application::
     from flask import Flask, flash, request, redirect, url_for
     from werkzeug.utils import secure_filename
 
-    UPLOAD_FOLDER = '/path/to/the/uploads'
+    proj_path = os.path.dirname(os.path.abspath(__file__))  # get full path
+    upload_url = url_for('static', filename='uploads/')  # get upload url
+    UPLOAD_FOLDER = proj_path + upload_url  # generates project_path/static/uploads
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
     app = Flask(__name__)
