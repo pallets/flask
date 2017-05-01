@@ -115,7 +115,7 @@ class Request(RequestBase):
 
         .. versionadded:: 0.11
         """
-        mt = self.mimetype
+        mt = self.mimetype.lower()
         if mt == 'application/json':
             return True
         if mt.startswith('application/') and mt.endswith('+json'):
