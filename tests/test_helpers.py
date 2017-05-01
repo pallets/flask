@@ -874,6 +874,22 @@ class TestStreaming(object):
         rv = c.get('/?name=World')
         assert rv.data == b'Hello World!'
 
+    def test_streaming_with_context_as_decorator_with_arguments(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            @flask.stream_with_context
+            def generate(greeting, punctuation='!'):
+                yield greeting
+                yield ' '
+                yield flask.request.args['name']
+                yield punctuation
+            return flask.Response(generate('Hello', punctuation='!'))
+        c = app.test_client()
+        rv = c.get('/?name=World')
+        assert rv.data == b'Hello World!'
+
     def test_streaming_with_context_and_custom_close(self):
         app = flask.Flask(__name__)
         app.testing = True
