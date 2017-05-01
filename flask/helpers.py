@@ -68,6 +68,8 @@ def _endpoint_from_view_func(view_func):
     """
     assert view_func is not None, 'expected view func if endpoint ' \
                                   'is not provided.'
+    if view_func.__module__ is not None:
+        return view_func.__module__ + '.' + view_func.__name__
     return view_func.__name__
 
 
