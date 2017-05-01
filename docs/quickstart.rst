@@ -80,7 +80,12 @@ should see your hello world greeting.
 
        flask run --host=0.0.0.0
 
-   This tells your operating system to listen on all public IPs.
+   This tells your operating system to listen on all public IPs.  
+
+   N.B. The Flask webserver supports only HTTP/1.0 which is unlikely
+   to work with most AJAX libraries.  In such cases you probably
+   should consider proxying the flask server behind a WSGI capable
+   production server.
 
 
 What to do if the Server does not Start
