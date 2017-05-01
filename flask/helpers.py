@@ -36,7 +36,7 @@ try:
 except ImportError:
     from werkzeug.utils import wrap_file
 
-from jinja2 import FileSystemLoader
+from jinja2 import FileSystemLoader, PackageLoader
 
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
@@ -896,6 +896,8 @@ class _PackageBoundObject(object):
         .. versionadded:: 0.5
         """
         if self.template_folder is not None:
+            if isinstance(self.template_folder, tuple):
+                return PackageLoader(*self.template_folder)
             return FileSystemLoader(os.path.join(self.root_path,
                                                  self.template_folder))
 
