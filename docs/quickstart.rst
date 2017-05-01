@@ -20,6 +20,9 @@ A minimal Flask application looks something like this::
     def hello_world():
         return 'Hello, World!'
 
+    if __name__ == '__main__':
+        app.run()
+
 So what did that code do?
 
 1. First we imported the :class:`~flask.Flask` class.  An instance of this
