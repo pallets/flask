@@ -5,7 +5,7 @@
 
     Various helpers to make the development experience better.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: (c) 2016 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 import os
