@@ -232,7 +232,7 @@ So why did we decide on a class-based approach here?  Because using our
 extension looks something like this::
 
     from flask import Flask
-    from flask_sqlite3 import SQLite3
+    from flask.ext.sqlite3 import SQLite3
 
     app = Flask(__name__)
     app.config.from_pyfile('the-config.cfg')
