@@ -1555,7 +1555,7 @@ class Flask(_PackageBoundObject):
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
         occurs that is not caught.  In debug mode the exception will
-        be re-raised immediately, otherwise it is logged and the handler
+        be logged and re-raised immediately, otherwise it is logged and the handler
         for a 500 internal server error is used.  If no such handler
         exists, a default 500 internal server error message is displayed.
 
@@ -1572,8 +1572,10 @@ class Flask(_PackageBoundObject):
             # (the function was actually called from the except part)
             # otherwise, we just raise the error again
             if exc_value is e:
+                self.log_exception((exc_type, exc_value, tb))
                 reraise(exc_type, exc_value, tb)
             else:
+                self.log_exception((exc_type, exc_value, tb))
                 raise e
 
         self.log_exception((exc_type, exc_value, tb))
