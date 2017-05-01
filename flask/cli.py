@@ -52,6 +52,47 @@ def find_best_app(module):
                          'using a factory function.' % module.__name__)
 
 
+class Shell(object):
+    """Wrapper for spawning an interactive python shell based
+    on what is available, falling back to the builtin python
+    REPL."""
+
+    # This order is also used for priority. The first one that matches
+    # is what gets used.
+    available_shells = ['ipython', 'bpython', 'builtin']
+
+    def __init__(self, shell=None):
+        if shell is None:
+            # By default, attempt all of the shells
+            self.shells = Shell.available_shells
+        elif shell == 'builtin':
+            # Special case `builtin` since it doesn't need a fallback
+            self.shells = ['builtin']
+        else:
+            # Append any explicit other choice, with `builtin` as a fallback
+            self.shells = [shell, 'builtin']
+
+    def ipython(self, banner='', context=None):
+        from IPython import start_ipython, Config
+        config = Config(TerminalInteractiveShell={'banner1': banner})
+        start_ipython(config=config, user_ns=context, argv=[])
+
+    def bpython(self, banner='', context=None):
+        from bpython import embed
+        embed(banner=banner, locals_=context)
+
+    def builtin(self, banner='', context=None):
+        import code
+        code.interact(banner=banner, local=context)
+
+    def run(self, **kwargs):
+        for shell in self.shells:
+            try:
+                return getattr(self, shell)(**kwargs)
+            except ImportError:
+                pass
+
+
 def prepare_exec_for_file(filename):
     """Given a filename this will try to calculate the python path, add it
     to the search path and return the actual module name that is expected.
@@ -455,16 +496,19 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
+@click.option('--interface', '-i', default=None,
+              type=click.Choice(Shell.available_shells),
+              help='Specify the interactive interpreter interface.')
 @with_appcontext
-def shell_command():
+def shell_command(interface):
     """Runs an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
-    namespace of this shell according to it's configuration.
+    namespace of this shell according to it's configuration. Attempts
+    to use IPython or bpython if one of them is available.
 
     This is useful for executing small snippets of management code
     without having to manually configuring the application.
     """
-    import code
     from flask.globals import _app_ctx_stack
     app = _app_ctx_stack.top.app
     banner = 'Python %s on %s\nApp: %s%s\nInstance: %s' % (
@@ -485,7 +529,7 @@ def shell_command():
 
     ctx.update(app.make_shell_context())
 
-    code.interact(banner=banner, local=ctx)
+    Shell(interface).run(banner=banner, context=ctx)
 
 
 @click.command('routes', short_help='Show the routes for the app.')
