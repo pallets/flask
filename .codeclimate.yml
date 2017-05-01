@@ -1,0 +1,11 @@
+---
+engines:
+  radon:
+    enabled: true
+  pep8:
+    enabled: true
+ratings:
+  paths:
+  - "**.py"
+exclude_paths:
+  - Makefile
