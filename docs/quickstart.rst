@@ -146,6 +146,8 @@ There are more parameters that are explained in the :ref:`server` docs.
    allows the execution of arbitrary code. This makes it a major security risk
    and therefore it **must never be used on production machines**.
 
+Want to just log errors and stack traces? See :ref:`application-errors`.
+
 Screenshot of the debugger in action:
 
 .. image:: _static/debugger.png
