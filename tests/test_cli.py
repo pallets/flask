@@ -271,13 +271,16 @@ class TestRoutes:
 
 
 def test_override_builtin_cli():
-    cli = FlaskGroup(create_app=lambda info: Flask('override_builtin'))
+    def create_app(info):
+        app = Flask(__name__)
 
-    @cli.command('run', help="foo")
-    def run():
-        click.echo(current_app.name)
+        @app.cli.command('routes')
+        def routes_command():
+            click.echo('test')
+
+        return app
 
     runner = CliRunner()
-    result = runner.invoke(cli, ['run'])
+    result = runner.invoke(FlaskGroup(create_app=create_app), ['routes'])
     assert result.exit_code == 0
-    assert result.output == 'override_builtin\n'
+    assert result.output == 'test\n'

@@ -34,11 +34,14 @@ Major release, unreleased
   type is invalid. (`#2256`_)
 - Add ``routes`` CLI command to output routes registered on the application.
   (`#2259`_)
+- Allow overriding built-in commands using ``app.cli.command`` instead of
+  creating a separate ``FlaskGroup``. (`#2217`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1898: https://github.com/pallets/flask/pull/1898
 .. _#1936: https://github.com/pallets/flask/pull/1936
 .. _#2017: https://github.com/pallets/flask/pull/2017
+.. _#2217: https://github.com/pallets/flask/pull/2217
 .. _#2223: https://github.com/pallets/flask/pull/2223
 .. _#2254: https://github.com/pallets/flask/pull/2254
 .. _#2256: https://github.com/pallets/flask/pull/2256
