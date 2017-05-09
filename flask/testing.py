@@ -10,9 +10,11 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import werkzeug
 from contextlib import contextmanager
+
+import werkzeug
 from werkzeug.test import Client, EnvironBuilder
+
 from flask import _request_ctx_stack
 
 try:

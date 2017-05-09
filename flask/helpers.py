@@ -18,7 +18,6 @@ from time import time
 from zlib import adler32
 from threading import RLock
 import unicodedata
-from werkzeug.routing import BuildError
 from functools import update_wrapper
 
 try:
@@ -26,6 +25,7 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
+from werkzeug.routing import BuildError
 from werkzeug.datastructures import Headers, Range
 from werkzeug.exceptions import BadRequest, NotFound, \
     RequestedRangeNotSatisfiable

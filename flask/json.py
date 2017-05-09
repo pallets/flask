@@ -11,17 +11,16 @@
 import io
 import uuid
 from datetime import date
-from .globals import current_app, request
-from ._compat import text_type, PY2
-from .ctx import has_request_context
 
 from werkzeug.http import http_date
 from jinja2 import Markup
-
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
 from itsdangerous import json as _json
 
+from .globals import current_app, request
+from ._compat import text_type, PY2
+from .ctx import has_request_context
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
