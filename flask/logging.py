@@ -12,10 +12,11 @@
 from __future__ import absolute_import
 
 import sys
-
-from werkzeug.local import LocalProxy
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, \
      DEBUG, ERROR
+
+from werkzeug.local import LocalProxy
+
 from .globals import _request_ctx_stack
 
 
