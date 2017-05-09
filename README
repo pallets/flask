@@ -47,3 +47,45 @@
       See http://flask.pocoo.org/community/ for more resources.
 
 
+
+                          // Q & A //
+
+    ~ If I wanna try out flask at an upcoming hackathon, whats the best resource to get started? 
+      
+      I've always found the documentation useful which you can find here:
+      http://flask.pocoo.org/
+      And also these video tutorials:
+   
+    ~ How would I make a flask rest api?
+
+      Take a look at this useful tutorial:
+      http://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+      
+    ~ Whats the best db to integrate with flask?
+      
+      The most popular ORM for non-Django web applications is SQLAlchemy by far, 
+      but there are plenty of other options from DynamoDB and MongoDB to 
+      simple local persistence like LevelDB or plain SQLite.
+
+    ~ Is flask the same thing as a django? Difference?
+      
+      With Flask, you will explicitly write your own route functions, 
+      make your routes render templates, etc. all using Python functions
+      you're already familiar with. There is little "magic". You can see 
+      exactly how everything is happening and understand why it is happening. 
+      Flask documentation is also quite nice and concise so you can read it 
+      and learn Flask in a few hours, spend several evenings learning to make 
+      a full application, and then move on to Django. The time investment is small, 
+      it will give you great preparation for Django, and you'll have learned 
+      about a great micro-framework. I sometimes prototype projects in Flask 
+      before building them in Django.
+
+      Django, while more fully featured, has definite structure and convention 
+      so it can be a little more mysterious for a beginner to figure out how 
+      everything fits together. If you're new to web development, 
+      you might have some confusion about whether you're doing something because 
+      its a web development convention or whether you're doing it because its
+      part of the Django conventions/organization.
+      If you can spend a few days or a week playing with Flask before moving on 
+      to learning Django (your original goal) I think it is well worth the time. 
+      Both are great frameworks. Welcome to the world of Web Development.
