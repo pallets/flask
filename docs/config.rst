@@ -132,13 +132,13 @@ The following configuration values are used internally by Flask:
                                   by default enables URL generation
                                   without a request context but with an
                                   application context.
-``APPLICATION_ROOT``              If the application does not occupy
-                                  a whole domain or subdomain this can
-                                  be set to the path where the application
-                                  is configured to live.  This is for
-                                  session cookie as path value.  If
-                                  domains are used, this should be
-                                  ``None``.
+``APPLICATION_ROOT``              The path value used for the session
+                                  cookie if ``SESSION_COOKIE_PATH`` isn't
+                                  set. If it's also ``None`` ``'/'`` is used.
+                                  Note that to actually serve your Flask
+                                  app under a subpath you need to tell
+                                  your WSGI container the ``SCRIPT_NAME``
+                                  WSGI environment variable.
 ``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
                                   reject incoming requests with a
                                   content length greater than this by
