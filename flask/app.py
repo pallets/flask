@@ -958,6 +958,11 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         first_registration = False
+
+        #Added by Gilles. Allows to pass options to a blue print 
+        #And retrieve it within the blueprint
+        self.options_blueprints=options
+
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, \
                 'A blueprint\'s name collision occurred between %r and ' \
