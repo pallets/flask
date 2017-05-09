@@ -12,7 +12,7 @@ import io
 import uuid
 from datetime import date
 from .globals import current_app, request
-from ._compat import text_type, PY2
+from ._compat import text_type, PY2, PY36PLUS
 from .ctx import has_request_context
 
 from werkzeug.http import http_date
@@ -22,6 +22,8 @@ from jinja2 import Markup
 # depend anyways.
 from itsdangerous import json as _json
 
+#Check if itsdangerous json package is simplejson or standard json
+SIMPLEJSON = _json.__name__ == 'simplejson'
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
@@ -154,8 +156,9 @@ def loads(s, **kwargs):
     application on the stack.
     """
     _load_arg_defaults(kwargs)
-    if isinstance(s, bytes):
-        s = s.decode(kwargs.pop('encoding', None) or 'utf-8')
+    if not (PY36PLUS and SIMPLEJSON): #If  python 3.6+ and simple json skip
+        if isinstance(s, bytes):
+            s = s.decode(kwargs.pop('encoding', None) or 'utf-8')
     return _json.loads(s, **kwargs)
 
 
