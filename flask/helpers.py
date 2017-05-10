@@ -939,7 +939,7 @@ class _PackageBoundObject(object):
         return send_from_directory(self.static_folder, filename,
                                    cache_timeout=cache_timeout)
 
-    def open_resource(self, resource, mode='rb'):
+    def open_resource(self, resource, mode='rb', encoding=None):
         """Opens a resource from the application's resource folder.  To see
         how this works, consider the following folder structure::
 
@@ -961,10 +961,11 @@ class _PackageBoundObject(object):
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
         :param mode: resource file opening mode, default is 'rb'.
+        :param encoding: resource file opening encoding, default is None (same as open)
         """
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
-        return open(os.path.join(self.root_path, resource), mode)
+        return open(os.path.join(self.root_path, resource), mode, encoding=encoding)
 
 
 def total_seconds(td):
