@@ -14,6 +14,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
+import warnings
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -511,6 +512,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         a :class:`~datetime.datetime` or timestamp.
         If a file was passed, this overrides its mtime.
     """
+    if isinstance(filename_or_fp, string_types):
+        if not is_ascii(filename_or_fp):
+            warnings.warn("Non-ASCII filename is being used in send_file", UnicodeWarning)
+
     mtime = None
     fsize = None
     if isinstance(filename_or_fp, string_types):
@@ -976,3 +981,13 @@ def total_seconds(td):
     :rtype: int
     """
     return td.days * 60 * 60 * 24 + td.seconds
+
+def is_ascii(string):
+    """Returns if a string object is fully ASCII encoded.
+
+    :param string string: the string to be evaluated
+
+    :returns: True if string is fully ASCII encoded, False if not
+    :rtype: boolean
+    """
+    return all(ord(char) < 128 for char in string)
