@@ -54,7 +54,7 @@ Install Flask as an editable package using the current source::
 
 Then you can run the testsuite with::
 
-    pytest
+    pytest tests/
 
 With only pytest installed, a large part of the testsuite will get skipped
 though.  Whether this is relevant depends on which part of Flask you're working
