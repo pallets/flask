@@ -153,7 +153,10 @@ class Blueprint(_PackageBoundObject):
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
         if self.has_static_folder:
-            state.add_url_rule(self.static_url_path + '/<path:filename>',
+            rule = self.static_url_path
+            if self.url_prefix == '/':
+                rule = self.name + rule
+            state.add_url_rule(rule + '/<path:filename>',
                                view_func=self.send_static_file,
                                endpoint='static')
 
