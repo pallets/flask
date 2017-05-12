@@ -702,7 +702,10 @@ def get_root_path(import_name):
         return os.path.dirname(os.path.abspath(mod.__file__))
 
     # Next attempt: check the loader.
-    loader = pkgutil.get_loader(import_name)
+    try:
+        loader = pkgutil.get_loader(import_name)
+    except AttributeError:
+        loader = None
 
     # Loader does not exist or we're referring to an unloaded main module
     # or a main module without path (interactive sessions), go with the
@@ -768,7 +771,10 @@ def find_package(import_name):
     folder structure exists (lib, share etc.).
     """
     root_mod_name = import_name.split('.')[0]
-    loader = pkgutil.get_loader(root_mod_name)
+    try:
+        loader = pkgutil.get_loader(root_mod_name)
+    except AttributeError:
+        loader = None
     if loader is None or import_name == '__main__':
         # import name is not found, or interactive/main module
         package_path = os.getcwd()
