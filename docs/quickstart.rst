@@ -159,9 +159,11 @@ Have another debugger in mind? See :ref:`working-with-debuggers`.
 Routing
 -------
 
-Modern web applications use meaningful URLs to help users. Users are more likely to like a page and come back if the page uses a meaningful URL they can remember and use to directly visit a page. 
+Modern web applications use meaningful URLs to help users. Users are more
+likely to like a page and come back if the page uses a meaningful URL they can
+remember and use to directly visit a page.
 
-As you saw in the minimal application, you can use the :meth:`~flask.Flask.route` decorator to bind a function to a meaningful URL. For example::
+Use the :meth:`~flask.Flask.route` decorator to bind a function to a URL. ::
 
     @app.route('/')
     def index():
@@ -171,12 +173,16 @@ As you saw in the minimal application, you can use the :meth:`~flask.Flask.route
     def hello():
         return 'Hello, World'
 
-You can do more! You can make parts of the URL dynamic and attach multiple rules to a function.
+You can do more! You can make parts of the URL dynamic and attach multiple
+rules to a function.
 
 Variable Rules
 ``````````````
 
-You can add variable sections to a URL by marking sections with ``<variable_name>``. Your function then receives the ``<variable_name>`` as a keyword argument. Optionally, you can use a converter to specify a rule with ``<converter:variable_name>``. For example::
+You can add variable sections to a URL by marking sections with
+``<variable_name>``. Your function then receives the ``<variable_name>``
+as a keyword argument. Optionally, you can use a converter to specify the type
+of the argument like ``<converter:variable_name>``. ::
 
     @app.route('/user/<username>')
     def show_user_profile(username):
@@ -195,75 +201,91 @@ You can add variable sections to a URL by marking sections with ``<variable_name
 
 Converter types:
 
-=========== ===============================================
-`string`    (default) accepts any text without a slash
-`int`       accepts integers
-`float`     accepts floating point values
-`path`      like `string` but also accepts slashes
-`any`       matches one of the items provided
-`uuid`      accepts UUID strings
-=========== ===============================================
+========== ==========================================
+``string`` (default) accepts any text without a slash
+``int``    accepts positive integers
+``float``  accepts positive floating point values
+``path``   like ``string`` but also accepts slashes
+``uuid``   accepts UUID strings
+========== ==========================================
 
-.. admonition:: Unique URLs / Redirection Behavior
+Unique URLs / Redirection Behavior
+``````````````````````````````````
 
-   Flask's URL rules are based on Werkzeug's routing module. The routing module creates meaningful and unique URLs based on precedents laid down by Apache and earlier HTTP servers.
+Take these two rules::
 
-   Take these two rules::
+    @app.route('/projects/')
+    def projects():
+        return 'The project page'
 
-        @app.route('/projects/')
-        def projects():
-            return 'The project page'
+    @app.route('/about')
+    def about():
+        return 'The about page'
 
-        @app.route('/about')
-        def about():
-            return 'The about page'
+Though they look similar, they differ in their use of the trailing slash in
+the URL. In the first case, the canonical URL for the ``projects`` endpoint
+uses a trailing slash. It's similar to a folder in a file system; if you
+access the URL without a trailing slash, Flask redirects you to the
+canonical URL with the trailing slash.
 
-   Though they look similar, they differ in their use of the trailing slash in the URL *definition*. In the first case, the canonical URL for the ``projects`` endpoint uses a trailing slash. It's similar to a folder in a file system, and if you access the URL without a trailing slash, Flask redirects you to the canonical URL with the trailing slash.
+In the second case, however, the URL definition lacks a trailing slash,
+like the pathname of a file on UNIX-like systems. Accessing the URL with a
+trailing slash produces a 404 “Not Found” error.
 
-   In the second case, however, the URL definition lacks a trailing slash like the pathname of a file on UNIX-like systems. Accessing the URL with a trailing slash produces a 404 “Not Found” error.
-
-   This behavior allows relative URLs to continue working even if the trailing
-   slash is omitted, consistent with how Apache and other servers work.  Also,
-   the URLs will stay unique, which helps search engines avoid indexing the
-   same page twice.
-
+This behavior allows relative URLs to continue working even if the trailing
+slash is omitted, consistent with how Apache and other servers work. Also,
+the URLs will stay unique, which helps search engines avoid indexing the
+same page twice.
 
 .. _url-building:
 
 URL Building
 ````````````
 
-Flask can match URLs, but can it also generate them? Yes! To build a URL to a specific function, you can use the :func:`~flask.url_for` function. It accepts the name of the function as its first argument and any number of keyword arguments, each corresponding to a variable part of the URL rule. Unknown variable parts are appended to the URL as query parameters.
+To build a URL to a specific function, use the :func:`~flask.url_for` function.
+It accepts the name of the function as its first argument and any number of
+keyword arguments, each corresponding to a variable part of the URL rule.
+Unknown variable parts are appended to the URL as query parameters.
 
 Why would you want to build URLs using the URL reversing function
-:func:`~flask.url_for` instead of hard-coding them into your templates? Three good reasons:
+:func:`~flask.url_for` instead of hard-coding them into your templates?
 
-1. Reversing is often more descriptive than hard-coding the URLs. More importantly, you can change your URLs in one go instead of needing to remember to manually change hard-coded URLs.
-2. URL building handles escaping of special characters and Unicode data transparently.
-3. If your application is placed outside the URL root, for example, in ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly handles that for you.
+1. Reversing is often more descriptive than hard-coding the URLs.
+2. You can change your URLs in one go instead of needing to remember to
+    manually change hard-coded URLs.
+3. URL building handles escaping of special characters and Unicode data
+    transparently.
+4. If your application is placed outside the URL root, for example, in
+    ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
+    handles that for you.
 
+For example, here we use the :meth:`~flask.Flask.test_request_context` method
+to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
+tells Flask to behave as though it's handling a request even while we use a
+Python shell. See :ref:`context-locals`. ::
 
-For example, here we use the :meth:`~flask.Flask.test_request_context` method to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context` tells Flask to behave as though it's handling a request even while we use a Python shell. Also see, :ref:`context-locals`.
+    from flask import Flask, url_for
 
-Example::
+    app = Flask(__name__)
 
-    >>> from flask import Flask, url_for
-    >>> app = Flask(__name__)
-    >>> @app.route('/')
-    ... def index(): pass
-    ...
-    >>> @app.route('/login')
-    ... def login(): pass
-    ...
-    >>> @app.route('/user/<username>')
-    ... def profile(username): pass
-    ...
-    >>> with app.test_request_context():
-    ...  print(url_for('index'))
-    ...  print(url_for('login'))
-    ...  print(url_for('login', next='/'))
-    ...  print(url_for('profile', username='John Doe'))
-    ...
+    @app.route('/')
+    def index():
+        return 'index'
+
+    @app.route('/login')
+    def login():
+        return 'login'
+
+    @app.route('/user/<username>')
+    def profile(username):
+        return '{}'s profile'.format(username)
+
+    with app.test_request_context():
+        print(url_for('index'))
+        print(url_for('login'))
+        print(url_for('login', next='/'))
+        print(url_for('profile', username='John Doe'))
+
     /
     /login
     /login?next=/
@@ -272,7 +294,11 @@ Example::
 HTTP Methods
 ````````````
 
-Web application communicate using HTTP and use different methods for accessing URLs. You should familiarize yourself with the HTTP methods as you work with Flask. By default, a route only answers to ``GET`` requests. You can use the ``methods`` argument of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods. For example::
+Web applications use different HTTP methods when accessing URLs. You should
+familiarize yourself with the HTTP methods as you work with Flask. By default,
+a route only answers to ``GET`` requests. You can use the ``methods`` argument
+of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
+::
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -281,7 +307,9 @@ Web application communicate using HTTP and use different methods for accessing U
         else:
             show_the_login_form()
 
-If ``GET`` is present, Flask automatically adds support for the ``HEAD`` method and handles ``HEAD`` requests according to the the `HTTP RFC`_. Likewise, as of Flask 0.6, ``OPTIONS`` is automatically implemented for you.
+If ``GET`` is present, Flask automatically adds support for the ``HEAD`` method
+and handles ``HEAD`` requests according to the the `HTTP RFC`_. Likewise,
+``OPTIONS`` is automatically implemented for you.
 
 .. _HTTP RFC: https://www.ietf.org/rfc/rfc2068.txt
 
