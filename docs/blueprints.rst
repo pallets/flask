@@ -168,6 +168,14 @@ it like you would do to the static folder of the application::
 
     url_for('admin.static', filename='style.css')
 
+.. warning::
+
+    As of Flask 0.9, for static files in blueprints to work correctly the
+    blueprint must be defined with a ``static_url_path`` specified or
+    must be registered with a ``url_prefix``.
+
+    See https://github.com/mitsuhiko/flask/issues/348 for more information.
+
 Templates
 `````````
 
