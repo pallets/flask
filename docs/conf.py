@@ -38,6 +38,14 @@ extensions = [
     'flaskdocext'
 ]
 
+try:
+    __import__('sphinxcontrib.log_cabinet')
+except ImportError:
+    print('sphinxcontrib-log-cabinet is not installed.')
+    print('Changelog directives will not be re-organized.')
+else:
+    extensions.append('sphinxcontrib.log_cabinet')
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

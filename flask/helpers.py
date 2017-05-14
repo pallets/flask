@@ -10,6 +10,7 @@
 """
 
 import os
+import socket
 import sys
 import pkgutil
 import posixpath
@@ -976,3 +977,24 @@ def total_seconds(td):
     :rtype: int
     """
     return td.days * 60 * 60 * 24 + td.seconds
+
+
+def is_ip(value):
+    """Determine if the given string is an IP address.
+
+    :param value: value to check
+    :type value: str
+
+    :return: True if string is an IP address
+    :rtype: bool
+    """
+
+    for family in (socket.AF_INET, socket.AF_INET6):
+        try:
+            socket.inet_pton(family, value)
+        except socket.error:
+            pass
+        else:
+            return True
+
+    return False
