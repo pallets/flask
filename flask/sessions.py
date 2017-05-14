@@ -11,7 +11,7 @@
 
 import uuid
 import hashlib
-from warnings import warn
+import warnings
 from base64 import b64encode, b64decode
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
@@ -201,30 +201,62 @@ class SessionInterface(object):
         return isinstance(obj, self.null_session_class)
 
     def get_cookie_domain(self, app):
-        """Helpful helper method that returns the cookie domain that should
-        be used for the session cookie if session cookies are used.
+        """Returns the domain that should be set for the session cookie.
+        
+        Uses ``SESSION_COOKIE_DOMAIN`` if it is configured, otherwise
+        falls back to detecting the domain based on ``SERVER_NAME``.
+        
+        Once detected (or if not set at all), ``SESSION_COOKIE_DOMAIN`` is
+        updated to avoid re-running the logic.
         """
-        if app.config['SESSION_COOKIE_DOMAIN'] is not None:
-            return app.config['SESSION_COOKIE_DOMAIN']
-        if app.config['SERVER_NAME'] is not None:
-            # chop off the port which is usually not supported by browsers
-            rv = '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
 
-            # Google chrome does not like cookies set to .localhost, so
-            # we just go with no domain then.  Flask documents anyways that
-            # cross domain cookies need a fully qualified domain name
-            if rv == '.localhost':
-                rv = None
+        rv = app.config['SESSION_COOKIE_DOMAIN']
 
-            # If we infer the cookie domain from the server name we need
-            # to check if we are in a subpath.  In that case we can't
-            # set a cross domain cookie.
-            if rv is not None:
-                path = self.get_cookie_path(app)
-                if path != '/':
-                    rv = rv.lstrip('.')
+        # set explicitly, or cached from SERVER_NAME detection
+        # if False, return None
+        if rv is not None:
+            return rv if rv else None
 
-            return rv
+        rv = app.config['SERVER_NAME']
+
+        # server name not set, cache False to return none next time
+        if not rv:
+            app.config['SESSION_COOKIE_DOMAIN'] = False
+            return None
+
+        # chop off the port which is usually not supported by browsers
+        # remove any leading '.' since we'll add that later
+        rv = rv.rsplit(':', 1)[0].lstrip('.')
+
+        if '.' not in rv:
+            # Chrome doesn't allow names without a '.'
+            # this should only come up with localhost
+            # hack around this by not setting the name, and show a warning
+            warnings.warn(
+                '"{rv}" is not a valid cookie domain, it must contain a ".".'
+                ' Add an entry to your hosts file, for example'
+                ' "{rv}.localdomain", and use that instead.'.format(rv=rv)
+            )
+            app.config['SESSION_COOKIE_DOMAIN'] = False
+            return None
+
+        ip = is_ip(rv)
+
+        if ip:
+            warnings.warn(
+                'The session cookie domain is an IP address. This may not work'
+                ' as intended in some browsers. Add an entry to your hosts'
+                ' file, for example "localhost.localdomain", and use that'
+                ' instead.'
+            )
+
+        # if this is not an ip and app is mounted at the root, allow subdomain
+        # matching by adding a '.' prefix
+        if self.get_cookie_path(app) == '/' and not ip:
+            rv = '.' + rv
+
+        app.config['SESSION_COOKIE_DOMAIN'] = rv
+        return rv
 
     def get_cookie_path(self, app):
         """Returns the path for which the cookie should be valid.  The
@@ -337,9 +369,6 @@ class SecureCookieSessionInterface(SessionInterface):
 
     def save_session(self, app, session, response):
         domain = self.get_cookie_domain(app)
-        if domain is not None:
-            if is_ip(domain):
-                warnings.warn("IP introduced in SESSION_COOKIE_DOMAIN", RuntimeWarning)
         path = self.get_cookie_path(app)
 
         # Delete case.  If there is no session we bail early.
