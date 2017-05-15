@@ -12,6 +12,7 @@
 import pytest
 
 import os
+import sys
 import uuid
 import datetime
 
@@ -904,6 +905,8 @@ class TestStreaming(object):
 
 class TestSafeJoin(object):
 
+    @pytest.mark.skipif(sys.platform == 'win32',
+                    reason="this test is for windows paths")
     def test_safe_join(self):
         # Valid combinations of *args and expected joined paths.
         passing = (
@@ -920,6 +923,28 @@ class TestSafeJoin(object):
             (('a/b/c', 'X/..'), 'a/b/c/.', ),
             # Base directory is always considered safe
             (('../', 'a/b/c'), '../a/b/c'),
+            (('/..', ), '/..'),
+        )
+
+        for args, expected in passing:
+            assert flask.safe_join(*args) == expected
+
+    @pytest.mark.skipif(sys.platform != 'win32',
+                    reason="this test is for windows paths")
+    def test_safe_join_windows(self):
+        # Valid combinations of *args and expected joined paths.
+        passing = (
+            (('a\\b\\c', ), 'a\\b\\c'),
+            (('\\\\', 'a\\', 'b\\', 'c\\', ), '\\\\a\\b\\c'),
+            (('a', 'b', 'c', ), 'a\\b\\c'),
+            (('a\\b', 'X\\..\\c'), 'a\\b\\c', ),
+            (('\\\\a\\b', 'c/X/..'), '\\\\a\\b\\c', ),
+            # If last path is '' add a slash
+            (('\\\\a\\b\\c', '', ), '\\\\a\\b\\c\\', ),
+            # Preserve dot slash
+            (('\\\\a\\b\\c', './', ), '\\\\a\\b\\c\\.', ),
+            (('a\\b\\c', 'X/..'), 'a\\b\\c\\.', ),
+            # Base directory is always considered safe
             (('/..', ), '/..'),
         )
 
