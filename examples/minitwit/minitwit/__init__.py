@@ -1,1 +1,1 @@
-from minitwit import app
+from .minitwit import app

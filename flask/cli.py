@@ -11,14 +11,18 @@
 
 import os
 import sys
-from threading import Lock, Thread
+import traceback
 from functools import update_wrapper
+from operator import attrgetter
+from threading import Lock, Thread
 
 import click
 
-from ._compat import iteritems, reraise
-from .helpers import get_debug_flag
 from . import __version__
+from ._compat import iteritems, reraise
+from .globals import current_app
+from .helpers import get_debug_flag
+
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -89,10 +93,18 @@ def locate_app(app_id):
     try:
         __import__(module)
     except ImportError:
-        raise NoAppException('The file/path provided (%s) does not appear to '
-                             'exist.  Please verify the path is correct.  If '
-                             'app is not on PYTHONPATH, ensure the extension '
-                             'is .py' % module)
+        # Reraise the ImportError if it occurred within the imported module.
+        # Determine this by checking whether the trace has a depth > 1.
+        if sys.exc_info()[-1].tb_next:
+            stack_trace = traceback.format_exc()
+            raise NoAppException('There was an error trying to import'
+                    ' the app (%s):\n%s' % (module, stack_trace))
+        else:
+            raise NoAppException('The file/path provided (%s) does not appear'
+                                 ' to exist.  Please verify the path is '
+                                 'correct.  If app is not on PYTHONPATH, '
+                                 'ensure the extension is .py' % module)
+
     mod = sys.modules[module]
     if app_obj is None:
         app = find_best_app(mod)
@@ -131,9 +143,9 @@ version_option = click.Option(['--version'],
                               is_flag=True, is_eager=True)
 
 class DispatchingApp(object):
-    """Special application that dispatches to a flask application which
+    """Special application that dispatches to a Flask application which
     is imported by name in a background thread.  If an error happens
-    it is is recorded and shows as part of the WSGI handling which in case
+    it is recorded and shown as part of the WSGI handling which in case
     of the Werkzeug debugger means that it shows up in the browser.
     """
 
@@ -310,6 +322,7 @@ class FlaskGroup(AppGroup):
         if add_default_commands:
             self.add_command(run_command)
             self.add_command(shell_command)
+            self.add_command(routes_command)
 
         self._loaded_plugin_commands = False
 
@@ -362,7 +375,9 @@ class FlaskGroup(AppGroup):
             # want the help page to break if the app does not exist.
             # If someone attempts to use the command we try to create
             # the app again and this will give us the error.
-            pass
+            # However, we will not do so silently because that would confuse
+            # users.
+            traceback.print_exc()
         return sorted(rv)
 
     def main(self, *args, **kwargs):
@@ -405,6 +420,13 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     Flask is enabled and disabled otherwise.
     """
     from werkzeug.serving import run_simple
+
+    # Set a global flag that indicates that we were invoked from the
+    # command line interface provided server command.  This is detected
+    # by Flask.run to make the call into a no-op.  This is necessary to
+    # avoid ugly errors when the script that is loaded here also attempts
+    # to start a server.
+    os.environ['FLASK_RUN_FROM_CLI_SERVER'] = '1'
 
     debug = get_debug_flag()
     if reload is None:
@@ -464,6 +486,53 @@ def shell_command():
     ctx.update(app.make_shell_context())
 
     code.interact(banner=banner, local=ctx)
+
+
+@click.command('routes', short_help='Show the routes for the app.')
+@click.option(
+    '--sort', '-s',
+    type=click.Choice(('endpoint', 'methods', 'rule', 'match')),
+    default='endpoint',
+    help=(
+        'Method to sort routes by. "match" is the order that Flask will match '
+        'routes when dispatching a request.'
+    )
+)
+@click.option(
+    '--all-methods',
+    is_flag=True,
+    help="Show HEAD and OPTIONS methods."
+)
+@with_appcontext
+def routes_command(sort, all_methods):
+    """Show all registered routes with endpoints and methods."""
+
+    rules = list(current_app.url_map.iter_rules())
+    ignored_methods = set(() if all_methods else ('HEAD', 'OPTIONS'))
+
+    if sort in ('endpoint', 'rule'):
+        rules = sorted(rules, key=attrgetter(sort))
+    elif sort == 'methods':
+        rules = sorted(rules, key=lambda rule: sorted(rule.methods))
+
+    rule_methods = [
+        ', '.join(sorted(rule.methods - ignored_methods)) for rule in rules
+    ]
+
+    headers = ('Endpoint', 'Methods', 'Rule')
+    widths = (
+        max(len(rule.endpoint) for rule in rules),
+        max(len(methods) for methods in rule_methods),
+        max(len(rule.rule) for rule in rules),
+    )
+    widths = [max(len(h), w) for h, w in zip(headers, widths)]
+    row = '{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}'.format(*widths)
+
+    click.echo(row.format(*headers).strip())
+    click.echo(row.format(*('-' * width for width in widths)))
+
+    for rule, methods in zip(rules, rule_methods):
+        click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
 
 
 cli = FlaskGroup(help="""\

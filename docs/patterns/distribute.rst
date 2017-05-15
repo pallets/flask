@@ -174,4 +174,4 @@ the code without having to run ``install`` again after each change.
 
 
 .. _pip: https://pypi.python.org/pypi/pip
-.. _Setuptools: https://pythonhosted.org/setuptools
+.. _Setuptools: https://pypi.python.org/pypi/setuptools

@@ -19,7 +19,7 @@ forms.
    fun.  You can get it from `PyPI
    <https://pypi.python.org/pypi/Flask-WTF>`_.
 
-.. _Flask-WTF: http://pythonhosted.org/Flask-WTF/
+.. _Flask-WTF: https://flask-wtf.readthedocs.io/en/stable/
 
 The Forms
 ---------
