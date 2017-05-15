@@ -31,4 +31,4 @@ Here a screenshot of the final application:
 
 Continue with :ref:`tutorial-folders`.
 
-.. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _SQLAlchemy: https://www.sqlalchemy.org/

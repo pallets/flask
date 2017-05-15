@@ -137,7 +137,8 @@ class Request(RequestBase):
                       on the request.
         """
         rv = getattr(self, '_cached_json', _missing)
-        if rv is not _missing:
+        # We return cached JSON only when the cache is enabled.
+        if cache and rv is not _missing:
             return rv
 
         if not (force or self.is_json):
