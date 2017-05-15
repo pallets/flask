@@ -15,6 +15,13 @@ Major release, unreleased
   method returns compressed response by default, and pretty response in
   debug mode.
 
+Version 0.12.2
+--------------
+
+Bugfix release
+
+- Fix a bug in `safe_join` on Windows.
+
 Version 0.12.1
 --------------
 
