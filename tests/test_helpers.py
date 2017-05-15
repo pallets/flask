@@ -903,21 +903,20 @@ class TestStreaming(object):
 
 
 class TestSafeJoin(object):
-
     def test_safe_join(self):
         # Valid combinations of *args and expected joined paths.
         passing = (
-            (('a/b/c', ), 'a/b/c'),
-            (('/', 'a/', 'b/', 'c/', ), '/a/b/c'),
-            (('a', 'b', 'c', ), 'a/b/c'),
-            (('/a', 'b/c', ), '/a/b/c'),
-            (('a/b', 'X/../c'), 'a/b/c', ),
-            (('/a/b', 'c/X/..'), '/a/b/c', ),
+            (('a/b/c',), 'a/b/c'),
+            (('/', 'a/', 'b/', 'c/'), '/a/b/c'),
+            (('a', 'b', 'c'), 'a/b/c'),
+            (('/a', 'b/c'), '/a/b/c'),
+            (('a/b', 'X/../c'), 'a/b/c'),
+            (('/a/b', 'c/X/..'), '/a/b/c'),
             # If last path is '' add a slash
-            (('/a/b/c', '', ), '/a/b/c/', ),
+            (('/a/b/c', ''), '/a/b/c/'),
             # Preserve dot slash
-            (('/a/b/c', './', ), '/a/b/c/.', ),
-            (('a/b/c', 'X/..'), 'a/b/c/.', ),
+            (('/a/b/c', './'), '/a/b/c/.'),
+            (('a/b/c', 'X/..'), 'a/b/c/.'),
             # Base directory is always considered safe
             (('../', 'a/b/c'), '../a/b/c'),
             (('/..', ), '/..'),
@@ -931,12 +930,12 @@ class TestSafeJoin(object):
         failing = (
             # path.isabs and ``..'' checks
             ('/a', 'b', '/c'),
-            ('/a', '../b/c', ),
+            ('/a', '../b/c'),
             ('/a', '..', 'b/c'),
             # Boundaries violations after path normalization
-            ('/a', 'b/../b/../../c', ),
+            ('/a', 'b/../b/../../c'),
             ('/a', 'b', 'c/../..'),
-            ('/a', 'b/../../c', ),
+            ('/a', 'b/../../c'),
         )
 
         for args in failing:
