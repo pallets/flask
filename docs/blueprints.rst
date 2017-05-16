@@ -200,13 +200,14 @@ To further reiterate this: if you have a blueprint named ``admin`` and you
 want to render a template called :file:`index.html` which is specific to this
 blueprint, the best idea is to lay out your templates like this::
 
-    yourpackage/
-        blueprints/
-            admin/
-                templates/
-                    admin/
-                        index.html
-                __init__.py
+    /yourpackage
+        /blueprints
+            /__init__.py
+            /admin
+                /__init__.py
+                /templates
+                    /admin
+                        /index.html
 
 And then when you want to render the template, use :file:`admin/index.html` as
 the name to look up the template by.  If you encounter problems loading
