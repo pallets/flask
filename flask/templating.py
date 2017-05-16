@@ -11,8 +11,10 @@
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
-from .globals import _request_ctx_stack, _app_ctx_stack
+from .globals import _request_ctx_stack, _app_ctx_stack, request
 from .signals import template_rendered, before_render_template
+from ._compat import string_types
+from .ctx import has_request_context
 
 
 def _default_template_ctx_processor():
@@ -122,12 +124,26 @@ def render_template(template_name_or_list, **context):
     """Renders a template from the template folder with the given
     context.
 
+    If the template path starts with ``./`` and the request is handled by a
+    `Blueprint` it will replace the ``.`` with the name of the Blueprint.
+
     :param template_name_or_list: the name of the template to be
                                   rendered, or an iterable with template names
                                   the first one existing will be rendered
     :param context: the variables that should be available in the
                     context of the template.
     """
+
+    if has_request_context() and request.blueprint is not None:
+        bp = request.blueprint
+        if isinstance(template_name_or_list, string_types):
+            if template_name_or_list.startswith('./'):
+                template_name_or_list = bp + template_name_or_list[1:]
+        else:
+            template_name_or_list = [
+                bp + t[1:] if t.startswith('./') else t
+                for t in template_name_or_list]
+
     ctx = _app_ctx_stack.top
     ctx.app.update_template_context(context)
     return _render(ctx.app.jinja_env.get_or_select_template(template_name_or_list),
