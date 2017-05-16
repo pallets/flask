@@ -51,6 +51,13 @@ Major release, unreleased
 .. _#2259: https://github.com/pallets/flask/pull/2259
 .. _#2282: https://github.com/pallets/flask/pull/2282
 
+Version 0.12.2
+--------------
+
+Bugfix release
+
+- Fix a bug in `safe_join` on Windows.
+
 Version 0.12.1
 --------------
 
