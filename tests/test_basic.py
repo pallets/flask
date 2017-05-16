@@ -1266,6 +1266,16 @@ def test_build_error_handler():
     app.url_build_error_handlers.append(handler)
     with app.test_request_context():
         assert flask.url_for('spam') == '/test_handler/'
+    # remove handler after test
+    app.url_build_error_handlers.pop()
+
+    # Test a custom handler which reraises the BuildError
+    def handler_raises_build_error(error, endpoint, values):
+        raise error
+    app.url_build_error_handlers.append(handler_raises_build_error)
+    app.config['SERVER_NAME'] = 'unit.test'  # SERVER_NAME is required in this case, is this correct?
+    with app.app_context():
+        pytest.raises(BuildError, flask.url_for, 'not.existing')
 
 
 def test_build_error_handler_reraise():
