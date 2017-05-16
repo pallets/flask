@@ -54,7 +54,7 @@ Major release, unreleased
 Version 0.12.2
 --------------
 
-Bugfix release
+Released on May 16 2017
 
 - Fix a bug in `safe_join` on Windows.
 
