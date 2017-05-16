@@ -721,6 +721,10 @@ sessions work::
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
+            # Regenerate session to prevent session fixation
+            app.regenerate_session(session)
+
+            # Handle login
             session['username'] = request.form['username']
             return redirect(url_for('index'))
         return '''
@@ -732,8 +736,8 @@ sessions work::
 
     @app.route('/logout')
     def logout():
-        # remove the username from the session if it's there
-        session.pop('username', None)
+        # Destroy the session to prevent reuse (e.g. session fixation)
+        app.destroy_session(session)
         return redirect(url_for('index'))
 
     # set the secret key.  keep this really secret:

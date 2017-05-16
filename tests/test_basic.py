@@ -529,6 +529,66 @@ def test_session_cookie_setting():
     run_test(expect_header=False)
 
 
+def test_session_cookie_regenerate():
+    app = flask.Flask(__name__)
+    app.testing = True
+    app.secret_key = 'dev key'
+
+    @app.route('/set', methods=['POST'])
+    def set():
+        flask.session['value'] = flask.request.form['value']
+        return 'value set'
+
+    @app.route('/get')
+    def get():
+        return flask.session['value']
+
+    @app.route('/regenerate', methods=['POST'])
+    def regenerate():
+        app.regenerate_session(flask.session)
+        return 'regenerated session'
+
+    # Set/get a value in our session
+    c = app.test_client()
+    assert c.post('/set', data={'value': '42'}).data == b'value set'
+    assert c.get('/get').data == b'42'
+
+    # Regenerate the session and verify the value still exists
+    assert c.post('/regenerate').data == b'regenerated session'
+    assert c.get('/get').data == b'42'
+
+
+def test_session_cookie_destroy():
+    app = flask.Flask(__name__)
+    app.testing = True
+    app.secret_key = 'dev key'
+
+    @app.route('/set', methods=['POST'])
+    def set():
+        flask.session['value'] = flask.request.form['value']
+        return 'value set'
+
+    @app.route('/get')
+    def get():
+        return flask.session.get('value', '')
+
+    @app.route('/destroy', methods=['POST'])
+    def destroy():
+        app.destroy_session(flask.session)
+        return 'destroyed session'
+
+    # Set/get a value in our session
+    c = app.test_client()
+    assert c.post('/set', data={'value': '42'}).data == b'value set'
+    assert c.get('/get').data == b'42'
+
+    # Destroy the session, verify we set up the session for destruction, and verify the value no longer exists
+    rv = c.post('/destroy')
+    assert rv.data == b'destroyed session'
+    assert 'max-age=0' in rv.headers['Set-Cookie'].lower()
+    assert c.get('/get').data == b''
+
+
 def test_flashes():
     app = flask.Flask(__name__)
     app.secret_key = 'testkey'

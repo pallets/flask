@@ -315,6 +315,18 @@ class SessionInterface(object):
         """
         raise NotImplementedError()
 
+    def regenerate_session(self, app, session):
+        """This is called for regenerating sessions to prevent session fixation
+        attacks.
+        """
+        raise NotImplementedError()
+
+    def destroy_session(self, app, session):
+        """This is called for destroying a session's contents and underlying store
+        information. This is used to prevent session fixation attacks.
+        """
+        raise NotImplementedError()
+
     def save_session(self, app, session, response):
         """This is called for actual sessions returned by :meth:`open_session`
         at the end of the request.  This is still called during a request
@@ -366,6 +378,16 @@ class SecureCookieSessionInterface(SessionInterface):
             return self.session_class(data)
         except BadSignature:
             return self.session_class()
+
+    def regenerate_session(self, app, session):
+        # There isn't anything related to a session id so we do nothing
+        pass
+
+    def destroy_session(self, app, session):
+        # Empty store contents
+        session.clear()
+
+        # `save_session` will take care of deleting our cookie
 
     def save_session(self, app, session, response):
         domain = self.get_cookie_domain(app)
