@@ -318,6 +318,8 @@ def url_for(endpoint, **values):
             raise ValueError('When specifying _scheme, _external must be True')
         old_scheme = url_adapter.url_scheme
         url_adapter.url_scheme = scheme
+    else:
+        url_adapter.url_scheme = current_app.config['PREFERRED_URL_SCHEME']
 
     try:
         try:
