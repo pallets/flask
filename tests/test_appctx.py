@@ -16,7 +16,7 @@ import flask
 
 def test_basic_url_generation():
     app = flask.Flask(__name__)
-    app.config['SERVER_NAME'] = 'localhost'
+    app.config['SERVER_NAME'] = 'somehost'
     app.config['PREFERRED_URL_SCHEME'] = 'https'
 
     @app.route('/')
@@ -25,13 +25,7 @@ def test_basic_url_generation():
 
     with app.app_context():
         rv = flask.url_for('index')
-        assert rv == 'https://localhost/'
-
-def test_url_generation_requires_server_name():
-    app = flask.Flask(__name__)
-    with app.app_context():
-        with pytest.raises(RuntimeError):
-            flask.url_for('index')
+        assert rv == 'https://somehost/'
 
 def test_url_generation_without_context_fails():
     with pytest.raises(RuntimeError):
@@ -48,6 +42,36 @@ def test_app_context_provides_current_app():
     with app.app_context():
         assert flask.current_app._get_current_object() == app
     assert flask._app_ctx_stack.top is None
+
+def test_url_for_without_server_name_or_app_context():
+    app = flask.Flask(__name__)
+    client = app.test_client()
+
+    @app.route('/endpoint')
+    def endpoint():
+        return 'Hello World!'
+
+    with app.app_context():
+        response = client.get(flask.url_for('endpoint', param='foo'))
+        assert response.status_code == 200
+
+def test_get_with_arguments():
+    app = flask.Flask(__name__)
+    app.debug = True
+
+    @app.route('/echo')
+    def index():
+        assert 'key' in flask.request.args
+        return flask.jsonify( {'key': flask.request.args['key']} )
+
+    url = None
+    with app.test_request_context():
+        url = flask.url_for('index', key='test', _external=True)
+
+    assert url == 'http://localhost/echo?key=test'
+
+    rv = app.test_client().get(url)
+    assert b'"key": "test"' in rv.data
 
 def test_app_tearing_down():
     cleanup_stuff = []
