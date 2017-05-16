@@ -970,6 +970,10 @@ class Flask(_PackageBoundObject):
             first_registration = True
         blueprint.register(self, options, first_registration)
 
+    def register_blueprints(self, blueprints):
+        for blueprint in blueprints:
+            self.register_blueprint(blueprint)
+
     def iter_blueprints(self):
         """Iterates over all blueprints by the order they were registered.
 
