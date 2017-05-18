@@ -85,7 +85,7 @@ Note that in the following the path is not real, it's simply used as an
 identifier to other
 directives such as AliasMatch::
 
-    FastCgiServer /var/www/html/yourapplication -host 127.0.0.1:3000
+    FastCgiExternalServer /var/www/html/yourapplication -host 127.0.0.1:3000
 
 If you cannot set ScriptAlias, for example on a shared web host, you can use
 WSGI middleware to remove yourapplication.fcgi from the URLs. Set .htaccess::
