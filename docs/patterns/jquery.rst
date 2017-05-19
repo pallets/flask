@@ -19,7 +19,7 @@ Loading jQuery
 In order to use jQuery, you have to download it first and place it in the
 static folder of your application and then ensure it's loaded.  Ideally
 you have a layout template that is used for all pages where you just have
-to add a script statement to the bottom of your `<body>` to load jQuery:
+to add a script statement to the bottom of your ``<body>`` to load jQuery:
 
 .. sourcecode:: html
 
@@ -65,12 +65,12 @@ like this:
 
 The ``|safe`` is necessary in Flask before 0.10 so that Jinja does not
 escape the JSON encoded string with HTML rules.  Usually this would be
-necessary, but we are inside a `script` block here where different rules
+necessary, but we are inside a ``script`` block here where different rules
 apply.
 
 .. admonition:: Information for Pros
 
-   In HTML the `script` tag is declared `CDATA` which means that entities
+   In HTML the ``script`` tag is declared ``CDATA`` which means that entities
    will not be parsed.  Everything until ``</script>`` is handled as script.
    This also means that there must never be any ``</`` between the script
    tags.  ``|tojson`` is kind enough to do the right thing here and
@@ -119,9 +119,9 @@ special error reporting in that case.
 The HTML
 --------
 
-Your index.html template either has to extend a `layout.html` template with
+Your index.html template either has to extend a :file:`layout.html` template with
 jQuery loaded and the `$SCRIPT_ROOT` variable set, or do that on the top.
-Here's the HTML code needed for our little application (`index.html`).
+Here's the HTML code needed for our little application (:file:`index.html`).
 Notice that we also drop the script directly into the HTML here.  It is
 usually a better idea to have that in a separate script file:
 
@@ -156,7 +156,7 @@ explanation of the little bit of code above:
    when the user clicked on the element.  If that function returns
    `false`, the default behavior will not kick in (in this case, navigate
    to the `#` URL).
-4. ``$.getJSON(url, data, func)`` sends a `GET` request to `url` and will
+4. ``$.getJSON(url, data, func)`` sends a ``GET`` request to `url` and will
    send the contents of the `data` object as query parameters.  Once the
    data arrived, it will call the given function with the return value as
    argument.  Note that we can use the `$SCRIPT_ROOT` variable here that
@@ -164,5 +164,5 @@ explanation of the little bit of code above:
 
 If you don't get the whole picture, download the `sourcecode
 for this example
-<http://github.com/mitsuhiko/flask/tree/master/examples/jqueryexample>`_
-from github.
+<https://github.com/pallets/flask/tree/master/examples/jqueryexample>`_
+from GitHub.

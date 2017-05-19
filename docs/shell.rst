@@ -26,6 +26,16 @@ context.
 Generally it's recommended that you read the :ref:`request-context`
 chapter of the documentation first.
 
+Command Line Interface
+----------------------
+
+Starting with Flask 0.11 the recommended way to work with the shell is the
+``flask shell`` command which does a lot of this automatically for you.
+For instance the shell is automatically initialized with a loaded
+application context.
+
+For more information see :ref:`cli`.
+
 Creating a Request Context
 --------------------------
 
@@ -35,7 +45,7 @@ us a :class:`~flask.ctx.RequestContext`:
 
 >>> ctx = app.test_request_context()
 
-Normally you would use the `with` statement to make this request object
+Normally you would use the ``with`` statement to make this request object
 active, but in the shell it's easier to use the
 :meth:`~flask.ctx.RequestContext.push` and
 :meth:`~flask.ctx.RequestContext.pop` methods by hand:
@@ -88,6 +98,6 @@ with stuff you want to star import into your interactive session.  There
 you could also define some more helper methods for common things such as
 initializing the database, dropping tables etc.
 
-Just put them into a module (like `shelltools` and import from there):
+Just put them into a module (like `shelltools`) and import from there:
 
 >>> from shelltools import *

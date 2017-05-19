@@ -16,7 +16,7 @@ However, barely any websites on the Internet are actual XHTML (which is
 HTML processed using XML rules).  There are a couple of major reasons
 why this is the case.  One of them is Internet Explorer's lack of proper
 XHTML support. The XHTML spec states that XHTML must be served with the MIME
-type `application/xhtml+xml`, but Internet Explorer refuses to read files
+type :mimetype:`application/xhtml+xml`, but Internet Explorer refuses to read files
 with that MIME type.
 While it is relatively easy to configure Web servers to serve XHTML properly,
 few people do.  This is likely because properly using XHTML can be quite
@@ -30,7 +30,7 @@ the (X)HTML generation on the web is based on non-XML template engines
 (such as Jinja, the one used in Flask) which do not protect you from
 accidentally creating invalid XHTML.  There are XML based template engines,
 such as Kid and the popular Genshi, but they often come with a larger
-runtime overhead and, are not as straightforward to use because they have
+runtime overhead and are not as straightforward to use because they have
 to obey XML rules.
 
 The majority of users, however, assumed they were properly using XHTML.
@@ -186,7 +186,7 @@ Many other features have been added, as well. A good guide to new features
 in HTML5 is Mark Pilgrim's soon-to-be-published book, `Dive Into HTML5`_.
 Not all of them are supported in browsers yet, however, so use caution.
 
-.. _Dive Into HTML5: http://www.diveintohtml5.org/
+.. _Dive Into HTML5: http://diveintohtml5.info/
 
 What should be used?
 --------------------

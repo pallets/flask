@@ -8,30 +8,34 @@ module.  That is quite simple.  Imagine a small application looks like
 this::
 
     /yourapplication
-        /yourapplication.py
+        yourapplication.py
         /static
-            /style.css
+            style.css
         /templates
             layout.html
             index.html
             login.html
             ...
 
+If you find yourself stuck on something, feel free
+to take a look at the source code for this example.
+You'll find `the full src for this example here`_.
+
 Simple Packages
 ---------------
 
 To convert that into a larger one, just create a new folder
-`yourapplication` inside the existing one and move everything below it.
-Then rename `yourapplication.py` to `__init__.py`.  (Make sure to delete
-all `.pyc` files first, otherwise things would most likely break)
+:file:`yourapplication` inside the existing one and move everything below it.
+Then rename :file:`yourapplication.py` to :file:`__init__.py`.  (Make sure to delete
+all ``.pyc`` files first, otherwise things would most likely break)
 
 You should then end up with something like that::
 
     /yourapplication
         /yourapplication
-            /__init__.py
+            __init__.py
             /static
-                /style.css
+                style.css
             /templates
                 layout.html
                 index.html
@@ -41,32 +45,57 @@ You should then end up with something like that::
 But how do you run your application now?  The naive ``python
 yourapplication/__init__.py`` will not work.  Let's just say that Python
 does not want modules in packages to be the startup file.  But that is not
-a big problem, just add a new file called `runserver.py` next to the inner
-`yourapplication` folder with the following contents::
+a big problem, just add a new file called :file:`setup.py` next to the inner
+:file:`yourapplication` folder with the following contents::
 
-    from yourapplication import app
-    app.run(debug=True)
+    from setuptools import setup
+
+    setup(
+        name='yourapplication',
+        packages=['yourapplication'],
+        include_package_data=True,
+        install_requires=[
+            'flask',
+        ],
+    )
+
+In order to run the application you need to export an environment variable 
+that tells Flask where to find the application instance:: 
+
+    export FLASK_APP=yourapplication
+
+If you are outside of the project directory make sure to provide the exact 
+path to your application directory. Similarly you can turn on "debug 
+mode" with this environment variable:: 
+
+    export FLASK_DEBUG=true 
+
+In order to install and run the application you need to issue the following 
+commands::
+
+    pip install -e . 
+    flask run
 
 What did we gain from this?  Now we can restructure the application a bit
 into multiple modules.  The only thing you have to remember is the
 following quick checklist:
 
 1. the `Flask` application object creation has to be in the
-   `__init__.py` file.  That way each module can import it safely and the
+   :file:`__init__.py` file.  That way each module can import it safely and the
    `__name__` variable will resolve to the correct package.
 2. all the view functions (the ones with a :meth:`~flask.Flask.route`
-   decorator on top) have to be imported in the `__init__.py` file.
+   decorator on top) have to be imported in the :file:`__init__.py` file.
    Not the object itself, but the module it is in. Import the view module
    **after the application object is created**.
 
-Here's an example `__init__.py`::
+Here's an example :file:`__init__.py`::
 
     from flask import Flask
     app = Flask(__name__)
 
     import yourapplication.views
 
-And this is what `views.py` would look like::
+And this is what :file:`views.py` would look like::
 
     from yourapplication import app
 
@@ -77,12 +106,12 @@ And this is what `views.py` would look like::
 You should then end up with something like that::
 
     /yourapplication
-        /runserver.py
+        setup.py
         /yourapplication
-            /__init__.py
-            /views.py
+            __init__.py
+            views.py
             /static
-                /style.css
+                style.css
             /templates
                 layout.html
                 index.html
@@ -93,9 +122,9 @@ You should then end up with something like that::
 
    Every Python programmer hates them, and yet we just added some:
    circular imports (That's when two modules depend on each other.  In this
-   case `views.py` depends on `__init__.py`).  Be advised that this is a
+   case :file:`views.py` depends on :file:`__init__.py`).  Be advised that this is a
    bad idea in general but here it is actually fine.  The reason for this is
-   that we are not actually using the views in `__init__.py` and just
+   that we are not actually using the views in :file:`__init__.py` and just
    ensuring the module is imported and we are doing that at the bottom of
    the file.
 
@@ -105,6 +134,7 @@ You should then end up with something like that::
 
 
 .. _working-with-modules:
+.. _the full src for this example here: https://github.com/pallets/flask/tree/master/examples/patterns/largerapp
 
 Working with Blueprints
 -----------------------

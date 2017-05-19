@@ -19,11 +19,9 @@
 
     ~ What do I need?
 
-      Jinja 2.4 and Werkzeug 0.7 or later.
-      `pip` or `easy_install` will install them for you if you do
-      `pip install Flask`.  I encourage you to use a virtualenv.
-      Check the docs for complete installation and usage
-      instructions.
+      All dependencies are installed by using `pip install Flask`.
+      We encourage you to use a virtualenv. Check the docs for
+      complete installation and usage instructions.
 
     ~ Where are the docs?
 
@@ -34,20 +32,12 @@
     ~ Where are the tests?
 
       Good that you're asking.  The tests are in the
-      flask/testsuite package.  To run the tests use the
-      `run-tests.py` file:
+      tests/ folder.  To run the tests use the
+      `pytest` testing tool:
 
-        $ python run-tests.py
+        $ pytest
 
-      If it's not enough output for you, you can use the
-      `--verbose` flag:
-
-        $ python run-tests.py --verbose
-
-      If you just want one particular testcase to run you can
-      provide it on the command line:
-
-        $ python run-tests.py test_to_run
+      Details on contributing can be found in CONTRIBUTING.rst
 
     ~ Where can I get help?
 

@@ -5,17 +5,14 @@
 
     Implements the bridge to Jinja2.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import posixpath
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
 from .globals import _request_ctx_stack, _app_ctx_stack
-from .signals import template_rendered
-from .module import blueprint_is_module
-from ._compat import itervalues, iteritems
+from .signals import template_rendered, before_render_template
 
 
 def _default_template_ctx_processor():
@@ -55,37 +52,47 @@ class DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
-        for loader, local_name in self._iter_loaders(template):
-            try:
-                return loader.get_source(environment, local_name)
-            except TemplateNotFound:
-                pass
+        if self.app.config['EXPLAIN_TEMPLATE_LOADING']:
+            return self._get_source_explained(environment, template)
+        return self._get_source_fast(environment, template)
 
+    def _get_source_explained(self, environment, template):
+        attempts = []
+        trv = None
+
+        for srcobj, loader in self._iter_loaders(template):
+            try:
+                rv = loader.get_source(environment, template)
+                if trv is None:
+                    trv = rv
+            except TemplateNotFound:
+                rv = None
+            attempts.append((loader, srcobj, rv))
+
+        from .debughelpers import explain_template_loading_attempts
+        explain_template_loading_attempts(self.app, template, attempts)
+
+        if trv is not None:
+            return trv
+        raise TemplateNotFound(template)
+
+    def _get_source_fast(self, environment, template):
+        for srcobj, loader in self._iter_loaders(template):
+            try:
+                return loader.get_source(environment, template)
+            except TemplateNotFound:
+                continue
         raise TemplateNotFound(template)
 
     def _iter_loaders(self, template):
         loader = self.app.jinja_loader
         if loader is not None:
-            yield loader, template
+            yield self.app, loader
 
-        # old style module based loaders in case we are dealing with a
-        # blueprint that is an old style module
-        try:
-            module, local_name = posixpath.normpath(template).split('/', 1)
-            blueprint = self.app.blueprints[module]
-            if blueprint_is_module(blueprint):
-                loader = blueprint.jinja_loader
-                if loader is not None:
-                    yield loader, local_name
-        except (ValueError, KeyError):
-            pass
-
-        for blueprint in itervalues(self.app.blueprints):
-            if blueprint_is_module(blueprint):
-                continue
+        for blueprint in self.app.iter_blueprints():
             loader = blueprint.jinja_loader
             if loader is not None:
-                yield loader, template
+                yield blueprint, loader
 
     def list_templates(self):
         result = set()
@@ -93,20 +100,19 @@ class DispatchingJinjaLoader(BaseLoader):
         if loader is not None:
             result.update(loader.list_templates())
 
-        for name, blueprint in iteritems(self.app.blueprints):
+        for blueprint in self.app.iter_blueprints():
             loader = blueprint.jinja_loader
             if loader is not None:
                 for template in loader.list_templates():
-                    prefix = ''
-                    if blueprint_is_module(blueprint):
-                        prefix = name + '/'
-                    result.add(prefix + template)
+                    result.add(template)
 
         return list(result)
 
 
 def _render(template, context, app):
     """Renders the template and fires the signal"""
+
+    before_render_template.send(app, template=template, context=context)
     rv = template.render(context)
     template_rendered.send(app, template=template, context=context)
     return rv
@@ -130,9 +136,9 @@ def render_template(template_name_or_list, **context):
 
 def render_template_string(source, **context):
     """Renders a template from the given template source string
-    with the given context.
+    with the given context. Template variables will be autoescaped.
 
-    :param source: the sourcecode of the template to be
+    :param source: the source code of the template to be
                    rendered
     :param context: the variables that should be available in the
                     context of the template.

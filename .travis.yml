@@ -1,3 +1,4 @@
+sudo: false
 language: python
 
 python:
@@ -5,23 +6,43 @@ python:
   - "2.7"
   - "pypy"
   - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 
 env:
   - REQUIREMENTS=lowest
+  - REQUIREMENTS=lowest-simplejson
   - REQUIREMENTS=release
+  - REQUIREMENTS=release-simplejson
   - REQUIREMENTS=devel
+  - REQUIREMENTS=devel-simplejson
 
 matrix:
   exclude:
     # Python 3 support currently does not work with lowest requirements
     - python: "3.3"
       env: REQUIREMENTS=lowest
+    - python: "3.3"
+      env: REQUIREMENTS=lowest-simplejson
+    - python: "3.4"
+      env: REQUIREMENTS=lowest
+    - python: "3.4"
+      env: REQUIREMENTS=lowest-simplejson
+    - python: "3.5"
+      env: REQUIREMENTS=lowest
+    - python: "3.5"
+      env: REQUIREMENTS=lowest-simplejson
+    - python: "3.6"
+      env: REQUIREMENTS=lowest
+    - python: "3.6"
+      env: REQUIREMENTS=lowest-simplejson
 
 install:
-  - pip install -r .travis-$REQUIREMENTS-requirements.txt
-  - pip install --editable .
+    - pip install tox
 
-script: make test
+script:
+    - tox -e py-$REQUIREMENTS
 
 branches:
   except:

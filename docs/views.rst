@@ -46,7 +46,7 @@ class into an actual view function by using the
 that function is the name of the endpoint that view will then have.  But
 this by itself is not helpful, so let's refactor the code a bit::
 
-    
+
     from flask.views import View
 
     class ListView(View):
@@ -71,7 +71,7 @@ this by itself is not helpful, so let's refactor the code a bit::
 
 This of course is not that helpful for such a small example, but it's good
 enough to explain the basic principle.  When you have a class-based view
-the question comes up what `self` points to.  The way this works is that
+the question comes up what ``self`` points to.  The way this works is that
 whenever the request is dispatched a new instance of the class is created
 and the :meth:`~flask.views.View.dispatch_request` method is called with
 the parameters from the URL rule.  The class itself is instantiated with

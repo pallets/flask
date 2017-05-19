@@ -5,7 +5,7 @@
     ~~~~~~~~~~~~~~~~
 
     This command line script scans a whole application tree and attempts to
-    output an unified diff with all the changes that are necessary to easily
+    output a unified diff with all the changes that are necessary to easily
     upgrade the application to 0.7 and to not yield deprecation warnings.
 
     This will also attempt to find `after_request` functions that don't modify
@@ -16,9 +16,10 @@
     the most common patterns at least.  The diff it generates should be
     hand reviewed and not applied blindly without making backups.
 
-    :copyright: (c) Copyright 2014 by Armin Ronacher.
+    :copyright: (c) Copyright 2015 by Armin Ronacher.
     :license: see LICENSE for more details.
 """
+from __future__ import print_function
 import re
 import os
 import inspect
@@ -59,7 +60,7 @@ def make_diff(filename, old, new):
                      posixpath.normpath(posixpath.join('a', filename)),
                      posixpath.normpath(posixpath.join('b', filename)),
                      lineterm=''):
-        print line
+        print(line)
 
 
 def looks_like_teardown_function(node):

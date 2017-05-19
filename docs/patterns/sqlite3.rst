@@ -3,9 +3,9 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can implement the opening of database connections on demand
-and closing it when the context dies (usually at the end of the request)
-easily.
+In Flask you can easily implement the opening of database connections on
+demand and closing them when the context dies (usually at the end of the
+request).
 
 Here is a simple example of how you can use SQLite 3 with Flask::
 
@@ -26,12 +26,11 @@ Here is a simple example of how you can use SQLite 3 with Flask::
         if db is not None:
             db.close()
 
-All the application needs to do in order to now use the database is having
-an active application context (which is always true if there is an request
-in flight) or to create an application context itself.  At that point the
-``get_db`` function can be used to get the current database connection.
-Whenever the context is destroyed the database connection will be
-terminated.
+Now, to use the database, the application must either have an active
+application context (which is always true if there is a request in flight)
+or create an application context itself.  At that point the ``get_db``
+function can be used to get the current database connection.  Whenever the
+context is destroyed the database connection will be terminated.
 
 Note: if you use Flask 0.9 or older you need to use
 ``flask._app_ctx_stack.top`` instead of ``g`` as the :data:`flask.g`
@@ -56,7 +55,7 @@ Connect on Demand
 -----------------
 
 The upside of this approach (connecting on first use) is that this will
-only opening the connection if truly necessary.  If you want to use this
+only open the connection if truly necessary.  If you want to use this
 code outside a request context you can use it in a Python shell by opening
 the application context by hand::
 
@@ -71,8 +70,9 @@ Easy Querying
 Now in each request handling function you can access `g.db` to get the
 current open database connection.  To simplify working with SQLite, a
 row factory function is useful.  It is executed for every result returned
-from the database to convert the result.  For instance in order to get
-dictionaries instead of tuples this could be inserted into ``get_db``::
+from the database to convert the result.  For instance, in order to get
+dictionaries instead of tuples, this could be inserted into the ``get_db``
+function we created above::
 
     def make_dicts(cursor, row):
         return dict((cursor.description[idx][0], value)
@@ -80,22 +80,38 @@ dictionaries instead of tuples this could be inserted into ``get_db``::
 
     db.row_factory = make_dicts
 
-Or even simpler::
+This will make the sqlite3 module return dicts for this database connection, which are much nicer to deal with. Even more simply, we could place this in ``get_db`` instead::
 
     db.row_factory = sqlite3.Row
 
-Additionally it is a good idea to provide a query function that combines
+This would use Row objects rather than dicts to return the results of queries. These are ``namedtuple`` s, so we can access them either by index or by key. For example, assuming we have a ``sqlite3.Row`` called ``r`` for the rows ``id``, ``FirstName``, ``LastName``, and ``MiddleInitial``::
+
+    >>> # You can get values based on the row's name
+    >>> r['FirstName']
+    John
+    >>> # Or, you can get them based on index
+    >>> r[1]
+    John
+    # Row objects are also iterable:
+    >>> for value in r:
+    ...     print(value)
+    1
+    John
+    Doe
+    M
+
+Additionally, it is a good idea to provide a query function that combines
 getting the cursor, executing and fetching the results::
-    
+
     def query_db(query, args=(), one=False):
         cur = get_db().execute(query, args)
         rv = cur.fetchall()
         cur.close()
         return (rv[0] if rv else None) if one else rv
 
-This handy little function in combination with a row factory makes working
-with the database much more pleasant than it is by just using the raw
-cursor and connection objects.
+This handy little function, in combination with a row factory, makes
+working with the database much more pleasant than it is by just using the
+raw cursor and connection objects.
 
 Here is how you can use it::
 
@@ -115,7 +131,7 @@ To pass variable parts to the SQL statement, use a question mark in the
 statement and pass in the arguments as a list.  Never directly add them to
 the SQL statement with string formatting because this makes it possible
 to attack the application using `SQL Injections
-<http://en.wikipedia.org/wiki/SQL_injection>`_.
+<https://en.wikipedia.org/wiki/SQL_injection>`_.
 
 Initial Schemas
 ---------------
@@ -132,7 +148,7 @@ can do that for you::
                 db.cursor().executescript(f.read())
             db.commit()
 
-You can then create such a database from the python shell:
+You can then create such a database from the Python shell:
 
 >>> from yourapplication import init_db
 >>> init_db()

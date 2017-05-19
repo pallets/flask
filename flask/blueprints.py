@@ -6,7 +6,7 @@
     Blueprints are the recommended way to implement larger or more
     pluggable applications in Flask 0.7 and later.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 from functools import update_wrapper
@@ -42,7 +42,7 @@ class BlueprintSetupState(object):
         if subdomain is None:
             subdomain = self.blueprint.subdomain
 
-        #: The subdomain that the blueprint should be active for, `None`
+        #: The subdomain that the blueprint should be active for, ``None``
         #: otherwise.
         self.subdomain = subdomain
 
@@ -89,6 +89,13 @@ class Blueprint(_PackageBoundObject):
     warn_on_modifications = False
     _got_registered_once = False
 
+    #: Blueprint local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    json_encoder = None
+    #: Blueprint local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    json_decoder = None
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
@@ -101,7 +108,6 @@ class Blueprint(_PackageBoundObject):
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.deferred_functions = []
-        self.view_functions = {}
         if url_defaults is None:
             url_defaults = {}
         self.url_values_defaults = url_defaults

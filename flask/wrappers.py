@@ -5,17 +5,15 @@
 
     Implements the WSGI wrappers (request and response).
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.exceptions import BadRequest
 
-from .debughelpers import attach_enctype_error_multidict
 from . import json
 from .globals import _request_ctx_stack
-
 
 _missing = object()
 
@@ -48,7 +46,7 @@ class Request(RequestBase):
     url_rule = None
 
     #: A dict of view arguments that matched the request.  If an exception
-    #: happened when matching, this will be `None`.
+    #: happened when matching, this will be ``None``.
     view_args = None
 
     #: If matching the URL failed, this is the exception that will be
@@ -63,7 +61,7 @@ class Request(RequestBase):
 
     @property
     def max_content_length(self):
-        """Read-only view of the `MAX_CONTENT_LENGTH` config key."""
+        """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         ctx = _request_ctx_stack.top
         if ctx is not None:
             return ctx.app.config['MAX_CONTENT_LENGTH']
@@ -73,7 +71,7 @@ class Request(RequestBase):
         """The endpoint that matched the request.  This in combination with
         :attr:`view_args` can be used to reconstruct the same or a
         modified URL.  If an exception happened when matching, this will
-        be `None`.
+        be ``None``.
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
@@ -99,19 +97,21 @@ class Request(RequestBase):
 
     @property
     def json(self):
-        """If the mimetype is `application/json` this will contain the
-        parsed JSON data.  Otherwise this will be `None`.
+        """If the mimetype is :mimetype:`application/json` this will contain the
+        parsed JSON data.  Otherwise this will be ``None``.
 
         The :meth:`get_json` method should be used instead.
         """
-        # XXX: deprecate property
+        from warnings import warn
+        warn(DeprecationWarning('json is deprecated.  '
+                                'Use get_json() instead.'), stacklevel=2)
         return self.get_json()
 
     @property
     def is_json(self):
         """Indicates if this request is JSON or not.  By default a request
         is considered to include JSON data if the mimetype is
-        ``application/json`` or ``application/*+json``.
+        :mimetype:`application/json` or :mimetype:`application/*+json`.
 
         .. versionadded:: 0.11
         """
@@ -123,20 +123,22 @@ class Request(RequestBase):
         return False
 
     def get_json(self, force=False, silent=False, cache=True):
-        """Parses the incoming JSON request data and returns it.  If
-        parsing fails the :meth:`on_json_loading_failed` method on the
-        request object will be invoked.  By default this function will
-        only load the json data if the mimetype is ``application/json``
-        but this can be overridden by the `force` parameter.
+        """Parses the incoming JSON request data and returns it.  By default
+        this function will return ``None`` if the mimetype is not
+        :mimetype:`application/json` but this can be overridden by the
+        ``force`` parameter. If parsing fails the
+        :meth:`on_json_loading_failed` method on the request object will be
+        invoked.
 
-        :param force: if set to `True` the mimetype is ignored.
-        :param silent: if set to `True` this method will fail silently
-                       and return `None`.
-        :param cache: if set to `True` the parsed JSON data is remembered
+        :param force: if set to ``True`` the mimetype is ignored.
+        :param silent: if set to ``True`` this method will fail silently
+                       and return ``None``.
+        :param cache: if set to ``True`` the parsed JSON data is remembered
                       on the request.
         """
         rv = getattr(self, '_cached_json', _missing)
-        if rv is not _missing:
+        # We return cached JSON only when the cache is enabled.
+        if cache and rv is not _missing:
             return rv
 
         if not (force or self.is_json):
@@ -174,6 +176,9 @@ class Request(RequestBase):
 
         .. versionadded:: 0.8
         """
+        ctx = _request_ctx_stack.top
+        if ctx is not None and ctx.app.config.get('DEBUG', False):
+            raise BadRequest('Failed to decode JSON object: {0}'.format(e))
         raise BadRequest()
 
     def _load_form_data(self):
@@ -184,6 +189,7 @@ class Request(RequestBase):
         ctx = _request_ctx_stack.top
         if ctx is not None and ctx.app.debug and \
            self.mimetype != 'multipart/form-data' and not self.files:
+            from .debughelpers import attach_enctype_error_multidict
             attach_enctype_error_multidict(self)
 
 

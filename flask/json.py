@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-    flask.jsonimpl
-    ~~~~~~~~~~~~~~
+    flask.json
+    ~~~~~~~~~~
 
     Implementation helpers for the JSON support in Flask.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 import io
 import uuid
-from datetime import datetime
+from datetime import date
 from .globals import current_app, request
 from ._compat import text_type, PY2
 
@@ -19,10 +19,7 @@ from jinja2 import Markup
 
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.
-try:
-    from itsdangerous import simplejson as _json
-except ImportError:
-    from itsdangerous import json as _json
+from itsdangerous import json as _json
 
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
@@ -60,7 +57,7 @@ class JSONEncoder(_json.JSONEncoder):
     def default(self, o):
         """Implement this method in a subclass such that it returns a
         serializable object for ``o``, or calls the base implementation (to
-        raise a ``TypeError``).
+        raise a :exc:`TypeError`).
 
         For example, to support arbitrary iterators, you could implement
         default like this::
@@ -74,8 +71,8 @@ class JSONEncoder(_json.JSONEncoder):
                     return list(iterable)
                 return JSONEncoder.default(self, o)
         """
-        if isinstance(o, datetime):
-            return http_date(o)
+        if isinstance(o, date):
+            return http_date(o.timetuple())
         if isinstance(o, uuid.UUID):
             return str(o)
         if hasattr(o, '__html__'):
@@ -85,7 +82,7 @@ class JSONEncoder(_json.JSONEncoder):
 
 class JSONDecoder(_json.JSONDecoder):
     """The default JSON decoder.  This one does not change the behavior from
-    the default simplejson encoder.  Consult the :mod:`json` documentation
+    the default simplejson decoder.  Consult the :mod:`json` documentation
     for more information.  This decoder is not only used for the load
     functions of this module but also :attr:`~flask.Request`.
     """
@@ -94,9 +91,16 @@ class JSONDecoder(_json.JSONDecoder):
 def _dump_arg_defaults(kwargs):
     """Inject default arguments for dump functions."""
     if current_app:
-        kwargs.setdefault('cls', current_app.json_encoder)
+        bp = current_app.blueprints.get(request.blueprint) if request else None
+        kwargs.setdefault(
+            'cls',
+            bp.json_encoder if bp and bp.json_encoder
+                else current_app.json_encoder
+        )
+
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
+
         kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
     else:
         kwargs.setdefault('sort_keys', True)
@@ -106,7 +110,12 @@ def _dump_arg_defaults(kwargs):
 def _load_arg_defaults(kwargs):
     """Inject default arguments for load functions."""
     if current_app:
-        kwargs.setdefault('cls', current_app.json_decoder)
+        bp = current_app.blueprints.get(request.blueprint) if request else None
+        kwargs.setdefault(
+            'cls',
+            bp.json_decoder if bp and bp.json_decoder
+                else current_app.json_decoder
+        )
     else:
         kwargs.setdefault('cls', JSONDecoder)
 
@@ -195,13 +204,26 @@ def htmlsafe_dumps(obj, **kwargs):
 
 def htmlsafe_dump(obj, fp, **kwargs):
     """Like :func:`htmlsafe_dumps` but writes into a file object."""
-    fp.write(unicode(htmlsafe_dumps(obj, **kwargs)))
+    fp.write(text_type(htmlsafe_dumps(obj, **kwargs)))
 
 
 def jsonify(*args, **kwargs):
-    """Creates a :class:`~flask.Response` with the JSON representation of
-    the given arguments with an `application/json` mimetype.  The arguments
-    to this function are the same as to the :class:`dict` constructor.
+    """This function wraps :func:`dumps` to add a few enhancements that make
+    life easier.  It turns the JSON output into a :class:`~flask.Response`
+    object with the :mimetype:`application/json` mimetype.  For convenience, it
+    also converts multiple arguments into an array or multiple keyword arguments
+    into a dict.  This means that both ``jsonify(1,2,3)`` and
+    ``jsonify([1,2,3])`` serialize to ``[1,2,3]``.
+
+    For clarity, the JSON serialization behavior has the following differences
+    from :func:`dumps`:
+
+    1. Single argument: Passed straight through to :func:`dumps`.
+    2. Multiple arguments: Converted to an array before being passed to
+       :func:`dumps`.
+    3. Multiple keyword arguments: Converted to a dict before being passed to
+       :func:`dumps`.
+    4. Both args and kwargs: Behavior undefined and will throw an exception.
 
     Example usage::
 
@@ -221,22 +243,37 @@ def jsonify(*args, **kwargs):
             "id": 42
         }
 
-    For security reasons only objects are supported toplevel.  For more
-    information about this, have a look at :ref:`json-security`.
 
-    This function's response will be pretty printed if it was not requested
-    with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
-    the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
+    .. versionchanged:: 0.11
+       Added support for serializing top-level arrays. This introduces a
+       security risk in ancient browsers. See :ref:`json-security` for details.
+
+    This function's response will be pretty printed if the
+    ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to True or the
+    Flask app is running in debug mode. Compressed (not pretty) formatting
+    currently means no indents and no spaces after separators.
 
     .. versionadded:: 0.2
     """
+
     indent = None
-    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
-       and not request.is_xhr:
+    separators = (',', ':')
+
+    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] or current_app.debug:
         indent = 2
-    return current_app.response_class(dumps(dict(*args, **kwargs),
-        indent=indent),
-        mimetype='application/json')
+        separators = (', ', ': ')
+
+    if args and kwargs:
+        raise TypeError('jsonify() behavior undefined when passed both args and kwargs')
+    elif len(args) == 1:  # single args are passed directly to dumps()
+        data = args[0]
+    else:
+        data = args or kwargs
+
+    return current_app.response_class(
+        (dumps(data, indent=indent, separators=separators), '\n'),
+        mimetype=current_app.config['JSONIFY_MIMETYPE']
+    )
 
 
 def tojson_filter(obj, **kwargs):

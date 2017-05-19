@@ -1,24 +1,24 @@
 .. _application-errors:
 
-Logging Application Errors
-==========================
+Application Errors
+==================
 
 .. versionadded:: 0.3
 
 Applications fail, servers fail.  Sooner or later you will see an exception
 in production.  Even if your code is 100% correct, you will still see
 exceptions from time to time.  Why?  Because everything else involved will
-fail.  Here some situations where perfectly fine code can lead to server
+fail.  Here are some situations where perfectly fine code can lead to server
 errors:
 
 -   the client terminated the request early and the application was still
-    reading from the incoming data.
--   the database server was overloaded and could not handle the query.
+    reading from the incoming data
+-   the database server was overloaded and could not handle the query
 -   a filesystem is full
 -   a harddrive crashed
 -   a backend server overloaded
 -   a programming error in a library you are using
--   network connection of the server to another system failed.
+-   network connection of the server to another system failed
 
 And that's just a small sample of issues you could be facing.  So how do we
 deal with that sort of problem?  By default if your application runs in
@@ -28,22 +28,112 @@ exception to the :attr:`~flask.Flask.logger`.
 But there is more you can do, and we will cover some better setups to deal
 with errors.
 
+Error Logging Tools
+-------------------
+
+Sending error mails, even if just for critical ones, can become
+overwhelming if enough users are hitting the error and log files are
+typically never looked at. This is why we recommend using `Sentry
+<https://www.getsentry.com/>`_ for dealing with application errors.  It's
+available as an Open Source project `on GitHub
+<https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
+<https://getsentry.com/signup/>`_ which you can try for free. Sentry
+aggregates duplicate errors, captures the full stack trace and local
+variables for debugging, and sends you mails based on new errors or
+frequency thresholds.
+
+To use Sentry you need to install the `raven` client::
+
+    $ pip install raven
+
+And then add this to your Flask app::
+
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(app, dsn='YOUR_DSN_HERE')
+
+Or if you are using factories you can also init it later::
+
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(dsn='YOUR_DSN_HERE')
+
+    def create_app():
+        app = Flask(__name__)
+        sentry.init_app(app)
+        ...
+        return app
+
+The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
+from your Sentry installation.
+
+Afterwards failures are automatically reported to Sentry and from there
+you can receive error notifications.
+
+.. _error-handlers:
+
+Error handlers
+--------------
+
+You might want to show custom error pages to the user when an error occurs.
+This can be done by registering error handlers.
+
+Error handlers are normal :ref:`views` but instead of being registered for
+routes, they are registered for exceptions that are raised while trying to
+do something else.
+
+Registering
+```````````
+
+Register error handlers using :meth:`~flask.Flask.errorhandler` or
+:meth:`~flask.Flask.register_error_handler`::
+
+    @app.errorhandler(werkzeug.exceptions.BadRequest)
+    def handle_bad_request(e):
+        return 'bad request!'
+
+    app.register_error_handler(400, lambda e: 'bad request!')
+
+Those two ways are equivalent, but the first one is more clear and leaves
+you with a function to call on your whim (and in tests).  Note that
+:exc:`werkzeug.exceptions.HTTPException` subclasses like
+:exc:`~werkzeug.exceptions.BadRequest` from the example and their HTTP codes
+are interchangeable when handed to the registration methods or decorator
+(``BadRequest.code == 400``).
+
+You are however not limited to :exc:`~werkzeug.exceptions.HTTPException`
+or HTTP status codes but can register a handler for every exception class you
+like.
+
+.. versionchanged:: 0.11
+
+   Errorhandlers are now prioritized by specificity of the exception classes
+   they are registered for instead of the order they are registered in.
+
+Handling
+````````
+
+Once an exception instance is raised, its class hierarchy is traversed,
+and searched for in the exception classes for which handlers are registered.
+The most specific handler is selected.
+
+E.g. if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
+is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
+the more specific :exc:`ConnectionRefusedError` handler is called on the
+exception instance, and its response is shown to the user.
+
 Error Mails
 -----------
 
 If the application runs in production mode (which it will do on your
-server) you won't see any log messages by default.  Why is that?  Flask
-tries to be a zero-configuration framework.  Where should it drop the logs
-for you if there is no configuration?  Guessing is not a good idea because
-chances are, the place it guessed is not the place where the user has
-permission to create a logfile.  Also, for most small applications nobody
-will look at the logs anyways.
+server) you might not see any log messages.  The reason for that is that
+Flask by default will just report to the WSGI error stream or stderr
+(depending on what's available).  Where this ends up is sometimes hard to
+find.  Often it's in your webserver's log files.
 
-In fact, I promise you right now that if you configure a logfile for the
-application errors you will never look at it except for debugging an issue
-when a user reported it for you.  What you want instead is a mail the
-second the exception happened.  Then you get an alert and you can do
-something about it.
+I can pretty much promise you however that if you only use a logfile for
+the application errors you will never look at it except for debugging an
+issue when a user reported it for you.  What you probably want instead is
+a mail the second the exception happened.  Then you get an alert and you
+can do something about it.
 
 Flask uses the Python builtin logging system, and it can actually send
 you mails for errors which is probably what you want.  Here is how you can
@@ -81,9 +171,10 @@ Logging to a File
 
 Even if you get mails, you probably also want to log warnings.  It's a
 good idea to keep as much information around that might be required to
-debug a problem.  Please note that Flask itself will not issue any
-warnings in the core system, so it's your responsibility to warn in the
-code if something seems odd.
+debug a problem.  By default as of Flask 0.11, errors are logged to your
+webserver's log automatically.  Warnings however are not.  Please note
+that Flask itself will not issue any warnings in the core system, so it's
+your responsibility to warn in the code if something seems odd.
 
 There are a couple of handlers provided by the logging system out of the
 box but not all of them are useful for basic error logging.  The most
@@ -125,7 +216,7 @@ A formatter can be instantiated with a format string.  Note that
 tracebacks are appended to the log entry automatically.  You don't have to
 do that in the log formatter format string.
 
-Here some example setups:
+Here are some example setups:
 
 Email
 `````
@@ -185,8 +276,9 @@ that this list is not complete, consult the official documentation of the
 | ``%(lineno)d``   | Source line number where the logging call was      |
 |                  | issued (if available).                             |
 +------------------+----------------------------------------------------+
-| ``%(asctime)s``  | Human-readable time when the LogRecord` was        |
-|                  | created.  By default this is of the form           |
+| ``%(asctime)s``  | Human-readable time when the                       |
+|                  | :class:`~logging.LogRecord` was created.           |
+|                  | By default this is of the form                     |
 |                  | ``"2003-07-08 16:49:45,896"`` (the numbers after   |
 |                  | the comma are millisecond portion of the time).    |
 |                  | This can be changed by subclassing the formatter   |

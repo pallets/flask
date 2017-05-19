@@ -3,13 +3,8 @@
 all: clean-pyc test
 
 test:
-	python run-tests.py
-
-tox-test:
-	tox
-
-test-with-mem:
-	RUN_FLASK_MEMORY_TESTS=1 python run-tests.py
+	pip install -r test-requirements.txt
+	tox -e py-release
 
 audit:
 	python setup.py audit

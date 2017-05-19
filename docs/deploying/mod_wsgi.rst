@@ -13,7 +13,7 @@ If you are using the `Apache`_ webserver, consider using `mod_wsgi`_.
    not called because this will always start a local WSGI server which
    we do not want if we deploy that application to mod_wsgi.
 
-.. _Apache: http://httpd.apache.org/
+.. _Apache: https://httpd.apache.org/
 
 Installing `mod_wsgi`
 ---------------------
@@ -29,12 +29,19 @@ follows:
 
     # apt-get install libapache2-mod-wsgi
 
+If you are using a yum based distribution (Fedora, OpenSUSE, etc..) you
+can install it as follows:
+
+.. sourcecode:: text
+
+    # yum install mod_wsgi
+
 On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by
 using pkg_add:
 
 .. sourcecode:: text
 
-    # pkg_add -r mod_wsgi
+    # pkg install ap22-mod_wsgi2
 
 If you are using pkgsrc you can install `mod_wsgi` by compiling the
 `www/ap2-wsgi` package.
@@ -45,7 +52,7 @@ reload you can safely ignore them.  Just restart the server.
 Creating a `.wsgi` file
 -----------------------
 
-To run your application you need a `yourapplication.wsgi` file.  This file
+To run your application you need a :file:`yourapplication.wsgi` file.  This file
 contains the code `mod_wsgi` is executing on startup to get the application
 object.  The object called `application` in that file is then used as
 application.
@@ -58,12 +65,12 @@ If you don't have a factory function for application creation but a singleton
 instance you can directly import that one as `application`.
 
 Store that file somewhere that you will find it again (e.g.:
-`/var/www/yourapplication`) and make sure that `yourapplication` and all
+:file:`/var/www/yourapplication`) and make sure that `yourapplication` and all
 the libraries that are in use are on the python load path.  If you don't
 want to install it system wide consider using a `virtual python`_
 instance.  Keep in mind that you will have to actually install your
 application into the virtualenv as well.  Alternatively there is the
-option to just patch the path in the `.wsgi` file before the import::
+option to just patch the path in the ``.wsgi`` file before the import::
 
     import sys
     sys.path.insert(0, '/path/to/the/application')
@@ -91,7 +98,7 @@ execute the application under a different user for security reasons:
         </Directory>
     </VirtualHost>
 
-Note: WSGIDaemonProcess isn't implemented in Windows and Apache will 
+Note: WSGIDaemonProcess isn't implemented in Windows and Apache will
 refuse to run with the above configuration. On a Windows system, eliminate those lines:
 
 .. sourcecode:: apache
@@ -105,12 +112,30 @@ refuse to run with the above configuration. On a Windows system, eliminate those
 		</Directory>
 	</VirtualHost>
 
-For more information consult the `mod_wsgi wiki`_.
+Note: There have been some changes in access control configuration for `Apache 2.4`_.
 
-.. _mod_wsgi: http://code.google.com/p/modwsgi/
-.. _installation instructions: http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide
-.. _virtual python: http://pypi.python.org/pypi/virtualenv
-.. _mod_wsgi wiki: http://code.google.com/p/modwsgi/wiki/
+.. _Apache 2.4: https://httpd.apache.org/docs/trunk/upgrading.html
+
+Most notably, the syntax for directory permissions has changed from httpd 2.2
+
+.. sourcecode:: apache
+
+    Order allow,deny
+    Allow from all
+
+to httpd 2.4 syntax
+
+.. sourcecode:: apache
+
+    Require all granted
+
+
+For more information consult the `mod_wsgi documentation`_.
+
+.. _mod_wsgi: https://github.com/GrahamDumpleton/mod_wsgi
+.. _installation instructions: https://modwsgi.readthedocs.io/en/develop/installation.html
+.. _virtual python: https://pypi.python.org/pypi/virtualenv
+.. _mod_wsgi documentation: https://modwsgi.readthedocs.io/en/develop/index.html
 
 Troubleshooting
 ---------------
@@ -118,10 +143,10 @@ Troubleshooting
 If your application does not run, follow this guide to troubleshoot:
 
 **Problem:** application does not run, errorlog shows SystemExit ignored
-    You have a ``app.run()`` call in your application file that is not
+    You have an ``app.run()`` call in your application file that is not
     guarded by an ``if __name__ == '__main__':`` condition.  Either
     remove that :meth:`~flask.Flask.run` call from the file and move it
-    into a separate `run.py` file or put it into such an if block.
+    into a separate :file:`run.py` file or put it into such an if block.
 
 **Problem:** application gives permission errors
     Probably caused by your application running as the wrong user.  Make
@@ -160,7 +185,7 @@ Support for Automatic Reloading
 -------------------------------
 
 To help deployment tools you can activate support for automatic
-reloading.  Whenever something changes the `.wsgi` file, `mod_wsgi` will
+reloading.  Whenever something changes the ``.wsgi`` file, `mod_wsgi` will
 reload all the daemon processes for us.
 
 For that, just add the following directive to your `Directory` section:
@@ -175,12 +200,18 @@ Working with Virtual Environments
 Virtual environments have the advantage that they never install the
 required dependencies system wide so you have a better control over what
 is used where.  If you want to use a virtual environment with mod_wsgi
-you have to modify your `.wsgi` file slightly.
+you have to modify your ``.wsgi`` file slightly.
 
-Add the following lines to the top of your `.wsgi` file::
+Add the following lines to the top of your ``.wsgi`` file::
 
     activate_this = '/path/to/env/bin/activate_this.py'
     execfile(activate_this, dict(__file__=activate_this))
+
+For Python 3 add the following lines to the top of your ``.wsgi`` file::
+
+    activate_this = '/path/to/env/bin/activate_this.py'
+    with open(activate_this) as file_:
+        exec(file_.read(), dict(__file__=activate_this))
 
 This sets up the load paths according to the settings of the virtual
 environment.  Keep in mind that the path has to be absolute.
