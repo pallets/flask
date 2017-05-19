@@ -20,9 +20,9 @@ there is a Flask extension that handles that for you.  This is recommended
 if you want to get started quickly.
 
 You can download `Flask-SQLAlchemy`_ from `PyPI
-<http://pypi.python.org/pypi/Flask-SQLAlchemy>`_.
+<https://pypi.python.org/pypi/Flask-SQLAlchemy>`_.
 
-.. _Flask-SQLAlchemy: http://packages.python.org/Flask-SQLAlchemy/
+.. _Flask-SQLAlchemy: http://flask-sqlalchemy.pocoo.org/
 
 
 Declarative
@@ -33,7 +33,7 @@ SQLAlchemy.  It allows you to define tables and models in one go, similar
 to how Django works.  In addition to the following text I recommend the
 official documentation on the `declarative`_ extension.
 
-Here the example `database.py` module for your application::
+Here's the example :file:`database.py` module for your application::
 
     from sqlalchemy import create_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -70,7 +70,7 @@ when the application shuts down::
     def shutdown_session(exception=None):
         db_session.remove()
 
-Here is an example model (put this into `models.py`, e.g.)::
+Here is an example model (put this into :file:`models.py`, e.g.)::
 
     from sqlalchemy import Column, Integer, String
     from yourapplication.database import Base
@@ -108,9 +108,9 @@ Querying is simple as well:
 >>> User.query.filter(User.name == 'admin').first()
 <User u'admin'>
 
-.. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _SQLAlchemy: https://www.sqlalchemy.org/
 .. _declarative:
-   http://www.sqlalchemy.org/docs/orm/extensions/declarative.html
+   https://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
 
 Manual Object Relational Mapping
 --------------------------------
@@ -122,7 +122,7 @@ flexible but a little more to type.  In general it works like the
 declarative approach, so make sure to also split up your application into
 multiple modules in a package.
 
-Here is an example `database.py` module for your application::
+Here is an example :file:`database.py` module for your application::
 
     from sqlalchemy import create_engine, MetaData
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -135,7 +135,7 @@ Here is an example `database.py` module for your application::
     def init_db():
         metadata.create_all(bind=engine)
 
-As for the declarative approach you need to close the session after
+As in the declarative approach, you need to close the session after
 each request or application context shutdown.  Put this into your
 application module::
 
@@ -145,7 +145,7 @@ application module::
     def shutdown_session(exception=None):
         db_session.remove()
 
-Here is an example table and model (put this into `models.py`)::
+Here is an example table and model (put this into :file:`models.py`)::
 
     from sqlalchemy import Table, Column, Integer, String
     from sqlalchemy.orm import mapper
@@ -177,7 +177,7 @@ SQL Abstraction Layer
 If you just want to use the database system (and SQL) abstraction layer
 you basically only need the engine::
 
-    from sqlalchemy import create_engine, MetaData
+    from sqlalchemy import create_engine, MetaData, Table
 
     engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
     metadata = MetaData(bind=engine)
@@ -186,7 +186,7 @@ Then you can either declare the tables in your code like in the examples
 above, or automatically load them::
 
     from sqlalchemy import Table
-    
+
     users = Table('users', metadata, autoload=True)
 
 To insert data you can use the `insert` method.  We have to get a
@@ -215,4 +215,4 @@ You can also pass strings of SQL statements to the
 (1, u'admin', u'admin@localhost')
 
 For more information about SQLAlchemy, head over to the
-`website <http://sqlalchemy.org/>`_.
+`website <https://www.sqlalchemy.org/>`_.

@@ -108,7 +108,7 @@ Comparisons:
   - against arbitrary types: ``==`` and ``!=``
   - against singletons with ``is`` and ``is not`` (eg: ``foo is not
     None``)
-  - never compare something with `True` or `False` (for example never
+  - never compare something with ``True`` or ``False`` (for example never
     do ``foo == False``, do ``not foo`` instead)
 
 Negated containment checks:
@@ -167,7 +167,7 @@ Docstring conventions:
         """
 
 Module header:
-  The module header consists of an utf-8 encoding declaration (if non
+  The module header consists of a utf-8 encoding declaration (if non
   ASCII letters are used, but it is recommended all the time) and a
   standard docstring::
 

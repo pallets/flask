@@ -14,10 +14,110 @@ This section of the documentation enumerates all the changes in Flask from
 release to release and how you can change your code to have a painless
 updating experience.
 
-If you want to use the `easy_install` command to upgrade your Flask
-installation, make sure to pass it the ``-U`` parameter::
+Use the :command:`pip` command to upgrade your existing Flask installation by
+providing the ``--upgrade`` parameter::
 
-    $ easy_install -U Flask
+    $ pip install --upgrade Flask
+
+.. _upgrading-to-012:
+
+Version 0.12
+------------
+
+Changes to send_file
+````````````````````
+
+The ``filename`` is no longer automatically inferred from file-like objects.
+This means that the following code will no longer automatically have
+``X-Sendfile`` support, etag generation or MIME-type guessing::
+
+    response = send_file(open('/path/to/file.txt'))
+
+Any of the following is functionally equivalent::
+
+    fname = '/path/to/file.txt'
+
+    # Just pass the filepath directly
+    response = send_file(fname)
+
+    # Set the MIME-type and ETag explicitly
+    response = send_file(open(fname), mimetype='text/plain')
+    response.set_etag(...)
+
+    # Set `attachment_filename` for MIME-type guessing
+    # ETag still needs to be manually set
+    response = send_file(open(fname), attachment_filename=fname)
+    response.set_etag(...)
+
+The reason for this is that some file-like objects have an invalid or even
+misleading ``name`` attribute. Silently swallowing errors in such cases was not
+a satisfying solution.
+
+Additionally the default of falling back to ``application/octet-stream`` has
+been restricted. If Flask can't guess one or the user didn't provide one, the
+function fails if no filename information was provided.
+
+.. _upgrading-to-011:
+
+Version 0.11
+------------
+
+0.11 is an odd release in the Flask release cycle because it was supposed
+to be the 1.0 release.  However because there was such a long lead time up
+to the release we decided to push out a 0.11 release first with some
+changes removed to make the transition easier.  If you have been tracking
+the master branch which was 1.0 you might see some unexpected changes.
+
+In case you did track the master branch you will notice that :command:`flask --app`
+is removed now.  You need to use the environment variable to specify an
+application.
+
+Debugging
+`````````
+
+Flask 0.11 removed the ``debug_log_format`` attribute from Flask
+applications.  Instead the new ``LOGGER_HANDLER_POLICY`` configuration can
+be used to disable the default log handlers and custom log handlers can be
+set up.
+
+Error handling
+``````````````
+
+The behavior of error handlers was changed.
+The precedence of handlers used to be based on the decoration/call order of
+:meth:`~flask.Flask.errorhandler` and
+:meth:`~flask.Flask.register_error_handler`, respectively.
+Now the inheritance hierarchy takes precedence and handlers for more
+specific exception classes are executed instead of more general ones.
+See :ref:`error-handlers` for specifics.
+
+Trying to register a handler on an instance now raises :exc:`ValueError`.
+
+.. note::
+
+    There used to be a logic error allowing you to register handlers
+    only for exception *instances*. This was unintended and plain wrong,
+    and therefore was replaced with the intended behavior of registering
+    handlers only using exception classes and HTTP error codes.
+
+Templating
+``````````
+
+The :func:`~flask.templating.render_template_string` function has changed to
+autoescape template variables by default. This better matches the behavior
+of :func:`~flask.templating.render_template`.
+
+Extension imports
+`````````````````
+
+Extension imports of the form ``flask.ext.foo`` are deprecated, you should use
+``flask_foo``.
+
+The old form still works, but Flask will issue a
+``flask.exthook.ExtDeprecationWarning`` for each extension you import the old
+way. We also provide a migration utility called `flask-ext-migrate
+<https://github.com/pallets/flask-ext-migrate>`_ that is supposed to
+automatically rewrite your imports for this.
 
 .. _upgrading-to-010:
 
@@ -43,7 +143,7 @@ when there is no request context yet but an application context.  The old
 ``flask.Flask.request_globals_class`` attribute was renamed to
 :attr:`flask.Flask.app_ctx_globals_class`.
 
-.. _Flask-OldSessions: http://packages.python.org/Flask-OldSessions/
+.. _Flask-OldSessions: https://pythonhosted.org/Flask-OldSessions/
 
 Version 0.9
 -----------
@@ -64,14 +164,14 @@ If you maintain an extension that was using :data:`~flask._request_ctx_stack`
 before, please consider changing to :data:`~flask._app_ctx_stack` if it makes
 sense for your extension.  For instance, the app context stack makes sense for
 extensions which connect to databases.  Using the app context stack instead of
-the request context stack will make extensions more readily handle use cases 
+the request context stack will make extensions more readily handle use cases
 outside of requests.
 
 Version 0.8
 -----------
 
 Flask introduced a new session interface system.  We also noticed that
-there was a naming collision between `flask.session` the module that
+there was a naming collision between ``flask.session`` the module that
 implements sessions and :data:`flask.session` which is the global session
 object.  With that introduction we moved the implementation details for
 the session system into a new module called :mod:`flask.sessions`.  If you
@@ -82,11 +182,11 @@ If invalid JSON data was submitted Flask will now raise a
 default :exc:`ValueError` bubble up.  This has the advantage that you no
 longer have to handle that error to avoid an internal server error showing
 up for the user.  If you were catching this down explicitly in the past
-as `ValueError` you will need to change this.
+as :exc:`ValueError` you will need to change this.
 
 Due to a bug in the test client Flask 0.7 did not trigger teardown
 handlers when the test client was used in a with statement.  This was
-since fixed but might require some changes in your testsuites if you
+since fixed but might require some changes in your test suites if you
 relied on this behavior.
 
 Version 0.7
@@ -98,7 +198,7 @@ applications with Flask.  Because we want to make upgrading as easy as
 possible we tried to counter the problems arising from these changes by
 providing a script that can ease the transition.
 
-The script scans your whole application and generates an unified diff with
+The script scans your whole application and generates a unified diff with
 changes it assumes are safe to apply.  However as this is an automated
 tool it won't be able to find all use cases and it might miss some.  We
 internally spread a lot of deprecation warnings all over the place to make
@@ -115,7 +215,7 @@ good.
 To apply the upgrade script do the following:
 
 1.  Download the script: `flask-07-upgrade.py
-    <https://raw.github.com/mitsuhiko/flask/master/scripts/flask-07-upgrade.py>`_
+    <https://raw.githubusercontent.com/pallets/flask/master/scripts/flask-07-upgrade.py>`_
 2.  Run it in the directory of your application::
 
         python flask-07-upgrade.py > patchfile.diff
@@ -126,18 +226,18 @@ To apply the upgrade script do the following:
         patch -p1 < patchfile.diff
 
 5.  If you were using per-module template folders you need to move some
-    templates around.  Previously if you had a folder named ``templates``
+    templates around.  Previously if you had a folder named :file:`templates`
     next to a blueprint named ``admin`` the implicit template path
-    automatically was ``admin/index.html`` for a template file called
-    ``templates/index.html``.  This no longer is the case.  Now you need
-    to name the template ``templates/admin/index.html``.  The tool will
+    automatically was :file:`admin/index.html` for a template file called
+    :file:`templates/index.html`.  This no longer is the case.  Now you need
+    to name the template :file:`templates/admin/index.html`.  The tool will
     not detect this so you will have to do that on your own.
 
 Please note that deprecation warnings are disabled by default starting
 with Python 2.7.  In order to see the deprecation warnings that might be
 emitted you have to enabled them with the :mod:`warnings` module.
 
-If you are working with windows and you lack the `patch` command line
+If you are working with windows and you lack the ``patch`` command line
 utility you can get it as part of various Unix runtime environments for
 windows including cygwin, msysgit or ming32.  Also source control systems
 like svn, hg or git have builtin support for applying unified diffs as
@@ -154,7 +254,7 @@ before, you should catch them with :exc:`RuntimeError` now.
 
 Additionally the :func:`~flask.send_file` function is now issuing
 deprecation warnings if you depend on functionality that will be removed
-in Flask 1.0.  Previously it was possible to use etags and mimetypes
+in Flask 0.11.  Previously it was possible to use etags and mimetypes
 when file objects were passed.  This was unreliable and caused issues
 for a few setups.  If you get a deprecation warning, make sure to
 update your application to work with either filenames there or disable
@@ -248,20 +348,20 @@ applications automatically, but there might be some cases where it fails
 to upgrade.  What changed?
 
 -   Blueprints need explicit names.  Modules had an automatic name
-    guesssing scheme where the shortname for the module was taken from the
+    guessing scheme where the shortname for the module was taken from the
     last part of the import module.  The upgrade script tries to guess
     that name but it might fail as this information could change at
     runtime.
 -   Blueprints have an inverse behavior for :meth:`url_for`.  Previously
     ``.foo`` told :meth:`url_for` that it should look for the endpoint
-    `foo` on the application.  Now it means “relative to current module”.
+    ``foo`` on the application.  Now it means “relative to current module”.
     The script will inverse all calls to :meth:`url_for` automatically for
     you.  It will do this in a very eager way so you might end up with
     some unnecessary leading dots in your code if you're not using
     modules.
 -   Blueprints do not automatically provide static folders.  They will
     also no longer automatically export templates from a folder called
-    `templates` next to their location however but it can be enabled from
+    :file:`templates` next to their location however but it can be enabled from
     the constructor.  Same with static files: if you want to continue
     serving static files you need to tell the constructor explicitly the
     path to the static folder (which can be relative to the blueprint's
@@ -269,10 +369,10 @@ to upgrade.  What changed?
 -   Rendering templates was simplified.  Now the blueprints can provide
     template folders which are added to a general template searchpath.
     This means that you need to add another subfolder with the blueprint's
-    name into that folder if you want ``blueprintname/template.html`` as
+    name into that folder if you want :file:`blueprintname/template.html` as
     the template name.
 
-If you continue to use the `Module` object which is deprecated, Flask will
+If you continue to use the ``Module`` object which is deprecated, Flask will
 restore the previous behavior as good as possible.  However we strongly
 recommend upgrading to the new blueprints as they provide a lot of useful
 improvement such as the ability to attach a blueprint multiple times,
@@ -286,13 +386,13 @@ Flask 0.6 comes with a backwards incompatible change which affects the
 order of after-request handlers.  Previously they were called in the order
 of the registration, now they are called in reverse order.  This change
 was made so that Flask behaves more like people expected it to work and
-how other systems handle request pre- and postprocessing.  If you
+how other systems handle request pre- and post-processing.  If you
 depend on the order of execution of post-request functions, be sure to
 change the order.
 
 Another change that breaks backwards compatibility is that context
 processors will no longer override values passed directly to the template
-rendering function.  If for example `request` is as variable passed
+rendering function.  If for example ``request`` is as variable passed
 directly to the template, the default context processor will not override
 it with the current request object.  This makes it easier to extend
 context processors later to inject additional variables without breaking
@@ -318,7 +418,7 @@ The following changes may be relevant to your application:
     for this feature.  Removing support for this makes the Flask internal
     code easier to understand and fixes a couple of small issues that make
     debugging harder than necessary.
--   The `create_jinja_loader` function is gone.  If you want to customize
+-   The ``create_jinja_loader`` function is gone.  If you want to customize
     the Jinja loader now, use the
     :meth:`~flask.Flask.create_jinja_environment` method instead.
 

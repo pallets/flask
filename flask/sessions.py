@@ -5,24 +5,22 @@
 
     Implements cookie based sessions based on itsdangerous.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 
 import uuid
 import hashlib
+import warnings
 from base64 import b64encode, b64decode
 from datetime import datetime
 from werkzeug.http import http_date, parse_date
 from werkzeug.datastructures import CallbackDict
 from . import Markup, json
 from ._compat import iteritems, text_type
+from .helpers import total_seconds, is_ip
 
 from itsdangerous import URLSafeTimedSerializer, BadSignature
-
-
-def total_seconds(td):
-    return td.days * 60 * 60 * 24 + td.seconds
 
 
 class SessionMixin(object):
@@ -42,13 +40,13 @@ class SessionMixin(object):
 
     #: some session backends can tell you if a session is new, but that is
     #: not necessarily guaranteed.  Use with caution.  The default mixin
-    #: implementation just hardcodes `False` in.
+    #: implementation just hardcodes ``False`` in.
     new = False
 
-    #: for some backends this will always be `True`, but some backends will
+    #: for some backends this will always be ``True``, but some backends will
     #: default this to false and detect changes in the dictionary for as
     #: long as changes do not happen on mutable structures in the session.
-    #: The default mixin implementation just hardcodes `True` in.
+    #: The default mixin implementation just hardcodes ``True`` in.
     modified = True
 
     #: the accessed variable indicates whether or not the session object has
@@ -59,53 +57,60 @@ class SessionMixin(object):
     #: from being served the same cache.
     accessed = True
 
+def _tag(value):
+    if isinstance(value, tuple):
+        return {' t': [_tag(x) for x in value]}
+    elif isinstance(value, uuid.UUID):
+        return {' u': value.hex}
+    elif isinstance(value, bytes):
+        return {' b': b64encode(value).decode('ascii')}
+    elif callable(getattr(value, '__html__', None)):
+        return {' m': text_type(value.__html__())}
+    elif isinstance(value, list):
+        return [_tag(x) for x in value]
+    elif isinstance(value, datetime):
+        return {' d': http_date(value)}
+    elif isinstance(value, dict):
+        return dict((k, _tag(v)) for k, v in iteritems(value))
+    elif isinstance(value, str):
+        try:
+            return text_type(value)
+        except UnicodeError:
+            from flask.debughelpers import UnexpectedUnicodeError
+            raise UnexpectedUnicodeError(u'A byte string with '
+                u'non-ASCII data was passed to the session system '
+                u'which can only store unicode strings.  Consider '
+                u'base64 encoding your string (String was %r)' % value)
+    return value
+
+
 class TaggedJSONSerializer(object):
     """A customized JSON serializer that supports a few extra types that
     we take for granted when serializing (tuples, markup objects, datetime).
     """
 
     def dumps(self, value):
-        def _tag(value):
-            if isinstance(value, tuple):
-                return {' t': [_tag(x) for x in value]}
-            elif isinstance(value, uuid.UUID):
-                return {' u': value.hex}
-            elif isinstance(value, bytes):
-                return {' b': b64encode(value).decode('ascii')}
-            elif callable(getattr(value, '__html__', None)):
-                return {' m': text_type(value.__html__())}
-            elif isinstance(value, list):
-                return [_tag(x) for x in value]
-            elif isinstance(value, datetime):
-                return {' d': http_date(value)}
-            elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in iteritems(value))
-            elif isinstance(value, str):
-                try:
-                    return text_type(value)
-                except UnicodeError:
-                    raise UnexpectedUnicodeError(u'A byte string with '
-                        u'non-ASCII data was passed to the session system '
-                        u'which can only store unicode strings.  Consider '
-                        u'base64 encoding your string (String was %r)' % value)
-            return value
         return json.dumps(_tag(value), separators=(',', ':'))
+
+    LOADS_MAP = {
+        ' t': tuple,
+        ' u': uuid.UUID,
+        ' b': b64decode,
+        ' m': Markup,
+        ' d': parse_date,
+    }
 
     def loads(self, value):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
             the_key, the_value = next(iteritems(obj))
-            if the_key == ' t':
-                return tuple(the_value)
-            elif the_key == ' u':
-                return uuid.UUID(the_value)
-            elif the_key == ' b':
-                return b64decode(the_value)
-            elif the_key == ' m':
-                return Markup(the_value)
-            elif the_key == ' d':
-                return parse_date(the_value)
+            # Check the key for a corresponding function
+            return_function = self.LOADS_MAP.get(the_key)
+            if return_function:
+                # Pass the value to the function
+                return return_function(the_value)
+            # Didn't find a function for this object
             return obj
         return json.loads(value, object_hook=object_hook)
 
@@ -114,7 +119,7 @@ session_json_serializer = TaggedJSONSerializer()
 
 
 class SecureCookieSession(CallbackDict, SessionMixin):
-    """Baseclass for sessions based on signed cookies."""
+    """Base class for sessions based on signed cookies."""
 
     def __init__(self, initial=None):
         def on_update(self):
@@ -139,7 +144,7 @@ class NullSession(SecureCookieSession):
     """
 
     def _fail(self, *args, **kwargs):
-        raise RuntimeError('the session is unavailable because no secret '
+        raise RuntimeError('The session is unavailable because no secret '
                            'key was set.  Set the secret_key on the '
                            'application to something unique and secret.')
     __setitem__ = __delitem__ = clear = pop = popitem = \
@@ -162,7 +167,7 @@ class SessionInterface(object):
         class Session(dict, SessionMixin):
             pass
 
-    If :meth:`open_session` returns `None` Flask will call into
+    If :meth:`open_session` returns ``None`` Flask will call into
     :meth:`make_null_session` to create a session that acts as replacement
     if the session support cannot work because some requirement is not
     fulfilled.  The default :class:`NullSession` class that is created
@@ -184,7 +189,7 @@ class SessionInterface(object):
     null_session_class = NullSession
 
     #: A flag that indicates if the session interface is pickle based.
-    #: This can be used by flask extensions to make a decision in regards
+    #: This can be used by Flask extensions to make a decision in regards
     #: to how to deal with the session object.
     #:
     #: .. versionadded:: 0.10
@@ -212,36 +217,68 @@ class SessionInterface(object):
         return isinstance(obj, self.null_session_class)
 
     def get_cookie_domain(self, app):
-        """Helpful helper method that returns the cookie domain that should
-        be used for the session cookie if session cookies are used.
+        """Returns the domain that should be set for the session cookie.
+        
+        Uses ``SESSION_COOKIE_DOMAIN`` if it is configured, otherwise
+        falls back to detecting the domain based on ``SERVER_NAME``.
+        
+        Once detected (or if not set at all), ``SESSION_COOKIE_DOMAIN`` is
+        updated to avoid re-running the logic.
         """
-        if app.config['SESSION_COOKIE_DOMAIN'] is not None:
-            return app.config['SESSION_COOKIE_DOMAIN']
-        if app.config['SERVER_NAME'] is not None:
-            # chop of the port which is usually not supported by browsers
-            rv = '.' + app.config['SERVER_NAME'].rsplit(':', 1)[0]
 
-            # Google chrome does not like cookies set to .localhost, so
-            # we just go with no domain then.  Flask documents anyways that
-            # cross domain cookies need a fully qualified domain name
-            if rv == '.localhost':
-                rv = None
+        rv = app.config['SESSION_COOKIE_DOMAIN']
 
-            # If we infer the cookie domain from the server name we need
-            # to check if we are in a subpath.  In that case we can't
-            # set a cross domain cookie.
-            if rv is not None:
-                path = self.get_cookie_path(app)
-                if path != '/':
-                    rv = rv.lstrip('.')
+        # set explicitly, or cached from SERVER_NAME detection
+        # if False, return None
+        if rv is not None:
+            return rv if rv else None
 
-            return rv
+        rv = app.config['SERVER_NAME']
+
+        # server name not set, cache False to return none next time
+        if not rv:
+            app.config['SESSION_COOKIE_DOMAIN'] = False
+            return None
+
+        # chop off the port which is usually not supported by browsers
+        # remove any leading '.' since we'll add that later
+        rv = rv.rsplit(':', 1)[0].lstrip('.')
+
+        if '.' not in rv:
+            # Chrome doesn't allow names without a '.'
+            # this should only come up with localhost
+            # hack around this by not setting the name, and show a warning
+            warnings.warn(
+                '"{rv}" is not a valid cookie domain, it must contain a ".".'
+                ' Add an entry to your hosts file, for example'
+                ' "{rv}.localdomain", and use that instead.'.format(rv=rv)
+            )
+            app.config['SESSION_COOKIE_DOMAIN'] = False
+            return None
+
+        ip = is_ip(rv)
+
+        if ip:
+            warnings.warn(
+                'The session cookie domain is an IP address. This may not work'
+                ' as intended in some browsers. Add an entry to your hosts'
+                ' file, for example "localhost.localdomain", and use that'
+                ' instead.'
+            )
+
+        # if this is not an ip and app is mounted at the root, allow subdomain
+        # matching by adding a '.' prefix
+        if self.get_cookie_path(app) == '/' and not ip:
+            rv = '.' + rv
+
+        app.config['SESSION_COOKIE_DOMAIN'] = rv
+        return rv
 
     def get_cookie_path(self, app):
         """Returns the path for which the cookie should be valid.  The
         default implementation uses the value from the ``SESSION_COOKIE_PATH``
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
-        uses ``/`` if it's `None`.
+        uses ``/`` if it's ``None``.
         """
         return app.config['SESSION_COOKIE_PATH'] or \
                app.config['APPLICATION_ROOT'] or '/'
@@ -261,7 +298,7 @@ class SessionInterface(object):
 
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
-        or `None` if the session is linked to the browser session.  The
+        or ``None`` if the session is linked to the browser session.  The
         default implementation returns now + the permanent session
         lifetime configured on the application.
         """
@@ -269,17 +306,17 @@ class SessionInterface(object):
             return datetime.utcnow() + app.permanent_session_lifetime
 
     def should_set_cookie(self, app, session):
-        """Indicates weather a cookie should be set now or not.  This is
+        """Indicates whether a cookie should be set now or not.  This is
         used by session backends to figure out if they should emit a
         set-cookie header or not.  The default behavior is controlled by
         the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
-        it's set to `False` then a cookie is only set if the session is
-        modified, if set to `True` it's always set if the session is
+        it's set to ``False`` then a cookie is only set if the session is
+        modified, if set to ``True`` it's always set if the session is
         permanent.
 
         This check is usually skipped if sessions get deleted.
 
-        .. versionadded:: 1.0
+        .. versionadded:: 0.11
         """
         if session.modified:
             return True
@@ -287,7 +324,7 @@ class SessionInterface(object):
         return save_each and session.permanent
 
     def open_session(self, app, request):
-        """This method has to be implemented and must either return `None`
+        """This method has to be implemented and must either return ``None``
         in case the loading failed because of a configuration error or an
         instance of a session object which implements a dictionary like
         interface + the methods and attributes on :class:`SessionMixin`.
@@ -382,6 +419,3 @@ class SecureCookieSessionInterface(SessionInterface):
         response.set_cookie(app.session_cookie_name, val,
                             expires=expires, httponly=httponly,
                             domain=domain, path=path, secure=secure)
-
-
-from flask.debughelpers import UnexpectedUnicodeError

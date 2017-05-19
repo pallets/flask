@@ -8,7 +8,7 @@ Thread-Locals in Flask
 
 One of the design decisions in Flask was that simple tasks should be simple;
 they should not take a lot of code and yet they should not limit you. Because
-of that, Flask has few design choices that some people might find surprising or
+of that, Flask has a few design choices that some people might find surprising or
 unorthodox. For example, Flask uses thread-local objects internally so that you
 don’t have to pass objects around from function to function within a request in
 order to stay threadsafe. This approach is convenient, but requires a valid
@@ -46,24 +46,10 @@ spam, links to malicious software, and the like.
 Flask is no different from any other framework in that you the developer must
 build with caution, watching for exploits when building to your requirements.
 
-The Status of Python 3
-----------------------
+Python 3 Support in Flask
+-------------------------
 
-Currently the Python community is in the process of improving libraries to
-support the new iteration of the Python programming language.  While the
-situation is greatly improving there are still some issues that make it
-hard for users to switch over to Python 3 just now.  These problems are
-partially caused by changes in the language that went unreviewed for too
-long, partially also because we have not quite worked out how the lower-
-level API should change to account for the Unicode differences in Python 3.
-
-We strongly recommend using Python 2.6 and 2.7 with activated Python 3
-warnings during development.  If you plan on upgrading to Python 3 in the
-near future we strongly recommend that you read `How to write forwards
-compatible Python code
-<http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/>`_.
-
-If you do want to dive into Python 3 already have a look at the
-:ref:`python3-support` page.
+Flask, its dependencies, and most Flask extensions all support Python 3.
+If you want to use Flask with Python 3 have a look at the :ref:`python3-support` page.
 
 Continue to :ref:`installation` or the :ref:`quickstart`.

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<script type=text/javascript>
+<script type="text/javascript">
   $(function() {
     var submit_form = function(e) {
       $.getJSON($SCRIPT_ROOT + '/_add_numbers', {
@@ -26,8 +26,8 @@
 </script>
 <h1>jQuery Example</h1>
 <p>
-  <input type=text size=5 name=a> +
-  <input type=text size=5 name=b> =
-  <span id=result>?</span>
-<p><a href=# id=calculate>calculate server side</a>
+  <input type="text" size="5" name="a"> +
+  <input type="text" size="5" name="b"> =
+  <span id="result">?</span>
+<p><a href=# id="calculate">calculate server side</a>
 {% endblock %}

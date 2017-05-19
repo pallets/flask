@@ -5,11 +5,12 @@
 
     Implements various helpers.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 
 import os
+import socket
 import sys
 import pkgutil
 import posixpath
@@ -17,6 +18,7 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+import unicodedata
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
@@ -25,8 +27,9 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
-from werkzeug.datastructures import Headers
-from werkzeug.exceptions import NotFound
+from werkzeug.datastructures import Headers, Range
+from werkzeug.exceptions import BadRequest, NotFound, \
+    RequestedRangeNotSatisfiable
 
 # this was moved in 0.7
 try:
@@ -51,6 +54,13 @@ _missing = object()
 # able to access files from outside the filesystem.
 _os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
                     if sep not in (None, '/'))
+
+
+def get_debug_flag(default=None):
+    val = os.environ.get('FLASK_DEBUG')
+    if not val:
+        return default
+    return val.lower() not in ('0', 'false', 'no')
 
 
 def _endpoint_from_view_func(view_func):
@@ -100,7 +110,7 @@ def stream_with_context(generator_or_function):
         gen = iter(generator_or_function)
     except TypeError:
         def decorator(*args, **kwargs):
-            gen = generator_or_function()
+            gen = generator_or_function(*args, **kwargs)
             return stream_with_context(gen)
         return update_wrapper(decorator, generator_or_function)
 
@@ -188,7 +198,7 @@ def url_for(endpoint, **values):
 
     Variable arguments that are unknown to the target endpoint are appended
     to the generated URL as query arguments.  If the value of a query argument
-    is `None`, the whole pair is skipped.  In case blueprints are active
+    is ``None``, the whole pair is skipped.  In case blueprints are active
     you can shortcut references to the same blueprint by prefixing the
     local endpoint with a dot (``.``).
 
@@ -203,7 +213,7 @@ def url_for(endpoint, **values):
     function results in a :exc:`~werkzeug.routing.BuildError` when the current
     app does not have a URL for the given endpoint and values.  When it does, the
     :data:`~flask.current_app` calls its :attr:`~Flask.url_build_error_handlers` if
-    it is not `None`, which can return a string to use as the result of
+    it is not ``None``, which can return a string to use as the result of
     `url_for` (instead of `url_for`'s default to raise the
     :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
     An example::
@@ -244,11 +254,15 @@ def url_for(endpoint, **values):
 
     :param endpoint: the endpoint of the URL (name of the function)
     :param values: the variable arguments of the URL rule
-    :param _external: if set to `True`, an absolute URL is generated. Server
-      address can be changed via `SERVER_NAME` configuration variable which
+    :param _external: if set to ``True``, an absolute URL is generated. Server
+      address can be changed via ``SERVER_NAME`` configuration variable which
       defaults to `localhost`.
     :param _scheme: a string specifying the desired URL scheme. The `_external`
-      parameter must be set to `True` or a `ValueError` is raised.
+      parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
+      behavior uses the same scheme as the current request, or
+      ``PREFERRED_URL_SCHEME`` from the :ref:`app configuration <config>` if no
+      request context is available. As of Werkzeug 0.10, this also can be set
+      to an empty string to build protocol-relative URLs.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
@@ -260,7 +274,7 @@ def url_for(endpoint, **values):
                            'executed when application context is available.')
 
     # If request specific information is available we have some extra
-    # features that support "relative" urls.
+    # features that support "relative" URLs.
     if reqctx is not None:
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
@@ -280,7 +294,7 @@ def url_for(endpoint, **values):
         external = values.pop('_external', False)
 
     # Otherwise go with the url adapter from the appctx and make
-    # the urls external by default.
+    # the URLs external by default.
     else:
         url_adapter = appctx.url_adapter
         if url_adapter is None:
@@ -295,20 +309,30 @@ def url_for(endpoint, **values):
     scheme = values.pop('_scheme', None)
     appctx.app.inject_url_defaults(endpoint, values)
 
+    # This is not the best way to deal with this but currently the
+    # underlying Werkzeug router does not support overriding the scheme on
+    # a per build call basis.
+    old_scheme = None
     if scheme is not None:
         if not external:
             raise ValueError('When specifying _scheme, _external must be True')
+        old_scheme = url_adapter.url_scheme
         url_adapter.url_scheme = scheme
 
     try:
-        rv = url_adapter.build(endpoint, values, method=method,
-                               force_external=external)
+        try:
+            rv = url_adapter.build(endpoint, values, method=method,
+                                   force_external=external)
+        finally:
+            if old_scheme is not None:
+                url_adapter.url_scheme = old_scheme
     except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
         values['_external'] = external
         values['_anchor'] = anchor
         values['_method'] = method
+        values['_scheme'] = scheme
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
@@ -319,7 +343,7 @@ def url_for(endpoint, **values):
 def get_template_attribute(template_name, attribute):
     """Loads a macro (or variable) a template exports.  This can be used to
     invoke a macro from within Python code.  If you for example have a
-    template named `_cider.html` with the following contents:
+    template named :file:`_cider.html` with the following contents:
 
     .. sourcecode:: html+jinja
 
@@ -372,7 +396,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     """Pulls all flashed messages from the session and returns them.
     Further calls in the same request to the function will return
     the same messages.  By default just the messages are returned,
-    but when `with_categories` is set to `True`, the return value will
+    but when `with_categories` is set to ``True``, the return value will
     be a list of tuples in the form ``(category, message)`` instead.
 
     Filter the flashed messages to one or more categories by providing those
@@ -381,7 +405,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     arguments are distinct:
 
     * `with_categories` controls whether categories are returned with message
-      text (`True` gives a tuple, where `False` gives just the message text).
+      text (``True`` gives a tuple, where ``False`` gives just the message text).
     * `category_filter` filters the messages down to only those matching the
       provided categories.
 
@@ -393,7 +417,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     .. versionchanged:: 0.9
         `category_filter` parameter added.
 
-    :param with_categories: set to `True` to also receive categories.
+    :param with_categories: set to ``True`` to also receive categories.
     :param category_filter: whitelist of categories to limit return values
     """
     flashes = _request_ctx_stack.top.flashes
@@ -409,13 +433,13 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
               attachment_filename=None, add_etags=True,
-              cache_timeout=None, conditional=False):
+              cache_timeout=None, conditional=False, last_modified=None):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
     you can set the application's :attr:`~Flask.use_x_sendfile` attribute
-    to ``True`` to directly emit an `X-Sendfile` header.  This however
-    requires support of the underlying webserver for `X-Sendfile`.
+    to ``True`` to directly emit an ``X-Sendfile`` header.  This however
+    requires support of the underlying webserver for ``X-Sendfile``.
 
     By default it will try to guess the mimetype for you, but you can
     also explicitly provide one.  For extra security you probably want
@@ -423,12 +447,15 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
 
-    Please never pass filenames to this function from user sources without
-    checking them first.  Something like this is usually sufficient to
-    avoid security problems::
+    ETags will also be attached automatically if a `filename` is provided. You
+    can turn this off by setting `add_etags=False`.
 
-        if '..' in filename or filename.startswith('/'):
-            abort(404)
+    If `conditional=True` and `filename` is provided, this method will try to
+    upgrade the response stream to support range requests.  This will allow
+    the request to be answered with partial content response.
+
+    Please never pass filenames to this function from user sources;
+    you should use :func:`send_from_directory` instead.
 
     .. versionadded:: 0.2
 
@@ -445,90 +472,112 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionchanged:: 0.9
        cache_timeout pulls its default from application config, when None.
 
-    :param filename_or_fp: the filename of the file to send.  This is
-                           relative to the :attr:`~Flask.root_path` if a
-                           relative path is specified.
-                           Alternatively a file object might be provided
-                           in which case `X-Sendfile` might not work and
-                           fall back to the traditional method.  Make sure
-                           that the file pointer is positioned at the start
-                           of data to send before calling :func:`send_file`.
-    :param mimetype: the mimetype of the file if provided, otherwise
-                     auto detection happens.
-    :param as_attachment: set to `True` if you want to send this file with
+    .. versionchanged:: 0.12
+       The filename is no longer automatically inferred from file objects. If
+       you want to use automatic mimetype and etag support, pass a filepath via
+       `filename_or_fp` or `attachment_filename`.
+
+    .. versionchanged:: 0.12
+       The `attachment_filename` is preferred over `filename` for MIME-type
+       detection.
+       
+    .. versionchanged:: 0.13
+        UTF-8 filenames, as specified in `RFC 2231`_, are supported.
+        
+    .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
+
+    :param filename_or_fp: the filename of the file to send.
+                           This is relative to the :attr:`~Flask.root_path`
+                           if a relative path is specified.
+                           Alternatively a file object might be provided in
+                           which case ``X-Sendfile`` might not work and fall
+                           back to the traditional method.  Make sure that the
+                           file pointer is positioned at the start of data to
+                           send before calling :func:`send_file`.
+    :param mimetype: the mimetype of the file if provided. If a file path is
+                     given, auto detection happens as fallback, otherwise an
+                     error will be raised.
+    :param as_attachment: set to ``True`` if you want to send this file with
                           a ``Content-Disposition: attachment`` header.
     :param attachment_filename: the filename for the attachment if it
                                 differs from the file's filename.
-    :param add_etags: set to `False` to disable attaching of etags.
-    :param conditional: set to `True` to enable conditional responses.
+    :param add_etags: set to ``False`` to disable attaching of etags.
+    :param conditional: set to ``True`` to enable conditional responses.
 
-    :param cache_timeout: the timeout in seconds for the headers. When `None`
+    :param cache_timeout: the timeout in seconds for the headers. When ``None``
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
                           :data:`~flask.current_app`.
+    :param last_modified: set the ``Last-Modified`` header to this value,
+        a :class:`~datetime.datetime` or timestamp.
+        If a file was passed, this overrides its mtime.
     """
     mtime = None
+    fsize = None
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
-        file = None
-    else:
-        from warnings import warn
-        file = filename_or_fp
-        filename = getattr(file, 'name', None)
-
-        # XXX: this behavior is now deprecated because it was unreliable.
-        # removed in Flask 1.0
-        if not attachment_filename and not mimetype \
-           and isinstance(filename, string_types):
-            warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is now deprecated.  Pass an '
-                'attach_filename if you want mimetypes to be guessed.'),
-                stacklevel=2)
-        if add_etags:
-            warn(DeprecationWarning('In future flask releases etags will no '
-                'longer be generated for file objects passed to the send_file '
-                'function because this behavior was unreliable.  Pass '
-                'filenames instead if possible, otherwise attach an etag '
-                'yourself based on another value'), stacklevel=2)
-
-    if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
-    if mimetype is None and (filename or attachment_filename):
-        mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+        file = None
+        if attachment_filename is None:
+            attachment_filename = os.path.basename(filename)
+    else:
+        file = filename_or_fp
+        filename = None
+
     if mimetype is None:
-        mimetype = 'application/octet-stream'
+        if attachment_filename is not None:
+            mimetype = mimetypes.guess_type(attachment_filename)[0] \
+                or 'application/octet-stream'
+
+        if mimetype is None:
+            raise ValueError(
+                'Unable to infer MIME-type because no filename is available. '
+                'Please set either `attachment_filename`, pass a filepath to '
+                '`filename_or_fp` or set your own MIME-type via `mimetype`.'
+            )
 
     headers = Headers()
     if as_attachment:
         if attachment_filename is None:
-            if filename is None:
-                raise TypeError('filename unavailable, required for '
-                                'sending as attachment')
-            attachment_filename = os.path.basename(filename)
-        headers.add('Content-Disposition', 'attachment',
-                    filename=attachment_filename)
+            raise TypeError('filename unavailable, required for '
+                            'sending as attachment')
+
+        try:
+            attachment_filename = attachment_filename.encode('latin-1')
+        except UnicodeEncodeError:
+            filenames = {
+                'filename': unicodedata.normalize(
+                    'NFKD', attachment_filename).encode('latin-1', 'ignore'),
+                'filename*': "UTF-8''%s" % url_quote(attachment_filename),
+            }
+        else:
+            filenames = {'filename': attachment_filename}
+
+        headers.add('Content-Disposition', 'attachment', **filenames)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:
             file.close()
         headers['X-Sendfile'] = filename
-        headers['Content-Length'] = os.path.getsize(filename)
+        fsize = os.path.getsize(filename)
+        headers['Content-Length'] = fsize
         data = None
     else:
         if file is None:
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
-            headers['Content-Length'] = os.path.getsize(filename)
+            fsize = os.path.getsize(filename)
+            headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
 
-    # if we know the file modification date, we can store it as the
-    # the time of the last modification.
-    if mtime is not None:
-        rv.last_modified = int(mtime)
+    if last_modified is not None:
+        rv.last_modified = last_modified
+    elif mtime is not None:
+        rv.last_modified = mtime
 
     rv.cache_control.public = True
     if cache_timeout is None:
@@ -538,8 +587,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.expires = int(time() + cache_timeout)
 
     if add_etags and filename is not None:
+        from warnings import warn
+
         try:
-            rv.set_etag('flask-%s-%s-%s' % (
+            rv.set_etag('%s-%s-%s' % (
                 os.path.getmtime(filename),
                 os.path.getsize(filename),
                 adler32(
@@ -551,17 +602,28 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             warn('Access %s failed, maybe it does not exist, so ignore etags in '
                  'headers' % filename, stacklevel=2)
 
-        if conditional:
+    if conditional:
+        if callable(getattr(Range, 'to_content_range_header', None)):
+            # Werkzeug supports Range Requests
+            # Remove this test when support for Werkzeug <0.12 is dropped
+            try:
+                rv = rv.make_conditional(request, accept_ranges=True,
+                                         complete_length=fsize)
+            except RequestedRangeNotSatisfiable:
+                file.close()
+                raise
+        else:
             rv = rv.make_conditional(request)
-            # make sure we don't send x-sendfile for servers that
-            # ignore the 304 status code for x-sendfile.
-            if rv.status_code == 304:
-                rv.headers.pop('x-sendfile', None)
+        # make sure we don't send x-sendfile for servers that
+        # ignore the 304 status code for x-sendfile.
+        if rv.status_code == 304:
+            rv.headers.pop('x-sendfile', None)
     return rv
 
 
-def safe_join(directory, filename):
-    """Safely join `directory` and `filename`.
+def safe_join(directory, *pathnames):
+    """Safely join `directory` and zero or more untrusted `pathnames`
+    components.
 
     Example usage::
 
@@ -569,22 +631,31 @@ def safe_join(directory, filename):
         def wiki_page(filename):
             filename = safe_join(app.config['WIKI_FOLDER'], filename)
             with open(filename, 'rb') as fd:
-                content = fd.read() # Read and process the file content...
+                content = fd.read()  # Read and process the file content...
 
-    :param directory: the base directory.
-    :param filename: the untrusted filename relative to that directory.
-    :raises: :class:`~werkzeug.exceptions.NotFound` if the resulting path
-             would fall out of `directory`.
+    :param directory: the trusted base directory.
+    :param pathnames: the untrusted pathnames relative to that directory.
+    :raises: :class:`~werkzeug.exceptions.NotFound` if one or more passed
+            paths fall out of its boundaries.
     """
-    filename = posixpath.normpath(filename)
-    for sep in _os_alt_seps:
-        if sep in filename:
+
+    parts = [directory]
+
+    for filename in pathnames:
+        if filename != '':
+            filename = posixpath.normpath(filename)
+
+        if (
+            any(sep in filename for sep in _os_alt_seps)
+            or os.path.isabs(filename)
+            or filename == '..'
+            or filename.startswith('../')
+        ):
             raise NotFound()
-    if os.path.isabs(filename) or \
-       filename == '..' or \
-       filename.startswith('../'):
-        raise NotFound()
-    return os.path.join(directory, filename)
+
+        parts.append(filename)
+
+    return posixpath.join(*parts)
 
 
 def send_from_directory(directory, filename, **options):
@@ -601,7 +672,7 @@ def send_from_directory(directory, filename, **options):
 
     .. admonition:: Sending files and Performance
 
-       It is strongly recommended to activate either `X-Sendfile` support in
+       It is strongly recommended to activate either ``X-Sendfile`` support in
        your webserver or (if no authentication happens) to tell the webserver
        to serve files for the given path on its own without calling into the
        web application for improved performance.
@@ -617,8 +688,11 @@ def send_from_directory(directory, filename, **options):
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
-    if not os.path.isfile(filename):
-        raise NotFound()
+    try:
+        if not os.path.isfile(filename):
+            raise NotFound()
+    except (TypeError, ValueError):
+        raise BadRequest()
     options.setdefault('conditional', True)
     return send_file(filename, **options)
 
@@ -662,7 +736,7 @@ def get_root_path(import_name):
                                'module came from an import hook that does '
                                'not provide file name information or because '
                                'it\'s a namespace package.  In this case '
-                               'the root path needs to be explictly '
+                               'the root path needs to be explicitly '
                                'provided.' % import_name)
 
     # filepath is import_name.py for a module, or __init__.py for a package.
@@ -722,7 +796,7 @@ def find_package(import_name):
             filename = sys.modules[import_name].__file__
         package_path = os.path.abspath(os.path.dirname(filename))
 
-        # In case the root module is a pcakage we need to chop of the
+        # In case the root module is a package we need to chop of the
         # rightmost part.  This needs to go through a helper function
         # because of python 3.3 namespace packages.
         if _matching_loader_thinks_module_is_package(
@@ -780,7 +854,7 @@ class _PackageBoundObject(object):
         #: it was set by the constructor.
         self.import_name = import_name
 
-        #: location of the templates.  `None` if templates should not be
+        #: location of the templates.  ``None`` if templates should not be
         #: exposed.
         self.template_folder = template_folder
 
@@ -798,15 +872,16 @@ class _PackageBoundObject(object):
             return os.path.join(self.root_path, self._static_folder)
     def _set_static_folder(self, value):
         self._static_folder = value
-    static_folder = property(_get_static_folder, _set_static_folder)
+    static_folder = property(_get_static_folder, _set_static_folder, doc='''
+    The absolute path to the configured static folder.
+    ''')
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
-        if self._static_url_path is None:
-            if self.static_folder is None:
-                return None
+        if self._static_url_path is not None:
+            return self._static_url_path
+        if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
-        return self._static_url_path
     def _set_static_url_path(self, value):
         self._static_url_path = value
     static_url_path = property(_get_static_url_path, _set_static_url_path)
@@ -814,8 +889,8 @@ class _PackageBoundObject(object):
 
     @property
     def has_static_folder(self):
-        """This is `True` if the package bound object's container has a
-        folder named ``'static'``.
+        """This is ``True`` if the package bound object's container has a
+        folder for static files.
 
         .. versionadded:: 0.5
         """
@@ -839,7 +914,7 @@ class _PackageBoundObject(object):
 
         Static file functions such as :func:`send_from_directory` use this
         function, and :func:`send_file` calls this function on
-        :data:`~flask.current_app` when the given cache_timeout is `None`. If a
+        :data:`~flask.current_app` when the given cache_timeout is ``None``. If a
         cache_timeout is given in :func:`send_file`, that timeout is used;
         otherwise, this method is called.
 
@@ -855,7 +930,7 @@ class _PackageBoundObject(object):
 
         .. versionadded:: 0.9
         """
-        return current_app.config['SEND_FILE_MAX_AGE_DEFAULT']
+        return total_seconds(current_app.send_file_max_age_default)
 
     def send_static_file(self, filename):
         """Function used internally to send static files from the static
@@ -883,7 +958,7 @@ class _PackageBoundObject(object):
                 /layout.html
                 /index.html
 
-        If you want to open the `schema.sql` file you would do the
+        If you want to open the :file:`schema.sql` file you would do the
         following::
 
             with app.open_resource('schema.sql') as f:
@@ -897,3 +972,35 @@ class _PackageBoundObject(object):
         if mode not in ('r', 'rb'):
             raise ValueError('Resources can only be opened for reading')
         return open(os.path.join(self.root_path, resource), mode)
+
+
+def total_seconds(td):
+    """Returns the total seconds from a timedelta object.
+
+    :param timedelta td: the timedelta to be converted in seconds
+
+    :returns: number of seconds
+    :rtype: int
+    """
+    return td.days * 60 * 60 * 24 + td.seconds
+
+
+def is_ip(value):
+    """Determine if the given string is an IP address.
+
+    :param value: value to check
+    :type value: str
+
+    :return: True if string is an IP address
+    :rtype: bool
+    """
+
+    for family in (socket.AF_INET, socket.AF_INET6):
+        try:
+            socket.inet_pton(family, value)
+        except socket.error:
+            pass
+        else:
+            return True
+
+    return False

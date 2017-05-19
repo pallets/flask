@@ -19,14 +19,14 @@ more.  Also keep in mind that signals are intended to notify subscribers
 and should not encourage subscribers to modify data.  You will notice that
 there are signals that appear to do the same thing like some of the
 builtin decorators do (eg: :data:`~flask.request_started` is very similar
-to :meth:`~flask.Flask.before_request`).  There are however difference in
-how they work.  The core :meth:`~flask.Flask.before_request` handler for
-example is executed in a specific order and is able to abort the request
+to :meth:`~flask.Flask.before_request`).  However, there are differences in
+how they work.  The core :meth:`~flask.Flask.before_request` handler, for
+example, is executed in a specific order and is able to abort the request
 early by returning a response.  In contrast all signal handlers are
 executed in undefined order and do not modify any data.
 
 The big advantage of signals over handlers is that you can safely
-subscribe to them for the split of a second.  These temporary
+subscribe to them for just a split second.  These temporary
 subscriptions are helpful for unittesting for example.  Say you want to
 know what templates were rendered as part of a request: signals allow you
 to do exactly that.
@@ -42,11 +42,11 @@ signal, you can use the :meth:`~blinker.base.Signal.disconnect` method.
 
 For all core Flask signals, the sender is the application that issued the
 signal.  When you subscribe to a signal, be sure to also provide a sender
-unless you really want to listen for signals of all applications.  This is
+unless you really want to listen for signals from all applications.  This is
 especially true if you are developing an extension.
 
-Here for example a helper context manager that can be used to figure out
-in a unittest which templates were rendered and what variables were passed
+For example, here is a helper context manager that can be used in a unittest
+to determine which templates were rendered and what variables were passed
 to the template::
 
     from flask import template_rendered
@@ -77,15 +77,15 @@ Make sure to subscribe with an extra ``**extra`` argument so that your
 calls don't fail if Flask introduces new arguments to the signals.
 
 All the template rendering in the code issued by the application `app`
-in the body of the `with` block will now be recorded in the `templates`
+in the body of the ``with`` block will now be recorded in the `templates`
 variable.  Whenever a template is rendered, the template object as well as
 context are appended to it.
 
 Additionally there is a convenient helper method
-(:meth:`~blinker.base.Signal.connected_to`).  that allows you to
+(:meth:`~blinker.base.Signal.connected_to`)  that allows you to
 temporarily subscribe a function to a signal with a context manager on
 its own.  Because the return value of the context manager cannot be
-specified that way one has to pass the list in as argument::
+specified that way, you have to pass the list in as an argument::
 
     from flask import template_rendered
 
@@ -148,7 +148,7 @@ signal subscribers::
             model_saved.send(self)
 
 Try to always pick a good sender.  If you have a class that is emitting a
-signal, pass `self` as sender.  If you emitting a signal from a random
+signal, pass ``self`` as sender.  If you are emitting a signal from a random
 function, you can pass ``current_app._get_current_object()`` as sender.
 
 .. admonition:: Passing Proxies as Senders
@@ -184,169 +184,7 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
 Core Signals
 ------------
 
-.. when modifying this list, also update the one in api.rst
-
-The following signals exist in Flask:
-
-.. data:: flask.template_rendered
-   :noindex:
-
-   This signal is sent when a template was successfully rendered.  The
-   signal is invoked with the instance of the template as `template`
-   and the context as dictionary (named `context`).
-
-   Example subscriber::
-
-        def log_template_renders(sender, template, context, **extra):
-            sender.logger.debug('Rendering template "%s" with context %s',
-                                template.name or 'string template',
-                                context)
-
-        from flask import template_rendered
-        template_rendered.connect(log_template_renders, app)
-
-.. data:: flask.request_started
-   :noindex:
-
-   This signal is sent before any request processing started but when the
-   request context was set up.  Because the request context is already
-   bound, the subscriber can access the request with the standard global
-   proxies such as :class:`~flask.request`.
-
-   Example subscriber::
-
-        def log_request(sender, **extra):
-            sender.logger.debug('Request context is set up')
-
-        from flask import request_started
-        request_started.connect(log_request, app)
-
-.. data:: flask.request_finished
-   :noindex:
-
-   This signal is sent right before the response is sent to the client.
-   It is passed the response to be sent named `response`.
-
-   Example subscriber::
-
-        def log_response(sender, response, **extra):
-            sender.logger.debug('Request context is about to close down.  '
-                                'Response: %s', response)
-
-        from flask import request_finished
-        request_finished.connect(log_response, app)
-
-.. data:: flask.got_request_exception
-   :noindex:
-
-   This signal is sent when an exception happens during request processing.
-   It is sent *before* the standard exception handling kicks in and even
-   in debug mode, where no exception handling happens.  The exception
-   itself is passed to the subscriber as `exception`.
-
-   Example subscriber::
-
-        def log_exception(sender, exception, **extra):
-            sender.logger.debug('Got exception during processing: %s', exception)
-
-        from flask import got_request_exception
-        got_request_exception.connect(log_exception, app)
-
-.. data:: flask.request_tearing_down
-   :noindex:
-
-   This signal is sent when the request is tearing down.  This is always
-   called, even if an exception is caused.  Currently functions listening
-   to this signal are called after the regular teardown handlers, but this
-   is not something you can rely on.
-
-   Example subscriber::
-
-        def close_db_connection(sender, **extra):
-            session.close()
-
-        from flask import request_tearing_down
-        request_tearing_down.connect(close_db_connection, app)
-
-   As of Flask 0.9, this will also be passed an `exc` keyword argument
-   that has a reference to the exception that caused the teardown if
-   there was one.
-
-.. data:: flask.appcontext_tearing_down
-   :noindex:
-
-   This signal is sent when the app context is tearing down.  This is always
-   called, even if an exception is caused.  Currently functions listening
-   to this signal are called after the regular teardown handlers, but this
-   is not something you can rely on.
-
-   Example subscriber::
-
-        def close_db_connection(sender, **extra):
-            session.close()
-
-        from flask import appcontext_tearing_down
-        appcontext_tearing_down.connect(close_db_connection, app)
-
-   This will also be passed an `exc` keyword argument that has a reference
-   to the exception that caused the teardown if there was one.
-
-.. data:: flask.appcontext_pushed
-   :noindex:
-
-   This signal is sent when an application context is pushed.  The sender
-   is the application.  This is usually useful for unittests in order to
-   temporarily hook in information.  For instance it can be used to
-   set a resource early onto the `g` object.
-
-   Example usage::
-
-        from contextlib import contextmanager
-        from flask import appcontext_pushed
-
-        @contextmanager
-        def user_set(app, user):
-            def handler(sender, **kwargs):
-                g.user = user
-            with appcontext_pushed.connected_to(handler, app):
-                yield
-
-   And in the testcode::
-
-        def test_user_me(self):
-            with user_set(app, 'john'):
-                c = app.test_client()
-                resp = c.get('/users/me')
-                assert resp.data == 'username=john'
-
-   .. versionadded:: 0.10
-
-.. data:: flask.appcontext_popped
-   :noindex:
-
-   This signal is sent when an application context is popped.  The sender
-   is the application.  This usually falls in line with the
-   :data:`appcontext_tearing_down` signal.
-
-   .. versionadded:: 0.10
+Take a look at :ref:`core-signals-list` for a list of all builtin signals.
 
 
-.. data:: flask.message_flashed
-   :noindex:
-
-   This signal is sent when the application is flashing a message.  The
-   messages is sent as `message` keyword argument and the category as
-   `category`.
-
-   Example subscriber::
-
-        recorded = []
-        def record(sender, message, category, **extra):
-            recorded.append((message, category))
-
-        from flask import message_flashed
-        message_flashed.connect(record, app)
-
-   .. versionadded:: 0.10
-
-.. _blinker: http://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.python.org/pypi/blinker

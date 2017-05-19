@@ -32,8 +32,8 @@ Imagine the current application looks somewhat like this::
     def user(username):
         pass
 
-Then the centralized approach you would have one file with the views
-(`views.py`) but without any decorator::
+Then, with the centralized approach you would have one file with the views
+(:file:`views.py`) but without any decorator::
 
     def index():
         pass
@@ -54,7 +54,7 @@ Loading Late
 ------------
 
 So far we only split up the views and the routing, but the module is still
-loaded upfront.  The trick to actually load the view function as needed.
+loaded upfront.  The trick is to actually load the view function as needed.
 This can be accomplished with a helper class that behaves just like a
 function but internally imports the real function on first use::
 
@@ -90,14 +90,19 @@ Then you can define your central place to combine the views like this::
 You can further optimize this in terms of amount of keystrokes needed to
 write this by having a function that calls into
 :meth:`~flask.Flask.add_url_rule` by prefixing a string with the project
-name and a dot, and by wrapping `view_func` in a `LazyView` as needed::
+name and a dot, and by wrapping `view_func` in a `LazyView` as needed.  ::
 
-    def url(url_rule, import_name, **options):
+    def url(import_name, url_rules=[], **options):
         view = LazyView('yourapplication.' + import_name)
-        app.add_url_rule(url_rule, view_func=view, **options)
+        for url_rule in url_rules:
+            app.add_url_rule(url_rule, view_func=view, **options)
 
-    url('/', 'views.index')
-    url('/user/<username>', 'views.user')
+    # add a single route to the index view
+    url('views.index', ['/'])
+
+    # add two routes to a single function endpoint
+    url_rules = ['/user/','/user/<username>']
+    url('views.user', url_rules)
 
 One thing to keep in mind is that before and after request handlers have
 to be in a file that is imported upfront to work properly on the first

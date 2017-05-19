@@ -20,7 +20,7 @@ Declarative
 The default behavior of MongoKit is the declarative one that is based on
 common ideas from Django or the SQLAlchemy declarative extension.
 
-Here an example `app.py` module for your application::
+Here an example :file:`app.py` module for your application::
 
     from flask import Flask
     from mongokit import Connection, Document
@@ -47,13 +47,16 @@ MongoDB is schemaless.  This means you can modify the data structure from one
 insert query to the next without any problem.  MongoKit is just schemaless
 too, but implements some validation to ensure data integrity.
 
-Here is an example document (put this also into `app.py`, e.g.)::
+Here is an example document (put this also into :file:`app.py`, e.g.)::
+
+    from mongokit import ValidationError
 
     def max_length(length):
         def validate(value):
             if len(value) <= length:
                 return True
-            raise Exception('%s must be at most %s characters long' % length)
+            # must have %s in error format string to have mongokit place key in there
+            raise ValidationError('%s must be at most {} characters long'.format(length))
         return validate
 
     class User(Document):
@@ -76,7 +79,7 @@ Here is an example document (put this also into `app.py`, e.g.)::
 This example shows you how to define your schema (named structure), a
 validator for the maximum character length and uses a special MongoKit feature
 called `use_dot_notation`.  Per default MongoKit behaves like a python
-dictionary but with `use_dot_notation` set to `True` you can use your
+dictionary but with `use_dot_notation` set to ``True`` you can use your
 documents like you use models in nearly any other ORM by using dots to
 separate between attributes.
 

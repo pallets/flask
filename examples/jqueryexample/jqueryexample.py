@@ -5,7 +5,7 @@
 
     A simple application that shows how Flask and jQuery get along.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 from flask import Flask, jsonify, render_template, request
@@ -23,7 +23,6 @@ def add_numbers():
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 if __name__ == '__main__':
     app.run()

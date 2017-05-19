@@ -21,7 +21,7 @@ specific upload folder and displays a file to the user.  Let's look at the
 bootstrapping code for our application::
 
     import os
-    from flask import Flask, request, redirect, url_for
+    from flask import Flask, flash, request, redirect, url_for
     from werkzeug.utils import secure_filename
 
     UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -32,31 +32,36 @@ bootstrapping code for our application::
 
 So first we need a couple of imports.  Most should be straightforward, the
 :func:`werkzeug.secure_filename` is explained a little bit later.  The
-`UPLOAD_FOLDER` is where we will store the uploaded files and the
-`ALLOWED_EXTENSIONS` is the set of allowed file extensions.  Then we add a
-URL rule by hand to the application.  Now usually we're not doing that, so
-why here?  The reasons is that we want the webserver (or our development
-server) to serve these files for us and so we only need a rule to generate
-the URL to these files.
+``UPLOAD_FOLDER`` is where we will store the uploaded files and the
+``ALLOWED_EXTENSIONS`` is the set of allowed file extensions.
 
 Why do we limit the extensions that are allowed?  You probably don't want
 your users to be able to upload everything there if the server is directly
 sending out the data to the client.  That way you can make sure that users
 are not able to upload HTML files that would cause XSS problems (see
-:ref:`xss`).  Also make sure to disallow `.php` files if the server
-executes them, but who has PHP installed on his server, right?  :)
+:ref:`xss`).  Also make sure to disallow ``.php`` files if the server
+executes them, but who has PHP installed on their server, right?  :)
 
 Next the functions that check if an extension is valid and that uploads
 the file and redirects the user to the URL for the uploaded file::
 
     def allowed_file(filename):
         return '.' in filename and \
-               filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     @app.route('/', methods=['GET', 'POST'])
     def upload_file():
         if request.method == 'POST':
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
             file = request.files['file']
+            # if user does not select file, browser also
+            # submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -66,9 +71,9 @@ the file and redirects the user to the URL for the uploaded file::
         <!doctype html>
         <title>Upload new File</title>
         <h1>Upload new File</h1>
-        <form action="" method=post enctype=multipart/form-data>
-          <p><input type=file name=file>
-             <input type=submit value=Upload>
+        <form method=post enctype=multipart/form-data>
+          <input type=file name=file>
+          <input type=submit value=Upload>
         </form>
         '''
 
@@ -89,7 +94,7 @@ before storing it directly on the filesystem.
       filename = "../../../../home/username/.bashrc"
 
    Assuming the number of ``../`` is correct and you would join this with
-   the `UPLOAD_FOLDER` the user might have the ability to modify a file on
+   the ``UPLOAD_FOLDER`` the user might have the ability to modify a file on
    the server's filesystem he or she should not modify.  This does require some
    knowledge about how the application looks like, but trust me, hackers
    are patient :)
@@ -99,8 +104,11 @@ before storing it directly on the filesystem.
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files.  As of
-Flask 0.5 we can use a function that does that for us::
+Now one last thing is missing: the serving of the uploaded files. In the
+:func:`upload_file()` we redirect the user to
+``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``.
+So we write the :func:`uploaded_file` function to return the file of that name. As
+of Flask 0.5 we can use a function that does that for us::
 
     from flask import send_from_directory
 
@@ -160,22 +168,17 @@ client asks the server every 5 seconds how much it has transmitted
 already.  Do you realize the irony?  The client is asking for something it
 should already know.
 
-Now there are better solutions to that work faster and more reliable.  The
-web changed a lot lately and you can use HTML5, Java, Silverlight or Flash
-to get a nicer uploading experience on the client side.  Look at the
-following libraries for some nice examples how to do that:
-
--   `Plupload <http://www.plupload.com/>`_ - HTML5, Java, Flash
--   `SWFUpload <http://www.swfupload.org/>`_ - Flash
--   `JumpLoader <http://jumploader.com/>`_ - Java
-
-
 An Easier Solution
 ------------------
 
-Because the common pattern for file uploads exists almost unchanged in all
-applications dealing with uploads, there is a Flask extension called
-`Flask-Uploads`_ that implements a full fledged upload mechanism with
-white and blacklisting of extensions and more.
+Now there are better solutions that work faster and are more reliable. There
+are JavaScript libraries like jQuery_ that have form plugins to ease the
+construction of progress bar.
 
-.. _Flask-Uploads: http://packages.python.org/Flask-Uploads/
+Because the common pattern for file uploads exists almost unchanged in all
+applications dealing with uploads, there is also a Flask extension called
+`Flask-Uploads`_ that implements a full fledged upload mechanism with white and
+blacklisting of extensions and more.
+
+.. _jQuery: https://jquery.com/
+.. _Flask-Uploads: https://pythonhosted.org/Flask-Uploads/

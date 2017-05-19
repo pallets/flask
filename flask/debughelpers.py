@@ -5,10 +5,16 @@
 
     Various helpers to make the development experience better.
 
-    :copyright: (c) 2014 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from ._compat import implements_to_string
+import os
+from warnings import warn
+
+from ._compat import implements_to_string, text_type
+from .app import Flask
+from .blueprints import Blueprint
+from .globals import _request_ctx_stack
 
 
 class UnexpectedUnicodeError(AssertionError, UnicodeError):
@@ -85,3 +91,77 @@ def attach_enctype_error_multidict(request):
     newcls.__name__ = oldcls.__name__
     newcls.__module__ = oldcls.__module__
     request.files.__class__ = newcls
+
+
+def _dump_loader_info(loader):
+    yield 'class: %s.%s' % (type(loader).__module__, type(loader).__name__)
+    for key, value in sorted(loader.__dict__.items()):
+        if key.startswith('_'):
+            continue
+        if isinstance(value, (tuple, list)):
+            if not all(isinstance(x, (str, text_type)) for x in value):
+                continue
+            yield '%s:' % key
+            for item in value:
+                yield '  - %s' % item
+            continue
+        elif not isinstance(value, (str, text_type, int, float, bool)):
+            continue
+        yield '%s: %r' % (key, value)
+
+
+def explain_template_loading_attempts(app, template, attempts):
+    """This should help developers understand what failed"""
+    info = ['Locating template "%s":' % template]
+    total_found = 0
+    blueprint = None
+    reqctx = _request_ctx_stack.top
+    if reqctx is not None and reqctx.request.blueprint is not None:
+        blueprint = reqctx.request.blueprint
+
+    for idx, (loader, srcobj, triple) in enumerate(attempts):
+        if isinstance(srcobj, Flask):
+            src_info = 'application "%s"' % srcobj.import_name
+        elif isinstance(srcobj, Blueprint):
+            src_info = 'blueprint "%s" (%s)' % (srcobj.name,
+                                                srcobj.import_name)
+        else:
+            src_info = repr(srcobj)
+
+        info.append('% 5d: trying loader of %s' % (
+            idx + 1, src_info))
+
+        for line in _dump_loader_info(loader):
+            info.append('       %s' % line)
+
+        if triple is None:
+            detail = 'no match'
+        else:
+            detail = 'found (%r)' % (triple[1] or '<string>')
+            total_found += 1
+        info.append('       -> %s' % detail)
+
+    seems_fishy = False
+    if total_found == 0:
+        info.append('Error: the template could not be found.')
+        seems_fishy = True
+    elif total_found > 1:
+        info.append('Warning: multiple loaders returned a match for the template.')
+        seems_fishy = True
+
+    if blueprint is not None and seems_fishy:
+        info.append('  The template was looked up from an endpoint that '
+                    'belongs to the blueprint "%s".' % blueprint)
+        info.append('  Maybe you did not place a template in the right folder?')
+        info.append('  See http://flask.pocoo.org/docs/blueprints/#templates')
+
+    app.logger.info('\n'.join(info))
+
+
+def explain_ignored_app_run():
+    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
+        warn(Warning('Silently ignoring app.run() because the '
+                     'application is run from the flask command line '
+                     'executable.  Consider putting app.run() behind an '
+                     'if __name__ == "__main__" guard to silence this '
+                     'warning.'), stacklevel=3)

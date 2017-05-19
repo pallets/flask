@@ -26,8 +26,8 @@ In contrast, during request handling, a couple of other rules exist:
 
 There is a third state which is sitting in between a little bit.
 Sometimes you are dealing with an application in a way that is similar to
-how you interact with applications during request handling just that there
-is no request active.  Consider for instance that you're sitting in an
+how you interact with applications during request handling; just that there
+is no request active.  Consider, for instance, that you're sitting in an
 interactive Python shell and interacting with the application, or a
 command line application.
 
@@ -38,8 +38,8 @@ Purpose of the Application Context
 ----------------------------------
 
 The main reason for the application's context existence is that in the
-past a bunch of functionality was attached to the request context in lack
-of a better solution.  Since one of the pillar's of Flask's design is that
+past a bunch of functionality was attached to the request context for lack
+of a better solution.  Since one of the pillars of Flask's design is that
 you can have more than one application in the same Python process.
 
 So how does the code find the “right” application?  In the past we
@@ -48,17 +48,17 @@ with libraries that were not designed with that in mind.
 
 A common workaround for that problem was to use the
 :data:`~flask.current_app` proxy later on, which was bound to the current
-request's application reference.  Since however creating such a request
-context is an unnecessarily expensive operation in case there is no
-request around, the application context was introduced.
+request's application reference.  Since creating such a request context is
+an unnecessarily expensive operation in case there is no request around,
+the application context was introduced.
 
 Creating an Application Context
 -------------------------------
 
-To make an application context there are two ways.  The first one is the
-implicit one: whenever a request context is pushed, an application context
-will be created alongside if this is necessary.  As a result of that, you
-can ignore the existence of the application context unless you need it.
+There are two ways to make an application context.  The first one is
+implicit: whenever a request context is pushed, an application context
+will be created alongside if this is necessary.  As a result, you can
+ignore the existence of the application context unless you need it.
 
 The second way is the explicit way using the
 :meth:`~flask.Flask.app_context` method::
@@ -73,6 +73,11 @@ The second way is the explicit way using the
 The application context is also used by the :func:`~flask.url_for`
 function in case a ``SERVER_NAME`` was configured.  This allows you to
 generate URLs even in the absence of a request.
+
+If no request context has been pushed and an application context has
+not been explicitly set, a ``RuntimeError`` will be raised. ::
+
+    RuntimeError: Working outside of application context.
 
 Locality of the Context
 -----------------------
@@ -91,9 +96,9 @@ For more information about that, see :ref:`extension-dev`.
 Context Usage
 -------------
 
-The context is typically used to cache resources on there that need to be
-created on a per-request or usage case.  For instance database connects
-are destined to go there.  When storing things on the application context
+The context is typically used to cache resources that need to be created
+on a per-request or usage case.  For instance, database connections are
+destined to go there.  When storing things on the application context
 unique names should be chosen as this is a place that is shared between
 Flask applications and extensions.
 
