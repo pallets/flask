@@ -533,20 +533,22 @@ def test_session_vary_cookie():
     app = flask.Flask(__name__)
     app.secret_key = 'testkey'
 
-    @app.route('/set-session')
+    @app.route('/set')
     def set_session():
         flask.session['test'] = 'test'
         return ''
 
-    @app.route('/get-session')
-    def get_session():
-        s = flask.session.get('test')
-        return ''
+    @app.route('/get')
+    def get():
+        return flask.session.get('test')
 
-    @app.route('/get-session-with-dictionary')
-    def get_session_with_dictionary():
-        s = flask.session['test']
-        return ''
+    @app.route('/getitem')
+    def getitem():
+        return flask.session['test']
+
+    @app.route('/setdefault')
+    def setdefault():
+        return flask.session.setdefault('test', 'default')
 
     @app.route('/no-vary-header')
     def no_vary_header():
@@ -554,17 +556,19 @@ def test_session_vary_cookie():
 
     c = app.test_client()
 
-    rv = c.get('/set-session')
-    assert rv.headers['Vary'] == 'Cookie'
+    def expect(path, header=True):
+        rv = c.get(path)
 
-    rv = c.get('/get-session')
-    assert rv.headers['Vary'] == 'Cookie'
+        if header:
+            assert rv.headers['Vary'] == 'Cookie'
+        else:
+            assert 'Vary' not in rv.headers
 
-    rv = c.get('/get-session-with-dictionary')
-    assert rv.headers['Vary'] == 'Cookie'
-
-    rv = c.get('/no-vary-header')
-    assert 'Vary' not in rv.headers
+    expect('/set')
+    expect('/get')
+    expect('/getitem')
+    expect('/setdefault')
+    expect('/no-vary-header', False)
 
 
 def test_flashes():
