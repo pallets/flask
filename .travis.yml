@@ -40,6 +40,10 @@ matrix:
 
 install:
     - pip install tox
+    - pip install flake8
+
+before_script:
+    - flake8 .
 
 script:
     - tox -e py-$REQUIREMENTS
