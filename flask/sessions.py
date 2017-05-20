@@ -125,7 +125,8 @@ class SecureCookieSession(CallbackDict, SessionMixin):
         def on_update(self):
             self.modified = True
             self.accessed = True
-        CallbackDict.__init__(self, initial, on_update)
+
+        super(SecureCookieSession, self).__init__(initial, on_update)
         self.modified = False
         self.accessed = False
 
@@ -306,22 +307,20 @@ class SessionInterface(object):
             return datetime.utcnow() + app.permanent_session_lifetime
 
     def should_set_cookie(self, app, session):
-        """Indicates whether a cookie should be set now or not.  This is
-        used by session backends to figure out if they should emit a
-        set-cookie header or not.  The default behavior is controlled by
-        the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
-        it's set to ``False`` then a cookie is only set if the session is
-        modified, if set to ``True`` it's always set if the session is
-        permanent.
-
-        This check is usually skipped if sessions get deleted.
+        """Used by session backends to determine if a ``Set-Cookie`` header
+        should be set for this session cookie for this response. If the session
+        has been modified, the cookie is set. If the session is permanent and
+        the ``SESSION_REFRESH_EACH_REQUEST`` config is true, the cookie is
+        always set.
+        
+        This check is usually skipped if the session was deleted.
 
         .. versionadded:: 0.11
         """
-        if session.modified:
-            return True
-        save_each = app.config['SESSION_REFRESH_EACH_REQUEST']
-        return save_each and session.permanent
+
+        return session.modified or (
+            session.permanent and app.config['SESSION_REFRESH_EACH_REQUEST']
+        )
 
     def open_session(self, app, request):
         """This method has to be implemented and must either return ``None``
@@ -387,35 +386,35 @@ class SecureCookieSessionInterface(SessionInterface):
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
 
-        if session.accessed:
+        # If the session is modified to be empty, remove the cookie.
+        # If the session is empty, return without setting the cookie.
+        if not session:
+            if session.modified:
+                response.delete_cookie(
+                    app.session_cookie_name,
+                    domain=domain,
+                    path=path
+                )
 
+            return
+
+        # Add a "Vary: Cookie" header if the session was accessed at all.
+        if session.accessed:
             response.headers.add('Vary', 'Cookie')
 
-        else:
-
-            # Delete case.  If there is no session we bail early.
-            # If the session was modified to be empty we remove the
-            # whole cookie.
-            if not session:
-                if session.modified:
-                    response.delete_cookie(app.session_cookie_name,
-                                           domain=domain, path=path)
-                return
-
-            # Modification case.  There are upsides and downsides to
-            # emitting a set-cookie header each request.  The behavior
-            # is controlled by the :meth:`should_set_cookie` method
-            # which performs a quick check to figure out if the cookie
-            # should be set or not.  This is controlled by the
-            # SESSION_REFRESH_EACH_REQUEST config flag as well as
-            # the permanent flag on the session itself.
-            if not self.should_set_cookie(app, session):
-                return
+        if not self.should_set_cookie(app, session):
+            return
 
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
-        response.set_cookie(app.session_cookie_name, val,
-                            expires=expires, httponly=httponly,
-                            domain=domain, path=path, secure=secure)
+        response.set_cookie(
+            app.session_cookie_name,
+            val,
+            expires=expires,
+            httponly=httponly,
+            domain=domain,
+            path=path,
+            secure=secure
+        )
