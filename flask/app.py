@@ -858,6 +858,9 @@ class Flask(_PackageBoundObject):
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
         try:
+            if self.debug is True and host == '0.0.0.0':
+                from werkzeug._internal import _log
+                _log('info', ' * You can visit %s://%s:%d/', "http", 'localhost', port)
             run_simple(host, port, self, **options)
         finally:
             # reset the first request information if the development server
