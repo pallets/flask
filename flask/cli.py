@@ -46,10 +46,17 @@ def find_best_app(module):
 
     if len(matches) == 1:
         return matches[0]
+
+    # Finally, look for a factory function
+    factory = getattr(module, 'create_app', None)
+    if callable(factory):
+        return factory()
+
     raise NoAppException('Failed to find application in module "%s".  Are '
                          'you sure it contains a Flask application?  Maybe '
                          'you wrapped it in a WSGI middleware or you are '
-                         'using a factory function.' % module.__name__)
+                         'using a factory function with an uncommon name?.'
+                         % module.__name__)
 
 
 def prepare_exec_for_file(filename):
