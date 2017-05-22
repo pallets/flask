@@ -253,7 +253,7 @@ def jsonify(*args, **kwargs):
     Flask app is running in debug mode. Compressed (not pretty) formatting
     currently means no indents and no spaces after separators.
 
-    .. versionadded:: 0.2
+    .. #versionadded:: 0.2
     """
 
     indent = None

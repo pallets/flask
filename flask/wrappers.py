@@ -42,7 +42,7 @@ class Request(RequestBase):
     #: useful to inspect which methods are allowed for the URL from
     #: a before/after handler (``request.url_rule.methods``) etc.
     #:
-    #: .. versionadded:: 0.6
+    #: .. #versionadded:: 0.6
     url_rule = None
 
     #: A dict of view arguments that matched the request.  If an exception
@@ -174,7 +174,7 @@ class Request(RequestBase):
            response.  If you want that behavior back you can trivially
            add it by subclassing.
 
-        .. versionadded:: 0.8
+        .. #versionadded:: 0.8
         """
         ctx = _request_ctx_stack.top
         if ctx is not None and ctx.app.config.get('DEBUG', False):

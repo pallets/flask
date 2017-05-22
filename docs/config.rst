@@ -3,7 +3,7 @@
 Configuration Handling
 ======================
 
-.. versionadded:: 0.3
+.. #versionadded:: 0.3
 
 Applications need some kind of configuration.  There are different settings
 you might want to change depending on the application environment like
@@ -231,25 +231,25 @@ The following configuration values are used internally by Flask:
 
 .. _bind: https://www.isc.org/downloads/bind/
 
-.. versionadded:: 0.4
+.. #versionadded:: 0.4
    ``LOGGER_NAME``
 
-.. versionadded:: 0.5
+.. #versionadded:: 0.5
    ``SERVER_NAME``
 
-.. versionadded:: 0.6
+.. #versionadded:: 0.6
    ``MAX_CONTENT_LENGTH``
 
-.. versionadded:: 0.7
+.. #versionadded:: 0.7
    ``PROPAGATE_EXCEPTIONS``, ``PRESERVE_CONTEXT_ON_EXCEPTION``
 
-.. versionadded:: 0.8
+.. #versionadded:: 0.8
    ``TRAP_BAD_REQUEST_ERRORS``, ``TRAP_HTTP_EXCEPTIONS``,
    ``APPLICATION_ROOT``, ``SESSION_COOKIE_DOMAIN``,
    ``SESSION_COOKIE_PATH``, ``SESSION_COOKIE_HTTPONLY``,
    ``SESSION_COOKIE_SECURE``
 
-.. versionadded:: 0.9
+.. #versionadded:: 0.9
    ``PREFERRED_URL_SCHEME``
 
 .. versionadded:: 0.10
@@ -400,7 +400,7 @@ your configuration files.  However here a list of good recommendations:
 Instance Folders
 ----------------
 
-.. versionadded:: 0.8
+.. #versionadded:: 0.8
 
 Flask 0.8 introduces instance folders.  Flask for a long time made it
 possible to refer to paths relative to the application's folder directly

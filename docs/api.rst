@@ -149,7 +149,7 @@ To access the current session you can use the :class:`session` object:
 Session Interface
 -----------------
 
-.. versionadded:: 0.8
+.. #versionadded:: 0.8
 
 The session interface provides a simple way to replace the session
 implementation that Flask is using.
@@ -386,7 +386,7 @@ Extensions
 
         from flask.ext import foo
 
-   .. versionadded:: 0.8
+   .. #versionadded:: 0.8
 
 Stream Helpers
 --------------
@@ -444,7 +444,7 @@ Useful Internals
    Works similar to the request context but only binds the application.
    This is mainly there for extensions to store data.
 
-   .. versionadded:: 0.9
+   .. #versionadded:: 0.9
 
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:
@@ -454,7 +454,7 @@ Useful Internals
 Signals
 -------
 
-.. versionadded:: 0.6
+.. #versionadded:: 0.6
 
 .. data:: signals.signals_available
 
@@ -653,7 +653,7 @@ The following signals exist in Flask:
 Class-Based Views
 -----------------
 
-.. versionadded:: 0.7
+.. #versionadded:: 0.7
 
 .. currentmodule:: None
 
@@ -806,7 +806,7 @@ Full example::
 
     app.add_url_rule('/', index)
 
-.. versionadded:: 0.8
+.. #versionadded:: 0.8
    The `provide_automatic_options` functionality was added.
 
 Command Line Interface

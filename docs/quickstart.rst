@@ -412,7 +412,7 @@ Here is a basic introduction to how the :class:`~jinja2.Markup` class works::
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
     u'Marked up \xbb HTML'
 
-.. versionchanged:: 0.5
+.. #versionchanged:: 0.5
 
    Autoescaping is no longer enabled for all templates.  The following
    extensions for templates trigger autoescaping: ``.html``, ``.htm``,
@@ -789,7 +789,7 @@ for a full example.
 Logging
 -------
 
-.. versionadded:: 0.3
+.. #versionadded:: 0.3
 
 Sometimes you might be in a situation where you deal with data that
 should be correct, but actually is not.  For example you may have some client-side

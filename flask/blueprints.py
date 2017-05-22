@@ -83,7 +83,7 @@ class Blueprint(_PackageBoundObject):
     or other things on the main application.  See :ref:`blueprints` for more
     information.
 
-    .. versionadded:: 0.7
+    .. #versionadded:: 0.7
     """
 
     warn_on_modifications = False

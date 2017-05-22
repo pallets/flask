@@ -93,7 +93,7 @@ And here is the :file:`login.html` template which also inherits from
 Flashing With Categories
 ------------------------
 
-.. versionadded:: 0.3
+.. #versionadded:: 0.3
 
 It is also possible to provide categories when flashing a message.  The
 default category if nothing is provided is ``'message'``.  Alternative
@@ -128,7 +128,7 @@ might also use the category to add a prefix such as
 Filtering Flash Messages
 ------------------------
 
-.. versionadded:: 0.9
+.. #versionadded:: 0.9
 
 Optionally you can pass a list of categories which filters the results of
 :func:`~flask.get_flashed_messages`.  This is useful if you wish to

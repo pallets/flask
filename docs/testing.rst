@@ -307,7 +307,7 @@ And then to use it::
 Keeping the Context Around
 --------------------------
 
-.. versionadded:: 0.4
+.. #versionadded:: 0.4
 
 Sometimes it is helpful to trigger a regular request but still keep the
 context around for a little longer so that additional introspection can
@@ -328,7 +328,7 @@ is no longer available (because you are trying to use it outside of the actual r
 Accessing and Modifying Sessions
 --------------------------------
 
-.. versionadded:: 0.8
+.. #versionadded:: 0.8
 
 Sometimes it can be very helpful to access or modify the sessions from the
 test client.  Generally there are two ways for this.  If you just want to

@@ -39,7 +39,7 @@ by default:
 
    The current configuration object (:data:`flask.config`)
 
-   .. versionadded:: 0.6
+   .. #versionadded:: 0.6
 
    .. versionchanged:: 0.10
       This is now always available, even in imported templates.
