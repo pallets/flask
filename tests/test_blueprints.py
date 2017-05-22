@@ -660,3 +660,22 @@ def test_context_processing():
 
     assert b'42' in answer_page_bytes
     assert b'43' in answer_page_bytes
+
+def test_template_global():
+    app = flask.Flask(__name__)
+    bp = flask.Blueprint('bp', __name__)
+    @bp.app_template_global()
+    def get_answer():
+        return 42
+    # Make sure the function is not in the jinja_env already
+    assert 'get_answer' not in app.jinja_env.globals.keys()
+    app.register_blueprint(bp)
+
+    # Tests
+    assert 'get_answer' in app.jinja_env.globals.keys()
+    assert app.jinja_env.globals['get_answer'] is get_answer
+    assert app.jinja_env.globals['get_answer']() == 42
+
+    with app.app_context():
+        rv = flask.render_template_string('{{ get_answer() }}')
+        assert rv == '42'
