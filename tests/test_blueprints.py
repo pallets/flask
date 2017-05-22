@@ -91,6 +91,33 @@ def test_blueprint_specific_user_error_handling():
     assert c.get('/decorator').data == b'boom'
     assert c.get('/function').data == b'bam'
 
+def test_blueprint_app_error_handling():
+    errors = flask.Blueprint('errors', __name__)
+
+    @errors.app_errorhandler(403)
+    def forbidden_handler(e):
+        return 'you shall not pass', 403
+
+    app = flask.Flask(__name__)
+
+    @app.route('/forbidden')
+    def app_forbidden():
+        flask.abort(403)
+
+    forbidden_bp = flask.Blueprint('forbidden_bp', __name__)
+
+    @forbidden_bp.route('/nope')
+    def bp_forbidden():
+        flask.abort(403)
+
+    app.register_blueprint(errors)
+    app.register_blueprint(forbidden_bp)
+
+    c = app.test_client()
+
+    assert c.get('/forbidden').data == b'you shall not pass'
+    assert c.get('/nope').data == b'you shall not pass'
+
 def test_blueprint_url_definitions():
     bp = flask.Blueprint('test', __name__)
 
