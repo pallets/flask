@@ -24,12 +24,31 @@ Reporting issues
 Submitting patches
 ==================
 
+
+- `Make sure you have a github account <https://github.com/join>`_
+- `Download and install latest version of git on your
+  machine <https://git-scm.com/downloads>`_
+- `Set up your username in git 
+  <https://help.github.com/articles/setting-your-username-in-git/>`_
+- `Set up your email in git 
+  <https://help.github.com/articles/setting-your-email-in-git/>`_
+- Fork flask to your github account (Click the Fork button)
+- `Copy your github fork locally 
+  <https://help.github.com/articles/fork-a-repo/#step-2-create-a-local-clone-of-your-fork>`_
+- Create a branch to identify the issue you would like to work 
+  on (eg 2287-dry-test-suite)
+- Using your favorite editor, make your changes, 
+  `committing as you go <http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes>`_
 - Include tests if your patch is supposed to solve a bug, and explain
   clearly under which circumstances the bug happens. Make sure the test fails
   without your patch.
-
 - Try to follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, but you
   may ignore the line-length-limit if following it would make the code uglier.
+- `Run tests. 
+  <https://github.com/pallets/flask/blob/master/CONTRIBUTING.rst#running-the-testsuite>`_
+  When tests pass push changes to github and `create pull request 
+  <https://help.github.com/articles/creating-a-pull-request/>`_
+- Celebrate 🎉
 
 
 Running the testsuite
