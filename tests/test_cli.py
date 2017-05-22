@@ -59,6 +59,13 @@ def test_find_best_app(test_apps):
     assert find_best_app(Module).name == 'appname'
 
     class Module:
+        @staticmethod
+        def make_app():
+            return Flask('appname')
+    assert isinstance(find_best_app(Module), Flask)
+    assert find_best_app(Module).name == 'appname'
+
+    class Module:
         myapp = Flask('appname1')
         @staticmethod
         def create_app():
