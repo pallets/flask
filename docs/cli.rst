@@ -32,7 +32,7 @@ Python module that contains a Flask application.
 
 In that imported file the name of the app needs to be called ``app`` or
 optionally be specified after a colon.  For instance
-`mymodule:application` would tell it to use the `application` object in
+``mymodule:application`` would tell it to use the `application` object in
 the :file:`mymodule.py` file.
 
 Given a :file:`hello.py` file with the application in it named ``app``
@@ -56,14 +56,24 @@ If you are constantly working with a virtualenv you can also put the
 bottom of the file.  That way every time you activate your virtualenv you
 automatically also activate the correct application name.
 
+Edit the activate script for the shell you use. For example:
+
+Unix Bash: ``venv/bin/activate``::
+
+    FLASK_APP=hello
+    export FLASK_APP
+
+Windows CMD.exe: ``venv\Scripts\activate.bat``::
+
+    set "FLASK_APP=hello"
+    :END
+
 Debug Flag
 ----------
 
 The :command:`flask` script can also be instructed to enable the debug
 mode of the application automatically by exporting ``FLASK_DEBUG``.  If
-set to ``1`` debug is enabled or ``0`` disables it.
-
-Or with a filename::
+set to ``1`` debug is enabled or ``0`` disables it::
 
     export FLASK_DEBUG=1
 
@@ -141,8 +151,8 @@ This could be a file named :file:`autoapp.py` with these contents::
     from yourapplication import create_app
     app = create_app(os.environ['YOURAPPLICATION_CONFIG'])
 
-Once this has happened you can make the flask command automatically pick
-it up::
+Once this has happened you can make the :command:`flask` command automatically
+pick it up::
 
     export YOURAPPLICATION_CONFIG=/path/to/config.cfg
     export FLASK_APP=/path/to/autoapp.py
@@ -218,13 +228,13 @@ step.
 CLI Plugins
 -----------
 
-Flask extensions can always patch the `Flask.cli` instance with more
+Flask extensions can always patch the :attr:`Flask.cli` instance with more
 commands if they want.  However there is a second way to add CLI plugins
-to Flask which is through `setuptools`.  If you make a Python package that
-should export a Flask command line plugin you can ship a `setup.py` file
+to Flask which is through ``setuptools``.  If you make a Python package that
+should export a Flask command line plugin you can ship a :file:`setup.py` file
 that declares an entrypoint that points to a click command:
 
-Example `setup.py`::
+Example :file:`setup.py`::
 
     from setuptools import setup
 
@@ -237,7 +247,7 @@ Example `setup.py`::
         ''',
     )
 
-Inside `mypackage/commands.py` you can then export a Click object::
+Inside :file:`mypackage/commands.py` you can then export a Click object::
 
     import click
 

@@ -87,4 +87,8 @@ def create_logger(app):
     logger.__class__ = DebugLogger
     logger.addHandler(debug_handler)
     logger.addHandler(prod_handler)
+
+    # Disable propagation by default
+    logger.propagate = False
+
     return logger

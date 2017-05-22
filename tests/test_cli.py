@@ -14,15 +14,21 @@
 from __future__ import absolute_import, print_function
 import os
 import sys
+from functools import partial
 
 import click
 import pytest
 from click.testing import CliRunner
 from flask import Flask, current_app
 
-from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
+from flask.cli import cli, AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
     find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
-    find_default_import_path
+    find_default_import_path, get_version
+
+
+@pytest.fixture
+def runner():
+    return CliRunner()
 
 
 def test_cli_name(test_apps):
@@ -32,24 +38,27 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    """Test of find_best_app."""
-    class mod:
+    """Test if `find_best_app` behaves as expected with different combinations of input."""
+    class Module:
         app = Flask('appname')
-    assert find_best_app(mod) == mod.app
+    assert find_best_app(Module) == Module.app
 
-    class mod:
+    class Module:
         application = Flask('appname')
-    assert find_best_app(mod) == mod.application
+    assert find_best_app(Module) == Module.application
 
-    class mod:
+    class Module:
         myapp = Flask('appname')
-    assert find_best_app(mod) == mod.myapp
+    assert find_best_app(Module) == Module.myapp
 
-    class mod:
-        myapp = Flask('appname')
+    class Module:
+        pass
+    pytest.raises(NoAppException, find_best_app, Module)
+
+    class Module:
+        myapp1 = Flask('appname1')
         myapp2 = Flask('appname2')
-
-    pytest.raises(NoAppException, find_best_app, mod)
+    pytest.raises(NoAppException, find_best_app, Module)
 
 
 def test_prepare_exec_for_file(test_apps):
@@ -77,7 +86,10 @@ def test_locate_app(test_apps):
     assert locate_app("cliapp.app").name == "testapp"
     assert locate_app("cliapp.app:testapp").name == "testapp"
     assert locate_app("cliapp.multiapp:app1").name == "app1"
+    pytest.raises(NoAppException, locate_app, "notanpp.py")
+    pytest.raises(NoAppException, locate_app, "cliapp/app")
     pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
+    pytest.raises(NoAppException, locate_app, "cliapp.importerrorapp")
 
 
 def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
@@ -91,6 +103,21 @@ def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
     monkeypatch.setitem(os.environ, 'FLASK_APP', str(tmpfile))
     expect_rv = prepare_exec_for_file(str(tmpfile))
     assert find_default_import_path() == expect_rv
+
+
+def test_get_version(test_apps, capsys):
+    """Test of get_version."""
+    from flask import __version__ as flask_ver
+    from sys import version as py_ver
+    class MockCtx(object):
+        resilient_parsing = False
+        color = None
+        def exit(self): return
+    ctx = MockCtx()
+    get_version(ctx, None, "test")
+    out, err = capsys.readouterr()
+    assert flask_ver in out
+    assert py_ver in out
 
 
 def test_scriptinfo(test_apps):
@@ -108,7 +135,7 @@ def test_scriptinfo(test_apps):
     assert obj.load_app() == app
 
 
-def test_with_appcontext():
+def test_with_appcontext(runner):
     """Test of with_appcontext."""
     @click.command()
     @with_appcontext
@@ -117,13 +144,12 @@ def test_with_appcontext():
 
     obj = ScriptInfo(create_app=lambda info: Flask("testapp"))
 
-    runner = CliRunner()
     result = runner.invoke(testcmd, obj=obj)
     assert result.exit_code == 0
     assert result.output == 'testapp\n'
 
 
-def test_appgroup():
+def test_appgroup(runner):
     """Test of with_appcontext."""
     @click.group(cls=AppGroup)
     def cli():
@@ -143,7 +169,6 @@ def test_appgroup():
 
     obj = ScriptInfo(create_app=lambda info: Flask("testappgroup"))
 
-    runner = CliRunner()
     result = runner.invoke(cli, ['test'], obj=obj)
     assert result.exit_code == 0
     assert result.output == 'testappgroup\n'
@@ -153,7 +178,7 @@ def test_appgroup():
     assert result.output == 'testappgroup\n'
 
 
-def test_flaskgroup():
+def test_flaskgroup(runner):
     """Test FlaskGroup."""
     def create_app(info):
         return Flask("flaskgroup")
@@ -166,7 +191,80 @@ def test_flaskgroup():
     def test():
         click.echo(current_app.name)
 
-    runner = CliRunner()
     result = runner.invoke(cli, ['test'])
     assert result.exit_code == 0
     assert result.output == 'flaskgroup\n'
+
+
+def test_print_exceptions(runner):
+    """Print the stacktrace if the CLI."""
+    def create_app(info):
+        raise Exception("oh no")
+        return Flask("flaskgroup")
+
+    @click.group(cls=FlaskGroup, create_app=create_app)
+    def cli(**params):
+        pass
+
+    result = runner.invoke(cli, ['--help'])
+    assert result.exit_code == 0
+    assert 'Exception: oh no' in result.output
+    assert 'Traceback' in result.output
+
+
+class TestRoutes:
+    @pytest.fixture
+    def invoke(self, runner):
+        def create_app(info):
+            app = Flask(__name__)
+            app.testing = True
+
+            @app.route('/get_post/<int:x>/<int:y>', methods=['GET', 'POST'])
+            def yyy_get_post(x, y):
+                pass
+
+            @app.route('/zzz_post', methods=['POST'])
+            def aaa_post():
+                pass
+
+            return app
+
+        cli = FlaskGroup(create_app=create_app)
+        return partial(runner.invoke, cli)
+
+    def expect_order(self, order, output):
+        # skip the header and match the start of each row
+        for expect, line in zip(order, output.splitlines()[2:]):
+            # do this instead of startswith for nicer pytest output
+            assert line[:len(expect)] == expect
+
+    def test_simple(self, invoke):
+        result = invoke(['routes'])
+        assert result.exit_code == 0
+        self.expect_order(
+            ['aaa_post', 'static', 'yyy_get_post'],
+            result.output
+        )
+
+    def test_sort(self, invoke):
+        default_output = invoke(['routes']).output
+        endpoint_output = invoke(['routes', '-s', 'endpoint']).output
+        assert default_output == endpoint_output
+        self.expect_order(
+            ['static', 'yyy_get_post', 'aaa_post'],
+            invoke(['routes', '-s', 'methods']).output
+        )
+        self.expect_order(
+            ['yyy_get_post', 'static', 'aaa_post'],
+            invoke(['routes', '-s', 'rule']).output
+        )
+        self.expect_order(
+            ['aaa_post', 'yyy_get_post', 'static'],
+            invoke(['routes', '-s', 'match']).output
+        )
+
+    def test_all_methods(self, invoke):
+        output = invoke(['routes']).output
+        assert 'GET, HEAD, OPTIONS, POST' not in output
+        output = invoke(['routes', '--all-methods']).output
+        assert 'GET, HEAD, OPTIONS, POST' in output

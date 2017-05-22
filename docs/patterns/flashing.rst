@@ -78,7 +78,7 @@ And here is the :file:`login.html` template which also inherits from
      {% if error %}
        <p class=error><strong>Error:</strong> {{ error }}
      {% endif %}
-     <form action="" method=post>
+     <form method=post>
        <dl>
          <dt>Username:
          <dd><input type=text name=username value="{{
