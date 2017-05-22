@@ -3,8 +3,7 @@ from werkzeug.exceptions import Forbidden, InternalServerError
 import flask
 
 
-def test_error_handler_no_match():
-    app = flask.Flask(__name__)
+def test_error_handler_no_match(app, client):
 
     class CustomException(Exception):
         pass
@@ -26,15 +25,12 @@ def test_error_handler_no_match():
     def key_error():
         raise KeyError()
 
-    c = app.test_client()
+    app.testing = False
+    assert client.get('/custom').data == b'custom'
+    assert client.get('/keyerror').data == b'KeyError'
 
-    assert c.get('/custom').data == b'custom'
-    assert c.get('/keyerror').data == b'KeyError'
 
-
-def test_error_handler_subclass():
-    app = flask.Flask(__name__)
-
+def test_error_handler_subclass(app):
     class ParentException(Exception):
         pass
 
@@ -73,9 +69,7 @@ def test_error_handler_subclass():
     assert c.get('/child-registered').data == b'child-registered'
 
 
-def test_error_handler_http_subclass():
-    app = flask.Flask(__name__)
-
+def test_error_handler_http_subclass(app):
     class ForbiddenSubclassRegistered(Forbidden):
         pass
 
@@ -111,7 +105,7 @@ def test_error_handler_http_subclass():
     assert c.get('/forbidden-registered').data == b'forbidden-registered'
 
 
-def test_error_handler_blueprint():
+def test_error_handler_blueprint(app):
     bp = flask.Blueprint('bp', __name__)
 
     @bp.errorhandler(500)
@@ -121,8 +115,6 @@ def test_error_handler_blueprint():
     @bp.route('/error')
     def bp_test():
         raise InternalServerError()
-
-    app = flask.Flask(__name__)
 
     @app.errorhandler(500)
     def app_exception_handler(e):
