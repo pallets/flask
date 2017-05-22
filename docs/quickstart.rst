@@ -153,6 +153,11 @@ Screenshot of the debugger in action:
    :class: screenshot
    :alt: screenshot of debugger in action
 
+More information on using the debugger can be found in the `Werkzeug 
+documentation`_.
+
+.. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
+
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 
 
