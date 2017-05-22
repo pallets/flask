@@ -20,9 +20,9 @@ except ImportError:
     greenlet = None
 
 
-def test_teardown_on_pop():
+def test_teardown_on_pop(app):
     buffer = []
-    app = flask.Flask(__name__)
+
     @app.teardown_request
     def end_of_request(exception):
         buffer.append(exception)
@@ -33,9 +33,10 @@ def test_teardown_on_pop():
     ctx.pop()
     assert buffer == [None]
 
-def test_teardown_with_previous_exception():
+
+def test_teardown_with_previous_exception(app):
     buffer = []
-    app = flask.Flask(__name__)
+
     @app.teardown_request
     def end_of_request(exception):
         buffer.append(exception)
@@ -49,9 +50,10 @@ def test_teardown_with_previous_exception():
         assert buffer == []
     assert buffer == [None]
 
-def test_teardown_with_handled_exception():
+
+def test_teardown_with_handled_exception(app):
     buffer = []
-    app = flask.Flask(__name__)
+
     @app.teardown_request
     def end_of_request(exception):
         buffer.append(exception)
@@ -64,8 +66,8 @@ def test_teardown_with_handled_exception():
             pass
     assert buffer == [None]
 
-def test_proper_test_request_context():
-    app = flask.Flask(__name__)
+
+def test_proper_test_request_context(app):
     app.config.update(
         SERVER_NAME='localhost.localdomain:5000'
     )
@@ -80,11 +82,11 @@ def test_proper_test_request_context():
 
     with app.test_request_context('/'):
         assert flask.url_for('index', _external=True) == \
-            'http://localhost.localdomain:5000/'
+               'http://localhost.localdomain:5000/'
 
     with app.test_request_context('/'):
         assert flask.url_for('sub', _external=True) == \
-            'http://foo.localhost.localdomain:5000/'
+               'http://foo.localhost.localdomain:5000/'
 
     try:
         with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
@@ -104,11 +106,12 @@ def test_proper_test_request_context():
     with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
         pass
 
-def test_context_binding():
-    app = flask.Flask(__name__)
+
+def test_context_binding(app):
     @app.route('/')
     def index():
         return 'Hello %s!' % flask.request.args['name']
+
     @app.route('/meh')
     def meh():
         return flask.request.url
@@ -119,8 +122,8 @@ def test_context_binding():
         assert meh() == 'http://localhost/meh'
     assert flask._request_ctx_stack.top is None
 
-def test_context_test():
-    app = flask.Flask(__name__)
+
+def test_context_test(app):
     assert not flask.request
     assert not flask.has_request_context()
     ctx = app.test_request_context()
@@ -131,8 +134,8 @@ def test_context_test():
     finally:
         ctx.pop()
 
-def test_manual_context_binding():
-    app = flask.Flask(__name__)
+
+def test_manual_context_binding(app):
     @app.route('/')
     def index():
         return 'Hello %s!' % flask.request.args['name']
@@ -144,14 +147,15 @@ def test_manual_context_binding():
     with pytest.raises(RuntimeError):
         index()
 
+
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
-def test_greenlet_context_copying():
-    app = flask.Flask(__name__)
+def test_greenlet_context_copying(app, client):
     greenlets = []
 
     @app.route('/')
     def index():
         reqctx = flask._request_ctx_stack.top.copy()
+
         def g():
             assert not flask.request
             assert not flask.current_app
@@ -162,23 +166,25 @@ def test_greenlet_context_copying():
                 assert flask.request.args['foo'] == 'bar'
             assert not flask.request
             return 42
+
         greenlets.append(greenlet(g))
         return 'Hello World!'
 
-    rv = app.test_client().get('/?foo=bar')
+    rv = client.get('/?foo=bar')
     assert rv.data == b'Hello World!'
 
     result = greenlets[0].run()
     assert result == 42
 
+
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
-def test_greenlet_context_copying_api():
-    app = flask.Flask(__name__)
+def test_greenlet_context_copying_api(app, client):
     greenlets = []
 
     @app.route('/')
     def index():
         reqctx = flask._request_ctx_stack.top.copy()
+
         @flask.copy_current_request_context
         def g():
             assert flask.request
@@ -186,10 +192,11 @@ def test_greenlet_context_copying_api():
             assert flask.request.path == '/'
             assert flask.request.args['foo'] == 'bar'
             return 42
+
         greenlets.append(greenlet(g))
         return 'Hello World!'
 
-    rv = app.test_client().get('/?foo=bar')
+    rv = client.get('/?foo=bar')
     assert rv.data == b'Hello World!'
 
     result = greenlets[0].run()
