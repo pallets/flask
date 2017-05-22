@@ -692,6 +692,9 @@ def test_request_processing():
         response.data += b'|after'
         evts.append('after')
         return response
+    @bp.teardown_request
+    def teardown_bp(exc):
+        evts.append('teardown')
 
     # Setup routes for testing
     @bp.route('/bp')
@@ -703,7 +706,7 @@ def test_request_processing():
     assert evts == []
     rv = app.test_client().get('/bp')
     assert rv.data == b'request|after'
-    assert evts == ['before', 'after']
+    assert evts == ['before', 'after', 'teardown']
 
 def test_app_request_processing():
     app = flask.Flask(__name__)
@@ -721,6 +724,9 @@ def test_app_request_processing():
         response.data += b'|after'
         evts.append('after')
         return response
+    @bp.teardown_app_request
+    def teardown_app(exc):
+        evts.append('teardown')
 
     app.register_blueprint(bp)
 
@@ -735,9 +741,9 @@ def test_app_request_processing():
     # first request
     resp = app.test_client().get('/').data
     assert resp == b'request|after'
-    assert evts == ['first', 'before', 'after']
+    assert evts == ['first', 'before', 'after', 'teardown']
 
     # second request
     resp = app.test_client().get('/').data
     assert resp == b'request|after'
-    assert evts == ['first', 'before', 'after', 'before', 'after']
+    assert evts == ['first'] + ['before', 'after', 'teardown'] * 2
