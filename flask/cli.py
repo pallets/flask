@@ -35,7 +35,7 @@ def find_best_app(module):
     from . import Flask
 
     # Search for the most common names first.
-    for attr_name in 'app', 'application':
+    for attr_name in ('app', 'application'):
         app = getattr(module, attr_name, None)
         if isinstance(app, Flask):
             return app
@@ -55,7 +55,7 @@ def find_best_app(module):
         )
 
     # Search for app factory callables.
-    for attr_name in 'create_app', 'make_app':
+    for attr_name in ('create_app', 'make_app'):
         app_factory = getattr(module, attr_name, None)
 
         if callable(app_factory):
