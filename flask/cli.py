@@ -46,6 +46,19 @@ def find_best_app(module):
 
     if len(matches) == 1:
         return matches[0]
+
+    # Search for app factory callable.
+    app_factory = getattr(module, 'create_app', None)
+    if app_factory is not None and callable(app_factory):
+        try:
+            app = app_factory()
+            if app is not None and isinstance(app, Flask):
+                return app
+        except TypeError:
+            raise NoAppException('Auto-detected a create_app() function in '
+                                 'module "%s", but could not call it without '
+                                 'specifying arguments.' % module.__name__)
+
     raise NoAppException('Failed to find application in module "%s".  Are '
                          'you sure it contains a Flask application?  Maybe '
                          'you wrapped it in a WSGI middleware or you are '
