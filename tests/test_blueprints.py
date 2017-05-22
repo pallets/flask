@@ -618,3 +618,45 @@ def test_add_template_test_with_name_and_template():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
+
+def test_context_processing():
+    app = flask.Flask(__name__)
+    answer_bp = flask.Blueprint('answer_bp', __name__)
+
+    template_string = lambda: flask.render_template_string(
+        '{% if notanswer %}{{ notanswer }} is not the answer. {% endif %}'
+        '{% if answer %}{{ answer }} is the answer.{% endif %}'
+    )
+
+    # App global context processor
+    @answer_bp.app_context_processor
+    def not_answer_context_processor():
+        return {'notanswer': 43}
+
+    # Blueprint local context processor
+    @answer_bp.context_processor
+    def answer_context_processor():
+        return {'answer': 42}
+
+    # Setup endpoints for testing
+    @answer_bp.route('/bp')
+    def bp_page():
+        return template_string()
+
+    @app.route('/')
+    def app_page():
+        return template_string()
+
+    # Register the blueprint
+    app.register_blueprint(answer_bp)
+
+    c = app.test_client()
+
+    app_page_bytes = c.get('/').data
+    answer_page_bytes = c.get('/bp').data
+
+    assert b'43' in app_page_bytes
+    assert b'42' not in app_page_bytes
+
+    assert b'42' in answer_page_bytes
+    assert b'43' in answer_page_bytes
