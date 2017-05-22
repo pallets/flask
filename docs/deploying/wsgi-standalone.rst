@@ -8,6 +8,23 @@ serve HTTP.  These servers stand alone when they run; you can proxy to them
 from your web server.  Note the section on :ref:`deploying-proxy-setups` if you
 run into issues.
 
+uWSGI
+--------
+
+`uWSGI`_ includes an HTTP/HTTPS router/proxy/load-balancer that can forward
+requests to uWSGI workers. The server can be used in two ways: embedded and
+standalone. In embedded mode, it will automatically spawn workers and setup the
+communication socket. In standalone mode you have to specify the address of a
+uwsgi socket to connect to.
+
+Example running `uWSGI HTTP Router`_ in Embedded Mode::
+
+    uwsgi --http 127.0.0.1:5000 --module myproject:app
+
+.. _uWSGI: http://uwsgi-docs.readthedocs.io/en/latest/
+.. _uWSGI HTTP Router: http://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
+
+
 Gunicorn
 --------
 
