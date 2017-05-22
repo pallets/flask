@@ -33,7 +33,7 @@ Self-hosted options
    :maxdepth: 2
 
    wsgi-standalone
-   mod_wsgi
    uwsgi
+   mod_wsgi
    fastcgi
    cgi
