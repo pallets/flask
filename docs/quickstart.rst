@@ -156,7 +156,7 @@ Screenshot of the debugger in action:
 More information on using the debugger can be found in the `Werkzeug 
 documentation`_.
 
-.. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/0.11/debug/#using-the-debugger
+.. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
 
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 
