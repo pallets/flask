@@ -41,32 +41,42 @@ def find_best_app(module):
             return app
 
     # Otherwise find the only object that is a Flask instance.
-    matches = [v for k, v in iteritems(module.__dict__)
-               if isinstance(v, Flask)]
+    matches = [
+        v for k, v in iteritems(module.__dict__) if isinstance(v, Flask)
+    ]
 
     if len(matches) == 1:
         return matches[0]
+    elif len(matches) > 1:
+        raise NoAppException(
+            'Auto-detected multiple Flask applications in module "{module}".'
+            ' Use "FLASK_APP={module}:name" to specify the correct'
+            ' one.'.format(module=module.__name__)
+        )
 
     # Search for app factory callables.
     for attr_name in 'create_app', 'make_app':
         app_factory = getattr(module, attr_name, None)
+
         if callable(app_factory):
             try:
                 app = app_factory()
+
                 if isinstance(app, Flask):
                     return app
             except TypeError:
                 raise NoAppException(
                     'Auto-detected "{callable}()" in module "{module}", but '
-                    'could not call it without specifying arguments.'
-                    .format(callable=attr_name,
-                            module=module.__name__))
+                    'could not call it without specifying arguments.'.format(
+                        callable=attr_name, module=module.__name__
+                    )
+                )
 
     raise NoAppException(
-        'Failed to find application in module "{module}".  Are you sure '
-        'it contains a Flask application?  Maybe you wrapped it in a WSGI '
-        'middleware or you are using a factory function.'
-        .format(module=module.__name__))
+        'Failed to find application in module "{module}". Are you sure '
+        'it contains a Flask application? Maybe you wrapped it in a WSGI '
+        'middleware.'.format(module=module.__name__)
+    )
 
 
 def prepare_exec_for_file(filename):
