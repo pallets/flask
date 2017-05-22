@@ -22,7 +22,7 @@ if you want to get started quickly.
 You can download `Flask-SQLAlchemy`_ from `PyPI
 <https://pypi.python.org/pypi/Flask-SQLAlchemy>`_.
 
-.. _Flask-SQLAlchemy: http://pythonhosted.org/Flask-SQLAlchemy/
+.. _Flask-SQLAlchemy: http://flask-sqlalchemy.pocoo.org/
 
 
 Declarative
@@ -108,9 +108,9 @@ Querying is simple as well:
 >>> User.query.filter(User.name == 'admin').first()
 <User u'admin'>
 
-.. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _SQLAlchemy: https://www.sqlalchemy.org/
 .. _declarative:
-   http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
+   https://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
 
 Manual Object Relational Mapping
 --------------------------------
@@ -135,7 +135,7 @@ Here is an example :file:`database.py` module for your application::
     def init_db():
         metadata.create_all(bind=engine)
 
-As for the declarative approach you need to close the session after
+As in the declarative approach, you need to close the session after
 each request or application context shutdown.  Put this into your
 application module::
 
@@ -215,4 +215,4 @@ You can also pass strings of SQL statements to the
 (1, u'admin', u'admin@localhost')
 
 For more information about SQLAlchemy, head over to the
-`website <http://www.sqlalchemy.org/>`_.
+`website <https://www.sqlalchemy.org/>`_.

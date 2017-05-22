@@ -91,6 +91,33 @@ def test_blueprint_specific_user_error_handling():
     assert c.get('/decorator').data == b'boom'
     assert c.get('/function').data == b'bam'
 
+def test_blueprint_app_error_handling():
+    errors = flask.Blueprint('errors', __name__)
+
+    @errors.app_errorhandler(403)
+    def forbidden_handler(e):
+        return 'you shall not pass', 403
+
+    app = flask.Flask(__name__)
+
+    @app.route('/forbidden')
+    def app_forbidden():
+        flask.abort(403)
+
+    forbidden_bp = flask.Blueprint('forbidden_bp', __name__)
+
+    @forbidden_bp.route('/nope')
+    def bp_forbidden():
+        flask.abort(403)
+
+    app.register_blueprint(errors)
+    app.register_blueprint(forbidden_bp)
+
+    c = app.test_client()
+
+    assert c.get('/forbidden').data == b'you shall not pass'
+    assert c.get('/nope').data == b'you shall not pass'
+
 def test_blueprint_url_definitions():
     bp = flask.Blueprint('test', __name__)
 
@@ -355,6 +382,25 @@ def test_route_decorator_custom_endpoint_with_dots():
     rv = c.get('/py/bar/123')
     assert rv.status_code == 404
 
+
+def test_endpoint_decorator():
+    from werkzeug.routing import Rule
+    app = flask.Flask(__name__)
+    app.url_map.add(Rule('/foo', endpoint='bar'))
+
+    bp = flask.Blueprint('bp', __name__)
+
+    @bp.endpoint('bar')
+    def foobar():
+        return flask.request.endpoint
+
+    app.register_blueprint(bp, url_prefix='/bp_prefix')
+
+    c = app.test_client()
+    assert c.get('/foo').data == b'bar'
+    assert c.get('/bp_prefix/bar').status_code == 404
+
+
 def test_template_filter():
     bp = flask.Blueprint('bp', __name__)
     @bp.app_template_filter()
@@ -572,3 +618,45 @@ def test_add_template_test_with_name_and_template():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
+
+def test_context_processing():
+    app = flask.Flask(__name__)
+    answer_bp = flask.Blueprint('answer_bp', __name__)
+
+    template_string = lambda: flask.render_template_string(
+        '{% if notanswer %}{{ notanswer }} is not the answer. {% endif %}'
+        '{% if answer %}{{ answer }} is the answer.{% endif %}'
+    )
+
+    # App global context processor
+    @answer_bp.app_context_processor
+    def not_answer_context_processor():
+        return {'notanswer': 43}
+
+    # Blueprint local context processor
+    @answer_bp.context_processor
+    def answer_context_processor():
+        return {'answer': 42}
+
+    # Setup endpoints for testing
+    @answer_bp.route('/bp')
+    def bp_page():
+        return template_string()
+
+    @app.route('/')
+    def app_page():
+        return template_string()
+
+    # Register the blueprint
+    app.register_blueprint(answer_bp)
+
+    c = app.test_client()
+
+    app_page_bytes = c.get('/').data
+    answer_page_bytes = c.get('/bp').data
+
+    assert b'43' in app_page_bytes
+    assert b'42' not in app_page_bytes
+
+    assert b'42' in answer_page_bytes
+    assert b'43' in answer_page_bytes
