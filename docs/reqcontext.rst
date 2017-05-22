@@ -119,7 +119,7 @@ understand what is actually happening.  The new behavior is quite simple:
     not executed yet or at all (for example in test environments sometimes
     you might want to not execute before-request callbacks).
 
-Now what happens on errors?  If you are not in debug mode if an exception is not    
+Now what happens on errors?  If you are not in debug mode and an exception is not    
 caught, the 500 internal server handler is called.  In debug mode   
 however the exception is not further processed and bubbles up to the WSGI 
 server.  That way things like the interactive debugger can provide helpful
