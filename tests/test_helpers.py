@@ -22,6 +22,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
+from flask.helpers import get_debug_flag, make_response
 
 
 def has_encoding(name):
@@ -941,3 +942,52 @@ class TestSafeJoin(object):
         for args in failing:
             with pytest.raises(NotFound):
                 print(flask.safe_join(*args))
+
+class TestHelpers(object):
+
+    def test_get_debug_flag(self):
+        original_debug_value = os.environ.get('FLASK_DEBUG') or ''
+        os.environ['FLASK_DEBUG'] = ''
+        assert get_debug_flag() == None
+        assert get_debug_flag(default=True) == True
+
+        os.environ['FLASK_DEBUG'] = '0'
+        assert get_debug_flag() == False
+        assert get_debug_flag(default=True) == False
+
+        os.environ['FLASK_DEBUG'] = 'False'
+        assert get_debug_flag() == False
+        assert get_debug_flag(default=True) == False
+
+        os.environ['FLASK_DEBUG'] = 'No'
+        assert get_debug_flag() == False
+        assert get_debug_flag(default=True) == False
+
+        os.environ['FLASK_DEBUG'] = 'True'
+        assert get_debug_flag() == True
+        assert get_debug_flag(default=True) == True
+
+        os.environ['FLASK_DEBUG'] = original_debug_value
+
+    def test_make_response_no_args(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            return flask.helpers.make_response()
+        c = app.test_client()
+        rv = c.get()
+        assert rv
+
+    def test_make_response_with_args(self):
+        app = flask.Flask(__name__)
+        app.testing = True
+        @app.route('/')
+        def index():
+            response = flask.helpers.make_response(flask.render_template_string('Hello World'))
+            response.headers['X-Parachutes'] = 'parachutes are cool'
+            return response
+        c = app.test_client()
+        rv = c.get()
+        assert rv
+        assert rv.headers['X-Parachutes'] == 'parachutes are cool'
