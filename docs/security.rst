@@ -122,7 +122,7 @@ Security Headers
 
 This section contains a list of headers supported by Flask and some packages that implements them.
 
-`Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_ (CSP)
+Content Security Policy (CSP)
 -----------------------------------------------------------------------------
 
 Enhance security and prevents common web vulnerabilities such as cross-site scripting and MITM related attacks.
@@ -140,7 +140,7 @@ See also `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_
 * `flask-csp <https://github.com/twaldear/flask-csp>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
 
-`HTTP Strict Transport Security <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_ (HSTS)
+HTTP Strict Transport Security (HSTS)
 ------------------------------------------------------------------------------------------------------------------------------
 
 Redirects http requests to https on all urls, preventing MITM attacks.
@@ -159,7 +159,7 @@ See also `Strict Transport Security <https://developer.mozilla.org/en-US/docs/We
 * `flask-sslify <https://github.com/kennethreitz/flask-sslify>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
 
-`X-FRAME-OPTIONS  <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>`_ (Clickjacking protection)
+X-FRAME-OPTIONS (Clickjacking protection)
 -------------------------------------------------------------------------------------------------------------------------
 
 Prevents the client from clicking page elements outside of the website, avoiding hijacking or UI redress attacks.
@@ -175,7 +175,7 @@ See also `X-Frame-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Hea
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
 
-`X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options>`_
+X-Content-Type-Options
 -------------------------------------------------------------------------------------------------------------
 
 Prevents XSS by blocking requests on clients and forcing them to read the content type instead of first opening it.
@@ -189,7 +189,7 @@ See also `X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/H
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
 
-`Cookie options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_
+Cookie options
 ----------------------------------------------------------------------------------------------------------
 
 For setting cookies on client-side storage.
@@ -205,7 +205,7 @@ See also `HTTP cookies <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookie
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
 
-`HTTP Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_ (HPKP)
+HTTP Public Key Pinning (HPKP)
 -------------------------------------------------------------------------------------------------------
 
 For associating clients with web servers through a certificate key and prevent MITM attacks.
