@@ -53,6 +53,7 @@ def test_provide_automatic_options_attr():
 
     def index():
         return 'Hello World!'
+
     index.provide_automatic_options = False
     app.route('/')(index)
     rv = app.test_client().open('/', method='OPTIONS')
@@ -62,6 +63,7 @@ def test_provide_automatic_options_attr():
 
     def index2():
         return 'Hello World!'
+
     index2.provide_automatic_options = True
     app.route('/', methods=['OPTIONS'])(index2)
     rv = app.test_client().open('/', method='OPTIONS')
@@ -365,7 +367,6 @@ def test_session_ip_warning(recwarn, app, client):
     assert 'cookie domain is an IP' in str(w.message)
 
 
-# TODO
 def test_missing_session():
     app = flask.Flask(__name__)
 
@@ -549,7 +550,6 @@ def test_flashes(app, req_ctx):
     assert list(flask.get_flashed_messages()) == ['Zap', 'Zip']
 
 
-# TODO
 def test_extended_flashing(app):
     # Be sure app.testing=True below, else tests can fail silently.
     #
@@ -951,11 +951,7 @@ def test_http_error_subclass_handling(app, client):
     assert client.get('/3').data == b'apple'
 
 
-# TODO
-def test_trapping_of_bad_request_key_errors():
-    app = flask.Flask(__name__)
-    app.testing = True
-
+def test_trapping_of_bad_request_key_errors(app):
     @app.route('/fail')
     def fail():
         flask.request.form['missing_key']
@@ -1791,7 +1787,6 @@ def test_subdomain_matching_with_ports(app, client):
 
 
 def test_multi_route_rules(app, client):
-
     @app.route('/')
     @app.route('/<test>/')
     def index(test='a'):
