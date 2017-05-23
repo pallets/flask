@@ -1067,12 +1067,21 @@ class Flask(_PackageBoundObject):
         rule.provide_automatic_options = provide_automatic_options
 
         self.url_map.add(rule)
+        endpoint_override = None
+        try:
+            rules_before_added = self.url_map._rules[:-1]
+            ix = rules_before_added.index(rule)
+            endpoint_override = rules_before_added[ix].endpoint
+        except ValueError:
+            pass
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
                 raise AssertionError('View function mapping is overwriting an '
                                      'existing endpoint function: %s' % endpoint)
             self.view_functions[endpoint] = view_func
+            if endpoint_override:
+                self.view_functions[endpoint_override] = view_func
 
     def route(self, rule, **options):
         """A decorator that is used to register a view function for a
