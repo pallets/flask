@@ -27,7 +27,7 @@ executed in undefined order and do not modify any data.
 
 The big advantage of signals over handlers is that you can safely
 subscribe to them for just a split second.  These temporary
-subscriptions are helpful for unittesting for example.  Say you want to
+subscriptions are helpful for unit testing for example.  Say you want to
 know what templates were rendered as part of a request: signals allow you
 to do exactly that.
 
@@ -45,7 +45,7 @@ signal.  When you subscribe to a signal, be sure to also provide a sender
 unless you really want to listen for signals from all applications.  This is
 especially true if you are developing an extension.
 
-For example, here is a helper context manager that can be used in a unittest
+For example, here is a helper context manager that can be used in a unit test
 to determine which templates were rendered and what variables were passed
 to the template::
 
