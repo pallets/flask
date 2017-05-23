@@ -5,23 +5,30 @@ Testing Flask Applications
 
    **Something that is untested is broken.**
 
-The origin of this quote is unknown and while it is not entirely correct, it is also
-not far from the truth.  Untested applications make it hard to
+The origin of this quote is unknown and while it is not entirely correct, it
+is also not far from the truth.  Untested applications make it hard to
 improve existing code and developers of untested applications tend to
 become pretty paranoid.  If an application has automated tests, you can
 safely make changes and instantly know if anything breaks.
 
 Flask provides a way to test your application by exposing the Werkzeug
 test :class:`~werkzeug.test.Client` and handling the context locals for you.
-You can then use that with your favourite testing solution.  In this documentation
-we will use the :mod:`unittest` package that comes pre-installed with Python.
+You can then use that with your favourite testing solution.
+
+In this documentation we will use the `pytest`_ package as the base
+framework for our tests. You can install it with ``pip``, like so::
+
+    pip install pytest
+
+.. _pytest:
+   https://pytest.org
 
 The Application
 ---------------
 
 First, we need an application to test; we will use the application from
 the :ref:`tutorial`.  If you don't have that application yet, get the
-sources from `the examples`_.
+source code from `the examples`_.
 
 .. _the examples:
    https://github.com/pallets/flask/tree/master/examples/flaskr/
@@ -29,92 +36,91 @@ sources from `the examples`_.
 The Testing Skeleton
 --------------------
 
-In order to test the application, we add a second module
-(:file:`flaskr_tests.py`) and create a unittest skeleton there::
+We begin by adding a tests directory under the application root.  Then
+create a Python file to store our tests (:file:`test_flaskr.py`). When we
+format the filename like ``test_*.py``, it will be auto-discoverable by
+pytest.
+
+Next, we create a `pytest fixture`_ called
+:func:`client` that configures
+the application for testing and initializes a new database.::
 
     import os
-    from flaskr import flaskr
-    import unittest
     import tempfile
 
-    class FlaskrTestCase(unittest.TestCase):
+    import pytest
 
-        def setUp(self):
-            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-            flaskr.app.testing = True
-            self.app = flaskr.app.test_client()
-            with flaskr.app.app_context():
-                flaskr.init_db()
+    from flaskr import flaskr
 
-        def tearDown(self):
-            os.close(self.db_fd)
-            os.unlink(flaskr.app.config['DATABASE'])
 
-    if __name__ == '__main__':
-        unittest.main()
+    @pytest.fixture
+    def client(request):
+        db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
+        flaskr.app.config['TESTING'] = True
+        client = flaskr.app.test_client()
 
-The code in the :meth:`~unittest.TestCase.setUp` method creates a new test
-client and initializes a new database.  This function is called before
-each individual test function is run.  To delete the database after the
-test, we close the file and remove it from the filesystem in the
-:meth:`~unittest.TestCase.tearDown` method.  Additionally during setup the
-``TESTING`` config flag is activated.  What it does is disable the error
-catching during request handling so that you get better error reports when
-performing test requests against the application.
+        with flaskr.app.app_context():
+            flaskr.init_db()
 
-This test client will give us a simple interface to the application.  We can
-trigger test requests to the application, and the client will also keep track
-of cookies for us.
+        yield client
 
-Because SQLite3 is filesystem-based we can easily use the tempfile module
+        os.close(db_fd)
+        os.unlink(flaskr.app.config['DATABASE'])
+
+This client fixture will be called by each individual test.  It gives us a
+simple interface to the application, where we can trigger test requests to the
+application.  The client will also keep track of cookies for us.
+
+During setup, the ``TESTING`` config flag is activated.  What
+this does is disable error catching during request handling, so that
+you get better error reports when performing test requests against the
+application.
+
+Because SQLite3 is filesystem-based, we can easily use the :mod:`tempfile` module
 to create a temporary database and initialize it.  The
 :func:`~tempfile.mkstemp` function does two things for us: it returns a
 low-level file handle and a random file name, the latter we use as
 database name.  We just have to keep the `db_fd` around so that we can use
 the :func:`os.close` function to close the file.
 
+To delete the database after the test, the fixture closes the file and removes
+it from the filesystem.
+
 If we now run the test suite, we should see the following output::
 
-    $ python flaskr_tests.py
+    $ pytest
 
-    ----------------------------------------------------------------------
-    Ran 0 tests in 0.000s
+    ================ test session starts ================
+    rootdir: ./flask/examples/flaskr, inifile: setup.cfg
+    collected 0 items
 
-    OK
+    =========== no tests ran in 0.07 seconds ============
 
-Even though it did not run any actual tests, we already know that our flaskr
+Even though it did not run any actual tests, we already know that our ``flaskr``
 application is syntactically valid, otherwise the import would have died
 with an exception.
+
+.. _pytest fixture:
+   https://docs.pytest.org/en/latest/fixture.html
 
 The First Test
 --------------
 
 Now it's time to start testing the functionality of the application.
 Let's check that the application shows "No entries here so far" if we
-access the root of the application (``/``). To do this, we add a new
-test method to our class, like this::
+access the root of the application (``/``).  To do this, we add a new
+test function to :file:`test_flaskr.py`, like this::
 
-    class FlaskrTestCase(unittest.TestCase):
+    def test_empty_db(client):
+        """Start with a blank database."""
 
-        def setUp(self):
-            self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-            flaskr.app.testing = True
-            self.app = flaskr.app.test_client()
-            with flaskr.app.app_context():
-                flaskr.init_db()
-
-        def tearDown(self):
-            os.close(self.db_fd)
-            os.unlink(flaskr.app.config['DATABASE'])
-
-        def test_empty_db(self):
-            rv = self.app.get('/')
-            assert b'No entries here so far' in rv.data
+        rv = client.get('/')
+        assert b'No entries here so far' in rv.data
 
 Notice that our test functions begin with the word `test`; this allows
-:mod:`unittest` to automatically identify the method as a test to run.
+`pytest`_ to automatically identify the function as a test to run.
 
-By using `self.app.get` we can send an HTTP ``GET`` request to the application with
+By using ``client.get`` we can send an HTTP ``GET`` request to the application with
 the given path.  The return value will be a :class:`~flask.Flask.response_class` object.
 We can now use the :attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect
 the return value (as string) from the application.  In this case, we ensure that
@@ -122,12 +128,15 @@ the return value (as string) from the application.  In this case, we ensure that
 
 Run it again and you should see one passing test::
 
-    $ python flaskr_tests.py
-    .
-    ----------------------------------------------------------------------
-    Ran 1 test in 0.034s
+    $ pytest -v
 
-    OK
+    ================ test session starts ================
+    rootdir: ./flask/examples/flaskr, inifile: setup.cfg
+    collected 1 items
+
+    tests/test_flaskr.py::test_empty_db PASSED
+
+    ============= 1 passed in 0.10 seconds ==============
 
 Logging In and Out
 ------------------
@@ -138,39 +147,47 @@ of the application.  To do this, we fire some requests to the login and logout
 pages with the required form data (username and password).  And because the
 login and logout pages redirect, we tell the client to `follow_redirects`.
 
-Add the following two methods to your `FlaskrTestCase` class::
+Add the following two functions to your :file:`test_flaskr.py` file::
 
-   def login(self, username, password):
-       return self.app.post('/login', data=dict(
-           username=username,
-           password=password
-       ), follow_redirects=True)
+    def login(client, username, password):
+        return client.post('/login', data=dict(
+            username=username,
+            password=password
+        ), follow_redirects=True)
 
-   def logout(self):
-       return self.app.get('/logout', follow_redirects=True)
+
+    def logout(client):
+        return client.get('/logout', follow_redirects=True)
 
 Now we can easily test that logging in and out works and that it fails with
-invalid credentials.  Add this new test to the class::
+invalid credentials.  Add this new test function::
 
-   def test_login_logout(self):
-       rv = self.login('admin', 'default')
-       assert b'You were logged in' in rv.data
-       rv = self.logout()
-       assert b'You were logged out' in rv.data
-       rv = self.login('adminx', 'default')
-       assert b'Invalid username' in rv.data
-       rv = self.login('admin', 'defaultx')
-       assert b'Invalid password' in rv.data
+    def test_login_logout(client):
+        """Make sure login and logout works."""
+
+        rv = login(client, flaskr.app.config['USERNAME'], flaskr.app.config['PASSWORD'])
+        assert b'You were logged in' in rv.data
+
+        rv = logout(client)
+        assert b'You were logged out' in rv.data
+
+        rv = login(client, flaskr.app.config['USERNAME'] + 'x', flaskr.app.config['PASSWORD'])
+        assert b'Invalid username' in rv.data
+
+        rv = login(client, flaskr.app.config['USERNAME'], flaskr.app.config['PASSWORD'] + 'x')
+        assert b'Invalid password' in rv.data
 
 Test Adding Messages
 --------------------
 
-We should also test that adding messages works.  Add a new test method
+We should also test that adding messages works.  Add a new test function
 like this::
 
-    def test_messages(self):
-        self.login('admin', 'default')
-        rv = self.app.post('/add', data=dict(
+    def test_messages(client):
+        """Test that messages work."""
+
+        login(client, flaskr.app.config['USERNAME'], flaskr.app.config['PASSWORD'])
+        rv = client.post('/add', data=dict(
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
@@ -183,21 +200,24 @@ which is the intended behavior.
 
 Running that should now give us three passing tests::
 
-    $ python flaskr_tests.py
-    ...
-    ----------------------------------------------------------------------
-    Ran 3 tests in 0.332s
+    $ pytest -v
 
-    OK
+    ================ test session starts ================
+    rootdir: ./flask/examples/flaskr, inifile: setup.cfg
+    collected 3 items
+
+    tests/test_flaskr.py::test_empty_db PASSED
+    tests/test_flaskr.py::test_login_logout PASSED
+    tests/test_flaskr.py::test_messages PASSED
+
+    ============= 3 passed in 0.23 seconds ==============
 
 For more complex tests with headers and status codes, check out the
 `MiniTwit Example`_ from the sources which contains a larger test
 suite.
 
-
 .. _MiniTwit Example:
    https://github.com/pallets/flask/tree/master/examples/minitwit/
-
 
 Other Testing Tricks
 --------------------

@@ -52,7 +52,6 @@ def test_method_based_view(app):
 
 
 def test_view_patching(app):
-
     class Index(flask.views.MethodView):
         def get(self):
             1 // 0
@@ -74,7 +73,6 @@ def test_view_patching(app):
 
 
 def test_view_inheritance(app):
-
     class Index(flask.views.MethodView):
         def get(self):
             return 'GET'
@@ -94,7 +92,6 @@ def test_view_inheritance(app):
 
 
 def test_view_decorators(app):
-
     def add_x_parachute(f):
         def new_function(*args, **kwargs):
             resp = flask.make_response(f(*args, **kwargs))
@@ -116,8 +113,47 @@ def test_view_decorators(app):
     assert rv.data == b'Awesome'
 
 
-def test_implicit_head(app):
+def test_view_provide_automatic_options_attr():
+    app = flask.Flask(__name__)
 
+    class Index1(flask.views.View):
+        provide_automatic_options = False
+
+        def dispatch_request(self):
+            return 'Hello World!'
+
+    app.add_url_rule('/', view_func=Index1.as_view('index'))
+    c = app.test_client()
+    rv = c.open('/', method='OPTIONS')
+    assert rv.status_code == 405
+
+    app = flask.Flask(__name__)
+
+    class Index2(flask.views.View):
+        methods = ['OPTIONS']
+        provide_automatic_options = True
+
+        def dispatch_request(self):
+            return 'Hello World!'
+
+    app.add_url_rule('/', view_func=Index2.as_view('index'))
+    c = app.test_client()
+    rv = c.open('/', method='OPTIONS')
+    assert sorted(rv.allow) == ['OPTIONS']
+
+    app = flask.Flask(__name__)
+
+    class Index3(flask.views.View):
+        def dispatch_request(self):
+            return 'Hello World!'
+
+    app.add_url_rule('/', view_func=Index3.as_view('index'))
+    c = app.test_client()
+    rv = c.open('/', method='OPTIONS')
+    assert 'OPTIONS' in rv.allow
+
+
+def test_implicit_head(app):
     class Index(flask.views.MethodView):
         def get(self):
             return flask.Response('Blub', headers={
@@ -135,7 +171,6 @@ def test_implicit_head(app):
 
 
 def test_explicit_head(app):
-
     class Index(flask.views.MethodView):
         def get(self):
             return 'GET'
@@ -171,7 +206,6 @@ def test_endpoint_override(app):
 
 
 def test_multiple_inheritance(app):
-
     class GetView(flask.views.MethodView):
         def get(self):
             return 'GET'
@@ -192,7 +226,6 @@ def test_multiple_inheritance(app):
 
 
 def test_remove_method_from_parent(app):
-
     class GetView(flask.views.MethodView):
         def get(self):
             return 'GET'
