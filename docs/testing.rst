@@ -57,13 +57,9 @@ the application for testing and initializes a new database.::
         client = flaskr.app.test_client()
         with flaskr.app.app_context():
             flaskr.init_db()
-
-        def teardown():
-            os.close(db_fd)
-            os.unlink(flaskr.app.config['DATABASE'])
-        request.addfinalizer(teardown)
-
-        return client
+        yield client
+        os.close(db_fd)
+        os.unlink(flaskr.app.config['DATABASE'])
 
 This client fixture will be called by each individual test.  It gives us a
 simple interface to the application, where we can trigger test requests to the
@@ -82,8 +78,7 @@ database name.  We just have to keep the `db_fd` around so that we can use
 the :func:`os.close` function to close the file.
 
 To delete the database after the test, we close the file and remove it
-from the filesystem in the
-:func:`teardown` function.
+from the filesystem.
 
 If we now run the test suite, we should see the following output::
 
@@ -118,7 +113,7 @@ test function to :file:`test_flaskr.py`, like this::
 Notice that our test functions begin with the word `test`; this allows
 `pytest`_ to automatically identify the function as a test to run.
 
-By using `client.get` we can send an HTTP ``GET`` request to the application with
+By using ``client.get`` we can send an HTTP ``GET`` request to the application with
 the given path.  The return value will be a :class:`~flask.Flask.response_class` object.
 We can now use the :attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect
 the return value (as string) from the application.  In this case, we ensure that
