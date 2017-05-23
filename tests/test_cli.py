@@ -150,15 +150,31 @@ def test_locate_app(test_apps):
     script_info = ScriptInfo()
     assert locate_app(script_info, "cliapp.app").name == "testapp"
     assert locate_app(script_info, "cliapp.app:testapp").name == "testapp"
+    assert locate_app(script_info, "cliapp.factory").name == "create_app"
+    assert locate_app(
+        script_info, "cliapp.factory").name == "create_app"
+    assert locate_app(
+        script_info, "cliapp.factory:create_app").name == "create_app"
+    assert locate_app(
+        script_info, "cliapp.factory:create_app()").name == "create_app"
+    assert locate_app(
+        script_info, "cliapp.factory:create_app2('foo', 'bar')"
+    ).name == "create_app2_foo_bar"
+    assert locate_app(
+        script_info, "cliapp.factory:create_app3('baz', 'qux')"
+    ).name == "create_app3_baz_qux"
     assert locate_app(script_info, "cliapp.multiapp:app1").name == "app1"
-    pytest.raises(NoAppException, locate_app,
-                  script_info, "notanpp.py")
-    pytest.raises(NoAppException, locate_app,
-                  script_info, "cliapp/app")
-    pytest.raises(RuntimeError, locate_app,
-                  script_info, "cliapp.app:notanapp")
-    pytest.raises(NoAppException, locate_app,
-                  script_info, "cliapp.importerrorapp")
+    pytest.raises(
+        NoAppException, locate_app, script_info, "notanpp.py")
+    pytest.raises(
+        NoAppException, locate_app, script_info, "cliapp/app")
+    pytest.raises(
+        RuntimeError, locate_app, script_info, "cliapp.app:notanapp")
+    pytest.raises(
+        NoAppException, locate_app,
+        script_info, "cliapp.factory:create_app2('foo')")
+    pytest.raises(
+        NoAppException, locate_app, script_info, "cliapp.importerrorapp")
 
 
 def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
