@@ -94,15 +94,12 @@ class TestJSON(object):
                           content_type='application/json; charset=iso-8859-15')
         assert resp.data == u'Hällo Wörld'.encode('utf-8')
 
-    def test_json_as_unicode(self, app, app_ctx):
+    @pytest.mark.parametrize('test_value,expected', [(True, '"\\u2603"'), (False, u'"\u2603"')])
+    def test_json_as_unicode(self, test_value, expected, app, app_ctx):
 
-        app.config['JSON_AS_ASCII'] = True
+        app.config['JSON_AS_ASCII'] = test_value
         rv = flask.json.dumps(u'\N{SNOWMAN}')
-        assert rv == '"\\u2603"'
-
-        app.config['JSON_AS_ASCII'] = False
-        rv = flask.json.dumps(u'\N{SNOWMAN}')
-        assert rv == u'"\u2603"'
+        assert rv == expected
 
     def test_json_dump_to_file(self, app, app_ctx):
         test_data = {'name': 'Flask'}
