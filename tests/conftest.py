@@ -33,13 +33,13 @@ def app():
     return app
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def app_ctx(app):
     with app.app_context() as ctx:
         yield ctx
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def req_ctx(app):
     with app.test_request_context() as ctx:
         yield ctx
@@ -67,6 +67,7 @@ def leak_detector(request):
         while flask._request_ctx_stack.top is not None:
             leaks.append(flask._request_ctx_stack.pop())
         assert leaks == []
+
     request.addfinalizer(ensure_clean_request_context)
 
 
@@ -171,4 +172,4 @@ def purge_module(request):
 def catch_deprecation_warnings(recwarn):
     yield
     gc.collect()
-    assert not recwarn.list
+    assert not recwarn.list, '\n'.join(str(w.message) for w in recwarn.list)
