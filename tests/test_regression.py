@@ -9,15 +9,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
-
-import os
 import gc
 import sys
-import flask
 import threading
+
+import pytest
 from werkzeug.exceptions import NotFound
 
+import flask
 
 _gc_lock = threading.Lock()
 

@@ -16,24 +16,22 @@ import werkzeug
 from flask._compat import text_type
 
 
-def test_environ_defaults_from_config():
-    app = flask.Flask(__name__)
-    app.testing = True
+def test_environ_defaults_from_config(app, client):
     app.config['SERVER_NAME'] = 'example.com:1234'
     app.config['APPLICATION_ROOT'] = '/foo'
+
     @app.route('/')
     def index():
         return flask.request.url
 
     ctx = app.test_request_context()
     assert ctx.request.url == 'http://example.com:1234/foo/'
-    with app.test_client() as c:
-        rv = c.get('/')
-        assert rv.data == b'http://example.com:1234/foo/'
 
-def test_environ_defaults():
-    app = flask.Flask(__name__)
-    app.testing = True
+    rv = client.get('/')
+    assert rv.data == b'http://example.com:1234/foo/'
+
+
+def test_environ_defaults(app, client, app_ctx, req_ctx):
     @app.route('/')
     def index():
         return flask.request.url
@@ -44,42 +42,40 @@ def test_environ_defaults():
         rv = c.get('/')
         assert rv.data == b'http://localhost/'
 
-def test_environ_base_default():
-    app = flask.Flask(__name__)
+
+def test_environ_base_default(app, client, app_ctx):
     app.testing = True
+
     @app.route('/')
     def index():
         flask.g.user_agent = flask.request.headers["User-Agent"]
         return flask.request.remote_addr
 
-    with app.test_client() as c:
-        rv = c.get('/')
-        assert rv.data == b'127.0.0.1'
-        assert flask.g.user_agent == 'werkzeug/' + werkzeug.__version__
+    rv = client.get('/')
+    assert rv.data == b'127.0.0.1'
+    assert flask.g.user_agent == 'werkzeug/' + werkzeug.__version__
 
-def test_environ_base_modified():
-    app = flask.Flask(__name__)
-    app.testing = True
+
+def test_environ_base_modified(app, client, app_ctx):
     @app.route('/')
     def index():
         flask.g.user_agent = flask.request.headers["User-Agent"]
         return flask.request.remote_addr
 
-    with app.test_client() as c:
-        c.environ_base['REMOTE_ADDR'] = '0.0.0.0'
-        c.environ_base['HTTP_USER_AGENT'] = 'Foo'
-        rv = c.get('/')
-        assert rv.data == b'0.0.0.0'
-        assert flask.g.user_agent == 'Foo'
+    client.environ_base['REMOTE_ADDR'] = '0.0.0.0'
+    client.environ_base['HTTP_USER_AGENT'] = 'Foo'
+    rv = client.get('/')
+    assert rv.data == b'0.0.0.0'
+    assert flask.g.user_agent == 'Foo'
 
-        c.environ_base['REMOTE_ADDR'] = '0.0.0.1'
-        c.environ_base['HTTP_USER_AGENT'] = 'Bar'
-        rv = c.get('/')
-        assert rv.data == b'0.0.0.1'
-        assert flask.g.user_agent == 'Bar'
+    client.environ_base['REMOTE_ADDR'] = '0.0.0.1'
+    client.environ_base['HTTP_USER_AGENT'] = 'Bar'
+    rv = client.get('/')
+    assert rv.data == b'0.0.0.1'
+    assert flask.g.user_agent == 'Bar'
 
-def test_redirect_keep_session():
-    app = flask.Flask(__name__)
+
+def test_redirect_keep_session(app, client, app_ctx):
     app.secret_key = 'testing'
 
     @app.route('/', methods=['GET', 'POST'])
@@ -93,7 +89,7 @@ def test_redirect_keep_session():
     def get_session():
         return flask.session.get('data', '<missing>')
 
-    with app.test_client() as c:
+    with client as c:
         rv = c.get('/getsession')
         assert rv.data == b'<missing>'
 
@@ -110,9 +106,8 @@ def test_redirect_keep_session():
         rv = c.get('/getsession')
         assert rv.data == b'foo'
 
-def test_session_transactions():
-    app = flask.Flask(__name__)
-    app.testing = True
+
+def test_session_transactions(app):
     app.secret_key = 'testing'
 
     @app.route('/')
@@ -130,6 +125,7 @@ def test_session_transactions():
             assert len(sess) == 1
             assert sess['foo'] == [42]
 
+
 def test_session_transactions_no_null_sessions():
     app = flask.Flask(__name__)
     app.testing = True
@@ -140,30 +136,28 @@ def test_session_transactions_no_null_sessions():
                 pass
         assert 'Session backend did not open a session' in str(e.value)
 
-def test_session_transactions_keep_context():
-    app = flask.Flask(__name__)
-    app.testing = True
+
+def test_session_transactions_keep_context(app, client, req_ctx):
     app.secret_key = 'testing'
 
-    with app.test_client() as c:
-        rv = c.get('/')
-        req = flask.request._get_current_object()
-        assert req is not None
-        with c.session_transaction():
-            assert req is flask.request._get_current_object()
+    rv = client.get('/')
+    req = flask.request._get_current_object()
+    assert req is not None
+    with client.session_transaction():
+        assert req is flask.request._get_current_object()
 
-def test_session_transaction_needs_cookies():
-    app = flask.Flask(__name__)
-    app.testing = True
+def test_session_transaction_needs_cookies(app):
     c = app.test_client(use_cookies=False)
     with pytest.raises(RuntimeError) as e:
         with c.session_transaction() as s:
             pass
     assert 'cookies' in str(e.value)
 
+
 def test_test_client_context_binding():
     app = flask.Flask(__name__)
     app.config['LOGGER_HANDLER_POLICY'] = 'never'
+
     @app.route('/')
     def index():
         flask.g.value = 42
@@ -192,6 +186,7 @@ def test_test_client_context_binding():
     else:
         raise AssertionError('some kind of exception expected')
 
+
 def test_reuse_client():
     app = flask.Flask(__name__)
     c = app.test_client()
@@ -202,9 +197,11 @@ def test_reuse_client():
     with c:
         assert c.get('/').status_code == 404
 
+
 def test_test_client_calls_teardown_handlers():
     app = flask.Flask(__name__)
     called = []
+
     @app.teardown_request
     def remember(error):
         called.append(error)
@@ -224,6 +221,7 @@ def test_test_client_calls_teardown_handlers():
         assert called == [None]
     assert called == [None, None]
 
+
 def test_full_url_request():
     app = flask.Flask(__name__)
     app.testing = True
@@ -238,9 +236,11 @@ def test_full_url_request():
         assert 'gin' in flask.request.form
         assert 'vodka' in flask.request.args
 
+
 def test_subdomain():
     app = flask.Flask(__name__)
     app.config['SERVER_NAME'] = 'example.com'
+
     @app.route('/', subdomain='<company_id>')
     def view(company_id):
         return company_id
@@ -254,9 +254,11 @@ def test_subdomain():
     assert 200 == response.status_code
     assert b'xxx' == response.data
 
+
 def test_nosubdomain():
     app = flask.Flask(__name__)
     app.config['SERVER_NAME'] = 'example.com'
+
     @app.route('/<company_id>')
     def view(company_id):
         return company_id
