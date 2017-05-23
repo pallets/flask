@@ -222,7 +222,7 @@ class Flask(_PackageBoundObject):
 
     #: The testing flag.  Set this to ``True`` to enable the test mode of
     #: Flask extensions (and in the future probably also Flask itself).
-    #: For example this might activate unittest helpers that have an
+    #: For example this might activate test helpers that have an
     #: additional runtime cost which should not be enabled by default.
     #:
     #: If this is enabled and PROPAGATE_EXCEPTIONS is not changed from the
