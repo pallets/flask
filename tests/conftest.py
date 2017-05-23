@@ -23,7 +23,6 @@ class Flask(_Flask):
     def make_response(self, rv):
         if rv is None:
             rv = ''
-
         return super(Flask, self).make_response(rv)
 
 
@@ -105,7 +104,7 @@ def limit_loader(request, monkeypatch):
 
 @pytest.fixture
 def modules_tmpdir(tmpdir, monkeypatch):
-    """A tmpdir added to sys.path"""
+    """A tmpdir added to sys.path."""
     rv = tmpdir.mkdir('modules_tmpdir')
     monkeypatch.syspath_prepend(str(rv))
     return rv
@@ -119,7 +118,7 @@ def modules_tmpdir_prefix(modules_tmpdir, monkeypatch):
 
 @pytest.fixture
 def site_packages(modules_tmpdir, monkeypatch):
-    """Create a fake site-packages"""
+    """Create a fake site-packages."""
     rv = modules_tmpdir \
         .mkdir('lib') \
         .mkdir('python{x[0]}.{x[1]}'.format(x=sys.version_info)) \
@@ -131,7 +130,7 @@ def site_packages(modules_tmpdir, monkeypatch):
 @pytest.fixture
 def install_egg(modules_tmpdir, monkeypatch):
     """Generate egg from package name inside base and put the egg into
-    sys.path"""
+    sys.path."""
 
     def inner(name, base=modules_tmpdir):
         if not isinstance(name, str):
