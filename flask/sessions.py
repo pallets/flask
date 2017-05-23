@@ -405,7 +405,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
         # Add a "Vary: Cookie" header if the session was accessed at all.
         if session.accessed:
-            response.headers.add('Vary', 'Cookie')
+            self._patch_vary_cookie_header(response)
 
         if not self.should_set_cookie(app, session):
             return
@@ -423,3 +423,16 @@ class SecureCookieSessionInterface(SessionInterface):
             path=path,
             secure=secure
         )
+
+    def _patch_vary_cookie_header(self, response):
+        """
+        Add a 'Cookie' value to the 'Vary' header if one is not already present.
+        """
+        header = response.headers.get('Vary', '')
+        headers = [h.strip() for h in header.split(',') if h]
+
+        if not any(h.lower() == 'cookie' for h in headers):
+            headers.append('Cookie')
+
+        updated_header = ', '.join(headers)
+        response.headers['Vary'] = updated_header
