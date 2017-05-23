@@ -25,6 +25,7 @@ if not PY2:
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
 
+    from inspect import getfullargspec as getargspec
     from io import StringIO
 
     def reraise(tp, value, tb=None):
@@ -43,6 +44,7 @@ else:
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
 
+    from inspect import getargspec
     from cStringIO import StringIO
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
