@@ -945,49 +945,35 @@ class TestSafeJoin(object):
 
 class TestHelpers(object):
 
-    def test_get_debug_flag(self):
-        original_debug_value = os.environ.get('FLASK_DEBUG') or ''
-        os.environ['FLASK_DEBUG'] = ''
+    def test_get_debug_flag(self, monkeypatch):
+        monkeypatch.setenv('FLASK_DEBUG', '')
         assert get_debug_flag() == None
         assert get_debug_flag(default=True) == True
 
-        os.environ['FLASK_DEBUG'] = '0'
+        monkeypatch.setenv('FLASK_DEBUG', '0')
         assert get_debug_flag() == False
         assert get_debug_flag(default=True) == False
 
-        os.environ['FLASK_DEBUG'] = 'False'
+        monkeypatch.setenv('FLASK_DEBUG', 'False')
         assert get_debug_flag() == False
         assert get_debug_flag(default=True) == False
 
-        os.environ['FLASK_DEBUG'] = 'No'
+        monkeypatch.setenv('FLASK_DEBUG', 'No')
         assert get_debug_flag() == False
         assert get_debug_flag(default=True) == False
 
-        os.environ['FLASK_DEBUG'] = 'True'
+        monkeypatch.setenv('FLASK_DEBUG', 'True')
         assert get_debug_flag() == True
         assert get_debug_flag(default=True) == True
 
-        os.environ['FLASK_DEBUG'] = original_debug_value
-
-    def test_make_response_no_args(self):
+    def test_make_response(self):
         app = flask.Flask(__name__)
-        app.testing = True
-        @app.route('/')
-        def index():
-            return flask.helpers.make_response()
-        c = app.test_client()
-        rv = c.get()
-        assert rv
+        with app.test_request_context():
+            rv = flask.helpers.make_response()
+            assert rv.status_code == 200
+            assert rv.mimetype == 'text/html'
 
-    def test_make_response_with_args(self):
-        app = flask.Flask(__name__)
-        app.testing = True
-        @app.route('/')
-        def index():
-            response = flask.helpers.make_response(flask.render_template_string('Hello World'))
-            response.headers['X-Parachutes'] = 'parachutes are cool'
-            return response
-        c = app.test_client()
-        rv = c.get()
-        assert rv
-        assert rv.headers['X-Parachutes'] == 'parachutes are cool'
+            rv = flask.helpers.make_response('Hello')
+            assert rv.status_code == 200
+            assert rv.data == b'Hello'
+            assert rv.mimetype == 'text/html'
