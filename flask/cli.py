@@ -9,7 +9,10 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import ast
+import inspect
 import os
+import re
 import sys
 import traceback
 from functools import update_wrapper
@@ -55,20 +58,20 @@ def find_best_app(script_info, module):
             ' one.'.format(module=module.__name__)
         )
 
-    # Search for app factory callables.
+    # Search for app factory functions.
     for attr_name in ('create_app', 'make_app'):
         app_factory = getattr(module, attr_name, None)
 
-        if callable(app_factory):
+        if inspect.isfunction(app_factory):
             try:
                 app = call_factory(app_factory, script_info)
                 if isinstance(app, Flask):
                     return app
             except TypeError:
                 raise NoAppException(
-                    'Auto-detected "{callable}()" in module "{module}", but '
+                    'Auto-detected "{function}()" in module "{module}", but '
                     'could not call it without specifying arguments.'.format(
-                        callable=attr_name, module=module.__name__
+                        function=attr_name, module=module.__name__
                     )
                 )
 
@@ -150,10 +153,45 @@ def locate_app(script_info, app_id):
     if app_obj is None:
         app = find_best_app(script_info, mod)
     else:
-        app = getattr(mod, app_obj, None)
+        function_regex = r'^([\w_][\w_\d]*)\((.*)\)$'
+        match = re.match(function_regex, app_obj)
+        try:
+            if match:
+                function_name = match.group(1)
+                arguments = match.group(2)
+                if arguments:
+                    arguments = ast.literal_eval(
+                        "({arguments}, )".format(arguments=arguments))
+                else:
+                    arguments = ()
+                app_factory = getattr(mod, function_name, None)
+                app_factory_arg_names = getargspec(app_factory).args
+                if 'script_info' in app_factory_arg_names:
+                    app = app_factory(*arguments, script_info=script_info)
+                elif arguments:
+                    app = app_factory(*arguments)
+                elif not arguments and len(app_factory_arg_names) == 1:
+                    app = app_factory(script_info)
+                else:
+                    app = app_factory()
+            else:
+                attr = getattr(mod, app_obj, None)
+                if inspect.isfunction(attr):
+                    app = call_factory(attr, script_info)
+                else:
+                    app = attr
+        except TypeError as e:
+            new_error = NoAppException(
+                '{e}\nThe app factory "{factory}" in module "{module}" could'
+                ' not be called with the specified arguments (and a'
+                ' script_info argument automatically added if applicable).'
+                ' Did you make sure to use the right number of arguments as'
+                ' well as not using keyword arguments or'
+                ' non-literals?'.format(e=e, factory=app_obj, module=module))
+            reraise(NoAppException, new_error, sys.exc_info()[2])
         if app is None:
-            raise RuntimeError('Failed to find application in module "%s"'
-                               % module)
+            raise RuntimeError('Failed to find application in module '
+                               '"{name}"'.format(name=module))
 
     return app
 
