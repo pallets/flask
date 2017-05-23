@@ -791,3 +791,30 @@ def test_app_request_processing():
     resp = app.test_client().get('/').data
     assert resp == b'request|after'
     assert evts == ['first'] + ['before', 'after', 'teardown'] * 2
+
+
+def test_app_url_processors(app, client):
+    bp = flask.Blueprint('bp', __name__)
+
+    # Register app-wide url defaults and preprocessor on blueprint
+    @bp.app_url_defaults
+    def add_language_code(endpoint, values):
+        values.setdefault('lang_code', flask.g.lang_code)
+
+    @bp.app_url_value_preprocessor
+    def pull_lang_code(endpoint, values):
+        flask.g.lang_code = values.pop('lang_code')
+
+    # Register route rules at the app level
+    @app.route('/<lang_code>/')
+    def index():
+        return flask.url_for('about')
+
+    @app.route('/<lang_code>/about')
+    def about():
+        return flask.url_for('index')
+
+    app.register_blueprint(bp)
+
+    assert client.get('/de/').data == b'/de/about'
+    assert client.get('/de/about').data == b'/de/'
