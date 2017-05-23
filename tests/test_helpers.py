@@ -945,26 +945,20 @@ class TestSafeJoin(object):
 
 class TestHelpers(object):
 
-    def test_get_debug_flag(self, monkeypatch):
-        monkeypatch.setenv('FLASK_DEBUG', '')
-        assert get_debug_flag() == None
-        assert get_debug_flag(default=True) == True
-
-        monkeypatch.setenv('FLASK_DEBUG', '0')
-        assert get_debug_flag() == False
-        assert get_debug_flag(default=True) == False
-
-        monkeypatch.setenv('FLASK_DEBUG', 'False')
-        assert get_debug_flag() == False
-        assert get_debug_flag(default=True) == False
-
-        monkeypatch.setenv('FLASK_DEBUG', 'No')
-        assert get_debug_flag() == False
-        assert get_debug_flag(default=True) == False
-
-        monkeypatch.setenv('FLASK_DEBUG', 'True')
-        assert get_debug_flag() == True
-        assert get_debug_flag(default=True) == True
+    @pytest.mark.parametrize("debug, expected_flag, expected_default_flag", [
+        ('', None, True),
+        ('0', False, False),
+        ('False', False, False),
+        ('No', False, False),
+        ('True', True, True)
+    ])
+    def test_get_debug_flag(self, monkeypatch, debug, expected_flag, expected_default_flag):
+        monkeypatch.setenv('FLASK_DEBUG', debug)
+        if expected_flag is None:
+            assert get_debug_flag() is None
+        else:
+            assert get_debug_flag() == expected_flag
+        assert get_debug_flag(default=True) == expected_default_flag
 
     def test_make_response(self):
         app = flask.Flask(__name__)
