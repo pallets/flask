@@ -125,11 +125,10 @@ class TestJSON(object):
 
     def test_jsonify_dicts(self, app, client):
         """Test jsonify with dicts and kwargs unpacking."""
-        d = dict(
-            a=0, b=23, c=3.14, d='t', e='Hi', f=True, g=False,
-            h=['test list', 10, False],
-            i={'test': 'dict'}
-        )
+        d = {'a': 0, 'b': 23, 'c': 3.14, 'd': 't',
+             'e': 'Hi', 'f': True, 'g': False,
+             'h': ['test list', 10, False],
+             'i': {'test': 'dict'}}
 
         @app.route('/kw')
         def return_kwargs():
@@ -640,7 +639,6 @@ class TestSendfile(object):
 
 
 class TestLogging(object):
-
     def test_logger_cache(self):
         app = flask.Flask(__name__)
         logger1 = app.logger
