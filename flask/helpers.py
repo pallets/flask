@@ -685,6 +685,9 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
+    # Expand relative directories to the app's root_path
+    if not os.path.isabs(directory):
+        directory = os.path.join(current_app.root_path, directory)
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
