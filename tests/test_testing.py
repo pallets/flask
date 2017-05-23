@@ -44,7 +44,6 @@ def test_environ_defaults(app, client, app_ctx, req_ctx):
 
 
 def test_environ_base_default(app, client, app_ctx):
-    app.testing = True
 
     @app.route('/')
     def index():
@@ -222,9 +221,7 @@ def test_test_client_calls_teardown_handlers():
     assert called == [None, None]
 
 
-def test_full_url_request():
-    app = flask.Flask(__name__)
-    app.testing = True
+def test_full_url_request(app):
 
     @app.route('/action', methods=['POST'])
     def action():

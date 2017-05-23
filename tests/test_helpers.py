@@ -85,7 +85,6 @@ class TestJSON(object):
         assert rv.data == b'foo'
 
     def test_json_body_encoding(self, app, client):
-        app.testing = True
 
         @app.route('/')
         def index():
@@ -285,7 +284,6 @@ class TestJSON(object):
         def index():
             return flask.json.dumps(flask.request.get_json()['x'])
 
-        app.testing = True
         app.register_blueprint(bp)
 
         rv = client.post('/bp', data=flask.json.dumps({
@@ -313,7 +311,6 @@ class TestJSON(object):
         test_modified_url_encoding = None
 
     def test_json_key_sorting(self, app, client):
-        app.testing = True
         app.debug = True
 
         assert app.config['JSON_SORT_KEYS'] == True
@@ -628,7 +625,6 @@ class TestSendfile(object):
         rv.close()
 
     def test_send_from_directory_bad_request(self, app, req_ctx):
-        app.testing = True
         app.root_path = os.path.join(os.path.dirname(__file__),
                                      'test_apps', 'subdomaintestmodule')
 
@@ -808,7 +804,6 @@ class TestNoImports(object):
 
 class TestStreaming(object):
     def test_streaming_with_context(self, app, client):
-        app.testing = True
 
         @app.route('/')
         def index():
@@ -839,7 +834,6 @@ class TestStreaming(object):
         assert rv.data == b'Hello World!'
 
     def test_streaming_with_context_and_custom_close(self, app, client):
-        app.testing = True
         called = []
 
         class Wrapper(object):
