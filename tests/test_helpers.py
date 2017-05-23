@@ -945,7 +945,7 @@ class TestSafeJoin(object):
 
 class TestHelpers(object):
 
-    @pytest.mark.parametrize("debug, expected_flag, expected_default_flag", [
+    @pytest.mark.parametrize('debug, expected_flag, expected_default_flag', [
         ('', None, True),
         ('0', False, False),
         ('False', False, False),
