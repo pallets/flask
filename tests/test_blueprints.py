@@ -723,3 +723,71 @@ def test_template_global():
     with app.app_context():
         rv = flask.render_template_string('{{ get_answer() }}')
         assert rv == '42'
+
+def test_request_processing():
+    app = flask.Flask(__name__)
+    bp = flask.Blueprint('bp', __name__)
+    evts = []
+    @bp.before_request
+    def before_bp():
+        evts.append('before')
+    @bp.after_request
+    def after_bp(response):
+        response.data += b'|after'
+        evts.append('after')
+        return response
+    @bp.teardown_request
+    def teardown_bp(exc):
+        evts.append('teardown')
+
+    # Setup routes for testing
+    @bp.route('/bp')
+    def bp_endpoint():
+        return 'request'
+
+    app.register_blueprint(bp)
+
+    assert evts == []
+    rv = app.test_client().get('/bp')
+    assert rv.data == b'request|after'
+    assert evts == ['before', 'after', 'teardown']
+
+def test_app_request_processing():
+    app = flask.Flask(__name__)
+    bp = flask.Blueprint('bp', __name__)
+    evts = []
+
+    @bp.before_app_first_request
+    def before_first_request():
+        evts.append('first')
+    @bp.before_app_request
+    def before_app():
+        evts.append('before')
+    @bp.after_app_request
+    def after_app(response):
+        response.data += b'|after'
+        evts.append('after')
+        return response
+    @bp.teardown_app_request
+    def teardown_app(exc):
+        evts.append('teardown')
+
+    app.register_blueprint(bp)
+
+    # Setup routes for testing
+    @app.route('/')
+    def bp_endpoint():
+        return 'request'
+
+    # before first request
+    assert evts == []
+
+    # first request
+    resp = app.test_client().get('/').data
+    assert resp == b'request|after'
+    assert evts == ['first', 'before', 'after', 'teardown']
+
+    # second request
+    resp = app.test_client().get('/').data
+    assert resp == b'request|after'
+    assert evts == ['first'] + ['before', 'after', 'teardown'] * 2
