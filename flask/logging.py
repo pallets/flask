@@ -22,7 +22,7 @@ from .globals import _request_ctx_stack
 PROD_LOG_FORMAT = '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
 DEBUG_LOG_FORMAT = (
     '-' * 80 + '\n' +
-    '%(levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n' +
+    '%(levelname)s in %(module)s [%(pathname)s: %(lineno)d]:\n' +
     '%(message)s\n' +
     '-' * 80
 )
