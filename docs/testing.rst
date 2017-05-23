@@ -54,7 +54,7 @@ the application for testing and initializes a new database.::
 
 
     @pytest.fixture
-    def client(request):
+    def client():
         db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
         flaskr.app.config['TESTING'] = True
         client = flaskr.app.test_client()
