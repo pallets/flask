@@ -61,8 +61,7 @@ def find_best_app(script_info, module):
 
         if callable(app_factory):
             try:
-                app = check_factory_for_script_info_and_call(app_factory,
-                                                             script_info)
+                app = call_factory(app_factory, script_info)
                 if isinstance(app, Flask):
                     return app
             except TypeError:
@@ -80,19 +79,18 @@ def find_best_app(script_info, module):
     )
 
 
-def check_factory_for_script_info_and_call(func, script_info):
-    """Given a function this checks if the function has an argument named 
-    script_info or just a single argument and calls the function with 
-    script_info if so. Otherwise calls the function without any arguments and 
-    returns the result."""
+def call_factory(func, script_info):
+    """Checks if the given app factory function has an argument named 
+    ``script_info`` or just a single argument and calls the function passing 
+    ``script_info`` if so. Otherwise, calls the function without any arguments
+    and returns the result.
+    """
     arguments = getargspec(func).args
     if 'script_info' in arguments:
-        result = func(script_info=script_info)
+        return func(script_info=script_info)
     elif len(arguments) == 1:
-        result = func(script_info)
-    else:
-        result = func()
-    return result
+        return func(script_info)
+    return func()
 
 
 def prepare_exec_for_file(filename):
@@ -275,7 +273,7 @@ class ScriptInfo(object):
         if self._loaded_app is not None:
             return self._loaded_app
         if self.create_app is not None:
-            rv = check_factory_for_script_info_and_call(self.create_app, self)
+            rv = call_factory(self.create_app, self)
         else:
             if not self.app_import_path:
                 raise NoAppException(
