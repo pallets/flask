@@ -22,6 +22,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
+from flask.helpers import get_debug_flag, make_response
 
 
 def has_encoding(name):
@@ -941,3 +942,32 @@ class TestSafeJoin(object):
         for args in failing:
             with pytest.raises(NotFound):
                 print(flask.safe_join(*args))
+
+class TestHelpers(object):
+
+    @pytest.mark.parametrize('debug, expected_flag, expected_default_flag', [
+        ('', None, True),
+        ('0', False, False),
+        ('False', False, False),
+        ('No', False, False),
+        ('True', True, True)
+    ])
+    def test_get_debug_flag(self, monkeypatch, debug, expected_flag, expected_default_flag):
+        monkeypatch.setenv('FLASK_DEBUG', debug)
+        if expected_flag is None:
+            assert get_debug_flag() is None
+        else:
+            assert get_debug_flag() == expected_flag
+        assert get_debug_flag(default=True) == expected_default_flag
+
+    def test_make_response(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.helpers.make_response()
+            assert rv.status_code == 200
+            assert rv.mimetype == 'text/html'
+
+            rv = flask.helpers.make_response('Hello')
+            assert rv.status_code == 200
+            assert rv.data == b'Hello'
+            assert rv.mimetype == 'text/html'
