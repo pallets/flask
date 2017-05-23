@@ -201,7 +201,7 @@ class SessionInterface(object):
     #: .. versionadded:: 0.10
     pickle_based = False
 
-    def make_null_session(self, app):
+    def make_null_session(self):
         """Creates a null session which acts as a replacement object if the
         real session support could not be loaded due to a configuration
         error.  This mainly aids the user experience because the job of the
