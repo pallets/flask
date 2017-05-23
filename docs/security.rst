@@ -109,25 +109,12 @@ Security Headers
 ----------------
 
 This section contains a list of headers supported by Flask.
-To configure HTTPS and handle the headers listed below we suggest the package `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`. 
-
-Content Security Policy (CSP)
------------------------------
-
-Enhance security and prevents common web vulnerabilities such as cross-site scripting and MITM related attacks.
-
-Example:
-
-.. sourcecode:: none
-   
-   Content-Security-Policy: default-src https:; script-src 'nonce-{random}'; object-src 'none'
-
-See also `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_.
+To configure HTTPS and handle the headers listed below we suggest the package `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_. 
 
 HTTP Strict Transport Security (HSTS)
 -------------------------------------
 
-Redirects http requests to https on all urls, preventing MITM attacks.
+Redirects http requests to https on all urls, preventing Man-in-the-middle (MITM) attacks.
 
 Example:
 
@@ -139,7 +126,20 @@ Example:
 
 See also `Strict Transport Security <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_. 
 
-X-FRAME-OPTIONS (Clickjacking protection)
+HTTP Public Key Pinning (HPKP)
+------------------------------
+
+This enables your web server to authenticate with a client browser using a specific certificate key to prevent Man-in-the-middle (MITM) attacks.
+
+Example:
+
+.. sourcecode:: none
+
+   Public-Key-Pins: pin-sha256="base64=="; max-age=expireTime [; includeSubDomains][; report-uri="reportURI"] 
+
+See also `Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_.
+
+X-Frame-Options (Clickjacking protection)
 -----------------------------------------
 
 Prevents the client from clicking page elements outside of the website, avoiding hijacking or UI redress attacks.
@@ -155,7 +155,7 @@ See also `X-Frame-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Hea
 X-Content-Type-Options
 ----------------------
 
-Prevents XSS by blocking requests on clients and forcing them to read the content type instead of first opening it.
+This header prevents Cross-site scripting (XSS) by blocking requests on clients and forcing them to first read and validate the content-type before reading any of the contents of the request.
 
 .. sourcecode:: none
    
@@ -163,10 +163,27 @@ Prevents XSS by blocking requests on clients and forcing them to read the conten
 
 See also `X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options>`_. 
 
+Content Security Policy (CSP)
+-----------------------------
+
+Enhances security and prevents common web vulnerabilities such as cross-site scripting (XSS) and Man-in-the-middle (MITM) related attacks.
+
+Example:
+
+.. sourcecode:: none
+   
+   Content-Security-Policy: default-src https:; script-src 'nonce-{random}'; object-src 'none'
+
+See also `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_.
+
 Cookie options
 --------------
 
-For setting cookies on client-side storage.
+While these headers are not directly security related, they have important options that may affect your flask application.
+
+- ``Secure`` limits your cookies to HTTPS traffic only.
+- ``HttpOnly`` protects the contents of your cookie from being visible to XSS.
+- ``SameSite`` ensures that cookies can only be requested from the same domain that created them but this feature is not yet fully supported across all browsers.  
 
 Example:
 
@@ -174,17 +191,7 @@ Example:
    
    Set-Cookie: [cookie-name]=[cookie-value] 
 
-See also `HTTP cookies <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_ .
+See also:
 
-HTTP Public Key Pinning (HPKP)
-------------------------------
-
-For associating clients with web servers through a certificate key and prevent MITM attacks.
-
-Example:
-
-.. sourcecode:: none
-
-   Public-Key-Pins: pin-sha256="base64=="; max-age=expireTime [; includeSubDomains][; report-uri="reportURI"] 
-
-See also `Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_.
+-  Mozilla guide to `HTTP cookies <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_.
+- `OWASP HTTP Only <https://www.owasp.org/index.php/HttpOnly>`_. 
