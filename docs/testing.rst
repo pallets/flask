@@ -159,7 +159,7 @@ Add the following two functions to your :file:`test_flaskr.py` file::
 Now we can easily test that logging in and out works and that it fails with
 invalid credentials.  Add this new test function::
 
- def test_login_logout(client):
+    def test_login_logout(client):
         """Make sure login and logout works"""
         rv = login(client, flaskr.app.config['USERNAME'],
                    flaskr.app.config['PASSWORD'])
