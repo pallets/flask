@@ -109,6 +109,43 @@ def test_view_decorators():
     assert rv.headers['X-Parachute'] == 'awesome'
     assert rv.data == b'Awesome'
 
+def test_view_provide_automatic_options_attr():
+    app = flask.Flask(__name__)
+
+    class Index1(flask.views.View):
+        provide_automatic_options = False
+        def dispatch_request(self):
+            return 'Hello World!'
+
+    app.add_url_rule('/', view_func=Index1.as_view('index'))
+    c = app.test_client()
+    rv = c.open('/', method='OPTIONS')
+    assert rv.status_code == 405
+
+    app = flask.Flask(__name__)
+
+    class Index2(flask.views.View):
+        methods = ['OPTIONS']
+        provide_automatic_options = True
+        def dispatch_request(self):
+            return 'Hello World!'
+
+    app.add_url_rule('/', view_func=Index2.as_view('index'))
+    c = app.test_client()
+    rv = c.open('/', method='OPTIONS')
+    assert sorted(rv.allow) == ['OPTIONS']
+
+    app = flask.Flask(__name__)
+
+    class Index3(flask.views.View):
+        def dispatch_request(self):
+            return 'Hello World!'
+
+    app.add_url_rule('/', view_func=Index3.as_view('index'))
+    c = app.test_client()
+    rv = c.open('/', method='OPTIONS')
+    assert 'OPTIONS' in rv.allow
+
 def test_implicit_head():
     app = flask.Flask(__name__)
 
