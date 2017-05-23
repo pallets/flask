@@ -149,9 +149,9 @@ def test_manual_context_binding(app):
 
 
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
-class GreenletContextCopying():
+class TestGreenletContextCopying(object):
 
-    def test_greenlet_context_copying(app, client):
+    def test_greenlet_context_copying(self, app, client):
         greenlets = []
 
         @app.route('/')
@@ -178,7 +178,7 @@ class GreenletContextCopying():
         result = greenlets[0].run()
         assert result == 42
 
-    def test_greenlet_context_copying_api(app, client):
+    def test_greenlet_context_copying_api(self, app, client):
         greenlets = []
 
         @app.route('/')
