@@ -22,13 +22,14 @@ from . import __version__
 from ._compat import iteritems, reraise
 from .globals import current_app
 from .helpers import get_debug_flag
+from ._compat import getargspec
 
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
 
-def find_best_app(module):
+def find_best_app(script_info, module):
     """Given a module instance this tries to find the best possible
     application in the module or raises an exception.
     """
@@ -60,8 +61,7 @@ def find_best_app(module):
 
         if callable(app_factory):
             try:
-                app = app_factory()
-
+                app = call_factory(app_factory, script_info)
                 if isinstance(app, Flask):
                     return app
             except TypeError:
@@ -77,6 +77,20 @@ def find_best_app(module):
         'it contains a Flask application? Maybe you wrapped it in a WSGI '
         'middleware.'.format(module=module.__name__)
     )
+
+
+def call_factory(func, script_info):
+    """Checks if the given app factory function has an argument named 
+    ``script_info`` or just a single argument and calls the function passing 
+    ``script_info`` if so. Otherwise, calls the function without any arguments
+    and returns the result.
+    """
+    arguments = getargspec(func).args
+    if 'script_info' in arguments:
+        return func(script_info=script_info)
+    elif len(arguments) == 1:
+        return func(script_info)
+    return func()
 
 
 def prepare_exec_for_file(filename):
@@ -108,7 +122,7 @@ def prepare_exec_for_file(filename):
     return '.'.join(module[::-1])
 
 
-def locate_app(app_id):
+def locate_app(script_info, app_id):
     """Attempts to locate the application."""
     __traceback_hide__ = True
     if ':' in app_id:
@@ -134,7 +148,7 @@ def locate_app(app_id):
 
     mod = sys.modules[module]
     if app_obj is None:
-        app = find_best_app(mod)
+        app = find_best_app(script_info, mod)
     else:
         app = getattr(mod, app_obj, None)
         if app is None:
@@ -259,7 +273,7 @@ class ScriptInfo(object):
         if self._loaded_app is not None:
             return self._loaded_app
         if self.create_app is not None:
-            rv = self.create_app(self)
+            rv = call_factory(self.create_app, self)
         else:
             if not self.app_import_path:
                 raise NoAppException(
@@ -267,7 +281,7 @@ class ScriptInfo(object):
                     'the FLASK_APP environment variable.\n\nFor more '
                     'information see '
                     'http://flask.pocoo.org/docs/latest/quickstart/')
-            rv = locate_app(self.app_import_path)
+            rv = locate_app(self, self.app_import_path)
         debug = get_debug_flag()
         if debug is not None:
             rv.debug = debug
