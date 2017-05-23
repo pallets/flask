@@ -90,6 +90,30 @@ def test_blueprint_specific_user_error_handling(app, client):
     assert client.get('/function').data == b'bam'
 
 
+def test_blueprint_app_error_handling(app, client):
+    errors = flask.Blueprint('errors', __name__)
+
+    @errors.app_errorhandler(403)
+    def forbidden_handler(e):
+        return 'you shall not pass', 403
+
+    @app.route('/forbidden')
+    def app_forbidden():
+        flask.abort(403)
+
+    forbidden_bp = flask.Blueprint('forbidden_bp', __name__)
+
+    @forbidden_bp.route('/nope')
+    def bp_forbidden():
+        flask.abort(403)
+
+    app.register_blueprint(errors)
+    app.register_blueprint(forbidden_bp)
+
+    assert client.get('/forbidden').data == b'you shall not pass'
+    assert client.get('/nope').data == b'you shall not pass'
+
+
 def test_blueprint_url_definitions(app, client):
     bp = flask.Blueprint('test', __name__)
 
@@ -434,7 +458,6 @@ def test_template_filter_with_template(app, client):
 
 
 def test_template_filter_after_route_with_template(app, client):
-
     @app.route('/')
     def index():
         return flask.render_template('template_filter.html', value='abcd')
@@ -571,7 +594,6 @@ def test_template_test_with_template(app, client):
 
 
 def test_template_test_after_route_with_template(app, client):
-
     @app.route('/')
     def index():
         return flask.render_template('template_test.html', value=False)
@@ -636,3 +658,68 @@ def test_add_template_test_with_name_and_template(app, client):
 
     rv = client.get('/')
     assert b'Success!' in rv.data
+
+
+def test_context_processing():
+    app = flask.Flask(__name__)
+    answer_bp = flask.Blueprint('answer_bp', __name__)
+
+    template_string = lambda: flask.render_template_string(
+        '{% if notanswer %}{{ notanswer }} is not the answer. {% endif %}'
+        '{% if answer %}{{ answer }} is the answer.{% endif %}'
+    )
+
+    # App global context processor
+    @answer_bp.app_context_processor
+    def not_answer_context_processor():
+        return {'notanswer': 43}
+
+    # Blueprint local context processor
+    @answer_bp.context_processor
+    def answer_context_processor():
+        return {'answer': 42}
+
+    # Setup endpoints for testing
+    @answer_bp.route('/bp')
+    def bp_page():
+        return template_string()
+
+    @app.route('/')
+    def app_page():
+        return template_string()
+
+    # Register the blueprint
+    app.register_blueprint(answer_bp)
+
+    c = app.test_client()
+
+    app_page_bytes = c.get('/').data
+    answer_page_bytes = c.get('/bp').data
+
+    assert b'43' in app_page_bytes
+    assert b'42' not in app_page_bytes
+
+    assert b'42' in answer_page_bytes
+    assert b'43' in answer_page_bytes
+
+
+def test_template_global():
+    app = flask.Flask(__name__)
+    bp = flask.Blueprint('bp', __name__)
+
+    @bp.app_template_global()
+    def get_answer():
+        return 42
+
+    # Make sure the function is not in the jinja_env already
+    assert 'get_answer' not in app.jinja_env.globals.keys()
+    app.register_blueprint(bp)
+
+    # Tests
+    assert 'get_answer' in app.jinja_env.globals.keys()
+    assert app.jinja_env.globals['get_answer'] is get_answer
+    assert app.jinja_env.globals['get_answer']() == 42
+
+    with app.app_context():
+        rv = flask.render_template_string('{{ get_answer() }}')
+        assert rv == '42'
