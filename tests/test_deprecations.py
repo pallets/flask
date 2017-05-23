@@ -17,7 +17,6 @@ import flask
 class TestRequestDeprecation(object):
     def test_request_json(self, recwarn, app, client):
         """Request.json is deprecated"""
-        app.testing = True
 
         @app.route('/', methods=['POST'])
         def index():
@@ -30,7 +29,6 @@ class TestRequestDeprecation(object):
 
     def test_request_module(self, recwarn, app, client):
         """Request.module is deprecated"""
-        app.testing = True
 
         @app.route('/')
         def index():

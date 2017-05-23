@@ -39,22 +39,27 @@ def test_cli_name(test_apps):
 
 def test_find_best_app(test_apps):
     """Test if `find_best_app` behaves as expected with different combinations of input."""
+
     class Module:
         app = Flask('appname')
+
     assert find_best_app(Module) == Module.app
 
     class Module:
         application = Flask('appname')
+
     assert find_best_app(Module) == Module.application
 
     class Module:
         myapp = Flask('appname')
+
     assert find_best_app(Module) == Module.myapp
 
     class Module:
         @staticmethod
         def create_app():
             return Flask('appname')
+
     assert isinstance(find_best_app(Module), Flask)
     assert find_best_app(Module).name == 'appname'
 
@@ -62,36 +67,44 @@ def test_find_best_app(test_apps):
         @staticmethod
         def make_app():
             return Flask('appname')
+
     assert isinstance(find_best_app(Module), Flask)
     assert find_best_app(Module).name == 'appname'
 
     class Module:
         myapp = Flask('appname1')
+
         @staticmethod
         def create_app():
             return Flask('appname2')
+
     assert find_best_app(Module) == Module.myapp
 
     class Module:
         myapp = Flask('appname1')
+
         @staticmethod
         def create_app(foo):
             return Flask('appname2')
+
     assert find_best_app(Module) == Module.myapp
 
     class Module:
         pass
+
     pytest.raises(NoAppException, find_best_app, Module)
 
     class Module:
         myapp1 = Flask('appname1')
         myapp2 = Flask('appname2')
+
     pytest.raises(NoAppException, find_best_app, Module)
 
     class Module:
         @staticmethod
         def create_app(foo):
             return Flask('appname2')
+
     pytest.raises(NoAppException, find_best_app, Module)
 
 
@@ -146,7 +159,9 @@ def test_get_version(test_apps, capsys):
     class MockCtx(object):
         resilient_parsing = False
         color = None
+
         def exit(self): return
+
     ctx = MockCtx()
     get_version(ctx, None, "test")
     out, err = capsys.readouterr()
@@ -171,6 +186,7 @@ def test_scriptinfo(test_apps):
 
 def test_with_appcontext(runner):
     """Test of with_appcontext."""
+
     @click.command()
     @with_appcontext
     def testcmd():
@@ -185,6 +201,7 @@ def test_with_appcontext(runner):
 
 def test_appgroup(runner):
     """Test of with_appcontext."""
+
     @click.group(cls=AppGroup)
     def cli():
         pass
@@ -214,6 +231,7 @@ def test_appgroup(runner):
 
 def test_flaskgroup(runner):
     """Test FlaskGroup."""
+
     def create_app(info):
         return Flask("flaskgroup")
 
@@ -232,6 +250,7 @@ def test_flaskgroup(runner):
 
 def test_print_exceptions(runner):
     """Print the stacktrace if the CLI."""
+
     def create_app(info):
         raise Exception("oh no")
         return Flask("flaskgroup")

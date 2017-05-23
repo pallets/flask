@@ -44,7 +44,6 @@ def test_environ_defaults(app, client, app_ctx, req_ctx):
 
 
 def test_environ_base_default(app, client, app_ctx):
-
     @app.route('/')
     def index():
         flask.g.user_agent = flask.request.headers["User-Agent"]
@@ -145,6 +144,7 @@ def test_session_transactions_keep_context(app, client, req_ctx):
     with client.session_transaction():
         assert req is flask.request._get_current_object()
 
+
 def test_session_transaction_needs_cookies(app):
     c = app.test_client(use_cookies=False)
     with pytest.raises(RuntimeError) as e:
@@ -222,7 +222,6 @@ def test_test_client_calls_teardown_handlers():
 
 
 def test_full_url_request(app):
-
     @app.route('/action', methods=['POST'])
     def action():
         return 'x'

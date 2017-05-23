@@ -240,7 +240,6 @@ class TestJSON(object):
                     return X(obj['_foo'])
                 return obj
 
-        app.testing = True
         app.json_encoder = MyEncoder
         app.json_decoder = MyDecoder
 
@@ -295,7 +294,6 @@ class TestJSON(object):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
 
-        app.testing = True
         app.request_class = ModifiedRequest
         app.url_map.charset = 'euc-kr'
 
@@ -616,7 +614,6 @@ class TestSendfile(object):
             rv.close()
 
     def test_send_from_directory(self, app, req_ctx):
-        app.testing = True
         app.root_path = os.path.join(os.path.dirname(__file__),
                                      'test_apps', 'subdomaintestmodule')
         rv = flask.send_from_directory('static', 'hello.txt')
@@ -818,7 +815,6 @@ class TestStreaming(object):
         assert rv.data == b'Hello World!'
 
     def test_streaming_with_context_as_decorator(self, app, client):
-        app.testing = True
 
         @app.route('/')
         def index():

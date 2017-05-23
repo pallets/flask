@@ -995,10 +995,7 @@ def test_enctype_debug_helper(app, client):
         assert 'This was submitted: "index.txt"' in str(e.value)
 
 
-def test_response_types():
-    app = flask.Flask(__name__)
-    app.testing = True
-
+def test_response_types(app, client):
     @app.route('/text')
     def from_text():
         return u'Hällo Wörld'
@@ -1040,44 +1037,42 @@ def test_response_types():
     def from_wsgi():
         return NotFound()
 
-    c = app.test_client()
+    assert client.get('/text').data == u'Hällo Wörld'.encode('utf-8')
+    assert client.get('/bytes').data == u'Hällo Wörld'.encode('utf-8')
 
-    assert c.get('/text').data == u'Hällo Wörld'.encode('utf-8')
-    assert c.get('/bytes').data == u'Hällo Wörld'.encode('utf-8')
-
-    rv = c.get('/full_tuple')
+    rv = client.get('/full_tuple')
     assert rv.data == b'Meh'
     assert rv.headers['X-Foo'] == 'Testing'
     assert rv.status_code == 400
     assert rv.mimetype == 'text/plain'
 
-    rv = c.get('/text_headers')
+    rv = client.get('/text_headers')
     assert rv.data == b'Hello'
     assert rv.headers['X-Foo'] == 'Test'
     assert rv.status_code == 200
     assert rv.mimetype == 'text/plain'
 
-    rv = c.get('/text_status')
+    rv = client.get('/text_status')
     assert rv.data == b'Hi, status!'
     assert rv.status_code == 400
     assert rv.mimetype == 'text/html'
 
-    rv = c.get('/response_headers')
+    rv = client.get('/response_headers')
     assert rv.data == b'Hello world'
     assert rv.headers.getlist('X-Foo') == ['Baz', 'Bar']
     assert rv.headers['X-Bar'] == 'Foo'
     assert rv.status_code == 404
 
-    rv = c.get('/response_status')
+    rv = client.get('/response_status')
     assert rv.data == b'Hello world'
     assert rv.status_code == 500
 
-    rv = c.get('/wsgi')
+    rv = client.get('/wsgi')
     assert b'Not Found' in rv.data
     assert rv.status_code == 404
 
 
-def test_response_type_errors():
+def test_response_type_errors(app):
     app = flask.Flask(__name__)
     app.testing = True
 
@@ -1306,9 +1301,7 @@ def test_custom_converters():
     assert c.get('/1,2,3').data == b'1|2|3'
 
 
-def test_static_files():
-    app = flask.Flask(__name__)
-    app.testing = True
+def test_static_files(app):
     rv = app.test_client().get('/static/index.html')
     assert rv.status_code == 200
     assert rv.data.strip() == b'<h1>Hello World!</h1>'
@@ -1549,10 +1542,7 @@ def test_inject_blueprint_url_defaults():
     assert url == expected
 
 
-def test_nonascii_pathinfo():
-    app = flask.Flask(__name__)
-    app.testing = True
-
+def test_nonascii_pathinfo(app):
     @app.route(u'/киртест')
     def index():
         return 'Hello World!'
@@ -1562,8 +1552,7 @@ def test_nonascii_pathinfo():
     assert rv.data == b'Hello World!'
 
 
-def test_debug_mode_complains_after_first_request():
-    app = flask.Flask(__name__)
+def test_debug_mode_complains_after_first_request(app):
     app.debug = True
 
     @app.route('/')
