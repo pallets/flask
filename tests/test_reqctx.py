@@ -149,58 +149,58 @@ def test_manual_context_binding(app):
 
 
 @pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
-def test_greenlet_context_copying(app, client):
-    greenlets = []
+class GreenletContextCopying():
 
-    @app.route('/')
-    def index():
-        reqctx = flask._request_ctx_stack.top.copy()
+    def test_greenlet_context_copying(app, client):
+        greenlets = []
 
-        def g():
-            assert not flask.request
-            assert not flask.current_app
-            with reqctx:
+        @app.route('/')
+        def index():
+            reqctx = flask._request_ctx_stack.top.copy()
+
+            def g():
+                assert not flask.request
+                assert not flask.current_app
+                with reqctx:
+                    assert flask.request
+                    assert flask.current_app == app
+                    assert flask.request.path == '/'
+                    assert flask.request.args['foo'] == 'bar'
+                assert not flask.request
+                return 42
+
+            greenlets.append(greenlet(g))
+            return 'Hello World!'
+
+        rv = client.get('/?foo=bar')
+        assert rv.data == b'Hello World!'
+
+        result = greenlets[0].run()
+        assert result == 42
+
+    def test_greenlet_context_copying_api(app, client):
+        greenlets = []
+
+        @app.route('/')
+        def index():
+            reqctx = flask._request_ctx_stack.top.copy()
+
+            @flask.copy_current_request_context
+            def g():
                 assert flask.request
                 assert flask.current_app == app
                 assert flask.request.path == '/'
                 assert flask.request.args['foo'] == 'bar'
-            assert not flask.request
-            return 42
+                return 42
 
-        greenlets.append(greenlet(g))
-        return 'Hello World!'
+            greenlets.append(greenlet(g))
+            return 'Hello World!'
 
-    rv = client.get('/?foo=bar')
-    assert rv.data == b'Hello World!'
+        rv = client.get('/?foo=bar')
+        assert rv.data == b'Hello World!'
 
-    result = greenlets[0].run()
-    assert result == 42
-
-
-@pytest.mark.skipif(greenlet is None, reason='greenlet not installed')
-def test_greenlet_context_copying_api(app, client):
-    greenlets = []
-
-    @app.route('/')
-    def index():
-        reqctx = flask._request_ctx_stack.top.copy()
-
-        @flask.copy_current_request_context
-        def g():
-            assert flask.request
-            assert flask.current_app == app
-            assert flask.request.path == '/'
-            assert flask.request.args['foo'] == 'bar'
-            return 42
-
-        greenlets.append(greenlet(g))
-        return 'Hello World!'
-
-    rv = client.get('/?foo=bar')
-    assert rv.data == b'Hello World!'
-
-    result = greenlets[0].run()
-    assert result == 42
+        result = greenlets[0].run()
+        assert result == 42
 
 
 def test_session_error_pops_context():
