@@ -153,9 +153,9 @@ def test_session_transaction_needs_cookies(app):
     assert 'cookies' in str(e.value)
 
 
-def test_test_client_context_binding():
-    app = flask.Flask(__name__)
+def test_test_client_context_binding(app, client):
     app.config['LOGGER_HANDLER_POLICY'] = 'never'
+    app.testing = False
 
     @app.route('/')
     def index():
@@ -166,7 +166,7 @@ def test_test_client_context_binding():
     def other():
         1 // 0
 
-    with app.test_client() as c:
+    with client as c:
         resp = c.get('/')
         assert flask.g.value == 42
         assert resp.data == b'Hello World!'
@@ -186,8 +186,7 @@ def test_test_client_context_binding():
         raise AssertionError('some kind of exception expected')
 
 
-def test_reuse_client():
-    app = flask.Flask(__name__)
+def test_reuse_client(app):
     c = app.test_client()
 
     with c:
@@ -197,22 +196,21 @@ def test_reuse_client():
         assert c.get('/').status_code == 404
 
 
-def test_test_client_calls_teardown_handlers():
-    app = flask.Flask(__name__)
+def test_test_client_calls_teardown_handlers(app, client):
     called = []
 
     @app.teardown_request
     def remember(error):
         called.append(error)
 
-    with app.test_client() as c:
+    with client as c:
         assert called == []
         c.get('/')
         assert called == []
     assert called == [None]
 
     del called[:]
-    with app.test_client() as c:
+    with client as c:
         assert called == []
         c.get('/')
         assert called == []
@@ -221,20 +219,19 @@ def test_test_client_calls_teardown_handlers():
     assert called == [None, None]
 
 
-def test_full_url_request(app):
+def test_full_url_request(app, client):
     @app.route('/action', methods=['POST'])
     def action():
         return 'x'
 
-    with app.test_client() as c:
+    with client as c:
         rv = c.post('http://domain.com/action?vodka=42', data={'gin': 43})
         assert rv.status_code == 200
         assert 'gin' in flask.request.form
         assert 'vodka' in flask.request.args
 
 
-def test_subdomain():
-    app = flask.Flask(__name__)
+def test_subdomain(app, client):
     app.config['SERVER_NAME'] = 'example.com'
 
     @app.route('/', subdomain='<company_id>')
@@ -244,15 +241,14 @@ def test_subdomain():
     with app.test_request_context():
         url = flask.url_for('view', company_id='xxx')
 
-    with app.test_client() as c:
+    with client as c:
         response = c.get(url)
 
     assert 200 == response.status_code
     assert b'xxx' == response.data
 
 
-def test_nosubdomain():
-    app = flask.Flask(__name__)
+def test_nosubdomain(app, client):
     app.config['SERVER_NAME'] = 'example.com'
 
     @app.route('/<company_id>')
@@ -262,7 +258,7 @@ def test_nosubdomain():
     with app.test_request_context():
         url = flask.url_for('view', company_id='xxx')
 
-    with app.test_client() as c:
+    with client as c:
         response = c.get(url)
 
     assert 200 == response.status_code

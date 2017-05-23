@@ -290,7 +290,7 @@ class TestJSON(object):
         }), content_type='application/json')
         assert rv.data == b'"<42>"'
 
-    def test_modified_url_encoding(self, app):
+    def test_modified_url_encoding(self, app, client):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
 
@@ -301,7 +301,7 @@ class TestJSON(object):
         def index():
             return flask.request.args['foo']
 
-        rv = app.test_client().get(u'/?foo=정상처리'.encode('euc-kr'))
+        rv = client.get(u'/?foo=정상처리'.encode('euc-kr'))
         assert rv.status_code == 200
         assert rv.data == u'정상처리'.encode('utf-8')
 
@@ -533,7 +533,6 @@ class TestSendfile(object):
         rv.close()
 
     def test_attachment(self, app, req_ctx):
-        app = flask.Flask(__name__)
 
         with open(os.path.join(app.root_path, 'static/index.html')) as f:
             rv = flask.send_file(f, as_attachment=True,
@@ -638,8 +637,7 @@ class TestLogging(object):
         app.logger_name = __name__ + '/test_logger_cache'
         assert app.logger is not logger1
 
-    def test_debug_log(self, capsys):
-        app = flask.Flask(__name__)
+    def test_debug_log(self, capsys, app, client):
         app.debug = True
 
         @app.route('/')
@@ -652,7 +650,7 @@ class TestLogging(object):
         def exc():
             1 // 0
 
-        with app.test_client() as c:
+        with client as c:
             c.get('/')
             out, err = capsys.readouterr()
             assert 'WARNING in test_helpers [' in err
@@ -669,7 +667,7 @@ class TestLogging(object):
         app.logger.level = 10
         assert app.logger.level == 10
 
-    def test_exception_logging(self, app):
+    def test_exception_logging(self, app, client):
         out = StringIO()
         app.config['LOGGER_HANDLER_POLICY'] = 'never'
         app.logger_name = 'flask_tests/test_exception_logging'
@@ -680,7 +678,7 @@ class TestLogging(object):
         def index():
             1 // 0
 
-        rv = app.test_client().get('/')
+        rv = client.get('/')
         assert rv.status_code == 500
         assert b'Internal Server Error' in rv.data
 
