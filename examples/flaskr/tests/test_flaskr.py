@@ -22,13 +22,9 @@ def client(request):
     client = flaskr.app.test_client()
     with flaskr.app.app_context():
         flaskr.init_db()
-
-    def teardown():
-        os.close(db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
-    request.addfinalizer(teardown)
-
-    return client
+    yield client
+    os.close(db_fd)
+    os.unlink(flaskr.app.config['DATABASE'])
 
 
 def login(client, username, password):
