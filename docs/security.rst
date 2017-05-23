@@ -109,9 +109,9 @@ arrays.
 SSL/HTTPS
 ---------
 
-For implementing HTTPS on your server
+For implementing HTTPS on your server.
 
-Below some packages in suggestion order that implements this protocol:
+Below are some packages that implement this protocol:
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-sslify <https://github.com/kennethreitz/flask-sslify>`_
@@ -120,21 +120,21 @@ Below some packages in suggestion order that implements this protocol:
 Security Headers
 ----------------
 
-This sections contains sections headers supported by Flask and a list of packages in suggestion order that implements it
+This section contains a list of headers supported by Flask and some packages that implements them.
 
 `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_ (CSP)
 -----------------------------------------------------------------------------
 
-For enhancing security and preventing common web vulnerabilities such as cross-site scripting and MITM related attacks
+Enhance security and prevents common web vulnerabilities such as cross-site scripting and MITM related attacks.
 
-Example
+Example:
 
 .. sourcecode:: html
    
    Content-Security-Policy: default-src https:; script-src 'nonce-{random}'; object-src 'none'
 
 
-To learn more check `this  <https://csp.withgoogle.com/docs/index.html>`_
+See also `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_.
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-csp <https://github.com/twaldear/flask-csp>`_
@@ -143,10 +143,9 @@ To learn more check `this  <https://csp.withgoogle.com/docs/index.html>`_
 `HTTP Strict Transport Security <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_ (HSTS)
 ------------------------------------------------------------------------------------------------------------------------------
 
+Redirects http requests to https on all urls, preventing MITM attacks.
 
-For automatically redirect HTTP to HTTPS on all the website url's and prevent MITM attacks
-
-Example
+Example:
 
 .. sourcecode:: html
    
@@ -154,8 +153,7 @@ Example
    Strict-Transport-Security: max-age=<expire-time>; includeSubDomains 
    Strict-Transport-Security: max-age=<expire-time>; preload 
 
-To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_ 
-
+See also `Strict Transport Security <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_. 
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-sslify <https://github.com/kennethreitz/flask-sslify>`_
@@ -163,8 +161,8 @@ To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/He
 
 `X-FRAME-OPTIONS  <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>`_ (Clickjacking protection)
 -------------------------------------------------------------------------------------------------------------------------
-Prevents the client clicking page elements outside of the website avoiding hijacking or UI redress attacks
 
+Prevents the client from clicking page elements outside of the website, avoiding hijacking or UI redress attacks.
 
 .. sourcecode:: html
    
@@ -172,7 +170,7 @@ Prevents the client clicking page elements outside of the website avoiding hijac
    X-Frame-Options: SAMEORIGIN
    X-Frame-Options: ALLOW-FROM https://example.com/
 
-To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_ 
+See also `X-Frame-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>`_. 
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
@@ -180,14 +178,13 @@ To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/He
 `X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options>`_
 -------------------------------------------------------------------------------------------------------------
 
-Prevents XSS by blocking requests on clients and forcing then to read the content type instead of first opening it.
+Prevents XSS by blocking requests on clients and forcing them to read the content type instead of first opening it.
 
 .. sourcecode:: html
    
    X-Content-Type-Options: nosniff
 
-To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options>`_ 
-
+See also `X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options>`_. 
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
@@ -195,15 +192,15 @@ To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/He
 `Cookie options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_
 ----------------------------------------------------------------------------------------------------------
 
-For setting cookies on client-side storage
+For setting cookies on client-side storage.
 
-Example
+Example:
 
 .. sourcecode:: html
    
    Set-Cookie: [cookie-name]=[cookie-value] 
 
-To learn more check `this <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_
+See also `HTTP cookies <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_ .
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
@@ -211,20 +208,20 @@ To learn more check `this <https://developer.mozilla.org/en-US/docs/Web/HTTP/Coo
 `HTTP Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_ (HPKP)
 -------------------------------------------------------------------------------------------------------
 
-For associating clients with web servers throught a certificate key and prevent MITM attacks
+For associating clients with web servers through a certificate key and prevent MITM attacks.
 
-Example
+Example:
 
 .. sourcecode:: html
 
    Public-Key-Pins: pin-sha256="base64=="; max-age=expireTime [; includeSubDomains][; report-uri="reportURI"] 
 
-To learn more check `this  <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_
+See also `Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_.
 
 * `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_
 * `flask-secure-headers <https://github.com/twaldear/flask-secure-headers>`_
 
-References:
+References
 -----------
 
 * https://docs.djangoproject.com/en/1.11/topics/security/
