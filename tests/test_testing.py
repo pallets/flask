@@ -38,7 +38,7 @@ def test_environ_defaults(app, client, app_ctx, req_ctx):
 
     ctx = app.test_request_context()
     assert ctx.request.url == 'http://localhost/'
-    with app.test_client() as c:
+    with client as c:
         rv = c.get('/')
         assert rv.data == b'http://localhost/'
 
@@ -105,14 +105,14 @@ def test_redirect_keep_session(app, client, app_ctx):
         assert rv.data == b'foo'
 
 
-def test_session_transactions(app):
+def test_session_transactions(app, client):
     app.secret_key = 'testing'
 
     @app.route('/')
     def index():
         return text_type(flask.session['foo'])
 
-    with app.test_client() as c:
+    with client as c:
         with c.session_transaction() as sess:
             assert len(sess) == 0
             sess['foo'] = [42]
@@ -186,8 +186,8 @@ def test_test_client_context_binding(app, client):
         raise AssertionError('some kind of exception expected')
 
 
-def test_reuse_client(app):
-    c = app.test_client()
+def test_reuse_client(client):
+    c = client
 
     with c:
         assert c.get('/').status_code == 404
