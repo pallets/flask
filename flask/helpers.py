@@ -385,8 +385,11 @@ def flash(message, category='message'):
     # This assumed that changes made to mutable structures in the session are
     # are always in sync with the session object, which is not true for session
     # implementations that use external storage for keeping their keys/values.
-    flashes = session.get('_flashes', [])
-    flashes.append((category, message))
+    flashes = session.get('_flashes', {})
+    if category not in flashes:
+        flashes[category] = []
+    category_flashes = flashes[category]
+    category_flashes.append(message)
     session['_flashes'] = flashes
     message_flashed.send(current_app._get_current_object(),
                          message=message, category=category)
@@ -421,14 +424,27 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     :param category_filter: whitelist of categories to limit return values
     """
     flashes = _request_ctx_stack.top.flashes
+    category_filter = set(category_filter)
     if flashes is None:
         _request_ctx_stack.top.flashes = flashes = session.pop('_flashes') \
-            if '_flashes' in session else []
+            if '_flashes' in session else {}
+    
     if category_filter:
-        flashes = list(filter(lambda f: f[0] in category_filter, flashes))
+        filtered_flashes = {}
+        for category in flashes:
+            if category in category_filter:
+                filtered_flashes[category] = flashes[category]
+    else:
+        filtered_flashes = flashes
+    
+    results = []
     if not with_categories:
-        return [x[1] for x in flashes]
-    return flashes
+        for flash_values in filtered_flashes.itervalues():
+            results += flash_values
+    else:
+        for flash_category, flash_values in filtered_flashes.iteritems():
+            results += map(lambda x: (flash_category, x), flash_values)
+    return results
 
 
 def send_file(filename_or_fp, mimetype=None, as_attachment=False,
