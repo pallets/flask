@@ -39,37 +39,54 @@ def test_cli_name(test_apps):
 
 def test_find_best_app(test_apps):
     """Test if `find_best_app` behaves as expected with different combinations of input."""
+    script_info = ScriptInfo()
 
     class Module:
         app = Flask('appname')
 
-    assert find_best_app(Module) == Module.app
+    assert find_best_app(script_info, Module) == Module.app
 
     class Module:
         application = Flask('appname')
 
-    assert find_best_app(Module) == Module.application
+    assert find_best_app(script_info, Module) == Module.application
 
     class Module:
         myapp = Flask('appname')
 
-    assert find_best_app(Module) == Module.myapp
+    assert find_best_app(script_info, Module) == Module.myapp
 
     class Module:
         @staticmethod
         def create_app():
             return Flask('appname')
 
-    assert isinstance(find_best_app(Module), Flask)
-    assert find_best_app(Module).name == 'appname'
+    assert isinstance(find_best_app(script_info, Module), Flask)
+    assert find_best_app(script_info, Module).name == 'appname'
+
+    class Module:
+        @staticmethod
+        def create_app(foo):
+            return Flask('appname')
+
+    assert isinstance(find_best_app(script_info, Module), Flask)
+    assert find_best_app(script_info, Module).name == 'appname'
+
+    class Module:
+        @staticmethod
+        def create_app(foo=None, script_info=None):
+            return Flask('appname')
+
+    assert isinstance(find_best_app(script_info, Module), Flask)
+    assert find_best_app(script_info, Module).name == 'appname'
 
     class Module:
         @staticmethod
         def make_app():
             return Flask('appname')
 
-    assert isinstance(find_best_app(Module), Flask)
-    assert find_best_app(Module).name == 'appname'
+    assert isinstance(find_best_app(script_info, Module), Flask)
+    assert find_best_app(script_info, Module).name == 'appname'
 
     class Module:
         myapp = Flask('appname1')
@@ -78,34 +95,34 @@ def test_find_best_app(test_apps):
         def create_app():
             return Flask('appname2')
 
-    assert find_best_app(Module) == Module.myapp
+    assert find_best_app(script_info, Module) == Module.myapp
 
     class Module:
         myapp = Flask('appname1')
 
         @staticmethod
-        def create_app(foo):
+        def create_app():
             return Flask('appname2')
 
-    assert find_best_app(Module) == Module.myapp
+    assert find_best_app(script_info, Module) == Module.myapp
 
     class Module:
         pass
 
-    pytest.raises(NoAppException, find_best_app, Module)
+    pytest.raises(NoAppException, find_best_app, script_info, Module)
 
     class Module:
         myapp1 = Flask('appname1')
         myapp2 = Flask('appname2')
 
-    pytest.raises(NoAppException, find_best_app, Module)
+    pytest.raises(NoAppException, find_best_app, script_info, Module)
 
     class Module:
         @staticmethod
-        def create_app(foo):
+        def create_app(foo, bar):
             return Flask('appname2')
 
-    pytest.raises(NoAppException, find_best_app, Module)
+    pytest.raises(NoAppException, find_best_app, script_info, Module)
 
 
 def test_prepare_exec_for_file(test_apps):
@@ -130,13 +147,18 @@ def test_prepare_exec_for_file(test_apps):
 
 def test_locate_app(test_apps):
     """Test of locate_app."""
-    assert locate_app("cliapp.app").name == "testapp"
-    assert locate_app("cliapp.app:testapp").name == "testapp"
-    assert locate_app("cliapp.multiapp:app1").name == "app1"
-    pytest.raises(NoAppException, locate_app, "notanpp.py")
-    pytest.raises(NoAppException, locate_app, "cliapp/app")
-    pytest.raises(RuntimeError, locate_app, "cliapp.app:notanapp")
-    pytest.raises(NoAppException, locate_app, "cliapp.importerrorapp")
+    script_info = ScriptInfo()
+    assert locate_app(script_info, "cliapp.app").name == "testapp"
+    assert locate_app(script_info, "cliapp.app:testapp").name == "testapp"
+    assert locate_app(script_info, "cliapp.multiapp:app1").name == "app1"
+    pytest.raises(NoAppException, locate_app,
+                  script_info, "notanpp.py")
+    pytest.raises(NoAppException, locate_app,
+                  script_info, "cliapp/app")
+    pytest.raises(RuntimeError, locate_app,
+                  script_info, "cliapp.app:notanapp")
+    pytest.raises(NoAppException, locate_app,
+                  script_info, "cliapp.importerrorapp")
 
 
 def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
@@ -156,6 +178,7 @@ def test_get_version(test_apps, capsys):
     """Test of get_version."""
     from flask import __version__ as flask_ver
     from sys import version as py_ver
+
     class MockCtx(object):
         resilient_parsing = False
         color = None
