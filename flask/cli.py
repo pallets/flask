@@ -96,6 +96,29 @@ def call_factory(func, script_info):
     return func()
 
 
+def call_factory_from_regex(match, mod, script_info):
+    """Checks if the given regex match has specified arguments and if the 
+    function takes a ``script_info`` argument and calls the function with
+    the appropriate arguments."""
+    function_name = match.group(1)
+    arguments = match.group(2)
+    if arguments:
+        arguments = ast.literal_eval(
+            "({arguments}, )".format(arguments=arguments))
+    else:
+        arguments = ()
+    app_factory = getattr(mod, function_name, None)
+    app_factory_arg_names = getargspec(app_factory).args
+    if 'script_info' in app_factory_arg_names:
+        app = app_factory(*arguments, script_info=script_info)
+    elif arguments:
+        app = app_factory(*arguments)
+    elif not arguments and len(app_factory_arg_names) == 1:
+        app = app_factory(script_info)
+    else:
+        app = app_factory()
+    return app
+
 def prepare_exec_for_file(filename):
     """Given a filename this will try to calculate the python path, add it
     to the search path and return the actual module name that is expected.
@@ -157,23 +180,7 @@ def locate_app(script_info, app_id):
         match = re.match(function_regex, app_obj)
         try:
             if match:
-                function_name = match.group(1)
-                arguments = match.group(2)
-                if arguments:
-                    arguments = ast.literal_eval(
-                        "({arguments}, )".format(arguments=arguments))
-                else:
-                    arguments = ()
-                app_factory = getattr(mod, function_name, None)
-                app_factory_arg_names = getargspec(app_factory).args
-                if 'script_info' in app_factory_arg_names:
-                    app = app_factory(*arguments, script_info=script_info)
-                elif arguments:
-                    app = app_factory(*arguments)
-                elif not arguments and len(app_factory_arg_names) == 1:
-                    app = app_factory(script_info)
-                else:
-                    app = app_factory()
+                app = call_factory_from_regex(match, mod, script_info)
             else:
                 attr = getattr(mod, app_obj, None)
                 if inspect.isfunction(attr):
