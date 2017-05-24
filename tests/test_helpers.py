@@ -650,8 +650,8 @@ class TestLogging(object):
         def exc():
             1 // 0
 
-        with client as c:
-            c.get('/')
+        with client:
+            client.get('/')
             out, err = capsys.readouterr()
             assert 'WARNING in test_helpers [' in err
             assert os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in err
@@ -659,7 +659,7 @@ class TestLogging(object):
             assert 'this is a debug statement' in err
 
             with pytest.raises(ZeroDivisionError):
-                c.get('/exc')
+                client.get('/exc')
 
     def test_debug_log_override(self, app):
         app.debug = True

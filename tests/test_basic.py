@@ -951,18 +951,16 @@ def test_http_error_subclass_handling(app, client):
     assert client.get('/3').data == b'apple'
 
 
-def test_trapping_of_bad_request_key_errors(app):
+def test_trapping_of_bad_request_key_errors(app, client):
     @app.route('/fail')
     def fail():
         flask.request.form['missing_key']
 
-    c = app.test_client()
-    assert c.get('/fail').status_code == 400
+    assert client.get('/fail').status_code == 400
 
     app.config['TRAP_BAD_REQUEST_ERRORS'] = True
-    c = app.test_client()
     with pytest.raises(KeyError) as e:
-        c.get("/fail")
+        client.get("/fail")
     assert e.errisinstance(BadRequest)
 
 
@@ -988,9 +986,9 @@ def test_enctype_debug_helper(app, client):
     # with statement is important because we leave an exception on the
     # stack otherwise and we want to ensure that this is not the case
     # to not negatively affect other tests.
-    with client as c:
+    with client:
         with pytest.raises(DebugFilesKeyError) as e:
-            c.post('/fail', data={'foo': 'index.txt'})
+            client.post('/fail', data={'foo': 'index.txt'})
         assert 'no file contents were transmitted' in str(e.value)
         assert 'This was submitted: "index.txt"' in str(e.value)
 
@@ -1583,19 +1581,19 @@ def test_routing_redirect_debugging(app, client):
     def foo():
         return 'success'
 
-    with client as c:
+    with client:
         with pytest.raises(AssertionError) as e:
-            c.post('/foo', data={})
+            client.post('/foo', data={})
         assert 'http://localhost/foo/' in str(e)
         assert ('Make sure to directly send '
                 'your POST-request to this URL') in str(e)
 
-        rv = c.get('/foo', data={}, follow_redirects=True)
+        rv = client.get('/foo', data={}, follow_redirects=True)
         assert rv.data == b'success'
 
     app.debug = False
-    with client as c:
-        rv = c.post('/foo', data={}, follow_redirects=True)
+    with client:
+        rv = client.post('/foo', data={}, follow_redirects=True)
         assert rv.data == b'success'
 
 
