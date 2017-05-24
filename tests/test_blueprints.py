@@ -202,9 +202,7 @@ def test_templates_and_static(test_apps):
         assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
 
-def test_default_static_cache_timeout():
-    app = flask.Flask(__name__)
-
+def test_default_static_cache_timeout(app):
     class MyBlueprint(flask.Blueprint):
         def get_send_file_max_age(self, filename):
             return 100
@@ -660,8 +658,7 @@ def test_add_template_test_with_name_and_template(app, client):
     assert b'Success!' in rv.data
 
 
-def test_context_processing():
-    app = flask.Flask(__name__)
+def test_context_processing(app, client):
     answer_bp = flask.Blueprint('answer_bp', __name__)
 
     template_string = lambda: flask.render_template_string(
@@ -691,10 +688,8 @@ def test_context_processing():
     # Register the blueprint
     app.register_blueprint(answer_bp)
 
-    c = app.test_client()
-
-    app_page_bytes = c.get('/').data
-    answer_page_bytes = c.get('/bp').data
+    app_page_bytes = client.get('/').data
+    answer_page_bytes = client.get('/bp').data
 
     assert b'43' in app_page_bytes
     assert b'42' not in app_page_bytes
@@ -703,8 +698,7 @@ def test_context_processing():
     assert b'43' in answer_page_bytes
 
 
-def test_template_global():
-    app = flask.Flask(__name__)
+def test_template_global(app):
     bp = flask.Blueprint('bp', __name__)
 
     @bp.app_template_global()
@@ -725,8 +719,7 @@ def test_template_global():
         assert rv == '42'
 
 
-def test_request_processing():
-    app = flask.Flask(__name__)
+def test_request_processing(app, client):
     bp = flask.Blueprint('bp', __name__)
     evts = []
 
@@ -752,7 +745,7 @@ def test_request_processing():
     app.register_blueprint(bp)
 
     assert evts == []
-    rv = app.test_client().get('/bp')
+    rv = client.get('/bp')
     assert rv.data == b'request|after'
     assert evts == ['before', 'after', 'teardown']
 
@@ -798,3 +791,30 @@ def test_app_request_processing(app, client):
     resp = client.get('/').data
     assert resp == b'request|after'
     assert evts == ['first'] + ['before', 'after', 'teardown'] * 2
+
+
+def test_app_url_processors(app, client):
+    bp = flask.Blueprint('bp', __name__)
+
+    # Register app-wide url defaults and preprocessor on blueprint
+    @bp.app_url_defaults
+    def add_language_code(endpoint, values):
+        values.setdefault('lang_code', flask.g.lang_code)
+
+    @bp.app_url_value_preprocessor
+    def pull_lang_code(endpoint, values):
+        flask.g.lang_code = values.pop('lang_code')
+
+    # Register route rules at the app level
+    @app.route('/<lang_code>/')
+    def index():
+        return flask.url_for('about')
+
+    @app.route('/<lang_code>/about')
+    def about():
+        return flask.url_for('index')
+
+    app.register_blueprint(bp)
+
+    assert client.get('/de/').data == b'/de/about'
+    assert client.get('/de/about').data == b'/de/'
