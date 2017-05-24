@@ -3,11 +3,11 @@
 Step 0: Creating The Folders
 ============================
 
-It is recommended to install your Flask application within a virtualenv.  Please
-read the Flask User Guide's `Installation`_ section to setup your environment.
+It is recommended to install your Flask application within a virtualenv. Please
+read the :ref:`installation` section to set up your environment.
 
 Now that you have installed Flask, you will need to create the folders required
-for this tutorial.  Your directory structure will look like this::
+for this tutorial. Your directory structure will look like this::
 
     /flaskr
         /flaskr
@@ -16,7 +16,7 @@ for this tutorial.  Your directory structure will look like this::
 
 The application will be installed and run as Python package.  This is the
 recommended way to install and run Flask applications.  You will see exactly
-how to run ``flaskr`` later on in this tutorial.  
+how to run ``flaskr`` later on in this tutorial.
 
 For now go ahead and create the applications directory structure.  In the next
 few steps you will be creating the database schema as well as the main module.
@@ -28,5 +28,4 @@ JavaScript files go.  Inside the :file:`templates` folder, Flask will look for
 
 For now you should continue with :ref:`tutorial-schema`.
 
-.. _Installation:  http://flask.pocoo.org/docs/0.12/installation/
 .. _Jinja2: http://jinja.pocoo.org/

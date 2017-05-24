@@ -10,32 +10,36 @@ Before starting the server for the first time, it's important to create
 that schema.
 
 Such a schema could be created by piping the ``schema.sql`` file into the
-`sqlite3` command as follows::
+``sqlite3`` command as follows::
 
     sqlite3 /tmp/flaskr.db < schema.sql
 
 However, the downside of this is that it requires the ``sqlite3`` command
-to be installed, which is not necessarily the case on every system.  This
+to be installed, which is not necessarily the case on every system. This
 also requires that you provide the path to the database, which can introduce
-errors.  
+errors.
 
-Instead of the sqlite3 command above, it's a good idea to add a function
-to our applicatioin that initializes the database for you. To do this, you
-can create a function and hook it into a :command:`flask` command that 
-initializes the database.  
+Instead of the ``sqlite3`` command above, it's a good idea to add a function
+to our application that initializes the database for you. To do this, you
+can create a function and hook it into a :command:`flask` command that
+initializes the database.
 
-Take a look at the code segment below.  A good place to add this function,
-and command, is just below the `connect_db` function in :file:`flaskr.py`::
+Take a look at the code segment below. A good place to add this function,
+and command, is just below the ``connect_db`` function in :file:`flaskr.py`::
 
     def init_db():
         db = get_db()
+
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
+
         db.commit()
+
 
     @app.cli.command('initdb')
     def initdb_command():
         """Initializes the database."""
+
         init_db()
         print('Initialized the database.')
 
