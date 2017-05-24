@@ -71,7 +71,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'Werkzeug>=0.7',
+        'Werkzeug>=0.9',
         'Jinja2>=2.4',
         'itsdangerous>=0.21',
         'click>=4.0',
