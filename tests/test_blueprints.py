@@ -202,9 +202,7 @@ def test_templates_and_static(test_apps):
         assert flask.render_template('nested/nested.txt') == 'I\'m nested'
 
 
-def test_default_static_cache_timeout():
-    app = flask.Flask(__name__)
-
+def test_default_static_cache_timeout(app):
     class MyBlueprint(flask.Blueprint):
         def get_send_file_max_age(self, filename):
             return 100
@@ -660,8 +658,7 @@ def test_add_template_test_with_name_and_template(app, client):
     assert b'Success!' in rv.data
 
 
-def test_context_processing():
-    app = flask.Flask(__name__)
+def test_context_processing(app, client):
     answer_bp = flask.Blueprint('answer_bp', __name__)
 
     template_string = lambda: flask.render_template_string(
@@ -691,10 +688,8 @@ def test_context_processing():
     # Register the blueprint
     app.register_blueprint(answer_bp)
 
-    c = app.test_client()
-
-    app_page_bytes = c.get('/').data
-    answer_page_bytes = c.get('/bp').data
+    app_page_bytes = client.get('/').data
+    answer_page_bytes = client.get('/bp').data
 
     assert b'43' in app_page_bytes
     assert b'42' not in app_page_bytes
@@ -703,8 +698,7 @@ def test_context_processing():
     assert b'43' in answer_page_bytes
 
 
-def test_template_global():
-    app = flask.Flask(__name__)
+def test_template_global(app):
     bp = flask.Blueprint('bp', __name__)
 
     @bp.app_template_global()
@@ -724,8 +718,7 @@ def test_template_global():
         rv = flask.render_template_string('{{ get_answer() }}')
         assert rv == '42'
 
-def test_request_processing():
-    app = flask.Flask(__name__)
+def test_request_processing(app, client):
     bp = flask.Blueprint('bp', __name__)
     evts = []
     @bp.before_request
@@ -748,12 +741,11 @@ def test_request_processing():
     app.register_blueprint(bp)
 
     assert evts == []
-    rv = app.test_client().get('/bp')
+    rv = client.get('/bp')
     assert rv.data == b'request|after'
     assert evts == ['before', 'after', 'teardown']
 
-def test_app_request_processing():
-    app = flask.Flask(__name__)
+def test_app_request_processing(app, client):
     bp = flask.Blueprint('bp', __name__)
     evts = []
 
@@ -783,12 +775,12 @@ def test_app_request_processing():
     assert evts == []
 
     # first request
-    resp = app.test_client().get('/').data
+    resp = client.get('/').data
     assert resp == b'request|after'
     assert evts == ['first', 'before', 'after', 'teardown']
 
     # second request
-    resp = app.test_client().get('/').data
+    resp = client.get('/').data
     assert resp == b'request|after'
     assert evts == ['first'] + ['before', 'after', 'teardown'] * 2
 
