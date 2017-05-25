@@ -56,6 +56,18 @@ If you are constantly working with a virtualenv you can also put the
 bottom of the file.  That way every time you activate your virtualenv you
 automatically also activate the correct application name.
 
+Edit the activate script for the shell you use. For example:
+
+Unix Bash: ``venv/bin/activate``::
+
+    FLASK_APP=hello
+    export FLASK_APP
+
+Windows CMD.exe: ``venv\Scripts\activate.bat``::
+
+    set "FLASK_APP=hello"
+    :END
+
 Debug Flag
 ----------
 
@@ -246,3 +258,46 @@ Inside :file:`mypackage/commands.py` you can then export a Click object::
 Once that package is installed in the same virtualenv as Flask itself you
 can run ``flask my-command`` to invoke your command.  This is useful to
 provide extra functionality that Flask itself cannot ship.
+
+PyCharm Integration
+-------------------
+
+The new Flask CLI features aren’t yet fully integrated into the PyCharm IDE,
+so we have to do a few tweaks to get them working smoothly.
+
+In your PyCharm application, with your project open, click on *Run*
+from the menu bar and go to *Edit Configurations*. You’ll be greeted by a
+screen similar to this:
+
+.. image:: _static/pycharm-runconfig.png
+   :align: center
+   :class: screenshot
+   :alt: screenshot of pycharm's run configuration settings
+
+There’s quite a few options to change, but don’t worry— once we’ve done it
+for one command, we can easily copy the entire configuration and make a
+single tweak to give us access to other flask cli commands, including
+any custom ones you may implement yourself.
+
+For the *Script* input (**A**), we want to navigate to the virtual environment
+we’re using for our project and within that folder we want to pick the ``flask``
+file which will reside in the ``bin`` folder, or in the ``Scripts`` folder if
+you're on Windows.
+
+The *Script Parameter* field (**B**) is set to the cli command you wish to
+execute, in this example we use ``run`` which will run our development server.
+
+We need to add an environment variable (**C**) to identify our application.
+Click on the browse button and add an entry with ``FLASK_APP`` on the
+left and the name of the python file, or package on the right
+(``app.py`` for example).
+
+Next we need to set the working directory (**D**) to be the same folder where
+our application file or package resides.
+
+Finally, untick the *PYTHONPATH* options (**E**) and give the configuration a
+good descriptive name, such as “Run Flask Server” and click *Apply*.
+
+Now that we have on run configuration which implements ``flask run`` from within
+PyCharm, we can simply copy that configuration and alter the script argument
+to run a different cli command, e.g. ``flask shell``.

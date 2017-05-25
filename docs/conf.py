@@ -22,7 +22,6 @@ BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.append(os.path.join(os.path.dirname(__file__), '_themes'))
 sys.path.append(os.path.dirname(__file__))
 
 # -- General configuration -----------------------------------------------------
@@ -37,6 +36,14 @@ extensions = [
     'sphinx.ext.intersphinx',
     'flaskdocext'
 ]
+
+try:
+    __import__('sphinxcontrib.log_cabinet')
+except ImportError:
+    print('sphinxcontrib-log-cabinet is not installed.')
+    print('Changelog directives will not be re-organized.')
+else:
+    extensions.append('sphinxcontrib.log_cabinet')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -113,7 +120,7 @@ exclude_patterns = ['_build']
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_themes']
+# html_theme_path = ['_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -265,21 +272,9 @@ intersphinx_mapping = {
     'blinker': ('https://pythonhosted.org/blinker/', None)
 }
 
-try:
-    __import__('flask_theme_support')
-    pygments_style = 'flask_theme_support.FlaskyStyle'
-    html_theme = 'flask'
-    html_theme_options = {
-        'touch_icon': 'touch-icon.png'
-    }
-except ImportError:
-    print('-' * 74)
-    print('Warning: Flask themes unavailable.  Building with default theme')
-    print('If you want the Flask themes, run this command and build again:')
-    print()
-    print('  git submodule update --init')
-    print('-' * 74)
-
+html_theme_options = {
+    'touch_icon': 'touch-icon.png'
+}
 
 # unwrap decorators
 def unwrap_decorators():

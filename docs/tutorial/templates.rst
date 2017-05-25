@@ -15,7 +15,8 @@ escaped with their XML equivalents.
 We are also using template inheritance which makes it possible to reuse
 the layout of the website in all pages.
 
-Put the following templates into the :file:`templates` folder:
+Create the follwing three HTML files and place them in the
+:file:`templates` folder:
 
 .. _Jinja2: http://jinja.pocoo.org/docs/templates
 
