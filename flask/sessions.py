@@ -9,18 +9,20 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import uuid
 import hashlib
+import uuid
 import warnings
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from datetime import datetime
-from werkzeug.http import http_date, parse_date
+
+from itsdangerous import BadSignature, URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
+from werkzeug.http import http_date, parse_date
+
+from flask.helpers import patch_vary_header
 from . import Markup, json
 from ._compat import iteritems, text_type
-from .helpers import total_seconds, is_ip
-
-from itsdangerous import URLSafeTimedSerializer, BadSignature
+from .helpers import is_ip, total_seconds
 
 
 class SessionMixin(object):
@@ -405,7 +407,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
         # Add a "Vary: Cookie" header if the session was accessed at all.
         if session.accessed:
-            self._patch_vary_cookie_header(response)
+            patch_vary_header(response, 'Cookie')
 
         if not self.should_set_cookie(app, session):
             return
@@ -423,16 +425,3 @@ class SecureCookieSessionInterface(SessionInterface):
             path=path,
             secure=secure
         )
-
-    def _patch_vary_cookie_header(self, response):
-        """
-        Add a 'Cookie' value to the 'Vary' header if one is not already present.
-        """
-        header = response.headers.get('Vary', '')
-        headers = [h.strip() for h in header.split(',') if h]
-
-        if not any(h.lower() == 'cookie' for h in headers):
-            headers.append('Cookie')
-
-        updated_header = ', '.join(headers)
-        response.headers['Vary'] = updated_header
