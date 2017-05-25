@@ -6,6 +6,10 @@ test:
 	pip install -r test-requirements.txt
 	tox -e py-release
 
+cov:
+	pip install -r test-requirements.txt -q
+	FLASK_DEBUG= py.test --cov-report term --cov-report html --cov=flask --cov=examples tests examples
+
 audit:
 	python setup.py audit
 

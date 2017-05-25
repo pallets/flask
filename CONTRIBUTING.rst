@@ -24,6 +24,13 @@ Reporting issues
 Submitting patches
 ==================
 
+- Include tests if your patch is supposed to solve a bug, and explain
+  clearly under which circumstances the bug happens. Make sure the test fails
+  without your patch.
+
+- Try to follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, but you
+  may ignore the line-length-limit if following it would make the code uglier.
+
 First time setup
 ----------------
 
@@ -81,9 +88,19 @@ Install Flask as an editable package using the current source::
     cd flask
     pip install --editable .
 
+Running the testsuite
+---------------------
+
+The minimal requirement for running the testsuite is ``pytest``.  You can
+install it with::
+
+    pip install pytest
+
 Then you can run the testsuite with::
 
     pytest tests/
+
+**Shortcut**: ``make test`` will ensure ``pytest`` is installed, and run it.
 
 With only pytest installed, a large part of the testsuite will get skipped
 though.  Whether this is relevant depends on which part of Flask you're working
@@ -97,6 +114,8 @@ of ``pytest``. You can install it with::
 
 The ``tox`` command will then run all tests against multiple combinations
 Python versions and dependency versions.
+
+**Shortcut**: ``make tox-test`` will ensure ``tox`` is installed, and run it.
 
 Running test coverage
 ---------------------
@@ -115,6 +134,9 @@ Generate a HTML report can be done using this command::
     pytest --cov-report html --cov=flask tests/
 
 Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
+
+**Shortcut**: ``make cov`` will ensure ``pytest-cov`` is installed, run it, display the results, *and* save the HTML report.
+
 
 Caution
 =======
