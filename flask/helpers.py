@@ -638,18 +638,24 @@ def safe_join(directory, *pathnames):
     :raises: :class:`~werkzeug.exceptions.NotFound` if one or more passed
             paths fall out of its boundaries.
     """
+
+    parts = [directory]
+
     for filename in pathnames:
         if filename != '':
             filename = posixpath.normpath(filename)
-        for sep in _os_alt_seps:
-            if sep in filename:
-                raise NotFound()
-        if os.path.isabs(filename) or \
-           filename == '..' or \
-           filename.startswith('../'):
+
+        if (
+            any(sep in filename for sep in _os_alt_seps)
+            or os.path.isabs(filename)
+            or filename == '..'
+            or filename.startswith('../')
+        ):
             raise NotFound()
-        directory = os.path.join(directory, filename)
-    return directory
+
+        parts.append(filename)
+
+    return posixpath.join(*parts)
 
 
 def send_from_directory(directory, filename, **options):
@@ -998,3 +1004,17 @@ def is_ip(value):
             return True
 
     return False
+
+
+def patch_vary_header(response, value):
+    """Add a value to the ``Vary`` header if it is not already present."""
+
+    header = response.headers.get('Vary', '')
+    headers = [h for h in (h.strip() for h in header.split(',')) if h]
+    lower_value = value.lower()
+
+    if not any(h.lower() == lower_value for h in headers):
+        headers.append(value)
+
+    updated_header = ', '.join(headers)
+    response.headers['Vary'] = updated_header

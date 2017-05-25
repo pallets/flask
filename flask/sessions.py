@@ -9,18 +9,20 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import uuid
 import hashlib
+import uuid
 import warnings
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from datetime import datetime
-from werkzeug.http import http_date, parse_date
+
+from itsdangerous import BadSignature, URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
+from werkzeug.http import http_date, parse_date
+
+from flask.helpers import patch_vary_header
 from . import Markup, json
 from ._compat import iteritems, text_type
-from .helpers import total_seconds, is_ip
-
-from itsdangerous import URLSafeTimedSerializer, BadSignature
+from .helpers import is_ip, total_seconds
 
 
 class SessionMixin(object):
@@ -49,6 +51,13 @@ class SessionMixin(object):
     #: The default mixin implementation just hardcodes ``True`` in.
     modified = True
 
+    #: the accessed variable indicates whether or not the session object has
+    #: been accessed in that request. This allows flask to append a `Vary:
+    #: Cookie` header to the response if the session is being accessed. This
+    #: allows caching proxy servers, like Varnish, to use both the URL and the
+    #: session cookie as keys when caching pages, preventing multiple users
+    #: from being served the same cache.
+    accessed = True
 
 def _tag(value):
     if isinstance(value, tuple):
@@ -117,8 +126,23 @@ class SecureCookieSession(CallbackDict, SessionMixin):
     def __init__(self, initial=None):
         def on_update(self):
             self.modified = True
-        CallbackDict.__init__(self, initial, on_update)
+            self.accessed = True
+
+        super(SecureCookieSession, self).__init__(initial, on_update)
         self.modified = False
+        self.accessed = False
+
+    def __getitem__(self, key):
+        self.accessed = True
+        return super(SecureCookieSession, self).__getitem__(key)
+
+    def get(self, key, default=None):
+        self.accessed = True
+        return super(SecureCookieSession, self).get(key, default)
+
+    def setdefault(self, key, default=None):
+        self.accessed = True
+        return super(SecureCookieSession, self).setdefault(key, default)
 
 
 class NullSession(SecureCookieSession):
@@ -290,22 +314,20 @@ class SessionInterface(object):
             return datetime.utcnow() + app.permanent_session_lifetime
 
     def should_set_cookie(self, app, session):
-        """Indicates whether a cookie should be set now or not.  This is
-        used by session backends to figure out if they should emit a
-        set-cookie header or not.  The default behavior is controlled by
-        the ``SESSION_REFRESH_EACH_REQUEST`` config variable.  If
-        it's set to ``False`` then a cookie is only set if the session is
-        modified, if set to ``True`` it's always set if the session is
-        permanent.
-
-        This check is usually skipped if sessions get deleted.
+        """Used by session backends to determine if a ``Set-Cookie`` header
+        should be set for this session cookie for this response. If the session
+        has been modified, the cookie is set. If the session is permanent and
+        the ``SESSION_REFRESH_EACH_REQUEST`` config is true, the cookie is
+        always set.
+        
+        This check is usually skipped if the session was deleted.
 
         .. versionadded:: 0.11
         """
-        if session.modified:
-            return True
-        save_each = app.config['SESSION_REFRESH_EACH_REQUEST']
-        return save_each and session.permanent
+
+        return session.modified or (
+            session.permanent and app.config['SESSION_REFRESH_EACH_REQUEST']
+        )
 
     def open_session(self, app, request):
         """This method has to be implemented and must either return ``None``
@@ -371,22 +393,22 @@ class SecureCookieSessionInterface(SessionInterface):
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
 
-        # Delete case.  If there is no session we bail early.
-        # If the session was modified to be empty we remove the
-        # whole cookie.
+        # If the session is modified to be empty, remove the cookie.
+        # If the session is empty, return without setting the cookie.
         if not session:
             if session.modified:
-                response.delete_cookie(app.session_cookie_name,
-                                       domain=domain, path=path)
+                response.delete_cookie(
+                    app.session_cookie_name,
+                    domain=domain,
+                    path=path
+                )
+
             return
 
-        # Modification case.  There are upsides and downsides to
-        # emitting a set-cookie header each request.  The behavior
-        # is controlled by the :meth:`should_set_cookie` method
-        # which performs a quick check to figure out if the cookie
-        # should be set or not.  This is controlled by the
-        # SESSION_REFRESH_EACH_REQUEST config flag as well as
-        # the permanent flag on the session itself.
+        # Add a "Vary: Cookie" header if the session was accessed at all.
+        if session.accessed:
+            patch_vary_header(response, 'Cookie')
+
         if not self.should_set_cookie(app, session):
             return
 
@@ -394,6 +416,12 @@ class SecureCookieSessionInterface(SessionInterface):
         secure = self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
-        response.set_cookie(app.session_cookie_name, val,
-                            expires=expires, httponly=httponly,
-                            domain=domain, path=path, secure=secure)
+        response.set_cookie(
+            app.session_cookie_name,
+            val,
+            expires=expires,
+            httponly=httponly,
+            domain=domain,
+            path=path,
+            secure=secure
+        )

@@ -133,8 +133,6 @@ class Flask(_PackageBoundObject):
     :param static_folder: the folder with static files that should be served
                           at `static_url_path`.  Defaults to the ``'static'``
                           folder in the root path of the application.
-                          folder in the root path of the application. Defaults
-                          to None.
     :param host_matching: sets the app's ``url_map.host_matching`` to the given
                           given value. Defaults to False.
     :param static_host: the host to use when adding the static route. Defaults
@@ -222,7 +220,7 @@ class Flask(_PackageBoundObject):
 
     #: The testing flag.  Set this to ``True`` to enable the test mode of
     #: Flask extensions (and in the future probably also Flask itself).
-    #: For example this might activate unittest helpers that have an
+    #: For example this might activate test helpers that have an
     #: additional runtime cost which should not be enabled by default.
     #:
     #: If this is enabled and PROPAGATE_EXCEPTIONS is not changed from the
@@ -1462,15 +1460,17 @@ class Flask(_PackageBoundObject):
         return f
 
     def _find_error_handler(self, e):
-        """Finds a registered error handler for the request’s blueprint.
-        Otherwise falls back to the app, returns None if not a suitable
-        handler is found.
+        """Find a registered error handler for a request in this order:
+        blueprint handler for a specific code, app handler for a specific code,
+        blueprint generic HTTPException handler, app generic HTTPException handler,
+        and returns None if a suitable handler is not found.
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
 
         def find_handler(handler_map):
             if not handler_map:
                 return
+
             for cls in exc_class.__mro__:
                 handler = handler_map.get(cls)
                 if handler is not None:
@@ -1478,15 +1478,13 @@ class Flask(_PackageBoundObject):
                     handler_map[exc_class] = handler
                     return handler
 
-        # try blueprint handlers
-        handler = find_handler(self.error_handler_spec
-                               .get(request.blueprint, {})
-                               .get(code))
-        if handler is not None:
-            return handler
+        # check for any in blueprint or app
+        for name, c in ((request.blueprint, code), (None, code),
+                        (request.blueprint, None), (None, None)):
+            handler = find_handler(self.error_handler_spec.get(name, {}).get(c))
 
-        # fall back to app handlers
-        return find_handler(self.error_handler_spec[None].get(code))
+            if handler:
+                return handler
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the

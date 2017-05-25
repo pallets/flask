@@ -50,7 +50,14 @@ to tell your terminal the application to work with by exporting the
     $ flask run
      * Running on http://127.0.0.1:5000/
 
-If you are on Windows you need to use ``set`` instead of ``export``.
+If you are on Windows, the environment variable syntax depends on command line
+interpreter. On Command Prompt::
+
+    C:\path\to\app>set FLASK_APP=hello.py
+
+And on PowerShell::
+
+    PS C:\path\to\app> $env:FLASK_APP = "hello.py"
 
 Alternatively you can use :command:`python -m flask`::
 
@@ -152,6 +159,11 @@ Screenshot of the debugger in action:
    :align: center
    :class: screenshot
    :alt: screenshot of debugger in action
+
+More information on using the debugger can be found in the `Werkzeug 
+documentation`_.
+
+.. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
 
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 

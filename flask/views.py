@@ -51,6 +51,9 @@ class View(object):
     #: A list of methods this view can handle.
     methods = None
 
+    #: Setting this disables or force-enables the automatic options handling.
+    provide_automatic_options = None
+
     #: The canonical way to decorate class-based views is to decorate the
     #: return value of as_view().  However since this moves parts of the
     #: logic from the class declaration to the place where it's hooked
@@ -99,6 +102,7 @@ class View(object):
         view.__doc__ = cls.__doc__
         view.__module__ = cls.__module__
         view.methods = cls.methods
+        view.provide_automatic_options = cls.provide_automatic_options
         return view
 
 

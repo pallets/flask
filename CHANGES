@@ -42,6 +42,12 @@ Major release, unreleased
   (`#2282`_)
 - Allow overriding built-in commands using ``app.cli.command`` instead of
   creating a separate ``FlaskGroup``. (`#2217`_)
+- Auto-detect zero-argument app factory called ``create_app`` or ``make_app``
+  from ``FLASK_APP``. (`#2297`_)
+- Factory functions are not required to take a ``script_info`` parameter to
+  work with the ``flask`` command. If they take a single parameter or a
+  parameter named ``script_info``, the ``ScriptInfo`` object will be passed.
+  (`#2319`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1898: https://github.com/pallets/flask/pull/1898
@@ -53,6 +59,15 @@ Major release, unreleased
 .. _#2256: https://github.com/pallets/flask/pull/2256
 .. _#2259: https://github.com/pallets/flask/pull/2259
 .. _#2282: https://github.com/pallets/flask/pull/2282
+.. _#2297: https://github.com/pallets/flask/pull/2297
+.. _#2319: https://github.com/pallets/flask/pull/2319
+
+Version 0.12.2
+--------------
+
+Released on May 16 2017
+
+- Fix a bug in `safe_join` on Windows.
 
 Version 0.12.1
 --------------
@@ -172,6 +187,8 @@ Released on May 29th 2016, codename Absinthe.
 - Don't leak exception info of already catched exceptions to context teardown
   handlers (pull request ``#1393``).
 - Allow custom Jinja environment subclasses (pull request ``#1422``).
+- Updated extension dev guidelines.
+
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).
