@@ -1776,7 +1776,11 @@ class Flask(_PackageBoundObject):
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
         :func:`werkzeug.test.EnvironBuilder` for more information, this
-        function accepts the same arguments).
+        function accepts the same arguments plus two additional).
+
+        Additional arguments (might be used only if `base_url` is not specified):
+        :param subdomain: subdomain in case of testing requests handled by blueprint
+        :param url_scheme: a URL scheme (default scheme is http)
         """
         from flask.testing import make_test_environ_builder
         builder = make_test_environ_builder(self, *args, **kwargs)
