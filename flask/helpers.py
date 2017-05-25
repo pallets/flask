@@ -1004,3 +1004,17 @@ def is_ip(value):
             return True
 
     return False
+
+
+def patch_vary_header(response, value):
+    """Add a value to the ``Vary`` header if it is not already present."""
+
+    header = response.headers.get('Vary', '')
+    headers = [h for h in (h.strip() for h in header.split(',')) if h]
+    lower_value = value.lower()
+
+    if not any(h.lower() == lower_value for h in headers):
+        headers.append(value)
+
+    updated_header = ', '.join(headers)
+    response.headers['Vary'] = updated_header
