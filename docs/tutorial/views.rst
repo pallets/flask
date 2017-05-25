@@ -4,7 +4,8 @@ Step 6: The View Functions
 ==========================
 
 Now that the database connections are working, you can start writing the
-view functions.  You will need four of them:
+view functions.  You will need four of them; Show Entries, Add New Entry,
+Login and Logout.  Add the following code snipets to :file:`flaskr.py`.
 
 Show Entries
 ------------
