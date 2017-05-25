@@ -3,163 +3,173 @@
 Installation
 ============
 
-Flask depends on some external libraries, like `Werkzeug
-<http://werkzeug.pocoo.org/>`_ and `Jinja2 <http://jinja.pocoo.org/>`_.
-Werkzeug is a toolkit for WSGI, the standard Python interface between web
-applications and a variety of servers for both development and deployment.
-Jinja2 renders templates.
+Python Version
+--------------
 
-So how do you get all that on your computer quickly?  There are many ways you
-could do that, but the most kick-ass method is virtualenv, so let's have a look
-at that first.
+We recommend using the latest version of Python 3. Flask supports Python 3.3
+and newer, Python 2.6 and newer, and PyPy.
 
-You will need Python 2.6 or newer to get started, so be sure to have an
-up-to-date Python 2.x installation.  For using Flask with Python 3 have a
-look at :ref:`python3-support`.
+Dependencies
+------------
 
-.. _virtualenv:
+These distributions will be installed automatically when installing Flask.
 
-virtualenv
-----------
+* `Werkzeug`_ implements WSGI, the standard Python interface between
+  applications and servers.
+* `Jinja`_ is a template language that renders the pages your application
+  serves.
+* `MarkupSafe`_ comes with Jinja. It escapes untrusted input when rendering
+  templates to avoid injection attacks.
+* `ItsDangerous`_ securely signs data to ensure its integrity. This is used
+  to protect Flask's session cookie.
+* `Click`_ is a framework for writing command line applications. It provides
+  the ``flask`` command and allows adding custom management commands.
 
-Virtualenv is probably what you want to use during development, and if you have
-shell access to your production machines, you'll probably want to use it there,
-too.
+.. _Werkzeug: http://werkzeug.pocoo.org/
+.. _Jinja: http://jinja.pocoo.org/
+.. _MarkupSafe: https://pypi.python.org/pypi/MarkupSafe
+.. _ItsDangerous: https://pythonhosted.org/itsdangerous/
+.. _Click: http://click.pocoo.org/
 
-What problem does virtualenv solve?  If you like Python as much as I do,
-chances are you want to use it for other projects besides Flask-based web
-applications.  But the more projects you have, the more likely it is that you
-will be working with different versions of Python itself, or at least different
-versions of Python libraries.  Let's face it: quite often libraries break
-backwards compatibility, and it's unlikely that any serious application will
-have zero dependencies.  So what do you do if two or more of your projects have
-conflicting dependencies?
+Optional dependencies
+~~~~~~~~~~~~~~~~~~~~~
 
-Virtualenv to the rescue!  Virtualenv enables multiple side-by-side
-installations of Python, one for each project.  It doesn't actually install
-separate copies of Python, but it does provide a clever way to keep different
-project environments isolated.  Let's see how virtualenv works.
+These distributions will not be installed automatically. Flask will detect and
+use them if you install them.
 
-If you are on Mac OS X or Linux, chances are that the following
-command will work for you::
+* `Blinker`_ provides support for :ref:`signals`.
+* `SimpleJSON`_ is a fast JSON implementation that is compatible with
+  Python's ``json`` module. It is preferred for JSON operations if it is
+  installed.
 
-    $ sudo pip install virtualenv
+.. _Blinker: https://pythonhosted.org/blinker/
+.. _SimpleJSON: https://simplejson.readthedocs.io/
 
-It will probably install virtualenv on your system.  Maybe it's even
-in your package manager.  If you use Ubuntu, try::
+Virtual environments
+--------------------
 
-    $ sudo apt-get install python-virtualenv
+Use a virtual environment to manage the dependencies for your project, both in
+development and in production.
 
-If you are on Windows and don't have the ``easy_install`` command, you must
-install it first.  Check the :ref:`windows-easy-install` section for more
-information about how to do that.  Once you have it installed, run the same
-commands as above, but without the ``sudo`` prefix.
+What problem does a virtual environment solve? The more Python projects you
+have, the more likely it is that you need to work with different versions of
+Python libraries, or even Python itself. Newer versions of libraries for one
+project can break compatibility in another project.
 
-Once you have virtualenv installed, just fire up a shell and create
-your own environment.  I usually create a project folder and a :file:`venv`
-folder within::
+Virtual environments are independent groups of Python libraries, one for each
+project. Packages installed for one project will not affect other projects or
+the operating system's packages.
 
-    $ mkdir myproject
-    $ cd myproject
-    $ virtualenv venv
-    New python executable in venv/bin/python
-    Installing setuptools, pip............done.
+Python 3 comes bundled with the :mod:`venv` module to create virtual
+environments. If you're using a modern version of Python, you can continue on
+to the next section.
 
-Now, whenever you want to work on a project, you only have to activate the
-corresponding environment.  On OS X and Linux, do the following::
+If you're using Python 2, see :ref:`install-install-virtualenv` first.
 
-    $ . venv/bin/activate
+.. _install-create-env:
 
-If you are a Windows user, the following command is for you::
+Create an environment
+~~~~~~~~~~~~~~~~~~~~~
 
-    $ venv\Scripts\activate
+Create a project folder and a :file:`venv` folder within:
 
-Either way, you should now be using your virtualenv (notice how the prompt of
-your shell has changed to show the active environment).
+.. code-block:: sh
 
-And if you want to go back to the real world, use the following command::
+    mkdir myproject
+    cd myproject
+    python3 -m venv venv
 
-    $ deactivate
+On Windows:
 
-After doing this, the prompt of your shell should be as familiar as before.
+.. code-block:: bat
 
-Now, let's move on. Enter the following command to get Flask activated in your
-virtualenv::
+    py -3 -m venv venv
 
-    $ pip install Flask
+If you needed to install virtualenv because you are on an older version of
+Python, use the following command instead:
 
-A few seconds later and you are good to go.
+.. code-block:: sh
 
+    virtualenv venv
 
-System-Wide Installation
-------------------------
+On Windows:
 
-This is possible as well, though I do not recommend it.  Just run
-``pip`` with root privileges::
+.. code-block:: bat
 
-    $ sudo pip install Flask
+    \Python27\Scripts\virtualenv.exe venv
 
-(On Windows systems, run it in a command-prompt window with administrator
-privileges, and leave out ``sudo``.)
+Activate the environment
+~~~~~~~~~~~~~~~~~~~~~~~~
 
+Before you work on your project, activate the corresponding environment:
 
-Living on the Edge
+.. code-block:: sh
+
+    . venv/bin/activate
+
+On Windows:
+
+.. code-block:: bat
+
+    venv\Scripts\activate
+
+Your shell prompt will change to show the name of the activated environment.
+
+Install Flask
+-------------
+
+Within the activated environment, use the following command to install Flask:
+
+.. code-block:: sh
+
+    pip install Flask
+
+Living on the edge
+~~~~~~~~~~~~~~~~~~
+
+If you want to work with the latest Flask code before it's released, install or
+update the code from the master branch:
+
+.. code-block:: sh
+
+    pip install -U https://github.com/pallets/flask/archive/master.tar.gz
+
+.. _install-install-virtualenv:
+
+Install virtualenv
 ------------------
 
-If you want to work with the latest version of Flask, there are two ways: you
-can either let ``pip`` pull in the development version, or you can tell
-it to operate on a git checkout.  Either way, virtualenv is recommended.
+If you are using Python 2, the venv module is not available. Instead,
+install `virtualenv`_.
 
-Get the git checkout in a new virtualenv and run in development mode::
+On Linux, virtualenv is provided by your package manager:
 
-    $ git clone https://github.com/pallets/flask.git
-    Initialized empty Git repository in ~/dev/flask/.git/
-    $ cd flask
-    $ virtualenv venv
-    New python executable in venv/bin/python
-    Installing setuptools, pip............done.
-    $ . venv/bin/activate
-    $ python setup.py develop
-    ...
-    Finished processing dependencies for Flask
+.. code-block:: sh
 
-This will pull in the dependencies and activate the git head as the current
-version inside the virtualenv.  Then all you have to do is run ``git pull
-origin`` to update to the latest version.
+    # Debian, Ubuntu
+    sudo apt-get install python-virtualenv
 
-.. _windows-easy-install:
+    # CentOS, Fedora
+    sudo yum install python-virtualenv
 
-`pip` and `setuptools` on Windows
----------------------------------
+    # Arch
+    sudo pacman -S python-virtualenv
 
-Sometimes getting the standard "Python packaging tools" like ``pip``, ``setuptools``
-and ``virtualenv`` can be a little trickier, but nothing very hard. The crucial
-package you will need is pip - this will let you install
-anything else (like virtualenv). Fortunately there is a "bootstrap script"
-you can run to install.
+If you are on Mac OS X or Windows, download `get-pip.py`_, then:
 
-If you don't currently have ``pip``, then `get-pip.py` will install it for you.
+.. code-block:: sh
 
-`get-pip.py`_
+    sudo python2 Downloads/get-pip.py
+    sudo python2 -m pip install virtualenv
 
-It should be double-clickable once you download it. If you already have ``pip``,
-you can upgrade them by running::
+On Windows, as an administrator:
 
-    > pip install --upgrade pip setuptools
+.. code-block:: bat
 
-Most often, once you pull up a command prompt you want to be able to type ``pip``
-and ``python`` which will run those things, but this might not automatically happen
-on Windows, because it doesn't know where those executables are (give either a try!).
+    \Python27\python.exe Downloads\get-pip.py
+    \Python27\python.exe -m pip install virtualenv
 
-To fix this, you should be able to navigate to your Python install directory
-(e.g :file:`C:\Python27`), then go to :file:`Tools`, then :file:`Scripts`, then find the
-:file:`win_add2path.py` file and run that. Open a **new** Command Prompt and
-check that you can now just type ``python`` to bring up the interpreter.
+Now you can continue to :ref:`install-create-env`.
 
-Finally, to install `virtualenv`_, you can simply run::
-
-    > pip install virtualenv
-
-Then you can be off on your way following the installation instructions above.
-
+.. _virtualenv: https://virtualenv.pypa.io/
 .. _get-pip.py: https://bootstrap.pypa.io/get-pip.py

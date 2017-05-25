@@ -32,8 +32,8 @@ Self-hosted options
 .. toctree::
    :maxdepth: 2
 
-   mod_wsgi
    wsgi-standalone
    uwsgi
+   mod_wsgi
    fastcgi
    cgi
