@@ -16,7 +16,7 @@ import logging
 from jinja2 import TemplateNotFound
 
 
-def test_context_processing(app):
+def test_context_processing(app, client):
     @app.context_processor
     def context_processor():
         return {'injected_value': 42}
@@ -25,7 +25,7 @@ def test_context_processing(app):
     def index():
         return flask.render_template('context_template.html', value=23)
 
-    rv = app.test_client().get('/')
+    rv = client.get('/')
     assert rv.data == b'<p>23|42'
 
 
@@ -253,7 +253,7 @@ def test_add_template_test_with_name(app):
     assert app.jinja_env.tests['boolean'](False)
 
 
-def test_template_test_with_template(app):
+def test_template_test_with_template(app, client):
     @app.template_test()
     def boolean(value):
         return isinstance(value, bool)
@@ -262,7 +262,7 @@ def test_template_test_with_template(app):
     def index():
         return flask.render_template('template_test.html', value=False)
 
-    rv = app.test_client().get('/')
+    rv = client.get('/')
     assert b'Success!' in rv.data
 
 

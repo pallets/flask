@@ -718,17 +718,21 @@ def test_template_global(app):
         rv = flask.render_template_string('{{ get_answer() }}')
         assert rv == '42'
 
+
 def test_request_processing(app, client):
     bp = flask.Blueprint('bp', __name__)
     evts = []
+
     @bp.before_request
     def before_bp():
         evts.append('before')
+
     @bp.after_request
     def after_bp(response):
         response.data += b'|after'
         evts.append('after')
         return response
+
     @bp.teardown_request
     def teardown_bp(exc):
         evts.append('teardown')
@@ -745,6 +749,7 @@ def test_request_processing(app, client):
     assert rv.data == b'request|after'
     assert evts == ['before', 'after', 'teardown']
 
+
 def test_app_request_processing(app, client):
     bp = flask.Blueprint('bp', __name__)
     evts = []
@@ -752,14 +757,17 @@ def test_app_request_processing(app, client):
     @bp.before_app_first_request
     def before_first_request():
         evts.append('first')
+
     @bp.before_app_request
     def before_app():
         evts.append('before')
+
     @bp.after_app_request
     def after_app(response):
         response.data += b'|after'
         evts.append('after')
         return response
+
     @bp.teardown_app_request
     def teardown_app(exc):
         evts.append('teardown')
