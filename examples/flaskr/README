@@ -11,7 +11,7 @@
 
       1. edit the configuration in the factory.py file or
          export an FLASKR_SETTINGS environment variable
-         pointing to a configuration file or pass in a 
+         pointing to a configuration file or pass in a
          dictionary with config values using the create_app
          function.
 
@@ -21,7 +21,7 @@
 
       3. Instruct flask to use the right application
 
-         export FLASK_APP=flaskr._cliapp
+         export FLASK_APP=flaskr.factory:create_app()
 
       4. initialize the database with this command:
 
