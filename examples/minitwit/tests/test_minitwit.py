@@ -9,24 +9,22 @@
     :license: BSD, see LICENSE for more details.
 """
 import os
-import minitwit
 import tempfile
 import pytest
+from minitwit import minitwit
 
 
 @pytest.fixture
-def client(request):
+def client():
     db_fd, minitwit.app.config['DATABASE'] = tempfile.mkstemp()
     client = minitwit.app.test_client()
     with minitwit.app.app_context():
         minitwit.init_db()
 
-    def teardown():
-        """Get rid of the database again after each test."""
-        os.close(db_fd)
-        os.unlink(minitwit.app.config['DATABASE'])
-    request.addfinalizer(teardown)
-    return client
+    yield client
+
+    os.close(db_fd)
+    os.unlink(minitwit.app.config['DATABASE'])
 
 
 def register(client, username, password, password2=None, email=None):

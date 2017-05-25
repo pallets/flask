@@ -12,7 +12,7 @@ from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
 from .globals import _request_ctx_stack, _app_ctx_stack
-from .signals import template_rendered
+from .signals import template_rendered, before_render_template
 
 
 def _default_template_ctx_processor():
@@ -52,27 +52,36 @@ class DispatchingJinjaLoader(BaseLoader):
         self.app = app
 
     def get_source(self, environment, template):
-        explain = self.app.config['EXPLAIN_TEMPLATE_LOADING']
+        if self.app.config['EXPLAIN_TEMPLATE_LOADING']:
+            return self._get_source_explained(environment, template)
+        return self._get_source_fast(environment, template)
+
+    def _get_source_explained(self, environment, template):
         attempts = []
-        tmplrv = None
+        trv = None
 
         for srcobj, loader in self._iter_loaders(template):
             try:
                 rv = loader.get_source(environment, template)
-                if tmplrv is None:
-                    tmplrv = rv
-                if not explain:
-                    break
+                if trv is None:
+                    trv = rv
             except TemplateNotFound:
                 rv = None
             attempts.append((loader, srcobj, rv))
 
-        if explain:
-            from .debughelpers import explain_template_loading_attempts
-            explain_template_loading_attempts(self.app, template, attempts)
+        from .debughelpers import explain_template_loading_attempts
+        explain_template_loading_attempts(self.app, template, attempts)
 
-        if tmplrv is not None:
-            return tmplrv
+        if trv is not None:
+            return trv
+        raise TemplateNotFound(template)
+
+    def _get_source_fast(self, environment, template):
+        for srcobj, loader in self._iter_loaders(template):
+            try:
+                return loader.get_source(environment, template)
+            except TemplateNotFound:
+                continue
         raise TemplateNotFound(template)
 
     def _iter_loaders(self, template):
@@ -102,6 +111,8 @@ class DispatchingJinjaLoader(BaseLoader):
 
 def _render(template, context, app):
     """Renders the template and fires the signal"""
+
+    before_render_template.send(app, template=template, context=context)
     rv = template.render(context)
     template_rendered.send(app, template=template, context=context)
     return rv
@@ -125,7 +136,7 @@ def render_template(template_name_or_list, **context):
 
 def render_template_string(source, **context):
     """Renders a template from the given template source string
-    with the given context.
+    with the given context. Template variables will be autoescaped.
 
     :param source: the source code of the template to be
                    rendered

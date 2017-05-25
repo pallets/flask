@@ -7,11 +7,46 @@
     :license: BSD, see LICENSE for more details.
 """
 import flask
+import gc
 import os
 import sys
 import pkgutil
 import pytest
 import textwrap
+from flask import Flask as _Flask
+
+
+class Flask(_Flask):
+    testing = True
+    secret_key = __name__
+
+    def make_response(self, rv):
+        if rv is None:
+            rv = ''
+        return super(Flask, self).make_response(rv)
+
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    return app
+
+
+@pytest.fixture
+def app_ctx(app):
+    with app.app_context() as ctx:
+        yield ctx
+
+
+@pytest.fixture
+def req_ctx(app):
+    with app.test_request_context() as ctx:
+        yield ctx
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
 
 
 @pytest.fixture
@@ -21,16 +56,17 @@ def test_apps(monkeypatch):
             os.path.dirname(__file__), 'test_apps'))
     )
 
+
 @pytest.fixture(autouse=True)
-def leak_detector(request):
-    def ensure_clean_request_context():
-        # make sure we're not leaking a request context since we are
-        # testing flask internally in debug mode in a few cases
-        leaks = []
-        while flask._request_ctx_stack.top is not None:
-            leaks.append(flask._request_ctx_stack.pop())
-        assert leaks == []
-    request.addfinalizer(ensure_clean_request_context)
+def leak_detector():
+    yield
+
+    # make sure we're not leaking a request context since we are
+    # testing flask internally in debug mode in a few cases
+    leaks = []
+    while flask._request_ctx_stack.top is not None:
+        leaks.append(flask._request_ctx_stack.pop())
+    assert leaks == []
 
 
 @pytest.fixture(params=(True, False))
@@ -61,12 +97,13 @@ def limit_loader(request, monkeypatch):
 
     def get_loader(*args, **kwargs):
         return LimitedLoader(old_get_loader(*args, **kwargs))
+
     monkeypatch.setattr(pkgutil, 'get_loader', get_loader)
 
 
 @pytest.fixture
 def modules_tmpdir(tmpdir, monkeypatch):
-    '''A tmpdir added to sys.path'''
+    """A tmpdir added to sys.path."""
     rv = tmpdir.mkdir('modules_tmpdir')
     monkeypatch.syspath_prepend(str(rv))
     return rv
@@ -80,10 +117,10 @@ def modules_tmpdir_prefix(modules_tmpdir, monkeypatch):
 
 @pytest.fixture
 def site_packages(modules_tmpdir, monkeypatch):
-    '''Create a fake site-packages'''
+    """Create a fake site-packages."""
     rv = modules_tmpdir \
-        .mkdir('lib')\
-        .mkdir('python{x[0]}.{x[1]}'.format(x=sys.version_info))\
+        .mkdir('lib') \
+        .mkdir('python{x[0]}.{x[1]}'.format(x=sys.version_info)) \
         .mkdir('site-packages')
     monkeypatch.syspath_prepend(str(rv))
     return rv
@@ -91,8 +128,9 @@ def site_packages(modules_tmpdir, monkeypatch):
 
 @pytest.fixture
 def install_egg(modules_tmpdir, monkeypatch):
-    '''Generate egg from package name inside base and put the egg into
-    sys.path'''
+    """Generate egg from package name inside base and put the egg into
+    sys.path."""
+
     def inner(name, base=modules_tmpdir):
         if not isinstance(name, str):
             raise ValueError(name)
@@ -116,6 +154,7 @@ def install_egg(modules_tmpdir, monkeypatch):
         egg_path, = modules_tmpdir.join('dist/').listdir()
         monkeypatch.syspath_prepend(str(egg_path))
         return egg_path
+
     return inner
 
 
@@ -123,11 +162,12 @@ def install_egg(modules_tmpdir, monkeypatch):
 def purge_module(request):
     def inner(name):
         request.addfinalizer(lambda: sys.modules.pop(name, None))
+
     return inner
 
 
-@pytest.fixture
-def catch_deprecation_warnings():
-    import warnings
-    warnings.simplefilter('default', category=DeprecationWarning)
-    return lambda: warnings.catch_warnings(record=True)
+@pytest.yield_fixture(autouse=True)
+def catch_deprecation_warnings(recwarn):
+    yield
+    gc.collect()
+    assert not recwarn.list, '\n'.join(str(w.message) for w in recwarn.list)

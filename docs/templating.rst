@@ -18,7 +18,10 @@ Jinja Setup
 Unless customized, Jinja2 is configured by Flask as follows:
 
 -   autoescaping is enabled for all templates ending in ``.html``,
-    ``.htm``, ``.xml`` as well as ``.xhtml``
+    ``.htm``, ``.xml`` as well as ``.xhtml`` when using
+    :func:`~flask.templating.render_template`.
+-   autoescaping is enabled for all strings when using
+    :func:`~flask.templating.render_template_string`.
 -   a template has the ability to opt in/out autoescaping with the
     ``{% autoescape %}`` tag.
 -   Flask inserts a couple of global functions and helpers into the
@@ -129,7 +132,7 @@ characters in text, but can also lead to security problems.  (see
 
 Sometimes however you will need to disable autoescaping in templates.
 This can be the case if you want to explicitly inject HTML into pages, for
-example if they come from a system that generate secure HTML like a
+example if they come from a system that generates secure HTML like a
 markdown to HTML converter.
 
 There are three ways to accomplish that:

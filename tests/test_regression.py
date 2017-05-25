@@ -9,15 +9,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
-
-import os
 import gc
 import sys
-import flask
 import threading
+
+import pytest
 from werkzeug.exceptions import NotFound
 
+import flask
 
 _gc_lock = threading.Lock()
 
@@ -39,8 +38,7 @@ class assert_no_leak(object):
         self.old_objects = len(gc.get_objects())
 
     def __exit__(self, exc_type, exc_value, tb):
-        if not hasattr(sys, 'getrefcount'):
-            gc.collect()
+        gc.collect()
         new_objects = len(gc.get_objects())
         if new_objects > self.old_objects:
             pytest.fail('Example code leaked')
@@ -78,11 +76,9 @@ def test_safe_join_toplevel_pardir():
         safe_join('/foo', '..')
 
 
-def test_aborting():
+def test_aborting(app):
     class Foo(Exception):
         whatever = 42
-    app = flask.Flask(__name__)
-    app.testing = True
 
     @app.errorhandler(Foo)
     def handle_foo(e):

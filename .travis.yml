@@ -1,37 +1,61 @@
 sudo: false
 language: python
 
-python:
-  - "2.6"
-  - "2.7"
-  - "pypy"
-  - "3.3"
-  - "3.4"
-
-env:
-  - REQUIREMENTS=lowest
-  - REQUIREMENTS=release
-  - REQUIREMENTS=devel
-
 matrix:
-  exclude:
-    # Python 3 support currently does not work with lowest requirements
-    - python: "3.3"
-      env: REQUIREMENTS=lowest
-    - python: "3.4"
-      env: REQUIREMENTS=lowest
-
+  include:
+    - python: 3.6
+      env: TOXENV=py-release,codecov
+    - python: 3.5
+      env: TOXENV=py-release,codecov
+    - python: 3.4
+      env: TOXENV=py-release,codecov
+    - python: 3.3
+      env: TOXENV=py-release,codecov
+    - python: 2.7
+      env: TOXENV=py-release,codecov
+    - python: 2.6
+      env: TOXENV=py-release,codecov
+    - python: pypy
+      env: TOXENV=py-release,codecov
+    - python: nightly
+      env: TOXENV=py-release
+    - python: 3.6
+      env: TOXENV=docs-html
+    - python: 3.6
+      env: TOXENV=py-release-simplejson,codecov
+    - python: 2.7
+      env: TOXENV=py-release-simplejson,codecov
+    - python: pypy
+      env: TOXENV=py-release-simplejson,codecov
+    - python: 3.6
+      env: TOXENV=py-devel,codecov
+    - python: 3.3
+      env: TOXENV=py-devel,codecov
+    - python: 2.7
+      env: TOXENV=py-devel,codecov
+    - python: 2.6
+      env: TOXENV=py-devel,codecov
+    - python: pypy
+      env: TOXENV=py-devel,codecov
+    - python: 3.6
+      env: TOXENV=py-lowest,codecov
+    - python: 3.3
+      env: TOXENV=py-lowest,codecov
+    - python: 2.7
+      env: TOXENV=py-lowest,codecov
+    - python: 2.6
+      env: TOXENV=py-lowest,codecov
+    - python: pypy
+      env: TOXENV=py-lowest,codecov
 
 install:
-    - pip install tox>=1.8
+  - pip install tox
 
 script:
-    - tox -e \
-      $(echo py$TRAVIS_PYTHON_VERSION | tr -d . | sed -e 's/pypypy/pypy/')-$REQUIREMENTS
+  - tox
 
-branches:
-  except:
-    - website
+cache:
+  - pip
 
 notifications:
   email: false

@@ -9,27 +9,22 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
-
 import os
-import flaskr
 import tempfile
+import pytest
+from flaskr import flaskr
 
 
 @pytest.fixture
-def client(request):
+def client():
     db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
     flaskr.app.config['TESTING'] = True
     client = flaskr.app.test_client()
     with flaskr.app.app_context():
         flaskr.init_db()
-
-    def teardown():
-        os.close(db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
-    request.addfinalizer(teardown)
-
-    return client
+    yield client
+    os.close(db_fd)
+    os.unlink(flaskr.app.config['DATABASE'])
 
 
 def login(client, username, password):

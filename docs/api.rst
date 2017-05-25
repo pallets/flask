@@ -30,60 +30,11 @@ Incoming Request Data
 
 .. autoclass:: Request
    :members:
-
-   .. attribute:: form
-
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed form data from ``POST``
-      or ``PUT`` requests.  Please keep in mind that file uploads will not
-      end up here,  but instead in the :attr:`files` attribute.
-
-   .. attribute:: args
-
-      A :class:`~werkzeug.datastructures.MultiDict` with the parsed contents of the query
-      string.  (The part in the URL after the question mark).
-
-   .. attribute:: values
-
-      A :class:`~werkzeug.datastructures.CombinedMultiDict` with the contents of both
-      :attr:`form` and :attr:`args`.
-
-   .. attribute:: cookies
-
-      A :class:`dict` with the contents of all cookies transmitted with
-      the request.
-
-   .. attribute:: stream
-
-      If the incoming form data was not encoded with a known mimetype
-      the data is stored unmodified in this stream for consumption.  Most
-      of the time it is a better idea to use :attr:`data` which will give
-      you that data as a string.  The stream only returns the data once.
-
-   .. attribute:: headers
-
-      The incoming request headers as a dictionary like object.
-
-   .. attribute:: data
-
-      Contains the incoming request data as string in case it came with
-      a mimetype Flask does not handle.
-
-   .. attribute:: files
-
-      A :class:`~werkzeug.datastructures.MultiDict` with files uploaded as part of a
-      ``POST`` or ``PUT`` request.  Each file is stored as
-      :class:`~werkzeug.datastructures.FileStorage` object.  It basically behaves like a
-      standard file object you know from Python, with the difference that
-      it also has a :meth:`~werkzeug.datastructures.FileStorage.save` function that can
-      store the file on the filesystem.
+   :inherited-members:
 
    .. attribute:: environ
 
       The underlying WSGI environment.
-
-   .. attribute:: method
-
-      The current request method (``POST``, ``GET`` etc.)
 
    .. attribute:: path
    .. attribute:: full_path
@@ -114,15 +65,8 @@ Incoming Request Data
       `url_root`    ``u'http://www.example.com/myapplication/'``
       ============= ======================================================
 
-   .. attribute:: is_xhr
 
-      ``True`` if the request was triggered via a JavaScript
-      `XMLHttpRequest`. This only works with libraries that support the
-      ``X-Requested-With`` header and set it to `XMLHttpRequest`.
-      Libraries that do that are prototype, jQuery and Mochikit and
-      probably some more.
-
-.. class:: request
+.. attribute:: request
 
    To access incoming request data, you can use the global `request`
    object.  Flask parses incoming request data for you and gives you
@@ -289,6 +233,9 @@ thing, like it does for :class:`request` and :class:`session`.
    It's now also possible to use the ``in`` operator on it to see if an
    attribute is defined and it yields all keys on iteration.
 
+   As of 0.11 you can use :meth:`pop` and :meth:`setdefault` in the same
+   way you would use them on a dictionary.
+
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
 
@@ -313,13 +260,7 @@ Useful Functions and Classes
 
 .. autofunction:: url_for
 
-.. function:: abort(code)
-
-   Raises an :exc:`~werkzeug.exceptions.HTTPException` for the given
-   status code.  For example to abort request handling with a page not
-   found exception, you would call ``abort(404)``.
-
-   :param code: the HTTP error code.
+.. autofunction:: abort
 
 .. autofunction:: redirect
 
@@ -508,17 +449,19 @@ Useful Internals
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:
 
+.. _core-signals-list:
+
 Signals
 -------
 
-.. when modifying this list, also update the one in signals.rst
-
 .. versionadded:: 0.6
 
-.. data:: signals_available
+.. data:: signals.signals_available
 
    ``True`` if the signaling system is available.  This is the case
    when `blinker`_ is installed.
+
+The following signals exist in Flask:
 
 .. data:: template_rendered
 
@@ -526,17 +469,61 @@ Signals
    signal is invoked with the instance of the template as `template`
    and the context as dictionary (named `context`).
 
+   Example subscriber::
+
+        def log_template_renders(sender, template, context, **extra):
+            sender.logger.debug('Rendering template "%s" with context %s',
+                                template.name or 'string template',
+                                context)
+
+        from flask import template_rendered
+        template_rendered.connect(log_template_renders, app)
+
+.. data:: flask.before_render_template
+   :noindex:
+
+   This signal is sent before template rendering process. The
+   signal is invoked with the instance of the template as `template`
+   and the context as dictionary (named `context`).
+
+   Example subscriber::
+
+        def log_template_renders(sender, template, context, **extra):
+            sender.logger.debug('Rendering template "%s" with context %s',
+                                template.name or 'string template',
+                                context)
+
+        from flask import before_render_template
+        before_render_template.connect(log_template_renders, app)
+
 .. data:: request_started
 
-   This signal is sent before any request processing started but when the
-   request context was set up.  Because the request context is already
+   This signal is sent when the request context is set up, before
+   any request processing happens.  Because the request context is already
    bound, the subscriber can access the request with the standard global
    proxies such as :class:`~flask.request`.
+
+   Example subscriber::
+
+        def log_request(sender, **extra):
+            sender.logger.debug('Request context is set up')
+
+        from flask import request_started
+        request_started.connect(log_request, app)
 
 .. data:: request_finished
 
    This signal is sent right before the response is sent to the client.
    It is passed the response to be sent named `response`.
+
+   Example subscriber::
+
+        def log_response(sender, response, **extra):
+            sender.logger.debug('Request context is about to close down.  '
+                                'Response: %s', response)
+
+        from flask import request_finished
+        request_finished.connect(log_response, app)
 
 .. data:: got_request_exception
 
@@ -545,26 +532,77 @@ Signals
    in debug mode, where no exception handling happens.  The exception
    itself is passed to the subscriber as `exception`.
 
+   Example subscriber::
+
+        def log_exception(sender, exception, **extra):
+            sender.logger.debug('Got exception during processing: %s', exception)
+
+        from flask import got_request_exception
+        got_request_exception.connect(log_exception, app)
+
 .. data:: request_tearing_down
 
-   This signal is sent when the application is tearing down the request.
-   This is always called, even if an error happened.  An `exc` keyword
-   argument is passed with the exception that caused the teardown.
+   This signal is sent when the request is tearing down.  This is always
+   called, even if an exception is caused.  Currently functions listening
+   to this signal are called after the regular teardown handlers, but this
+   is not something you can rely on.
 
-   .. versionchanged:: 0.9
-      The `exc` parameter was added.
+   Example subscriber::
+
+        def close_db_connection(sender, **extra):
+            session.close()
+
+        from flask import request_tearing_down
+        request_tearing_down.connect(close_db_connection, app)
+
+   As of Flask 0.9, this will also be passed an `exc` keyword argument
+   that has a reference to the exception that caused the teardown if
+   there was one.
 
 .. data:: appcontext_tearing_down
 
-   This signal is sent when the application is tearing down the
-   application context.  This is always called, even if an error happened.
-   An `exc` keyword argument is passed with the exception that caused the
-   teardown.  The sender is the application.
+   This signal is sent when the app context is tearing down.  This is always
+   called, even if an exception is caused.  Currently functions listening
+   to this signal are called after the regular teardown handlers, but this
+   is not something you can rely on.
+
+   Example subscriber::
+
+        def close_db_connection(sender, **extra):
+            session.close()
+
+        from flask import appcontext_tearing_down
+        appcontext_tearing_down.connect(close_db_connection, app)
+
+   This will also be passed an `exc` keyword argument that has a reference
+   to the exception that caused the teardown if there was one.
 
 .. data:: appcontext_pushed
 
    This signal is sent when an application context is pushed.  The sender
-   is the application.
+   is the application.  This is usually useful for unittests in order to
+   temporarily hook in information.  For instance it can be used to
+   set a resource early onto the `g` object.
+
+   Example usage::
+
+        from contextlib import contextmanager
+        from flask import appcontext_pushed
+
+        @contextmanager
+        def user_set(app, user):
+            def handler(sender, **kwargs):
+                g.user = user
+            with appcontext_pushed.connected_to(handler, app):
+                yield
+
+   And in the testcode::
+
+        def test_user_me(self):
+            with user_set(app, 'john'):
+                c = app.test_client()
+                resp = c.get('/users/me')
+                assert resp.data == 'username=john'
 
    .. versionadded:: 0.10
 
@@ -576,17 +614,25 @@ Signals
 
    .. versionadded:: 0.10
 
+
 .. data:: message_flashed
 
    This signal is sent when the application is flashing a message.  The
    messages is sent as `message` keyword argument and the category as
    `category`.
 
+   Example subscriber::
+
+        recorded = []
+        def record(sender, message, category, **extra):
+            recorded.append((message, category))
+
+        from flask import message_flashed
+        message_flashed.connect(record, app)
+
    .. versionadded:: 0.10
 
-.. currentmodule:: None
-
-.. class:: flask.signals.Namespace
+.. class:: signals.Namespace
 
    An alias for :class:`blinker.base.Namespace` if blinker is available,
    otherwise a dummy class that creates fake signals.  This class is
@@ -600,7 +646,9 @@ Signals
       do nothing but will fail with a :exc:`RuntimeError` for all other
       operations, including connecting.
 
+
 .. _blinker: https://pypi.python.org/pypi/blinker
+
 
 Class-Based Views
 -----------------
@@ -641,6 +689,8 @@ The following converters are available:
 `int`       accepts integers
 `float`     like `int` but for floating point values
 `path`      like the default but also accepts slashes
+`any`       matches one of the items provided
+`uuid`      accepts UUID strings
 =========== ===============================================
 
 Custom converters can be defined using :attr:`flask.Flask.url_map`.
@@ -779,13 +829,6 @@ Command Line Interface
 
    Marks a function so that an instance of :class:`ScriptInfo` is passed
    as first argument to the click callback.
-
-.. autofunction:: script_info_option
-
-   A special decorator that informs a click callback to be passed the
-   script info object as first argument.  This is normally not useful
-   unless you implement very special commands like the run command which
-   does not want the application to be loaded yet.
 
 .. autodata:: run_command
 
