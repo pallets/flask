@@ -13,18 +13,26 @@
          export an FLASKR_SETTINGS environment variable
          pointing to a configuration file.
 
-      2. initialize the database with this command:
+      2. install the app from the root of the project directory
 
-         flask --app=flaskr initdb
+         pip install --editable .
 
-      3. now you can run flaskr:
+      3. Instruct flask to use the right application
 
-         flask --app=flaskr run
+         export FLASK_APP=flaskr
+
+      4. initialize the database with this command:
+
+         flask initdb
+
+      5. now you can run flaskr:
+
+         flask run
 
          the application will greet you on
          http://localhost:5000/
 
     ~ Is it tested?
 
-      You betcha.  Run the `test_flaskr.py` file to see
+      You betcha.  Run `python setup.py test` to see
       the tests pass.

@@ -25,13 +25,29 @@ For example, to run a Flask application with 4 worker processes (``-w
 
 .. _Gunicorn: http://gunicorn.org/
 .. _eventlet: http://eventlet.net/
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
+
+uWSGI
+--------
+
+`uWSGI`_ is a fast application server written in C. It is very configurable
+which makes it more complicated to setup than gunicorn.
+
+Running `uWSGI HTTP Router`_::
+
+    uwsgi --http 127.0.0.1:5000 --module myproject:app
+
+For a more optimized setup, see `configuring uWSGI and NGINX`_.
+
+.. _uWSGI: http://uwsgi-docs.readthedocs.io/en/latest/
+.. _uWSGI HTTP Router: http://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
+.. _configuring uWSGI and NGINX: uwsgi.html#starting-your-app-with-uwsgi
 
 Gevent
 -------
 
 `Gevent`_ is a coroutine-based Python networking library that uses
-`greenlet`_ to provide a high-level synchronous API on top of `libevent`_
+`greenlet`_ to provide a high-level synchronous API on top of `libev`_
 event loop::
 
     from gevent.wsgi import WSGIServer
@@ -41,8 +57,8 @@ event loop::
     http_server.serve_forever()
 
 .. _Gevent: http://www.gevent.org/
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
-.. _libevent: http://libevent.org/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
+.. _libev: http://software.schmorp.de/pkg/libev.html
 
 Twisted Web
 -----------
@@ -97,9 +113,10 @@ localhost at port 8000, setting appropriate headers:
             proxy_pass         http://127.0.0.1:8000/;
             proxy_redirect     off;
 
-            proxy_set_header   Host             $host;
-            proxy_set_header   X-Real-IP        $remote_addr;
-            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+            proxy_set_header   Host                 $host;
+            proxy_set_header   X-Real-IP            $remote_addr;
+            proxy_set_header   X-Forwarded-For      $proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Proto    $scheme;
         }
     }
 

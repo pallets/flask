@@ -176,16 +176,25 @@ the `template_folder` parameter to the :class:`Blueprint` constructor::
 
     admin = Blueprint('admin', __name__, template_folder='templates')
 
-As for static files, the path can be absolute or relative to the blueprint
-resource folder.  The template folder is added to the searchpath of
-templates but with a lower priority than the actual application's template
-folder.  That way you can easily override templates that a blueprint
-provides in the actual application.
+For static files, the path can be absolute or relative to the blueprint
+resource folder.
+
+The template folder is added to the search path of templates but with a lower
+priority than the actual application's template folder. That way you can
+easily override templates that a blueprint provides in the actual application.
+This also means that if you don't want a blueprint template to be accidentally
+overridden, make sure that no other blueprint or actual application template
+has the same relative path. When multiple blueprints provide the same relative
+template path the first blueprint registered takes precedence over the others.
+
 
 So if you have a blueprint in the folder ``yourapplication/admin`` and you
 want to render the template ``'admin/index.html'`` and you have provided
 ``templates`` as a `template_folder` you will have to create a file like
-this: :file:`yourapplication/admin/templates/admin/index.html`.
+this: :file:`yourapplication/admin/templates/admin/index.html`. The reason
+for the extra ``admin`` folder is to avoid getting our template overridden
+by a template named ``index.html`` in the actual application template
+folder.
 
 To further reiterate this: if you have a blueprint named ``admin`` and you
 want to render a template called :file:`index.html` which is specific to this
@@ -235,5 +244,23 @@ Here is an example for a "404 Page Not Found" exception::
     @simple_page.errorhandler(404)
     def page_not_found(e):
         return render_template('pages/404.html')
+
+Most errorhandlers will simply work as expected; however, there is a caveat
+concerning handlers for 404 and 405 exceptions.  These errorhandlers are only
+invoked from an appropriate ``raise`` statement or a call to ``abort`` in another
+of the blueprint's view functions; they are not invoked by, e.g., an invalid URL
+access.  This is because the blueprint does not "own" a certain URL space, so
+the application instance has no way of knowing which blueprint errorhandler it
+should run if given an invalid URL.  If you would like to execute different
+handling strategies for these errors based on URL prefixes, they may be defined
+at the application level using the ``request`` proxy object::
+
+    @app.errorhandler(404)
+    @app.errorhandler(405)
+    def _handle_api_error(ex):
+        if request.path.startswith('/api/'):
+            return jsonify_error(ex)
+        else:
+            return ex
 
 More information on error handling see :ref:`errorpages`.

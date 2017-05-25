@@ -1,10 +1,11 @@
 .. _tutorial-views:
 
-Step 5: The View Functions
+Step 6: The View Functions
 ==========================
 
-Now that the database connections are working, we can start writing the
-view functions.  We will need four of them:
+Now that the database connections are working, you can start writing the
+view functions.  You will need four of them; Show Entries, Add New Entry,
+Login and Logout.  Add the following code snipets to :file:`flaskr.py`.
 
 Show Entries
 ------------
@@ -12,11 +13,11 @@ Show Entries
 This view shows all the entries stored in the database.  It listens on the
 root of the application and will select title and text from the database.
 The one with the highest id (the newest entry) will be on top.  The rows
-returned from the cursor look a bit like tuples because we are using
+returned from the cursor look a bit like dictionaries because we are using
 the :class:`sqlite3.Row` row factory.
 
-The view function will pass the entries as dictionaries to the
-:file:`show_entries.html` template and return the rendered one::
+The view function will pass the entries to the :file:`show_entries.html`
+template and return the rendered one::
 
     @app.route('/')
     def show_entries():
@@ -30,7 +31,7 @@ Add New Entry
 
 This view lets the user add new entries if they are logged in.  This only
 responds to ``POST`` requests; the actual form is shown on the
-`show_entries` page.  If everything worked out well, we will
+`show_entries` page.  If everything worked out well, it will
 :func:`~flask.flash` an information message to the next request and
 redirect back to the `show_entries` page::
 
@@ -45,8 +46,8 @@ redirect back to the `show_entries` page::
         flash('New entry was successfully posted')
         return redirect(url_for('show_entries'))
 
-Note that we check that the user is logged in here (the `logged_in` key is
-present in the session and ``True``).
+Note that this view checks that the user is logged in (that is, if the
+`logged_in` key is present in the session and ``True``).
 
 .. admonition:: Security Note
 
@@ -81,11 +82,11 @@ notified about that, and the user is asked again::
         return render_template('login.html', error=error)
 
 The `logout` function, on the other hand, removes that key from the session
-again.  We use a neat trick here: if you use the :meth:`~dict.pop` method
+again.  There is a neat trick here: if you use the :meth:`~dict.pop` method
 of the dict and pass a second parameter to it (the default), the method
 will delete the key from the dictionary if present or do nothing when that
-key is not in there.  This is helpful because now we don't have to check
-if the user was logged in.
+key is not in there.  This is helpful because now it is not necessary to
+check if the user was logged in.
 
 ::
 
@@ -95,4 +96,23 @@ if the user was logged in.
         flash('You were logged out')
         return redirect(url_for('show_entries'))
 
+.. admonition:: Security Note
+
+    Passwords should never be stored in plain text in a production
+    system. This tutorial uses plain text passwords for simplicity. If you
+    plan to release a project based off this tutorial out into the world,
+    passwords should be both `hashed and salted`_ before being stored in a
+    database or file.
+
+    Fortunately, there are Flask extensions for the purpose of
+    hashing passwords and verifying passwords against hashes, so adding
+    this functionality is fairly straight forward. There are also
+    many general python libraries that can be used for hashing.
+
+    You can find a list of recommended Flask extensions
+    `here <http://flask.pocoo.org/extensions/>`_
+
+
 Continue with :ref:`tutorial-templates`.
+
+.. _hashed and salted: https://blog.codinghorror.com/youre-probably-storing-passwords-incorrectly/

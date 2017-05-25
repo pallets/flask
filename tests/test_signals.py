@@ -18,15 +18,13 @@ except ImportError:
 
 import flask
 
-
 pytestmark = pytest.mark.skipif(
     blinker is None,
     reason='Signals require the blinker library.'
 )
 
-def test_template_rendered():
-    app = flask.Flask(__name__)
 
+def test_template_rendered(app, client):
     @app.route('/')
     def index():
         return flask.render_template('simple_template.html', whiskey=42)
@@ -38,13 +36,39 @@ def test_template_rendered():
 
     flask.template_rendered.connect(record, app)
     try:
-        app.test_client().get('/')
+        client.get('/')
         assert len(recorded) == 1
         template, context = recorded[0]
         assert template.name == 'simple_template.html'
         assert context['whiskey'] == 42
     finally:
         flask.template_rendered.disconnect(record, app)
+
+
+def test_before_render_template():
+    app = flask.Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return flask.render_template('simple_template.html', whiskey=42)
+
+    recorded = []
+
+    def record(sender, template, context):
+        context['whiskey'] = 43
+        recorded.append((template, context))
+
+    flask.before_render_template.connect(record, app)
+    try:
+        rv = app.test_client().get('/')
+        assert len(recorded) == 1
+        template, context = recorded[0]
+        assert template.name == 'simple_template.html'
+        assert context['whiskey'] == 43
+        assert rv.data == b'<h1>43</h1>'
+    finally:
+        flask.before_render_template.disconnect(record, app)
+
 
 def test_request_signals():
     app = flask.Flask(__name__)
@@ -85,6 +109,7 @@ def test_request_signals():
         flask.request_started.disconnect(before_request_signal, app)
         flask.request_finished.disconnect(after_request_signal, app)
 
+
 def test_request_exception_signal():
     app = flask.Flask(__name__)
     recorded = []
@@ -103,6 +128,7 @@ def test_request_exception_signal():
         assert isinstance(recorded[0], ZeroDivisionError)
     finally:
         flask.got_request_exception.disconnect(record, app)
+
 
 def test_appcontext_signals():
     app = flask.Flask(__name__)
@@ -130,6 +156,7 @@ def test_appcontext_signals():
         flask.appcontext_pushed.disconnect(record_push, app)
         flask.appcontext_popped.disconnect(record_pop, app)
 
+
 def test_flash_signal():
     app = flask.Flask(__name__)
     app.config['SECRET_KEY'] = 'secret'
@@ -155,6 +182,7 @@ def test_flash_signal():
             assert category == 'notice'
     finally:
         flask.message_flashed.disconnect(record, app)
+
 
 def test_appcontext_tearing_down_signal():
     app = flask.Flask(__name__)

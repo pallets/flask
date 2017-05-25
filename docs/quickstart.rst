@@ -26,7 +26,7 @@ So what did that code do?
    class will be our WSGI application.
 2. Next we create an instance of this class. The first argument is the name of
    the application's module or package.  If you are using a single module (as
-   in this example), you should use `__name__` because depending on if it's
+   in this example), you should use ``__name__`` because depending on if it's
    started as application or imported as module the name will be different
    (``'__main__'`` versus the actual import name). This is needed so that
    Flask knows where to look for templates, static files, and so on. For more
@@ -37,19 +37,32 @@ So what did that code do?
    particular function, and returns the message we want to display in the
    user's browser.
 
-Just save it as :file:`hello.py` (or something similar) and run it with your Python
-interpreter.  Make sure to not call your application :file:`flask.py` because this
-would conflict with Flask itself.
+Just save it as :file:`hello.py` or something similar. Make sure to not call
+your application :file:`flask.py` because this would conflict with Flask
+itself.
 
 To run the application you can either use the :command:`flask` command or
-python's :option:`-m` switch with Flask::
+python's ``-m`` switch with Flask.  Before you can do that you need
+to tell your terminal the application to work with by exporting the
+``FLASK_APP`` environment variable::
 
-    $ flask -a hello run
+    $ export FLASK_APP=hello.py
+    $ flask run
      * Running on http://127.0.0.1:5000/
 
-or alternatively::
+If you are on Windows, the environment variable syntax depends on command line
+interpreter. On Command Prompt::
 
-    $ python -m flask -a hello run
+    C:\path\to\app>set FLASK_APP=hello.py
+
+And on PowerShell::
+
+    PS C:\path\to\app> $env:FLASK_APP = "hello.py"
+
+Alternatively you can use :command:`python -m flask`::
+
+    $ export FLASK_APP=hello.py
+    $ python -m flask run
      * Running on http://127.0.0.1:5000/
 
 This launches a very simple builtin server, which is good enough for testing
@@ -72,7 +85,7 @@ should see your hello world greeting.
    you can make the server publicly available simply by adding
    ``--host=0.0.0.0`` to the command line::
 
-       flask -a hello run --host=0.0.0.0
+       flask run --host=0.0.0.0
 
    This tells your operating system to listen on all public IPs.
 
@@ -80,35 +93,26 @@ should see your hello world greeting.
 What to do if the Server does not Start
 ---------------------------------------
 
-In case the ``python -m flask`` fails or :command:`flask` does not exist,
+In case the :command:`python -m flask` fails or :command:`flask` does not exist,
 there are multiple reasons this might be the case.  First of all you need
 to look at the error message.
 
 Old Version of Flask
 ````````````````````
 
-Versions of Flask older than 1.0 use to have different ways to start the
+Versions of Flask older than 0.11 use to have different ways to start the
 application.  In short, the :command:`flask` command did not exist, and
-neither did ``python -m flask``.  In that case you have two options:
+neither did :command:`python -m flask`.  In that case you have two options:
 either upgrade to newer Flask versions or have a look at the :ref:`server`
 docs to see the alternative method for running a server.
-
-Python older 2.7
-````````````````
-
-In case you have a version of Python older than 2.7 ``python -m flask``
-does not work.  You can either use :command:`flask` or ``python -m
-flask.cli`` as an alternative.  This is because Python before 2.7 does no
-permit packages to act as executable modules.  For more information see
-:ref:`cli`.
 
 Invalid Import Name
 ```````````````````
 
-The :option:`-a` argument to :command:`flask` is the name of the module to import.  In
-case that module is incorrectly named you will get an import error upon
-start (or if debug is enabled when you navigate to the application).  It
-will tell you what it tried to import and why it failed.
+The ``FLASK_APP`` environment variable is the name of the module to import at
+:command:`flask run`. In case that module is incorrectly named you will get an
+import error upon start (or if debug is enabled when you navigate to the
+application). It will tell you what it tried to import and why it failed.
 
 The most common reason is a typo or because you did not actually create an
 ``app`` object.
@@ -118,16 +122,21 @@ The most common reason is a typo or because you did not actually create an
 Debug Mode
 ----------
 
+(Want to just log errors and stack traces? See :ref:`application-errors`)
+
 The :command:`flask` script is nice to start a local development server, but
 you would have to restart it manually after each change to your code.
 That is not very nice and Flask can do better.  If you enable debug
 support the server will reload itself on code changes, and it will also
 provide you with a helpful debugger if things go wrong.
 
-There are different ways to enable the debug mode.  The most obvious one
-is the :option:`--debug` parameter to the :command:`flask` command::
+To enable debug mode you can export the ``FLASK_DEBUG`` environment variable
+before running the server::
 
-    flask --debug -a hello run
+    $ export FLASK_DEBUG=1
+    $ flask run
+
+(On Windows you need to use ``set`` instead of ``export``).
 
 This does the following things:
 
@@ -151,20 +160,22 @@ Screenshot of the debugger in action:
    :class: screenshot
    :alt: screenshot of debugger in action
 
+More information on using the debugger can be found in the `Werkzeug 
+documentation`_.
+
+.. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
+
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 
 
 Routing
 -------
 
-Modern web applications have beautiful URLs.  This helps people remember
-the URLs, which is especially handy for applications that are used from
-mobile devices with slower network connections.  If the user can directly
-go to the desired page without having to hit the index page it is more
-likely they will like the page and come back next time.
+Modern web applications use meaningful URLs to help users. Users are more
+likely to like a page and come back if the page uses a meaningful URL they can
+remember and use to directly visit a page.
 
-As you have seen above, the :meth:`~flask.Flask.route` decorator is used to
-bind a function to a URL.  Here are some basic examples::
+Use the :meth:`~flask.Flask.route` decorator to bind a function to a URL. ::
 
     @app.route('/')
     def index():
@@ -174,16 +185,16 @@ bind a function to a URL.  Here are some basic examples::
     def hello():
         return 'Hello, World'
 
-But there is more to it!  You can make certain parts of the URL dynamic and
-attach multiple rules to a function.
+You can do more! You can make parts of the URL dynamic and attach multiple
+rules to a function.
 
 Variable Rules
 ``````````````
 
-To add variable parts to a URL you can mark these special sections as
-``<variable_name>``.  Such a part is then passed as a keyword argument to your
-function.  Optionally a converter can be used by specifying a rule with
-``<converter:variable_name>``.  Here are some nice examples::
+You can add variable sections to a URL by marking sections with
+``<variable_name>``. Your function then receives the ``<variable_name>``
+as a keyword argument. Optionally, you can use a converter to specify the type
+of the argument like ``<converter:variable_name>``. ::
 
     @app.route('/user/<username>')
     def show_user_profile(username):
@@ -195,109 +206,111 @@ function.  Optionally a converter can be used by specifying a rule with
         # show the post with the given id, the id is an integer
         return 'Post %d' % post_id
 
-The following converters exist:
+    @app.route('/path/<path:subpath>')
+    def show_subpath(subpath):
+        # show the subpath after /path/
+        return 'Subpath %s' % subpath
 
-=========== ===============================================
-`string`    accepts any text without a slash (the default)
-`int`       accepts integers
-`float`     like `int` but for floating point values
-`path`      like the default but also accepts slashes
-=========== ===============================================
+Converter types:
 
-.. admonition:: Unique URLs / Redirection Behavior
+========== ==========================================
+``string`` (default) accepts any text without a slash
+``int``    accepts positive integers
+``float``  accepts positive floating point values
+``path``   like ``string`` but also accepts slashes
+``uuid``   accepts UUID strings
+========== ==========================================
 
-   Flask's URL rules are based on Werkzeug's routing module.  The idea
-   behind that module is to ensure beautiful and unique URLs based on
-   precedents laid down by Apache and earlier HTTP servers.
+Unique URLs / Redirection Behavior
+``````````````````````````````````
 
-   Take these two rules::
+Take these two rules::
 
-        @app.route('/projects/')
-        def projects():
-            return 'The project page'
+    @app.route('/projects/')
+    def projects():
+        return 'The project page'
 
-        @app.route('/about')
-        def about():
-            return 'The about page'
+    @app.route('/about')
+    def about():
+        return 'The about page'
 
-   Though they look rather similar, they differ in their use of the trailing
-   slash in the URL *definition*.  In the first case, the canonical URL for the
-   `projects` endpoint has a trailing slash.  In that sense, it is similar to
-   a folder on a filesystem.  Accessing it without a trailing slash will cause
-   Flask to redirect to the canonical URL with the trailing slash.
+Though they look similar, they differ in their use of the trailing slash in
+the URL. In the first case, the canonical URL for the ``projects`` endpoint
+uses a trailing slash. It's similar to a folder in a file system; if you
+access the URL without a trailing slash, Flask redirects you to the
+canonical URL with the trailing slash.
 
-   In the second case, however, the URL is defined without a trailing slash,
-   rather like the pathname of a file on UNIX-like systems. Accessing the URL
-   with a trailing slash will produce a 404 "Not Found" error.
+In the second case, however, the URL definition lacks a trailing slash,
+like the pathname of a file on UNIX-like systems. Accessing the URL with a
+trailing slash produces a 404 “Not Found” error.
 
-   This behavior allows relative URLs to continue working even if the trailing
-   slash is omitted, consistent with how Apache and other servers work.  Also,
-   the URLs will stay unique, which helps search engines avoid indexing the
-   same page twice.
-
+This behavior allows relative URLs to continue working even if the trailing
+slash is omitted, consistent with how Apache and other servers work. Also,
+the URLs will stay unique, which helps search engines avoid indexing the
+same page twice.
 
 .. _url-building:
 
 URL Building
 ````````````
 
-If it can match URLs, can Flask also generate them?  Of course it can.  To
-build a URL to a specific function you can use the :func:`~flask.url_for`
-function.  It accepts the name of the function as first argument and a number
-of keyword arguments, each corresponding to the variable part of the URL rule.
-Unknown variable parts are appended to the URL as query parameters.  Here are
-some examples:
-
->>> from flask import Flask, url_for
->>> app = Flask(__name__)
->>> @app.route('/')
-... def index(): pass
-...
->>> @app.route('/login')
-... def login(): pass
-...
->>> @app.route('/user/<username>')
-... def profile(username): pass
-...
->>> with app.test_request_context():
-...  print url_for('index')
-...  print url_for('login')
-...  print url_for('login', next='/')
-...  print url_for('profile', username='John Doe')
-...
-/
-/login
-/login?next=/
-/user/John%20Doe
-
-(This also uses the :meth:`~flask.Flask.test_request_context` method, explained
-below.  It tells Flask to behave as though it is handling a request, even
-though we are interacting with it through a Python shell.  Have a look at the
-explanation below. :ref:`context-locals`).
+To build a URL to a specific function, use the :func:`~flask.url_for` function.
+It accepts the name of the function as its first argument and any number of
+keyword arguments, each corresponding to a variable part of the URL rule.
+Unknown variable parts are appended to the URL as query parameters.
 
 Why would you want to build URLs using the URL reversing function
 :func:`~flask.url_for` instead of hard-coding them into your templates?
-There are three good reasons for this:
 
-1. Reversing is often more descriptive than hard-coding the URLs.  More
-   importantly, it allows you to change URLs in one go, without having to
-   remember to change URLs all over the place.
-2. URL building will handle escaping of special characters and Unicode
-   data transparently for you, so you don't have to deal with them.
-3. If your application is placed outside the URL root (say, in
-   ``/myapplication`` instead of ``/``), :func:`~flask.url_for` will handle
-   that properly for you.
+1. Reversing is often more descriptive than hard-coding the URLs.
+2. You can change your URLs in one go instead of needing to remember to
+    manually change hard-coded URLs.
+3. URL building handles escaping of special characters and Unicode data
+    transparently.
+4. If your application is placed outside the URL root, for example, in
+    ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
+    handles that for you.
 
+For example, here we use the :meth:`~flask.Flask.test_request_context` method
+to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
+tells Flask to behave as though it's handling a request even while we use a
+Python shell. See :ref:`context-locals`. ::
+
+    from flask import Flask, url_for
+
+    app = Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return 'index'
+
+    @app.route('/login')
+    def login():
+        return 'login'
+
+    @app.route('/user/<username>')
+    def profile(username):
+        return '{}'s profile'.format(username)
+
+    with app.test_request_context():
+        print(url_for('index'))
+        print(url_for('login'))
+        print(url_for('login', next='/'))
+        print(url_for('profile', username='John Doe'))
+
+    /
+    /login
+    /login?next=/
+    /user/John%20Doe
 
 HTTP Methods
 ````````````
 
-HTTP (the protocol web applications are speaking) knows different methods for
-accessing URLs.  By default, a route only answers to ``GET`` requests, but that
-can be changed by providing the `methods` argument to the
-:meth:`~flask.Flask.route` decorator.  Here are some examples::
-
-    from flask import request
+Web applications use different HTTP methods when accessing URLs. You should
+familiarize yourself with the HTTP methods as you work with Flask. By default,
+a route only answers to ``GET`` requests. You can use the ``methods`` argument
+of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
+::
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -306,64 +319,11 @@ can be changed by providing the `methods` argument to the
         else:
             show_the_login_form()
 
-If ``GET`` is present, ``HEAD`` will be added automatically for you.  You
-don't have to deal with that.  It will also make sure that ``HEAD`` requests
-are handled as the `HTTP RFC`_ (the document describing the HTTP
-protocol) demands, so you can completely ignore that part of the HTTP
-specification.  Likewise, as of Flask 0.6, ``OPTIONS`` is implemented for you
-automatically as well.
+If ``GET`` is present, Flask automatically adds support for the ``HEAD`` method
+and handles ``HEAD`` requests according to the the `HTTP RFC`_. Likewise,
+``OPTIONS`` is automatically implemented for you.
 
-You have no idea what an HTTP method is?  Worry not, here is a quick
-introduction to HTTP methods and why they matter:
-
-The HTTP method (also often called "the verb") tells the server what the
-clients wants to *do* with the requested page.  The following methods are
-very common:
-
-``GET``
-    The browser tells the server to just *get* the information stored on
-    that page and send it.  This is probably the most common method.
-
-``HEAD``
-    The browser tells the server to get the information, but it is only
-    interested in the *headers*, not the content of the page.  An
-    application is supposed to handle that as if a ``GET`` request was
-    received but to not deliver the actual content.  In Flask you don't
-    have to deal with that at all, the underlying Werkzeug library handles
-    that for you.
-
-``POST``
-    The browser tells the server that it wants to *post* some new
-    information to that URL and that the server must ensure the data is
-    stored and only stored once.  This is how HTML forms usually
-    transmit data to the server.
-
-``PUT``
-    Similar to ``POST`` but the server might trigger the store procedure
-    multiple times by overwriting the old values more than once.  Now you
-    might be asking why this is useful, but there are some good reasons
-    to do it this way.  Consider that the connection is lost during
-    transmission: in this situation a system between the browser and the
-    server might receive the request safely a second time without breaking
-    things.  With ``POST`` that would not be possible because it must only
-    be triggered once.
-
-``DELETE``
-    Remove the information at the given location.
-
-``OPTIONS``
-    Provides a quick way for a client to figure out which methods are
-    supported by this URL.  Starting with Flask 0.6, this is implemented
-    for you automatically.
-
-Now the interesting part is that in HTML4 and XHTML1, the only methods a
-form can submit to the server are ``GET`` and ``POST``.  But with JavaScript
-and future HTML standards you can use the other methods as well.  Furthermore
-HTTP has become quite popular lately and browsers are no longer the only
-clients that are using HTTP. For instance, many revision control systems
-use it.
-
-.. _HTTP RFC: http://www.ietf.org/rfc/rfc2068.txt
+.. _HTTP RFC: https://www.ietf.org/rfc/rfc2068.txt
 
 Static Files
 ------------
@@ -442,22 +402,22 @@ know how that works, head over to the :ref:`template-inheritance` pattern
 documentation.  Basically template inheritance makes it possible to keep
 certain elements on each page (like header, navigation and footer).
 
-Automatic escaping is enabled, so if `name` contains HTML it will be escaped
+Automatic escaping is enabled, so if ``name`` contains HTML it will be escaped
 automatically.  If you can trust a variable and you know that it will be
 safe HTML (for example because it came from a module that converts wiki
 markup to HTML) you can mark it as safe by using the
 :class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
 
-Here is a basic introduction to how the :class:`~jinja2.Markup` class works:
+Here is a basic introduction to how the :class:`~jinja2.Markup` class works::
 
->>> from flask import Markup
->>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
-Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
->>> Markup.escape('<blink>hacker</blink>')
-Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
->>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-u'Marked up \xbb HTML'
+    >>> from flask import Markup
+    >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
+    Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
+    >>> Markup.escape('<blink>hacker</blink>')
+    Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
+    >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
+    u'Marked up \xbb HTML'
 
 .. versionchanged:: 0.5
 
@@ -534,16 +494,16 @@ The Request Object
 ``````````````````
 
 The request object is documented in the API section and we will not cover
-it here in detail (see :class:`~flask.request`). Here is a broad overview of
+it here in detail (see :class:`~flask.Request`). Here is a broad overview of
 some of the most common operations.  First of all you have to import it from
-the `flask` module::
+the ``flask`` module::
 
     from flask import request
 
 The current request method is available by using the
-:attr:`~flask.request.method` attribute.  To access form data (data
+:attr:`~flask.Request.method` attribute.  To access form data (data
 transmitted in a ``POST`` or ``PUT`` request) you can use the
-:attr:`~flask.request.form` attribute.  Here is a full example of the two
+:attr:`~flask.Request.form` attribute.  Here is a full example of the two
 attributes mentioned above::
 
     @app.route('/login', methods=['POST', 'GET'])
@@ -559,14 +519,14 @@ attributes mentioned above::
         # was GET or the credentials were invalid
         return render_template('login.html', error=error)
 
-What happens if the key does not exist in the `form` attribute?  In that
+What happens if the key does not exist in the ``form`` attribute?  In that
 case a special :exc:`KeyError` is raised.  You can catch it like a
 standard :exc:`KeyError` but if you don't do that, a HTTP 400 Bad Request
 error page is shown instead.  So for many situations you don't have to
 deal with that problem.
 
 To access parameters submitted in the URL (``?key=value``) you can use the
-:attr:`~flask.request.args` attribute::
+:attr:`~flask.Request.args` attribute::
 
     searchword = request.args.get('key', '')
 
@@ -575,7 +535,7 @@ We recommend accessing URL parameters with `get` or by catching the
 bad request page in that case is not user friendly.
 
 For a full list of methods and attributes of the request object, head over
-to the :class:`~flask.request` documentation.
+to the :class:`~flask.Request` documentation.
 
 
 File Uploads
@@ -721,17 +681,15 @@ converting return values into response objects is as follows:
 3.  If a tuple is returned the items in the tuple can provide extra
     information.  Such tuples have to be in the form ``(response, status,
     headers)`` or ``(response, headers)`` where at least one item has
-    to be in the tuple.  The `status` value will override the status code
-    and `headers` can be a list or dictionary of additional header values.
+    to be in the tuple.  The ``status`` value will override the status code
+    and ``headers`` can be a list or dictionary of additional header values.
 4.  If none of that works, Flask will assume the return value is a
     valid WSGI application and convert that into a response object.
 
 If you want to get hold of the resulting response object inside the view
 you can use the :func:`~flask.make_response` function.
 
-Imagine you have a view like this:
-
-.. sourcecode:: python
+Imagine you have a view like this::
 
     @app.errorhandler(404)
     def not_found(error):
@@ -739,9 +697,7 @@ Imagine you have a view like this:
 
 You just need to wrap the return expression with
 :func:`~flask.make_response` and get the response object to modify it, then
-return it:
-
-.. sourcecode:: python
+return it::
 
     @app.errorhandler(404)
     def not_found(error):
@@ -780,7 +736,7 @@ sessions work::
             session['username'] = request.form['username']
             return redirect(url_for('index'))
         return '''
-            <form action="" method="post">
+            <form method="post">
                 <p><input type=text name=username>
                 <p><input type=submit value=Login>
             </form>
@@ -803,13 +759,13 @@ not using the template engine (as in this example).
    The problem with random is that it's hard to judge what is truly random.  And
    a secret key should be as random as possible.  Your operating system
    has ways to generate pretty random stuff based on a cryptographic
-   random generator which can be used to get such a key:
+   random generator which can be used to get such a key::
 
-   >>> import os
-   >>> os.urandom(24)
-   '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+       >>> import os
+       >>> os.urandom(24)
+       '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 
-   Just take that thing and copy/paste it into your code and you're done.
+       Just take that thing and copy/paste it into your code and you're done.
 
 A note on cookie-based sessions: Flask will take the values you put into the
 session object and serialize them into a cookie.  If you are finding some
@@ -817,6 +773,9 @@ values do not persist across requests, cookies are indeed enabled, and you are
 not getting a clear error message, check the size of the cookie in your page
 responses compared to the size supported by web browsers.
 
+Besides the default client-side based sessions, if you want to handle
+sessions on the server-side instead, there are several
+Flask extensions that support this.
 
 Message Flashing
 ----------------

@@ -1,11 +1,12 @@
 .. _tutorial-templates:
 
-Step 6: The Templates
+Step 7: The Templates
 =====================
 
-Now we should start working on the templates.  If we were to request the URLs
-now, we would only get an exception that Flask cannot find the templates.  The
-templates are using `Jinja2`_ syntax and have autoescaping enabled by
+Now it is time to start working on the templates.  As you may have
+noticed, if you make requests with the app running, you will get
+an exception that Flask cannot find the templates.  The templates
+are using `Jinja2`_ syntax and have autoescaping enabled by
 default.  This means that unless you mark a value in the code with
 :class:`~flask.Markup` or with the ``|safe`` filter in the template,
 Jinja2 will ensure that special characters such as ``<`` or ``>`` are
@@ -14,7 +15,8 @@ escaped with their XML equivalents.
 We are also using template inheritance which makes it possible to reuse
 the layout of the website in all pages.
 
-Put the following templates into the :file:`templates` folder:
+Create the follwing three HTML files and place them in the
+:file:`templates` folder:
 
 .. _Jinja2: http://jinja.pocoo.org/docs/templates
 
@@ -57,9 +59,9 @@ show_entries.html
 
 This template extends the :file:`layout.html` template from above to display the
 messages.  Note that the ``for`` loop iterates over the messages we passed
-in with the :func:`~flask.render_template` function.  We also tell the
-form to submit to your `add_entry` function and use ``POST`` as HTTP
-method:
+in with the :func:`~flask.render_template` function.  Notice that the form is
+configured to submit to the `add_entry` view function and use ``POST`` as
+HTTP method:
 
 .. sourcecode:: html+jinja
 
@@ -78,9 +80,9 @@ method:
       {% endif %}
       <ul class=entries>
       {% for entry in entries %}
-        <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+        <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>
       {% else %}
-        <li><em>Unbelievable.  No entries here so far</em>
+        <li><em>Unbelievable.  No entries here so far</em></li>
       {% endfor %}
       </ul>
     {% endblock %}

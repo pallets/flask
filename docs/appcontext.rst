@@ -26,8 +26,8 @@ In contrast, during request handling, a couple of other rules exist:
 
 There is a third state which is sitting in between a little bit.
 Sometimes you are dealing with an application in a way that is similar to
-how you interact with applications during request handling just that there
-is no request active.  Consider for instance that you're sitting in an
+how you interact with applications during request handling; just that there
+is no request active.  Consider, for instance, that you're sitting in an
 interactive Python shell and interacting with the application, or a
 command line application.
 
@@ -73,6 +73,11 @@ The second way is the explicit way using the
 The application context is also used by the :func:`~flask.url_for`
 function in case a ``SERVER_NAME`` was configured.  This allows you to
 generate URLs even in the absence of a request.
+
+If no request context has been pushed and an application context has
+not been explicitly set, a ``RuntimeError`` will be raised. ::
+
+    RuntimeError: Working outside of application context.
 
 Locality of the Context
 -----------------------
