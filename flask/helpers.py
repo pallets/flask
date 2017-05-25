@@ -10,6 +10,7 @@
 """
 
 import os
+import socket
 import sys
 import pkgutil
 import posixpath
@@ -17,6 +18,7 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+import unicodedata
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
@@ -330,6 +332,7 @@ def url_for(endpoint, **values):
         values['_external'] = external
         values['_anchor'] = anchor
         values['_method'] = method
+        values['_scheme'] = scheme
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
@@ -477,8 +480,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionchanged:: 0.12
        The `attachment_filename` is preferred over `filename` for MIME-type
        detection.
+       
+    .. versionchanged:: 0.13
+        UTF-8 filenames, as specified in `RFC 2231`_, are supported.
+        
+    .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
 
-    :param filename_or_fp: the filename of the file to send in `latin-1`.
+    :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
                            Alternatively a file object might be provided in
@@ -534,8 +542,19 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         if attachment_filename is None:
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
-        headers.add('Content-Disposition', 'attachment',
-                    filename=attachment_filename)
+
+        try:
+            attachment_filename = attachment_filename.encode('latin-1')
+        except UnicodeEncodeError:
+            filenames = {
+                'filename': unicodedata.normalize(
+                    'NFKD', attachment_filename).encode('latin-1', 'ignore'),
+                'filename*': "UTF-8''%s" % url_quote(attachment_filename),
+            }
+        else:
+            filenames = {'filename': attachment_filename}
+
+        headers.add('Content-Disposition', 'attachment', **filenames)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:
@@ -619,18 +638,24 @@ def safe_join(directory, *pathnames):
     :raises: :class:`~werkzeug.exceptions.NotFound` if one or more passed
             paths fall out of its boundaries.
     """
+
+    parts = [directory]
+
     for filename in pathnames:
         if filename != '':
             filename = posixpath.normpath(filename)
-        for sep in _os_alt_seps:
-            if sep in filename:
-                raise NotFound()
-        if os.path.isabs(filename) or \
-           filename == '..' or \
-           filename.startswith('../'):
+
+        if (
+            any(sep in filename for sep in _os_alt_seps)
+            or os.path.isabs(filename)
+            or filename == '..'
+            or filename.startswith('../')
+        ):
             raise NotFound()
-        directory = os.path.join(directory, filename)
-    return directory
+
+        parts.append(filename)
+
+    return posixpath.join(*parts)
 
 
 def send_from_directory(directory, filename, **options):
@@ -958,3 +983,38 @@ def total_seconds(td):
     :rtype: int
     """
     return td.days * 60 * 60 * 24 + td.seconds
+
+
+def is_ip(value):
+    """Determine if the given string is an IP address.
+
+    :param value: value to check
+    :type value: str
+
+    :return: True if string is an IP address
+    :rtype: bool
+    """
+
+    for family in (socket.AF_INET, socket.AF_INET6):
+        try:
+            socket.inet_pton(family, value)
+        except socket.error:
+            pass
+        else:
+            return True
+
+    return False
+
+
+def patch_vary_header(response, value):
+    """Add a value to the ``Vary`` header if it is not already present."""
+
+    header = response.headers.get('Vary', '')
+    headers = [h for h in (h.strip() for h in header.split(',')) if h]
+    lower_value = value.lower()
+
+    if not any(h.lower() == lower_value for h in headers):
+        headers.append(value)
+
+    updated_header = ', '.join(headers)
+    response.headers['Vary'] = updated_header

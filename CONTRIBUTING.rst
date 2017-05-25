@@ -31,6 +31,42 @@ Submitting patches
 - Try to follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, but you
   may ignore the line-length-limit if following it would make the code uglier.
 
+First time setup
+----------------
+
+- Download and install the `latest version of git`_.
+- Configure git with your `username`_ and `email`_.
+- Make sure you have a `GitHub account`_.
+- Fork Flask to your GitHub account by clicking the `Fork`_ button.
+- `Clone`_ your GitHub fork locally.
+- Add the main repository as a remote to update later.
+  ``git remote add pallets https://github.com/pallets/flask``
+
+.. _GitHub account: https://github.com/join
+.. _latest version of git: https://git-scm.com/downloads
+.. _username: https://help.github.com/articles/setting-your-username-in-git/
+.. _email: https://help.github.com/articles/setting-your-email-in-git/
+.. _Fork: https://github.com/pallets/flask/pull/2305#fork-destination-box
+.. _Clone: https://help.github.com/articles/fork-a-repo/#step-2-create-a-local-clone-of-your-fork
+
+Start coding
+------------
+
+- Create a branch to identify the issue you would like to work on (e.g.
+  ``2287-dry-test-suite``)
+- Using your favorite editor, make your changes, `committing as you go`_.
+- Try to follow `PEP8`_, but you may ignore the line length limit if following
+  it would make the code uglier.
+- Include tests that cover any code changes you make. Make sure the test fails
+  without your patch. `Run the tests. <contributing-testsuite_>`_.
+- Push your commits to GitHub and `create a pull request`_.
+- Celebrate 🎉
+
+.. _committing as you go: http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _PEP8: https://pep8.org/
+.. _create a pull request: https://help.github.com/articles/creating-a-pull-request/
+
+.. _contributing-testsuite:
 
 Running the testsuite
 ---------------------
@@ -52,9 +88,19 @@ Install Flask as an editable package using the current source::
     cd flask
     pip install --editable .
 
+Running the testsuite
+---------------------
+
+The minimal requirement for running the testsuite is ``pytest``.  You can
+install it with::
+
+    pip install pytest
+
 Then you can run the testsuite with::
 
-    pytest
+    pytest tests/
+
+**Shortcut**: ``make test`` will ensure ``pytest`` is installed, and run it.
 
 With only pytest installed, a large part of the testsuite will get skipped
 though.  Whether this is relevant depends on which part of Flask you're working
@@ -68,6 +114,8 @@ of ``pytest``. You can install it with::
 
 The ``tox`` command will then run all tests against multiple combinations
 Python versions and dependency versions.
+
+**Shortcut**: ``make tox-test`` will ensure ``tox`` is installed, and run it.
 
 Running test coverage
 ---------------------
@@ -86,6 +134,9 @@ Generate a HTML report can be done using this command::
     pytest --cov-report html --cov=flask tests/
 
 Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
+
+**Shortcut**: ``make cov`` will ensure ``pytest-cov`` is installed, run it, display the results, *and* save the HTML report.
+
 
 Caution
 =======
