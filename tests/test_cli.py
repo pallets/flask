@@ -161,6 +161,9 @@ def test_locate_app(test_apps):
         script_info, "cliapp.factory:create_app2('foo', 'bar')"
     ).name == "create_app2_foo_bar"
     assert locate_app(
+        script_info, "cliapp.factory:create_app2('foo', 'bar', )"
+    ).name == "create_app2_foo_bar"
+    assert locate_app(
         script_info, "cliapp.factory:create_app3('baz', 'qux')"
     ).name == "create_app3_baz_qux"
     assert locate_app(script_info, "cliapp.multiapp:app1").name == "app1"
@@ -173,6 +176,9 @@ def test_locate_app(test_apps):
     pytest.raises(
         NoAppException, locate_app,
         script_info, "cliapp.factory:create_app2('foo')")
+    pytest.raises(
+        NoAppException, locate_app,
+        script_info, "cliapp.factory:create_app ()")
     pytest.raises(
         NoAppException, locate_app, script_info, "cliapp.importerrorapp")
 
