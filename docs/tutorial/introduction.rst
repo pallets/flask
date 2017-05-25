@@ -22,7 +22,7 @@ connections in a more intelligent way, allowing you to target different
 relational databases at once and more.  You might also want to consider
 one of the popular NoSQL databases if your data is more suited for those.
 
-Here a screenshot of the final application:
+Here is a screenshot of the final application:
 
 .. image:: ../_static/flaskr.png
    :align: center
