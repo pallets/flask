@@ -85,7 +85,6 @@ class TestJSON(object):
         assert rv.data == b'foo'
 
     def test_json_body_encoding(self, app, client):
-        app.testing = True
 
         @app.route('/')
         def index():
@@ -241,7 +240,6 @@ class TestJSON(object):
                     return X(obj['_foo'])
                 return obj
 
-        app.testing = True
         app.json_encoder = MyEncoder
         app.json_decoder = MyDecoder
 
@@ -285,7 +283,6 @@ class TestJSON(object):
         def index():
             return flask.json.dumps(flask.request.get_json()['x'])
 
-        app.testing = True
         app.register_blueprint(bp)
 
         rv = client.post('/bp', data=flask.json.dumps({
@@ -293,11 +290,10 @@ class TestJSON(object):
         }), content_type='application/json')
         assert rv.data == b'"<42>"'
 
-    def test_modified_url_encoding(self, app):
+    def test_modified_url_encoding(self, app, client):
         class ModifiedRequest(flask.Request):
             url_charset = 'euc-kr'
 
-        app.testing = True
         app.request_class = ModifiedRequest
         app.url_map.charset = 'euc-kr'
 
@@ -305,7 +301,7 @@ class TestJSON(object):
         def index():
             return flask.request.args['foo']
 
-        rv = app.test_client().get(u'/?foo=정상처리'.encode('euc-kr'))
+        rv = client.get(u'/?foo=정상처리'.encode('euc-kr'))
         assert rv.status_code == 200
         assert rv.data == u'정상처리'.encode('utf-8')
 
@@ -313,7 +309,6 @@ class TestJSON(object):
         test_modified_url_encoding = None
 
     def test_json_key_sorting(self, app, client):
-        app.testing = True
         app.debug = True
 
         assert app.config['JSON_SORT_KEYS'] == True
@@ -538,7 +533,6 @@ class TestSendfile(object):
         rv.close()
 
     def test_attachment(self, app, req_ctx):
-        app = flask.Flask(__name__)
 
         with open(os.path.join(app.root_path, 'static/index.html')) as f:
             rv = flask.send_file(f, as_attachment=True,
@@ -619,7 +613,6 @@ class TestSendfile(object):
             rv.close()
 
     def test_send_from_directory(self, app, req_ctx):
-        app.testing = True
         app.root_path = os.path.join(os.path.dirname(__file__),
                                      'test_apps', 'subdomaintestmodule')
         rv = flask.send_from_directory('static', 'hello.txt')
@@ -628,7 +621,6 @@ class TestSendfile(object):
         rv.close()
 
     def test_send_from_directory_bad_request(self, app, req_ctx):
-        app.testing = True
         app.root_path = os.path.join(os.path.dirname(__file__),
                                      'test_apps', 'subdomaintestmodule')
 
@@ -645,8 +637,7 @@ class TestLogging(object):
         app.logger_name = __name__ + '/test_logger_cache'
         assert app.logger is not logger1
 
-    def test_debug_log(self, capsys):
-        app = flask.Flask(__name__)
+    def test_debug_log(self, capsys, app, client):
         app.debug = True
 
         @app.route('/')
@@ -659,8 +650,8 @@ class TestLogging(object):
         def exc():
             1 // 0
 
-        with app.test_client() as c:
-            c.get('/')
+        with client:
+            client.get('/')
             out, err = capsys.readouterr()
             assert 'WARNING in test_helpers [' in err
             assert os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in err
@@ -668,7 +659,7 @@ class TestLogging(object):
             assert 'this is a debug statement' in err
 
             with pytest.raises(ZeroDivisionError):
-                c.get('/exc')
+                client.get('/exc')
 
     def test_debug_log_override(self, app):
         app.debug = True
@@ -676,7 +667,7 @@ class TestLogging(object):
         app.logger.level = 10
         assert app.logger.level == 10
 
-    def test_exception_logging(self, app):
+    def test_exception_logging(self, app, client):
         out = StringIO()
         app.config['LOGGER_HANDLER_POLICY'] = 'never'
         app.logger_name = 'flask_tests/test_exception_logging'
@@ -687,7 +678,7 @@ class TestLogging(object):
         def index():
             1 // 0
 
-        rv = app.test_client().get('/')
+        rv = client.get('/')
         assert rv.status_code == 500
         assert b'Internal Server Error' in rv.data
 
@@ -808,7 +799,6 @@ class TestNoImports(object):
 
 class TestStreaming(object):
     def test_streaming_with_context(self, app, client):
-        app.testing = True
 
         @app.route('/')
         def index():
@@ -823,7 +813,6 @@ class TestStreaming(object):
         assert rv.data == b'Hello World!'
 
     def test_streaming_with_context_as_decorator(self, app, client):
-        app.testing = True
 
         @app.route('/')
         def index():
@@ -839,7 +828,6 @@ class TestStreaming(object):
         assert rv.data == b'Hello World!'
 
     def test_streaming_with_context_and_custom_close(self, app, client):
-        app.testing = True
         called = []
 
         class Wrapper(object):

@@ -76,11 +76,9 @@ def test_safe_join_toplevel_pardir():
         safe_join('/foo', '..')
 
 
-def test_aborting():
+def test_aborting(app):
     class Foo(Exception):
         whatever = 42
-    app = flask.Flask(__name__)
-    app.testing = True
 
     @app.errorhandler(Foo)
     def handle_foo(e):
