@@ -11,41 +11,86 @@
 
 import os
 import sys
-from threading import Lock, Thread
+import traceback
 from functools import update_wrapper
+from operator import attrgetter
+from threading import Lock, Thread
 
 import click
 
-from ._compat import iteritems, reraise
-from .helpers import get_debug_flag
 from . import __version__
+from ._compat import iteritems, reraise
+from .globals import current_app
+from .helpers import get_debug_flag
+from ._compat import getargspec
+
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
 
-def find_best_app(module):
+def find_best_app(script_info, module):
     """Given a module instance this tries to find the best possible
     application in the module or raises an exception.
     """
     from . import Flask
 
     # Search for the most common names first.
-    for attr_name in 'app', 'application':
+    for attr_name in ('app', 'application'):
         app = getattr(module, attr_name, None)
-        if app is not None and isinstance(app, Flask):
+        if isinstance(app, Flask):
             return app
 
     # Otherwise find the only object that is a Flask instance.
-    matches = [v for k, v in iteritems(module.__dict__)
-               if isinstance(v, Flask)]
+    matches = [
+        v for k, v in iteritems(module.__dict__) if isinstance(v, Flask)
+    ]
 
     if len(matches) == 1:
         return matches[0]
-    raise NoAppException('Failed to find application in module "%s".  Are '
-                         'you sure it contains a Flask application?  Maybe '
-                         'you wrapped it in a WSGI middleware or you are '
-                         'using a factory function.' % module.__name__)
+    elif len(matches) > 1:
+        raise NoAppException(
+            'Auto-detected multiple Flask applications in module "{module}".'
+            ' Use "FLASK_APP={module}:name" to specify the correct'
+            ' one.'.format(module=module.__name__)
+        )
+
+    # Search for app factory callables.
+    for attr_name in ('create_app', 'make_app'):
+        app_factory = getattr(module, attr_name, None)
+
+        if callable(app_factory):
+            try:
+                app = call_factory(app_factory, script_info)
+                if isinstance(app, Flask):
+                    return app
+            except TypeError:
+                raise NoAppException(
+                    'Auto-detected "{callable}()" in module "{module}", but '
+                    'could not call it without specifying arguments.'.format(
+                        callable=attr_name, module=module.__name__
+                    )
+                )
+
+    raise NoAppException(
+        'Failed to find application in module "{module}". Are you sure '
+        'it contains a Flask application? Maybe you wrapped it in a WSGI '
+        'middleware.'.format(module=module.__name__)
+    )
+
+
+def call_factory(func, script_info):
+    """Checks if the given app factory function has an argument named 
+    ``script_info`` or just a single argument and calls the function passing 
+    ``script_info`` if so. Otherwise, calls the function without any arguments
+    and returns the result.
+    """
+    arguments = getargspec(func).args
+    if 'script_info' in arguments:
+        return func(script_info=script_info)
+    elif len(arguments) == 1:
+        return func(script_info)
+    return func()
 
 
 def prepare_exec_for_file(filename):
@@ -77,7 +122,7 @@ def prepare_exec_for_file(filename):
     return '.'.join(module[::-1])
 
 
-def locate_app(app_id):
+def locate_app(script_info, app_id):
     """Attempts to locate the application."""
     __traceback_hide__ = True
     if ':' in app_id:
@@ -92,7 +137,9 @@ def locate_app(app_id):
         # Reraise the ImportError if it occurred within the imported module.
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[-1].tb_next:
-            raise
+            stack_trace = traceback.format_exc()
+            raise NoAppException('There was an error trying to import'
+                    ' the app (%s):\n%s' % (module, stack_trace))
         else:
             raise NoAppException('The file/path provided (%s) does not appear'
                                  ' to exist.  Please verify the path is '
@@ -101,7 +148,7 @@ def locate_app(app_id):
 
     mod = sys.modules[module]
     if app_obj is None:
-        app = find_best_app(mod)
+        app = find_best_app(script_info, mod)
     else:
         app = getattr(mod, app_obj, None)
         if app is None:
@@ -226,7 +273,7 @@ class ScriptInfo(object):
         if self._loaded_app is not None:
             return self._loaded_app
         if self.create_app is not None:
-            rv = self.create_app(self)
+            rv = call_factory(self.create_app, self)
         else:
             if not self.app_import_path:
                 raise NoAppException(
@@ -234,7 +281,7 @@ class ScriptInfo(object):
                     'the FLASK_APP environment variable.\n\nFor more '
                     'information see '
                     'http://flask.pocoo.org/docs/latest/quickstart/')
-            rv = locate_app(self.app_import_path)
+            rv = locate_app(self, self.app_import_path)
         debug = get_debug_flag()
         if debug is not None:
             rv.debug = debug
@@ -316,6 +363,7 @@ class FlaskGroup(AppGroup):
         if add_default_commands:
             self.add_command(run_command)
             self.add_command(shell_command)
+            self.add_command(routes_command)
 
         self._loaded_plugin_commands = False
 
@@ -368,7 +416,9 @@ class FlaskGroup(AppGroup):
             # want the help page to break if the app does not exist.
             # If someone attempts to use the command we try to create
             # the app again and this will give us the error.
-            pass
+            # However, we will not do so silently because that would confuse
+            # users.
+            traceback.print_exc()
         return sorted(rv)
 
     def main(self, *args, **kwargs):
@@ -477,6 +527,53 @@ def shell_command():
     ctx.update(app.make_shell_context())
 
     code.interact(banner=banner, local=ctx)
+
+
+@click.command('routes', short_help='Show the routes for the app.')
+@click.option(
+    '--sort', '-s',
+    type=click.Choice(('endpoint', 'methods', 'rule', 'match')),
+    default='endpoint',
+    help=(
+        'Method to sort routes by. "match" is the order that Flask will match '
+        'routes when dispatching a request.'
+    )
+)
+@click.option(
+    '--all-methods',
+    is_flag=True,
+    help="Show HEAD and OPTIONS methods."
+)
+@with_appcontext
+def routes_command(sort, all_methods):
+    """Show all registered routes with endpoints and methods."""
+
+    rules = list(current_app.url_map.iter_rules())
+    ignored_methods = set(() if all_methods else ('HEAD', 'OPTIONS'))
+
+    if sort in ('endpoint', 'rule'):
+        rules = sorted(rules, key=attrgetter(sort))
+    elif sort == 'methods':
+        rules = sorted(rules, key=lambda rule: sorted(rule.methods))
+
+    rule_methods = [
+        ', '.join(sorted(rule.methods - ignored_methods)) for rule in rules
+    ]
+
+    headers = ('Endpoint', 'Methods', 'Rule')
+    widths = (
+        max(len(rule.endpoint) for rule in rules),
+        max(len(methods) for methods in rule_methods),
+        max(len(rule.rule) for rule in rules),
+    )
+    widths = [max(len(h), w) for h, w in zip(headers, widths)]
+    row = '{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}'.format(*widths)
+
+    click.echo(row.format(*headers).strip())
+    click.echo(row.format(*('-' * width for width in widths)))
+
+    for rule, methods in zip(rules, rule_methods):
+        click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
 
 
 cli = FlaskGroup(help="""\
