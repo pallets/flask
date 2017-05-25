@@ -108,13 +108,13 @@ arrays.
 Security Headers
 ----------------
 
-This section contains a list of headers supported by Flask.
+This section contains a list of HTTP security headers supported by Flask.
 To configure HTTPS and handle the headers listed below we suggest the package `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_. 
 
 HTTP Strict Transport Security (HSTS)
 -------------------------------------
 
-Redirects http requests to https on all urls, preventing Man-in-the-middle (MITM) attacks.
+Redirects HTTP requests to HTTPS on all URLs, preventing man-in-the-middle (MITM) attacks.
 
 Example:
 
@@ -129,7 +129,7 @@ See also `Strict Transport Security <https://developer.mozilla.org/en-US/docs/We
 HTTP Public Key Pinning (HPKP)
 ------------------------------
 
-This enables your web server to authenticate with a client browser using a specific certificate key to prevent Man-in-the-middle (MITM) attacks.
+This enables your web server to authenticate with a client browser using a specific certificate key to prevent man-in-the-middle (MITM) attacks.
 
 Example:
 
@@ -139,7 +139,7 @@ Example:
 
 See also `Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_.
 
-X-Frame-Options (Clickjacking protection)
+X-Frame-Options (Clickjacking Protection)
 -----------------------------------------
 
 Prevents the client from clicking page elements outside of the website, avoiding hijacking or UI redress attacks.
@@ -166,7 +166,7 @@ See also `X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/H
 Content Security Policy (CSP)
 -----------------------------
 
-Enhances security and prevents common web vulnerabilities such as cross-site scripting (XSS) and Man-in-the-middle (MITM) related attacks.
+Enhances security and prevents common web vulnerabilities such as cross-site scripting (XSS) and man-in-the-middle (MITM) related attacks.
 
 Example:
 
@@ -176,10 +176,10 @@ Example:
 
 See also `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_.
 
-Cookie options
+Cookie Options
 --------------
 
-While these headers are not directly security related, they have important options that may affect your flask application.
+While these headers are not directly security related, they have important options that may affect your Flask application.
 
 - ``Secure`` limits your cookies to HTTPS traffic only.
 - ``HttpOnly`` protects the contents of your cookie from being visible to XSS.
