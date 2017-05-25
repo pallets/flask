@@ -272,16 +272,9 @@ intersphinx_mapping = {
     'blinker': ('https://pythonhosted.org/blinker/', None)
 }
 
-try:
-    __import__('flask_sphinx_themes')
-    html_theme = 'flask'
-    html_theme_options = {
-        'touch_icon': 'touch-icon.png'
-    }
-except ImportError:
-    print('Flask theme unavailable; using the default theme.')
-    print('Install using `pip install Flask-Sphinx-Themes`.')
-
+html_theme_options = {
+    'touch_icon': 'touch-icon.png'
+}
 
 # unwrap decorators
 def unwrap_decorators():
