@@ -9,7 +9,10 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import ast
+import inspect
 import os
+import re
 import sys
 import traceback
 from functools import update_wrapper
@@ -55,20 +58,20 @@ def find_best_app(script_info, module):
             ' one.'.format(module=module.__name__)
         )
 
-    # Search for app factory callables.
+    # Search for app factory functions.
     for attr_name in ('create_app', 'make_app'):
         app_factory = getattr(module, attr_name, None)
 
-        if callable(app_factory):
+        if inspect.isfunction(app_factory):
             try:
                 app = call_factory(app_factory, script_info)
                 if isinstance(app, Flask):
                     return app
             except TypeError:
                 raise NoAppException(
-                    'Auto-detected "{callable}()" in module "{module}", but '
+                    'Auto-detected "{function}()" in module "{module}", but '
                     'could not call it without specifying arguments.'.format(
-                        callable=attr_name, module=module.__name__
+                        function=attr_name, module=module.__name__
                     )
                 )
 
@@ -79,18 +82,66 @@ def find_best_app(script_info, module):
     )
 
 
-def call_factory(func, script_info):
-    """Checks if the given app factory function has an argument named 
-    ``script_info`` or just a single argument and calls the function passing 
-    ``script_info`` if so. Otherwise, calls the function without any arguments
-    and returns the result.
+def call_factory(app_factory, script_info, arguments=()):
+    """Takes an app factory, a ``script_info` object and  optionally a tuple
+    of arguments. Checks for the existence of a script_info argument and calls
+    the app_factory depending on that and the arguments provided.
     """
-    arguments = getargspec(func).args
-    if 'script_info' in arguments:
-        return func(script_info=script_info)
-    elif len(arguments) == 1:
-        return func(script_info)
-    return func()
+    arg_names = getargspec(app_factory).args
+    if 'script_info' in arg_names:
+        return app_factory(*arguments, script_info=script_info)
+    elif arguments:
+        return app_factory(*arguments)
+    elif not arguments and len(arg_names) == 1:
+        return app_factory(script_info)
+    return app_factory()
+
+
+def find_app_by_string(string, script_info, module):
+    """Checks if the given string is a variable name or a function. If it is 
+    a function, it checks for specified arguments and whether it takes 
+    a ``script_info`` argument and calls the function with the appropriate 
+    arguments. If it is a """
+    from . import Flask
+    function_regex = r'^(?P<name>\w+)(?:\((?P<args>.*)\))?$'
+    match = re.match(function_regex, string)
+    if match:
+        name, args = match.groups()
+        try:
+            if args is not None:
+                args = args.rstrip(' ,')
+                if args:
+                    args = ast.literal_eval(
+                        "({args}, )".format(args=args))
+                else:
+                    args = ()
+                app_factory = getattr(module, name, None)
+                app = call_factory(app_factory, script_info, args)
+            else:
+                attr = getattr(module, name, None)
+                if inspect.isfunction(attr):
+                    app = call_factory(attr, script_info)
+                else:
+                    app = attr
+
+            if isinstance(app, Flask):
+                return app
+            else:
+                raise RuntimeError('Failed to find application in module '
+                                   '"{name}"'.format(name=module))
+        except TypeError as e:
+            new_error = NoAppException(
+                '{e}\nThe app factory "{factory}" in module "{module}" could'
+                ' not be called with the specified arguments (and a'
+                ' script_info argument automatically added if applicable).'
+                ' Did you make sure to use the right number of arguments as'
+                ' well as not using keyword arguments or'
+                ' non-literals?'.format(e=e, factory=string, module=module))
+            reraise(NoAppException, new_error, sys.exc_info()[2])
+    else:
+        raise NoAppException(
+            'The provided string "{string}" is not a valid variable name'
+            'or function expression.'.format(string=string))
 
 
 def prepare_exec_for_file(filename):
@@ -148,14 +199,9 @@ def locate_app(script_info, app_id):
 
     mod = sys.modules[module]
     if app_obj is None:
-        app = find_best_app(script_info, mod)
+        return find_best_app(script_info, mod)
     else:
-        app = getattr(mod, app_obj, None)
-        if app is None:
-            raise RuntimeError('Failed to find application in module "%s"'
-                               % module)
-
-    return app
+        return find_app_by_string(app_obj, script_info, mod)
 
 
 def find_default_import_path():
