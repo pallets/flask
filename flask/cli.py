@@ -98,10 +98,10 @@ def call_factory(app_factory, script_info, arguments=()):
 
 
 def find_app_by_string(string, script_info, module):
-    """Checks if the given string is a variable name or a function. If it is 
-    a function, it checks for specified arguments and whether it takes 
-    a ``script_info`` argument and calls the function with the appropriate 
-    arguments. If it is a """
+    """Checks if the given string is a variable name or a function. If it is
+    a function, it checks for specified arguments and whether it takes
+    a ``script_info`` argument and calls the function with the appropriate
+    arguments."""
     from . import Flask
     function_regex = r'^(?P<name>\w+)(?:\((?P<args>.*)\))?$'
     match = re.match(function_regex, string)
