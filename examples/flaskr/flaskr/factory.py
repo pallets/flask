@@ -17,7 +17,7 @@ from flaskr.blueprints.flaskr import init_db
 
 
 def create_app(config=None):
-    app = Flask(__name__.split('.')[0])
+    app = Flask('flaskr')
 
     app.config.update(dict(
         DATABASE=os.path.join(app.root_path, 'flaskr.db'),
