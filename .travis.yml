@@ -23,30 +23,6 @@ matrix:
       env: TOXENV=docs-html
     - python: 3.6
       env: TOXENV=py-release-simplejson,codecov
-    - python: 2.7
-      env: TOXENV=py-release-simplejson,codecov
-    - python: pypy
-      env: TOXENV=py-release-simplejson,codecov
-    - python: 3.6
-      env: TOXENV=py-devel,codecov
-    - python: 3.3
-      env: TOXENV=py-devel,codecov
-    - python: 2.7
-      env: TOXENV=py-devel,codecov
-    - python: 2.6
-      env: TOXENV=py-devel,codecov
-    - python: pypy
-      env: TOXENV=py-devel,codecov
-    - python: 3.6
-      env: TOXENV=py-lowest,codecov
-    - python: 3.3
-      env: TOXENV=py-lowest,codecov
-    - python: 2.7
-      env: TOXENV=py-lowest,codecov
-    - python: 2.6
-      env: TOXENV=py-lowest,codecov
-    - python: pypy
-      env: TOXENV=py-lowest,codecov
 
 install:
   - pip install tox
