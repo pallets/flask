@@ -108,90 +108,101 @@ arrays.
 Security Headers
 ----------------
 
-This section contains a list of HTTP security headers supported by Flask.
-To configure HTTPS and handle the headers listed below we suggest the package `flask-talisman <https://github.com/GoogleCloudPlatform/flask-talisman>`_. 
+Browsers recognize various response headers in order to control security. We
+recommend reviewing each of the headers below for use in your application.
+The `Flask-Talisman`_ extension can be used to manage HTTPS and the security
+headers for you.
+
+.. _Flask-Talisman: https://github.com/GoogleCloudPlatform/flask-talisman
 
 HTTP Strict Transport Security (HSTS)
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Redirects HTTP requests to HTTPS on all URLs, preventing man-in-the-middle (MITM) attacks.
+Tells the browser to convert all HTTP requests to HTTPS, preventing
+man-in-the-middle (MITM) attacks. ::
 
-Example:
+    response.haders['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 
-.. sourcecode:: none
-   
-   Strict-Transport-Security: max-age=<expire-time 
-   Strict-Transport-Security: max-age=<expire-time>; includeSubDomains 
-   Strict-Transport-Security: max-age=<expire-time>; preload 
-
-See also `Strict Transport Security <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security>`_. 
-
-HTTP Public Key Pinning (HPKP)
-------------------------------
-
-This enables your web server to authenticate with a client browser using a specific certificate key to prevent man-in-the-middle (MITM) attacks.
-
-Example:
-
-.. sourcecode:: none
-
-   Public-Key-Pins: pin-sha256="base64=="; max-age=expireTime [; includeSubDomains][; report-uri="reportURI"] 
-
-See also `Public Key Pinning <https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning>`_.
-
-X-Frame-Options (Clickjacking Protection)
------------------------------------------
-
-Prevents the client from clicking page elements outside of the website, avoiding hijacking or UI redress attacks.
-
-.. sourcecode:: none
-   
-   X-Frame-Options: DENY 
-   X-Frame-Options: SAMEORIGIN
-   X-Frame-Options: ALLOW-FROM https://example.com/
-
-See also `X-Frame-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>`_. 
-
-X-Content-Type-Options
-----------------------
-
-This header prevents Cross-site scripting (XSS) by blocking requests on clients and forcing them to first read and validate the content-type before reading any of the contents of the request.
-
-.. sourcecode:: none
-   
-   X-Content-Type-Options: nosniff
-
-See also `X-Content-Type-Options <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options>`_. 
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 
 Content Security Policy (CSP)
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Enhances security and prevents common web vulnerabilities such as cross-site scripting (XSS) and man-in-the-middle (MITM) related attacks.
+Tell the browser where it can load various types of resource from. This header
+should be used whenever possible, but requires some work to define the correct
+policy for your site. A very strict policy would be::
 
-Example:
+    response.headers['Content-Security-Policy'] = "default-src: 'self'"
 
-.. sourcecode:: none
-   
-   Content-Security-Policy: default-src https:; script-src 'nonce-{random}'; object-src 'none'
+- https://csp.withgoogle.com/docs/index.html
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
 
-See also `Content Security Policy <https://csp.withgoogle.com/docs/index.html>`_.
+X-Content-Type-Options
+~~~~~~~~~~~~~~~~~~~~~~
 
-Cookie Options
---------------
+Forces the browser to honor the response content type instead of trying to
+detect it, which can be abused to generate a cross-site scripting (XSS)
+attack. ::
 
-While these headers are not directly security related, they have important options that may affect your Flask application.
+    response.headers['X-Content-Type-Options'] = 'nosniff'
 
-- ``Secure`` limits your cookies to HTTPS traffic only.
-- ``HttpOnly`` protects the contents of your cookie from being visible to XSS.
-- ``SameSite`` ensures that cookies can only be requested from the same domain that created them but this feature is not yet fully supported across all browsers.  
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
 
-Example:
+X-Frame-Options
+~~~~~~~~~~~~~~~
 
-.. sourcecode:: none
-   
-   Set-Cookie: [cookie-name]=[cookie-value] 
+Prevents external sites from embedding your site in an ``iframe``. This
+prevents a class of attacks where clicks in the outer frame can be translated
+invisibly to clicks on your page's elements. This is also known as
+"clickjacking". ::
 
-See also:
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
 
--  Mozilla guide to `HTTP cookies <https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies>`_.
-- `OWASP HTTP Only <https://www.owasp.org/index.php/HttpOnly>`_. 
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+
+X-XSS-Protection
+~~~~~~~~~~~~~~~~
+
+The browser will try to prevent reflected XSS attacks by not loading the page
+if the request contains something that looks like JavaScript and the response
+contains the same data. ::
+
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+
+Set-Cookie options
+~~~~~~~~~~~~~~~~~~
+
+These options can be added to a ``Set-Cookie`` header to improve their
+security. Flask has configuration options to set these on the session cookie.
+They can be set on other cookies too.
+
+- ``Secure`` limits cookies to HTTPS traffic only.
+- ``HttpOnly`` protects the contents of cookies from being read with
+  JavaScript.
+- ``SameSite`` ensures that cookies can only be requested from the same
+  domain that created them. It is not supported by Flask yet.
+
+::
+
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+    )
+
+   response.set_cookie('username', 'flask', secure=True, httponly=True)
+
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies
+
+HTTP Public Key Pinning (HPKP)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This tells the browser to authenticate with the server using only the specific
+certificate key to prevent MITM attacks.
+
+.. warning::
+   Be careful when enabling this, as it is very difficult to undo if you set up
+   or upgrade your key incorrectly.
+
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning
