@@ -11,6 +11,7 @@
 from jinja2 import BaseLoader, Environment as BaseEnvironment, \
      TemplateNotFound
 
+from ._compat import string_types
 from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import template_rendered, before_render_template
 
@@ -130,8 +131,26 @@ def render_template(template_name_or_list, **context):
     """
     ctx = _app_ctx_stack.top
     ctx.app.update_template_context(context)
-    return _render(ctx.app.jinja_env.get_or_select_template(template_name_or_list),
-                   context, ctx.app)
+
+    template = None
+
+    if _request_ctx_stack.top is not None and \
+            _request_ctx_stack.top.request.blueprint is not None and \
+            isinstance(template_name_or_list, string_types):
+        bp = ctx.app.blueprints[_request_ctx_stack.top.request.blueprint]
+        if bp.jinja_loader is not None:
+            try:
+                template = bp.jinja_loader.load(ctx.app.jinja_env,
+                                                template_name_or_list,
+                                                ctx.app.jinja_env.globals)
+            except TemplateNotFound:
+                pass
+
+    if template is None:
+        template = ctx.app.jinja_env\
+            .get_or_select_template(template_name_or_list)
+
+    return _render(template, context, ctx.app)
 
 
 def render_template_string(source, **context):
