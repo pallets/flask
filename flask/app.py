@@ -307,7 +307,7 @@ class Flask(_PackageBoundObject):
         'LOGGER_NAME':                          None,
         'LOGGER_HANDLER_POLICY':               'always',
         'SERVER_NAME':                          None,
-        'APPLICATION_ROOT':                     None,
+        'APPLICATION_ROOT':                     '/',
         'SESSION_COOKIE_NAME':                  'session',
         'SESSION_COOKIE_DOMAIN':                None,
         'SESSION_COOKIE_PATH':                  None,
@@ -1845,7 +1845,7 @@ class Flask(_PackageBoundObject):
         if self.config['SERVER_NAME'] is not None:
             return self.url_map.bind(
                 self.config['SERVER_NAME'],
-                script_name=self.config['APPLICATION_ROOT'] or '/',
+                script_name=self.config['APPLICATION_ROOT'],
                 url_scheme=self.config['PREFERRED_URL_SCHEME'])
 
     def inject_url_defaults(self, endpoint, values):
