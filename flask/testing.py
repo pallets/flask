@@ -34,13 +34,13 @@ def make_test_environ_builder(
 
     if base_url is None:
         http_host = app.config.get('SERVER_NAME') or 'localhost'
-        app_root = app.config.get('APPLICATION_ROOT') or '/'
+        app_root = app.config['APPLICATION_ROOT']
 
         if subdomain:
             http_host = '{0}.{1}'.format(subdomain, http_host)
 
         if url_scheme is None:
-            url_scheme = app.config.get('PREFERRED_URL_SCHEME') or 'http'
+            url_scheme = app.config['PREFERRED_URL_SCHEME']
 
         url = url_parse(path)
         base_url = '{0}://{1}/{2}'.format(
