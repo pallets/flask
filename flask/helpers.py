@@ -279,7 +279,7 @@ def url_for(endpoint, **values):
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
         if not reqctx.request._is_old_module:
-            if endpoint[:1] == '.':
+            if endpoint[0] == '.':
                 if blueprint_name is not None:
                     endpoint = blueprint_name + endpoint
                 else:
