@@ -159,6 +159,44 @@ pick it up::
 
 From this point onwards :command:`flask` will find your application.
 
+Overriding Built-In Commands
+----------------------------
+
+Flask comes with some built in commands which can be overridden. Use
+``app.cli.command(name)`` with the name of the built-in command being
+overridden. Use :meth:`~click.Context.forward` to call the built-in command
+from the custom command.
+
+For example, to override the built-in ``run`` command and add a ``--ssl``
+option for enabling SSL on the dev server::
+
+    import click
+    from flask import Flask
+    from flask.cli import run_command as builtin_run_command
+
+    app = Flask(__name__)
+
+    @app.cli.command(
+        'run',
+        # copy the built-in command's help text
+        help=builtin_run_command.help,
+        short_help=builtin_run_command.short_help
+    )
+    @click.option('--ssl', 'ssl_context', flag_value='adhoc')
+    @click.pass_context
+    def run_command(ctx, *args, ssl_context=None, **kwargs):
+        if ssl_context == 'adhoc':
+            click.echo(' * Enabling adhoc SSL')
+
+        ctx.forward(builtin_run_command)
+
+    # copy the built-in command's options
+    run_command.params[:0] = builtin_run_command.params
+
+Copying the built-in function's code to your own version is also viable, and
+may be more useful if the behavior you want to change can't be done before the
+command is forwarded to.
+
 .. _custom-scripts:
 
 Custom Scripts

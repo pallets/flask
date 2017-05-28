@@ -366,3 +366,19 @@ class TestRoutes:
         assert 'GET, HEAD, OPTIONS, POST' not in output
         output = invoke(['routes', '--all-methods']).output
         assert 'GET, HEAD, OPTIONS, POST' in output
+
+
+def test_override_builtin_cli():
+    def create_app(info):
+        app = Flask(__name__)
+
+        @app.cli.command('routes')
+        def routes_command():
+            click.echo('test')
+
+        return app
+
+    runner = CliRunner()
+    result = runner.invoke(FlaskGroup(create_app=create_app), ['routes'])
+    assert result.exit_code == 0
+    assert result.output == 'test\n'

@@ -40,6 +40,8 @@ Major release, unreleased
 - Allow IP address as exact session cookie domain. (`#2282`_)
 - ``SESSION_COOKIE_DOMAIN`` is set if it is detected through ``SERVER_NAME``.
   (`#2282`_)
+- Allow overriding built-in commands using ``app.cli.command`` instead of
+  creating a separate ``FlaskGroup``. (`#2217`_)
 - Auto-detect zero-argument app factory called ``create_app`` or ``make_app``
   from ``FLASK_APP``. (`#2297`_)
 - Factory functions are not required to take a ``script_info`` parameter to
@@ -52,6 +54,7 @@ Major release, unreleased
 .. _#1898: https://github.com/pallets/flask/pull/1898
 .. _#1936: https://github.com/pallets/flask/pull/1936
 .. _#2017: https://github.com/pallets/flask/pull/2017
+.. _#2217: https://github.com/pallets/flask/pull/2217
 .. _#2223: https://github.com/pallets/flask/pull/2223
 .. _#2254: https://github.com/pallets/flask/pull/2254
 .. _#2256: https://github.com/pallets/flask/pull/2256

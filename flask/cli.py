@@ -431,43 +431,40 @@ class FlaskGroup(AppGroup):
 
     def get_command(self, ctx, name):
         self._load_plugin_commands()
-
-        # We load built-in commands first as these should always be the
-        # same no matter what the app does.  If the app does want to
-        # override this it needs to make a custom instance of this group
-        # and not attach the default commands.
-        #
-        # This also means that the script stays functional in case the
-        # application completely fails.
-        rv = AppGroup.get_command(self, ctx, name)
-        if rv is not None:
-            return rv
-
         info = ctx.ensure_object(ScriptInfo)
+
         try:
             rv = info.load_app().cli.get_command(ctx, name)
+
             if rv is not None:
                 return rv
-        except NoAppException:
-            pass
+        except Exception:
+            # Intentionally swallow all exceptions and try to get the built-in
+            # version of the command. If this didn't fail in list_commands
+            # first, print the traceback.
+            if not info.data.get('_list_commands_failed', False):
+                traceback.print_exc()
+
+        # If the app couldn't be loaded, or didn't have the given command, fall
+        # back to built-in commands.
+        return super(FlaskGroup, self).get_command(ctx, name)
 
     def list_commands(self, ctx):
         self._load_plugin_commands()
-
         # The commands available is the list of both the application (if
         # available) plus the builtin commands.
-        rv = set(click.Group.list_commands(self, ctx))
+        rv = set(super(FlaskGroup, self).list_commands(ctx))
         info = ctx.ensure_object(ScriptInfo)
+
         try:
             rv.update(info.load_app().cli.list_commands(ctx))
         except Exception:
-            # Here we intentionally swallow all exceptions as we don't
-            # want the help page to break if the app does not exist.
-            # If someone attempts to use the command we try to create
-            # the app again and this will give us the error.
-            # However, we will not do so silently because that would confuse
-            # users.
+            # Intentionally swallow all exceptions so the help page doesn't
+            # break if the app does not exist. Set a flag so that the error is
+            # only printed once while printing each command's help.
+            info.data['_list_commands_failed'] = True
             traceback.print_exc()
+
         return sorted(rv)
 
     def main(self, *args, **kwargs):
@@ -496,8 +493,9 @@ class FlaskGroup(AppGroup):
 @click.option('--with-threads/--without-threads', default=False,
               help='Enable or disable multithreading.')
 @pass_script_info
-def run_command(info, host, port, reload, debugger, eager_loading,
-                with_threads):
+def run_command(
+    info, host, port, reload, debugger, eager_loading, with_threads, **kwargs
+):
     """Runs a local development server for the Flask application.
 
     This local server is recommended for development purposes only but it
@@ -540,8 +538,12 @@ def run_command(info, host, port, reload, debugger, eager_loading,
         if debug is not None:
             print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
 
-    run_simple(host, port, app, use_reloader=reload,
-               use_debugger=debugger, threaded=with_threads)
+    run_simple(
+        host, port, app,
+        use_reloader=reload, use_debugger=debugger,
+        threaded=with_threads,
+        **kwargs
+    )
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
