@@ -49,6 +49,7 @@ Major release, unreleased
   work with the ``flask`` command. If they take a single parameter or a
   parameter named ``script_info``, the ``ScriptInfo`` object will be passed.
   (`#2319`_)
+- FLASK_APP=myproject.app:create_app('dev') support. 
 - ``FLASK_APP`` can be set to an app factory, with arguments if needed, for
   example ``FLASK_APP=myproject.app:create_app('dev')``. (`#2326`_)
 - ``View.provide_automatic_options = True`` is set on the view function from
@@ -59,6 +60,8 @@ Major release, unreleased
   accessed at all during the request (and it wasn't deleted). (`#2288`_)
 - ``app.test_request_context()`` take ``subdomain`` and ``url_scheme``
   parameters for use when building base URL. (`#1621`_)
+- Set ``APPLICATION_ROOT = '/'`` by default. This was already the implicit
+  default when it was set to ``None``.
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621

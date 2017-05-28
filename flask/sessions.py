@@ -288,8 +288,8 @@ class SessionInterface(object):
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's ``None``.
         """
-        return app.config['SESSION_COOKIE_PATH'] or \
-               app.config['APPLICATION_ROOT'] or '/'
+        return app.config['SESSION_COOKIE_PATH'] \
+               or app.config['APPLICATION_ROOT']
 
     def get_cookie_httponly(self, app):
         """Returns True if the session cookie should be httponly.  This
