@@ -2017,10 +2017,19 @@ class Flask(_PackageBoundObject):
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
         :class:`werkzeug.test.EnvironBuilder` for more information, this
-        function accepts the same arguments).
+        function accepts the same arguments plus two additional).
+
+        Additional arguments (only if ``base_url`` is not specified):
+
+        :param subdomain: subdomain to use for route matching
+        :param url_scheme: scheme for the request, default
+            ``PREFERRED_URL_SCHEME`` or ``http``.
         """
+
         from flask.testing import make_test_environ_builder
+
         builder = make_test_environ_builder(self, *args, **kwargs)
+
         try:
             return self.request_context(builder.get_environ())
         finally:
