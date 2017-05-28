@@ -832,7 +832,7 @@ class Flask(_PackageBoundObject):
                       See :attr:`debug`.
         :param options: the options to be forwarded to the underlying
                         Werkzeug server.  See
-                        :func:`werkzeug.serving.run_simple` for more
+                        :func:`werkzeug.run_simple` for more
                         information.
         """
         # Change this into a no-op if the server is invoked from the
