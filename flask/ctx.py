@@ -329,9 +329,11 @@ class RequestContext(object):
         # available. This allows a custom open_session method to use the
         # request context (e.g. code that access database information
         # stored on `g` instead of the appcontext).
-        self.session = self.app.open_session(self.request)
+        session_interface = self.app.session_interface
+        self.session = session_interface.open_session(self.app, self.request)
+
         if self.session is None:
-            self.session = self.app.make_null_session()
+            self.session = session_interface.make_null_session(self.app)
 
     def pop(self, exc=_sentinel):
         """Pops the request context and unbinds it by doing that.  This will
