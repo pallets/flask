@@ -119,9 +119,9 @@ understand what is actually happening.  The new behavior is quite simple:
     not executed yet or at all (for example in test environments sometimes
     you might want to not execute before-request callbacks).
 
-Now what happens on errors?  In production mode if an exception is not
-caught, the 500 internal server handler is called.  In development mode
-however the exception is not further processed and bubbles up to the WSGI
+Now what happens on errors?  If you are not in debug mode and an exception is not    
+caught, the 500 internal server handler is called.  In debug mode   
+however the exception is not further processed and bubbles up to the WSGI 
 server.  That way things like the interactive debugger can provide helpful
 debug information.
 
@@ -214,10 +214,11 @@ provide you with important information.
 Starting with Flask 0.7 you have finer control over that behavior by
 setting the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.  By
 default it's linked to the setting of ``DEBUG``.  If the application is in
-debug mode the context is preserved, in production mode it's not.
+debug mode the context is preserved. If debug mode is set to off, the context
+is not preserved.
 
-Do not force activate ``PRESERVE_CONTEXT_ON_EXCEPTION`` in production mode
-as it will cause your application to leak memory on exceptions.  However
+Do not force activate ``PRESERVE_CONTEXT_ON_EXCEPTION`` if debug mode is set to off
+as it will cause your application to leak memory on exceptions. However,
 it can be useful during development to get the same error preserving
-behavior as in development mode when attempting to debug an error that
+behavior as debug  mode when attempting to debug an error that
 only occurs under production settings.

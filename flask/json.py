@@ -91,9 +91,16 @@ class JSONDecoder(_json.JSONDecoder):
 def _dump_arg_defaults(kwargs):
     """Inject default arguments for dump functions."""
     if current_app:
-        kwargs.setdefault('cls', current_app.json_encoder)
+        bp = current_app.blueprints.get(request.blueprint) if request else None
+        kwargs.setdefault(
+            'cls',
+            bp.json_encoder if bp and bp.json_encoder
+                else current_app.json_encoder
+        )
+
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
+
         kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
     else:
         kwargs.setdefault('sort_keys', True)
@@ -103,7 +110,12 @@ def _dump_arg_defaults(kwargs):
 def _load_arg_defaults(kwargs):
     """Inject default arguments for load functions."""
     if current_app:
-        kwargs.setdefault('cls', current_app.json_decoder)
+        bp = current_app.blueprints.get(request.blueprint) if request else None
+        kwargs.setdefault(
+            'cls',
+            bp.json_decoder if bp and bp.json_decoder
+                else current_app.json_decoder
+        )
     else:
         kwargs.setdefault('cls', JSONDecoder)
 

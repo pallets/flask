@@ -21,19 +21,37 @@ except ImportError:
     from urlparse import urlsplit as url_parse
 
 
-def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
+def make_test_environ_builder(
+    app, path='/', base_url=None, subdomain=None, url_scheme=None,
+    *args, **kwargs
+):
     """Creates a new test builder with some application defaults thrown in."""
-    http_host = app.config.get('SERVER_NAME')
-    app_root = app.config.get('APPLICATION_ROOT')
+
+    assert (
+        not (base_url or subdomain or url_scheme)
+        or (base_url is not None) != bool(subdomain or url_scheme)
+    ), 'Cannot pass "subdomain" or "url_scheme" with "base_url".'
+
     if base_url is None:
+        http_host = app.config.get('SERVER_NAME') or 'localhost'
+        app_root = app.config['APPLICATION_ROOT']
+
+        if subdomain:
+            http_host = '{0}.{1}'.format(subdomain, http_host)
+
+        if url_scheme is None:
+            url_scheme = app.config['PREFERRED_URL_SCHEME']
+
         url = url_parse(path)
-        base_url = 'http://%s/' % (url.netloc or http_host or 'localhost')
-        if app_root:
-            base_url += app_root.lstrip('/')
-        if url.netloc:
-            path = url.path
-            if url.query:
-                path += '?' + url.query
+        base_url = '{0}://{1}/{2}'.format(
+            url_scheme, url.netloc or http_host, app_root.lstrip('/')
+        )
+        path = url.path
+
+        if url.query:
+            sep = b'?' if isinstance(url.query, bytes) else '?'
+            path += sep + url.query
+
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
 

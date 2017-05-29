@@ -8,19 +8,85 @@ Version 0.13
 
 Major release, unreleased
 
-- Make `app.run()` into a noop if a Flask application is run from the
-  development server on the command line.  This avoids some behavior that
+- Minimum Werkzeug version bumped to 0.9, but please use the latest version.
+- Minimum Click version bumped to 4, but please use the latest version.
+- Make ``app.run()`` into a noop if a Flask application is run from the
+  development server on the command line. This avoids some behavior that
   was confusing to debug for newcomers.
-- Change default configuration `JSONIFY_PRETTYPRINT_REGULAR=False`. jsonify()
-  method returns compressed response by default, and pretty response in
-  debug mode.
-- Change Flask.__init__ to accept two new keyword arguments, ``host_matching``
-  and ``static_host``. This enables ``host_matching`` to be set properly by the
-  time the constructor adds the static route, and enables the static route to
-  be properly associated with the required host. (``#1559``)
+- Change default configuration ``JSONIFY_PRETTYPRINT_REGULAR=False``.
+  ``jsonify()`` method returns compressed response by default, and pretty
+  response in debug mode. (`#2193`_)
+- Change ``Flask.__init__`` to accept two new keyword arguments,
+  ``host_matching`` and ``static_host``. This enables ``host_matching`` to be
+  set properly by the time the constructor adds the static route, and enables
+  the static route to be properly associated with the required host.
+  (``#1559``)
 - ``send_file`` supports Unicode in ``attachment_filename``. (`#2223`_)
+- Pass ``_scheme`` argument from ``url_for`` to ``handle_build_error``.
+  (`#2017`_)
+- Add support for ``provide_automatic_options`` in ``add_url_rule`` to disable
+  adding OPTIONS method when the ``view_func`` argument is not a class.
+  (`#1489`_).
+- ``MethodView`` can inherit method handlers from base classes. (`#1936`_)
+- Errors caused while opening the session at the beginning of the request are
+  handled by the app's error handlers. (`#2254`_)
+- Blueprints gained ``json_encoder`` and ``json_decoder`` attributes to
+  override the app's encoder and decoder. (`#1898`_)
+- ``Flask.make_response`` raises ``TypeError`` instead of ``ValueError`` for
+  bad response types. The error messages have been improved to describe why the
+  type is invalid. (`#2256`_)
+- Add ``routes`` CLI command to output routes registered on the application.
+  (`#2259`_)
+- Show warning when session cookie domain is a bare hostname or an IP
+  address, as these may not behave properly in some browsers, such as Chrome.
+  (`#2282`_)
+- Allow IP address as exact session cookie domain. (`#2282`_)
+- ``SESSION_COOKIE_DOMAIN`` is set if it is detected through ``SERVER_NAME``.
+  (`#2282`_)
+- Auto-detect zero-argument app factory called ``create_app`` or ``make_app``
+  from ``FLASK_APP``. (`#2297`_)
+- Factory functions are not required to take a ``script_info`` parameter to
+  work with the ``flask`` command. If they take a single parameter or a
+  parameter named ``script_info``, the ``ScriptInfo`` object will be passed.
+  (`#2319`_)
+- FLASK_APP=myproject.app:create_app('dev') support. 
+- ``FLASK_APP`` can be set to an app factory, with arguments if needed, for
+  example ``FLASK_APP=myproject.app:create_app('dev')``. (`#2326`_)
+- ``View.provide_automatic_options = True`` is set on the view function from
+  ``View.as_view``, to be detected in ``app.add_url_rule``. (`#2316`_)
+- Error handling will try handlers registered for ``blueprint, code``,
+  ``app, code``, ``blueprint, exception``, ``app, exception``. (`#2314`_)
+- ``Cookie`` is added to the response's ``Vary`` header if the session is
+  accessed at all during the request (and it wasn't deleted). (`#2288`_)
+- ``app.test_request_context()`` take ``subdomain`` and ``url_scheme``
+  parameters for use when building base URL. (`#1621`_)
+- Set ``APPLICATION_ROOT = '/'`` by default. This was already the implicit
+  default when it was set to ``None``.
 
+.. _#1489: https://github.com/pallets/flask/pull/1489
+.. _#1621: https://github.com/pallets/flask/pull/1621
+.. _#1898: https://github.com/pallets/flask/pull/1898
+.. _#1936: https://github.com/pallets/flask/pull/1936
+.. _#2017: https://github.com/pallets/flask/pull/2017
+.. _#2193: https://github.com/pallets/flask/pull/2193
 .. _#2223: https://github.com/pallets/flask/pull/2223
+.. _#2254: https://github.com/pallets/flask/pull/2254
+.. _#2256: https://github.com/pallets/flask/pull/2256
+.. _#2259: https://github.com/pallets/flask/pull/2259
+.. _#2282: https://github.com/pallets/flask/pull/2282
+.. _#2288: https://github.com/pallets/flask/pull/2288
+.. _#2297: https://github.com/pallets/flask/pull/2297
+.. _#2314: https://github.com/pallets/flask/pull/2314
+.. _#2316: https://github.com/pallets/flask/pull/2316
+.. _#2319: https://github.com/pallets/flask/pull/2319
+.. _#2326: https://github.com/pallets/flask/pull/2326
+
+Version 0.12.2
+--------------
+
+Released on May 16 2017
+
+- Fix a bug in `safe_join` on Windows.
 
 Version 0.12.1
 --------------
@@ -140,6 +206,8 @@ Released on May 29th 2016, codename Absinthe.
 - Don't leak exception info of already catched exceptions to context teardown
   handlers (pull request ``#1393``).
 - Allow custom Jinja environment subclasses (pull request ``#1422``).
+- Updated extension dev guidelines.
+
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).
