@@ -163,7 +163,7 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
-.. py:data:: SESSION_COOKIE_LIFETIME
+.. py:data:: PERMANENT_SESSION_LIFETIME
 
     If ``session.permanent`` is true, the cookie's max age will be set to this
     number of seconds. Can either be a :class:`datetime.timedelta` or an
@@ -188,7 +188,7 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
-.. py:data:: SEND_FILE_MAX_AGE
+.. py:data:: SEND_FILE_MAX_AGE_DEFAULT
 
     When serving files, set the cache control max age to this number of
     seconds.  Can either be a :class:`datetime.timedelta` or an ``int``.
