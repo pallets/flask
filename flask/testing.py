@@ -105,7 +105,8 @@ class FlaskClient(Client):
         self.cookie_jar.inject_wsgi(environ_overrides)
         outer_reqctx = _request_ctx_stack.top
         with app.test_request_context(*args, **kwargs) as c:
-            sess = app.open_session(c.request)
+            session_interface = app.session_interface
+            sess = session_interface.open_session(app, c.request)
             if sess is None:
                 raise RuntimeError('Session backend did not open a session. '
                                    'Check the configuration')
@@ -124,8 +125,8 @@ class FlaskClient(Client):
                 _request_ctx_stack.pop()
 
             resp = app.response_class()
-            if not app.session_interface.is_null_session(sess):
-                app.save_session(sess, resp)
+            if not session_interface.is_null_session(sess):
+                session_interface.save_session(app, sess, resp)
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
