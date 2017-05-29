@@ -19,6 +19,9 @@ A minimal Flask application looks something like this::
     @app.route('/')
     def hello_world():
         return 'Hello, World!'
+    
+    if __name__ = "__main__":
+        app.run()
 
 So what did that code do?
 
