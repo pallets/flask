@@ -19,7 +19,6 @@ from itsdangerous import BadSignature, URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 from werkzeug.http import http_date, parse_date
 
-from flask.helpers import patch_vary_header
 from . import Markup, json
 from ._compat import iteritems, text_type
 from .helpers import is_ip, total_seconds
@@ -407,7 +406,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
         # Add a "Vary: Cookie" header if the session was accessed at all.
         if session.accessed:
-            patch_vary_header(response, 'Cookie')
+            response.vary.add('Cookie')
 
         if not self.should_set_cookie(app, session):
             return
