@@ -1585,7 +1585,7 @@ class Flask(_PackageBoundObject):
         # when generating the response message. Set an informative
         # description for key errors in debug mode or when trapping errors.
         if (
-            self.debug or self.config['TRAP_BAD_REQUEST_ERRORS']
+            (self.debug or self.config['TRAP_BAD_REQUEST_ERRORS'])
             and isinstance(e, BadRequestKeyError)
             # only set it if it's still the default description
             and e.description is BadRequestKeyError.description
