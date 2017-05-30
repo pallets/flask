@@ -44,6 +44,7 @@ class TestJSON(object):
 
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self, app, client):
         app.config['DEBUG'] = True
+        app.config['TRAP_BAD_REQUEST_ERRORS'] = False
 
         @app.route('/json', methods=['POST'])
         def post_json():
@@ -56,6 +57,7 @@ class TestJSON(object):
 
     def test_post_empty_json_wont_add_exception_to_response_if_no_debug(self, app, client):
         app.config['DEBUG'] = False
+        app.config['TRAP_BAD_REQUEST_ERRORS'] = False
 
         @app.route('/json', methods=['POST'])
         def post_json():
