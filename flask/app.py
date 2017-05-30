@@ -1583,9 +1583,9 @@ class Flask(_PackageBoundObject):
 
         # MultiDict passes the key to the exception, but that's ignored
         # when generating the response message. Set an informative
-        # description for key errors in debug mode.
+        # description for key errors in debug mode or when trapping errors.
         if (
-            self.debug
+            self.debug or self.config['TRAP_BAD_REQUEST_ERRORS']
             and isinstance(e, BadRequestKeyError)
             # only set it if it's still the default description
             and e.description is BadRequestKeyError.description
