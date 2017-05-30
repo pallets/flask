@@ -18,7 +18,8 @@ from threading import Lock
 
 from werkzeug.datastructures import ImmutableDict, Headers
 from werkzeug.exceptions import BadRequest, HTTPException, \
-    InternalServerError, MethodNotAllowed, default_exceptions
+    InternalServerError, MethodNotAllowed, default_exceptions, \
+    BadRequestKeyError
 from werkzeug.routing import BuildError, Map, RequestRedirect, Rule
 
 from . import cli, json
@@ -317,7 +318,7 @@ class Flask(_PackageBoundObject):
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
         'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
-        'TRAP_BAD_REQUEST_ERRORS':              False,
+        'TRAP_BAD_REQUEST_ERRORS':              None,
         'TRAP_HTTP_EXCEPTIONS':                 False,
         'EXPLAIN_TEMPLATE_LOADING':             False,
         'PREFERRED_URL_SCHEME':                 'http',
@@ -1542,13 +1543,21 @@ class Flask(_PackageBoundObject):
         exception is not called and it shows up as regular exception in the
         traceback.  This is helpful for debugging implicitly raised HTTP
         exceptions.
+        
+        .. versionchanged:: 1.0
+            Bad request errors are not trapped by default in debug mode.
 
         .. versionadded:: 0.8
         """
         if self.config['TRAP_HTTP_EXCEPTIONS']:
             return True
-        if self.config['TRAP_BAD_REQUEST_ERRORS']:
+
+        trap_bad_request = self.config['TRAP_BAD_REQUEST_ERRORS']
+
+        # if unset, trap based on debug mode
+        if (trap_bad_request is None and self.debug) or trap_bad_request:
             return isinstance(e, BadRequest)
+
         return False
 
     def handle_user_exception(self, e):
@@ -1559,15 +1568,29 @@ class Flask(_PackageBoundObject):
         function will either return a response value or reraise the
         exception with the same traceback.
 
+        .. versionchanged:: 1.0
+            Key errors raised from request data like ``form`` show the the bad
+            key in debug mode rather than a generic bad request message.
+
         .. versionadded:: 0.7
         """
         exc_type, exc_value, tb = sys.exc_info()
         assert exc_value is e
-
         # ensure not to trash sys.exc_info() at that point in case someone
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
+
+        # MultiDict passes the key to the exception, but that's ignored
+        # when generating the response message. Set an informative
+        # description for key errors in debug mode or when trapping errors.
+        if (
+            (self.debug or self.config['TRAP_BAD_REQUEST_ERRORS'])
+            and isinstance(e, BadRequestKeyError)
+            # only set it if it's still the default description
+            and e.description is BadRequestKeyError.description
+        ):
+            e.description = "KeyError: '{0}'".format(*e.args)
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
