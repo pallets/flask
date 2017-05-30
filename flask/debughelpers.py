@@ -32,7 +32,7 @@ class DebugFilesKeyError(KeyError, AssertionError):
     def __init__(self, request, key):
         form_matches = request.form.getlist(key)
         buf = ['You tried to access the file "%s" in the request.files '
-               'dictionary but it does not exist.  The mimetype for the request '
+               'dictionary but it does not exist. The mimetype for the request'
                'is "%s" instead of "multipart/form-data" which means that no '
                'file contents were transmitted.  To fix this error you should '
                'provide enctype="multipart/form-data" in your form.' %
@@ -80,6 +80,7 @@ def attach_enctype_error_multidict(request):
     object is accessed.
     """
     oldcls = request.files.__class__
+
     class newcls(oldcls):
         def __getitem__(self, key):
             try:
