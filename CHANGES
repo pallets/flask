@@ -49,7 +49,7 @@ Major release, unreleased
   work with the ``flask`` command. If they take a single parameter or a
   parameter named ``script_info``, the ``ScriptInfo`` object will be passed.
   (`#2319`_)
-- FLASK_APP=myproject.app:create_app('dev') support. 
+- FLASK_APP=myproject.app:create_app('dev') support.
 - ``FLASK_APP`` can be set to an app factory, with arguments if needed, for
   example ``FLASK_APP=myproject.app:create_app('dev')``. (`#2326`_)
 - ``View.provide_automatic_options = True`` is set on the view function from
@@ -62,6 +62,9 @@ Major release, unreleased
   parameters for use when building base URL. (`#1621`_)
 - Set ``APPLICATION_ROOT = '/'`` by default. This was already the implicit
   default when it was set to ``None``.
+- ``TRAP_BAD_REQUEST_ERRORS`` is enabled by default in debug mode.
+  ``BadRequestKeyError`` has a message with the bad key in debug mode instead
+  of the generic bad request message. (`#2348`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -80,6 +83,7 @@ Major release, unreleased
 .. _#2316: https://github.com/pallets/flask/pull/2316
 .. _#2319: https://github.com/pallets/flask/pull/2319
 .. _#2326: https://github.com/pallets/flask/pull/2326
+.. _#2348: https://github.com/pallets/flask/pull/2348
 
 Version 0.12.2
 --------------

@@ -109,9 +109,10 @@ The following configuration values are used internally by Flask:
     Trying to access a key that doesn't exist from request dicts like ``args``
     and ``form`` will return a 400 Bad Request error page. Enable this to treat
     the error as an unhandled exception instead so that you get the interactive
-    debugger. This is a more specific version of ``TRAP_HTTP_EXCEPTIONS``.
+    debugger. This is a more specific version of ``TRAP_HTTP_EXCEPTIONS``. If
+    unset, it is enabled in debug mode.
 
-    Default: ``False``
+    Default: ``None``
 
 .. py:data:: SECRET_KEY
 
