@@ -21,19 +21,37 @@ except ImportError:
     from urlparse import urlsplit as url_parse
 
 
-def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
+def make_test_environ_builder(
+    app, path='/', base_url=None, subdomain=None, url_scheme=None,
+    *args, **kwargs
+):
     """Creates a new test builder with some application defaults thrown in."""
-    http_host = app.config.get('SERVER_NAME')
-    app_root = app.config.get('APPLICATION_ROOT')
+
+    assert (
+        not (base_url or subdomain or url_scheme)
+        or (base_url is not None) != bool(subdomain or url_scheme)
+    ), 'Cannot pass "subdomain" or "url_scheme" with "base_url".'
+
     if base_url is None:
+        http_host = app.config.get('SERVER_NAME') or 'localhost'
+        app_root = app.config['APPLICATION_ROOT']
+
+        if subdomain:
+            http_host = '{0}.{1}'.format(subdomain, http_host)
+
+        if url_scheme is None:
+            url_scheme = app.config['PREFERRED_URL_SCHEME']
+
         url = url_parse(path)
-        base_url = 'http://%s/' % (url.netloc or http_host or 'localhost')
-        if app_root:
-            base_url += app_root.lstrip('/')
-        if url.netloc:
-            path = url.path
-            if url.query:
-                path += '?' + url.query
+        base_url = '{0}://{1}/{2}'.format(
+            url_scheme, url.netloc or http_host, app_root.lstrip('/')
+        )
+        path = url.path
+
+        if url.query:
+            sep = b'?' if isinstance(url.query, bytes) else '?'
+            path += sep + url.query
+
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
 
@@ -87,7 +105,8 @@ class FlaskClient(Client):
         self.cookie_jar.inject_wsgi(environ_overrides)
         outer_reqctx = _request_ctx_stack.top
         with app.test_request_context(*args, **kwargs) as c:
-            sess = app.open_session(c.request)
+            session_interface = app.session_interface
+            sess = session_interface.open_session(app, c.request)
             if sess is None:
                 raise RuntimeError('Session backend did not open a session. '
                                    'Check the configuration')
@@ -106,8 +125,8 @@ class FlaskClient(Client):
                 _request_ctx_stack.pop()
 
             resp = app.response_class()
-            if not app.session_interface.is_null_session(sess):
-                app.save_session(sess, resp)
+            if not session_interface.is_null_session(sess):
+                session_interface.save_session(app, sess, resp)
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 

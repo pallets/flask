@@ -76,49 +76,72 @@ Error handlers
 You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
-Error handlers are normal :ref:`views` but instead of being registered for
-routes, they are registered for exceptions that are raised while trying to
-do something else.
+An error handler is a normal view function that return a response, but instead
+of being registered for a route, it is registered for an exception or HTTP
+status code that would is raised while trying to handle a request.
 
 Registering
 ```````````
 
-Register error handlers using :meth:`~flask.Flask.errorhandler` or
-:meth:`~flask.Flask.register_error_handler`::
+Register handlers by decorating a function with
+:meth:`~flask.Flask.errorhandler`. Or use
+:meth:`~flask.Flask.register_error_handler` to register the function later.
+Remember to set the error code when returning the response. ::
 
     @app.errorhandler(werkzeug.exceptions.BadRequest)
     def handle_bad_request(e):
-        return 'bad request!'
+        return 'bad request!', 400
 
-    app.register_error_handler(400, lambda e: 'bad request!')
+    # or, without the decorator
+    app.register_error_handler(400, handle_bad_request)
 
-Those two ways are equivalent, but the first one is more clear and leaves
-you with a function to call on your whim (and in tests).  Note that
 :exc:`werkzeug.exceptions.HTTPException` subclasses like
-:exc:`~werkzeug.exceptions.BadRequest` from the example and their HTTP codes
-are interchangeable when handed to the registration methods or decorator
-(``BadRequest.code == 400``).
+:exc:`~werkzeug.exceptions.BadRequest` and their HTTP codes are interchangeable
+when registering handlers. (``BadRequest.code == 400``)
 
-You are however not limited to :exc:`~werkzeug.exceptions.HTTPException`
-or HTTP status codes but can register a handler for every exception class you
-like.
+Non-standard HTTP codes cannot be registered by code because they are not known
+by Werkzeug. Instead, define a subclass of
+:class:`~werkzeug.exceptions.HTTPException` with the appropriate code and
+register and raise that exception class. ::
 
-.. versionchanged:: 0.11
+    class InsufficientStorage(werkzeug.exceptions.HTTPException):
+        code = 507
+        description = 'Not enough storage space.'
 
-   Errorhandlers are now prioritized by specificity of the exception classes
-   they are registered for instead of the order they are registered in.
+    app.register_error_handler(InsuffcientStorage, handle_507)
+
+    raise InsufficientStorage()
+
+Handlers can be registered for any exception class, not just
+:exc:`~werkzeug.exceptions.HTTPException` subclasses or HTTP status
+codes. Handlers can be registered for a specific class, or for all subclasses
+of a parent class.
 
 Handling
 ````````
 
-Once an exception instance is raised, its class hierarchy is traversed,
-and searched for in the exception classes for which handlers are registered.
-The most specific handler is selected.
+When an exception is caught by Flask while handling a request, it is first
+looked up by code. If no handler is registered for the code, it is looked up
+by its class hierarchy; the most specific handler is chosen. If no handler is
+registered, :class:`~werkzeug.exceptions.HTTPException` subclasses show a
+generic message about their code, while other exceptions are converted to a
+generic 500 Internal Server Error.
 
-E.g. if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
+For example, if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
 is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
-the more specific :exc:`ConnectionRefusedError` handler is called on the
-exception instance, and its response is shown to the user.
+the more specific :exc:`ConnectionRefusedError` handler is called with the
+exception instance to generate the response.
+
+Handlers registered on the blueprint take precedence over those registered
+globally on the application, assuming a blueprint is handling the request that
+raises the exception. However, the blueprint cannot handle 404 routing errors
+because the 404 occurs at the routing level before the blueprint can be
+determined.
+
+.. versionchanged:: 0.11
+
+   Handlers are prioritized by specificity of the exception classes they are
+   registered for instead of the order they are registered in.
 
 Error Mails
 -----------

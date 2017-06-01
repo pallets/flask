@@ -59,3 +59,4 @@ Design notes, legal information and changelog are here for the interested.
    upgrading
    changelog
    license
+   contributing
