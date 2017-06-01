@@ -870,6 +870,13 @@ def test_error_handling(app, client):
     assert b'forbidden' == rv.data
 
 
+def test_error_handler_unknown_code(app):
+    with pytest.raises(KeyError) as exc_info:
+        app.register_error_handler(999, lambda e: ('999', 999))
+
+    assert 'Use a subclass' in exc_info.value.args[0]
+
+
 def test_error_handling_processing(app, client):
     app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
