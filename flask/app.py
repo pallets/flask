@@ -1166,7 +1166,9 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def errorhandler(self, code_or_exception):
-        """A decorator that is used to register a function given an
+        """Register a function to handle errors by code or exception class.
+
+        A decorator that is used to register a function given an
         error code.  Example::
 
             @app.errorhandler(404)
@@ -1178,21 +1180,6 @@ class Flask(_PackageBoundObject):
             @app.errorhandler(DatabaseError)
             def special_exception_handler(error):
                 return 'Database connection failed', 500
-
-        You can also register a function as error handler without using
-        the :meth:`errorhandler` decorator.  The following example is
-        equivalent to the one above::
-
-            def page_not_found(error):
-                return 'This page does not exist', 404
-            app.error_handler_spec[None][404] = page_not_found
-
-        Setting error handlers via assignments to :attr:`error_handler_spec`
-        however is discouraged as it requires fiddling with nested dictionaries
-        and the special case for arbitrary exception types.
-
-        The first ``None`` refers to the active blueprint.  If the error
-        handler should be application wide ``None`` shall be used.
 
         .. versionadded:: 0.7
             Use :meth:`register_error_handler` instead of modifying
@@ -1212,6 +1199,7 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    @setupmethod
     def register_error_handler(self, code_or_exception, f):
         """Alternative error attach function to the :meth:`errorhandler`
         decorator that is more straightforward to use for non decorator
@@ -1230,11 +1218,18 @@ class Flask(_PackageBoundObject):
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
-                'Tried to register a handler for an exception instance {0!r}. '
-                'Handlers can only be registered for exception classes or HTTP error codes.'
-                .format(code_or_exception))
+                'Tried to register a handler for an exception instance {0!r}.'
+                ' Handlers can only be registered for exception classes or'
+                ' HTTP error codes.'.format(code_or_exception)
+            )
 
-        exc_class, code = self._get_exc_class_and_code(code_or_exception)
+        try:
+            exc_class, code = self._get_exc_class_and_code(code_or_exception)
+        except KeyError:
+            raise KeyError(
+                "'{0}' is not a recognized HTTP error code. Use a subclass of"
+                " HTTPException with that code instead.".format(code_or_exception)
+            )
 
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
         handlers[exc_class] = f
@@ -1339,7 +1334,7 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def before_request(self, f):
         """Registers a function to run before each request.
-        
+
         For example, this can be used to open a database connection, or to load
         the logged in user from the session.
 
@@ -1467,12 +1462,12 @@ class Flask(_PackageBoundObject):
         """Register a URL value preprocessor function for all view
         functions in the application. These functions will be called before the
         :meth:`before_request` functions.
-        
+
         The function can modify the values captured from the matched url before
         they are passed to the view. For example, this can be used to pop a
         common language code value and place it in ``g`` rather than pass it to
         every view.
-        
+
         The function is passed the endpoint name and values dict. The return
         value is ignored.
         """
@@ -1543,7 +1538,7 @@ class Flask(_PackageBoundObject):
         exception is not called and it shows up as regular exception in the
         traceback.  This is helpful for debugging implicitly raised HTTP
         exceptions.
-        
+
         .. versionchanged:: 1.0
             Bad request errors are not trapped by default in debug mode.
 
@@ -1783,10 +1778,10 @@ class Flask(_PackageBoundObject):
             ``str`` (``unicode`` in Python 2)
                 A response object is created with the string encoded to UTF-8
                 as the body.
-                
+
             ``bytes`` (``str`` in Python 2)
                 A response object is created with the bytes as the body.
-                
+
             ``tuple``
                 Either ``(body, status, headers)``, ``(body, status)``, or
                 ``(body, headers)``, where ``body`` is any of the other types
@@ -1795,13 +1790,13 @@ class Flask(_PackageBoundObject):
                 tuples. If ``body`` is a :attr:`response_class` instance,
                 ``status`` overwrites the exiting value and ``headers`` are
                 extended.
-    
+
             :attr:`response_class`
                 The object is returned unchanged.
-            
+
             other :class:`~werkzeug.wrappers.Response` class
                 The object is coerced to :attr:`response_class`.
-                
+
             :func:`callable`
                 The function is called as a WSGI application. The result is
                 used to create a response object.
@@ -1938,7 +1933,7 @@ class Flask(_PackageBoundObject):
         :attr:`url_value_preprocessors` registered with the app and the
         current blueprint (if any). Then calls :attr:`before_request_funcs`
         registered with the app and the blueprint.
-        
+
         If any :meth:`before_request` handler returns a non-None value, the
         value is handled as if it was the return value from the view, and
         further request handling is stopped.
