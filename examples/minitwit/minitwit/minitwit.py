@@ -25,7 +25,7 @@ DEBUG = True
 SECRET_KEY = 'development key'
 
 # create our little application :)
-app = Flask(__name__)
+app = Flask('minitwit')
 app.config.from_object(__name__)
 app.config.from_envvar('MINITWIT_SETTINGS', silent=True)
 

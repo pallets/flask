@@ -9,9 +9,11 @@
 
     ~ How do I use it?
 
-      1. edit the configuration in the flaskr.py file or
+      1. edit the configuration in the factory.py file or
          export an FLASKR_SETTINGS environment variable
-         pointing to a configuration file.
+         pointing to a configuration file or pass in a
+         dictionary with config values using the create_app
+         function.
 
       2. install the app from the root of the project directory
 
@@ -19,7 +21,7 @@
 
       3. Instruct flask to use the right application
 
-         export FLASK_APP=flaskr
+         export FLASK_APP=flaskr.factory:create_app()
 
       4. initialize the database with this command:
 

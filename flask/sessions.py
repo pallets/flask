@@ -18,7 +18,6 @@ from itsdangerous import BadSignature, URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 from werkzeug.http import http_date, parse_date
 
-from flask.helpers import patch_vary_header
 from . import Markup, json
 from ._compat import iteritems, text_type
 from .helpers import is_ip, total_seconds
@@ -347,8 +346,8 @@ class SessionInterface(object):
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's ``None``.
         """
-        return app.config['SESSION_COOKIE_PATH'] or \
-               app.config['APPLICATION_ROOT'] or '/'
+        return app.config['SESSION_COOKIE_PATH'] \
+               or app.config['APPLICATION_ROOT']
 
     def get_cookie_httponly(self, app):
         """Returns True if the session cookie should be httponly.  This
@@ -466,7 +465,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
         # Add a "Vary: Cookie" header if the session was accessed at all.
         if session.accessed:
-            patch_vary_header(response, 'Cookie')
+            response.vary.add('Cookie')
 
         if not self.should_set_cookie(app, session):
             return

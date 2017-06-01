@@ -73,6 +73,38 @@ def test_environ_base_modified(app, client, app_ctx):
     assert flask.g.user_agent == 'Bar'
 
 
+def test_specify_url_scheme(app, client):
+    @app.route('/')
+    def index():
+        return flask.request.url
+
+    ctx = app.test_request_context(url_scheme='https')
+    assert ctx.request.url == 'https://localhost/'
+
+    rv = client.get('/', url_scheme='https')
+    assert rv.data == b'https://localhost/'
+
+
+def test_blueprint_with_subdomain(app, client):
+    app.config['SERVER_NAME'] = 'example.com:1234'
+    app.config['APPLICATION_ROOT'] = '/foo'
+
+    bp = flask.Blueprint('company', __name__, subdomain='xxx')
+
+    @bp.route('/')
+    def index():
+        return flask.request.url
+
+    app.register_blueprint(bp)
+
+    ctx = app.test_request_context('/', subdomain='xxx')
+    assert ctx.request.url == 'http://xxx.example.com:1234/foo/'
+    assert ctx.request.blueprint == bp.name
+
+    rv = client.get('/', subdomain='xxx')
+    assert rv.data == b'http://xxx.example.com:1234/foo/'
+
+
 def test_redirect_keep_session(app, client, app_ctx):
     app.secret_key = 'testing'
 

@@ -9,20 +9,21 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
-
-import re
-import uuid
-import time
-import flask
 import pickle
+import re
+import time
+import uuid
 from datetime import datetime
 from threading import Thread
-from flask._compat import text_type
-from werkzeug.exceptions import BadRequest, NotFound, Forbidden
+
+import pytest
+import werkzeug.serving
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
-import werkzeug.serving
+
+import flask
+from flask._compat import text_type
 
 
 def test_options_work(app, client):
@@ -529,14 +530,14 @@ def test_session_vary_cookie(app, client):
     @app.route('/vary-cookie-header-set')
     def vary_cookie_header_set():
         response = flask.Response()
-        response.headers['Vary'] = 'Cookie'
+        response.vary.add('Cookie')
         flask.session['test'] = 'test'
         return response
 
     @app.route('/vary-header-set')
     def vary_header_set():
         response = flask.Response()
-        response.headers['Vary'] = 'Accept-Encoding, Accept-Language'
+        response.vary.update(('Accept-Encoding', 'Accept-Language'))
         flask.session['test'] = 'test'
         return response
 
@@ -875,6 +876,13 @@ def test_error_handling(app, client):
     assert b'forbidden' == rv.data
 
 
+def test_error_handler_unknown_code(app):
+    with pytest.raises(KeyError) as exc_info:
+        app.register_error_handler(999, lambda e: ('999', 999))
+
+    assert 'Use a subclass' in exc_info.value.args[0]
+
+
 def test_error_handling_processing(app, client):
     app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
@@ -980,12 +988,17 @@ def test_trapping_of_bad_request_key_errors(app, client):
     def fail():
         flask.request.form['missing_key']
 
-    assert client.get('/fail').status_code == 400
+    rv = client.get('/fail')
+    assert rv.status_code == 400
+    assert b'missing_key' not in rv.data
 
     app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+
     with pytest.raises(KeyError) as e:
         client.get("/fail")
+
     assert e.errisinstance(BadRequest)
+    assert 'missing_key' in e.value.description
 
 
 def test_trapping_of_all_http_exceptions(app, client):

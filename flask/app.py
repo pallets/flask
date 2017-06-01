@@ -10,6 +10,7 @@
 """
 import os
 import sys
+import warnings
 from datetime import timedelta
 from functools import update_wrapper
 from itertools import chain
@@ -17,7 +18,8 @@ from threading import Lock
 
 from werkzeug.datastructures import ImmutableDict, Headers
 from werkzeug.exceptions import BadRequest, HTTPException, \
-    InternalServerError, MethodNotAllowed, default_exceptions
+    InternalServerError, MethodNotAllowed, default_exceptions, \
+    BadRequestKeyError
 from werkzeug.routing import BuildError, Map, RequestRedirect, Rule
 
 from . import cli, json
@@ -307,7 +309,7 @@ class Flask(_PackageBoundObject):
         'LOGGER_NAME':                          None,
         'LOGGER_HANDLER_POLICY':               'always',
         'SERVER_NAME':                          None,
-        'APPLICATION_ROOT':                     None,
+        'APPLICATION_ROOT':                     '/',
         'SESSION_COOKIE_NAME':                  'session',
         'SESSION_COOKIE_DOMAIN':                None,
         'SESSION_COOKIE_PATH':                  None,
@@ -316,7 +318,7 @@ class Flask(_PackageBoundObject):
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
         'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
-        'TRAP_BAD_REQUEST_ERRORS':              False,
+        'TRAP_BAD_REQUEST_ERRORS':              None,
         'TRAP_HTTP_EXCEPTIONS':                 False,
         'EXPLAIN_TEMPLATE_LOADING':             False,
         'PREFERRED_URL_SCHEME':                 'http',
@@ -925,8 +927,17 @@ class Flask(_PackageBoundObject):
         :attr:`secret_key` is set.  Instead of overriding this method
         we recommend replacing the :class:`session_interface`.
 
+        .. deprecated: 1.0
+            Will be removed in 1.1. Use ``session_interface.open_session``
+            instead.
+
         :param request: an instance of :attr:`request_class`.
         """
+
+        warnings.warn(DeprecationWarning(
+            '"open_session" is deprecated and will be removed in 1.1. Use'
+            ' "session_interface.open_session" instead.'
+        ))
         return self.session_interface.open_session(self, request)
 
     def save_session(self, session, response):
@@ -934,19 +945,37 @@ class Flask(_PackageBoundObject):
         implementation, check :meth:`open_session`.  Instead of overriding this
         method we recommend replacing the :class:`session_interface`.
 
+        .. deprecated: 1.0
+            Will be removed in 1.1. Use ``session_interface.save_session``
+            instead.
+
         :param session: the session to be saved (a
                         :class:`~werkzeug.contrib.securecookie.SecureCookie`
                         object)
         :param response: an instance of :attr:`response_class`
         """
+
+        warnings.warn(DeprecationWarning(
+            '"save_session" is deprecated and will be removed in 1.1. Use'
+            ' "session_interface.save_session" instead.'
+        ))
         return self.session_interface.save_session(self, session, response)
 
     def make_null_session(self):
         """Creates a new instance of a missing session.  Instead of overriding
         this method we recommend replacing the :class:`session_interface`.
 
+        .. deprecated: 1.0
+            Will be removed in 1.1. Use ``session_interface.make_null_session``
+            instead.
+
         .. versionadded:: 0.7
         """
+
+        warnings.warn(DeprecationWarning(
+            '"make_null_session" is deprecated and will be removed in 1.1. Use'
+            ' "session_interface.make_null_session" instead.'
+        ))
         return self.session_interface.make_null_session(self)
 
     @setupmethod
@@ -1137,7 +1166,9 @@ class Flask(_PackageBoundObject):
 
     @setupmethod
     def errorhandler(self, code_or_exception):
-        """A decorator that is used to register a function given an
+        """Register a function to handle errors by code or exception class.
+
+        A decorator that is used to register a function given an
         error code.  Example::
 
             @app.errorhandler(404)
@@ -1149,21 +1180,6 @@ class Flask(_PackageBoundObject):
             @app.errorhandler(DatabaseError)
             def special_exception_handler(error):
                 return 'Database connection failed', 500
-
-        You can also register a function as error handler without using
-        the :meth:`errorhandler` decorator.  The following example is
-        equivalent to the one above::
-
-            def page_not_found(error):
-                return 'This page does not exist', 404
-            app.error_handler_spec[None][404] = page_not_found
-
-        Setting error handlers via assignments to :attr:`error_handler_spec`
-        however is discouraged as it requires fiddling with nested dictionaries
-        and the special case for arbitrary exception types.
-
-        The first ``None`` refers to the active blueprint.  If the error
-        handler should be application wide ``None`` shall be used.
 
         .. versionadded:: 0.7
             Use :meth:`register_error_handler` instead of modifying
@@ -1183,6 +1199,7 @@ class Flask(_PackageBoundObject):
             return f
         return decorator
 
+    @setupmethod
     def register_error_handler(self, code_or_exception, f):
         """Alternative error attach function to the :meth:`errorhandler`
         decorator that is more straightforward to use for non decorator
@@ -1201,11 +1218,18 @@ class Flask(_PackageBoundObject):
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
-                'Tried to register a handler for an exception instance {0!r}. '
-                'Handlers can only be registered for exception classes or HTTP error codes.'
-                .format(code_or_exception))
+                'Tried to register a handler for an exception instance {0!r}.'
+                ' Handlers can only be registered for exception classes or'
+                ' HTTP error codes.'.format(code_or_exception)
+            )
 
-        exc_class, code = self._get_exc_class_and_code(code_or_exception)
+        try:
+            exc_class, code = self._get_exc_class_and_code(code_or_exception)
+        except KeyError:
+            raise KeyError(
+                "'{0}' is not a recognized HTTP error code. Use a subclass of"
+                " HTTPException with that code instead.".format(code_or_exception)
+            )
 
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
         handlers[exc_class] = f
@@ -1310,7 +1334,7 @@ class Flask(_PackageBoundObject):
     @setupmethod
     def before_request(self, f):
         """Registers a function to run before each request.
-        
+
         For example, this can be used to open a database connection, or to load
         the logged in user from the session.
 
@@ -1438,12 +1462,12 @@ class Flask(_PackageBoundObject):
         """Register a URL value preprocessor function for all view
         functions in the application. These functions will be called before the
         :meth:`before_request` functions.
-        
+
         The function can modify the values captured from the matched url before
         they are passed to the view. For example, this can be used to pop a
         common language code value and place it in ``g`` rather than pass it to
         every view.
-        
+
         The function is passed the endpoint name and values dict. The return
         value is ignored.
         """
@@ -1515,12 +1539,20 @@ class Flask(_PackageBoundObject):
         traceback.  This is helpful for debugging implicitly raised HTTP
         exceptions.
 
+        .. versionchanged:: 1.0
+            Bad request errors are not trapped by default in debug mode.
+
         .. versionadded:: 0.8
         """
         if self.config['TRAP_HTTP_EXCEPTIONS']:
             return True
-        if self.config['TRAP_BAD_REQUEST_ERRORS']:
+
+        trap_bad_request = self.config['TRAP_BAD_REQUEST_ERRORS']
+
+        # if unset, trap based on debug mode
+        if (trap_bad_request is None and self.debug) or trap_bad_request:
             return isinstance(e, BadRequest)
+
         return False
 
     def handle_user_exception(self, e):
@@ -1531,15 +1563,29 @@ class Flask(_PackageBoundObject):
         function will either return a response value or reraise the
         exception with the same traceback.
 
+        .. versionchanged:: 1.0
+            Key errors raised from request data like ``form`` show the the bad
+            key in debug mode rather than a generic bad request message.
+
         .. versionadded:: 0.7
         """
         exc_type, exc_value, tb = sys.exc_info()
         assert exc_value is e
-
         # ensure not to trash sys.exc_info() at that point in case someone
         # wants the traceback preserved in handle_http_exception.  Of course
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
+
+        # MultiDict passes the key to the exception, but that's ignored
+        # when generating the response message. Set an informative
+        # description for key errors in debug mode or when trapping errors.
+        if (
+            (self.debug or self.config['TRAP_BAD_REQUEST_ERRORS'])
+            and isinstance(e, BadRequestKeyError)
+            # only set it if it's still the default description
+            and e.description is BadRequestKeyError.description
+        ):
+            e.description = "KeyError: '{0}'".format(*e.args)
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
@@ -1732,10 +1778,10 @@ class Flask(_PackageBoundObject):
             ``str`` (``unicode`` in Python 2)
                 A response object is created with the string encoded to UTF-8
                 as the body.
-                
+
             ``bytes`` (``str`` in Python 2)
                 A response object is created with the bytes as the body.
-                
+
             ``tuple``
                 Either ``(body, status, headers)``, ``(body, status)``, or
                 ``(body, headers)``, where ``body`` is any of the other types
@@ -1744,13 +1790,13 @@ class Flask(_PackageBoundObject):
                 tuples. If ``body`` is a :attr:`response_class` instance,
                 ``status`` overwrites the exiting value and ``headers`` are
                 extended.
-    
+
             :attr:`response_class`
                 The object is returned unchanged.
-            
+
             other :class:`~werkzeug.wrappers.Response` class
                 The object is coerced to :attr:`response_class`.
-                
+
             :func:`callable`
                 The function is called as a WSGI application. The result is
                 used to create a response object.
@@ -1845,7 +1891,7 @@ class Flask(_PackageBoundObject):
         if self.config['SERVER_NAME'] is not None:
             return self.url_map.bind(
                 self.config['SERVER_NAME'],
-                script_name=self.config['APPLICATION_ROOT'] or '/',
+                script_name=self.config['APPLICATION_ROOT'],
                 url_scheme=self.config['PREFERRED_URL_SCHEME'])
 
     def inject_url_defaults(self, endpoint, values):
@@ -1887,7 +1933,7 @@ class Flask(_PackageBoundObject):
         :attr:`url_value_preprocessors` registered with the app and the
         current blueprint (if any). Then calls :attr:`before_request_funcs`
         registered with the app and the blueprint.
-        
+
         If any :meth:`before_request` handler returns a non-None value, the
         value is handled as if it was the return value from the view, and
         further request handling is stopped.
@@ -1932,7 +1978,7 @@ class Flask(_PackageBoundObject):
         for handler in funcs:
             response = handler(response)
         if not self.session_interface.is_null_session(ctx.session):
-            self.save_session(ctx.session, response)
+            self.session_interface.save_session(self, ctx.session, response)
         return response
 
     def do_teardown_request(self, exc=_sentinel):
@@ -2017,10 +2063,19 @@ class Flask(_PackageBoundObject):
     def test_request_context(self, *args, **kwargs):
         """Creates a WSGI environment from the given values (see
         :class:`werkzeug.test.EnvironBuilder` for more information, this
-        function accepts the same arguments).
+        function accepts the same arguments plus two additional).
+
+        Additional arguments (only if ``base_url`` is not specified):
+
+        :param subdomain: subdomain to use for route matching
+        :param url_scheme: scheme for the request, default
+            ``PREFERRED_URL_SCHEME`` or ``http``.
         """
+
         from flask.testing import make_test_environ_builder
+
         builder = make_test_environ_builder(self, *args, **kwargs)
+
         try:
             return self.request_context(builder.get_environ())
         finally:

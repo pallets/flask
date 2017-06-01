@@ -3,8 +3,6 @@
 Configuration Handling
 ======================
 
-.. versionadded:: 0.3
-
 Applications need some kind of configuration.  There are different settings
 you might want to change depending on the application environment like
 toggling the debug mode, setting the secret key, and other such
@@ -54,182 +52,253 @@ method::
     $ flask run
 
    (On Windows you need to use ``set`` instead of ``export``).
-   
-   ``app.debug`` and ``app.config['DEBUG']`` are not compatible with 
+
+   ``app.debug`` and ``app.config['DEBUG']`` are not compatible with
    the :command:`flask` script. They only worked when using ``Flask.run()``
    method.
-   
+
 Builtin Configuration Values
 ----------------------------
 
 The following configuration values are used internally by Flask:
 
-.. tabularcolumns:: |p{6.5cm}|p{8.5cm}|
+.. py:data:: DEBUG
 
-================================= =========================================
-``DEBUG``                         enable/disable debug mode when using 
-                                  ``Flask.run()`` method to start server
-``TESTING``                       enable/disable testing mode
-``PROPAGATE_EXCEPTIONS``          explicitly enable or disable the
-                                  propagation of exceptions.  If not set or
-                                  explicitly set to ``None`` this is
-                                  implicitly true if either ``TESTING`` or
-                                  ``DEBUG`` is true.
-``PRESERVE_CONTEXT_ON_EXCEPTION`` By default if the application is in
-                                  debug mode the request context is not
-                                  popped on exceptions to enable debuggers
-                                  to introspect the data.  This can be
-                                  disabled by this key.  You can also use
-                                  this setting to force-enable it for non
-                                  debug execution which might be useful to
-                                  debug production applications (but also
-                                  very risky).
-``SECRET_KEY``                    the secret key
-``SESSION_COOKIE_NAME``           the name of the session cookie
-``SESSION_COOKIE_DOMAIN``         the domain for the session cookie.  If
-                                  this is not set, the cookie will be
-                                  valid for all subdomains of
-                                  ``SERVER_NAME``.
-``SESSION_COOKIE_PATH``           the path for the session cookie.  If
-                                  this is not set the cookie will be valid
-                                  for all of ``APPLICATION_ROOT`` or if
-                                  that is not set for ``'/'``.
-``SESSION_COOKIE_HTTPONLY``       controls if the cookie should be set
-                                  with the httponly flag.  Defaults to
-                                  ``True``.
-``SESSION_COOKIE_SECURE``         controls if the cookie should be set
-                                  with the secure flag.  Defaults to
-                                  ``False``.
-``PERMANENT_SESSION_LIFETIME``    the lifetime of a permanent session as
-                                  :class:`datetime.timedelta` object.
-                                  Starting with Flask 0.8 this can also be
-                                  an integer representing seconds.
-``SESSION_REFRESH_EACH_REQUEST``  this flag controls how permanent
-                                  sessions are refreshed.  If set to ``True``
-                                  (which is the default) then the cookie
-                                  is refreshed each request which
-                                  automatically bumps the lifetime.  If
-                                  set to ``False`` a `set-cookie` header is
-                                  only sent if the session is modified.
-                                  Non permanent sessions are not affected
-                                  by this.
-``USE_X_SENDFILE``                enable/disable x-sendfile
-``LOGGER_NAME``                   the name of the logger
-``LOGGER_HANDLER_POLICY``         the policy of the default logging
-                                  handler.  The default is ``'always'``
-                                  which means that the default logging
-                                  handler is always active.  ``'debug'``
-                                  will only activate logging in debug
-                                  mode, ``'production'`` will only log in
-                                  production and ``'never'`` disables it
-                                  entirely.
-``SERVER_NAME``                   the name and port number of the server.
-                                  Required for subdomain support (e.g.:
-                                  ``'myapp.dev:5000'``)  Note that
-                                  localhost does not support subdomains so
-                                  setting this to “localhost” does not
-                                  help.  Setting a ``SERVER_NAME`` also
-                                  by default enables URL generation
-                                  without a request context but with an
-                                  application context.
-``APPLICATION_ROOT``              The path value used for the session
-                                  cookie if ``SESSION_COOKIE_PATH`` isn't
-                                  set. If it's also ``None`` ``'/'`` is used.
-                                  Note that to actually serve your Flask
-                                  app under a subpath you need to tell
-                                  your WSGI container the ``SCRIPT_NAME``
-                                  WSGI environment variable.
-``MAX_CONTENT_LENGTH``            If set to a value in bytes, Flask will
-                                  reject incoming requests with a
-                                  content length greater than this by
-                                  returning a 413 status code.
-``SEND_FILE_MAX_AGE_DEFAULT``     Default cache control max age to use with
-                                  :meth:`~flask.Flask.send_static_file` (the
-                                  default static file handler) and
-                                  :func:`~flask.send_file`, as
-                                  :class:`datetime.timedelta` or as seconds.
-                                  Override this value on a per-file
-                                  basis using the
-                                  :meth:`~flask.Flask.get_send_file_max_age`
-                                  hook on :class:`~flask.Flask` or
-                                  :class:`~flask.Blueprint`,
-                                  respectively. Defaults to 43200 (12 hours).
-``TRAP_HTTP_EXCEPTIONS``          If this is set to ``True`` Flask will
-                                  not execute the error handlers of HTTP
-                                  exceptions but instead treat the
-                                  exception like any other and bubble it
-                                  through the exception stack.  This is
-                                  helpful for hairy debugging situations
-                                  where you have to find out where an HTTP
-                                  exception is coming from.
-``TRAP_BAD_REQUEST_ERRORS``       Werkzeug's internal data structures that
-                                  deal with request specific data will
-                                  raise special key errors that are also
-                                  bad request exceptions.  Likewise many
-                                  operations can implicitly fail with a
-                                  BadRequest exception for consistency.
-                                  Since it's nice for debugging to know
-                                  why exactly it failed this flag can be
-                                  used to debug those situations.  If this
-                                  config is set to ``True`` you will get
-                                  a regular traceback instead.
-``PREFERRED_URL_SCHEME``          The URL scheme that should be used for
-                                  URL generation if no URL scheme is
-                                  available.  This defaults to ``http``.
-``JSON_AS_ASCII``                 By default Flask serialize object to
-                                  ascii-encoded JSON.  If this is set to
-                                  ``False`` Flask will not encode to ASCII
-                                  and output strings as-is and return
-                                  unicode strings.  ``jsonify`` will
-                                  automatically encode it in ``utf-8``
-                                  then for transport for instance.
-``JSON_SORT_KEYS``                By default Flask will serialize JSON
-                                  objects in a way that the keys are
-                                  ordered.  This is done in order to
-                                  ensure that independent of the hash seed
-                                  of the dictionary the return value will
-                                  be consistent to not trash external HTTP
-                                  caches.  You can override the default
-                                  behavior by changing this variable.
-                                  This is not recommended but might give
-                                  you a performance improvement on the
-                                  cost of cacheability.
-``JSONIFY_PRETTYPRINT_REGULAR``   If this is set to ``True`` or the Flask app
-                                  is running in debug mode, jsonify responses
-                                  will be pretty printed.
-``JSONIFY_MIMETYPE``              MIME type used for jsonify responses.
-``TEMPLATES_AUTO_RELOAD``         Whether to check for modifications of
-                                  the template source and reload it
-                                  automatically. By default the value is
-                                  ``None`` which means that Flask checks
-                                  original file only in debug mode.
-``EXPLAIN_TEMPLATE_LOADING``      If this is enabled then every attempt to
-                                  load a template will write an info
-                                  message to the logger explaining the
-                                  attempts to locate the template.  This
-                                  can be useful to figure out why
-                                  templates cannot be found or wrong
-                                  templates appear to be loaded.
-================================= =========================================
+    Enable debug mode. When using the development server with ``flask run`` or
+    ``app.run``, an interactive debugger will be shown for unhanlded
+    exceptions, and the server will be reloaded when code changes.
 
-.. admonition:: More on ``SERVER_NAME``
+    **Do not enable debug mode in production.**
 
-   The ``SERVER_NAME`` key is used for the subdomain support.  Because
-   Flask cannot guess the subdomain part without the knowledge of the
-   actual server name, this is required if you want to work with
-   subdomains.  This is also used for the session cookie.
+    Default: ``False``
 
-   Please keep in mind that not only Flask has the problem of not knowing
-   what subdomains are, your web browser does as well.  Most modern web
-   browsers will not allow cross-subdomain cookies to be set on a
-   server name without dots in it.  So if your server name is
-   ``'localhost'`` you will not be able to set a cookie for
-   ``'localhost'`` and every subdomain of it.  Please choose a different
-   server name in that case, like ``'myapplication.local'`` and add
-   this name + the subdomains you want to use into your host config
-   or setup a local `bind`_.
+.. py:data:: TESTING
 
-.. _bind: https://www.isc.org/downloads/bind/
+    Enable testing mode. Exceptions are propagated rather than handled by the
+    the app's error handlers. Extensions may also change their behavior to
+    facilitate easier testing. You should enable this in your own tests.
+
+    Default: ``False``
+
+.. py:data:: PROPAGATE_EXCEPTIONS
+
+    Exceptions are re-raised rather than being handled by the app's error
+    handlers. If not set, this is implicitly true if ``TESTING`` or ``DEBUG``
+    is enabled.
+
+    Default: ``None``
+
+.. py:data:: PRESERVE_CONTEXT_ON_EXCEPTION
+
+    Don't pop the request context when an exception occurs. If not set, this
+    is true if ``DEBUG`` is true. This allows debuggers to introspect the
+    request data on errors, and should normally not need to be set directly.
+
+    Default: ``None``
+
+.. py:data:: TRAP_HTTP_EXCEPTIONS
+
+    If there is no handler for an ``HTTPException``-type exception, re-raise it
+    to be handled by the interactive debugger instead of returning it as a
+    simple error response.
+
+    Default: ``False``
+
+.. py:data:: TRAP_BAD_REQUEST_ERRORS``
+
+    Trying to access a key that doesn't exist from request dicts like ``args``
+    and ``form`` will return a 400 Bad Request error page. Enable this to treat
+    the error as an unhandled exception instead so that you get the interactive
+    debugger. This is a more specific version of ``TRAP_HTTP_EXCEPTIONS``. If
+    unset, it is enabled in debug mode.
+
+    Default: ``None``
+
+.. py:data:: SECRET_KEY
+
+    A secret key that will be used for securely signing the session cookie
+    and can be used for any other security related needs by extensions or your
+    application. It should be a long random string of bytes, although unicode
+    is accepted too. For example, copy the output of this to your config::
+
+        python -c 'import os; print(os.urandom(32))'
+
+    **Do not reveal the secret key when posting questions or committing code.**
+
+    Default: ``None``
+
+.. py:data:: SESSION_COOKIE_NAME
+
+    The name of the session cookie. Can be changed in case you already have a
+    cookie with the same name.
+
+    Default: ``'session'``
+
+.. py:data:: SESSION_COOKIE_DOMAIN
+
+    The domain match rule that the session cookie will be valid for. If not
+    set, the cookie will be valid for all subdomains of ``SERVER_NAME``. If
+    ``False``, the cookie's domain will not be set.
+
+    Default: ``None``
+
+.. py:data:: SESSION_COOKIE_PATH
+
+    The path that the session cookie will be valid for. If not set, the cookie
+    will be valid underneath ``APPLICATION_ROOT`` or ``/`` if that is not set.
+
+    Default: ``None``
+
+.. py:data:: SESSION_COOKIE_HTTPONLY
+
+    Browsers will not allow JavaScript access to cookies marked as "HTTP only"
+    for security.
+
+    Default: ``True``
+
+.. py:data:: SESSION_COOKIE_SECURE
+
+    Browsers will only send cookies with requests over HTTPS if the cookie is
+    marked "secure". The application must be served over HTTPS for this to make
+    sense.
+
+    Default: ``False``
+
+.. py:data:: PERMANENT_SESSION_LIFETIME
+
+    If ``session.permanent`` is true, the cookie's max age will be set to this
+    number of seconds. Can either be a :class:`datetime.timedelta` or an
+    ``int``.
+
+    Default: ``timedelta(days=31)`` (``2678400`` seconds)
+
+.. py:data:: SESSION_REFRESH_EACH_REQUEST
+
+    Control whether the cookie is sent with every response when
+    ``session.permanent`` is true. Sending the cookie every time (the default)
+    can more reliably keep the session from expiring, but uses more bandwidth.
+    Non-permanent sessions are not affected.
+
+    Default: ``True``
+
+.. py:data:: USE_X_SENDFILE
+
+    When serving files, set the ``X-Sendfile`` header instead of serving the
+    data with Flask. Some web servers, such as Apache, recognize this and serve
+    the data more efficiently. This only makes sense when using such a server.
+
+    Default: ``False``
+
+.. py:data:: SEND_FILE_MAX_AGE_DEFAULT
+
+    When serving files, set the cache control max age to this number of
+    seconds.  Can either be a :class:`datetime.timedelta` or an ``int``.
+    Override this value on a per-file basis using
+    :meth:`~flask.Flask.get_send_file_max_age` on the application or blueprint.
+
+    Default: ``timedelta(hours=12)`` (``43200`` seconds)
+
+.. py:data:: LOGGER_NAME
+
+    The name of the logger that the Flask application sets up. If not set,
+    it will take the import name passed to ``Flask.__init__``.
+
+    Default: ``None``
+
+.. py:data:: LOGGER_HANDLER_POLICY
+
+    When to activate the application's logger handler. ``'always'`` always
+    enables it, ``'debug'`` only activates it in debug mode, ``'production'``
+    only activates it when not in debug mode, and ``'never'`` never enables it.
+
+    Default: ``'always'``
+
+.. py:data:: SERVER_NAME
+
+    Inform the application what host and port it is bound to. Required for
+    subdomain route matching support.
+
+    If set, will be used for the session cookie domain if
+    ``SESSION_COOKIE_DOMAIN`` is not set. Modern web browsers will not allow
+    setting cookies for domains without a dot. To use a domain locally,
+    add any names that should route to the app to your ``hosts`` file. ::
+
+        127.0.0.1 localhost.dev
+
+    If set, ``url_for`` can generate external URLs with only an application
+    context instead of a request context.
+
+    Default: ``None``
+
+.. py:data:: APPLICATION_ROOT
+
+    Inform the application what path it is mounted under by the application /
+    web server.
+
+    Will be used for the session cookie path if ``SESSION_COOKIE_PATH`` is not
+    set.
+
+    Default: ``'/'``
+
+.. py:data:: PREFERRED_URL_SCHEME
+
+    Use this scheme for generating external URLs when not in a request context.
+
+    Default: ``'http'``
+
+.. py:data:: MAX_CONTENT_LENGTH
+
+    Don't read more than this many bytes from the incoming request data. If not
+    set and the request does not specify a ``CONTENT_LENGTH``, no data will be
+    read for security.
+
+    Default: ``None``
+
+.. py:data:: JSON_AS_ASCII
+
+    Serialize objects to ASCII-encoded JSON. If this is disabled, the JSON
+    will be returned as a Unicode string, or encoded as ``UTF-8`` by
+    ``jsonify``. This has security implications when rendering the JSON in
+    to JavaScript in templates, and should typically remain enabled.
+
+    Default: ``True``
+
+.. py:data:: JSON_SORT_KEYS
+
+    Sort the keys of JSON objects alphabetically. This is useful for caching
+    because it ensures the data is serialized the same way no matter what
+    Python's hash seed is. While not recommended, you can disable this for a
+    possible performance improvement at the cost of caching.
+
+    Default: ``True``
+
+.. py:data:: JSONIFY_PRETTYPRINT_REGULAR
+
+    ``jsonify`` responses will be output with newlines, spaces, and indentation
+    for easier reading by humans. Always enabled in debug mode.
+
+    Default: ``False``
+
+.. py:data:: JSONIFY_MIMETYPE
+
+    The mimetype of ``jsonify`` responses.
+
+    Default: ``'application/json'``
+
+.. py:data:: TEMPLATES_AUTO_RELOAD
+
+    Reload templates when they are changed. If not set, it will be enabled in
+    debug mode.
+
+    Default: ``None``
+
+.. py:data:: EXPLAIN_TEMPLATE_LOADING
+
+    Log debugging information tracing how a template file was loaded. This can
+    be useful to figure out why a template was not loaded or the wrong file
+    appears to be loaded.
+
+    Default: ``False``
 
 .. versionadded:: 0.4
    ``LOGGER_NAME``
@@ -477,3 +546,4 @@ Example usage for both::
     # or via open_instance_resource:
     with app.open_instance_resource('application.cfg') as f:
         config = f.read()
+
