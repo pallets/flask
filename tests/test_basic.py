@@ -442,6 +442,9 @@ def test_session_special_types(app, client):
         flask.session['dt'] = now
         flask.session['b'] = b'\xff'
         flask.session['t'] = (1, 2, 3)
+        flask.session['spacefirst'] = {' t': 'not-a-tuple'}
+        flask.session['withunderscores'] = {' t__': 'not-a-tuple'}
+        flask.session['notadict'] = {' di': 'not-a-dict'}
         return response
 
     @app.route('/')
@@ -457,6 +460,9 @@ def test_session_special_types(app, client):
     assert rv['b'] == b'\xff'
     assert type(rv['b']) == bytes
     assert rv['t'] == (1, 2, 3)
+    assert rv['spacefirst'] == {' t': 'not-a-tuple'}
+    assert rv['withunderscores'] == {' t__': 'not-a-tuple'}
+    assert rv['notadict'] == {' di': 'not-a-dict'}
 
 
 def test_session_cookie_setting(app):
