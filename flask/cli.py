@@ -545,8 +545,9 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
+@click.option('--ipython/--no-ipython', default=True)
 @with_appcontext
-def shell_command():
+def shell_command(ipython):
     """Runs an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
     namespace of this shell according to it's configuration.
@@ -565,6 +566,14 @@ def shell_command():
         app.instance_path,
     )
     ctx = {}
+
+    if ipython:
+        try:
+            from IPython import embed
+            embed(banner1=banner, user_ns=app.make_shell_context())
+            return
+        except ImportError:
+            pass
 
     # Support the regular Python interpreter startup script if someone
     # is using it.
