@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-    flask.json
-    ~~~~~~~~~~
-
-    Implementation helpers for the JSON support in Flask.
-
-    :copyright: (c) 2015 by Armin Ronacher.
-    :license: BSD, see LICENSE for more details.
-"""
 import io
 import uuid
 from datetime import date
-from .globals import current_app, request
-from ._compat import text_type, PY2
+from flask.globals import current_app, request
+from flask._compat import text_type, PY2
 
 from werkzeug.http import http_date
 from jinja2 import Markup
