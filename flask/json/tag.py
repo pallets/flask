@@ -10,179 +10,244 @@ from flask.json import dumps, loads
 
 
 class JSONTag(object):
-    __slots__ = ()
+    """Base class for defining type tags for :class:`TaggedJSONSerializer`."""
+
+    __slots__ = ('serializer',)
     key = None
+    """The tag to mark the serialized object with. If ``None``, this tag is
+    only used as an intermediate step during tagging."""
 
-    def check(self, serializer, value):
+    def __init__(self, serializer):
+        """Create a tagger for the given serializer."""
+
+        self.serializer = serializer
+
+    def check(self, value):
+        """Check if the given value should be tagged by this tag."""
+
         raise NotImplementedError
 
-    def to_json(self, serializer, value):
+    def to_json(self, value):
+        """Convert the Python object to an object that is a valid JSON type.
+        The tag will be added later."""
+
         raise NotImplementedError
 
-    def to_python(self, serializer, value):
+    def to_python(self, value):
+        """Convert the JSON representation back to the correct type. The tag
+        will already be removed."""
+
         raise NotImplementedError
 
-    def tag(self, serializer, value):
-        return {self.key: self.to_json(serializer, value)}
+    def tag(self, value):
+        """Convert the value to a valid JSON type and add the tag structure
+        around it."""
+
+        return {self.key: self.to_json(value)}
 
 
 class TagDict(JSONTag):
-    __slots__ = ()
+    """Tag for 1-item dicts whose only key matches a registered tag.
+
+    Internally, the dict key is suffixed with `__`, and the suffix is removed
+    when deserializing.
+    """
+
+    __slots__ = ('serializer',)
     key = ' di'
 
-    def check(self, serializer, value):
-        return isinstance(value, dict)
+    def check(self, value):
+        return (
+            isinstance(value, dict)
+            and len(value) == 1
+            and next(iter(value)) in self.serializer.tags
+        )
 
-    def to_json(self, serializer, value, key=None):
-        if key is not None:
-            return {key + '__': serializer._tag(value[key])}
+    def to_json(self, value):
+        key = next(iter(value))
+        return {key + '__': self.serializer.tag(value[key])}
 
-        return dict((k, serializer._tag(v)) for k, v in iteritems(value))
-
-    def to_python(self, serializer, value):
+    def to_python(self, value):
         key = next(iter(value))
         return {key[:-2]: value[key]}
 
-    def tag(self, serializer, value):
-        if len(value) == 1:
-            key = next(iter(value))
 
-            if key in serializer._tags:
-                return {self.key: self.to_json(serializer, value, key=key)}
+class PassDict(JSONTag):
+    __slots__ = ('serializer',)
 
-        return self.to_json(serializer, value)
+    def check(self, value):
+        return isinstance(value, dict)
+
+    def to_json(self, value):
+        # JSON objects may only have string keys, so don't bother tagging the
+        # key here.
+        return dict((k, self.serializer.tag(v)) for k, v in iteritems(value))
+
+    tag = to_json
 
 
 class TagTuple(JSONTag):
-    __slots__ = ()
+    __slots__ = ('serializer',)
     key = ' t'
 
-    def check(self, serializer, value):
+    def check(self, value):
         return isinstance(value, tuple)
 
-    def to_json(self, serializer, value):
-        return [serializer._tag(item) for item in value]
+    def to_json(self, value):
+        return [self.serializer.tag(item) for item in value]
 
-    def to_python(self, serializer, value):
+    def to_python(self, value):
         return tuple(value)
 
 
 class PassList(JSONTag):
-    __slots__ = ()
+    __slots__ = ('serializer',)
 
-    def check(self, serializer, value):
+    def check(self, value):
         return isinstance(value, list)
 
-    def to_json(self, serializer, value):
-        return [serializer._tag(item) for item in value]
+    def to_json(self, value):
+        return [self.serializer.tag(item) for item in value]
 
     tag = to_json
 
 
 class TagBytes(JSONTag):
-    __slots__ = ()
+    __slots__ = ('serializer',)
     key = ' b'
 
-    def check(self, serializer, value):
+    def check(self, value):
         return isinstance(value, bytes)
 
-    def to_json(self, serializer, value):
+    def to_json(self, value):
         return b64encode(value).decode('ascii')
 
-    def to_python(self, serializer, value):
+    def to_python(self, value):
         return b64decode(value)
 
 
 class TagMarkup(JSONTag):
-    __slots__ = ()
+    """Serialize anything matching the :class:`~markupsafe.Markup` API by
+    having a ``__html__`` method to the result of that method. Always
+    deserializes to an instance of :class:`~markupsafe.Markup`."""
+
+    __slots__ = ('serializer',)
     key = ' m'
 
-    def check(self, serializer, value):
+    def check(self, value):
         return callable(getattr(value, '__html__', None))
 
-    def to_json(self, serializer, value):
+    def to_json(self, value):
         return text_type(value.__html__())
 
-    def to_python(self, serializer, value):
+    def to_python(self, value):
         return Markup(value)
 
 
 class TagUUID(JSONTag):
-    __slots__ = ()
+    __slots__ = ('serializer',)
     key = ' u'
 
-    def check(self, serializer, value):
+    def check(self, value):
         return isinstance(value, UUID)
 
-    def to_json(self, serializer, value):
+    def to_json(self, value):
         return value.hex
 
-    def to_python(self, serializer, value):
+    def to_python(self, value):
         return UUID(value)
 
 
 class TagDateTime(JSONTag):
-    __slots__ = ()
+    __slots__ = ('serializer',)
     key = ' d'
 
-    def check(self, serializer, value):
+    def check(self, value):
         return isinstance(value, datetime)
 
-    def to_json(self, serializer, value):
+    def to_json(self, value):
         return http_date(value)
 
-    def to_python(self, serializer, value):
+    def to_python(self, value):
         return parse_date(value)
 
 
 class TaggedJSONSerializer(object):
-    __slots__ = ('_tags', '_order')
-    _default_tags = [
-        TagDict(), TagTuple(), PassList(), TagBytes(), TagMarkup(), TagUUID(),
-        TagDateTime(),
+    """Serializer that uses a tag system to compactly represent objects that
+    are not JSON types. Passed as the intermediate serializer to
+    :class:`itsdangerous.Serializer`."""
+
+    __slots__ = ('tags', 'order')
+    default_tags = [
+        TagDict, PassDict, TagTuple, PassList, TagBytes, TagMarkup, TagUUID,
+        TagDateTime,
     ]
+    """Tag classes to bind when creating the serializer. Other tags can be
+    added later using :meth:`~register`."""
 
     def __init__(self):
-        self._tags = {}
-        self._order = []
+        self.tags = {}
+        self.order = []
 
-        for tag in self._default_tags:
-            self.register(tag)
+        for cls in self.default_tags:
+            self.register(cls)
 
-    def register(self, tag, force=False, index=-1):
+    def register(self, tag_class, force=False, index=-1):
+        """Register a new tag with this serializer.
+
+        :param tag_class: tag class to register. Will be instantiated with this
+            serializer instance.
+        :param force: overwrite an existing tag. If false (default), a
+            :exc:`KeyError` is raised.
+        :param index: index to insert the new tag in the tag order. Useful when
+            the new tag is a special case of an existing tag. If -1 (default),
+            the tag is appended to the end of the order.
+
+        :raise KeyError: if the tag key is already registered and ``force`` is
+            not true.
+        """
+
+        tag = tag_class(self)
         key = tag.key
 
         if key is not None:
-            if not force and key in self._tags:
+            if not force and key in self.tags:
                 raise KeyError("Tag '{0}' is already registered.".format(key))
 
-            self._tags[key] = tag
+            self.tags[key] = tag
 
         if index == -1:
-            self._order.append(tag)
+            self.order.append(tag)
         else:
-            self._order.insert(index, tag)
+            self.order.insert(index, tag)
 
-    def _tag(self, value):
-        for tag in self._order:
-            if tag.check(self, value):
-                return tag.tag(self, value)
+    def tag(self, value):
+        """Convert a value to a tagged representation if necessary."""
+
+        for tag in self.order:
+            if tag.check(value):
+                return tag.tag(value)
 
         return value
 
-    def _untag(self, value):
+    def untag(self, value):
+        """Convert a tagged representation back to the original type."""
+
         if len(value) != 1:
             return value
 
         key = next(iter(value))
 
-        if key not in self._tags:
+        if key not in self.tags:
             return value
 
-        return self._tags[key].to_python(self, value[key])
+        return self.tags[key].to_python(value[key])
 
     def dumps(self, value):
-        return dumps(self._tag(value), separators=(',', ':'))
+        """Tag the value and dump it to a compact JSON string."""
+
+        return dumps(self.tag(value), separators=(',', ':'))
 
     def loads(self, value):
-        return loads(value, object_hook=self._untag)
+        """Load data from a JSON string and deserialized any tagged objects."""
+        return loads(value, object_hook=self.untag)
