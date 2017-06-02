@@ -13,36 +13,32 @@ class JSONTag(object):
     """Base class for defining type tags for :class:`TaggedJSONSerializer`."""
 
     __slots__ = ('serializer',)
+
+    #: The tag to mark the serialized object with. If ``None``, this tag is
+    #: only used as an intermediate step during tagging.
     key = None
-    """The tag to mark the serialized object with. If ``None``, this tag is
-    only used as an intermediate step during tagging."""
 
     def __init__(self, serializer):
         """Create a tagger for the given serializer."""
-
         self.serializer = serializer
 
     def check(self, value):
         """Check if the given value should be tagged by this tag."""
-
         raise NotImplementedError
 
     def to_json(self, value):
         """Convert the Python object to an object that is a valid JSON type.
         The tag will be added later."""
-
         raise NotImplementedError
 
     def to_python(self, value):
         """Convert the JSON representation back to the correct type. The tag
         will already be removed."""
-
         raise NotImplementedError
 
     def tag(self, value):
         """Convert the value to a valid JSON type and add the tag structure
         around it."""
-
         return {self.key: self.to_json(value)}
 
 
@@ -127,9 +123,9 @@ class TagBytes(JSONTag):
 
 
 class TagMarkup(JSONTag):
-    """Serialize anything matching the :class:`~markupsafe.Markup` API by
+    """Serialize anything matching the :class:`~flask.Markup` API by
     having a ``__html__`` method to the result of that method. Always
-    deserializes to an instance of :class:`~markupsafe.Markup`."""
+    deserializes to an instance of :class:`~flask.Markup`."""
 
     __slots__ = ('serializer',)
     key = ' m'
@@ -175,15 +171,26 @@ class TagDateTime(JSONTag):
 class TaggedJSONSerializer(object):
     """Serializer that uses a tag system to compactly represent objects that
     are not JSON types. Passed as the intermediate serializer to
-    :class:`itsdangerous.Serializer`."""
+    :class:`itsdangerous.Serializer`.
+
+    The following extra types are supported:
+
+    * :class:`dict`
+    * :class:`tuple`
+    * :class:`bytes`
+    * :class:`~flask.Markup`
+    * :class:`~uuid.UUID`
+    * :class:`~datetime.datetime`
+    """
 
     __slots__ = ('tags', 'order')
+
+    #: Tag classes to bind when creating the serializer. Other tags can be
+    #: added later using :meth:`~register`.
     default_tags = [
         TagDict, PassDict, TagTuple, PassList, TagBytes, TagMarkup, TagUUID,
         TagDateTime,
     ]
-    """Tag classes to bind when creating the serializer. Other tags can be
-    added later using :meth:`~register`."""
 
     def __init__(self):
         self.tags = {}
@@ -206,7 +213,6 @@ class TaggedJSONSerializer(object):
         :raise KeyError: if the tag key is already registered and ``force`` is
             not true.
         """
-
         tag = tag_class(self)
         key = tag.key
 
@@ -223,7 +229,6 @@ class TaggedJSONSerializer(object):
 
     def tag(self, value):
         """Convert a value to a tagged representation if necessary."""
-
         for tag in self.order:
             if tag.check(value):
                 return tag.tag(value)
@@ -232,7 +237,6 @@ class TaggedJSONSerializer(object):
 
     def untag(self, value):
         """Convert a tagged representation back to the original type."""
-
         if len(value) != 1:
             return value
 
@@ -245,7 +249,6 @@ class TaggedJSONSerializer(object):
 
     def dumps(self, value):
         """Tag the value and dump it to a compact JSON string."""
-
         return dumps(self.tag(value), separators=(',', ':'))
 
     def loads(self, value):
