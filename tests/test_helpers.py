@@ -861,6 +861,20 @@ class TestStreaming(object):
         assert rv.data == b'Hello World!'
         assert called == [42]
 
+    def test_stream_keeps_session(self, app, client):
+        @app.route('/')
+        def index():
+            flask.session['test'] = 'flask'
+
+            @flask.stream_with_context
+            def gen():
+                yield flask.session['test']
+
+            return flask.Response(gen())
+
+        rv = client.get('/')
+        assert rv.data == b'flask'
+
 
 class TestSafeJoin(object):
     def test_safe_join(self):
