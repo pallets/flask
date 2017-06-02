@@ -65,6 +65,8 @@ Major release, unreleased
 - ``TRAP_BAD_REQUEST_ERRORS`` is enabled by default in debug mode.
   ``BadRequestKeyError`` has a message with the bad key in debug mode instead
   of the generic bad request message. (`#2348`_)
+- Allow registering new tags with ``TaggedJSONSerializer`` to support
+  storing other types in the session cookie. (`#2352`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -84,6 +86,7 @@ Major release, unreleased
 .. _#2319: https://github.com/pallets/flask/pull/2319
 .. _#2326: https://github.com/pallets/flask/pull/2326
 .. _#2348: https://github.com/pallets/flask/pull/2348
+.. _#2352: https://github.com/pallets/flask/pull/2352
 
 Version 0.12.2
 --------------

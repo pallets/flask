@@ -8,20 +8,15 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-
 import hashlib
-import uuid
 import warnings
-from base64 import b64decode, b64encode
 from datetime import datetime
 
 from itsdangerous import BadSignature, URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
-from werkzeug.http import http_date, parse_date
 
-from . import Markup, json
-from ._compat import iteritems, text_type
-from .helpers import is_ip, total_seconds
+from flask.helpers import is_ip, total_seconds
+from flask.json.tag import TaggedJSONSerializer
 
 
 class SessionMixin(object):
@@ -57,66 +52,6 @@ class SessionMixin(object):
     #: session cookie as keys when caching pages, preventing multiple users
     #: from being served the same cache.
     accessed = True
-
-def _tag(value):
-    if isinstance(value, tuple):
-        return {' t': [_tag(x) for x in value]}
-    elif isinstance(value, uuid.UUID):
-        return {' u': value.hex}
-    elif isinstance(value, bytes):
-        return {' b': b64encode(value).decode('ascii')}
-    elif callable(getattr(value, '__html__', None)):
-        return {' m': text_type(value.__html__())}
-    elif isinstance(value, list):
-        return [_tag(x) for x in value]
-    elif isinstance(value, datetime):
-        return {' d': http_date(value)}
-    elif isinstance(value, dict):
-        return dict((k, _tag(v)) for k, v in iteritems(value))
-    elif isinstance(value, str):
-        try:
-            return text_type(value)
-        except UnicodeError:
-            from flask.debughelpers import UnexpectedUnicodeError
-            raise UnexpectedUnicodeError(u'A byte string with '
-                u'non-ASCII data was passed to the session system '
-                u'which can only store unicode strings.  Consider '
-                u'base64 encoding your string (String was %r)' % value)
-    return value
-
-
-class TaggedJSONSerializer(object):
-    """A customized JSON serializer that supports a few extra types that
-    we take for granted when serializing (tuples, markup objects, datetime).
-    """
-
-    def dumps(self, value):
-        return json.dumps(_tag(value), separators=(',', ':'))
-
-    LOADS_MAP = {
-        ' t': tuple,
-        ' u': uuid.UUID,
-        ' b': b64decode,
-        ' m': Markup,
-        ' d': parse_date,
-    }
-
-    def loads(self, value):
-        def object_hook(obj):
-            if len(obj) != 1:
-                return obj
-            the_key, the_value = next(iteritems(obj))
-            # Check the key for a corresponding function
-            return_function = self.LOADS_MAP.get(the_key)
-            if return_function:
-                # Pass the value to the function
-                return return_function(the_value)
-            # Didn't find a function for this object
-            return obj
-        return json.loads(value, object_hook=object_hook)
-
-
-session_json_serializer = TaggedJSONSerializer()
 
 
 class SecureCookieSession(CallbackDict, SessionMixin):
@@ -225,10 +160,10 @@ class SessionInterface(object):
 
     def get_cookie_domain(self, app):
         """Returns the domain that should be set for the session cookie.
-        
+
         Uses ``SESSION_COOKIE_DOMAIN`` if it is configured, otherwise
         falls back to detecting the domain based on ``SERVER_NAME``.
-        
+
         Once detected (or if not set at all), ``SESSION_COOKIE_DOMAIN`` is
         updated to avoid re-running the logic.
         """
@@ -318,7 +253,7 @@ class SessionInterface(object):
         has been modified, the cookie is set. If the session is permanent and
         the ``SESSION_REFRESH_EACH_REQUEST`` config is true, the cookie is
         always set.
-        
+
         This check is usually skipped if the session was deleted.
 
         .. versionadded:: 0.11
@@ -343,6 +278,9 @@ class SessionInterface(object):
         that.
         """
         raise NotImplementedError()
+
+
+session_json_serializer = TaggedJSONSerializer()
 
 
 class SecureCookieSessionInterface(SessionInterface):

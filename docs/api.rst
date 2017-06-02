@@ -171,18 +171,6 @@ implementation that Flask is using.
 .. autoclass:: SessionMixin
    :members:
 
-.. autodata:: session_json_serializer
-
-   This object provides dumping and loading methods similar to simplejson
-   but it also tags certain builtin Python objects that commonly appear in
-   sessions.  Currently the following extended values are supported in
-   the JSON it dumps:
-
-   -    :class:`~markupsafe.Markup` objects
-   -    :class:`~uuid.UUID` objects
-   -    :class:`~datetime.datetime` objects
-   -   :class:`tuple`\s
-
 .. admonition:: Notice
 
    The ``PERMANENT_SESSION_LIFETIME`` config key can also be an integer
@@ -353,6 +341,8 @@ you are using Flask 0.10 which implies that:
 
 .. autoclass:: JSONDecoder
    :members:
+
+.. automodule:: flask.json.tag
 
 Template Rendering
 ------------------
