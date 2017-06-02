@@ -1,3 +1,44 @@
+"""
+Tagged JSON
+~~~~~~~~~~~
+
+A compact representation for lossless serialization of non-standard JSON types.
+:class:`~flask.sessions.SecureCookieSessionInterface` uses this to serialize
+the session data, but it may be useful in other places. It can be extended to
+support other types.
+
+.. autoclass:: TaggedJSONSerializer
+    :members:
+
+.. autoclass:: JSONTag
+    :members:
+
+Let's seen an example that adds support for :class:`~collections.OrderedDict`.
+Dicts don't have an order in Python or JSON, so to handle this we will dump
+the items as a list of ``[key, value]`` pairs. Subclass :class:`JSONTag` and
+give it the new key ``' od'`` to identify the type. The session serializer
+processes dicts first, so insert the new tag at the front of the order since
+``OrderedDict`` must be processed before ``dict``. ::
+
+    from flask.json.tag import JSONTag
+
+    class TagOrderedDict(JSONTag):
+        __slots__ = ('serializer',)
+        key = ' od'
+
+        def check(self, value):
+            return isinstance(value, OrderedDict)
+
+        def to_json(self, value):
+            return [[k, self.serializer.tag(v)] for k, v in iteritems(value)]
+
+        def to_python(self, value):
+            return OrderedDict(value)
+
+    app.session_interface.serializer.register(TagOrderedDict, 0)
+
+"""
+
 from base64 import b64decode, b64encode
 from datetime import datetime
 from uuid import UUID
@@ -49,7 +90,7 @@ class TagDict(JSONTag):
     when deserializing.
     """
 
-    __slots__ = ('serializer',)
+    __slots__ = ()
     key = ' di'
 
     def check(self, value):
@@ -69,7 +110,7 @@ class TagDict(JSONTag):
 
 
 class PassDict(JSONTag):
-    __slots__ = ('serializer',)
+    __slots__ = ()
 
     def check(self, value):
         return isinstance(value, dict)
@@ -83,7 +124,7 @@ class PassDict(JSONTag):
 
 
 class TagTuple(JSONTag):
-    __slots__ = ('serializer',)
+    __slots__ = ()
     key = ' t'
 
     def check(self, value):
@@ -97,7 +138,7 @@ class TagTuple(JSONTag):
 
 
 class PassList(JSONTag):
-    __slots__ = ('serializer',)
+    __slots__ = ()
 
     def check(self, value):
         return isinstance(value, list)
@@ -109,7 +150,7 @@ class PassList(JSONTag):
 
 
 class TagBytes(JSONTag):
-    __slots__ = ('serializer',)
+    __slots__ = ()
     key = ' b'
 
     def check(self, value):
@@ -127,7 +168,7 @@ class TagMarkup(JSONTag):
     having a ``__html__`` method to the result of that method. Always
     deserializes to an instance of :class:`~flask.Markup`."""
 
-    __slots__ = ('serializer',)
+    __slots__ = ()
     key = ' m'
 
     def check(self, value):
@@ -141,7 +182,7 @@ class TagMarkup(JSONTag):
 
 
 class TagUUID(JSONTag):
-    __slots__ = ('serializer',)
+    __slots__ = ()
     key = ' u'
 
     def check(self, value):
@@ -155,7 +196,7 @@ class TagUUID(JSONTag):
 
 
 class TagDateTime(JSONTag):
-    __slots__ = ('serializer',)
+    __slots__ = ()
     key = ' d'
 
     def check(self, value):
