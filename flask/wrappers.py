@@ -97,8 +97,9 @@ class Request(RequestBase):
 
     @property
     def json(self):
-        """If the mimetype is :mimetype:`application/json` this will contain the
-        parsed JSON data.  Otherwise this will be ``None``.
+        """If the request has a JSON mimetype like :mimetype:`application/json`
+        (see :meth:`is_json`), this will contain the parsed JSON data.
+        Otherwise this will be ``None``.
 
         The :meth:`get_json` method should be used instead.
         """
@@ -109,7 +110,7 @@ class Request(RequestBase):
 
     @property
     def is_json(self):
-        """Indicates if this request is JSON or not.  By default a request
+        """Indicates if this request is JSON or not. By default a request
         is considered to include JSON data if the mimetype is
         :mimetype:`application/json` or :mimetype:`application/*+json`.
 
@@ -123,18 +124,18 @@ class Request(RequestBase):
         return False
 
     def get_json(self, force=False, silent=False, cache=True):
-        """Parses the incoming JSON request data and returns it.  By default
-        this function will return ``None`` if the mimetype is not
-        :mimetype:`application/json` but this can be overridden by the
-        ``force`` parameter. If parsing fails the
-        :meth:`on_json_loading_failed` method on the request object will be
+        """Parses the incoming JSON request data and returns it. By default
+        this function will return ``None`` if the request does not use a JSON
+        mimetype like :mimetype:`application/json`. See :meth:`is_json`. This
+        can be overridden by the ``force`` parameter. If parsing fails,
+        the :meth:`on_json_loading_failed` method on the request object will be
         invoked.
 
         :param force: if set to ``True`` the mimetype is ignored.
         :param silent: if set to ``True`` this method will fail silently
-                       and return ``None``.
+            and return ``None``.
         :param cache: if set to ``True`` the parsed JSON data is remembered
-                      on the request.
+            on the request.
         """
         rv = getattr(self, '_cached_json', _missing)
         # We return cached JSON only when the cache is enabled.
