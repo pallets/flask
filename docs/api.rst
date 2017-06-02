@@ -342,20 +342,7 @@ you are using Flask 0.10 which implies that:
 .. autoclass:: JSONDecoder
    :members:
 
-Tagged JSON
-~~~~~~~~~~~
-
-A compact representation for lossless serialization of non-standard JSON types.
-:class:`~flask.sessions.SecureCookieSessionInterface` uses this to serialize
-the session data, but it may be useful in other places.
-
-.. py:currentmodule:: flask.json.tag
-
-.. autoclass:: TaggedJSONSerializer
-    :members:
-
-.. autoclass:: JSONTag
-    :members:
+.. automodule:: flask.json.tag
 
 Template Rendering
 ------------------
