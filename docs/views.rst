@@ -235,3 +235,4 @@ registration code::
                          methods=['GET', 'PUT', 'DELETE'])
 
     register_api(UserAPI, 'user_api', '/users/', pk='user_id')
+
