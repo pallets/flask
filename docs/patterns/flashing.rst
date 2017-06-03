@@ -48,7 +48,7 @@ And here is the :file:`layout.html` template which does the magic:
    <title>My Application</title>
    {% with messages = get_flashed_messages() %}
      {% if messages %}
-       <ul class=flashes>
+       <ul class="flashes">
        {% for message in messages %}
          <li>{{ message }}</li>
        {% endfor %}
@@ -78,15 +78,15 @@ And here is the :file:`login.html` template which also inherits from
      {% if error %}
        <p class=error><strong>Error:</strong> {{ error }}
      {% endif %}
-     <form method=post>
+     <form method="post">
        <dl>
          <dt>Username:
-         <dd><input type=text name=username value="{{
+         <dd><input type="text" name="username" value="{{
              request.form.username }}">
          <dt>Password:
-         <dd><input type=password name=password>
+         <dd><input type="password" name="password">
        </dl>
-       <p><input type=submit value=Login>
+       <p><input type="submit" value="Login">
      </form>
    {% endblock %}
 
@@ -113,7 +113,7 @@ categories.  The loop looks slightly different in that situation then:
 
    {% with messages = get_flashed_messages(with_categories=true) %}
      {% if messages %}
-       <ul class=flashes>
+       <ul class="flashes">
        {% for category, message in messages %}
          <li class="{{ category }}">{{ message }}</li>
        {% endfor %}

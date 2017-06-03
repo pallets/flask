@@ -85,7 +85,7 @@ Here's an example :file:`_formhelpers.html` template with such a macro:
       <dt>{{ field.label }}
       <dd>{{ field(**kwargs)|safe }}
       {% if field.errors %}
-        <ul class=errors>
+        <ul class="errors">
         {% for error in field.errors %}
           <li>{{ error }}</li>
         {% endfor %}
@@ -108,7 +108,7 @@ takes advantage of the :file:`_formhelpers.html` template:
 .. sourcecode:: html+jinja
 
     {% from "_formhelpers.html" import render_field %}
-    <form method=post>
+    <form method="post">
       <dl>
         {{ render_field(form.username) }}
         {{ render_field(form.email) }}
@@ -116,7 +116,7 @@ takes advantage of the :file:`_formhelpers.html` template:
         {{ render_field(form.confirm) }}
         {{ render_field(form.accept_tos) }}
       </dl>
-      <p><input type=submit value=Register>
+      <p><input type="submit" value="Register">
     </form>
 
 For more information about WTForms, head over to the `WTForms

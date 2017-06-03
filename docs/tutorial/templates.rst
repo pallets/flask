@@ -38,10 +38,10 @@ the session:
 
     <!doctype html>
     <title>Flaskr</title>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-    <div class=page>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <div class="page">
       <h1>Flaskr</h1>
-      <div class=metanav>
+      <div class="metanav">
       {% if not session.logged_in %}
         <a href="{{ url_for('login') }}">log in</a>
       {% else %}
@@ -49,7 +49,7 @@ the session:
       {% endif %}
       </div>
       {% for message in get_flashed_messages() %}
-        <div class=flash>{{ message }}</div>
+        <div class="flash">{{ message }}</div>
       {% endfor %}
       {% block body %}{% endblock %}
     </div>
@@ -68,7 +68,7 @@ HTTP method:
     {% extends "layout.html" %}
     {% block body %}
       {% if session.logged_in %}
-        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+        <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
           <dl>
             <dt>Title:
             <dd><input type=text size=30 name=title>
@@ -78,7 +78,7 @@ HTTP method:
           </dl>
         </form>
       {% endif %}
-      <ul class=entries>
+      <ul class="entries">
       {% for entry in entries %}
         <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>
       {% else %}
@@ -98,14 +98,14 @@ the user to login:
     {% extends "layout.html" %}
     {% block body %}
       <h2>Login</h2>
-      {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+      {% if error %}<p class="error"><strong>Error:</strong> {{ error }}{% endif %}
       <form action="{{ url_for('login') }}" method=post>
         <dl>
           <dt>Username:
-          <dd><input type=text name=username>
+          <dd><input type="text" name="username">
           <dt>Password:
-          <dd><input type=password name=password>
-          <dd><input type=submit value=Login>
+          <dd><input type="password" name="password">
+          <dd><input type="submit" value="Login">
         </dl>
       </form>
     {% endblock %}
