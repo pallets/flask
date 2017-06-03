@@ -67,6 +67,9 @@ Major release, unreleased
   of the generic bad request message. (`#2348`_)
 - Allow registering new tags with ``TaggedJSONSerializer`` to support
   storing other types in the session cookie. (`#2352`_)
+- Only open the session if the request has not been pushed onto the context
+  stack yet. This allows ``stream_with_context`` generators to access the same
+  session that the containing view uses. (`#2354`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -87,6 +90,7 @@ Major release, unreleased
 .. _#2326: https://github.com/pallets/flask/pull/2326
 .. _#2348: https://github.com/pallets/flask/pull/2348
 .. _#2352: https://github.com/pallets/flask/pull/2352
+.. _#2354: https://github.com/pallets/flask/pull/2354
 
 Version 0.12.2
 --------------
