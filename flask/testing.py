@@ -14,6 +14,7 @@ import werkzeug
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
+from flask.json import dumps as json_dumps
 
 try:
     from werkzeug.urls import url_parse
@@ -51,6 +52,18 @@ def make_test_environ_builder(
         if url.query:
             sep = b'?' if isinstance(url.query, bytes) else '?'
             path += sep + url.query
+
+    if 'json' in kwargs:
+        assert 'data' not in kwargs, (
+            "Client cannot provide both 'json' and 'data'."
+        )
+
+        # push a context so flask.json can use app's json attributes
+        with app.app_context():
+            kwargs['data'] = json_dumps(kwargs.pop('json'))
+
+        if 'content_type' not in kwargs:
+            kwargs['content_type'] = 'application/json'
 
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
