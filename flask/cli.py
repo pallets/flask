@@ -494,19 +494,19 @@ Example usage:
 
 
 def main(as_module=False):
-    this_module = __package__ + '.cli'
     args = sys.argv[1:]
 
     if as_module:
-        if sys.version_info >= (2, 7):
-            name = 'python -m ' + this_module.rsplit('.', 1)[0]
-        else:
-            name = 'python -m ' + this_module
+        this_module = 'flask'
 
-        # This module is always executed as "python -m flask.run" and as such
-        # we need to ensure that we restore the actual command line so that
-        # the reloader can properly operate.
-        sys.argv = ['-m', this_module] + sys.argv[1:]
+        if sys.version_info < (2, 7):
+            this_module += '.cli'
+
+        name = 'python -m ' + this_module
+
+        # Python rewrites "python -m flask" to the path to the file in argv.
+        # Restore the original command so that the reloader works.
+        sys.argv = ['-m', this_module] + args
     else:
         name = None
 
