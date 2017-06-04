@@ -22,7 +22,7 @@ from threading import Lock, Thread
 import click
 
 from . import __version__
-from ._compat import iteritems, reraise, PY2
+from ._compat import iteritems, reraise
 from .globals import current_app
 from .helpers import get_debug_flag
 from ._compat import getargspec
