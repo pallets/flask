@@ -9,33 +9,39 @@ systems need a schema that tells them how to store that information.
 Before starting the server for the first time, it's important to create
 that schema.
 
-Such a schema can be created by piping the ``schema.sql`` file into the
-`sqlite3` command as follows::
+Such a schema could be created by piping the ``schema.sql`` file into the
+``sqlite3`` command as follows::
 
     sqlite3 /tmp/flaskr.db < schema.sql
 
-The downside of this is that it requires the ``sqlite3`` command to be
-installed, which is not necessarily the case on every system.  This also
-requires that you provide the path to the database, which can introduce
-errors.  It's a good idea to add a function that initializes the database
-for you, to the application.
+However, the downside of this is that it requires the ``sqlite3`` command
+to be installed, which is not necessarily the case on every system. This
+also requires that you provide the path to the database, which can introduce
+errors.
 
-To do this, you can create a function and hook it into a :command:`flask`
-command that initializes the database.  For now just take a look at the
-code segment below.  A good place to add this function, and command, is
-just below the `connect_db` function in :file:`flaskr.py`::
+Instead of the ``sqlite3`` command above, it's a good idea to add a function
+to our application that initializes the database for you. To do this, you
+can create a function and hook it into a :command:`flask` command that
+initializes the database.
+
+Take a look at the code segment below. A good place to add this function,
+and command, is just below the ``connect_db`` function in :file:`flaskr.py`::
 
     def init_db():
         db = get_db()
+
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
+
         db.commit()
+
 
     @app.cli.command('initdb')
     def initdb_command():
         """Initializes the database."""
+
         init_db()
-        print 'Initialized the database.'
+        print('Initialized the database.')
 
 The ``app.cli.command()`` decorator registers a new command with the
 :command:`flask` script.  When the command executes, Flask will automatically
@@ -59,7 +65,8 @@ On that cursor, there is a method to execute a complete script.  Finally, you
 only have to commit the changes.  SQLite3 and other transactional
 databases will not commit unless you explicitly tell it to.
 
-Now, it is possible to create a database with the :command:`flask` script::
+Now, in a terminal, from the application root directory :file:`flaskr/` it is
+possible to create a database with the :command:`flask` script::
 
     flask initdb
     Initialized the database.

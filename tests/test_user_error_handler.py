@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-from werkzeug.exceptions import Forbidden, InternalServerError
+from werkzeug.exceptions import (
+    Forbidden,
+    InternalServerError,
+    HTTPException,
+    NotFound
+    )
 import flask
 
 
-def test_error_handler_no_match():
-    app = flask.Flask(__name__)
+def test_error_handler_no_match(app, client):
 
     class CustomException(Exception):
         pass
@@ -26,15 +30,12 @@ def test_error_handler_no_match():
     def key_error():
         raise KeyError()
 
-    c = app.test_client()
+    app.testing = False
+    assert client.get('/custom').data == b'custom'
+    assert client.get('/keyerror').data == b'KeyError'
 
-    assert c.get('/custom').data == b'custom'
-    assert c.get('/keyerror').data == b'KeyError'
 
-
-def test_error_handler_subclass():
-    app = flask.Flask(__name__)
-
+def test_error_handler_subclass(app):
     class ParentException(Exception):
         pass
 
@@ -73,9 +74,7 @@ def test_error_handler_subclass():
     assert c.get('/child-registered').data == b'child-registered'
 
 
-def test_error_handler_http_subclass():
-    app = flask.Flask(__name__)
-
+def test_error_handler_http_subclass(app):
     class ForbiddenSubclassRegistered(Forbidden):
         pass
 
@@ -111,7 +110,7 @@ def test_error_handler_http_subclass():
     assert c.get('/forbidden-registered').data == b'forbidden-registered'
 
 
-def test_error_handler_blueprint():
+def test_error_handler_blueprint(app):
     bp = flask.Blueprint('bp', __name__)
 
     @bp.errorhandler(500)
@@ -121,8 +120,6 @@ def test_error_handler_blueprint():
     @bp.route('/error')
     def bp_test():
         raise InternalServerError()
-
-    app = flask.Flask(__name__)
 
     @app.errorhandler(500)
     def app_exception_handler(e):
@@ -138,3 +135,53 @@ def test_error_handler_blueprint():
 
     assert c.get('/error').data == b'app-error'
     assert c.get('/bp/error').data == b'bp-error'
+
+
+def test_default_error_handler():
+    bp = flask.Blueprint('bp', __name__)
+
+    @bp.errorhandler(HTTPException)
+    def bp_exception_handler(e):
+        assert isinstance(e, HTTPException)
+        assert isinstance(e, NotFound)
+        return 'bp-default'
+
+    @bp.errorhandler(Forbidden)
+    def bp_exception_handler(e):
+        assert isinstance(e, Forbidden)
+        return 'bp-forbidden'
+
+    @bp.route('/undefined')
+    def bp_registered_test():
+        raise NotFound()
+
+    @bp.route('/forbidden')
+    def bp_forbidden_test():
+        raise Forbidden()
+
+    app = flask.Flask(__name__)
+
+    @app.errorhandler(HTTPException)
+    def catchall_errorhandler(e):
+        assert isinstance(e, HTTPException)
+        assert isinstance(e, NotFound)
+        return 'default'
+
+    @app.errorhandler(Forbidden)
+    def catchall_errorhandler(e):
+        assert isinstance(e, Forbidden)
+        return 'forbidden'
+
+    @app.route('/forbidden')
+    def forbidden():
+        raise Forbidden()
+
+    app.register_blueprint(bp, url_prefix='/bp')
+
+    c = app.test_client()
+    assert c.get('/bp/undefined').data == b'bp-default'
+    assert c.get('/bp/forbidden').data == b'bp-forbidden'
+    assert c.get('/undefined').data == b'default'
+    assert c.get('/forbidden').data == b'forbidden'
+
+

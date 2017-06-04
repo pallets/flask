@@ -3,7 +3,10 @@
 Step 4: Database Connections
 ----------------------------
 
-You now have a function for establishing a database connection with
+Let's continue building our code in the ``flaskr.py`` file.
+(Scroll to the end of the page for more about project layout.)
+
+You currently have a function for establishing a database connection with
 `connect_db`, but by itself, it is not particularly useful.  Creating and
 closing database connections all the time is very inefficient, so you will
 need to keep it around for longer.  Because database connections

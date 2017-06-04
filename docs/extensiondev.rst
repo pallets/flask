@@ -29,12 +29,6 @@ be something like "Flask-SimpleXML".  Make sure to include the name
 This is how users can then register dependencies to your extension in
 their :file:`setup.py` files.
 
-Flask sets up a redirect package called :data:`flask.ext` where users
-should import the extensions from.  If you for instance have a package
-called ``flask_something`` users would import it as
-``flask.ext.something``.  This is done to transition from the old
-namespace packages.  See :ref:`ext-import-transition` for more details.
-
 But what do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
 a requirement because many people will use patterns like the
@@ -48,7 +42,7 @@ that people can easily install the development version into their
 virtualenv without having to download the library by hand.
 
 Flask extensions must be licensed under a BSD, MIT or more liberal license
-to be able to be enlisted in the Flask Extension Registry.  Keep in mind
+in order to be listed in the Flask Extension Registry.  Keep in mind
 that the Flask Extension Registry is a moderated place and libraries will
 be reviewed upfront if they behave as required.
 
@@ -154,10 +148,10 @@ What to use depends on what you have in mind.  For the SQLite 3 extension
 we will use the class-based approach because it will provide users with an
 object that handles opening and closing database connections.
 
-What's important about classes is that they encourage to be shared around
-on module level.  In that case, the object itself must not under any
+When designing your classes, it's important to make them easily reusable
+at the module level. This means the object itself must not under any
 circumstances store any application specific state and must be shareable
-between different application.
+between different applications.
 
 The Extension Code
 ------------------
@@ -334,10 +328,10 @@ development.  If you want to learn more, it's a very good idea to check
 out existing extensions on the `Flask Extension Registry`_.  If you feel
 lost there is still the `mailinglist`_ and the `IRC channel`_ to get some
 ideas for nice looking APIs.  Especially if you do something nobody before
-you did, it might be a very good idea to get some more input.  This not
-only to get an idea about what people might want to have from an
-extension, but also to avoid having multiple developers working on pretty
-much the same side by side.
+you did, it might be a very good idea to get some more input.  This not only
+generates useful feedback on what people might want from an extension, but
+also avoids having multiple developers working in isolation on pretty much the
+same problem.
 
 Remember: good API design is hard, so introduce your project on the
 mailinglist, and let other developers give you a helping hand with
@@ -370,10 +364,10 @@ extension to be approved you have to follow these guidelines:
 3.  APIs of approved extensions will be checked for the following
     characteristics:
 
-    -   an approved extension has to support multiple applications
-        running in the same Python process.
-    -   it must be possible to use the factory pattern for creating
-        applications.
+   -   an approved extension has to support multiple applications
+       running in the same Python process.
+   -   it must be possible to use the factory pattern for creating
+       applications.
 
 4.  The license must be BSD/MIT/WTFPL licensed.
 5.  The naming scheme for official extensions is *Flask-ExtensionName* or
@@ -387,13 +381,11 @@ extension to be approved you have to follow these guidelines:
     link to the documentation, website (if there is one) and there
     must be a link to automatically install the development version
     (``PackageName==dev``).
-9.  The ``zip_safe`` flag in the setup script must be set to ``False``,
-    even if the extension would be safe for zipping.
-10. An extension currently has to support Python 2.6 as well as
-    Python 2.7
+9. The ``zip_safe`` flag in the setup script must be set to ``False``,
+   even if the extension would be safe for zipping.
+10. An extension currently has to support Python 2.7, Python 3.3 and higher.
 
 
-.. _ext-import-transition:
 
 Extension Import Transition
 ---------------------------
@@ -413,6 +405,6 @@ schema. The ``flask.ext.foo`` compatibility alias is still in Flask 0.11 but is
 now deprecated -- you should use ``flask_foo``.
 
 
-.. _OAuth extension: http://pythonhosted.org/Flask-OAuth/
+.. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/

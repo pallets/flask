@@ -41,13 +41,12 @@ Links
 * `website <http://flask.pocoo.org/>`_
 * `documentation <http://flask.pocoo.org/docs/>`_
 * `development version
-  <http://github.com/pallets/flask/zipball/master#egg=Flask-dev>`_
+  <https://github.com/pallets/flask/zipball/master#egg=Flask-dev>`_
 
 """
 import re
 import ast
 from setuptools import setup
-
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
@@ -55,11 +54,10 @@ with open('flask/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-
 setup(
     name='Flask',
     version=version,
-    url='http://github.com/pallets/flask/',
+    url='https://github.com/pallets/flask/',
     license='BSD',
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',
@@ -71,11 +69,22 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'Werkzeug>=0.7',
+        'Werkzeug>=0.9',
         'Jinja2>=2.4',
         'itsdangerous>=0.21',
-        'click>=2.0',
+        'click>=4.0',
     ],
+    extras_require={
+        'dev': [
+            'blinker',
+            'greenlet',
+            'pytest>=3',
+            'coverage',
+            'tox',
+            'sphinx',
+            'sphinxcontrib-log-cabinet'
+        ],
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -90,6 +99,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
