@@ -23,7 +23,7 @@ except ImportError:
 
 
 def make_test_environ_builder(
-    app, path='/', base_url=None, subdomain=None, url_scheme=None, json=None,
+    app, path='/', base_url=None, subdomain=None, url_scheme=None,
     *args, **kwargs
 ):
     """Creates a new test builder with some application defaults thrown in."""
@@ -54,12 +54,14 @@ def make_test_environ_builder(
             path += sep + url.query
 
     if 'json' in kwargs:
-        if 'data' in kwargs:
-            raise ValueError('Client cannot provide both `json` and `data`')
+        assert 'data' not in kwargs, (
+            "Client cannot provide both 'json' and 'data'."
+        )
 
-        kwargs['data'] = json_dumps(kwargs.pop('json'))
+        # push a context so flask.json can use app's json attributes
+        with app.app_context():
+            kwargs['data'] = json_dumps(kwargs.pop('json'))
 
-        # Only set Content-Type when not explicitly provided
         if 'content_type' not in kwargs:
             kwargs['content_type'] = 'application/json'
 

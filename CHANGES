@@ -70,6 +70,12 @@ Major release, unreleased
 - Only open the session if the request has not been pushed onto the context
   stack yet. This allows ``stream_with_context`` generators to access the same
   session that the containing view uses. (`#2354`_)
+- Add ``json`` keyword argument for the test client request methods. This will
+  dump the given object as JSON and set the appropriate content type.
+  (`#2358`_)
+- Extract JSON handling to a mixin applied to both the request and response
+  classes used by Flask. This adds the ``is_json`` and ``get_json`` methods to
+  the response to make testing JSON response much easier. (`#2358`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -91,6 +97,7 @@ Major release, unreleased
 .. _#2348: https://github.com/pallets/flask/pull/2348
 .. _#2352: https://github.com/pallets/flask/pull/2352
 .. _#2354: https://github.com/pallets/flask/pull/2354
+.. _#2358: https://github.com/pallets/flask/pull/2358
 
 Version 0.12.2
 --------------
@@ -126,11 +133,6 @@ Released on December 21st 2016, codename Punsch.
   ``application/octet-stream``. See pull request ``#1988``.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
-- Added `json` keyword argument to :meth:`flask.testing.FlaskClient.open`
-  (and related ``get``, ``post``, etc.), which makes it more convenient to
-  send JSON requests from the test client.
-- Added ``is_json`` and ``get_json`` to :class:``flask.wrappers.Response``
-  in order to make it easier to build assertions when testing JSON responses.
 - Revert a behavior change that made the dev server crash instead of returning
   a Internal Server Error (pull request ``#2006``).
 - Correctly invoke response handlers for both regular request dispatching as
