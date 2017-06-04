@@ -1,6 +1,6 @@
 .. _tutorial-templates:
 
-Step 8: The Templates
+Step 7: The Templates
 =====================
 
 Now it is time to start working on the templates.  As you may have
@@ -15,7 +15,8 @@ escaped with their XML equivalents.
 We are also using template inheritance which makes it possible to reuse
 the layout of the website in all pages.
 
-Put the following templates into the :file:`templates` folder:
+Create the follwing three HTML files and place them in the
+:file:`templates` folder:
 
 .. _Jinja2: http://jinja.pocoo.org/docs/templates
 
@@ -59,7 +60,7 @@ show_entries.html
 This template extends the :file:`layout.html` template from above to display the
 messages.  Note that the ``for`` loop iterates over the messages we passed
 in with the :func:`~flask.render_template` function.  Notice that the form is
-configured to to submit to the `add_entry` view function and use ``POST`` as
+configured to submit to the `add_entry` view function and use ``POST`` as
 HTTP method:
 
 .. sourcecode:: html+jinja
@@ -79,9 +80,9 @@ HTTP method:
       {% endif %}
       <ul class=entries>
       {% for entry in entries %}
-        <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+        <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>
       {% else %}
-        <li><em>Unbelievable.  No entries here so far</em>
+        <li><em>Unbelievable.  No entries here so far</em></li>
       {% endfor %}
       </ul>
     {% endblock %}

@@ -47,37 +47,53 @@ even if the application behaves correctly:
 Error Handlers
 --------------
 
-An error handler is a function, just like a view function, but it is
-called when an error happens and is passed that error.  The error is most
-likely a :exc:`~werkzeug.exceptions.HTTPException`, but in one case it
-can be a different error: a handler for internal server errors will be
-passed other exception instances as well if they are uncaught.
+An error handler is a function that returns a response when a type of error is
+raised, similar to how a view is a function that returns a response when a
+request URL is matched. It is passed the instance of the error being handled,
+which is most likely a :exc:`~werkzeug.exceptions.HTTPException`. An error
+handler for "500 Internal Server Error" will be passed uncaught exceptions in
+addition to explicit 500 errors.
 
 An error handler is registered with the :meth:`~flask.Flask.errorhandler`
-decorator and the error code of the exception.  Keep in mind that Flask
-will *not* set the error code for you, so make sure to also provide the
-HTTP status code when returning a response.
+decorator or the :meth:`~flask.Flask.register_error_handler` method. A handler
+can be registered for a status code, like 404, or for an exception class.
 
-Please note that if you add an error handler for "500 Internal Server
-Error", Flask will not trigger it if it's running in Debug mode.
+The status code of the response will not be set to the handler's code. Make
+sure to provide the appropriate HTTP status code when returning a response from
+a handler.
 
-Here an example implementation for a "404 Page Not Found" exception::
+A handler for "500 Internal Server Error" will not be used when running in
+debug mode. Instead, the interactive debugger will be shown.
+
+Here is an example implementation for a "404 Page Not Found" exception::
 
     from flask import render_template
 
     @app.errorhandler(404)
     def page_not_found(e):
+        # note that we set the 404 status explicitly
         return render_template('404.html'), 404
+
+When using the :ref:`application factory pattern <app-factories>`::
+
+    from flask import Flask, render_template
+
+    def page_not_found(e):
+      return render_template('404.html'), 404
+
+    def create_app(config_filename):
+        app = Flask(__name__)
+        app.register_error_handler(404, page_not_found)
+        return app
 
 An example template might be this:
 
 .. sourcecode:: html+jinja
 
-   {% extends "layout.html" %}
-   {% block title %}Page Not Found{% endblock %}
-   {% block body %}
-     <h1>Page Not Found</h1>
-     <p>What you were looking for is just not there.
-     <p><a href="{{ url_for('index') }}">go somewhere nice</a>
-   {% endblock %}
-
+    {% extends "layout.html" %}
+    {% block title %}Page Not Found{% endblock %}
+    {% block body %}
+      <h1>Page Not Found</h1>
+      <p>What you were looking for is just not there.
+      <p><a href="{{ url_for('index') }}">go somewhere nice</a>
+    {% endblock %}
