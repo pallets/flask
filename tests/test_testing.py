@@ -267,7 +267,7 @@ def test_full_url_request(app, client):
 def test_json_request_and_response(app, client):
     @app.route('/echo', methods=['POST'])
     def echo():
-        return jsonify(flask.request.json)
+        return jsonify(flask.request.get_json())
 
     with client:
         json_data = {'drink': {'gin': 1, 'tonic': True}, 'price': 10}
