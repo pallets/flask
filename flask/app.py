@@ -1484,31 +1484,27 @@ class Flask(_PackageBoundObject):
         return f
 
     def _find_error_handler(self, e):
-        """Find a registered error handler for a request in this order:
+        """Return a registered error handler for an exception in this order:
         blueprint handler for a specific code, app handler for a specific code,
-        blueprint generic HTTPException handler, app generic HTTPException handler,
-        and returns None if a suitable handler is not found.
+        blueprint handler for an exception class, app handler for an exception
+        class, or ``None`` if a suitable handler is not found.
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
 
-        def find_handler(handler_map):
+        for name, c in (
+            (request.blueprint, code), (None, code),
+            (request.blueprint, None), (None, None)
+        ):
+            handler_map = self.error_handler_spec.setdefault(name, {}).get(c)
+
             if not handler_map:
-                return
+                continue
 
             for cls in exc_class.__mro__:
                 handler = handler_map.get(cls)
+
                 if handler is not None:
-                    # cache for next time exc_class is raised
-                    handler_map[exc_class] = handler
                     return handler
-
-        # check for any in blueprint or app
-        for name, c in ((request.blueprint, code), (None, code),
-                        (request.blueprint, None), (None, None)):
-            handler = find_handler(self.error_handler_spec.get(name, {}).get(c))
-
-            if handler:
-                return handler
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the

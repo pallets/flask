@@ -76,6 +76,9 @@ Major release, unreleased
 - Extract JSON handling to a mixin applied to both the request and response
   classes used by Flask. This adds the ``is_json`` and ``get_json`` methods to
   the response to make testing JSON response much easier. (`#2358`_)
+- Removed error handler caching because it caused unexpected results for some
+  exception inheritance hierarchies. Register handlers explicitly for each
+  exception if you don't want to traverse the MRO. (`#2362`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -98,6 +101,7 @@ Major release, unreleased
 .. _#2352: https://github.com/pallets/flask/pull/2352
 .. _#2354: https://github.com/pallets/flask/pull/2354
 .. _#2358: https://github.com/pallets/flask/pull/2358
+.. _#2362: https://github.com/pallets/flask/pull/2362
 
 Version 0.12.2
 --------------
