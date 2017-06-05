@@ -177,7 +177,7 @@ class Blueprint(_PackageBoundObject):
         if endpoint:
             assert '.' not in endpoint, "Blueprint endpoints should not contain dots"
         self.record(lambda s:
-            s.add_url_rule(rule, endpoint, view_func, **options))
+                    s.add_url_rule(rule, endpoint, view_func, **options))
 
     def endpoint(self, endpoint):
         """Like :meth:`Flask.endpoint` but for a blueprint.  This does not
@@ -279,7 +279,7 @@ class Blueprint(_PackageBoundObject):
         that blueprint.
         """
         self.record_once(lambda s: s.app.before_request_funcs
-            .setdefault(self.name, []).append(f))
+                         .setdefault(self.name, []).append(f))
         return f
 
     def before_app_request(self, f):
@@ -287,7 +287,7 @@ class Blueprint(_PackageBoundObject):
         before each request, even if outside of a blueprint.
         """
         self.record_once(lambda s: s.app.before_request_funcs
-            .setdefault(None, []).append(f))
+                         .setdefault(None, []).append(f))
         return f
 
     def before_app_first_request(self, f):
@@ -303,7 +303,7 @@ class Blueprint(_PackageBoundObject):
         that blueprint.
         """
         self.record_once(lambda s: s.app.after_request_funcs
-            .setdefault(self.name, []).append(f))
+                         .setdefault(self.name, []).append(f))
         return f
 
     def after_app_request(self, f):
@@ -311,7 +311,7 @@ class Blueprint(_PackageBoundObject):
         is executed after each request, even if outside of the blueprint.
         """
         self.record_once(lambda s: s.app.after_request_funcs
-            .setdefault(None, []).append(f))
+                         .setdefault(None, []).append(f))
         return f
 
     def teardown_request(self, f):
@@ -322,7 +322,7 @@ class Blueprint(_PackageBoundObject):
         performed.
         """
         self.record_once(lambda s: s.app.teardown_request_funcs
-            .setdefault(self.name, []).append(f))
+                         .setdefault(self.name, []).append(f))
         return f
 
     def teardown_app_request(self, f):
@@ -331,7 +331,7 @@ class Blueprint(_PackageBoundObject):
         the blueprint.
         """
         self.record_once(lambda s: s.app.teardown_request_funcs
-            .setdefault(None, []).append(f))
+                         .setdefault(None, []).append(f))
         return f
 
     def context_processor(self, f):
@@ -339,7 +339,7 @@ class Blueprint(_PackageBoundObject):
         function is only executed for requests handled by a blueprint.
         """
         self.record_once(lambda s: s.app.template_context_processors
-            .setdefault(self.name, []).append(f))
+                         .setdefault(self.name, []).append(f))
         return f
 
     def app_context_processor(self, f):
@@ -347,7 +347,7 @@ class Blueprint(_PackageBoundObject):
         function is executed each request, even if outside of the blueprint.
         """
         self.record_once(lambda s: s.app.template_context_processors
-            .setdefault(None, []).append(f))
+                         .setdefault(None, []).append(f))
         return f
 
     def app_errorhandler(self, code):
@@ -365,7 +365,7 @@ class Blueprint(_PackageBoundObject):
         can modify the url values provided.
         """
         self.record_once(lambda s: s.app.url_value_preprocessors
-            .setdefault(self.name, []).append(f))
+                         .setdefault(self.name, []).append(f))
         return f
 
     def url_defaults(self, f):
@@ -374,21 +374,21 @@ class Blueprint(_PackageBoundObject):
         in place.
         """
         self.record_once(lambda s: s.app.url_default_functions
-            .setdefault(self.name, []).append(f))
+                         .setdefault(self.name, []).append(f))
         return f
 
     def app_url_value_preprocessor(self, f):
         """Same as :meth:`url_value_preprocessor` but application wide.
         """
         self.record_once(lambda s: s.app.url_value_preprocessors
-            .setdefault(None, []).append(f))
+                         .setdefault(None, []).append(f))
         return f
 
     def app_url_defaults(self, f):
         """Same as :meth:`url_defaults` but application wide.
         """
         self.record_once(lambda s: s.app.url_default_functions
-            .setdefault(None, []).append(f))
+                         .setdefault(None, []).append(f))
         return f
 
     def errorhandler(self, code_or_exception):
