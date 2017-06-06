@@ -570,6 +570,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             fsize = os.path.getsize(filename)
             headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
+        file.close()
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
                                     direct_passthrough=True)
