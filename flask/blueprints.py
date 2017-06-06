@@ -96,6 +96,21 @@ class Blueprint(_PackageBoundObject):
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
     json_decoder = None
 
+    # TODO remove the next three attrs when Sphinx :inherited-members: works
+    # https://github.com/sphinx-doc/sphinx/issues/741
+
+    #: The name of the package or module that this app belongs to. Do not
+    #: change this once it is set by the constructor.
+    import_name = None
+
+    #: Location of the template files to be added to the template lookup.
+    #: ``None`` if templates should not be added.
+    template_folder = None
+
+    #: Absolute path to the package on the filesystem. Used to look up
+    #: resources contained in the package.
+    root_path = None
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
