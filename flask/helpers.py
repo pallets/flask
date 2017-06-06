@@ -480,10 +480,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     .. versionchanged:: 0.12
        The `attachment_filename` is preferred over `filename` for MIME-type
        detection.
-       
+
     .. versionchanged:: 0.13
         UTF-8 filenames, as specified in `RFC 2231`_, are supported.
-        
+
     .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
 
     :param filename_or_fp: the filename of the file to send.
@@ -848,43 +848,56 @@ class locked_cached_property(object):
 
 
 class _PackageBoundObject(object):
+    #: The name of the package or module that this app belongs to. Do not
+    #: change this once it is set by the constructor.
+    import_name = None
+
+    #: Location of the template files to be added to the template lookup.
+    #: ``None`` if templates should not be added.
+    template_folder = None
+
+    #: Absolute path to the package on the filesystem. Used to look up
+    #: resources contained in the package.
+    root_path = None
 
     def __init__(self, import_name, template_folder=None, root_path=None):
-        #: The name of the package or module.  Do not change this once
-        #: it was set by the constructor.
         self.import_name = import_name
-
-        #: location of the templates.  ``None`` if templates should not be
-        #: exposed.
         self.template_folder = template_folder
 
         if root_path is None:
             root_path = get_root_path(self.import_name)
 
-        #: Where is the app root located?
         self.root_path = root_path
-
         self._static_folder = None
         self._static_url_path = None
 
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
-    static_folder = property(_get_static_folder, _set_static_folder, doc='''
-    The absolute path to the configured static folder.
-    ''')
+
+    static_folder = property(
+        _get_static_folder, _set_static_folder,
+        doc='The absolute path to the configured static folder.'
+    )
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
         if self._static_url_path is not None:
             return self._static_url_path
+
         if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
-    static_url_path = property(_get_static_url_path, _set_static_url_path)
+
+    static_url_path = property(
+        _get_static_url_path, _set_static_url_path,
+        doc='The URL prefix that the static route will be registered for.'
+    )
     del _get_static_url_path, _set_static_url_path
 
     @property
