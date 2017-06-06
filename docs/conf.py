@@ -24,6 +24,8 @@ BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.append(os.path.dirname(__file__))
 
+os.environ['SPHINX_BUILD'] = '1'
+
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.

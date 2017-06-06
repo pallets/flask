@@ -43,6 +43,9 @@ _logger_lock = Lock()
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
 
+# Returns functions instead of decorators when building the documentation
+IS_SPHINX_BUILD = bool(os.getenv('SPHINX_BUILD'))
+
 
 def _make_timedelta(value):
     if not isinstance(value, timedelta):
@@ -64,7 +67,7 @@ def setupmethod(f):
                 'database models and everything related at a central place '
                 'before the application starts serving requests.')
         return f(self, *args, **kwargs)
-    return update_wrapper(wrapper_func, f)
+    return f if IS_SPHINX_BUILD else update_wrapper(wrapper_func, f)
 
 
 class Flask(_PackageBoundObject):
