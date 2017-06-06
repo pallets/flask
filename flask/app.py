@@ -54,6 +54,7 @@ def setupmethod(f):
     """Wraps a method so that it performs a check in debug mode if the
     first request was already handled.
     """
+
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request:
             raise AssertionError('A setup function was called after the '

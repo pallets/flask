@@ -22,7 +22,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
-from flask.helpers import get_debug_flag, make_response
+from flask.helpers import get_debug_flag
 
 
 def has_encoding(name):
@@ -35,6 +35,7 @@ def has_encoding(name):
 
 
 class TestJSON(object):
+
     def test_ignore_cached_json(self, app):
         with app.test_request_context('/', method='POST', data='malformed',
                                       content_type='application/json'):
@@ -915,6 +916,7 @@ class TestSafeJoin(object):
         for args in failing:
             with pytest.raises(NotFound):
                 print(flask.safe_join(*args))
+
 
 class TestHelpers(object):
 

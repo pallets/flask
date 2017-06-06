@@ -57,9 +57,11 @@ _blueprint_related = [
 
 def make_diff(filename, old, new):
     for line in difflib.unified_diff(old.splitlines(), new.splitlines(),
-                     posixpath.normpath(posixpath.join('a', filename)),
-                     posixpath.normpath(posixpath.join('b', filename)),
-                     lineterm=''):
+                                     posixpath.normpath(
+                                         posixpath.join('a', filename)),
+                                     posixpath.normpath(
+                                         posixpath.join('b', filename)),
+                                     lineterm=''):
         print(line)
 
 
