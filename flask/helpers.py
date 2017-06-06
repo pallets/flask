@@ -507,7 +507,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     :param cache_timeout: the timeout in seconds for the headers. When ``None``
                           (default), this value is set by
                           :meth:`~Flask.get_send_file_max_age` of
-                          :data:`~flask.current_app`.
+                          :data:`~flask.current_app`. When `< 0`, will
+                          no-cache, no-store
     :param last_modified: set the ``Last-Modified`` header to this value,
         a :class:`~datetime.datetime` or timestamp.
         If a file was passed, this overrides its mtime.
@@ -583,8 +584,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     if cache_timeout is None:
         cache_timeout = current_app.get_send_file_max_age(filename)
     if cache_timeout is not None:
-        rv.cache_control.max_age = cache_timeout
-        rv.expires = int(time() + cache_timeout)
+        if cache_timeout >= 0:
+            rv.cache_control.max_age = cache_timeout
+            rv.expires = int(time() + cache_timeout)
+        else:
+            rv.cache_control.public = False
+            rv.cache_control.no_store = True
+            rv.cache_control.no_cache = True
 
     if add_etags and filename is not None:
         from warnings import warn
