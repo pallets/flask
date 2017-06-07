@@ -218,6 +218,56 @@ class Config(dict):
                     self[key] = value
         return True
 
+    def from_envjson(self, prefix, silent=False):
+        """Updates the config from JSON-parsed environment variables.
+
+        For example::
+
+            $ export FLASKR_DEBUG='true'
+            $ export FLASKR_SECRET_KEY='"ba92ffd4d9582827cb8f93c4b48f60e3"'
+            $ export FLASKR_MAX_CONTENT_LENGTH='4096'
+            $ cat <<EOF > foo.py
+            > from flask import Flask
+            >
+            > app = Flask(__name__)
+            > app.config.from_envjson('FLASKR')
+            >
+            > print('DEBUG:%r' % app.debug)
+            > print('SECRET_KEY:%r' app.secret_key)
+            > print('MAX_CONTENT_LENGTH:%r' % app.config['MAX_CONTENT_LENGTH'])
+            > EOF
+            $ python foo.py
+            DEBUG:True
+            SECRET_KEY:'ba92ffd4d9582827cb8f93c4b48f60e3'
+            MAX_CONTENT_LENGTH:4096
+
+        :param prefix: the prefix to specify which variables to be imported.
+                       (e.g. ``FLASKR``)
+        :param silent: set to ``True`` if you want to ignore some environment
+                       variables which could not be parsed as JSON expression
+                       instead of raising a :exc:`ValueError`.
+
+        .. versionadded:: 1.0
+        """
+        for name, value in iteritems(os.environ):
+            if not name.startswith(prefix):
+                continue
+            try:
+                config_value = json.loads(value)
+            except ValueError:
+                if silent:
+                    continue
+                error_msg = (
+                    '{0}={1!r} found but it is unable to parse {1!r} as a '
+                    'JSON expression.\n\n'
+                    'You may need to write {0}=\'"{1}"\' in shell if the '
+                    'value should be string type.')
+                raise ValueError(error_msg.format(name, value))
+            else:
+                config_name = name[len(prefix):]  # strips prefix
+                config_name = config_name.lstrip('_')  # strips possible "_"
+                self[config_name] = config_value
+
     def get_namespace(self, namespace, lowercase=True, trim_namespace=True):
         """Returns a dictionary containing a subset of configuration options
         that match the specified namespace/prefix. Example usage::

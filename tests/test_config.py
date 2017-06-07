@@ -142,6 +142,55 @@ def test_config_missing_json():
     assert not app.config.from_json('missing.json', silent=True)
 
 
+def test_config_from_envjson():
+    env = os.environ
+    try:
+        os.environ = {'FOO_BAR_BOOLEAN': 'true', 'FOO_BAR_STRING': '"true"',
+                      'FOO_BAR_INTEGER': '42', 'FOO_BAR_FLOAT': '3.14',
+                      'FOO_BAR_LIST': '[1,2,3]', 'FOO_BAR_DICT': '{"1": 2}'}
+
+        def assert_config_correct(app):
+            assert app.config['BAR_BOOLEAN'] is True
+            assert app.config['BAR_STRING'] == 'true'
+            assert app.config['BAR_INTEGER'] == 42
+            assert app.config['BAR_FLOAT'] == 3.14
+            assert app.config['BAR_LIST'] == [1, 2, 3]
+            assert app.config['BAR_DICT'] == {'1': 2}
+
+        # without underline
+        app = flask.Flask(__name__)
+        app.config.from_envjson('FOO')
+        assert_config_correct(app)
+
+        # with underline
+        app = flask.Flask(__name__)
+        app.config.from_envjson('FOO_')
+        assert_config_correct(app)
+    finally:
+        os.environ = env
+
+
+def test_config_from_envjson_invalid():
+    env = os.environ
+    try:
+        os.environ = {'FOO_BAR_BOOLEAN': 'true', 'FOO_BAR_INVALID': 'garbage'}
+
+        # silent:False - exception raised
+        app = flask.Flask(__name__)
+        with pytest.raises(ValueError) as einfo:
+            app.config.from_envjson('FOO')
+        assert "FOO_BAR_INVALID='garbage' found" in einfo.value.args[0]
+        assert "FOO_BAR_INVALID='\"garbage\"' in shell" in einfo.value.args[0]
+
+        # silent:True - invalid value ignored
+        app = flask.Flask(__name__)
+        app.config.from_envjson('FOO', silent=True)
+        assert app.config['BAR_BOOLEAN'] is True
+        assert 'BAR_INVALID' not in app.config
+    finally:
+        os.environ = env
+
+
 def test_custom_config_class():
     class Config(flask.Config):
         pass
