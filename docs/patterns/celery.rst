@@ -36,6 +36,7 @@ hooking it up with the Flask configuration.
 
 This is all that is necessary to properly integrate Celery with Flask::
 
+    from __future__ import absolute_import
     from celery import Celery
 
     def make_celery(app):
