@@ -11,6 +11,7 @@
 """
 from functools import update_wrapper
 
+from . import cli
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
 
 
@@ -127,6 +128,14 @@ class Blueprint(_PackageBoundObject):
             url_defaults = {}
         self.url_values_defaults = url_defaults
 
+        #: The click command line context for this blueprint.  Commands
+        #: registered here show up in the :command:`flask` command. If your
+        #: blueprint has multiple commands it's a good idea to define only one
+        #: top-level group.
+        #:
+        #: This behaves like an instance of a :class:`click.Group` object.
+        self.cli = cli.AppGroup()
+
     def record(self, func):
         """Registers a function that is called when the blueprint is
         registered on the application.  This function is called with the
@@ -174,6 +183,8 @@ class Blueprint(_PackageBoundObject):
 
         for deferred in self.deferred_functions:
             deferred(state)
+        # Register commands for the `flask` command-line tool
+        state.app.cli.commands.update(self.cli.commands)
 
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
