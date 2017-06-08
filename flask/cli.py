@@ -239,6 +239,15 @@ class DispatchingApp(object):
     of the Werkzeug debugger means that it shows up in the browser.
     """
 
+    @property
+    def debug(self):
+        try:
+            return self._app.debug
+        except AttributeError as e:
+            print('Application not created yet, can\'t determine debug '
+                  'status.')
+            return False
+
     def __init__(self, loader, use_eager_loading=False):
         self.loader = loader
         self._app = None
@@ -539,6 +548,10 @@ def run_command(info, host, port, reload, debugger, eager_loading,
             print(' * Serving Flask app "%s"' % info.app_import_path)
         if debug is not None:
             print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
+
+    if app.debug:
+        debugger = True
+        print(' * Debug activated by application configuration.')
 
     run_simple(host, port, app, use_reloader=reload,
                use_debugger=debugger, threaded=with_threads)
