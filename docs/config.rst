@@ -375,6 +375,54 @@ methods on the config object as well to load from individual files.  For a
 complete reference, read the :class:`~flask.Config` object's
 documentation.
 
+Configuring from Environmental Variables
+----------------------------------------
+
+In addition to pointing to configuration files using environment variables, you
+may find it useful (or necessary) to control your configuration values
+directly from the environment.
+
+Environment variables can be set on Linux or OS X with the export command in the
+shell before starting the server::
+
+    $ export SECRET_KEY='?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
+    $ export DEBUG=False
+    $ python run-app.py
+     * Running on http://127.0.0.1:5000/
+     * Restarting with reloader...
+
+On Windows systems use the `set` builtin instead::
+
+    >set SECRET_KEY='?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
+    >set DEBUG=False
+
+While this approach is straightforward to use, it is important to remember that
+environment variables are strings -- they are not automatically deserialized into Python
+types.
+
+Here is an example of a configuration file that uses environmental variables::
+
+    # Example configuration
+    import os
+
+    ENVIRONMENT_DEBUG = os.environ.get("DEBUG", default=False)
+    if ENVIRONMENT_DEBUG.lower() in ("f", "false"):
+        ENVIRONMENT_DEBUG = False
+
+    DEBUG = ENVIRONMENT_DEBUG
+    SECRET_KEY = os.environ.get("SECRET_KEY", default=None)
+    if not SECRET_KEY:
+        raise ValueError("No secret key set for Flask application")
+
+
+Notice that any value besides a empty string will be interpreted as a boolean True value in Python, which
+requires care if an environment may explicit setting values intended to be False.
+
+Make sure to load the configuration very early on, so that extensions have
+the ability to access the configuration when starting up.  There are other
+methods on the config object as well to load from individual files.  For a
+complete reference, read the :class:`~flask.Config` object's
+documentation.
 
 Configuration Best Practices
 ----------------------------
