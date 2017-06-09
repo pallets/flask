@@ -415,8 +415,8 @@ Here is an example of a configuration file that uses environmental variables::
         raise ValueError("No secret key set for Flask application")
 
 
-Notice that any value besides a empty string will be interpreted as a boolean True value in Python, which
-requires care if an environment may explicit setting values intended to be False.
+Notice that any value besides an empty string will be interpreted as a boolean True value in Python, which
+requires care if an environment explicitly sets values intended to be False.
 
 Make sure to load the configuration very early on, so that extensions have
 the ability to access the configuration when starting up.  There are other
