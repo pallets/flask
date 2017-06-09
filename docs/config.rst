@@ -375,15 +375,15 @@ methods on the config object as well to load from individual files.  For a
 complete reference, read the :class:`~flask.Config` object's
 documentation.
 
-Configuring from Environmental Variables
-----------------------------------------
+Configuring from Environment Variables
+--------------------------------------
 
 In addition to pointing to configuration files using environment variables, you
-may find it useful (or necessary) to control your configuration values
-directly from the environment.
+may find it useful (or necessary) to control your configuration values directly
+from the environment.
 
-Environment variables can be set on Linux or OS X with the export command in the
-shell before starting the server::
+Environment variables can be set on Linux or OS X with the export command in
+the shell before starting the server::
 
     $ export SECRET_KEY='?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
     $ export DEBUG=False
@@ -397,10 +397,10 @@ On Windows systems use the `set` builtin instead::
     >set DEBUG=False
 
 While this approach is straightforward to use, it is important to remember that
-environment variables are strings -- they are not automatically deserialized into Python
-types.
+environment variables are strings -- they are not automatically deserialized
+into Python types.
 
-Here is an example of a configuration file that uses environmental variables::
+Here is an example of a configuration file that uses environment variables::
 
     # Example configuration
     import os
@@ -415,14 +415,14 @@ Here is an example of a configuration file that uses environmental variables::
         raise ValueError("No secret key set for Flask application")
 
 
-Notice that any value besides an empty string will be interpreted as a boolean True value in Python, which
-requires care if an environment explicitly sets values intended to be False.
+Notice that any value besides an empty string will be interpreted as a boolean
+``True`` value in Python, which requires care if an environment explicitly sets
+values intended to be ``False``.
 
-Make sure to load the configuration very early on, so that extensions have
-the ability to access the configuration when starting up.  There are other
-methods on the config object as well to load from individual files.  For a
-complete reference, read the :class:`~flask.Config` object's
-documentation.
+Make sure to load the configuration very early on, so that extensions have the
+ability to access the configuration when starting up.  There are other methods
+on the config object as well to load from individual files.  For a complete
+reference, read the :class:`~flask.Config` class documentation.
 
 Configuration Best Practices
 ----------------------------
