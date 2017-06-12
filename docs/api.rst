@@ -639,6 +639,7 @@ The following signals exist in Flask:
 
 .. _blinker: https://pypi.python.org/pypi/blinker
 
+.. _class-based-views:
 
 Class-Based Views
 -----------------
