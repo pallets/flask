@@ -80,6 +80,8 @@ Major release, unreleased
   exception inheritance hierarchies. Register handlers explicitly for each
   exception if you don't want to traverse the MRO. (`#2362`_)
 - Fix incorrect JSON encoding of aware, non-UTC datetimes. (`#2374`_)
+- Template auto reloading will honor the ``run`` command's ``debug`` flag even
+  if ``app.jinja_env`` was already accessed. (`#2373`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -104,6 +106,7 @@ Major release, unreleased
 .. _#2358: https://github.com/pallets/flask/pull/2358
 .. _#2362: https://github.com/pallets/flask/pull/2362
 .. _#2374: https://github.com/pallets/flask/pull/2374
+.. _#2373: https://github.com/pallets/flask/pull/2373
 
 Version 0.12.2
 --------------
