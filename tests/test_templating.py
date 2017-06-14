@@ -386,19 +386,19 @@ def test_templates_auto_reload(app):
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     assert app.jinja_env.auto_reload is True
 
-def test_templates_auto_reload_debug_run(monkeypatch):
-    # debug is None in config, config option is None, app.run(debug=True)
-    # Mocks werkzeug.serving.run_simple method
+def test_templates_auto_reload_debug_run(app, monkeypatch):
     def run_simple_mock(*args, **kwargs):
         pass
 
-    app = flask.Flask(__name__)
     monkeypatch.setattr(werkzeug.serving, 'run_simple', run_simple_mock)
 
-    assert app.config['TEMPLATES_AUTO_RELOAD'] is None
-    assert app.jinja_env.auto_reload is False
+    app.run()
+    assert app.templates_auto_reload == False
+    assert app.jinja_env.auto_reload == False
+
     app.run(debug=True)
-    assert app.jinja_env.auto_reload is True
+    assert app.templates_auto_reload == True
+    assert app.jinja_env.auto_reload == True
 
 
 def test_template_loader_debugging(test_apps):
