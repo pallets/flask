@@ -1,0 +1,2 @@
+[aliases]
+test=pytest

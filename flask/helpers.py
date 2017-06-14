@@ -10,6 +10,7 @@
 """
 
 import os
+import socket
 import sys
 import pkgutil
 import posixpath
@@ -17,6 +18,7 @@ import mimetypes
 from time import time
 from zlib import adler32
 from threading import RLock
+import unicodedata
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
@@ -25,8 +27,9 @@ try:
 except ImportError:
     from urlparse import quote as url_quote
 
-from werkzeug.datastructures import Headers
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.datastructures import Headers, Range
+from werkzeug.exceptions import BadRequest, NotFound, \
+    RequestedRangeNotSatisfiable
 
 # this was moved in 0.7
 try:
@@ -39,7 +42,7 @@ from jinja2 import FileSystemLoader
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type, PY2
+from ._compat import string_types, text_type
 
 
 # sentinel
@@ -57,7 +60,7 @@ def get_debug_flag(default=None):
     val = os.environ.get('FLASK_DEBUG')
     if not val:
         return default
-    return val not in ('0', 'false', 'no')
+    return val.lower() not in ('0', 'false', 'no')
 
 
 def _endpoint_from_view_func(view_func):
@@ -329,6 +332,7 @@ def url_for(endpoint, **values):
         values['_external'] = external
         values['_anchor'] = anchor
         values['_method'] = method
+        values['_scheme'] = scheme
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
@@ -437,7 +441,18 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     to ``True`` to directly emit an ``X-Sendfile`` header.  This however
     requires support of the underlying webserver for ``X-Sendfile``.
 
-    You must explicitly provide the mimetype for the filename or file object.
+    By default it will try to guess the mimetype for you, but you can
+    also explicitly provide one.  For extra security you probably want
+    to send certain files as attachment (HTML for instance).  The mimetype
+    guessing requires a `filename` or an `attachment_filename` to be
+    provided.
+
+    ETags will also be attached automatically if a `filename` is provided. You
+    can turn this off by setting `add_etags=False`.
+
+    If `conditional=True` and `filename` is provided, this method will try to
+    upgrade the response stream to support range requests.  This will allow
+    the request to be answered with partial content response.
 
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
@@ -458,11 +473,20 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
        cache_timeout pulls its default from application config, when None.
 
     .. versionchanged:: 0.12
-       mimetype guessing and etag support removed for file objects.
-       If no mimetype or attachment_filename is provided, application/octet-stream
-       will be used.
+       The filename is no longer automatically inferred from file objects. If
+       you want to use automatic mimetype and etag support, pass a filepath via
+       `filename_or_fp` or `attachment_filename`.
 
-    :param filename_or_fp: the filename of the file to send in `latin-1`.
+    .. versionchanged:: 0.12
+       The `attachment_filename` is preferred over `filename` for MIME-type
+       detection.
+
+    .. versionchanged:: 0.13
+        UTF-8 filenames, as specified in `RFC 2231`_, are supported.
+
+    .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
+
+    :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
                            Alternatively a file object might be provided in
@@ -470,8 +494,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                            back to the traditional method.  Make sure that the
                            file pointer is positioned at the start of data to
                            send before calling :func:`send_file`.
-    :param mimetype: the mimetype of the file if provided, otherwise
-                     auto detection happens.
+    :param mimetype: the mimetype of the file if provided. If a file path is
+                     given, auto detection happens as fallback, otherwise an
+                     error will be raised.
     :param as_attachment: set to ``True`` if you want to send this file with
                           a ``Content-Disposition: attachment`` header.
     :param attachment_filename: the filename for the attachment if it
@@ -488,42 +513,62 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         If a file was passed, this overrides its mtime.
     """
     mtime = None
+    fsize = None
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
-        file = None
-    else:
-        file = filename_or_fp
-        filename = getattr(file, 'name', None)
-
-    if filename is not None:
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
-    if mimetype is None and (filename or attachment_filename):
-        mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+        file = None
+        if attachment_filename is None:
+            attachment_filename = os.path.basename(filename)
+    else:
+        file = filename_or_fp
+        filename = None
+
     if mimetype is None:
-        mimetype = 'application/octet-stream'
+        if attachment_filename is not None:
+            mimetype = mimetypes.guess_type(attachment_filename)[0] \
+                or 'application/octet-stream'
+
+        if mimetype is None:
+            raise ValueError(
+                'Unable to infer MIME-type because no filename is available. '
+                'Please set either `attachment_filename`, pass a filepath to '
+                '`filename_or_fp` or set your own MIME-type via `mimetype`.'
+            )
 
     headers = Headers()
     if as_attachment:
         if attachment_filename is None:
-            if filename is None:
-                raise TypeError('filename unavailable, required for '
-                                'sending as attachment')
-            attachment_filename = os.path.basename(filename)
-        headers.add('Content-Disposition', 'attachment',
-                    filename=attachment_filename)
+            raise TypeError('filename unavailable, required for '
+                            'sending as attachment')
+
+        try:
+            attachment_filename = attachment_filename.encode('latin-1')
+        except UnicodeEncodeError:
+            filenames = {
+                'filename': unicodedata.normalize(
+                    'NFKD', attachment_filename).encode('latin-1', 'ignore'),
+                'filename*': "UTF-8''%s" % url_quote(attachment_filename),
+            }
+        else:
+            filenames = {'filename': attachment_filename}
+
+        headers.add('Content-Disposition', 'attachment', **filenames)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:
             file.close()
         headers['X-Sendfile'] = filename
-        headers['Content-Length'] = os.path.getsize(filename)
+        fsize = os.path.getsize(filename)
+        headers['Content-Length'] = fsize
         data = None
     else:
         if file is None:
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
-            headers['Content-Length'] = os.path.getsize(filename)
+            fsize = os.path.getsize(filename)
+            headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
 
     rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
@@ -541,7 +586,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
 
-    if add_etags and filename is not None and file is None:
+    if add_etags and filename is not None:
         from warnings import warn
 
         try:
@@ -557,12 +602,22 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             warn('Access %s failed, maybe it does not exist, so ignore etags in '
                  'headers' % filename, stacklevel=2)
 
-        if conditional:
+    if conditional:
+        if callable(getattr(Range, 'to_content_range_header', None)):
+            # Werkzeug supports Range Requests
+            # Remove this test when support for Werkzeug <0.12 is dropped
+            try:
+                rv = rv.make_conditional(request, accept_ranges=True,
+                                         complete_length=fsize)
+            except RequestedRangeNotSatisfiable:
+                file.close()
+                raise
+        else:
             rv = rv.make_conditional(request)
-            # make sure we don't send x-sendfile for servers that
-            # ignore the 304 status code for x-sendfile.
-            if rv.status_code == 304:
-                rv.headers.pop('x-sendfile', None)
+        # make sure we don't send x-sendfile for servers that
+        # ignore the 304 status code for x-sendfile.
+        if rv.status_code == 304:
+            rv.headers.pop('x-sendfile', None)
     return rv
 
 
@@ -583,18 +638,24 @@ def safe_join(directory, *pathnames):
     :raises: :class:`~werkzeug.exceptions.NotFound` if one or more passed
             paths fall out of its boundaries.
     """
+
+    parts = [directory]
+
     for filename in pathnames:
         if filename != '':
             filename = posixpath.normpath(filename)
-        for sep in _os_alt_seps:
-            if sep in filename:
-                raise NotFound()
-        if os.path.isabs(filename) or \
-           filename == '..' or \
-           filename.startswith('../'):
+
+        if (
+            any(sep in filename for sep in _os_alt_seps)
+            or os.path.isabs(filename)
+            or filename == '..'
+            or filename.startswith('../')
+        ):
             raise NotFound()
-        directory = os.path.join(directory, filename)
-    return directory
+
+        parts.append(filename)
+
+    return posixpath.join(*parts)
 
 
 def send_from_directory(directory, filename, **options):
@@ -787,43 +848,56 @@ class locked_cached_property(object):
 
 
 class _PackageBoundObject(object):
+    #: The name of the package or module that this app belongs to. Do not
+    #: change this once it is set by the constructor.
+    import_name = None
+
+    #: Location of the template files to be added to the template lookup.
+    #: ``None`` if templates should not be added.
+    template_folder = None
+
+    #: Absolute path to the package on the filesystem. Used to look up
+    #: resources contained in the package.
+    root_path = None
 
     def __init__(self, import_name, template_folder=None, root_path=None):
-        #: The name of the package or module.  Do not change this once
-        #: it was set by the constructor.
         self.import_name = import_name
-
-        #: location of the templates.  ``None`` if templates should not be
-        #: exposed.
         self.template_folder = template_folder
 
         if root_path is None:
             root_path = get_root_path(self.import_name)
 
-        #: Where is the app root located?
         self.root_path = root_path
-
         self._static_folder = None
         self._static_url_path = None
 
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
-    static_folder = property(_get_static_folder, _set_static_folder, doc='''
-    The absolute path to the configured static folder.
-    ''')
+
+    static_folder = property(
+        _get_static_folder, _set_static_folder,
+        doc='The absolute path to the configured static folder.'
+    )
     del _get_static_folder, _set_static_folder
 
     def _get_static_url_path(self):
         if self._static_url_path is not None:
             return self._static_url_path
+
         if self.static_folder is not None:
             return '/' + os.path.basename(self.static_folder)
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
-    static_url_path = property(_get_static_url_path, _set_static_url_path)
+
+    static_url_path = property(
+        _get_static_url_path, _set_static_url_path,
+        doc='The URL prefix that the static route will be registered for.'
+    )
     del _get_static_url_path, _set_static_url_path
 
     @property
@@ -922,3 +996,24 @@ def total_seconds(td):
     :rtype: int
     """
     return td.days * 60 * 60 * 24 + td.seconds
+
+
+def is_ip(value):
+    """Determine if the given string is an IP address.
+
+    :param value: value to check
+    :type value: str
+
+    :return: True if string is an IP address
+    :rtype: bool
+    """
+
+    for family in (socket.AF_INET, socket.AF_INET6):
+        try:
+            socket.inet_pton(family, value)
+        except socket.error:
+            pass
+        else:
+            return True
+
+    return False

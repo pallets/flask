@@ -89,6 +89,28 @@ class Blueprint(_PackageBoundObject):
     warn_on_modifications = False
     _got_registered_once = False
 
+    #: Blueprint local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    json_encoder = None
+    #: Blueprint local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    json_decoder = None
+
+    # TODO remove the next three attrs when Sphinx :inherited-members: works
+    # https://github.com/sphinx-doc/sphinx/issues/741
+
+    #: The name of the package or module that this app belongs to. Do not
+    #: change this once it is set by the constructor.
+    import_name = None
+
+    #: Location of the template files to be added to the template lookup.
+    #: ``None`` if templates should not be added.
+    template_folder = None
+
+    #: Absolute path to the package on the filesystem. Used to look up
+    #: resources contained in the package.
+    root_path = None
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
@@ -137,18 +159,25 @@ class Blueprint(_PackageBoundObject):
         return BlueprintSetupState(self, app, options, first_registration)
 
     def register(self, app, options, first_registration=False):
-        """Called by :meth:`Flask.register_blueprint` to register a blueprint
-        on the application.  This can be overridden to customize the register
-        behavior.  Keyword arguments from
-        :func:`~flask.Flask.register_blueprint` are directly forwarded to this
-        method in the `options` dictionary.
+        """Called by :meth:`Flask.register_blueprint` to register all views
+        and callbacks registered on the blueprint with the application. Creates
+        a :class:`.BlueprintSetupState` and calls each :meth:`record` callback
+        with it.
+
+        :param app: The application this blueprint is being registered with.
+        :param options: Keyword arguments forwarded from
+            :meth:`~Flask.register_blueprint`.
+        :param first_registration: Whether this is the first time this
+            blueprint has been registered on the application.
         """
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
+
         if self.has_static_folder:
-            state.add_url_rule(self.static_url_path + '/<path:filename>',
-                               view_func=self.send_static_file,
-                               endpoint='static')
+            state.add_url_rule(
+                self.static_url_path + '/<path:filename>',
+                view_func=self.send_static_file, endpoint='static'
+            )
 
         for deferred in self.deferred_functions:
             deferred(state)

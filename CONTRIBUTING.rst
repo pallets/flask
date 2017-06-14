@@ -1,89 +1,166 @@
-==========================
 How to contribute to Flask
 ==========================
 
-Thanks for considering contributing to Flask.
+Thank you for considering contributing to Flask!
 
 Support questions
-=================
+-----------------
 
-Please, don't use the issue tracker for this. Check whether the ``#pocoo`` IRC
-channel on Freenode can help with your issue. If your problem is not strictly
-Werkzeug or Flask specific, ``#python`` is generally more active.
-`Stack Overflow <https://stackoverflow.com/>`_ is also worth considering.
+Please, don't use the issue tracker for this. Use one of the following
+resources for questions about your own code:
+
+* The IRC channel ``#pocoo`` on FreeNode.
+* The IRC channel ``#python`` on FreeNode for more general questions.
+* The mailing list flask@python.org for long term discussion or larger issues.
+* Ask on `Stack Overflow`_. Search with Google first using:
+  ``site:stackoverflow.com flask {search term, exception message, etc.}``
+
+.. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?sort=linked
 
 Reporting issues
-================
+----------------
 
-- Under which versions of Python does this happen? This is even more important
-  if your issue is encoding related.
+- Describe what you expected to happen.
+- If possible, include a `minimal, complete, and verifiable example`_ to help
+  us identify the issue. This also helps check that the issue is not with your
+  own code.
+- Describe what actually happened. Include the full traceback if there was an
+  exception.
+- List your Python, Flask, and Werkzeug versions. If possible, check if this
+  issue is already fixed in the repository.
 
-- Under which versions of Werkzeug does this happen? Check if this issue is
-  fixed in the repository.
+.. _minimal, complete, and verifiable example: https://stackoverflow.com/help/mcve
 
 Submitting patches
-==================
+------------------
 
 - Include tests if your patch is supposed to solve a bug, and explain
   clearly under which circumstances the bug happens. Make sure the test fails
   without your patch.
+- Try to follow `PEP8`_, but you may ignore the line length limit if following
+  it would make the code uglier.
 
-- Try to follow `PEP8 <http://legacy.python.org/dev/peps/pep-0008/>`_, but you
-  may ignore the line-length-limit if following it would make the code uglier.
+First time setup
+~~~~~~~~~~~~~~~~
 
+- Download and install the `latest version of git`_.
+- Configure git with your `username`_ and `email`_::
 
-Running the testsuite
----------------------
+        git config --global user.name 'your name'
+        git config --global user.email 'your email'
 
-You probably want to set up a `virtualenv
-<https://virtualenv.readthedocs.io/en/latest/index.html>`_.
+- Make sure you have a `GitHub account`_.
+- Fork Flask to your GitHub account by clicking the `Fork`_ button.
+- `Clone`_ your GitHub fork locally::
 
-The minimal requirement for running the testsuite is ``py.test``.  You can
-install it with::
+        git clone https://github.com/{username}/flask
+        cd flask
 
-    pip install pytest
+- Add the main repository as a remote to update later::
 
-Clone this repository::
+        git remote add pallets https://github.com/pallets/flask
+        git fetch pallets
 
-    git clone https://github.com/pallets/flask.git
+- Create a virtualenv::
 
-Install Flask as an editable package using the current source::
+        python3 -m venv env
+        . env/bin/activate
+        # or "env\Scripts\activate" on Windows
 
-    cd flask
-    pip install --editable .
+- Install Flask in editable mode with development dependencies::
 
-Then you can run the testsuite with::
+        pip install -e ".[dev]"
 
-    py.test
+.. _GitHub account: https://github.com/join
+.. _latest version of git: https://git-scm.com/downloads
+.. _username: https://help.github.com/articles/setting-your-username-in-git/
+.. _email: https://help.github.com/articles/setting-your-email-in-git/
+.. _Fork: https://github.com/pallets/flask/pull/2305#fork-destination-box
+.. _Clone: https://help.github.com/articles/fork-a-repo/#step-2-create-a-local-clone-of-your-fork
 
-With only py.test installed, a large part of the testsuite will get skipped
-though.  Whether this is relevant depends on which part of Flask you're working
-on.  Travis is set up to run the full testsuite when you submit your pull
-request anyways.
+Start coding
+~~~~~~~~~~~~
 
-If you really want to test everything, you will have to install ``tox`` instead
-of ``pytest``. You can install it with::
+- Create a branch to identify the issue you would like to work on (e.g.
+  ``2287-dry-test-suite``)
+- Using your favorite editor, make your changes, `committing as you go`_.
+- Try to follow `PEP8`_, but you may ignore the line length limit if following
+  it would make the code uglier.
+- Include tests that cover any code changes you make. Make sure the test fails
+  without your patch. `Run the tests. <contributing-testsuite_>`_.
+- Push your commits to GitHub and `create a pull request`_.
+- Celebrate 🎉
 
-    pip install tox
+.. _committing as you go: http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _PEP8: https://pep8.org/
+.. _create a pull request: https://help.github.com/articles/creating-a-pull-request/
 
-The ``tox`` command will then run all tests against multiple combinations
-Python versions and dependency versions.
+.. _contributing-testsuite:
+
+Running the tests
+~~~~~~~~~~~~~~~~~
+
+Run the basic test suite with::
+
+    pytest
+
+This only runs the tests for the current environment. Whether this is relevant
+depends on which part of Flask you're working on. Travis-CI will run the full
+suite when you submit your pull request.
+
+The full test suite takes a long time to run because it tests multiple
+combinations of Python and dependencies. You need to have Python 2.6, 2.7, 3.3,
+3.4, 3.5 3.6, and PyPy 2.7 installed to run all of the environments. Then run::
+
+    tox
 
 Running test coverage
----------------------
-Generating a report of lines that do not have unit test coverage can indicate where
-to start contributing.  ``pytest`` integrates with ``coverage.py``, using the ``pytest-cov``
-plugin.  This assumes you have already run the testsuite (see previous section)::
+~~~~~~~~~~~~~~~~~~~~~
 
-    pip install pytest-cov
+Generating a report of lines that do not have test coverage can indicate
+where to start contributing. Run ``pytest`` using ``coverage`` and generate a
+report on the terminal and as an interactive HTML document::
 
-After this has been installed, you can output a report to the command line using this command::
+    coverage run -m pytest
+    coverage report
+    coverage html
+    # then open htmlcov/index.html
 
-    py.test --cov=flask tests/
+Read more about `coverage <https://coverage.readthedocs.io>`_.
 
-Generate a HTML report can be done using this command::
+Running the full test suite with ``tox`` will combine the coverage reports
+from all runs.
 
-    py.test --cov-report html --cov=flask tests/
+``make`` targets
+~~~~~~~~~~~~~~~~
 
-Full docs on ``coverage.py`` are here: https://coverage.readthedocs.io
+Flask provides a ``Makefile`` with various shortcuts. They will ensure that
+all dependencies are installed.
 
+- ``make test`` runs the basic test suite with ``pytest``
+- ``make cov`` runs the basic test suite with ``coverage``
+- ``make test-all`` runs the full test suite with ``tox``
+- ``make docs`` builds the HTML documentation
+
+Caution: zero-padded file modes
+-------------------------------
+
+This repository contains several zero-padded file modes that may cause issues
+when pushing this repository to git hosts other than GitHub. Fixing this is
+destructive to the commit history, so we suggest ignoring these warnings. If it
+fails to push and you're using a self-hosted git service like GitLab, you can
+turn off repository checks in the admin panel.
+
+These files can also cause issues while cloning. If you have ::
+
+    [fetch]
+    fsckobjects = true
+
+or ::
+
+    [receive]
+    fsckObjects = true
+
+set in your git configuration file, cloning this repository will fail. The only
+solution is to set both of the above settings to false while cloning, and then
+setting them back to true after the cloning is finished.
