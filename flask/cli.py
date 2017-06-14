@@ -319,8 +319,10 @@ class ScriptInfo(object):
         be returned.
         """
         __traceback_hide__ = True
+
         if self._loaded_app is not None:
             return self._loaded_app
+
         if self.create_app is not None:
             rv = call_factory(self.create_app, self)
         else:
@@ -330,10 +332,14 @@ class ScriptInfo(object):
                     'the FLASK_APP environment variable.\n\nFor more '
                     'information see '
                     'http://flask.pocoo.org/docs/latest/quickstart/')
+
             rv = locate_app(self, self.app_import_path)
+
         debug = get_debug_flag()
+
         if debug is not None:
-            rv.debug = debug
+            rv._reconfigure_for_run_debug(debug)
+
         self._loaded_app = rv
         return rv
 
