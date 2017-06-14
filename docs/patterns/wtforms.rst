@@ -19,7 +19,7 @@ forms.
    fun.  You can get it from `PyPI
    <https://pypi.python.org/pypi/Flask-WTF>`_.
 
-.. _Flask-WTF: http://pythonhosted.org/Flask-WTF/
+.. _Flask-WTF: https://flask-wtf.readthedocs.io/en/stable/
 
 The Forms
 ---------
@@ -108,7 +108,7 @@ takes advantage of the :file:`_formhelpers.html` template:
 .. sourcecode:: html+jinja
 
     {% from "_formhelpers.html" import render_field %}
-    <form method=post action="/register">
+    <form method=post>
       <dl>
         {{ render_field(form.username) }}
         {{ render_field(form.email) }}

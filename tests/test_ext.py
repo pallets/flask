@@ -21,19 +21,18 @@ from flask._compat import PY2
 
 
 @pytest.fixture(autouse=True)
-def disable_extwarnings(request, recwarn):
+def disable_extwarnings(recwarn):
     from flask.exthook import ExtDeprecationWarning
 
-    def inner():
-        assert set(w.category for w in recwarn.list) \
-            <= set([ExtDeprecationWarning])
-        recwarn.clear()
+    yield
 
-    request.addfinalizer(inner)
+    assert set(w.category for w in recwarn.list) \
+        <= set([ExtDeprecationWarning])
+    recwarn.clear()
 
 
 @pytest.fixture(autouse=True)
-def importhook_setup(monkeypatch, request):
+def importhook_setup(monkeypatch):
     # we clear this out for various reasons.  The most important one is
     # that a real flaskext could be in there which would disable our
     # fake package.  Secondly we want to make sure that the flaskext
@@ -58,12 +57,11 @@ def importhook_setup(monkeypatch, request):
             import_hooks += 1
     assert import_hooks == 1
 
-    def teardown():
-        from flask import ext
-        for key in ext.__dict__:
-            assert '.' not in key
+    yield
 
-    request.addfinalizer(teardown)
+    from flask import ext
+    for key in ext.__dict__:
+        assert '.' not in key
 
 
 @pytest.fixture
@@ -179,8 +177,8 @@ def test_flaskext_broken_package_no_module_caching(flaskext_broken):
 def test_no_error_swallowing(flaskext_broken):
     with pytest.raises(ImportError) as excinfo:
         import flask.ext.broken
-
-    assert excinfo.type is ImportError
+    # python3.6 raises a subclass of ImportError: 'ModuleNotFoundError'
+    assert issubclass(excinfo.type, ImportError)
     if PY2:
         message = 'No module named missing_module'
     else:
