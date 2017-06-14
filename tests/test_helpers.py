@@ -23,7 +23,12 @@ from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
 from flask.helpers import get_debug_flag, make_response
-from pytz import timezone
+try:
+    from pytz import timezone
+except ImportError:
+    has_pytz = False
+else:
+    has_pytz = True
 
 
 def has_encoding(name):
@@ -178,6 +183,7 @@ class TestJSON(object):
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
 
+    @pytest.mark.skipif('not has_pytz')
     @pytest.mark.parametrize('tzname', ('UTC', 'PST8PDT', 'Asia/Seoul'))
     def test_jsonify_aware_datetimes(self, tzname):
         """Test if aware datetime.datetime objects are converted into GMT."""
