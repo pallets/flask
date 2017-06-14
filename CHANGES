@@ -79,6 +79,7 @@ Major release, unreleased
 - Removed error handler caching because it caused unexpected results for some
   exception inheritance hierarchies. Register handlers explicitly for each
   exception if you don't want to traverse the MRO. (`#2362`_)
+- Fix incorrect JSON encoding of aware, non-UTC datetimes. (`#2374`_)
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -102,6 +103,7 @@ Major release, unreleased
 .. _#2354: https://github.com/pallets/flask/pull/2354
 .. _#2358: https://github.com/pallets/flask/pull/2358
 .. _#2362: https://github.com/pallets/flask/pull/2362
+.. _#2374: https://github.com/pallets/flask/pull/2374
 
 Version 0.12.2
 --------------
