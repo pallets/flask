@@ -994,9 +994,7 @@ class Flask(_PackageBoundObject):
         return self.session_interface.make_null_session(self)
 
     @setupmethod
-    def register_blueprint(
-        self, blueprint, **options
-    ):
+    def register_blueprint(self, blueprint, **options):
         """Register a :class:`~flask.Blueprint` on the application. Keyword
         arguments passed to this method will override the defaults set on the
         blueprint.
@@ -1004,6 +1002,7 @@ class Flask(_PackageBoundObject):
         Calls the blueprint's :meth:`~flask.Blueprint.register` method after
         recording the blueprint in the application's :attr:`blueprints`.
 
+        :param blueprint: The blueprint to register.
         :param url_prefix: Blueprint routes will be prefixed with this.
         :param subdomain: Blueprint routes will match on this subdomain.
         :param url_defaults: Blueprint routes will use these default values for
