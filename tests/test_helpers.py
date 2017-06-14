@@ -23,12 +23,6 @@ from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
 from flask._compat import StringIO, text_type
 from flask.helpers import get_debug_flag, make_response
-try:
-    from pytz import timezone
-except ImportError:
-    has_pytz = False
-else:
-    has_pytz = True
 
 
 def has_encoding(name):
@@ -183,15 +177,14 @@ class TestJSON(object):
             assert rv.mimetype == 'application/json'
             assert flask.json.loads(rv.data)['x'] == http_date(d.timetuple())
 
-    @pytest.mark.skipif('not has_pytz')
-    @pytest.mark.parametrize('tzname', ('UTC', 'PST8PDT', 'Asia/Seoul'))
-    def test_jsonify_aware_datetimes(self, tzname):
+    @pytest.mark.parametrize('tz', (('UTC', 0), ('PST', -8), ('KST', 9)))
+    def test_jsonify_aware_datetimes(self, tz):
         """Test if aware datetime.datetime objects are converted into GMT."""
-        dt_naive = datetime.datetime(2017, 1, 1, 12, 34, 56)
-        dt_aware = timezone(tzname).localize(dt_naive)
-        dt_as_gmt = dt_aware.astimezone(timezone('GMT'))
-        expected = dt_as_gmt.strftime('"%a, %d %b %Y %H:%M:%S %Z"')
-        assert flask.json.JSONEncoder().encode(dt_aware) == expected
+        tzinfo = datetime.timezone(datetime.timedelta(hours=tz[1]), name=tz[0])
+        dt = datetime.datetime(2017, 1, 1, 12, 34, 56, tzinfo=tzinfo)
+        gmt = datetime.timezone(datetime.timedelta(), name='GMT')
+        expected = dt.astimezone(gmt).strftime('"%a, %d %b %Y %H:%M:%S %Z"')
+        assert flask.json.JSONEncoder().encode(dt) == expected
 
     def test_jsonify_uuid_types(self, app, client):
         """Test jsonify with uuid.UUID types"""
