@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import io
 import uuid
-from datetime import date
+from datetime import date, datetime
 from flask.globals import current_app, request
 from flask._compat import text_type, PY2
 
@@ -62,6 +62,8 @@ class JSONEncoder(_json.JSONEncoder):
                     return list(iterable)
                 return JSONEncoder.default(self, o)
         """
+        if isinstance(o, datetime):
+            return http_date(o.utctimetuple())
         if isinstance(o, date):
             return http_date(o.timetuple())
         if isinstance(o, uuid.UUID):
