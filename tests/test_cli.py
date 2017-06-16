@@ -181,6 +181,9 @@ def test_locate_app(test_apps):
         script_info, "cliapp.factory:create_app ()")
     pytest.raises(
         NoAppException, locate_app, script_info, "cliapp.importerrorapp")
+    assert locate_app(
+        script_info, "notanpp.py", raise_if_not_found=False
+    ) is None
 
 
 def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
@@ -214,7 +217,7 @@ def test_get_version(test_apps, capsys):
     assert py_ver in out
 
 
-def test_scriptinfo(test_apps):
+def test_scriptinfo(test_apps, monkeypatch):
     """Test of ScriptInfo."""
     obj = ScriptInfo(app_import_path="cliapp.app:testapp")
     assert obj.load_app().name == "testapp"
@@ -227,6 +230,25 @@ def test_scriptinfo(test_apps):
     app = obj.load_app()
     assert app.name == "createapp"
     assert obj.load_app() == app
+
+    obj = ScriptInfo()
+    pytest.raises(NoAppException, obj.load_app)
+
+    # import app from wsgi.py in current directory
+    monkeypatch.chdir(os.path.abspath(os.path.join(
+        os.path.dirname(__file__), 'test_apps', 'helloworld'
+    )))
+    obj = ScriptInfo()
+    app = obj.load_app()
+    assert app.name == 'hello'
+
+    # import app from app.py in current directory
+    monkeypatch.chdir(os.path.abspath(os.path.join(
+        os.path.dirname(__file__), 'test_apps', 'cliapp'
+    )))
+    obj = ScriptInfo()
+    app = obj.load_app()
+    assert app.name == 'testapp'
 
 
 def test_with_appcontext(runner):
