@@ -172,13 +172,16 @@ def prepare_exec_for_file(filename):
         if not os.path.isfile(os.path.join(dirpath, '__init__.py')):
             break
 
-    sys.path.insert(0, dirpath)
+    if sys.path[0] != dirpath:
+        sys.path.insert(0, dirpath)
+
     return '.'.join(module[::-1])
 
 
-def locate_app(script_info, app_id):
+def locate_app(script_info, app_id, raise_if_not_found=True):
     """Attempts to locate the application."""
     __traceback_hide__ = True
+
     if ':' in app_id:
         module, app_obj = app_id.split(':', 1)
     else:
@@ -192,15 +195,23 @@ def locate_app(script_info, app_id):
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[-1].tb_next:
             stack_trace = traceback.format_exc()
-            raise NoAppException('There was an error trying to import'
-                    ' the app (%s):\n%s' % (module, stack_trace))
+            raise NoAppException(
+                'There was an error trying to import the app ({module}):\n'
+                '{stack_trace}'.format(
+                    module=module, stack_trace=stack_trace
+                )
+            )
+        elif raise_if_not_found:
+            raise NoAppException(
+                'The file/path provided (%s) does not appear to exist. Please'
+                ' verify the path is correct. If app is not on PYTHONPATH,'
+                ' ensure the extension is .py.'.format(module=module)
+            )
         else:
-            raise NoAppException('The file/path provided (%s) does not appear'
-                                 ' to exist.  Please verify the path is '
-                                 'correct.  If app is not on PYTHONPATH, '
-                                 'ensure the extension is .py' % module)
+            return
 
     mod = sys.modules[module]
+
     if app_obj is None:
         return find_best_app(script_info, mod)
     else:
@@ -326,14 +337,26 @@ class ScriptInfo(object):
         if self.create_app is not None:
             rv = call_factory(self.create_app, self)
         else:
-            if not self.app_import_path:
+            if self.app_import_path:
+                rv = locate_app(self, self.app_import_path)
+            else:
+                for module in ['wsgi.py', 'app.py']:
+                    import_path = prepare_exec_for_file(module)
+                    rv = locate_app(
+                        self, import_path, raise_if_not_found=False
+                    )
+
+                    if rv:
+                        break
+
+            if not rv:
                 raise NoAppException(
                     'Could not locate Flask application. You did not provide '
-                    'the FLASK_APP environment variable.\n\nFor more '
-                    'information see '
-                    'http://flask.pocoo.org/docs/latest/quickstart/')
-
-            rv = locate_app(self, self.app_import_path)
+                    'the FLASK_APP environment variable, and a wsgi.py or '
+                    'app.py module was not found in the current directory.\n\n'
+                    'For more information see '
+                    'http://flask.pocoo.org/docs/latest/quickstart/'
+                )
 
         debug = get_debug_flag()
 

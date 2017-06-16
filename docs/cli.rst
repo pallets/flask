@@ -25,10 +25,14 @@ your Flask application's :attr:`Flask.cli` instance as well as some
 built-in commands that are always there.  Flask extensions can also
 register more commands there if they desire so.
 
-For the :command:`flask` script to work, an application needs to be
-discovered.  This is achieved by exporting the ``FLASK_APP`` environment
-variable.  It can be either set to an import path or to a filename of a
-Python module that contains a Flask application.
+For the :command:`flask` script to work, an application needs to be discovered.
+Flask looks for a module named :file:`wsgi.py` or :file:`app.py` by default,
+and if it finds one it assumes the application is defined in it.
+
+You can instruct Flask to look for the application in a different module by
+exporting the ``FLASK_APP`` environment variable. It can be either set to an
+import path or to a filename of a Python module that contains a Flask
+application.
 
 In that imported file the name of the app needs to be called ``app`` or
 optionally be specified after a colon.  For instance
