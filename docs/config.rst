@@ -475,7 +475,7 @@ configuration::
     class Config(object):
         DEBUG = False
         TESTING = False
-        DATABASE_URI = 'sqlite://:memory:'
+        DATABASE_URI = 'sqlite:///:memory:'
 
     class ProductionConfig(Config):
         DATABASE_URI = 'mysql://user@localhost/foo'
