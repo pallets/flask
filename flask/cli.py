@@ -177,6 +177,14 @@ def prepare_exec_for_file(filename):
 
     return '.'.join(module[::-1])
 
+def prepare_exec_for_dir(dirpath):
+    """Given a directory this will put the parent directory on the python path
+    and return the directory name. Used for when FLASK_APP is a module that
+    contains an app
+    """
+    sys.path.append(os.path.join(dirpath, os.pardir))
+    return os.path.basename(dirpath)
+
 
 def locate_app(script_info, app_id, raise_if_not_found=True):
     """Attempts to locate the application."""
@@ -222,8 +230,11 @@ def find_default_import_path():
     app = os.environ.get('FLASK_APP')
     if app is None:
         return
-    if os.path.isfile(app):
-        return prepare_exec_for_file(app)
+    if os.path.isdir(app):
+        return prepare_exec_for_dir(app)
+    for path in [app, app + '.py']:
+        if os.path.isfile(path):
+            return prepare_exec_for_file(path)
     return app
 
 
