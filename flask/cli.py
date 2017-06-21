@@ -442,6 +442,7 @@ class FlaskGroup(AppGroup):
             self.add_command(run_command)
             self.add_command(shell_command)
             self.add_command(routes_command)
+            self.add_command(generate_secret_command)
 
         self._loaded_plugin_commands = False
 
@@ -652,6 +653,17 @@ def routes_command(sort, all_methods):
 
     for rule, methods in zip(rules, rule_methods):
         click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
+
+
+@click.command('generate-secret', short_help='Generates a secure random string.')
+@click.option('--length', type=click.IntRange(0), default=30, help='The length of the string to generate.')
+def generate_secret_command(length):
+    """Generates a secure random string.
+
+    It can be used, for example, to set Flask's SECRET_KEY.
+    """
+    import base64
+    click.echo(base64.b64encode(os.urandom(-(-length * 3 // 4))).decode('UTF-8')[:length])
 
 
 cli = FlaskGroup(help="""\
