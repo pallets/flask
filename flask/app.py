@@ -772,15 +772,6 @@ class Flask(_PackageBoundObject):
         """
         return DispatchingJinjaLoader(self)
 
-    def init_jinja_globals(self):
-        """Deprecated.  Used to initialize the Jinja2 globals.
-
-        .. versionadded:: 0.5
-        .. versionchanged:: 0.7
-           This method is deprecated with 0.7.  Override
-           :meth:`create_jinja_environment` instead.
-        """
-
     def select_jinja_autoescape(self, filename):
         """Returns ``True`` if autoescaping should be active for the given
         template name. If no template name is given, returns `True`.
