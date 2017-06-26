@@ -188,18 +188,6 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.10
     app_ctx_globals_class = _AppCtxGlobals
 
-    # Backwards compatibility support
-    def _get_request_globals_class(self):
-        return self.app_ctx_globals_class
-    def _set_request_globals_class(self, value):
-        from warnings import warn
-        warn(DeprecationWarning('request_globals_class attribute is now '
-                                'called app_ctx_globals_class'))
-        self.app_ctx_globals_class = value
-    request_globals_class = property(_get_request_globals_class,
-                                     _set_request_globals_class)
-    del _get_request_globals_class, _set_request_globals_class
-
     #: The class that is used for the ``config`` attribute of this app.
     #: Defaults to :class:`~flask.Config`.
     #:
