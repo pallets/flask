@@ -393,10 +393,6 @@ class Flask(_PackageBoundObject):
         #: To register a view function, use the :meth:`route` decorator.
         self.view_functions = {}
 
-        # support for the now deprecated `error_handlers` attribute.  The
-        # :attr:`error_handler_spec` shall be used now.
-        self._error_handlers = {}
-
         #: A dictionary of all registered error handlers.  The key is ``None``
         #: for error handlers active on the application, otherwise the key is
         #: the name of the blueprint.  Each key points to another dictionary
@@ -407,7 +403,7 @@ class Flask(_PackageBoundObject):
         #:
         #: To register an error handler, use the :meth:`errorhandler`
         #: decorator.
-        self.error_handler_spec = {None: self._error_handlers}
+        self.error_handler_spec = {}
 
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
@@ -562,17 +558,6 @@ class Flask(_PackageBoundObject):
         #:
         #: This is an instance of a :class:`click.Group` object.
         self.cli = cli.AppGroup(self.name)
-
-    def _get_error_handlers(self):
-        from warnings import warn
-        warn(DeprecationWarning('error_handlers is deprecated, use the '
-            'new error_handler_spec attribute instead.'), stacklevel=1)
-        return self._error_handlers
-    def _set_error_handlers(self, value):
-        self._error_handlers = value
-        self.error_handler_spec[None] = value
-    error_handlers = property(_get_error_handlers, _set_error_handlers)
-    del _get_error_handlers, _set_error_handlers
 
     @locked_cached_property
     def name(self):
