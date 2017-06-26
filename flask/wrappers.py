@@ -8,8 +8,6 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from warnings import warn
-
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 
@@ -44,13 +42,7 @@ class JSONMixin(object):
         """This will contain the parsed JSON data if the mimetype indicates
         JSON (:mimetype:`application/json`, see :meth:`is_json`), otherwise it
         will be ``None``.
-
-        .. deprecated:: 1.0
-            Use :meth:`get_json` instead.
         """
-        warn(DeprecationWarning(
-            "'json' is deprecated. Use 'get_json()' instead."
-        ), stacklevel=2)
         return self.get_json()
 
     def _get_data_for_json(self, cache):

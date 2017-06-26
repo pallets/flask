@@ -96,6 +96,9 @@ Major release, unreleased
     - ``Flask.static_path`` - use ``Flask.static_url_path`` instead.
     - ``Request.module`` - use ``Request.blueprint`` instead.
 
+- The ``request.json`` property is no longer deprecated. (`#1421`_)
+
+.. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
 .. _#1898: https://github.com/pallets/flask/pull/1898
