@@ -349,29 +349,38 @@ class Flask(_PackageBoundObject):
     #: resources contained in the package.
     root_path = None
 
-    def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', static_host=None,
-                 host_matching=False, template_folder='templates',
-                 instance_path=None, instance_relative_config=False,
-                 root_path=None):
-        _PackageBoundObject.__init__(self, import_name,
-                                     template_folder=template_folder,
-                                     root_path=root_path)
-        if static_path is not None:
-            from warnings import warn
-            warn(DeprecationWarning('static_path is now called '
-                                    'static_url_path'), stacklevel=2)
-            static_url_path = static_path
+    def __init__(
+        self,
+        import_name,
+        static_url_path=None,
+        static_folder='static',
+        static_host=None,
+        host_matching=False,
+        template_folder='templates',
+        instance_path=None,
+        instance_relative_config=False,
+        root_path=None
+    ):
+        _PackageBoundObject.__init__(
+            self,
+            import_name,
+            template_folder=template_folder,
+            root_path=root_path
+        )
 
         if static_url_path is not None:
             self.static_url_path = static_url_path
+
         if static_folder is not None:
             self.static_folder = static_folder
+
         if instance_path is None:
             instance_path = self.auto_find_instance_path()
         elif not os.path.isabs(instance_path):
-            raise ValueError('If an instance path is provided it must be '
-                             'absolute.  A relative path was given instead.')
+            raise ValueError(
+                'If an instance path is provided it must be absolute.'
+                ' A relative path was given instead.'
+            )
 
         #: Holds the path to the instance folder.
         #:
@@ -547,9 +556,12 @@ class Flask(_PackageBoundObject):
         # development). Also, Google App Engine stores static files somewhere
         if self.has_static_folder:
             assert bool(static_host) == host_matching, 'Invalid static_host/host_matching combination'
-            self.add_url_rule(self.static_url_path + '/<path:filename>',
-                              endpoint='static', host=static_host,
-                              view_func=self.send_static_file)
+            self.add_url_rule(
+                self.static_url_path + '/<path:filename>',
+                endpoint='static',
+                host=static_host,
+                view_func=self.send_static_file
+            )
 
         #: The click command line context for this application.  Commands
         #: registered here show up in the :command:`flask` command once the
