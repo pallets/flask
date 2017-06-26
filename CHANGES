@@ -82,6 +82,16 @@ Major release, unreleased
 - Fix incorrect JSON encoding of aware, non-UTC datetimes. (`#2374`_)
 - Template auto reloading will honor the ``run`` command's ``debug`` flag even
   if ``app.jinja_env`` was already accessed. (`#2373`_)
+- The following old deprecated code was removed. (`#2385`_)
+
+    - ``Flask.init_jinja_globals`` - extend ``Flask.create_jinja_environment``
+      instead.
+    - ``Flask.error_handlers`` - tracked by ``Flask.error_handler_spec``,
+      use ``@app.errorhandler`` to register handlers.
+    - ``Flask.request_globals_class`` - use ``Flask.app_ctx_globals_class``
+      instead.
+    - ``Flask.static_path`` - use ``Flask.static_url_path`` instead.
+    - ``Request.module`` - use ``Request.blueprint`` instead.
 
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
@@ -107,6 +117,7 @@ Major release, unreleased
 .. _#2362: https://github.com/pallets/flask/pull/2362
 .. _#2374: https://github.com/pallets/flask/pull/2374
 .. _#2373: https://github.com/pallets/flask/pull/2373
+.. _#2385: https://github.com/pallets/flask/issues/2385
 
 Version 0.12.2
 --------------
