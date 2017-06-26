@@ -268,40 +268,40 @@ def url_for(endpoint, **values):
     """
     appctx = _app_ctx_stack.top
     reqctx = _request_ctx_stack.top
+
     if appctx is None:
-        raise RuntimeError('Attempted to generate a URL without the '
-                           'application context being pushed. This has to be '
-                           'executed when application context is available.')
+        raise RuntimeError(
+            'Attempted to generate a URL without the application context being'
+            ' pushed. This has to be executed when application context is'
+            ' available.'
+        )
 
     # If request specific information is available we have some extra
     # features that support "relative" URLs.
     if reqctx is not None:
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
-        if not reqctx.request._is_old_module:
-            if endpoint[:1] == '.':
-                if blueprint_name is not None:
-                    endpoint = blueprint_name + endpoint
-                else:
-                    endpoint = endpoint[1:]
-        else:
-            # TODO: get rid of this deprecated functionality in 1.0
-            if '.' not in endpoint:
-                if blueprint_name is not None:
-                    endpoint = blueprint_name + '.' + endpoint
-            elif endpoint.startswith('.'):
+
+        if endpoint[:1] == '.':
+            if blueprint_name is not None:
+                endpoint = blueprint_name + endpoint
+            else:
                 endpoint = endpoint[1:]
+
         external = values.pop('_external', False)
 
     # Otherwise go with the url adapter from the appctx and make
     # the URLs external by default.
     else:
         url_adapter = appctx.url_adapter
+
         if url_adapter is None:
-            raise RuntimeError('Application was not able to create a URL '
-                               'adapter for request independent URL generation. '
-                               'You might be able to fix this by setting '
-                               'the SERVER_NAME config variable.')
+            raise RuntimeError(
+                'Application was not able to create a URL adapter for request'
+                ' independent URL generation. You might be able to fix this by'
+                ' setting the SERVER_NAME config variable.'
+            )
+
         external = values.pop('_external', True)
 
     anchor = values.pop('_anchor', None)
