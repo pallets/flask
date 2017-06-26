@@ -141,10 +141,6 @@ class Request(RequestBase, JSONMixin):
     #: something similar.
     routing_exception = None
 
-    # Switched by the request context until 1.0 to opt in deprecated
-    # module functionality.
-    _is_old_module = False
-
     @property
     def max_content_length(self):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
@@ -160,19 +156,6 @@ class Request(RequestBase, JSONMixin):
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
-
-    @property
-    def module(self):
-        """The name of the current module if the request was dispatched
-        to an actual module.  This is deprecated functionality, use blueprints
-        instead.
-        """
-        from warnings import warn
-        warn(DeprecationWarning('modules were deprecated in favor of '
-                                'blueprints.  Use request.blueprint '
-                                'instead.'), stacklevel=2)
-        if self._is_old_module:
-            return self.blueprint
 
     @property
     def blueprint(self):
