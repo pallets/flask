@@ -188,18 +188,6 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.10
     app_ctx_globals_class = _AppCtxGlobals
 
-    # Backwards compatibility support
-    def _get_request_globals_class(self):
-        return self.app_ctx_globals_class
-    def _set_request_globals_class(self, value):
-        from warnings import warn
-        warn(DeprecationWarning('request_globals_class attribute is now '
-                                'called app_ctx_globals_class'))
-        self.app_ctx_globals_class = value
-    request_globals_class = property(_get_request_globals_class,
-                                     _set_request_globals_class)
-    del _get_request_globals_class, _set_request_globals_class
-
     #: The class that is used for the ``config`` attribute of this app.
     #: Defaults to :class:`~flask.Config`.
     #:
@@ -771,15 +759,6 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         return DispatchingJinjaLoader(self)
-
-    def init_jinja_globals(self):
-        """Deprecated.  Used to initialize the Jinja2 globals.
-
-        .. versionadded:: 0.5
-        .. versionchanged:: 0.7
-           This method is deprecated with 0.7.  Override
-           :meth:`create_jinja_environment` instead.
-        """
 
     def select_jinja_autoescape(self, filename):
         """Returns ``True`` if autoescaping should be active for the given
