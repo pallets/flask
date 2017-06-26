@@ -84,6 +84,9 @@ Major release, unreleased
   if ``app.jinja_env`` was already accessed. (`#2373`_)
 - The following old deprecated code was removed. (`#2385`_)
 
+    - ``flask.ext`` - import extensions directly by their name instead of
+      through the ``flask.ext`` namespace. For example,
+      ``import flask.ext.sqlalchemy`` becomes ``import flask_sqlalchemy``.
     - ``Flask.init_jinja_globals`` - extend ``Flask.create_jinja_environment``
       instead.
     - ``Flask.error_handlers`` - tracked by ``Flask.error_handler_spec``,
