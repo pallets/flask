@@ -203,9 +203,10 @@ def locate_app(script_info, app_id, raise_if_not_found=True):
             )
         elif raise_if_not_found:
             raise NoAppException(
-                'The file/path provided (%s) does not appear to exist. Please'
-                ' verify the path is correct. If app is not on PYTHONPATH,'
-                ' ensure the extension is .py.'.format(module=module)
+                'The file/path provided ({module}) does not appear to exist.'
+                ' Please verify the path is correct. If app is not on'
+                ' PYTHONPATH, ensure the extension is .py.'.format(
+                    module=module)
             )
         else:
             return
