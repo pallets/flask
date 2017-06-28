@@ -33,12 +33,12 @@ initialize it with the config from the same file in :file:`flaskr.py`::
     app.config.from_object(__name__) # load config from this file , flaskr.py
 
     # Load default config and override config from an environment variable
-    app.config.update(dict(
+    app.config.update(
         DATABASE=os.path.join(app.root_path, 'flaskr.db'),
-        SECRET_KEY='development key',
+        SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/',
         USERNAME='admin',
         PASSWORD='default'
-    ))
+    )
     app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 In the above code, the :class:`~flask.Config` object works similarly to a
@@ -77,7 +77,7 @@ method on the config object and provide it with an import name of a
 module.  Flask will then initialize the variable from that module.  Note
 that in all cases, only variable names that are uppercase are considered.
 
-The ``SECRET_KEY`` is needed to keep the client-side sessions secure.
+The :data:`SECRET_KEY` is needed to keep the client-side sessions secure.
 Choose that key wisely and as hard to guess and complex as possible.
 
 Lastly, add a method that allows for easy connections to the specified

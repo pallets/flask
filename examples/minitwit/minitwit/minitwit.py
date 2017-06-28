@@ -22,7 +22,7 @@ from werkzeug import check_password_hash, generate_password_hash
 DATABASE = '/tmp/minitwit.db'
 PER_PAGE = 30
 DEBUG = True
-SECRET_KEY = 'development key'
+SECRET_KEY = b'_5#y2L"F4Q8z\n\xec]/'
 
 # create our little application :)
 app = Flask('minitwit')

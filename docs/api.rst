@@ -103,12 +103,12 @@ Response Objects
 Sessions
 --------
 
-If you have the :attr:`Flask.secret_key` set you can use sessions in Flask
-applications.  A session basically makes it possible to remember
-information from one request to another.  The way Flask does this is by
-using a signed cookie.  So the user can look at the session contents, but
-not modify it unless they know the secret key, so make sure to set that
-to something complex and unguessable.
+If you have set :attr:`Flask.secret_key` (or configured it from
+:data:`SECRET_KEY`) you can use sessions in Flask applications. A session makes
+it possible to remember information from one request to another. The way Flask
+does this is by using a signed cookie. The user can look at the session
+contents, but can't modify it unless they know the secret key, so make sure to
+set that to something complex and unguessable.
 
 To access the current session you can use the :class:`session` object:
 
