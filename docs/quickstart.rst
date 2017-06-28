@@ -160,7 +160,7 @@ Screenshot of the debugger in action:
    :class: screenshot
    :alt: screenshot of debugger in action
 
-More information on using the debugger can be found in the `Werkzeug 
+More information on using the debugger can be found in the `Werkzeug
 documentation`_.
 
 .. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
@@ -724,6 +724,9 @@ sessions work::
 
     app = Flask(__name__)
 
+    # Set the secret key to some random bytes. Keep this really secret!
+    app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
     @app.route('/')
     def index():
         if 'username' in session:
@@ -748,24 +751,18 @@ sessions work::
         session.pop('username', None)
         return redirect(url_for('index'))
 
-    # set the secret key.  keep this really secret:
-    app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-
 The :func:`~flask.escape` mentioned here does escaping for you if you are
 not using the template engine (as in this example).
 
 .. admonition:: How to generate good secret keys
 
-   The problem with random is that it's hard to judge what is truly random.  And
-   a secret key should be as random as possible.  Your operating system
-   has ways to generate pretty random stuff based on a cryptographic
-   random generator which can be used to get such a key::
+    A secret key should be as random as possible. Your operating system has
+    ways to generate pretty random data based on a cryptographic random
+    generator. Use the following command to quickly generate a value for
+    :attr:`Flask.secret_key` (or :data:`SECRET_KEY`)::
 
-       >>> import os
-       >>> os.urandom(24)
-       '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-
-       Just take that thing and copy/paste it into your code and you're done.
+        $ python -c 'import os; print(os.urandom(16))'
+        b'_5#y2L"F4Q8z\n\xec]/'
 
 A note on cookie-based sessions: Flask will take the values you put into the
 session object and serialize them into a cookie.  If you are finding some

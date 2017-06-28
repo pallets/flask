@@ -19,11 +19,11 @@ import pytest
 
 # config keys used for the TestConfig
 TEST_KEY = 'foo'
-SECRET_KEY = 'devkey'
+SECRET_KEY = 'config'
 
 
 def common_object_test(app):
-    assert app.secret_key == 'devkey'
+    assert app.secret_key == 'config'
     assert app.config['TEST_KEY'] == 'foo'
     assert 'TestConfig' not in app.config
 
@@ -50,21 +50,21 @@ def test_config_from_json():
 def test_config_from_mapping():
     app = flask.Flask(__name__)
     app.config.from_mapping({
-        'SECRET_KEY': 'devkey',
+        'SECRET_KEY': 'config',
         'TEST_KEY': 'foo'
     })
     common_object_test(app)
 
     app = flask.Flask(__name__)
     app.config.from_mapping([
-        ('SECRET_KEY', 'devkey'),
+        ('SECRET_KEY', 'config'),
         ('TEST_KEY', 'foo')
     ])
     common_object_test(app)
 
     app = flask.Flask(__name__)
     app.config.from_mapping(
-        SECRET_KEY='devkey',
+        SECRET_KEY='config',
         TEST_KEY='foo'
     )
     common_object_test(app)
@@ -81,7 +81,8 @@ def test_config_from_class():
         TEST_KEY = 'foo'
 
     class Test(Base):
-        SECRET_KEY = 'devkey'
+        SECRET_KEY = 'config'
+
     app = flask.Flask(__name__)
     app.config.from_object(Test)
     common_object_test(app)
