@@ -221,11 +221,11 @@ class Flask(_PackageBoundObject):
     testing = ConfigAttribute('TESTING')
 
     #: If a secret key is set, cryptographic components can use this to
-    #: sign cookies and other things.  Set this to a complex random value
+    #: sign cookies and other things. Set this to a complex random value
     #: when you want to use the secure cookie for instance.
     #:
     #: This attribute can also be configured from the config with the
-    #: ``SECRET_KEY`` configuration key.  Defaults to ``None``.
+    #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
     secret_key = ConfigAttribute('SECRET_KEY')
 
     #: The secure cookie uses this for the name of the session cookie.

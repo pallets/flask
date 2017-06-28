@@ -107,8 +107,6 @@ def test_blueprint_with_subdomain(app, client):
 
 
 def test_redirect_keep_session(app, client, app_ctx):
-    app.secret_key = 'testing'
-
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if flask.request.method == 'POST':
@@ -139,8 +137,6 @@ def test_redirect_keep_session(app, client, app_ctx):
 
 
 def test_session_transactions(app, client):
-    app.secret_key = 'testing'
-
     @app.route('/')
     def index():
         return text_type(flask.session['foo'])
@@ -169,8 +165,6 @@ def test_session_transactions_no_null_sessions():
 
 
 def test_session_transactions_keep_context(app, client, req_ctx):
-    app.secret_key = 'testing'
-
     rv = client.get('/')
     req = flask.request._get_current_object()
     assert req is not None

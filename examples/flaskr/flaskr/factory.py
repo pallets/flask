@@ -22,7 +22,7 @@ def create_app(config=None):
     app.config.update(dict(
         DATABASE=os.path.join(app.root_path, 'flaskr.db'),
         DEBUG=True,
-        SECRET_KEY='development key',
+        SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/',
         USERNAME='admin',
         PASSWORD='default'
     ))
