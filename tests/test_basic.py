@@ -220,8 +220,6 @@ def test_endpoint_decorator(app, client):
 
 
 def test_session(app, client):
-    app.secret_key = 'testkey'
-
     @app.route('/set', methods=['POST'])
     def set():
         flask.session['value'] = flask.request.form['value']
@@ -237,7 +235,6 @@ def test_session(app, client):
 
 def test_session_using_server_name(app, client):
     app.config.update(
-        SECRET_KEY='foo',
         SERVER_NAME='example.com'
     )
 
@@ -253,7 +250,6 @@ def test_session_using_server_name(app, client):
 
 def test_session_using_server_name_and_port(app, client):
     app.config.update(
-        SECRET_KEY='foo',
         SERVER_NAME='example.com:8080'
     )
 
@@ -269,7 +265,6 @@ def test_session_using_server_name_and_port(app, client):
 
 def test_session_using_server_name_port_and_path(app, client):
     app.config.update(
-        SECRET_KEY='foo',
         SERVER_NAME='example.com:8080',
         APPLICATION_ROOT='/foo'
     )
@@ -297,7 +292,6 @@ def test_session_using_application_root(app, client):
 
     app.wsgi_app = PrefixPathMiddleware(app.wsgi_app, '/bar')
     app.config.update(
-        SECRET_KEY='foo',
         APPLICATION_ROOT='/bar'
     )
 
@@ -312,7 +306,6 @@ def test_session_using_application_root(app, client):
 
 def test_session_using_session_settings(app, client):
     app.config.update(
-        SECRET_KEY='foo',
         SERVER_NAME='www.example.com:8080',
         APPLICATION_ROOT='/test',
         SESSION_COOKIE_DOMAIN='.example.com',
@@ -336,7 +329,6 @@ def test_session_using_session_settings(app, client):
 
 def test_session_localhost_warning(recwarn, app, client):
     app.config.update(
-        SECRET_KEY='testing',
         SERVER_NAME='localhost:5000',
     )
 
@@ -353,7 +345,6 @@ def test_session_localhost_warning(recwarn, app, client):
 
 def test_session_ip_warning(recwarn, app, client):
     app.config.update(
-        SECRET_KEY='testing',
         SERVER_NAME='127.0.0.1:5000',
     )
 
@@ -368,8 +359,8 @@ def test_session_ip_warning(recwarn, app, client):
     assert 'cookie domain is an IP' in str(w.message)
 
 
-def test_missing_session():
-    app = flask.Flask(__name__)
+def test_missing_session(app):
+    app.secret_key = None
 
     def expect_exception(f, *args, **kwargs):
         e = pytest.raises(RuntimeError, f, *args, **kwargs)
@@ -383,7 +374,6 @@ def test_missing_session():
 
 def test_session_expiration(app, client):
     permanent = True
-    app.secret_key = 'testkey'
 
     @app.route('/')
     def index():
@@ -415,8 +405,6 @@ def test_session_expiration(app, client):
 
 
 def test_session_stored_last(app, client):
-    app.secret_key = 'development-key'
-
     @app.after_request
     def modify_session(response):
         flask.session['foo'] = 42
@@ -431,7 +419,6 @@ def test_session_stored_last(app, client):
 
 
 def test_session_special_types(app, client):
-    app.secret_key = 'development-key'
     now = datetime.utcnow().replace(microsecond=0)
     the_uuid = uuid.uuid4()
 
@@ -463,7 +450,6 @@ def test_session_special_types(app, client):
 
 
 def test_session_cookie_setting(app):
-    app.secret_key = 'dev key'
     is_permanent = True
 
     @app.route('/bump')
@@ -505,8 +491,6 @@ def test_session_cookie_setting(app):
 
 
 def test_session_vary_cookie(app, client):
-    app.secret_key = 'testkey'
-
     @app.route('/set')
     def set_session():
         flask.session['test'] = 'test'
@@ -562,8 +546,6 @@ def test_session_vary_cookie(app, client):
 
 
 def test_flashes(app, req_ctx):
-    app.secret_key = 'testkey'
-
     assert not flask.session.modified
     flask.flash('Zap')
     flask.session.modified = False
@@ -578,8 +560,6 @@ def test_extended_flashing(app):
     # Specifically, if app.testing is not set to True, the AssertionErrors
     # in the view functions will cause a 500 response to the test client
     # instead of propagating exceptions.
-
-    app.secret_key = 'testkey'
 
     @app.route('/')
     def index():

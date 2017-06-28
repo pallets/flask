@@ -52,8 +52,6 @@ def test_request_less_rendering(app, app_ctx):
 
 
 def test_standard_context(app, client):
-    app.secret_key = 'development key'
-
     @app.route('/')
     def index():
         flask.g.foo = 23
