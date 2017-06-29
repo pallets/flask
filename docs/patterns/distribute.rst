@@ -88,8 +88,8 @@ support them and they make debugging a lot harder.
 Tagging Builds
 --------------
 
-It is useful to distinguish between release and development builds.  Add a
-:file:`setup.cfg` file to configure these options.
+It is useful to distinguish between release and development builds. Add a
+:file:`setup.cfg` file to configure these options. ::
 
     [egg_info]
     tag_build = .dev
