@@ -9,7 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pickle
 import re
 import time
 import uuid
