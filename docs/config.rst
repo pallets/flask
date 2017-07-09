@@ -39,7 +39,7 @@ method::
 
     app.config.update(
         DEBUG=True,
-        SECRET_KEY='...'
+        SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/'
     )
 
 .. admonition:: Debug Mode with the ``flask`` Script
@@ -121,7 +121,8 @@ The following configuration values are used internally by Flask:
     application. It should be a long random string of bytes, although unicode
     is accepted too. For example, copy the output of this to your config::
 
-        python -c 'import os; print(os.urandom(32))'
+        python -c 'import os; print(os.urandom(16))'
+        b'_5#y2L"F4Q8z\n\xec]/'
 
     **Do not reveal the secret key when posting questions or committing code.**
 
@@ -367,7 +368,7 @@ Here is an example of a configuration file::
 
     # Example configuration
     DEBUG = False
-    SECRET_KEY = '?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
+    SECRET_KEY = b'_5#y2L"F4Q8z\n\xec]/'
 
 Make sure to load the configuration very early on, so that extensions have
 the ability to access the configuration when starting up.  There are other
@@ -385,7 +386,7 @@ from the environment.
 Environment variables can be set on Linux or OS X with the export command in
 the shell before starting the server::
 
-    $ export SECRET_KEY='?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
+    $ export SECRET_KEY='5f352379324c22463451387a0aec5d2f'
     $ export DEBUG=False
     $ python run-app.py
      * Running on http://127.0.0.1:5000/
@@ -393,7 +394,7 @@ the shell before starting the server::
 
 On Windows systems use the `set` builtin instead::
 
-    >set SECRET_KEY='?\xbf,\xb4\x8d\xa3"<\x9c\xb0@\x0f5\xab,w\xee\x8d$0\x13\x8b83'
+    >set SECRET_KEY='5f352379324c22463451387a0aec5d2f'
     >set DEBUG=False
 
 While this approach is straightforward to use, it is important to remember that

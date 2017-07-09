@@ -157,10 +157,7 @@ def test_appcontext_signals():
         flask.appcontext_popped.disconnect(record_pop, app)
 
 
-def test_flash_signal():
-    app = flask.Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret'
-
+def test_flash_signal(app):
     @app.route('/')
     def index():
         flask.flash('This is a flash message', category='notice')

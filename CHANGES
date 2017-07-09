@@ -84,7 +84,24 @@ Major release, unreleased
   if ``app.jinja_env`` was already accessed. (`#2373`_)
 - The ``flask`` command no longer requires that the ``FLASK_APP`` environment
   variable have a ``.py`` extension. (`#2383`_)
+  
+- The following old deprecated code was removed. (`#2385`_)
 
+    - ``flask.ext`` - import extensions directly by their name instead of
+      through the ``flask.ext`` namespace. For example,
+      ``import flask.ext.sqlalchemy`` becomes ``import flask_sqlalchemy``.
+    - ``Flask.init_jinja_globals`` - extend ``Flask.create_jinja_environment``
+      instead.
+    - ``Flask.error_handlers`` - tracked by ``Flask.error_handler_spec``,
+      use ``@app.errorhandler`` to register handlers.
+    - ``Flask.request_globals_class`` - use ``Flask.app_ctx_globals_class``
+      instead.
+    - ``Flask.static_path`` - use ``Flask.static_url_path`` instead.
+    - ``Request.module`` - use ``Request.blueprint`` instead.
+
+- The ``request.json`` property is no longer deprecated. (`#1421`_)
+
+.. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
 .. _#1898: https://github.com/pallets/flask/pull/1898
@@ -110,6 +127,7 @@ Major release, unreleased
 .. _#2374: https://github.com/pallets/flask/pull/2374
 .. _#2373: https://github.com/pallets/flask/pull/2373
 .. _#2383: https://github.com/pallets/flask/pull/2383
+.. _#2385: https://github.com/pallets/flask/issues/2385
 
 Version 0.12.2
 --------------

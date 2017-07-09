@@ -188,18 +188,6 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.10
     app_ctx_globals_class = _AppCtxGlobals
 
-    # Backwards compatibility support
-    def _get_request_globals_class(self):
-        return self.app_ctx_globals_class
-    def _set_request_globals_class(self, value):
-        from warnings import warn
-        warn(DeprecationWarning('request_globals_class attribute is now '
-                                'called app_ctx_globals_class'))
-        self.app_ctx_globals_class = value
-    request_globals_class = property(_get_request_globals_class,
-                                     _set_request_globals_class)
-    del _get_request_globals_class, _set_request_globals_class
-
     #: The class that is used for the ``config`` attribute of this app.
     #: Defaults to :class:`~flask.Config`.
     #:
@@ -233,11 +221,11 @@ class Flask(_PackageBoundObject):
     testing = ConfigAttribute('TESTING')
 
     #: If a secret key is set, cryptographic components can use this to
-    #: sign cookies and other things.  Set this to a complex random value
+    #: sign cookies and other things. Set this to a complex random value
     #: when you want to use the secure cookie for instance.
     #:
     #: This attribute can also be configured from the config with the
-    #: ``SECRET_KEY`` configuration key.  Defaults to ``None``.
+    #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
     secret_key = ConfigAttribute('SECRET_KEY')
 
     #: The secure cookie uses this for the name of the session cookie.
@@ -361,29 +349,38 @@ class Flask(_PackageBoundObject):
     #: resources contained in the package.
     root_path = None
 
-    def __init__(self, import_name, static_path=None, static_url_path=None,
-                 static_folder='static', static_host=None,
-                 host_matching=False, template_folder='templates',
-                 instance_path=None, instance_relative_config=False,
-                 root_path=None):
-        _PackageBoundObject.__init__(self, import_name,
-                                     template_folder=template_folder,
-                                     root_path=root_path)
-        if static_path is not None:
-            from warnings import warn
-            warn(DeprecationWarning('static_path is now called '
-                                    'static_url_path'), stacklevel=2)
-            static_url_path = static_path
+    def __init__(
+        self,
+        import_name,
+        static_url_path=None,
+        static_folder='static',
+        static_host=None,
+        host_matching=False,
+        template_folder='templates',
+        instance_path=None,
+        instance_relative_config=False,
+        root_path=None
+    ):
+        _PackageBoundObject.__init__(
+            self,
+            import_name,
+            template_folder=template_folder,
+            root_path=root_path
+        )
 
         if static_url_path is not None:
             self.static_url_path = static_url_path
+
         if static_folder is not None:
             self.static_folder = static_folder
+
         if instance_path is None:
             instance_path = self.auto_find_instance_path()
         elif not os.path.isabs(instance_path):
-            raise ValueError('If an instance path is provided it must be '
-                             'absolute.  A relative path was given instead.')
+            raise ValueError(
+                'If an instance path is provided it must be absolute.'
+                ' A relative path was given instead.'
+            )
 
         #: Holds the path to the instance folder.
         #:
@@ -405,10 +402,6 @@ class Flask(_PackageBoundObject):
         #: To register a view function, use the :meth:`route` decorator.
         self.view_functions = {}
 
-        # support for the now deprecated `error_handlers` attribute.  The
-        # :attr:`error_handler_spec` shall be used now.
-        self._error_handlers = {}
-
         #: A dictionary of all registered error handlers.  The key is ``None``
         #: for error handlers active on the application, otherwise the key is
         #: the name of the blueprint.  Each key points to another dictionary
@@ -419,7 +412,7 @@ class Flask(_PackageBoundObject):
         #:
         #: To register an error handler, use the :meth:`errorhandler`
         #: decorator.
-        self.error_handler_spec = {None: self._error_handlers}
+        self.error_handler_spec = {}
 
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
@@ -563,9 +556,12 @@ class Flask(_PackageBoundObject):
         # development). Also, Google App Engine stores static files somewhere
         if self.has_static_folder:
             assert bool(static_host) == host_matching, 'Invalid static_host/host_matching combination'
-            self.add_url_rule(self.static_url_path + '/<path:filename>',
-                              endpoint='static', host=static_host,
-                              view_func=self.send_static_file)
+            self.add_url_rule(
+                self.static_url_path + '/<path:filename>',
+                endpoint='static',
+                host=static_host,
+                view_func=self.send_static_file
+            )
 
         #: The click command line context for this application.  Commands
         #: registered here show up in the :command:`flask` command once the
@@ -574,17 +570,6 @@ class Flask(_PackageBoundObject):
         #:
         #: This is an instance of a :class:`click.Group` object.
         self.cli = cli.AppGroup(self.name)
-
-    def _get_error_handlers(self):
-        from warnings import warn
-        warn(DeprecationWarning('error_handlers is deprecated, use the '
-            'new error_handler_spec attribute instead.'), stacklevel=1)
-        return self._error_handlers
-    def _set_error_handlers(self, value):
-        self._error_handlers = value
-        self.error_handler_spec[None] = value
-    error_handlers = property(_get_error_handlers, _set_error_handlers)
-    del _get_error_handlers, _set_error_handlers
 
     @locked_cached_property
     def name(self):
@@ -771,15 +756,6 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         return DispatchingJinjaLoader(self)
-
-    def init_jinja_globals(self):
-        """Deprecated.  Used to initialize the Jinja2 globals.
-
-        .. versionadded:: 0.5
-        .. versionchanged:: 0.7
-           This method is deprecated with 0.7.  Override
-           :meth:`create_jinja_environment` instead.
-        """
 
     def select_jinja_autoescape(self, filename):
         """Returns ``True`` if autoescaping should be active for the given
