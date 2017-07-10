@@ -81,7 +81,7 @@ def test_app_tearing_down_with_previous_exception(app):
     assert cleanup_stuff == [None]
 
 
-def test_app_tearing_down_with_handled_exception(app):
+def test_app_tearing_down_with_handled_exception_by_except_block(app):
     cleanup_stuff = []
 
     @app.teardown_appcontext
@@ -95,6 +95,49 @@ def test_app_tearing_down_with_handled_exception(app):
             pass
 
     assert cleanup_stuff == [None]
+
+
+def test_app_tearing_down_with_handled_exception_by_app_handler(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+    cleanup_stuff = []
+
+    @app.teardown_appcontext
+    def cleanup(exception):
+        cleanup_stuff.append(exception)
+
+    @app.route('/')
+    def index():
+        raise Exception('dummy')
+
+    @app.errorhandler(Exception)
+    def handler(f):
+        return flask.jsonify(str(f))
+
+    with app.app_context():
+        client.get('/')
+
+    assert cleanup_stuff == [None]
+
+
+def test_app_tearing_down_with_unhandled_exception(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+    cleanup_stuff = []
+
+    @app.teardown_appcontext
+    def cleanup(exception):
+        cleanup_stuff.append(exception)
+
+    @app.route('/')
+    def index():
+        raise Exception('dummy')
+
+    with pytest.raises(Exception):
+        with app.app_context():
+            client.get('/')
+
+    assert len(cleanup_stuff) == 1
+    assert isinstance(cleanup_stuff[0], Exception)
+    assert str(cleanup_stuff[0]) == 'dummy'
 
 
 def test_app_ctx_globals_methods(app, app_ctx):
