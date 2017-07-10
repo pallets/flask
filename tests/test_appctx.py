@@ -97,12 +97,9 @@ def test_app_tearing_down_with_handled_exception_by_except_block(app):
     assert cleanup_stuff == [None]
 
 
-def test_app_tearing_down_with_handled_exception_by_app_handler(app):
+def test_app_tearing_down_with_handled_exception_by_app_handler(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     cleanup_stuff = []
-
-    class AppConfig():
-        PROPAGATE_EXCEPTIONS = True
-    app.config.from_object(AppConfig())
 
     @app.teardown_appcontext
     def cleanup(exception):
@@ -116,19 +113,15 @@ def test_app_tearing_down_with_handled_exception_by_app_handler(app):
     def handler(f):
         return flask.jsonify(str(f))
 
-    test_client = app.test_client()
     with app.app_context():
-        test_client.get('/')
+        client.get('/')
 
     assert cleanup_stuff == [None]
 
 
-def test_app_tearing_down_with_unhandled_exception(app):
+def test_app_tearing_down_with_unhandled_exception(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     cleanup_stuff = []
-
-    class AppConfig():
-        PROPAGATE_EXCEPTIONS = True
-    app.config.from_object(AppConfig())
 
     @app.teardown_appcontext
     def cleanup(exception):
@@ -138,10 +131,9 @@ def test_app_tearing_down_with_unhandled_exception(app):
     def index():
         raise Exception('dummy')
 
-    test_client = app.test_client()
     with pytest.raises(Exception):
         with app.app_context():
-            test_client.get('/')
+            client.get('/')
 
     assert len(cleanup_stuff) == 1
     assert isinstance(cleanup_stuff[0], Exception)
