@@ -1485,8 +1485,8 @@ class Flask(_PackageBoundObject):
         context it would also be called when you pop a request context.
 
         When a teardown function was called because of an unhandled exception
-        it will be passed an error object.  Note that if a :meth:`errorhandler`
-        is registered, it will handle the exception and the teardown will not
+        it will be passed an error object. If an :meth:`errorhandler` is
+        registered, it will handle the exception and the teardown will not
         receive it.
 
         The return values of teardown functions are ignored.
