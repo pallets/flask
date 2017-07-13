@@ -15,6 +15,7 @@ import werkzeug
 
 from flask._compat import text_type
 from flask.json import jsonify
+from flask.testing import make_test_environ_builder
 
 
 def test_environ_defaults_from_config(app, client):
@@ -72,6 +73,23 @@ def test_environ_base_modified(app, client, app_ctx):
     rv = client.get('/')
     assert rv.data == b'0.0.0.1'
     assert flask.g.user_agent == 'Bar'
+
+
+def test_client_open_environ(app, client, request):
+    @app.route('/index')
+    def index():
+        return flask.request.remote_addr
+
+    builder = make_test_environ_builder(app, path='/index', method='GET')
+    request.addfinalizer(builder.close)
+
+    rv = client.open(builder)
+    assert rv.data == b'127.0.0.1'
+
+    environ = builder.get_environ()
+    client.environ_base['REMOTE_ADDR'] = '127.0.0.2'
+    rv = client.open(environ)
+    assert rv.data == b'127.0.0.2'
 
 
 def test_specify_url_scheme(app, client):
