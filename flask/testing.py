@@ -144,19 +144,41 @@ class FlaskClient(Client):
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
-        kwargs.setdefault('environ_overrides', {}) \
-            ['flask._preserve_context'] = self.preserve_context
-        kwargs.setdefault('environ_base', self.environ_base)
-
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)
         follow_redirects = kwargs.pop('follow_redirects', False)
-        builder = make_test_environ_builder(self.application, *args, **kwargs)
 
-        return Client.open(self, builder,
-                           as_tuple=as_tuple,
-                           buffered=buffered,
-                           follow_redirects=follow_redirects)
+        if (
+            not kwargs and len(args) == 1
+            and isinstance(args[0], (EnvironBuilder, dict))
+        ):
+            environ = self.environ_base.copy()
+
+            if isinstance(args[0], EnvironBuilder):
+                environ.update(args[0].get_environ())
+            else:
+                environ.update(args[0])
+
+            environ['flask._preserve_context'] = self.preserve_context
+        else:
+            kwargs.setdefault('environ_overrides', {}) \
+                ['flask._preserve_context'] = self.preserve_context
+            kwargs.setdefault('environ_base', self.environ_base)
+            builder = make_test_environ_builder(
+                self.application, *args, **kwargs
+            )
+
+            try:
+                environ = builder.get_environ()
+            finally:
+                builder.close()
+
+        return Client.open(
+            self, environ,
+            as_tuple=as_tuple,
+            buffered=buffered,
+            follow_redirects=follow_redirects
+        )
 
     def __enter__(self):
         if self.preserve_context:
