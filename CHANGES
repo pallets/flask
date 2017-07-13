@@ -82,6 +82,9 @@ Major release, unreleased
 - Fix incorrect JSON encoding of aware, non-UTC datetimes. (`#2374`_)
 - Template auto reloading will honor the ``run`` command's ``debug`` flag even
   if ``app.jinja_env`` was already accessed. (`#2373`_)
+- The ``flask`` command no longer requires that the ``FLASK_APP`` environment
+  variable have a ``.py`` extension. (`#2383`_)
+  
 - The following old deprecated code was removed. (`#2385`_)
 
     - ``flask.ext`` - import extensions directly by their name instead of
@@ -125,6 +128,7 @@ Major release, unreleased
 .. _#2362: https://github.com/pallets/flask/pull/2362
 .. _#2374: https://github.com/pallets/flask/pull/2374
 .. _#2373: https://github.com/pallets/flask/pull/2373
+.. _#2383: https://github.com/pallets/flask/pull/2383
 .. _#2385: https://github.com/pallets/flask/issues/2385
 .. _#2412: https://github.com/pallets/flask/pull/2412
 
