@@ -820,7 +820,9 @@ class Flask(_PackageBoundObject):
         self.debug = debug
         self.jinja_env.auto_reload = self.templates_auto_reload
 
-    def run(self, host=None, port=None, debug=None, **options):
+    def run(
+        self, host=None, port=None, debug=None, load_dotenv=True, **options
+    ):
         """Runs the application on a local development server.
 
         Do not use ``run()`` in a production setting. It is not intended to
@@ -849,29 +851,39 @@ class Flask(_PackageBoundObject):
            won't catch any exceptions because there won't be any to
            catch.
 
+        :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
+            have the server available externally as well. Defaults to
+            ``'127.0.0.1'`` or the host in the ``SERVER_NAME`` config variable
+            if present.
+        :param port: the port of the webserver. Defaults to ``5000`` or the
+            port defined in the ``SERVER_NAME`` config variable if present.
+        :param debug: if given, enable or disable debug mode. See
+            :attr:`debug`.
+        :param load_dotenv: Load the nearest :file:`.env` and :file:`.flaskenv`
+            files to set environment variables. Will also change the working
+            directory to the directory containing the first file found.
+        :param options: the options to be forwarded to the underlying Werkzeug
+            server. See :func:`werkzeug.serving.run_simple` for more
+            information.
+
+        .. versionchanged:: 1.0
+            If installed, python-dotenv will be used to load environment
+            variables from :file:`.env` and :file:`.flaskenv` files.
+
         .. versionchanged:: 0.10
            The default port is now picked from the ``SERVER_NAME`` variable.
 
-        :param host: the hostname to listen on. Set this to ``'0.0.0.0'`` to
-                     have the server available externally as well. Defaults to
-                     ``'127.0.0.1'`` or the host in the ``SERVER_NAME`` config
-                     variable if present.
-        :param port: the port of the webserver. Defaults to ``5000`` or the
-                     port defined in the ``SERVER_NAME`` config variable if
-                     present.
-        :param debug: if given, enable or disable debug mode.
-                      See :attr:`debug`.
-        :param options: the options to be forwarded to the underlying
-                        Werkzeug server.  See
-                        :func:`werkzeug.serving.run_simple` for more
-                        information.
         """
         # Change this into a no-op if the server is invoked from the
         # command line.  Have a look at cli.py for more information.
-        if os.environ.get('FLASK_RUN_FROM_CLI_SERVER') == '1':
+        if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
             from .debughelpers import explain_ignored_app_run
             explain_ignored_app_run()
             return
+
+        if load_dotenv:
+            from flask.cli import load_dotenv
+            load_dotenv()
 
         if debug is not None:
             self._reconfigure_for_run_debug(bool(debug))

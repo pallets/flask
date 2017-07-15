@@ -41,9 +41,12 @@ use them if you install them.
 * `SimpleJSON`_ is a fast JSON implementation that is compatible with
   Python's ``json`` module. It is preferred for JSON operations if it is
   installed.
+* `python-dotenv`_ enables support for :ref:`dotenv` when running ``flask``
+  commands.
 
 .. _Blinker: https://pythonhosted.org/blinker/
 .. _SimpleJSON: https://simplejson.readthedocs.io/
+.. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 
 Virtual environments
 --------------------

@@ -75,8 +75,10 @@ setup(
         'click>=4.0',
     ],
     extras_require={
+        'dotenv': ['python-dotenv'],
         'dev': [
             'blinker',
+            'python-dotenv',
             'greenlet',
             'pytest>=3',
             'coverage',
