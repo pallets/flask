@@ -97,9 +97,8 @@ Custom Commands
 ---------------
 
 If you want to add more commands to the shell script you can do this
-easily.  Flask uses `click`_ for the command interface which makes
-creating custom commands very easy.  For instance if you want a shell
-command to initialize the database you can do this::
+easily. For instance if you want a shell command to initialize the database you
+can do this::
 
     import click
     from flask import Flask
@@ -133,6 +132,35 @@ decorator::
     @app.cli.command(with_appcontext=False)
     def example():
         pass
+
+
+.. _dotenv:
+
+Loading Environment Variables From ``.env`` Files
+-------------------------------------------------
+
+If `python-dotenv`_ is installed, running the :command:`flask` command will set
+environment variables defined in the files :file:`.env` and :file:`.flaskenv`.
+This can be used to avoid having to set ``FLASK_APP`` manually every time you
+open a new terminal, and to set configuration using environment variables
+similar to how some deployment services work.
+
+Variables set on the command line are used over those set in :file:`.env`,
+which are used over those set in :file:`.flaskenv`. :file:`.flaskenv` should be
+used for public variables, such as ``FLASK_APP``, while :file:`.env` should not
+be committed to your repository so that it can set private variables.
+
+Directories are scanned upwards from the directory you call :command:`flask`
+from to locate the files. The current working directory will be set to the
+location of the file, with the assumption that that is the top level project
+directory.
+
+The files are only loaded by the :command:`flask` command or calling
+:meth:`~flask.Flask.run`. If you would like to load these files when running in
+production, you should call :func:`~flask.cli.load_dotenv` manually.
+
+.. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
+
 
 Factory Functions
 -----------------
