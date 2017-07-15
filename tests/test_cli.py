@@ -200,6 +200,8 @@ def test_prepare_import(request, value, path, result):
     ('cliapp.factory', 'create_app2("foo", "bar", )', 'app2_foo_bar'),
     # takes script_info
     ('cliapp.factory', 'create_app3("foo")', 'app3_foo_spam'),
+    # strip whitespace
+    ('cliapp.factory', ' create_app () ', 'app'),
 ))
 def test_locate_app(test_apps, iname, aname, result):
     info = ScriptInfo()
@@ -213,12 +215,14 @@ def test_locate_app(test_apps, iname, aname, result):
     ('cliapp.app', 'notanapp'),
     # not enough arguments
     ('cliapp.factory', 'create_app2("foo")'),
+    # invalid identifier
+    ('cliapp.factory', 'create_app('),
+    # no app returned
+    ('cliapp.factory', 'no_app'),
     # nested import error
     ('cliapp.importerrorapp', None),
     # not a Python file
     ('cliapp.message.txt', None),
-    # space before arg list
-    ('cliapp.factory', 'create_app ()'),
 ))
 def test_locate_app_raises(test_apps, iname, aname):
     info = ScriptInfo()
