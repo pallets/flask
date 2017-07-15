@@ -52,6 +52,8 @@ Major release, unreleased
 - FLASK_APP=myproject.app:create_app('dev') support.
 - ``FLASK_APP`` can be set to an app factory, with arguments if needed, for
   example ``FLASK_APP=myproject.app:create_app('dev')``. (`#2326`_)
+- ``FLASK_APP`` can point to local packages that are not installed in dev mode,
+  although `pip install -e` should still be preferred. (`#2414`_)
 - ``View.provide_automatic_options = True`` is set on the view function from
   ``View.as_view``, to be detected in ``app.add_url_rule``. (`#2316`_)
 - Error handling will try handlers registered for ``blueprint, code``,
@@ -127,6 +129,7 @@ Major release, unreleased
 .. _#2373: https://github.com/pallets/flask/pull/2373
 .. _#2385: https://github.com/pallets/flask/issues/2385
 .. _#2412: https://github.com/pallets/flask/pull/2412
+.. _#2414: https://github.com/pallets/flask/pull/2414
 
 Version 0.12.2
 --------------

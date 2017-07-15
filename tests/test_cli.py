@@ -11,7 +11,8 @@
 # the Revised BSD License.
 # Copyright (C) 2015 CERN.
 #
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
+
 import os
 import sys
 from functools import partial
@@ -19,11 +20,10 @@ from functools import partial
 import click
 import pytest
 from click.testing import CliRunner
-from flask import Flask, current_app
 
-from flask.cli import cli, AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
-    find_best_app, locate_app, with_appcontext, prepare_exec_for_file, \
-    find_default_import_path, get_version
+from flask import Flask, current_app
+from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
+    find_best_app, get_version, locate_app, prepare_import, with_appcontext
 
 
 @pytest.fixture
@@ -125,78 +125,104 @@ def test_find_best_app(test_apps):
     pytest.raises(NoAppException, find_best_app, script_info, Module)
 
 
-def test_prepare_exec_for_file(test_apps):
-    """Expect the correct path to be set and the correct module name to be returned.
+cwd = os.getcwd()
+test_path = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), 'test_apps'
+))
 
-    :func:`prepare_exec_for_file` has a side effect, where
-    the parent directory of given file is added to `sys.path`.
+
+@pytest.mark.parametrize('value,path,result', (
+    ('test', cwd, 'test'),
+    ('test.py', cwd, 'test'),
+    ('a/test', os.path.join(cwd, 'a'), 'test'),
+    ('test/__init__.py', cwd, 'test'),
+    ('test/__init__', cwd, 'test'),
+    # nested package
+    (
+        os.path.join(test_path, 'cliapp', 'inner1', '__init__'),
+        test_path, 'cliapp.inner1'
+    ),
+    (
+        os.path.join(test_path, 'cliapp', 'inner1', 'inner2'),
+        test_path, 'cliapp.inner1.inner2'
+    ),
+    # dotted name
+    ('test.a.b', cwd, 'test.a.b'),
+    (os.path.join(test_path, 'cliapp.app'), test_path, 'cliapp.app'),
+    # not a Python file, will be caught during import
+    (
+        os.path.join(test_path, 'cliapp', 'message.txt'),
+        test_path, 'cliapp.message.txt'
+    ),
+))
+def test_prepare_import(request, value, path, result):
+    """Expect the correct path to be set and the correct import and app names
+    to be returned.
+
+    :func:`prepare_exec_for_file` has a side effect where the parent directory
+    of the given import is added to :data:`sys.path`. This is reset after the
+    test runs.
     """
-    realpath = os.path.realpath('/tmp/share/test.py')
-    dirname = os.path.dirname(realpath)
-    assert prepare_exec_for_file('/tmp/share/test.py') == 'test'
-    assert dirname in sys.path
+    original_path = sys.path[:]
 
-    realpath = os.path.realpath('/tmp/share/__init__.py')
-    dirname = os.path.dirname(os.path.dirname(realpath))
-    assert prepare_exec_for_file('/tmp/share/__init__.py') == 'share'
-    assert dirname in sys.path
+    def reset_path():
+        sys.path[:] = original_path
+
+    request.addfinalizer(reset_path)
+
+    assert prepare_import(value) == result
+    assert sys.path[0] == path
+
+
+@pytest.mark.parametrize('iname,aname,result', (
+    ('cliapp.app', None, 'testapp'),
+    ('cliapp.app', 'testapp', 'testapp'),
+    ('cliapp.factory', None, 'app'),
+    ('cliapp.factory', 'create_app', 'app'),
+    ('cliapp.factory', 'create_app()', 'app'),
+    # no script_info
+    ('cliapp.factory', 'create_app2("foo", "bar")', 'app2_foo_bar'),
+    # trailing comma space
+    ('cliapp.factory', 'create_app2("foo", "bar", )', 'app2_foo_bar'),
+    # takes script_info
+    ('cliapp.factory', 'create_app3("foo")', 'app3_foo_spam'),
+))
+def test_locate_app(test_apps, iname, aname, result):
+    info = ScriptInfo()
+    info.data['test'] = 'spam'
+    assert locate_app(info, iname, aname).name == result
+
+
+@pytest.mark.parametrize('iname,aname', (
+    ('notanapp.py', None),
+    ('cliapp/app', None),
+    ('cliapp.app', 'notanapp'),
+    # not enough arguments
+    ('cliapp.factory', 'create_app2("foo")'),
+    # nested import error
+    ('cliapp.importerrorapp', None),
+    # not a Python file
+    ('cliapp.message.txt', None),
+    # space before arg list
+    ('cliapp.factory', 'create_app ()'),
+))
+def test_locate_app_raises(test_apps, iname, aname):
+    info = ScriptInfo()
 
     with pytest.raises(NoAppException):
-        prepare_exec_for_file('/tmp/share/test.txt')
+        locate_app(info, iname, aname)
 
 
-def test_locate_app(test_apps):
-    """Test of locate_app."""
-    script_info = ScriptInfo()
-    assert locate_app(script_info, "cliapp.app").name == "testapp"
-    assert locate_app(script_info, "cliapp.app:testapp").name == "testapp"
-    assert locate_app(script_info, "cliapp.factory").name == "create_app"
-    assert locate_app(
-        script_info, "cliapp.factory").name == "create_app"
-    assert locate_app(
-        script_info, "cliapp.factory:create_app").name == "create_app"
-    assert locate_app(
-        script_info, "cliapp.factory:create_app()").name == "create_app"
-    assert locate_app(
-        script_info, "cliapp.factory:create_app2('foo', 'bar')"
-    ).name == "create_app2_foo_bar"
-    assert locate_app(
-        script_info, "cliapp.factory:create_app2('foo', 'bar', )"
-    ).name == "create_app2_foo_bar"
-    assert locate_app(
-        script_info, "cliapp.factory:create_app3('baz', 'qux')"
-    ).name == "create_app3_baz_qux"
-    assert locate_app(script_info, "cliapp.multiapp:app1").name == "app1"
-    pytest.raises(
-        NoAppException, locate_app, script_info, "notanpp.py")
-    pytest.raises(
-        NoAppException, locate_app, script_info, "cliapp/app")
-    pytest.raises(
-        RuntimeError, locate_app, script_info, "cliapp.app:notanapp")
-    pytest.raises(
-        NoAppException, locate_app,
-        script_info, "cliapp.factory:create_app2('foo')")
-    pytest.raises(
-        NoAppException, locate_app,
-        script_info, "cliapp.factory:create_app ()")
-    pytest.raises(
-        NoAppException, locate_app, script_info, "cliapp.importerrorapp")
-    assert locate_app(
-        script_info, "notanpp.py", raise_if_not_found=False
-    ) is None
+def test_locate_app_suppress_raise():
+    info = ScriptInfo()
+    app = locate_app(info, 'notanapp.py', None, raise_if_not_found=False)
+    assert app is None
 
-
-def test_find_default_import_path(test_apps, monkeypatch, tmpdir):
-    """Test of find_default_import_path."""
-    monkeypatch.delitem(os.environ, 'FLASK_APP', raising=False)
-    assert find_default_import_path() == None
-    monkeypatch.setitem(os.environ, 'FLASK_APP', 'notanapp')
-    assert find_default_import_path() == 'notanapp'
-    tmpfile = tmpdir.join('testapp.py')
-    tmpfile.write('')
-    monkeypatch.setitem(os.environ, 'FLASK_APP', str(tmpfile))
-    expect_rv = prepare_exec_for_file(str(tmpfile))
-    assert find_default_import_path() == expect_rv
+    # only direct import error is suppressed
+    with pytest.raises(NoAppException):
+        locate_app(
+            info, 'cliapp.importerrorapp', None, raise_if_not_found=False
+        )
 
 
 def test_get_version(test_apps, capsys):
