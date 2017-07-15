@@ -130,7 +130,7 @@ def find_app_by_string(string, script_info, module):
             if isinstance(app, Flask):
                 return app
             else:
-                raise RuntimeError('Failed to find application in module '
+                raise NoAppException('Failed to find application in module '
                                    '"{name}"'.format(name=module))
         except TypeError as e:
             new_error = NoAppException(
@@ -147,85 +147,61 @@ def find_app_by_string(string, script_info, module):
             'or function expression.'.format(string=string))
 
 
-def prepare_exec_for_file(filename):
+def prepare_import(path):
     """Given a filename this will try to calculate the python path, add it
     to the search path and return the actual module name that is expected.
     """
-    module = []
+    path = os.path.realpath(path)
 
-    # Chop off file extensions or package markers
-    if os.path.split(filename)[1] == '__init__.py':
-        filename = os.path.dirname(filename)
-    elif filename.endswith('.py'):
-        filename = filename[:-3]
-    else:
-        raise NoAppException('The file provided (%s) does exist but is not a '
-                             'valid Python file.  This means that it cannot '
-                             'be used as application.  Please change the '
-                             'extension to .py' % filename)
-    filename = os.path.realpath(filename)
+    if os.path.splitext(path)[1] == '.py':
+        path = os.path.splitext(path)[0]
 
-    dirpath = filename
-    while 1:
-        dirpath, extra = os.path.split(dirpath)
-        module.append(extra)
-        if not os.path.isfile(os.path.join(dirpath, '__init__.py')):
+    if os.path.basename(path) == '__init__':
+        path = os.path.dirname(path)
+
+    module_name = []
+
+    # move up until outside package structure (no __init__.py)
+    while True:
+        path, name = os.path.split(path)
+        module_name.append(name)
+
+        if not os.path.exists(os.path.join(path, '__init__.py')):
             break
 
-    if sys.path[0] != dirpath:
-        sys.path.insert(0, dirpath)
+    if sys.path[0] != path:
+        sys.path.insert(0, path)
 
-    return '.'.join(module[::-1])
+    return '.'.join(module_name[::-1])
 
 
-def locate_app(script_info, app_id, raise_if_not_found=True):
+def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
     """Attempts to locate the application."""
     __traceback_hide__ = True
 
-    if ':' in app_id:
-        module, app_obj = app_id.split(':', 1)
-    else:
-        module = app_id
-        app_obj = None
-
     try:
-        __import__(module)
+        __import__(module_name)
     except ImportError:
         # Reraise the ImportError if it occurred within the imported module.
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[-1].tb_next:
-            stack_trace = traceback.format_exc()
             raise NoAppException(
-                'There was an error trying to import the app ({module}):\n'
-                '{stack_trace}'.format(
-                    module=module, stack_trace=stack_trace
-                )
+                'While importing "{name}", an ImportError was raised:'
+                '\n\n{tb}'.format(name=module_name, tb=traceback.format_exc())
             )
         elif raise_if_not_found:
             raise NoAppException(
-                'The file/path provided ({module}) does not appear to exist.'
-                ' Please verify the path is correct. If app is not on'
-                ' PYTHONPATH, ensure the extension is .py.'.format(
-                    module=module)
+                'Could not import "{name}"."'.format(name=module_name)
             )
         else:
             return
 
-    mod = sys.modules[module]
+    module = sys.modules[module_name]
 
-    if app_obj is None:
-        return find_best_app(script_info, mod)
+    if app_name is None:
+        return find_best_app(script_info, module)
     else:
-        return find_app_by_string(app_obj, script_info, mod)
-
-
-def find_default_import_path():
-    app = os.environ.get('FLASK_APP')
-    if app is None:
-        return
-    if os.path.isfile(app):
-        return prepare_exec_for_file(app)
-    return app
+        return find_app_by_string(app_name, script_info, module)
 
 
 def get_version(ctx, param, value):
@@ -308,15 +284,8 @@ class ScriptInfo(object):
     """
 
     def __init__(self, app_import_path=None, create_app=None):
-        if create_app is None:
-            if app_import_path is None:
-                app_import_path = find_default_import_path()
-            self.app_import_path = app_import_path
-        else:
-            app_import_path = None
-
         #: Optionally the import path for the Flask application.
-        self.app_import_path = app_import_path
+        self.app_import_path = app_import_path or os.environ.get('FLASK_APP')
         #: Optionally a function that is passed the script info to create
         #: the instance of the application.
         self.create_app = create_app
@@ -335,37 +304,39 @@ class ScriptInfo(object):
         if self._loaded_app is not None:
             return self._loaded_app
 
+        app = None
+
         if self.create_app is not None:
-            rv = call_factory(self.create_app, self)
+            app = call_factory(self.create_app, self)
         else:
             if self.app_import_path:
-                rv = locate_app(self, self.app_import_path)
+                path, name = (self.app_import_path.split(':', 1) + [None])[:2]
+                import_name = prepare_import(path)
+                app = locate_app(self, import_name, name)
             else:
-                for module in ['wsgi.py', 'app.py']:
-                    import_path = prepare_exec_for_file(module)
-                    rv = locate_app(
-                        self, import_path, raise_if_not_found=False
+                for path in ('wsgi.py', 'app.py'):
+                    import_name = prepare_import(path)
+                    app = locate_app(
+                        self, import_name, None, raise_if_not_found=False
                     )
 
-                    if rv:
+                    if app:
                         break
 
-            if not rv:
-                raise NoAppException(
-                    'Could not locate Flask application. You did not provide '
-                    'the FLASK_APP environment variable, and a wsgi.py or '
-                    'app.py module was not found in the current directory.\n\n'
-                    'For more information see '
-                    'http://flask.pocoo.org/docs/latest/quickstart/'
-                )
+        if not app:
+            raise NoAppException(
+                'Could not locate a Flask application. You did not provide '
+                'the "FLASK_APP" environment variable, and a "wsgi.py" or '
+                '"app.py" module was not found in the current directory.'
+            )
 
         debug = get_debug_flag()
 
         if debug is not None:
-            rv._reconfigure_for_run_debug(debug)
+            app._reconfigure_for_run_debug(debug)
 
-        self._loaded_app = rv
-        return rv
+        self._loaded_app = app
+        return app
 
 
 pass_script_info = click.make_pass_decorator(ScriptInfo, ensure=True)
