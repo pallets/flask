@@ -132,7 +132,7 @@ HTTP Strict Transport Security (HSTS)
 Tells the browser to convert all HTTP requests to HTTPS, preventing
 man-in-the-middle (MITM) attacks. ::
 
-    response.haders['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 
