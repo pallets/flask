@@ -101,6 +101,9 @@ Major release, unreleased
 - The ``request.json`` property is no longer deprecated. (`#1421`_)
 - Support passing an existing ``EnvironBuilder`` or ``dict`` to
   ``test_client.open``. (`#2412`_)
+- The ``flask`` command and ``app.run`` will load environment variables using
+  from ``.env`` and ``.flaskenv`` files if python-dotenv is installed.
+  (`#2416`_)
 
 .. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
@@ -130,6 +133,7 @@ Major release, unreleased
 .. _#2385: https://github.com/pallets/flask/issues/2385
 .. _#2412: https://github.com/pallets/flask/pull/2412
 .. _#2414: https://github.com/pallets/flask/pull/2414
+.. _#2416: https://github.com/pallets/flask/pull/2416
 
 Version 0.12.2
 --------------

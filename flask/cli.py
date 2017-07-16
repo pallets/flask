@@ -8,6 +8,7 @@
     :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import print_function
 
 import ast
 import inspect
@@ -22,10 +23,14 @@ from threading import Lock, Thread
 import click
 
 from . import __version__
-from ._compat import iteritems, reraise
+from ._compat import getargspec, iteritems, reraise
 from .globals import current_app
 from .helpers import get_debug_flag
-from ._compat import getargspec
+
+try:
+    import dotenv
+except ImportError:
+    dotenv = None
 
 
 class NoAppException(click.UsageError):
@@ -394,14 +399,23 @@ class FlaskGroup(AppGroup):
     For information as of why this is useful see :ref:`custom-scripts`.
 
     :param add_default_commands: if this is True then the default run and
-                                 shell commands wil be added.
+        shell commands wil be added.
     :param add_version_option: adds the ``--version`` option.
-    :param create_app: an optional callback that is passed the script info
-                       and returns the loaded app.
+    :param create_app: an optional callback that is passed the script info and
+        returns the loaded app.
+    :param load_dotenv: Load the nearest :file:`.env` and :file:`.flaskenv`
+        files to set environment variables. Will also change the working
+        directory to the directory containing the first file found.
+
+    .. versionchanged:: 1.0
+        If installed, python-dotenv will be used to load environment variables
+        from :file:`.env` and :file:`.flaskenv` files.
     """
 
-    def __init__(self, add_default_commands=True, create_app=None,
-                 add_version_option=True, **extra):
+    def __init__(
+        self, add_default_commands=True, create_app=None,
+        add_version_option=True, load_dotenv=True, **extra
+    ):
         params = list(extra.pop('params', None) or ())
 
         if add_version_option:
@@ -409,6 +423,7 @@ class FlaskGroup(AppGroup):
 
         AppGroup.__init__(self, params=params, **extra)
         self.create_app = create_app
+        self.load_dotenv = load_dotenv
 
         if add_default_commands:
             self.add_command(run_command)
@@ -472,12 +487,75 @@ class FlaskGroup(AppGroup):
         return sorted(rv)
 
     def main(self, *args, **kwargs):
+        # Set a global flag that indicates that we were invoked from the
+        # command line interface. This is detected by Flask.run to make the
+        # call into a no-op. This is necessary to avoid ugly errors when the
+        # script that is loaded here also attempts to start a server.
+        os.environ['FLASK_RUN_FROM_CLI'] = 'true'
+
+        if self.load_dotenv:
+            load_dotenv()
+
         obj = kwargs.get('obj')
+
         if obj is None:
             obj = ScriptInfo(create_app=self.create_app)
+
         kwargs['obj'] = obj
         kwargs.setdefault('auto_envvar_prefix', 'FLASK')
-        return AppGroup.main(self, *args, **kwargs)
+        return super(FlaskGroup, self).main(*args, **kwargs)
+
+
+def _path_is_ancestor(path, other):
+    """Take ``other`` and remove the length of ``path`` from it. Then join it
+    to ``path``. If it is the original value, ``path`` is an ancestor of
+    ``other``."""
+    return os.path.join(path, other[len(path):].lstrip(os.sep)) == other
+
+
+def load_dotenv(path=None):
+    """Load "dotenv" files in order of precedence to set environment variables.
+
+    If an env var is already set it is not overwritten, so earlier files in the
+    list are preferred over later files.
+
+    Changes the current working directory to the location of the first file
+    found, with the assumption that it is in the top level project directory
+    and will be where the Python path should import local packages from.
+
+    This is a no-op if `python-dotenv`_ is not installed.
+
+    .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
+
+    :param path: Load the file at this location instead of searching.
+    :return: ``True`` if a file was loaded.
+
+    .. versionadded:: 1.0
+    """
+
+    if dotenv is None:
+        return
+
+    if path is not None:
+        return dotenv.load_dotenv(path)
+
+    new_dir = None
+
+    for name in ('.env', '.flaskenv'):
+        path = dotenv.find_dotenv(name, usecwd=True)
+
+        if not path:
+            continue
+
+        if new_dir is None:
+            new_dir = os.path.dirname(path)
+
+        dotenv.load_dotenv(path)
+
+    if new_dir and os.getcwd() != new_dir:
+        os.chdir(new_dir)
+
+    return new_dir is not None  # at least one file was located and loaded
 
 
 @click.command('run', short_help='Runs a development server.')
@@ -511,13 +589,6 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     Flask is enabled and disabled otherwise.
     """
     from werkzeug.serving import run_simple
-
-    # Set a global flag that indicates that we were invoked from the
-    # command line interface provided server command.  This is detected
-    # by Flask.run to make the call into a no-op.  This is necessary to
-    # avoid ugly errors when the script that is loaded here also attempts
-    # to start a server.
-    os.environ['FLASK_RUN_FROM_CLI_SERVER'] = '1'
 
     debug = get_debug_flag()
     if reload is None:

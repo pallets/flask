@@ -814,6 +814,8 @@ Command Line Interface
 .. autoclass:: ScriptInfo
    :members:
 
+.. autofunction:: load_dotenv
+
 .. autofunction:: with_appcontext
 
 .. autofunction:: pass_script_info

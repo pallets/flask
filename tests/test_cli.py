@@ -19,11 +19,31 @@ from functools import partial
 
 import click
 import pytest
+from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
 from flask import Flask, current_app
-from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, \
-    find_best_app, get_version, locate_app, prepare_import, with_appcontext
+from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, dotenv, \
+    find_best_app, get_version, load_dotenv, locate_app, prepare_import, \
+    with_appcontext
+
+cwd = os.getcwd()
+test_path = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), 'test_apps'
+))
+
+
+@pytest.fixture(autouse=True)
+def manage_os_environ(monkeypatch):
+    # can't use monkeypatch.delitem since we don't want to restore a value
+    os.environ.pop('FLASK_APP', None)
+    os.environ.pop('FLASK_DEBUG', None)
+    # use monkeypatch internals to force-delete environ keys
+    monkeypatch._setitem.extend((
+        (os.environ, 'FLASK_APP', notset),
+        (os.environ, 'FLASK_DEBUG', notset),
+        (os.environ, 'FLASK_RUN_FROM_CLI', notset),
+    ))
 
 
 @pytest.fixture
@@ -123,12 +143,6 @@ def test_find_best_app(test_apps):
             return Flask('appname2')
 
     pytest.raises(NoAppException, find_best_app, script_info, Module)
-
-
-cwd = os.getcwd()
-test_path = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), 'test_apps'
-))
 
 
 @pytest.mark.parametrize('value,path,result', (
@@ -414,3 +428,46 @@ class TestRoutes:
         assert 'GET, HEAD, OPTIONS, POST' not in output
         output = invoke(['routes', '--all-methods']).output
         assert 'GET, HEAD, OPTIONS, POST' in output
+
+
+need_dotenv = pytest.mark.skipif(
+    dotenv is None, reason='dotenv is not installed'
+)
+
+
+@need_dotenv
+def test_load_dotenv(monkeypatch):
+    # can't use monkeypatch.delitem since the keys don't exist yet
+    for item in ('FOO', 'BAR', 'SPAM'):
+        monkeypatch._setitem.append((os.environ, item, notset))
+
+    monkeypatch.setenv('EGGS', '3')
+    monkeypatch.chdir(os.path.join(test_path, 'cliapp', 'inner1'))
+    load_dotenv()
+    assert os.getcwd() == test_path
+    # .flaskenv doesn't overwrite .env
+    assert os.environ['FOO'] == 'env'
+    # set only in .flaskenv
+    assert os.environ['BAR'] == 'bar'
+    # set only in .env
+    assert os.environ['SPAM'] == '1'
+    # set manually, files don't overwrite
+    assert os.environ['EGGS'] == '3'
+
+
+@need_dotenv
+def test_dotenv_path(monkeypatch):
+    for item in ('FOO', 'BAR', 'EGGS'):
+        monkeypatch._setitem.append((os.environ, item, notset))
+
+    cwd = os.getcwd()
+    load_dotenv(os.path.join(test_path, '.flaskenv'))
+    assert os.getcwd() == cwd
+    assert 'FOO' in os.environ
+
+
+def test_dotenv_optional(monkeypatch):
+    monkeypatch.setattr('flask.cli.dotenv', None)
+    monkeypatch.chdir(test_path)
+    load_dotenv()
+    assert 'FOO' not in os.environ
