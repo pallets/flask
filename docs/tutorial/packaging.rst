@@ -3,6 +3,11 @@
 Step 3: Installing flaskr as a Package
 ======================================
 
+It's customary to install your Flask application package into your
+project's venv right from the start. As described below, you'll use
+pip to install it such that code changes will automatically propagate
+to the installed package.
+
 Flask is now shipped with built-in support for `Click`_.  Click provides
 Flask with enhanced and extensible command line utilities.  Later in this
 tutorial you will see exactly how to extend the ``flask`` command line
