@@ -40,10 +40,10 @@ def make_test_environ_builder(
         if subdomain:
             http_host = '{0}.{1}'.format(subdomain, http_host)
 
+	url = url_parse(path)
         if url_scheme is None:
-            url_scheme = app.config['PREFERRED_URL_SCHEME']
+            url_scheme = url.scheme or app.config['PREFERRED_URL_SCHEME']
 
-        url = url_parse(path)
         base_url = '{0}://{1}/{2}'.format(
             url_scheme, url.netloc or http_host, app_root.lstrip('/')
         )
