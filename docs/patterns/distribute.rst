@@ -96,7 +96,7 @@ It is useful to distinguish between release and development builds. Add a
     tag_date = 1
 
     [aliases]
-    release = egg_info -RDb ''
+    release = egg_info -Db ''
 
 Running ``python setup.py sdist`` will create a development package
 with ".dev" and the current date appended: ``flaskr-1.0.dev20160314.tar.gz``.
