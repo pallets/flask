@@ -199,21 +199,6 @@ The following configuration values are used internally by Flask:
 
     Default: ``timedelta(hours=12)`` (``43200`` seconds)
 
-.. py:data:: LOGGER_NAME
-
-    The name of the logger that the Flask application sets up. If not set,
-    it will take the import name passed to ``Flask.__init__``.
-
-    Default: ``None``
-
-.. py:data:: LOGGER_HANDLER_POLICY
-
-    When to activate the application's logger handler. ``'always'`` always
-    enables it, ``'debug'`` only activates it in debug mode, ``'production'``
-    only activates it when not in debug mode, and ``'never'`` never enables it.
-
-    Default: ``'always'``
-
 .. py:data:: SERVER_NAME
 
     Inform the application what host and port it is bound to. Required for
@@ -328,6 +313,11 @@ The following configuration values are used internally by Flask:
 .. versionadded:: 0.11
    ``SESSION_REFRESH_EACH_REQUEST``, ``TEMPLATES_AUTO_RELOAD``,
    ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
+
+.. versionchanged:: 1.0
+
+    ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` were removed. See
+    :ref:`logging` for information about configuration.
 
 Configuring from Files
 ----------------------
