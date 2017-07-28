@@ -16,10 +16,9 @@ from functools import update_wrapper
 from itertools import chain
 from threading import Lock
 
-from werkzeug.datastructures import ImmutableDict, Headers
-from werkzeug.exceptions import BadRequest, HTTPException, \
-    InternalServerError, MethodNotAllowed, default_exceptions, \
-    BadRequestKeyError
+from werkzeug.datastructures import Headers, ImmutableDict
+from werkzeug.exceptions import BadRequest, BadRequestKeyError, HTTPException, \
+    InternalServerError, MethodNotAllowed, default_exceptions
 from werkzeug.routing import BuildError, Map, RequestRedirect, Rule
 
 from . import cli, json
@@ -30,15 +29,13 @@ from .globals import _request_ctx_stack, g, request, session
 from .helpers import _PackageBoundObject, \
     _endpoint_from_view_func, find_package, get_debug_flag, \
     get_flashed_messages, locked_cached_property, url_for
+from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
 from .signals import appcontext_tearing_down, got_request_exception, \
     request_finished, request_started, request_tearing_down
 from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .wrappers import Request, Response
-
-# a lock used for logger initialization
-_logger_lock = Lock()
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
@@ -264,12 +261,6 @@ class Flask(_PackageBoundObject):
     #: ``USE_X_SENDFILE`` configuration key.  Defaults to ``False``.
     use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
 
-    #: The name of the logger to use.  By default the logger name is the
-    #: package name passed to the constructor.
-    #:
-    #: .. versionadded:: 0.4
-    logger_name = ConfigAttribute('LOGGER_NAME')
-
     #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
     #:
     #: .. versionadded:: 0.10
@@ -294,8 +285,6 @@ class Flask(_PackageBoundObject):
         'SECRET_KEY':                           None,
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
         'USE_X_SENDFILE':                       False,
-        'LOGGER_NAME':                          None,
-        'LOGGER_HANDLER_POLICY':               'always',
         'SERVER_NAME':                          None,
         'APPLICATION_ROOT':                     '/',
         'SESSION_COOKIE_NAME':                  'session',
@@ -391,10 +380,6 @@ class Flask(_PackageBoundObject):
         #: exactly like a regular dictionary but supports additional methods
         #: to load a config from files.
         self.config = self.make_config(instance_relative_config)
-
-        # Prepare the deferred setup of the logger.
-        self._logger = None
-        self.logger_name = self.import_name
 
         #: A dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
@@ -613,27 +598,28 @@ class Flask(_PackageBoundObject):
             return rv
         return self.debug
 
-    @property
+    @locked_cached_property
     def logger(self):
-        """A :class:`logging.Logger` object for this application.  The
-        default configuration is to log to stderr if the application is
-        in debug mode.  This logger can be used to (surprise) log messages.
-        Here some examples::
+        """The ``'flask.app'`` logger, a standard Python
+        :class:`~logging.Logger`.
 
-            app.logger.debug('A value for debugging')
-            app.logger.warning('A warning occurred (%d apples)', 42)
-            app.logger.error('An error occurred')
+        In debug mode, the logger's :attr:`~logging.Logger.level` will be set
+        to :data:`~logging.DEBUG`.
+
+        If there are no handlers configured, a default handler will be added.
+        See :ref:`logging` for more information.
+
+        .. versionchanged:: 1.0
+            Behavior was simplified. The logger is always named
+            ``flask.app``. The level is only set during configuration, it
+            doesn't check ``app.debug`` each time. Only one format is used,
+            not different ones depending on ``app.debug``. No handlers are
+            removed, and a handler is only added if no handlers are already
+            configured.
 
         .. versionadded:: 0.3
         """
-        if self._logger and self._logger.name == self.logger_name:
-            return self._logger
-        with _logger_lock:
-            if self._logger and self._logger.name == self.logger_name:
-                return self._logger
-            from flask.logging import create_logger
-            self._logger = rv = create_logger(self)
-            return rv
+        return create_logger(self)
 
     @locked_cached_property
     def jinja_env(self):

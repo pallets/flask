@@ -9,20 +9,19 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
-
+import datetime
 import os
 import uuid
-import datetime
 
-import flask
-from logging import StreamHandler
+import pytest
 from werkzeug.datastructures import Range
 from werkzeug.exceptions import BadRequest, NotFound
-from werkzeug.http import parse_cache_control_header, parse_options_header
-from werkzeug.http import http_date
+from werkzeug.http import http_date, parse_cache_control_header, \
+    parse_options_header
+
+import flask
 from flask._compat import StringIO, text_type
-from flask.helpers import get_debug_flag, make_response
+from flask.helpers import get_debug_flag
 
 
 def has_encoding(name):
@@ -660,94 +659,7 @@ class TestSendfile(object):
             flask.send_from_directory('static', 'bad\x00')
 
 
-class TestLogging(object):
-    def test_logger_cache(self):
-        app = flask.Flask(__name__)
-        logger1 = app.logger
-        assert app.logger is logger1
-        assert logger1.name == __name__
-        app.logger_name = __name__ + '/test_logger_cache'
-        assert app.logger is not logger1
-
-    def test_debug_log(self, capsys, app, client):
-        app.debug = True
-
-        @app.route('/')
-        def index():
-            app.logger.warning('the standard library is dead')
-            app.logger.debug('this is a debug statement')
-            return ''
-
-        @app.route('/exc')
-        def exc():
-            1 // 0
-
-        with client:
-            client.get('/')
-            out, err = capsys.readouterr()
-            assert 'WARNING in test_helpers [' in err
-            assert os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in err
-            assert 'the standard library is dead' in err
-            assert 'this is a debug statement' in err
-
-            with pytest.raises(ZeroDivisionError):
-                client.get('/exc')
-
-    def test_debug_log_override(self, app):
-        app.debug = True
-        app.logger_name = 'flask_tests/test_debug_log_override'
-        app.logger.level = 10
-        assert app.logger.level == 10
-
-    def test_exception_logging(self, app, client):
-        out = StringIO()
-        app.config['LOGGER_HANDLER_POLICY'] = 'never'
-        app.logger_name = 'flask_tests/test_exception_logging'
-        app.logger.addHandler(StreamHandler(out))
-        app.testing = False
-
-        @app.route('/')
-        def index():
-            1 // 0
-
-        rv = client.get('/')
-        assert rv.status_code == 500
-        assert b'Internal Server Error' in rv.data
-
-        err = out.getvalue()
-        assert 'Exception on / [GET]' in err
-        assert 'Traceback (most recent call last):' in err
-        assert '1 // 0' in err
-        assert 'ZeroDivisionError:' in err
-
-    def test_processor_exceptions(self, app, client):
-        app.config['LOGGER_HANDLER_POLICY'] = 'never'
-        app.testing = False
-
-        @app.before_request
-        def before_request():
-            if trigger == 'before':
-                1 // 0
-
-        @app.after_request
-        def after_request(response):
-            if trigger == 'after':
-                1 // 0
-            return response
-
-        @app.route('/')
-        def index():
-            return 'Foo'
-
-        @app.errorhandler(500)
-        def internal_server_error(e):
-            return 'Hello Server Error', 500
-
-        for trigger in 'before', 'after':
-            rv = client.get('/')
-            assert rv.status_code == 500
-            assert rv.data == b'Hello Server Error'
-
+class TestUrlFor(object):
     def test_url_for_with_anchor(self, app, req_ctx):
 
         @app.route('/')

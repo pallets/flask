@@ -207,7 +207,6 @@ def test_session_transaction_needs_cookies(app):
 
 
 def test_test_client_context_binding(app, client):
-    app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
 
     @app.route('/')

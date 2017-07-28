@@ -738,7 +738,6 @@ def test_teardown_request_handler_debug_mode(app, client):
 
 def test_teardown_request_handler_error(app, client):
     called = []
-    app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
 
     @app.teardown_request
@@ -814,7 +813,6 @@ def test_before_after_request_order(app, client):
 
 
 def test_error_handling(app, client):
-    app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
 
     @app.errorhandler(404)
@@ -860,7 +858,6 @@ def test_error_handler_unknown_code(app):
 
 
 def test_error_handling_processing(app, client):
-    app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
 
     @app.errorhandler(500)
@@ -882,7 +879,6 @@ def test_error_handling_processing(app, client):
 
 
 def test_baseexception_error_handling(app, client):
-    app.config['LOGGER_HANDLER_POLICY'] = 'never'
     app.testing = False
 
     @app.route('/')
@@ -1019,6 +1015,34 @@ def test_trapping_of_all_http_exceptions(app, client):
 
     with pytest.raises(NotFound):
         client.get('/fail')
+
+
+def test_error_handler_after_processor_error(app, client):
+    app.testing = False
+
+    @app.before_request
+    def before_request():
+        if trigger == 'before':
+            1 // 0
+
+    @app.after_request
+    def after_request(response):
+        if trigger == 'after':
+            1 // 0
+        return response
+
+    @app.route('/')
+    def index():
+        return 'Foo'
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        return 'Hello Server Error', 500
+
+    for trigger in 'before', 'after':
+        rv = client.get('/')
+        assert rv.status_code == 500
+        assert rv.data == b'Hello Server Error'
 
 
 def test_enctype_debug_helper(app, client):
@@ -1425,7 +1449,6 @@ def test_test_app_proper_environ(app, client):
 
 def test_exception_propagation(app, client):
     def apprunner(config_key):
-        app.config['LOGGER_HANDLER_POLICY'] = 'never'
 
         @app.route('/')
         def index():
