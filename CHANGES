@@ -104,6 +104,8 @@ Major release, unreleased
 - The ``flask`` command and ``app.run`` will load environment variables using
   from ``.env`` and ``.flaskenv`` files if python-dotenv is installed.
   (`#2416`_)
+- When passing a full URL to the test client, use the scheme in the URL instead
+  of the ``PREFERRED_URL_SCHEME``. (`#2436`_)
 
 .. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
@@ -134,6 +136,7 @@ Major release, unreleased
 .. _#2412: https://github.com/pallets/flask/pull/2412
 .. _#2414: https://github.com/pallets/flask/pull/2414
 .. _#2416: https://github.com/pallets/flask/pull/2416
+.. _#2436: https://github.com/pallets/flask/pull/2436
 
 Version 0.12.2
 --------------
