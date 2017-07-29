@@ -104,6 +104,14 @@ def test_specify_url_scheme(app, client):
     assert rv.data == b'https://localhost/'
 
 
+def test_path_is_url(app):
+    eb = make_test_environ_builder(app, 'https://example.com/')
+    assert eb.url_scheme == 'https'
+    assert eb.host == 'example.com'
+    assert eb.script_root == ''
+    assert eb.path == '/'
+
+
 def test_blueprint_with_subdomain(app, client):
     app.config['SERVER_NAME'] = 'example.com:1234'
     app.config['APPLICATION_ROOT'] = '/foo'

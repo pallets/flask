@@ -44,8 +44,10 @@ def make_test_environ_builder(
             url_scheme = app.config['PREFERRED_URL_SCHEME']
 
         url = url_parse(path)
-        base_url = '{0}://{1}/{2}'.format(
-            url_scheme, url.netloc or http_host, app_root.lstrip('/')
+        base_url = '{scheme}://{netloc}/{path}'.format(
+            scheme=url.scheme or url_scheme,
+            netloc=url.netloc or http_host,
+            path=app_root.lstrip('/')
         )
         path = url.path
 
