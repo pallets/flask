@@ -335,7 +335,9 @@ class ScriptInfo(object):
                 '"app.py" module was not found in the current directory.'
             )
 
-        debug = get_debug_flag()
+        debug = get_debug_flag(
+            app.config.get('DEBUG')
+        )
 
         if debug is not None:
             app._reconfigure_for_run_debug(debug)
@@ -590,7 +592,10 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     """
     from werkzeug.serving import run_simple
 
-    debug = get_debug_flag()
+    debug = get_debug_flag(
+        info.load_app().config.get('DEBUG')
+    )
+
     if reload is None:
         reload = bool(debug)
     if debugger is None:
