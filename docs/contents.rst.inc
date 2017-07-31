@@ -16,6 +16,7 @@ instructions for web development with Flask.
    templating
    testing
    errorhandling
+   logging
    config
    signals
    views

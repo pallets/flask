@@ -106,6 +106,12 @@ Major release, unreleased
   (`#2416`_)
 - When passing a full URL to the test client, use the scheme in the URL instead
   of the ``PREFERRED_URL_SCHEME``. (`#2436`_)
+- ``app.logger`` has been simplified. ``LOGGER_NAME`` and
+  ``LOGGER_HANDLER_POLICY`` config was removed. The logger is always named
+  ``flask.app``. The level is only set on first access, it doesn't check
+  ``app.debug`` each time. Only one format is used, not different ones
+  depending on ``app.debug``. No handlers are removed, and a handler is only
+  added if no handlers are already configured. (`#2436`_)
 
 .. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
