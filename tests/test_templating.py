@@ -399,7 +399,7 @@ def test_templates_auto_reload_debug_run(app, monkeypatch):
     assert app.jinja_env.auto_reload == True
 
 
-def test_template_loader_debugging(test_apps):
+def test_template_loader_debugging(test_apps, monkeypatch):
     from blueprintapp import app
 
     called = []
@@ -419,19 +419,15 @@ def test_template_loader_debugging(test_apps):
             assert 'See http://flask.pocoo.org/docs/blueprints/#templates' in text
 
     with app.test_client() as c:
-        try:
-            old_load_setting = app.config['EXPLAIN_TEMPLATE_LOADING']
-            old_handlers = app.logger.handlers[:]
-            app.logger.handlers = [_TestHandler()]
-            app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+        monkeypatch.setitem(app.config, 'EXPLAIN_TEMPLATE_LOADING', True)
+        monkeypatch.setattr(
+            logging.getLogger('flask'), 'handlers', [_TestHandler()]
+        )
 
-            with pytest.raises(TemplateNotFound) as excinfo:
-                c.get('/missing')
+        with pytest.raises(TemplateNotFound) as excinfo:
+            c.get('/missing')
 
-            assert 'missing_template.html' in str(excinfo.value)
-        finally:
-            app.logger.handlers[:] = old_handlers
-            app.config['EXPLAIN_TEMPLATE_LOADING'] = old_load_setting
+        assert 'missing_template.html' in str(excinfo.value)
 
     assert len(called) == 1
 
