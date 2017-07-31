@@ -168,8 +168,9 @@ The following configuration values are used internally by Flask:
 .. py:data:: PERMANENT_SESSION_LIFETIME
 
     If ``session.permanent`` is true, the cookie's max age will be set to this
-    number of seconds. Can either be a :class:`datetime.timedelta` or an
-    ``int``.
+    number of seconds. A client cannot [replay](https://en.wikipedia.org/wiki
+    /Session_replay) the session value after the value has expired. Can either
+    be a :class:`datetime.timedelta` or an ``int``.
 
     Default: ``timedelta(days=31)`` (``2678400`` seconds)
 
