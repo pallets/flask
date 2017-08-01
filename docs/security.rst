@@ -217,7 +217,7 @@ For the session cookie, if ``session.permanent`` is set, then
 :data:`SESSION_COOKIE_LIFETIME` is used to set the expiration. Flask's default
 cookie implementation validates that the cryptographic signature is not older
 than this value. Lowering this value may help mitigate replay attacks, where
-intercepted cookies can be sent at a later time.
+intercepted cookies can be sent at a later time. ::
 
     app.config.update(
         PERMANENT_SESSION_LIFETIME=600
