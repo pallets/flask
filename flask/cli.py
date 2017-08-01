@@ -429,6 +429,7 @@ class FlaskGroup(AppGroup):
             self.add_command(run_command)
             self.add_command(shell_command)
             self.add_command(routes_command)
+            self.add_command(clean_command)
 
         self._loaded_plugin_commands = False
 
