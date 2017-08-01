@@ -213,11 +213,11 @@ option is set, the cookie will be removed when the browser is closed. ::
     # cookie expires after 10 minutes
     response.set_cookie('snakes', '3', max_age=600)
 
-For the session cookie, if ``session.permanent`` is set, then
-:data:`SESSION_COOKIE_LIFETIME` is used to set the expiration. Flask's default
-cookie implementation validates that the cryptographic signature is not older
-than this value. Lowering this value may help mitigate replay attacks, where
-intercepted cookies can be sent at a later time. ::
+For the session cookie, if :attr:`session.permanent <flask.session.permanent>`
+is set, then :data:`PERMANENT_SESSION_LIFETIME` is used to set the expiration.
+Flask's default cookie implementation validates that the cryptographic
+signature is not older than this value. Lowering this value may help mitigate
+replay attacks, where intercepted cookies can be sent at a later time. ::
 
     app.config.update(
         PERMANENT_SESSION_LIFETIME=600
@@ -231,8 +231,8 @@ intercepted cookies can be sent at a later time. ::
         session.permanent = True
         ...
 
-Use :class:`TimedSerializer` to sign and validate other cookie values (or any
-values that need secure signatures).
+Use :class:`itsdangerous.TimedSerializer` to sign and validate other cookie
+values (or any values that need secure signatures).
 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
