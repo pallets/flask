@@ -167,9 +167,12 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: PERMANENT_SESSION_LIFETIME
 
-    If ``session.permanent`` is true, the cookie's max age will be set to this
-    number of seconds. Can either be a :class:`datetime.timedelta` or an
-    ``int``.
+    If ``session.permanent`` is true, the cookie's expiration will be set this
+    number of seconds in the future. Can either be a
+    :class:`datetime.timedelta` or an ``int``.
+
+    Flask's default cookie implementation validates that the cryptographic
+    signature is not older than this value.
 
     Default: ``timedelta(days=31)`` (``2678400`` seconds)
 
