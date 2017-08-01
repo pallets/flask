@@ -429,6 +429,7 @@ class FlaskGroup(AppGroup):
             self.add_command(run_command)
             self.add_command(shell_command)
             self.add_command(routes_command)
+            self.add_command(clean_command)
 
         self._loaded_plugin_commands = False
 
@@ -695,6 +696,28 @@ def routes_command(sort, all_methods):
 
     for rule, methods in zip(rules, rule_methods):
         click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
+
+
+@click.command('clean', short_help='Clean python compile file.')
+@with_appcontext
+def clean_command():
+    """Clean all the .pyc and .pyo files recursively starting at 
+    the path to the root of the application.
+    """
+    from flask.globals import _app_ctx_stack
+    app = _app_ctx_stack.top.app
+    
+    root_path = app.root_path
+    if not root_path:
+        return click.echo('The path to the root of the application was not found, '
+                          'please define it through app.root_path manually.')
+
+    for dirpath, dirnames, filenames in os.walk(app.root_path):
+        for filename in filenames:
+            if filename.endswith('.pyc') or filename.endswith('.pyo'):
+                full_pathname = os.path.join(dirpath, filename)
+                click.echo('Removing %s' % full_pathname)
+                os.remove(full_pathname)
 
 
 cli = FlaskGroup(help="""\
