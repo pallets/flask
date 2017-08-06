@@ -31,9 +31,9 @@ And run it:
 
     $ pip install Flask
     $ python hello.py
-     * Running on http://localhost:5000/
+    * Running on http://localhost:5000/
 
- Ready for production? `Read this first <http://flask.pocoo.org/docs/deploying/>`.
+Ready for production? `Read this first <http://flask.pocoo.org/docs/deploying/>`.
 
 Links
 `````
