@@ -43,6 +43,8 @@ _sentinel = object()
 
 def _make_timedelta(value):
     if not isinstance(value, timedelta):
+        if isinstance(value, str):
+            value = int(value)
         return timedelta(seconds=value)
     return value
 
