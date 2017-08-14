@@ -161,7 +161,7 @@ def purge_module(request):
     return inner
 
 
-@pytest.yield_fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def catch_deprecation_warnings(recwarn):
     yield
     gc.collect()
