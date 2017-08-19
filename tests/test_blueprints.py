@@ -360,6 +360,15 @@ def test_route_decorator_custom_endpoint_with_dots(app, client):
         lambda: None
     )
 
+    foo_foo_foo.__name__ = 'bar.123'
+
+    pytest.raises(
+        AssertionError,
+        lambda: bp.add_url_rule(
+            '/bar/123', view_func=foo_foo_foo
+        )
+    )
+
     app.register_blueprint(bp, url_prefix='/py')
 
     assert client.get('/py/foo').data == b'bp.foo'
