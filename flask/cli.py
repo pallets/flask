@@ -377,7 +377,9 @@ class AppGroup(click.Group):
         def decorator(f):
             if wrap_for_ctx:
                 f = with_appcontext(f)
-            return click.Group.command(self, *args, **kwargs)(f)
+                cmd = click.Group.command(self, *args, **kwargs)(f)
+                cmd.parse_args = with_appcontext(cmd.parse_args)
+            return cmd
         return decorator
 
     def group(self, *args, **kwargs):
