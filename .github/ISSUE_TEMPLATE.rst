@@ -1,6 +1,6 @@
 **This issue tracker is a tool to address bugs in Flask itself.
 Please use the #pocoo IRC channel on freenode or Stack Overflow for general
-questions about using Jinja or issues not related to Jinja.**
+questions about using Flask or issues not related to Flask.**
 
 If you'd like to report a bug in Flask, fill out the template below. Provide
 any any extra information that may be useful / related to your problem.
