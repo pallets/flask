@@ -774,6 +774,19 @@ def test_teardown_request_handler_error(app, client):
     assert len(called) == 2
 
 
+def test_teardown_app_handler(app, client):
+    called = []
+
+    @app.teardown_app
+    def teardown_app():
+        called.append(True)
+        return "Ignored"
+
+    app.close()
+    app.close()
+    assert len(called) == 1
+
+
 def test_before_after_request_order(app, client):
     called = []
 

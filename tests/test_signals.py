@@ -201,3 +201,19 @@ def test_appcontext_tearing_down_signal():
         assert recorded == [('tear_down', {'exc': None})]
     finally:
         flask.appcontext_tearing_down.disconnect(record_teardown, app)
+
+
+def test_app_tearing_down_signal():
+    app = flask.Flask(__name__)
+    recorded = []
+
+    def record_teardown(sender, **kwargs):
+        recorded.append(('tear_down', kwargs))
+
+    flask.app_tearing_down.connect(record_teardown, app)
+    try:
+        app.close()
+        app.close()
+        assert recorded == [('tear_down', {})]
+    finally:
+        flask.app_tearing_down.disconnect(record_teardown, app)

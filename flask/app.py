@@ -31,8 +31,9 @@ from .helpers import _PackageBoundObject, \
     get_flashed_messages, locked_cached_property, url_for
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
-from .signals import appcontext_tearing_down, got_request_exception, \
-    request_finished, request_started, request_tearing_down
+from .signals import app_tearing_down, appcontext_tearing_down, \
+    got_request_exception, request_finished, request_started, \
+    request_tearing_down
 from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .wrappers import Request, Response
@@ -449,6 +450,15 @@ class Flask(_PackageBoundObject):
         #: .. versionadded:: 0.9
         self.teardown_appcontext_funcs = []
 
+        #: A list of functions that are called when the application
+        #: is destroyed.  Application can be only destroyed explicitly
+        #: by calling the :meth:`close` function.  This is mostly useful
+        #: for testing when you might be creating a lot of application
+        #: instances and want extensions linked to them to be cleaned up.
+        #:
+        #: .. versionadded:: FIXME
+        self.teardown_app_funcs = []
+
         #: A dictionary with lists of functions that are called before the
         #: :attr:`before_request_funcs` functions. The key of the dictionary is
         #: the name of the blueprint this function is active for, or ``None``
@@ -533,6 +543,9 @@ class Flask(_PackageBoundObject):
         # request.
         self._got_first_request = False
         self._before_request_lock = Lock()
+
+        self._closed = False
+        self._closed_lock = Lock()
 
         # Add a static route using the provided static_url_path, static_host,
         # and static_folder if there is a configured static_folder.
@@ -1495,6 +1508,47 @@ class Flask(_PackageBoundObject):
         return f
 
     @setupmethod
+    def teardown_app(self, f):
+        """Register a function that is called when the application
+        is destroyed.  Application can be only destroyed explicitly
+        by calling the :meth:`close` function.  This is mostly useful
+        for testing when you might be creating a lot of application
+        instances and want extensions linked to them to be cleaned up.
+
+        If you are developing an extension that keeps a pool of
+        connections to some service, you might want to register a
+        teardown function to cleanly close all connections from
+        the pool.
+
+        The return values of teardown functions are ignored.
+
+        .. versionadded:: FIXME
+        """
+        self.teardown_app_funcs.append(f)
+        return f
+
+    def close(self):
+        """Close the application and trigger application teardown
+        handler functions.  This is mostly useful for testing
+        when you might be creating a lot of application instances
+        and want extensions linked to them to be cleaned up.
+
+        You might also use a hook in your framework to call this
+        function to gracefully shut down the server.
+
+        Example using Gunicorn server hooks::
+
+            def worker_exit(server, worker):
+                app.close()
+
+        .. versionadded:: FIXME
+        """
+        with self._closed_lock:
+            if not self._closed:
+                self.do_teardown_app()
+                self._closed = True
+
+    @setupmethod
     def context_processor(self, f):
         """Registers a template context processor function."""
         self.template_context_processors[None].append(f)
@@ -2062,6 +2116,15 @@ class Flask(_PackageBoundObject):
         for func in reversed(self.teardown_appcontext_funcs):
             func(exc)
         appcontext_tearing_down.send(self, exc=exc)
+
+    def do_teardown_app(self):
+        """Called when the application is closed by calling :meth:`close`.
+
+        .. versionadded:: FIXME
+        """
+        for func in reversed(self.teardown_app_funcs):
+            func()
+        app_tearing_down.send(self)
 
     def app_context(self):
         """Binds the application only.  For as long as the application is bound
