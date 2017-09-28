@@ -317,6 +317,13 @@ def test_appgroup(runner):
     def test():
         click.echo(current_app.name)
 
+    @cli.command(with_appcontext=True)
+    @click.argument(
+        "arg", callback=lambda ctx, param, value: current_app.name
+    )
+    def test_callback(arg):
+        click.echo(arg)
+
     @cli.group()
     def subgroup():
         pass
@@ -328,6 +335,10 @@ def test_appgroup(runner):
     obj = ScriptInfo(create_app=lambda info: Flask("testappgroup"))
 
     result = runner.invoke(cli, ['test'], obj=obj)
+    assert result.exit_code == 0
+    assert result.output == 'testappgroup\n'
+
+    result = runner.invoke(cli, ['test_callback', 'arg'], obj=obj)
     assert result.exit_code == 0
     assert result.output == 'testappgroup\n'
 
