@@ -20,6 +20,7 @@ from zlib import adler32
 from threading import RLock
 import unicodedata
 from werkzeug.routing import BuildError
+from werkzeug.exceptions import Aborter
 from functools import update_wrapper
 
 try:
@@ -1017,3 +1018,27 @@ def is_ip(value):
             return True
 
     return False
+
+
+def abort(status, *args, **kwargs):
+    '''
+    Raises an :py:exc:`werkzeug.exceptions.HTTPException` for the given
+    status::
+
+        abort(404)  # 404 Not Found
+        abort(Response('Hello World'))
+
+    If a status code is given it's looked up in the list of exceptions and will
+    raise that exception::
+
+       abort(404)
+       abort(Response('Hello World'))
+
+    To modify the status code to exception mapping, you can use
+    aborter.mapping.update::
+
+       aborter.mapping.update({404: MyCustom404Exception})
+    '''
+    return aborter(status, *args, **kwargs)
+
+aborter = Aborter()
