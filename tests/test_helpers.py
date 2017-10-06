@@ -907,7 +907,7 @@ class TestCustomAborterMapping(object):
 
             rv = client.get('/')
             assert rv.status_code == 404
-            assert 'CUSTOM ABORTER MAPPINGS' in rv.data
+            assert b'CUSTOM ABORTER MAPPINGS' in rv.data
         finally:
             if original != '__UNSET__':
                 flask.aborter.mapping.update({404: original})
