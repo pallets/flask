@@ -119,6 +119,10 @@ class Request(RequestBase, JSONMixin):
     #: The internal URL rule that matched the request.  This can be
     #: useful to inspect which methods are allowed for the URL from
     #: a before/after handler (``request.url_rule.methods``) etc.
+    #: Though if the request's method was invalid for the URL rule,
+    #: the valid list is available in ``routing_exception.valid_methods``
+    #: instead (an attribute of the Werkzeug exception :exc:`~werkzeug.exceptions.MethodNotAllowed`)
+    #: because the request was never internally bound. 
     #:
     #: .. versionadded:: 0.6
     url_rule = None
