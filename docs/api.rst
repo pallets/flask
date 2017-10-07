@@ -622,6 +622,21 @@ The following signals exist in Flask:
 
    .. versionadded:: 0.10
 
+.. data:: app_tearing_down
+
+   This signal is sent when the application is being destroyed.
+   This is mostly useful for testing when you might be creating
+   a lot of application instances and want your code to be handle
+   some cleanup in between tests.
+
+   Example subscriber::
+
+        def close_db_connections(sender, **extra):
+            db.close()
+
+        from flask import app_tearing_down
+        app_tearing_down.connect(close_db_connections, app)
+
 .. class:: signals.Namespace
 
    An alias for :class:`blinker.base.Namespace` if blinker is available,

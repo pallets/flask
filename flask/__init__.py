@@ -34,7 +34,8 @@ from .templating import render_template, render_template_string
 from .signals import signals_available, template_rendered, request_started, \
      request_finished, got_request_exception, request_tearing_down, \
      appcontext_tearing_down, appcontext_pushed, \
-     appcontext_popped, message_flashed, before_render_template
+     appcontext_popped, message_flashed, before_render_template, \
+     app_tearing_down
 
 # We're not exposing the actual json module but a convenient wrapper around
 # it.
