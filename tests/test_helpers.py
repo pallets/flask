@@ -15,7 +15,7 @@ import uuid
 
 import pytest
 from werkzeug.datastructures import Range
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, HTTPException
 from werkzeug.http import http_date, parse_cache_control_header, \
     parse_options_header
 
@@ -886,3 +886,28 @@ class TestHelpers(object):
             assert rv.status_code == 200
             assert rv.data == b'Hello'
             assert rv.mimetype == 'text/html'
+
+
+class TestCustomAborterMapping(object):
+    def test_custom_aborter_mapping(self, app, client):
+        app.config['DEBUG'] = True
+        app.config['TRAP_BAD_REQUEST_ERRORS'] = False
+
+        class CustomNotFound(HTTPException):
+            code = 404
+            description = 'CUSTOM ABORTER MAPPINGS'
+
+        @app.route('/', methods=['GET'])
+        def index():
+            flask.abort(404)
+
+        try:
+            original = flask.aborter.mapping.get(404, '__UNSET__')
+            flask.aborter.mapping.update({404: CustomNotFound})
+
+            rv = client.get('/')
+            assert rv.status_code == 404
+            assert b'CUSTOM ABORTER MAPPINGS' in rv.data
+        finally:
+            if original != '__UNSET__':
+                flask.aborter.mapping.update({404: original})
