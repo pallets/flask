@@ -62,9 +62,8 @@ def test_memory_consumption():
     # Trigger caches
     fire()
 
-    # This test only works on CPython 2.7.
-    if sys.version_info >= (2, 7) and \
-            not hasattr(sys, 'pypy_translation_info'):
+    # This test only works on CPython.
+    if not hasattr(sys, 'pypy_translation_info'):
         with assert_no_leak():
             for x in range(10):
                 fire()

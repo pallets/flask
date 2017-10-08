@@ -724,9 +724,6 @@ def main(as_module=False):
     if as_module:
         this_module = 'flask'
 
-        if sys.version_info < (2, 7):
-            this_module += '.cli'
-
         name = 'python -m ' + this_module
 
         # Python rewrites "python -m flask" to the path to the file in argv.

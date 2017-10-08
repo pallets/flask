@@ -13,8 +13,6 @@ matrix:
       env: TOXENV=py,codecov
     - python: 2.7
       env: TOXENV=py,codecov
-    - python: 2.6
-      env: TOXENV=py,codecov
     - python: pypy
       env: TOXENV=py,codecov
     - python: nightly
