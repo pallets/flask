@@ -284,7 +284,7 @@ def main():
                         help='run against all extensions, not just approved')
     parser.add_argument('--browse', dest='browse', action='store_true',
                         help='show browser with the result summary')
-    parser.add_argument('--env', dest='env', default='py25,py26,py27',
+    parser.add_argument('--env', dest='env', default='py27',
                         help='the tox environments to run against')
     parser.add_argument('--extension=', dest='extension', default=None,
                         help='tests a single extension')
