@@ -46,6 +46,7 @@ def find_best_app(script_info, module):
     # Search for the most common names first.
     for attr_name in ('app', 'application'):
         app = getattr(module, attr_name, None)
+
         if isinstance(app, Flask):
             return app
 
@@ -58,9 +59,9 @@ def find_best_app(script_info, module):
         return matches[0]
     elif len(matches) > 1:
         raise NoAppException(
-            'Auto-detected multiple Flask applications in module "{module}".'
-            ' Use "FLASK_APP={module}:name" to specify the correct'
-            ' one.'.format(module=module.__name__)
+            'Detected multiple Flask applications in module "{module}". Use '
+            '"FLASK_APP={module}:name" to specify the correct '
+            'one.'.format(module=module.__name__)
         )
 
     # Search for app factory functions.
@@ -69,25 +70,29 @@ def find_best_app(script_info, module):
 
         if inspect.isfunction(app_factory):
             try:
-                app = call_factory(app_factory, script_info)
+                app = call_factory(script_info, app_factory)
+
                 if isinstance(app, Flask):
                     return app
             except TypeError:
                 raise NoAppException(
-                    'Auto-detected "{function}()" in module "{module}", but '
-                    'could not call it without specifying arguments.'.format(
-                        function=attr_name, module=module.__name__
+                    'Detected factory "{factory}" in module "{module}", but '
+                    'could not call it without arguments. Use '
+                    '"FLASK_APP=\'{module}:{factory}(args)\'" to specify '
+                    'arguments.'.format(
+                        factory=attr_name, module=module.__name__
                     )
                 )
 
     raise NoAppException(
-        'Failed to find application in module "{module}". Are you sure '
-        'it contains a Flask application? Maybe you wrapped it in a WSGI '
-        'middleware.'.format(module=module.__name__)
+        'Failed to find Flask application or factory in module "{module}". '
+        'Use "FLASK_APP={module}:name to specify one.'.format(
+            module=module.__name__
+        )
     )
 
 
-def call_factory(app_factory, script_info, arguments=()):
+def call_factory(script_info, app_factory, arguments=()):
     """Takes an app factory, a ``script_info` object and  optionally a tuple
     of arguments. Checks for the existence of a script_info argument and calls
     the app_factory depending on that and the arguments provided.
@@ -102,54 +107,65 @@ def call_factory(app_factory, script_info, arguments=()):
         return app_factory(*arguments)
     elif not arguments and len(arg_names) == 1 and arg_defaults is None:
         return app_factory(script_info)
+
     return app_factory()
 
 
-def find_app_by_string(string, script_info, module):
-    """Checks if the given string is a variable name or a function. If it is
-    a function, it checks for specified arguments and whether it takes
-    a ``script_info`` argument and calls the function with the appropriate
-    arguments."""
-    from . import Flask
-    function_regex = r'^(?P<name>\w+)(?:\((?P<args>.*)\))?$'
-    match = re.match(function_regex, string)
-    if match:
-        name, args = match.groups()
-        try:
-            if args is not None:
-                args = args.rstrip(' ,')
-                if args:
-                    args = ast.literal_eval(
-                        "({args}, )".format(args=args))
-                else:
-                    args = ()
-                app_factory = getattr(module, name, None)
-                app = call_factory(app_factory, script_info, args)
-            else:
-                attr = getattr(module, name, None)
-                if inspect.isfunction(attr):
-                    app = call_factory(attr, script_info)
-                else:
-                    app = attr
+def find_app_by_string(script_info, module, app_name):
+    """Checks if the given string is a variable name or a function. If it is a
+    function, it checks for specified arguments and whether it takes a
+    ``script_info`` argument and calls the function with the appropriate
+    arguments.
+    """
+    from flask import Flask
+    match = re.match(r'^ *([^ ()]+) *(?:\((.*?) *,? *\))? *$', app_name)
 
-            if isinstance(app, Flask):
-                return app
-            else:
-                raise NoAppException('Failed to find application in module '
-                                   '"{name}"'.format(name=module))
-        except TypeError as e:
-            new_error = NoAppException(
-                '{e}\nThe app factory "{factory}" in module "{module}" could'
-                ' not be called with the specified arguments (and a'
-                ' script_info argument automatically added if applicable).'
-                ' Did you make sure to use the right number of arguments as'
-                ' well as not using keyword arguments or'
-                ' non-literals?'.format(e=e, factory=string, module=module))
-            reraise(NoAppException, new_error, sys.exc_info()[2])
-    else:
+    if not match:
         raise NoAppException(
-            'The provided string "{string}" is not a valid variable name'
-            'or function expression.'.format(string=string))
+            '"{name}" is not a valid variable name or function '
+            'expression.'.format(name=app_name)
+        )
+
+    name, args = match.groups()
+
+    try:
+        attr = getattr(module, name)
+    except AttributeError as e:
+        raise NoAppException(e.args[0])
+
+    if inspect.isfunction(attr):
+        if args:
+            try:
+                args = ast.literal_eval('({args},)'.format(args=args))
+            except (ValueError, SyntaxError)as e:
+                raise NoAppException(
+                    'Could not parse the arguments in '
+                    '"{app_name}".'.format(e=e, app_name=app_name)
+                )
+        else:
+            args = ()
+
+        try:
+            app = call_factory(script_info, attr, args)
+        except TypeError as e:
+            raise NoAppException(
+                '{e}\nThe factory "{app_name}" in module "{module}" could not '
+                'be called with the specified arguments.'.format(
+                    e=e, app_name=app_name, module=module.__name__
+                )
+            )
+    else:
+        app = attr
+
+    if isinstance(app, Flask):
+        return app
+
+    raise NoAppException(
+        'A valid Flask application was not obtained from '
+        '"{module}:{app_name}".'.format(
+            module=module.__name__, app_name=app_name
+        )
+    )
 
 
 def prepare_import(path):
@@ -181,7 +197,6 @@ def prepare_import(path):
 
 
 def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
-    """Attempts to locate the application."""
     __traceback_hide__ = True
 
     try:
@@ -206,7 +221,7 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
     if app_name is None:
         return find_best_app(script_info, module)
     else:
-        return find_app_by_string(app_name, script_info, module)
+        return find_app_by_string(script_info, module, app_name)
 
 
 def get_version(ctx, param, value):
@@ -219,11 +234,16 @@ def get_version(ctx, param, value):
     }, color=ctx.color)
     ctx.exit()
 
-version_option = click.Option(['--version'],
-                              help='Show the flask version',
-                              expose_value=False,
-                              callback=get_version,
-                              is_flag=True, is_eager=True)
+
+version_option = click.Option(
+    ['--version'],
+    help='Show the flask version',
+    expose_value=False,
+    callback=get_version,
+    is_flag=True,
+    is_eager=True
+)
+
 
 class DispatchingApp(object):
     """Special application that dispatches to a Flask application which
@@ -312,7 +332,7 @@ class ScriptInfo(object):
         app = None
 
         if self.create_app is not None:
-            app = call_factory(self.create_app, self)
+            app = call_factory(self, self.create_app)
         else:
             if self.app_import_path:
                 path, name = (self.app_import_path.split(':', 1) + [None])[:2]
@@ -698,24 +718,21 @@ def routes_command(sort, all_methods):
 
 
 cli = FlaskGroup(help="""\
-This shell command acts as general utility script for Flask applications.
+A general utility script for Flask applications.
 
-It loads the application configured (through the FLASK_APP environment
-variable) and then provides commands either provided by the application or
-Flask itself.
-
-The most useful commands are the "run" and "shell" command.
-
-Example usage:
+Provides commands from Flask, extensions, and the application. Loads the
+application defined in the FLASK_APP environment variable, or from a wsgi.py
+file. Debug mode can be controlled with the FLASK_DEBUG
+environment variable.
 
 \b
-  %(prefix)s%(cmd)s FLASK_APP=hello.py
-  %(prefix)s%(cmd)s FLASK_DEBUG=1
-  %(prefix)sflask run
-""" % {
-    'cmd': os.name == 'posix' and 'export' or 'set',
-    'prefix': os.name == 'posix' and '$ ' or '',
-})
+  {prefix}{cmd} FLASK_APP=hello.py
+  {prefix}{cmd} FLASK_DEBUG=1
+  {prefix}flask run
+""".format(
+    cmd='export' if os.name == 'posix' else 'set',
+    prefix='$ ' if os.name == 'posix' else '> '
+))
 
 
 def main(as_module=False):
