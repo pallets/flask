@@ -234,11 +234,16 @@ def get_version(ctx, param, value):
     }, color=ctx.color)
     ctx.exit()
 
-version_option = click.Option(['--version'],
-                              help='Show the flask version',
-                              expose_value=False,
-                              callback=get_version,
-                              is_flag=True, is_eager=True)
+
+version_option = click.Option(
+    ['--version'],
+    help='Show the flask version',
+    expose_value=False,
+    callback=get_version,
+    is_flag=True,
+    is_eager=True
+)
+
 
 class DispatchingApp(object):
     """Special application that dispatches to a Flask application which
@@ -713,24 +718,21 @@ def routes_command(sort, all_methods):
 
 
 cli = FlaskGroup(help="""\
-This shell command acts as general utility script for Flask applications.
+A general utility script for Flask applications.
 
-It loads the application configured (through the FLASK_APP environment
-variable) and then provides commands either provided by the application or
-Flask itself.
-
-The most useful commands are the "run" and "shell" command.
-
-Example usage:
+Provides commands from Flask, extensions, and the application. Loads the
+application defined in the FLASK_APP environment variable, or from a wsgi.py
+file. Debug mode can be controlled with the FLASK_DEBUG
+environment variable.
 
 \b
-  %(prefix)s%(cmd)s FLASK_APP=hello.py
-  %(prefix)s%(cmd)s FLASK_DEBUG=1
-  %(prefix)sflask run
-""" % {
-    'cmd': os.name == 'posix' and 'export' or 'set',
-    'prefix': os.name == 'posix' and '$ ' or '',
-})
+  {prefix}{cmd} FLASK_APP=hello.py
+  {prefix}{cmd} FLASK_DEBUG=1
+  {prefix}flask run
+""".format(
+    cmd='export' if os.name == 'posix' else 'set',
+    prefix='$ ' if os.name == 'posix' else '> '
+))
 
 
 def main(as_module=False):
