@@ -149,8 +149,8 @@ config key::
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-The code above will limited the maximum allowed payload to 16 megabytes.
-If a larger file is transmitted, Flask will raise an
+The code above will limit the maximum allowed payload to 16 megabytes.
+If a larger file is transmitted, Flask will raise a
 :exc:`~werkzeug.exceptions.RequestEntityTooLarge` exception.
 
 This feature was added in Flask 0.6 but can be achieved in older versions
