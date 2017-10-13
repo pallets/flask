@@ -8,11 +8,11 @@ Let's continue building our code in the ``flaskr.py`` file.
 
 You currently have a function for establishing a database connection with
 `connect_db`, but by itself, it is not particularly useful.  Creating and
-closing database connections all the time is very inefficient, so you will
-need to keep it around for longer.  Because database connections
-encapsulate a transaction, you will need to make sure that only one
-request at a time uses the connection. An elegant way to do this is by
-utilizing the *application context*.
+closing database connections for each query is very inefficient, so you
+will need to keep it around for the duratiob of a request.  Because database
+connections encapsulate a transaction, you will need to make sure that
+only one request at a time uses the connection. An elegant way to do this
+is by utilizing the *application context*.
 
 Flask provides two contexts: the *application context* and the
 *request context*.  For the time being, all you have to know is that there
