@@ -644,7 +644,7 @@ def shell_command():
     namespace of this shell according to it's configuration.
 
     This is useful for executing small snippets of management code
-    without having to manually configuring the application.
+    without having to manually configure the application.
     """
     import code
     from flask.globals import _app_ctx_stack
