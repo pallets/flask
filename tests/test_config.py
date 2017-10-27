@@ -206,3 +206,37 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     if PY2:
         value = value.decode(encoding)
     assert value == u'föö'
+
+def test_none_root_path():
+    app = flask.Flask(__name__)
+    app.config = app.config_class()
+
+    app = flask.Flask(__name__)
+    app.config.from_mapping({
+        'SECRET_KEY': 'config',
+        'TEST_KEY': 'foo'
+    })
+    common_object_test(app)
+
+    app = flask.Flask(__name__)
+    app.config = app.config_class()
+    app.config.from_mapping([
+        ('SECRET_KEY', 'config'),
+        ('TEST_KEY', 'foo')
+    ])
+    common_object_test(app)
+
+    app = flask.Flask(__name__)
+    app.config = app.config_class()
+    app.config.from_mapping(
+        SECRET_KEY='config',
+        TEST_KEY='foo'
+    )
+    common_object_test(app)
+
+    app = flask.Flask(__name__)
+    with pytest.raises(TypeError):
+        app.config.from_mapping(
+            {}, {}
+        )
+

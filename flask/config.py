@@ -81,9 +81,9 @@ class Config(dict):
     :param defaults: an optional dictionary of default values
     """
 
-    def __init__(self, root_path, defaults=None):
+    def __init__(self, root_path=None, defaults=None):
         dict.__init__(self, defaults or {})
-        self.root_path = root_path
+        self.root_path = root_path or ""
 
     def from_envvar(self, variable_name, silent=False):
         """Loads a configuration from an environment variable pointing to
