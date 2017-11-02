@@ -25,7 +25,7 @@ will cover some more details of this later on.
 For the time being, all you have to know is that you can store information
 safely on the :data:`~flask.g` object.
 
-So when do you put it on there?  To do that you can make a helper
+So how do you put it on there?  To do that you can make a helper
 function.  The first time the function is called, it will create a database
 connection for the current context, and successive calls will return the
 already established connection::
