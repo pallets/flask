@@ -21,7 +21,7 @@
 
       3. instruct flask to use the right application
 
-         export FLASK_APP=flaskr.factory:create_app()
+         export FLASK_APP="flaskr.factory:create_app()"
 
       4. initialize the database with this command:
 
