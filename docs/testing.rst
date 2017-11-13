@@ -86,6 +86,11 @@ the :func:`os.close` function to close the file.
 To delete the database after the test, the fixture closes the file and removes
 it from the filesystem.
 
+Finally, note our use of ``flaskr.init_db()``: this requires the ``init_db``
+function to be exposed on our ``flaskr`` module. Add it in the ``__init__.py`` file:::
+
+    from .flaskr import app, init_db
+
 If we now run the test suite, we should see the following output::
 
     $ pytest
