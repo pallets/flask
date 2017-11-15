@@ -30,10 +30,9 @@ installs it with support for Redis as a task broker.
 Configuration
 -------------
 
-There's nothing Flask-specific to set up, but you do need to tell
-Dramatiq what broker it should use.  For this example we're going to
-use RabbitMQ, so create an instance of ``RabbitmqBroker`` in a module
-called ``tasks.py`` and then set it as the default broker::
+You need to tell Dramatiq what broker it should use.  For this example
+we're going to use RabbitMQ, so create an instance of ``RabbitmqBroker``
+in a module called ``tasks.py`` and then set it as the default broker::
 
     import dramatiq
     import os
@@ -44,6 +43,26 @@ called ``tasks.py`` and then set it as the default broker::
     broker = RabbitmqBroker(url=rabbitmq_url)
     dramatiq.set_broker(broker)
 
+In order to be able to access the global app context inside of actors,
+you need to define and register a middleware that updates the context
+stack every time a message is processed::
+
+    class AppContextMiddleware(dramatiq.Middleware):
+        def __init__(self, app):
+            self.app = app
+
+        def before_process_message(self, broker, message):
+            context = self.app.app_context()
+            context.push()
+            message.options["flask_app_context"] = context
+
+        def after_process_message(self, broker, message, *, result=None, exception=None):
+            context = message.options.pop("flask_app_context", None)
+            if context:
+                context.pop(exception)
+
+        after_skip_message = after_process_message
+
 After that's done you can start writing actors.  In that same module::
 
     @dramatiq.actor
@@ -51,9 +70,16 @@ After that's done you can start writing actors.  In that same module::
         print(f"The sum of {x} and {y} is {x + y}.")
 
 You can send that actor a message from your view by calling its
-``send`` method::
+``send`` method.  Don't forget to register the ``AppContextMiddleware``
+after you declare your app::
+
+    from flask import Flask
 
     from . import tasks
+
+    app = Flask(__name__)
+    tasks.broker.add_middleware(tasks.AppContextMiddleware(app))
+
 
     @app.route("/", methods=["POST"])
     def compute_sum():
