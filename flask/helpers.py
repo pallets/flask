@@ -591,7 +591,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                 rv = rv.make_conditional(request, accept_ranges=True,
                                          complete_length=fsize)
             except RequestedRangeNotSatisfiable:
-                file.close()
+                if file is not None:
+                    file.close()
                 raise
         else:
             rv = rv.make_conditional(request)
