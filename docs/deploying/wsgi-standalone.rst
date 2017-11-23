@@ -78,7 +78,7 @@ as well; see ``twistd -h`` and ``twistd web -h`` for more information. For
 example, to run a Twisted Web server in the foreground, on port 8080, with an
 application from ``myproject``::
 
-    twistd -n web --port 8080 --wsgi myproject.app
+    twistd -n web --port tcp:8080 --wsgi myproject.app
 
 .. _Twisted: https://twistedmatrix.com/
 .. _Twisted Web: https://twistedmatrix.com/trac/wiki/TwistedWeb
