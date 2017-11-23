@@ -468,7 +468,7 @@ class TestSendfile(object):
 
     @pytest.mark.skipif(
         not callable(getattr(Range, 'to_content_range_header', None)),
-        reason="not implement within werkzeug"
+        reason="not implemented within werkzeug"
     )
     def test_send_file_range_request(self):
         app = flask.Flask(__name__)
@@ -527,6 +527,25 @@ class TestSendfile(object):
         rv = c.get('/', headers={'Range': 'bytes=4-15', 'If-Range': http_date(
             datetime.datetime(1999, 1, 1))})
         assert rv.status_code == 200
+        rv.close()
+
+    @pytest.mark.skipif(
+        not callable(getattr(Range, 'to_content_range_header', None)),
+        reason="not implemented within werkzeug"
+    )
+    def test_send_file_range_request_xsendfile_invalid(self):
+        # https://github.com/pallets/flask/issues/2526
+        app = flask.Flask(__name__)
+        app.use_x_sendfile = True
+
+        @app.route('/')
+        def index():
+            return flask.send_file('static/index.html', conditional=True)
+
+        c = app.test_client()
+
+        rv = c.get('/', headers={'Range': 'bytes=1000-'})
+        assert rv.status_code == 416
         rv.close()
 
     def test_attachment(self):

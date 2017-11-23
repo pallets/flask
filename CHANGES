@@ -15,6 +15,14 @@ Major release, unreleased
   method returns compressed response by default, and pretty response in
   debug mode.
 
+Version 0.12.3
+--------------
+
+Bugfix release, unreleased
+
+- Fix a ValueError caused by invalid Range requests in some cases
+
+
 Version 0.12.2
 --------------
 
