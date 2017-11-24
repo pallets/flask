@@ -1,9 +1,0 @@
-from flask import Flask
-
-app = Flask()
-
-@app.route("/", methods=["GET", "POST"])
-def index():
-    return "Hello world!"
-
-app.run(debug=True)
