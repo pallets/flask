@@ -36,7 +36,9 @@ except ImportError:
 def _called_with_wrong_args(factory, exc_info):
     exc_type, exc_value, tb = exc_info
     return exc_type is TypeError and \
-        str(exc_value).startswith('%s() takes' % factory.__name__)
+        str(exc_value).startswith((
+            '%s() takes' % factory.__name__,
+            '%s() missing' % factory.__name__))
 
 
 class NoAppException(click.UsageError):
