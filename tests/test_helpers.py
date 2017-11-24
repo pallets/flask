@@ -571,6 +571,10 @@ class TestSendfile(object):
         # https://github.com/pallets/flask/issues/2526
         app.use_x_sendfile = True
 
+        @app.route('/')
+        def index():
+            return flask.send_file('static/index.html', conditional=True)
+
         rv = client.get('/', headers={'Range': 'bytes=1000-'})
         assert rv.status_code == 416
         rv.close()
