@@ -148,6 +148,14 @@ Major release, unreleased
 .. _#2436: https://github.com/pallets/flask/pull/2436
 .. _#2450: https://github.com/pallets/flask/pull/2450
 
+Version 0.12.3
+--------------
+
+Bugfix release, unreleased
+
+- Fix a ValueError caused by invalid Range requests in some cases
+
+
 Version 0.12.2
 --------------
 
