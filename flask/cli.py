@@ -33,6 +33,12 @@ except ImportError:
     dotenv = None
 
 
+def _called_with_wrong_args(factory, exc_info):
+    exc_type, exc_value, tb = exc_info
+    return exc_type is TypeError and \
+        str(exc_value).startswith('%s() takes' % factory.__name__)
+
+
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
@@ -75,6 +81,8 @@ def find_best_app(script_info, module):
                 if isinstance(app, Flask):
                     return app
             except TypeError:
+                if not _called_with_wrong_args(app_factory, sys.exc_info()):
+                    raise
                 raise NoAppException(
                     'Detected factory "{factory}" in module "{module}", but '
                     'could not call it without arguments. Use '
@@ -148,6 +156,8 @@ def find_app_by_string(script_info, module, app_name):
         try:
             app = call_factory(script_info, attr, args)
         except TypeError as e:
+            if not _called_with_wrong_args(attr, sys.exc_info()):
+                raise
             raise NoAppException(
                 '{e}\nThe factory "{app_name}" in module "{module}" could not '
                 'be called with the specified arguments.'.format(
