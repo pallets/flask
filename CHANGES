@@ -113,6 +113,7 @@ Major release, unreleased
   depending on ``app.debug``. No handlers are removed, and a handler is only
   added if no handlers are already configured. (`#2436`_)
 - Blueprint view function name may not contain dots. (`#2450`_)
+- The dev server now uses threads by default.
 
 .. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
