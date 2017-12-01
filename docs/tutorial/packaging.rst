@@ -50,7 +50,7 @@ Create the :file:`MANIFEST.in` and add the following lines::
     include flaskr/schema.sql
 
 Next, to simplify locating the application, create the file,
-:file:`flaskr/__init__.py` containing only the following import statement::
+:file:`flaskr/flaskr/__init__.py` containing only the following import statement::
 
     from .flaskr import app
 
