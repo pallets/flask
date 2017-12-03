@@ -359,11 +359,10 @@ There's quite a few options to change, but once we've done it for one command,
 we can easily copy the entire configuration and make a single tweak to give us
 access to other commands, including any custom ones you may implement yourself.
 
-For the *Script* input (**A**), navigate to your project's virtual environment.
-Within that folder, pick the ``flask`` executable which will reside in the
-``bin`` folder, or in the ``Scripts`` on Windows.
+Since PyCharm 2017.3, you can run modules instead of needing to find ``flask``
+executable. For the *Module name* input (**A**), you just need to input ``flask``.
 
-The *Script Parameter* field (**B**) is set to the CLI command you to execute.
+The *Parameters* field (**B**) is set to the CLI command you to execute.
 In this example we use ``run``, which will run the development server.
 
 You can skip this next step if you're using :ref:`dotenv`. We need to add an
