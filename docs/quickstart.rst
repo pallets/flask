@@ -315,9 +315,9 @@ of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
-            do_the_login()
+            return do_the_login()
         else:
-            show_the_login_form()
+            return show_the_login_form()
 
 If ``GET`` is present, Flask automatically adds support for the ``HEAD`` method
 and handles ``HEAD`` requests according to the the `HTTP RFC`_. Likewise,
