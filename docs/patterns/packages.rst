@@ -42,7 +42,7 @@ You should then end up with something like that::
                 login.html
                 ...
 
-But how do you run your application now?  The naive ``python
+But how do you run your application now?  The native ``python
 yourapplication/__init__.py`` will not work.  Let's just say that Python
 does not want modules in packages to be the startup file.  But that is not
 a big problem, just add a new file called :file:`setup.py` next to the inner
