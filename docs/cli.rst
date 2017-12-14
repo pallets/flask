@@ -176,7 +176,7 @@ Unix Bash, :file:`venv/bin/activate`::
 
     export FLASK_APP=hello
 
-Windows CMD, :file:`venv\Scripts\activate.bat`::
+Windows CMD, :file:`venv\\Scripts\\activate.bat`::
 
     set FLASK_APP=hello
 
