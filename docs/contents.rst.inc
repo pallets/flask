@@ -56,7 +56,6 @@ Design notes, legal information and changelog are here for the interested.
    unicode
    extensiondev
    styleguide
-   python3
    upgrading
    changelog
    license
