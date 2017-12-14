@@ -104,7 +104,7 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
-.. py:data:: TRAP_BAD_REQUEST_ERRORS``
+.. py:data:: TRAP_BAD_REQUEST_ERRORS
 
     Trying to access a key that doesn't exist from request dicts like ``args``
     and ``form`` will return a 400 Bad Request error page. Enable this to treat
