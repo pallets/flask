@@ -8,6 +8,7 @@ Version 0.13
 
 Major release, unreleased
 
+- **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
 - Minimum Werkzeug version bumped to 0.9, but please use the latest version.
 - Minimum Click version bumped to 4, but please use the latest version.
 - Make ``app.run()`` into a noop if a Flask application is run from the
@@ -115,6 +116,7 @@ Major release, unreleased
 - Blueprint view function name may not contain dots. (`#2450`_)
 - The dev server now uses threads by default.
 
+.. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
 .. _#1489: https://github.com/pallets/flask/pull/1489
 .. _#1621: https://github.com/pallets/flask/pull/1621
