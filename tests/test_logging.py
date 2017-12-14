@@ -29,7 +29,8 @@ def reset_logging(monkeypatch):
     logger.handlers = []
     logger.setLevel(logging.NOTSET)
 
-    pytest.config.pluginmanager.register(logging_plugin, 'logging-plugin')
+    if logging_plugin:
+        pytest.config.pluginmanager.register(logging_plugin, 'logging-plugin')
 
 
 def test_logger(app):
