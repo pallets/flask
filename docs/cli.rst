@@ -99,6 +99,31 @@ replaces the :meth:`Flask.run` method in most cases. ::
     is provided for convenience, but is not designed to be particularly secure,
     stable, or efficient. See :ref:`deployment` for how to run in production.
 
+Run Options
+--------------------------
+
+Running `flask run --help` will list the command-line options, including options
+to set the host bind interface and port. ::
+
+    $ flask run --help
+    Usage: flask run [OPTIONS]
+
+    Runs a local development server for the Flask application.
+    ...
+    Options:
+      -h, --host TEXT                 The interface to bind to.
+      -p, --port INTEGER              The port to bind to.
+      --reload / --no-reload          Enable or disable the reloader.  By default
+                                      the reloader is active if debug is enabled.
+      --debugger / --no-debugger      Enable or disable the debugger.  By default
+                                  the debugger is active if debug is enabled.
+      --eager-loading / --lazy-loader
+                                      Enable or disable eager loading.  By default
+                                      eager loading is enabled if the reloader is
+                                      disabled.
+      --with-threads / --without-threads
+                                      Enable or disable multithreading.
+      --help                          Show this message and exit.
 
 Open a Shell
 ------------
