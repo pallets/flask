@@ -1,0 +1,20 @@
+environment:
+  global:
+    TOXENV: "py"
+
+  matrix:
+    - PYTHON: "C:\\Python36"
+    - PYTHON: "C:\\Python27"
+
+install:
+  - "%PYTHON%\\python.exe -m pip install -U pip setuptools wheel tox"
+
+build: false
+
+test_script:
+  - "%PYTHON%\\python.exe -m tox"
+
+branches:
+  only:
+    - master
+    - /^.*-maintenance$/
