@@ -4,25 +4,17 @@ language: python
 matrix:
   include:
     - python: 3.6
-      env: TOXENV=py,codecov
+      env: TOXENV=py,simplejson,devel,lowest,codecov,docs-html
     - python: 3.5
       env: TOXENV=py,codecov
     - python: 3.4
       env: TOXENV=py,codecov
-    - python: 3.3
-      env: TOXENV=py,codecov
     - python: 2.7
-      env: TOXENV=py,codecov
-    - python: 2.6
-      env: TOXENV=py,codecov
+      env: TOXENV=py,simplejson,devel,lowest,codecov
     - python: pypy
       env: TOXENV=py,codecov
     - python: nightly
       env: TOXENV=py
-    - python: 3.6
-      env: TOXENV=docs-html
-    - python: 3.6
-      env: TOXENV=py-simplejson,codecov
 
 install:
   - pip install tox
