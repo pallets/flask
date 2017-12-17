@@ -37,35 +37,48 @@ The Testing Skeleton
 --------------------
 
 We begin by adding a tests directory under the application root.  Then
-create a Python file to store our tests (:file:`test_flaskr.py`). When we
-format the filename like ``test_*.py``, it will be auto-discoverable by
-pytest.
+create a Python file to store our test configuration (:file:`conftest.py`). This
+is a special file that will be automatically loaded by pytest on runtime.
 
 Next, we create a `pytest fixture`_ called
-:func:`client` that configures
+:func:`client` in (:file:`conftest.py`), which configures
 the application for testing and initializes a new database.::
 
     import os
     import tempfile
-
     import pytest
-
-    from flaskr import flaskr
+    from flaskr.factory import create_app
+    from flaskr.blueprints.flaskr import init_db
 
 
     @pytest.fixture
-    def client():
-        db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-        flaskr.app.config['TESTING'] = True
-        client = flaskr.app.test_client()
+    def app(request):
 
-        with flaskr.app.app_context():
-            flaskr.init_db()
+        db_fd, temp_db_location = tempfile.mkstemp()
+        config = {
+            'DATABASE': temp_db_location,
+            'TESTING': True,
+            'DB_FD': db_fd
+        }
 
-        yield client
+        app = create_app(config=config)
 
-        os.close(db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
+        with app.app_context():
+            init_db()
+            yield app
+
+
+    @pytest.fixture
+    def client(request, app):
+
+        client = app.test_client()
+
+        def teardown():
+            os.close(app.config['DB_FD'])
+            os.unlink(app.config['DATABASE'])
+        request.addfinalizer(teardown)
+
+        return client
 
 This client fixture will be called by each individual test.  It gives us a
 simple interface to the application, where we can trigger test requests to the
@@ -76,8 +89,8 @@ this does is disable error catching during request handling, so that
 you get better error reports when performing test requests against the
 application.
 
-Because SQLite3 is filesystem-based, we can easily use the :mod:`tempfile` module
-to create a temporary database and initialize it.  The
+Because SQLite3 is filesystem-based, we can easily use the :mod:`tempfile`
+module to create a temporary database and initialize it.  The
 :func:`~tempfile.mkstemp` function does two things for us: it returns a
 low-level file handle and a random file name, the latter we use as
 database name.  We just have to keep the `db_fd` around so that we can use
@@ -108,8 +121,10 @@ The First Test
 
 Now it's time to start testing the functionality of the application.
 Let's check that the application shows "No entries here so far" if we
-access the root of the application (``/``).  To do this, we add a new
-test function to :file:`test_flaskr.py`, like this::
+access the root of the application (``/``). When we
+format the filename like ``test_*.py``, it will be auto-discoverable by
+pytest. Therefore, we add a new test function to :file:`test_flaskr.py`, like
+this::
 
     def test_empty_db(client):
         """Start with a blank database."""
