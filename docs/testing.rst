@@ -37,9 +37,7 @@ The Testing Skeleton
 --------------------
 
 We begin by adding a tests directory under the application root.  Then
-create a Python file to store our tests (:file:`test_flaskr.py`). When we
-format the filename like ``test_*.py``, it will be auto-discoverable by
-pytest.
+create a Python file to store our test configuration (:file:`conftest.py`).
 
 Next, we create a `pytest fixture`_ called
 :func:`client` that configures
@@ -76,8 +74,8 @@ this does is disable error catching during request handling, so that
 you get better error reports when performing test requests against the
 application.
 
-Because SQLite3 is filesystem-based, we can easily use the :mod:`tempfile` module
-to create a temporary database and initialize it.  The
+Because SQLite3 is filesystem-based, we can easily use the :mod:`tempfile`
+module to create a temporary database and initialize it.  The
 :func:`~tempfile.mkstemp` function does two things for us: it returns a
 low-level file handle and a random file name, the latter we use as
 database name.  We just have to keep the `db_fd` around so that we can use
@@ -108,8 +106,10 @@ The First Test
 
 Now it's time to start testing the functionality of the application.
 Let's check that the application shows "No entries here so far" if we
-access the root of the application (``/``).  To do this, we add a new
-test function to :file:`test_flaskr.py`, like this::
+access the root of the application (``/``). When we
+format the filename like ``test_*.py``, it will be auto-discoverable by
+pytest. Therefore, we add a new test function to :file:`test_flaskr.py`, like
+this::
 
     def test_empty_db(client):
         """Start with a blank database."""
