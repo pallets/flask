@@ -94,6 +94,9 @@ replaces the :meth:`Flask.run` method in most cases. ::
      * Serving Flask app "hello"
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
+The bind-address and port can be controlled using the `--host` and `--port`
+options.
+
 .. warning:: Do not use this command to run your application in production.
     Only use the development server during development. The development server
     is provided for convenience, but is not designed to be particularly secure,
