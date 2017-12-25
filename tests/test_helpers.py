@@ -886,7 +886,7 @@ class TestSafeJoin(object):
 class TestHelpers(object):
 
     @pytest.mark.parametrize('debug, expected_flag, expected_default_flag', [
-        ('', None, True),
+        ('', False, False),
         ('0', False, False),
         ('False', False, False),
         ('No', False, False),
@@ -898,7 +898,7 @@ class TestHelpers(object):
             assert get_debug_flag() is None
         else:
             assert get_debug_flag() == expected_flag
-        assert get_debug_flag(default=True) == expected_default_flag
+        assert get_debug_flag() == expected_default_flag
 
     def test_make_response(self):
         app = flask.Flask(__name__)
