@@ -65,10 +65,10 @@ that tells Flask where to find the application instance::
     export FLASK_APP=yourapplication
 
 If you are outside of the project directory make sure to provide the exact 
-path to your application directory. Similarly you can turn on "debug 
-mode" with this environment variable:: 
+path to your application directory. Similarly you can turn on the
+development features like this::
 
-    export FLASK_DEBUG=true 
+    export FLASK_ENV=development
 
 In order to install and run the application you need to issue the following 
 commands::

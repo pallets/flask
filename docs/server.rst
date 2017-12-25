@@ -12,12 +12,13 @@ but you can also continue using the :meth:`Flask.run` method.
 Command Line
 ------------
 
-The :command:`flask` command line script (:ref:`cli`) is strongly recommended for
-development because it provides a superior reload experience due to how it
-loads the application.  The basic usage is like this::
+The :command:`flask` command line script (:ref:`cli`) is strongly
+recommended for development because it provides a superior reload
+experience due to how it loads the application.  The basic usage is like
+this::
 
     $ export FLASK_APP=my_application
-    $ export FLASK_DEBUG=1
+    $ export FLASK_ENV=development
     $ flask run
 
 This will enable the debugger, the reloader and then start the server on
@@ -28,6 +29,13 @@ arguments to the ``run`` option.  For instance the reloader can be
 disabled::
 
     $ flask run --no-reload
+
+.. note::
+
+    On older Flask version (before 1.0) the :envvar:`FLASK_ENV`
+    environment variable is not supported and you need to enable the
+    debug mode separately by setting the :envvar:`FLASK_DEBUG` environment
+    variable to ``1``.
 
 In Code
 -------
