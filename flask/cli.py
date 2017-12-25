@@ -25,7 +25,7 @@ import click
 from . import __version__
 from ._compat import getargspec, iteritems, reraise
 from .globals import current_app
-from .helpers import get_debug_flag
+from .helpers import get_debug_flag, get_env
 
 try:
     import dotenv
@@ -628,6 +628,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
         # we won't print anything.
         if info.app_import_path is not None:
             print(' * Serving Flask app "%s"' % info.app_import_path)
+        print(' * Env %s' % get_env())
         if debug is not None:
             print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
 
