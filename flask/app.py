@@ -269,8 +269,8 @@ class Flask(_PackageBoundObject):
 
     #: Default configuration parameters.
     default_config = ImmutableDict({
-        'ENV':                                  get_env(),
-        'DEBUG':                                get_debug_flag(),
+        'ENV':                                  None,
+        'DEBUG':                                None,
         'TESTING':                              False,
         'PROPAGATE_EXCEPTIONS':                 None,
         'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
@@ -639,7 +639,10 @@ class Flask(_PackageBoundObject):
         root_path = self.root_path
         if instance_relative:
             root_path = self.instance_path
-        return self.config_class(root_path, self.default_config)
+        defaults = dict(self.default_config)
+        defaults['ENV'] = get_env()
+        defaults['DEBUG'] = get_debug_flag()
+        return self.config_class(root_path, defaults)
 
     def auto_find_instance_path(self):
         """Tries to locate the instance path if it was not provided to the

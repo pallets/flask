@@ -341,9 +341,8 @@ class ScriptInfo(object):
             else:
                 for path in ('wsgi.py', 'app.py'):
                     import_name = prepare_import(path)
-                    app = locate_app(
-                        self, import_name, None, raise_if_not_found=False
-                    )
+                    app = locate_app(self, import_name, None,
+                                     raise_if_not_found=False)
 
                     if app:
                         break
@@ -651,11 +650,12 @@ def shell_command():
     import code
     from flask.globals import _app_ctx_stack
     app = _app_ctx_stack.top.app
-    banner = 'Python %s on %s\nApp: %s%s\nInstance: %s' % (
+    banner = 'Python %s on %s\nApp: %s%s\nEnv: %s\nInstance: %s' % (
         sys.version,
         sys.platform,
         app.import_name,
         app.debug and ' [debug]' or '',
+        app.env,
         app.instance_path,
     )
     ctx = {}
