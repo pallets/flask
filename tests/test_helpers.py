@@ -21,7 +21,7 @@ from werkzeug.http import http_date, parse_cache_control_header, \
 
 import flask
 from flask._compat import StringIO, text_type
-from flask.helpers import get_debug_flag
+from flask.helpers import get_debug_flag, get_env
 
 
 def has_encoding(name):
@@ -899,6 +899,17 @@ class TestHelpers(object):
         else:
             assert get_debug_flag() == expected_flag
         assert get_debug_flag() == expected_default_flag
+
+    @pytest.mark.parametrize('env, ref_env, debug', [
+        ('', 'production', False),
+        ('production', 'production', False),
+        ('development', 'development', True),
+        ('other', 'other', False),
+    ])
+    def test_get_env(self, monkeypatch, env, ref_env, debug):
+        monkeypatch.setenv('FLASK_ENV', env)
+        assert get_debug_flag() == debug
+        assert get_env() == ref_env
 
     def test_make_response(self):
         app = flask.Flask(__name__)
