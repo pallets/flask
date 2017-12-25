@@ -433,10 +433,8 @@ class FlaskGroup(AppGroup):
         from :file:`.env` and :file:`.flaskenv` files.
     """
 
-    def __init__(
-        self, add_default_commands=True, create_app=None,
-        add_version_option=True, load_dotenv=True, **extra
-    ):
+    def __init__(self, add_default_commands=True, create_app=None,
+                 add_version_option=True, load_dotenv=True, **extra):
         params = list(extra.pop('params', None) or ())
 
         if add_version_option:
@@ -650,11 +648,10 @@ def shell_command():
     import code
     from flask.globals import _app_ctx_stack
     app = _app_ctx_stack.top.app
-    banner = 'Python %s on %s\nApp: %s%s\nEnv: %s\nInstance: %s' % (
+    banner = 'Python %s on %s\nApp: %s [%s]\nInstance: %s' % (
         sys.version,
         sys.platform,
         app.import_name,
-        app.debug and ' [debug]' or '',
         app.env,
         app.instance_path,
     )
