@@ -61,21 +61,30 @@ class SecureCookieSession(CallbackDict, SessionMixin):
         def on_update(self):
             self.modified = True
             self.accessed = True
+            self.new = True
 
         super(SecureCookieSession, self).__init__(initial, on_update)
         self.modified = False
         self.accessed = False
+        if not hasattr(self, 'has_run'):
+            self.has_run = True
+            self.new = False
+        else:
+            self.new = True
 
     def __getitem__(self, key):
         self.accessed = True
+        self.new = False
         return super(SecureCookieSession, self).__getitem__(key)
 
     def get(self, key, default=None):
         self.accessed = True
+        self.new = False
         return super(SecureCookieSession, self).get(key, default)
 
     def setdefault(self, key, default=None):
         self.accessed = True
+        self.new = False
         return super(SecureCookieSession, self).setdefault(key, default)
 
 
