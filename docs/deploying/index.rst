@@ -17,6 +17,7 @@ Hosted options
 --------------
 
 - `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/getting-started-with-python>`_
+- `Deploying Flask on Hasura <https://hasura.io/hub/project/hasura/hello-python-flask>`_
 - `Deploying Flask on OpenShift <https://developers.openshift.com/en/python-flask.html>`_
 - `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
 - `Deploying Flask on Google App Engine <https://cloud.google.com/appengine/docs/standard/python/getting-started/python-standard-env>`_
