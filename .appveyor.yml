@@ -1,15 +1,13 @@
 environment:
   global:
-    TOXENV: "py"
+    TOXENV: py
 
   matrix:
-    - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python35"
-    - PYTHON: "C:\\Python36"
+    - PYTHON: C:\Python36
+    - PYTHON: C:\Python27
 
 init:
   - SET PATH=%PYTHON%;%PATH%
-  - python -c "import sys;sys.stdout.write(sys.version)"
 
 install:
   - python -m pip install -U pip setuptools wheel tox
