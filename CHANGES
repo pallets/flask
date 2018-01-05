@@ -3,6 +3,7 @@ Flask Changelog
 
 Here you can see the full list of changes between each Flask release.
 
+
 Version 0.13
 ------------
 
@@ -114,7 +115,9 @@ Major release, unreleased
   depending on ``app.debug``. No handlers are removed, and a handler is only
   added if no handlers are already configured. (`#2436`_)
 - Blueprint view function name may not contain dots. (`#2450`_)
-- The dev server now uses threads by default.
+- The dev server now uses threads by default. (`#2529`_)
+- Loading config files with ``silent=True`` will ignore ``ENOTDIR``
+  errors. (`#2581`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -149,6 +152,9 @@ Major release, unreleased
 .. _#2430: https://github.com/pallets/flask/pull/2430
 .. _#2436: https://github.com/pallets/flask/pull/2436
 .. _#2450: https://github.com/pallets/flask/pull/2450
+.. _#2529: https://github.com/pallets/flask/pull/2529
+.. _#2581: https://github.com/pallets/flask/pull/2581
+
 
 Version 0.12.3
 --------------
