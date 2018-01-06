@@ -22,21 +22,12 @@ import unicodedata
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
-try:
-    from werkzeug.urls import url_quote
-except ImportError:
-    from urlparse import quote as url_quote
-
+from werkzeug.urls import url_quote
 from werkzeug.datastructures import Headers, Range
 from werkzeug.exceptions import BadRequest, NotFound, \
     RequestedRangeNotSatisfiable
 
-# this was moved in 0.7
-try:
-    from werkzeug.wsgi import wrap_file
-except ImportError:
-    from werkzeug.utils import wrap_file
-
+from werkzeug.wsgi import wrap_file
 from jinja2 import FileSystemLoader
 
 from .signals import message_flashed
