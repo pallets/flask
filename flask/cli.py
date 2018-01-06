@@ -609,6 +609,14 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     """
     from werkzeug.serving import run_simple
 
+    if get_env() == 'production':
+        click.secho('Warning: Detected a production environment. Do not '
+                    'use `flask run` for production use.',
+                    fg='red')
+        click.secho('Use a production ready WSGI server instead',
+                    dim=True)
+        click.echo()
+
     debug = get_debug_flag()
     if reload is None:
         reload = bool(debug)
