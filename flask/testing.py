@@ -15,11 +15,7 @@ from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
 from flask.json import dumps as json_dumps
-
-try:
-    from werkzeug.urls import url_parse
-except ImportError:
-    from urlparse import urlsplit as url_parse
+from werkzeug.urls import url_parse
 
 
 def make_test_environ_builder(
