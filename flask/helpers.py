@@ -46,10 +46,20 @@ _os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
                     if sep not in (None, '/'))
 
 
-def get_debug_flag(default=None):
+def get_env():
+    val = os.environ.get('FLASK_ENV')
+    if not val:
+        val = 'production'
+    return val
+
+
+def get_debug_flag():
     val = os.environ.get('FLASK_DEBUG')
     if not val:
-        return default
+        env = get_env()
+        if env == 'development':
+            return True
+        return False
     return val.lower() not in ('0', 'false', 'no')
 
 

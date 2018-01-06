@@ -25,7 +25,7 @@ import click
 from . import __version__
 from ._compat import getargspec, iteritems, reraise
 from .globals import current_app
-from .helpers import get_debug_flag
+from .helpers import get_debug_flag, get_env
 
 try:
     import dotenv
@@ -341,9 +341,8 @@ class ScriptInfo(object):
             else:
                 for path in ('wsgi.py', 'app.py'):
                     import_name = prepare_import(path)
-                    app = locate_app(
-                        self, import_name, None, raise_if_not_found=False
-                    )
+                    app = locate_app(self, import_name, None,
+                                     raise_if_not_found=False)
 
                     if app:
                         break
@@ -357,8 +356,10 @@ class ScriptInfo(object):
 
         debug = get_debug_flag()
 
+        # Update the app's debug flag through the descriptor so that other
+        # values repopulate as well.
         if debug is not None:
-            app._reconfigure_for_run_debug(debug)
+            app.debug = debug
 
         self._loaded_app = app
         return app
@@ -432,10 +433,8 @@ class FlaskGroup(AppGroup):
         from :file:`.env` and :file:`.flaskenv` files.
     """
 
-    def __init__(
-        self, add_default_commands=True, create_app=None,
-        add_version_option=True, load_dotenv=True, **extra
-    ):
+    def __init__(self, add_default_commands=True, create_app=None,
+                 add_version_option=True, load_dotenv=True, **extra):
         params = list(extra.pop('params', None) or ())
 
         if add_version_option:
@@ -610,6 +609,13 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     """
     from werkzeug.serving import run_simple
 
+    if get_env() == 'production':
+        click.secho('Warning: Detected a production environment. Do not '
+                    'use `flask run` for production use.',
+                    fg='red')
+        click.secho('Use a production ready WSGI server instead',
+                    dim=True)
+
     debug = get_debug_flag()
     if reload is None:
         reload = bool(debug)
@@ -629,6 +635,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
         # we won't print anything.
         if info.app_import_path is not None:
             print(' * Serving Flask app "%s"' % info.app_import_path)
+        print(' * Env %s' % get_env())
         if debug is not None:
             print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
 
@@ -649,11 +656,11 @@ def shell_command():
     import code
     from flask.globals import _app_ctx_stack
     app = _app_ctx_stack.top.app
-    banner = 'Python %s on %s\nApp: %s%s\nInstance: %s' % (
+    banner = 'Python %s on %s\nApp: %s [%s]\nInstance: %s' % (
         sys.version,
         sys.platform,
         app.import_name,
-        app.debug and ' [debug]' or '',
+        app.env,
         app.instance_path,
     )
     ctx = {}

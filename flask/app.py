@@ -27,7 +27,7 @@ from .config import Config, ConfigAttribute
 from .ctx import AppContext, RequestContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, g, request, session
 from .helpers import _PackageBoundObject, \
-    _endpoint_from_view_func, find_package, get_debug_flag, \
+    _endpoint_from_view_func, find_package, get_env, get_debug_flag, \
     get_flashed_messages, locked_cached_property, url_for
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
@@ -196,15 +196,6 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.11
     config_class = Config
 
-    #: The debug flag.  Set this to ``True`` to enable debugging of the
-    #: application.  In debug mode the debugger will kick in when an unhandled
-    #: exception occurs and the integrated server will automatically reload
-    #: the application if changes in the code are detected.
-    #:
-    #: This attribute can also be configured from the config with the ``DEBUG``
-    #: configuration key.  Defaults to ``False``.
-    debug = ConfigAttribute('DEBUG')
-
     #: The testing flag.  Set this to ``True`` to enable the test mode of
     #: Flask extensions (and in the future probably also Flask itself).
     #: For example this might activate test helpers that have an
@@ -278,7 +269,8 @@ class Flask(_PackageBoundObject):
 
     #: Default configuration parameters.
     default_config = ImmutableDict({
-        'DEBUG':                                get_debug_flag(default=False),
+        'ENV':                                  None,
+        'DEBUG':                                None,
         'TESTING':                              False,
         'PROPAGATE_EXCEPTIONS':                 None,
         'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
@@ -647,7 +639,10 @@ class Flask(_PackageBoundObject):
         root_path = self.root_path
         if instance_relative:
             root_path = self.instance_path
-        return self.config_class(root_path, self.default_config)
+        defaults = dict(self.default_config)
+        defaults['ENV'] = get_env()
+        defaults['DEBUG'] = get_debug_flag()
+        return self.config_class(root_path, defaults)
 
     def auto_find_instance_path(self):
         """Tries to locate the instance path if it was not provided to the
@@ -790,25 +785,38 @@ class Flask(_PackageBoundObject):
             rv.update(processor())
         return rv
 
-    def _reconfigure_for_run_debug(self, debug):
-        """The ``run`` commands will set the application's debug flag. Some
-        application configuration may already be calculated based on the
-        previous debug value. This method will recalculate affected values.
+    #: The environment value.  This is typically set from outside the
+    #: process by setting the `FLASK_ENV` environment variable and can be
+    #: used to quickly switch between different environments like
+    #: `production` and `development`.  If not set this defaults to
+    #: `production`.
+    env = ConfigAttribute('ENV')
 
-        Called by the :func:`flask.cli.run` command or :meth:`Flask.run`
-        method if the debug flag is set explicitly in the call.
+    def _get_debug(self):
+        return self.config['DEBUG']
+    def _set_debug(self, value):
+        self._set_debug_value(value)
 
-        :param debug: the new value of the debug flag
+    #: The debug flag.  If this is ``True`` it enables debugging of the
+    #: application.  In debug mode the debugger will kick in when an
+    #: unhandled exception occurs and the integrated server will
+    #: automatically reload the application if changes in the code are
+    #: detected.
+    #:
+    #: This value should only be configured by the :envvar:`FLASK_DEBUG`
+    #: environment variable.  Changing it by other means will not yield
+    #: consistent results.  The default value depends on the Flask
+    #: environment and will be true for the development environment and false
+    #: otherwise.
+    debug = property(_get_debug, _set_debug)
+    del _get_debug, _set_debug
 
-        .. versionadded:: 1.0
-            Reconfigures ``app.jinja_env.auto_reload``.
-        """
-        self.debug = debug
+    def _set_debug_value(self, value):
+        self.config['DEBUG'] = value
         self.jinja_env.auto_reload = self.templates_auto_reload
 
-    def run(
-        self, host=None, port=None, debug=None, load_dotenv=True, **options
-    ):
+    def run(self, host=None, port=None, debug=None,
+            load_dotenv=True, **options):
         """Runs the application on a local development server.
 
         Do not use ``run()`` in a production setting. It is not intended to
@@ -872,11 +880,11 @@ class Flask(_PackageBoundObject):
             load_dotenv()
 
         if debug is not None:
-            self._reconfigure_for_run_debug(bool(debug))
+            self.debug = bool(debug)
 
         _host = '127.0.0.1'
         _port = 5000
-        server_name = self.config.get("SERVER_NAME")
+        server_name = self.config.get('SERVER_NAME')
         sn_host, sn_port = None, None
 
         if server_name:
@@ -1055,7 +1063,8 @@ class Flask(_PackageBoundObject):
         return iter(self._blueprint_order)
 
     @setupmethod
-    def add_url_rule(self, rule, endpoint=None, view_func=None, provide_automatic_options=None, **options):
+    def add_url_rule(self, rule, endpoint=None, view_func=None,
+                     provide_automatic_options=None, **options):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
         endpoint.

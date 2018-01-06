@@ -78,11 +78,13 @@ With that out of the way, you should be able to start up the application.
 Do this on Mac or Linux with the following commands in ``flaskr/``::
 
     export FLASK_APP=flaskr
-    export FLASK_DEBUG=true
+    export FLASK_ENV=development
     flask run
 
 (In case you are on Windows you need to use ``set`` instead of ``export``).
-The :envvar:`FLASK_DEBUG` flag enables or disables the interactive debugger.
+The :envvar:`FLASK_ENV` flag if set to ``development`` turns on all
+development features such as enabling the interactive debugger.
+
 *Never leave debug mode activated in a production system*, because it will
 allow users to execute code on the server!
 
