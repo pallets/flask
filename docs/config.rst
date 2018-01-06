@@ -27,35 +27,52 @@ The :attr:`~flask.Flask.config` is actually a subclass of a dictionary and
 can be modified just like any dictionary::
 
     app = Flask(__name__)
-    app.config['DEBUG'] = True
+    app.config['TESTING'] = True
 
 Certain configuration values are also forwarded to the
 :attr:`~flask.Flask` object so you can read and write them from there::
 
-    app.debug = True
+    app.testing = True
 
 To update multiple keys at once you can use the :meth:`dict.update`
 method::
 
     app.config.update(
-        DEBUG=True,
+        TESTING=True,
         SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/'
     )
 
-.. admonition:: Debug Mode with the ``flask`` Script
+Environment and Debug Features
+------------------------------
 
-   If you use the :command:`flask` script to start a local development
-   server, to enable the debug mode, you need to export the ``FLASK_DEBUG``
-   environment variable before running the server::
+Some values are special in that they can show unexpected behavior when
+changed late.  In particular that applies to the Flask environment and
+debug mode.
 
-    $ export FLASK_DEBUG=1
-    $ flask run
+If you use the :command:`flask` script to start a local development server
+for instance you should tell Flask that you want to work in the
+development environment.  For safety reasons we default the flask
+environment to production mode instead of development.  This is done
+because development mode can turn on potentially unsafe features such as
+the debugger by default.
 
-   (On Windows you need to use ``set`` instead of ``export``).
+To control the environment and such fundamental features Flask provides
+the two environment variables :envvar:`FLASK_ENV` and :envvar:`FLASK_DEBUG`.
+In versions of Flask older than 1.0 the :envvar:`FLASK_ENV` environment
+variable did not exist.
 
-   ``app.debug`` and ``app.config['DEBUG']`` are not compatible with
-   the :command:`flask` script. They only worked when using ``Flask.run()``
-   method.
+The most common way to switch Flask to development mode is to tell it to
+work on the ``development`` environment::
+
+$ export FLASK_ENV=development
+$ flask run
+
+(On Windows you need to use ``set`` instead of ``export``).
+
+While you can attempt to flip the environment and debug flag separately in
+the Flask config from the config file this is strongly discouraged as
+those flags are often loaded early and changing them late might not apply
+to all systems and extensions.
 
 Builtin Configuration Values
 ----------------------------
