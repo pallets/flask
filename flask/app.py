@@ -797,13 +797,17 @@ class Flask(_PackageBoundObject):
     def _set_debug(self, value):
         self._set_debug_value(value)
 
-    #: The debug flag.  Set this to ``True`` to enable debugging of the
-    #: application.  In debug mode the debugger will kick in when an unhandled
-    #: exception occurs and the integrated server will automatically reload
-    #: the application if changes in the code are detected.
+    #: The debug flag.  If this is ``True`` it enables debugging of the
+    #: application.  In debug mode the debugger will kick in when an
+    #: unhandled exception occurs and the integrated server will
+    #: automatically reload the application if changes in the code are
+    #: detected.
     #:
-    #: This attribute can also be configured from the config with the ``DEBUG``
-    #: configuration key.  Defaults to ``False``.
+    #: This value should only be configured by the :envvar:`FLASK_DEBUG`
+    #: environment variable.  Changing it by other means will not yield
+    #: consistent results.  The default value depends on the Flask
+    #: environment and will be true for the development environment and false
+    #: otherwise.
     debug = property(_get_debug, _set_debug)
     del _get_debug, _set_debug
 

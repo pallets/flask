@@ -357,7 +357,7 @@ class ScriptInfo(object):
         debug = get_debug_flag()
 
         # Update the app's debug flag through the descriptor so that other
-        # values repropulate as well.
+        # values repopulate as well.
         if debug is not None:
             app.debug = debug
 
