@@ -615,7 +615,6 @@ def run_command(info, host, port, reload, debugger, eager_loading,
                     fg='red')
         click.secho('Use a production ready WSGI server instead',
                     dim=True)
-        click.echo()
 
     debug = get_debug_flag()
     if reload is None:
