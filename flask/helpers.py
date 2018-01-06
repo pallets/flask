@@ -42,8 +42,7 @@ from jinja2 import FileSystemLoader
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type
-
+from ._compat import string_types, text_type, PY2
 
 # sentinel
 _missing = object()
@@ -1012,12 +1011,21 @@ def total_seconds(td):
 def is_ip(value):
     """Determine if the given string is an IP address.
 
+    Python 2 on Windows doesn't provide ``inet_pton``, so this only
+    checks IPv4 addresses in that environment.
+
     :param value: value to check
     :type value: str
 
     :return: True if string is an IP address
     :rtype: bool
     """
+    if PY2 and os.name == 'nt':
+        try:
+            socket.inet_aton(value)
+            return True
+        except socket.error:
+            return False
 
     for family in (socket.AF_INET, socket.AF_INET6):
         try:
