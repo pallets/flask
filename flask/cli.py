@@ -215,6 +215,11 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
             )
         else:
             return
+    except SyntaxError:
+        if module_name in sys.modules:
+            del sys.modules[module_name]
+        raise
+
 
     module = sys.modules[module_name]
 
