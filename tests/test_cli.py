@@ -243,6 +243,15 @@ def test_locate_app_suppress_raise():
         )
 
 
+def test_locate_app_init_syntax_error(test_apps):
+    info = ScriptInfo()
+    with pytest.raises(SyntaxError):
+        locate_app(info, 'cliapp.syntaxerror', None)
+
+    with pytest.raises(SyntaxError):
+        locate_app(info, 'cliapp.syntaxerror', None)
+
+
 def test_get_version(test_apps, capsys):
     """Test of get_version."""
     from flask import __version__ as flask_ver
