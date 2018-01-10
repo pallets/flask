@@ -577,6 +577,28 @@ def load_dotenv(path=None):
     return new_dir is not None  # at least one file was located and loaded
 
 
+def show_server_banner(env, debug, app_import_path):
+    """Show extra startup messages the first time the server is run,
+    ignoring the reloader.
+    """
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        return
+
+    if app_import_path is not None:
+        print(' * Serving Flask app "{0}"'.format(app_import_path))
+
+    print(' * Environment: {0}'.format(env))
+
+    if env == 'production':
+        click.secho(
+            '   WARNING: Do not use the development server in a production'
+            ' environment.', fg='red')
+        click.secho('   Use a production WSGI server instead.', dim=True)
+
+    if debug is not None:
+        print(' * Debug mode: {0}'.format('on' if debug else 'off'))
+
+
 @click.command('run', short_help='Runs a development server.')
 @click.option('--host', '-h', default='127.0.0.1',
               help='The interface to bind to.')
@@ -596,51 +618,31 @@ def load_dotenv(path=None):
 @pass_script_info
 def run_command(info, host, port, reload, debugger, eager_loading,
                 with_threads):
-    """Runs a local development server for the Flask application.
+    """Run a local development server.
 
-    This local server is recommended for development purposes only but it
-    can also be used for simple intranet deployments.  By default it will
-    not support any sort of concurrency at all to simplify debugging.  This
-    can be changed with the --with-threads option which will enable basic
-    multithreading.
+    This server is for development purposes only. It does not provide
+    the stability, security, or performance of production WSGI servers.
 
-    The reloader and debugger are by default enabled if the debug flag of
-    Flask is enabled and disabled otherwise.
+    The reloader and debugger are enabled by default if
+    FLASK_ENV=development or FLASK_DEBUG=1.
     """
-    from werkzeug.serving import run_simple
-
-    if get_env() == 'production':
-        click.secho('Warning: Detected a production environment. Do not '
-                    'use `flask run` for production use.',
-                    fg='red')
-        click.secho('Use a production ready WSGI server instead',
-                    dim=True)
-
     debug = get_debug_flag()
+
     if reload is None:
-        reload = bool(debug)
+        reload = debug
+
     if debugger is None:
-        debugger = bool(debug)
+        debugger = debug
+
     if eager_loading is None:
         eager_loading = not reload
 
+    show_server_banner(get_env(), debug, info.app_import_path)
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
-    # Extra startup messages.  This depends a bit on Werkzeug internals to
-    # not double execute when the reloader kicks in.
-    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
-        # If we have an import path we can print it out now which can help
-        # people understand what's being served.  If we do not have an
-        # import path because the app was loaded through a callback then
-        # we won't print anything.
-        if info.app_import_path is not None:
-            print(' * Serving Flask app "%s"' % info.app_import_path)
-        print(' * Env %s' % get_env())
-        if debug is not None:
-            print(' * Forcing debug mode %s' % (debug and 'on' or 'off'))
-
-    run_simple(host, port, app, use_reloader=reload,
-               use_debugger=debugger, threaded=with_threads)
+    from werkzeug.serving import run_simple
+    run_simple(host, port, app, use_reloader=reload, use_debugger=debugger,
+               threaded=with_threads)
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')

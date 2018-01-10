@@ -864,21 +864,34 @@ class Flask(_PackageBoundObject):
             If installed, python-dotenv will be used to load environment
             variables from :file:`.env` and :file:`.flaskenv` files.
 
-        .. versionchanged:: 0.10
-           The default port is now picked from the ``SERVER_NAME`` variable.
+            If set, the :envvar:`FLASK_ENV` and :envvar:`FLASK_DEBUG`
+            environment variables will override :attr:`env` and
+            :attr:`debug`.
 
+            Threaded mode is enabled by default.
+
+        .. versionchanged:: 0.10
+            The default port is now picked from the ``SERVER_NAME``
+            variable.
         """
         # Change this into a no-op if the server is invoked from the
-        # command line.  Have a look at cli.py for more information.
+        # command line. Have a look at cli.py for more information.
         if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
             from .debughelpers import explain_ignored_app_run
             explain_ignored_app_run()
             return
 
         if load_dotenv:
-            from flask.cli import load_dotenv
-            load_dotenv()
+            cli.load_dotenv()
 
+            # if set, let env vars override previous values
+            if 'FLASK_ENV' in os.environ:
+                self.env = get_env()
+                self.debug = get_debug_flag()
+            elif 'FLASK_DEBUG' in os.environ:
+                self.debug = get_debug_flag()
+
+        # debug passed to method overrides all other sources
         if debug is not None:
             self.debug = bool(debug)
 
@@ -892,8 +905,12 @@ class Flask(_PackageBoundObject):
 
         host = host or sn_host or _host
         port = int(port or sn_port or _port)
+
         options.setdefault('use_reloader', self.debug)
         options.setdefault('use_debugger', self.debug)
+        options.setdefault('threaded', True)
+
+        cli.show_server_banner(self.env, self.debug, self.name)
 
         from werkzeug.serving import run_simple
 
