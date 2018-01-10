@@ -21,21 +21,23 @@ this::
     $ export FLASK_ENV=development
     $ flask run
 
-This will enable the debugger, the reloader and then start the server on
+This enables the development environment, including the interactive
+debugger and reloader, and then starts the server on
 *http://localhost:5000/*.
 
 The individual features of the server can be controlled by passing more
-arguments to the ``run`` option.  For instance the reloader can be
+arguments to the ``run`` option. For instance the reloader can be
 disabled::
 
     $ flask run --no-reload
 
 .. note::
 
-    On older Flask version (before 1.0) the :envvar:`FLASK_ENV`
-    environment variable is not supported and you need to enable the
-    debug mode separately by setting the :envvar:`FLASK_DEBUG` environment
-    variable to ``1``.
+    Prior to Flask 1.0 the :envvar:`FLASK_ENV` environment variable was
+    not supported and you needed to enable debug mode by exporting
+    ``FLASK_DEBUG=1``. This can still be used to control debug mode, but
+    you should prefer setting the development environment as shown
+    above.
 
 In Code
 -------
