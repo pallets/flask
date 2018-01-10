@@ -20,6 +20,7 @@ object.  This is the place where Flask itself puts certain configuration
 values and also where extensions can put their configuration values.  But
 this is also where you can have your own configuration.
 
+
 Configuration Basics
 --------------------
 
@@ -42,52 +43,77 @@ method::
         SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/'
     )
 
+
 Environment and Debug Features
 ------------------------------
 
-Some values are special in that they can show unexpected behavior when
-changed late.  In particular that applies to the Flask environment and
-debug mode.
+The :data:`ENV` and :data:`DEBUG` config values are special because they
+may behave inconsistently if changed after the app has begun setting up.
+In order to set the environment and debug mode reliably, Flask uses
+environment variables.
 
-If you use the :command:`flask` script to start a local development server
-for instance you should tell Flask that you want to work in the
-development environment.  For safety reasons we default the flask
-environment to production mode instead of development.  This is done
-because development mode can turn on potentially unsafe features such as
-the debugger by default.
+The environment is used to indicate to Flask, extensions, and other
+programs, like Sentry, what context Flask is running in. It is
+controlled with the :envvar:`FLASK_ENV` environment variable and
+defaults to ``production``.
 
-To control the environment and such fundamental features Flask provides
-the two environment variables :envvar:`FLASK_ENV` and :envvar:`FLASK_DEBUG`.
-In versions of Flask older than 1.0 the :envvar:`FLASK_ENV` environment
-variable did not exist.
+Setting :envvar:`FLASK_ENV` to ``development`` will enable debug mode.
+``flask run`` will use the interactive debugger and reloader by default
+in debug mode. To control this separately from the environment, use the
+:envvar:`FLASK_DEBUG` flag.
 
-The most common way to switch Flask to development mode is to tell it to
-work on the ``development`` environment::
+.. versionchanged:: 1.0
+    Added :envvar:`FLASK_ENV` to control the environment separately
+    from debug mode. The development environment enables debug mode.
 
-$ export FLASK_ENV=development
-$ flask run
+To switch Flask to the development environment and enable debug mode,
+set :envvar:`FLASK_ENV`::
 
-(On Windows you need to use ``set`` instead of ``export``).
+    $ export FLASK_ENV=development
+    $ flask run
 
-While you can attempt to flip the environment and debug flag separately in
-the Flask config from the config file this is strongly discouraged as
-those flags are often loaded early and changing them late might not apply
-to all systems and extensions.
+(On Windows, use ``set`` instead of ``export``.)
+
+Using the environment variables as described above is recommended. While
+it is possible to set :data:`ENV` and :data:`DEBUG` in your config or
+code, this is strongly discouraged. They can't be read early by the
+``flask`` command, and some systems or extensions may have already
+configured themselves based on a previous value.
+
 
 Builtin Configuration Values
 ----------------------------
 
 The following configuration values are used internally by Flask:
 
+.. py:data:: ENV
+
+    What environment the app is running in. Flask and extensions may
+    enable behaviors based on the environment, such as enabling debug
+    mode. The :attr:`~flask.Flask.env` attribute maps to this config
+    key. This is set by the :envvar:`FLASK_ENV` environment variable and
+    may not behave as expected if set in code.
+
+    **Do not enable development when deploying in production.**
+
+    Default: ``'production'``
+
+    .. versionadded:: 1.0
+
 .. py:data:: DEBUG
 
-    Enable debug mode. When using the development server with ``flask run`` or
-    ``app.run``, an interactive debugger will be shown for unhanlded
-    exceptions, and the server will be reloaded when code changes.
+    Whether debug mode is enabled. When using ``flask run`` to start the
+    development server, an interactive debugger will be shown for
+    unhandled exceptions, and the server will be reloaded when code
+    changes. The :attr:`~flask.Flask.debug` attribute maps to this
+    config key. This is enabled when :data:`ENV` is ``'development'``
+    and is overridden by the ``FLASK_DEBUG`` environment variable. It
+    may not behave as expected if set in code.
 
-    **Do not enable debug mode in production.**
+    **Do not enable debug mode when deploying in production.**
 
-    Default: ``False``
+    Default: ``True`` if :data:`ENV` is ``'production'``, or ``False``
+    otherwise.
 
 .. py:data:: TESTING
 
@@ -338,6 +364,10 @@ The following configuration values are used internally by Flask:
 
     ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` were removed. See
     :ref:`logging` for information about configuration.
+
+    Added :data:`ENV` to reflect the :envvar:`FLASK_ENV` environment
+    variable.
+
 
 Configuring from Files
 ----------------------

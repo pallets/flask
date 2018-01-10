@@ -785,35 +785,38 @@ class Flask(_PackageBoundObject):
             rv.update(processor())
         return rv
 
-    #: The environment value.  This is typically set from outside the
-    #: process by setting the `FLASK_ENV` environment variable and can be
-    #: used to quickly switch between different environments like
-    #: `production` and `development`.  If not set this defaults to
-    #: `production`.
+    #: What environment the app is running in. Flask and extensions may
+    #: enable behaviors based on the environment, such as enabling debug
+    #: mode. This maps to the :data:`ENV` config key. This is set by the
+    #: :envvar:`FLASK_ENV` environment variable and may not behave as
+    #: expected if set in code.
+    #:
+    #: **Do not enable development when deploying in production.**
+    #:
+    #: Default: ``'production'``
     env = ConfigAttribute('ENV')
 
     def _get_debug(self):
         return self.config['DEBUG']
+
     def _set_debug(self, value):
-        self._set_debug_value(value)
-
-    #: The debug flag.  If this is ``True`` it enables debugging of the
-    #: application.  In debug mode the debugger will kick in when an
-    #: unhandled exception occurs and the integrated server will
-    #: automatically reload the application if changes in the code are
-    #: detected.
-    #:
-    #: This value should only be configured by the :envvar:`FLASK_DEBUG`
-    #: environment variable.  Changing it by other means will not yield
-    #: consistent results.  The default value depends on the Flask
-    #: environment and will be true for the development environment and false
-    #: otherwise.
-    debug = property(_get_debug, _set_debug)
-    del _get_debug, _set_debug
-
-    def _set_debug_value(self, value):
         self.config['DEBUG'] = value
         self.jinja_env.auto_reload = self.templates_auto_reload
+
+    #: Whether debug mode is enabled. When using ``flask run`` to start
+    #: the development server, an interactive debugger will be shown for
+    #: unhandled exceptions, and the server will be reloaded when code
+    #: changes. This maps to the :data:`DEBUG` config key. This is
+    #: enabled when :attr:`env` is ``'development'`` and is overridden
+    #: by the ``FLASK_DEBUG`` environment variable. It may not behave as
+    #: expected if set in code.
+    #:
+    #: **Do not enable debug mode when deploying in production.**
+    #:
+    #: Default: ``True`` if :attr:`env` is ``'development'``, or
+    #: ``False`` otherwise.
+    debug = property(_get_debug, _set_debug)
+    del _get_debug, _set_debug
 
     def run(self, host=None, port=None, debug=None,
             load_dotenv=True, **options):
