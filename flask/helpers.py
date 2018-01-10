@@ -47,19 +47,24 @@ _os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
 
 
 def get_env():
-    val = os.environ.get('FLASK_ENV')
-    if not val:
-        val = 'production'
-    return val
+    """Get the environment the app is running in, indicated by the
+    :envvar:`FLASK_ENV` environment variable. The default is
+    ``'production'``.
+    """
+    return os.environ.get('FLASK_ENV') or 'production'
 
 
 def get_debug_flag():
+    """Get whether debug mode should be enabled for the app, indicated
+    by the :envvar:`FLASK_DEBUG` environment variable. The default is
+    ``True`` if :func:`.get_env` returns ``'development'``, or ``False``
+    otherwise.
+    """
     val = os.environ.get('FLASK_DEBUG')
+
     if not val:
-        env = get_env()
-        if env == 'development':
-            return True
-        return False
+        return get_env() == 'development'
+
     return val.lower() not in ('0', 'false', 'no')
 
 

@@ -116,35 +116,40 @@ context will be active, and the app instance will be imported. ::
 
 Use :meth:`~Flask.shell_context_processor` to add other automatic imports.
 
+
 Environments
 ------------
 
 .. versionadded:: 1.0
 
-The environment in which the Flask app should run is set by the
-:envvar:`FLASK_ENV` environment variable.  If not set it defaults to
-``production``.  The other default environment which is known is
-``development``.  If the env is set to ``development`` the debug mode is
-for instance automatically enabled.
+The environment in which the Flask app runs is set by the
+:envvar:`FLASK_ENV` environment variable. If not set it defaults to
+``production``. The other recognized environment is ``development``.
+Flask and extensions may choose to enable behaviors based on the
+environment.
 
-Debug Mode
-----------
-
-Set the :envvar:`FLASK_DEBUG` environment variable to override the
-application's :attr:`~Flask.debug` flag. The value ``1`` enables it, ``0``
-disables it. Forcing the debug flag on also enables the debugger and reloader
-when running the development server.
+If the env is set to ``development``, the ``flask`` command will enable
+debug mode and ``flask run`` will enable the interactive debugger and
+reloader.
 
 ::
 
-    $ FLASK_DEBUG=1 flask run
+    $ FLASK_ENV=development flask run
      * Serving Flask app "hello"
-     * Forcing debug mode on
-     * Env production
+     * Environment: development
+     * Debug mode: on
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
      * Restarting with inotify reloader
      * Debugger is active!
      * Debugger PIN: 223-456-919
+
+
+Debug Mode
+----------
+
+Debug mode will be enabled when :envvar:`FLASK_ENV` is ``development``,
+as described above. If you want to control debug mode separately, use
+:envvar:`FLASK_DEBUG`. The value ``1`` enables it, ``0`` disables it.
 
 
 .. _dotenv:
