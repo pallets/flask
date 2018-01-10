@@ -23,27 +23,16 @@ from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
 from flask import Flask, current_app
-from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, dotenv, \
-    find_best_app, get_version, load_dotenv, locate_app, prepare_import, \
+from flask.cli import (
+    AppGroup, FlaskGroup, NoAppException, ScriptInfo, dotenv,
+    find_best_app, get_version, load_dotenv, locate_app, prepare_import,
     with_appcontext
+)
 
 cwd = os.getcwd()
 test_path = os.path.abspath(os.path.join(
     os.path.dirname(__file__), 'test_apps'
 ))
-
-
-@pytest.fixture(autouse=True)
-def manage_os_environ(monkeypatch):
-    # can't use monkeypatch.delitem since we don't want to restore a value
-    os.environ.pop('FLASK_APP', None)
-    os.environ.pop('FLASK_DEBUG', None)
-    # use monkeypatch internals to force-delete environ keys
-    monkeypatch._setitem.extend((
-        (os.environ, 'FLASK_APP', notset),
-        (os.environ, 'FLASK_DEBUG', notset),
-        (os.environ, 'FLASK_RUN_FROM_CLI', notset),
-    ))
 
 
 @pytest.fixture
