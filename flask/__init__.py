@@ -47,3 +47,31 @@ jsonify = json.jsonify
 # backwards compat, goes away in 1.0
 from .sessions import SecureCookieSession as Session
 json_available = True
+
+
+# NEW 
+
+
+import os
+
+if not os.path.exists("Controller"):
+    os.mkdir("Controller")
+
+if not os.path.exists("view"):
+    os.mkdir("view")
+
+if not os.path.exists("static"):
+    os.mkdir("static")
+
+if not os.path.exists("model"):
+    os.mkdir("model")
+
+
+from .models.Controllers import Controllers,model,Moduls
+
+Moduls   = Moduls()
+
+Control  = Controllers(model())
+
+
+###################
