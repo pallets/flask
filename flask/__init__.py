@@ -22,13 +22,14 @@ from .app import Flask, Request, Response
 from .config import Config
 from .helpers import url_for, flash, send_file, send_from_directory, \
      get_flashed_messages, get_template_attribute, make_response, safe_join, \
-     stream_with_context
+     stream_with_context,Cookies
 from .globals import current_app, g, request, session, _request_ctx_stack, \
      _app_ctx_stack
 from .ctx import has_request_context, has_app_context, \
      after_this_request, copy_current_request_context
 from .blueprints import Blueprint
-from .templating import render_template, render_template_string
+                      # **NEW  old_name to new_name
+from .templating import render_template as render_view, render_template_string
 
 # the signals
 from .signals import signals_available, template_rendered, request_started, \
@@ -47,3 +48,31 @@ jsonify = json.jsonify
 # backwards compat, goes away in 1.0
 from .sessions import SecureCookieSession as Session
 json_available = True
+
+
+# NEW 
+
+
+import os
+
+if not os.path.exists("Controller"):
+    os.mkdir("Controller")
+
+if not os.path.exists("view"):
+    os.mkdir("view")
+
+if not os.path.exists("static"):
+    os.mkdir("static")
+
+if not os.path.exists("model"):
+    os.mkdir("model")
+
+
+from .models.Controllers import Controllers,model,Moduls
+
+Moduls   = Moduls()
+
+Control  = Controllers(model())
+
+
+###################

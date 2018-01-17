@@ -37,6 +37,10 @@ from .templating import DispatchingJinjaLoader, Environment, \
     _default_template_ctx_processor
 from .wrappers import Request, Response
 
+# **NEW 
+from .models.methods import Router
+
+
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
 
@@ -362,6 +366,10 @@ class Flask(_PackageBoundObject):
                 'If an instance path is provided it must be absolute.'
                 ' A relative path was given instead.'
             )
+            
+        # NEW
+        self.router = Router(self)
+    
 
         #: Holds the path to the instance folder.
         #:
