@@ -149,6 +149,57 @@ def stream_with_context(generator_or_function):
     return wrapped_g
 
 
+#NEW 
+class Cookies():
+
+    """
+        SetCookies And GetCookies 
+        
+        Exmp:/
+            setCookies :
+                def set (name):
+
+                    # key: 
+                    #     html :: render file html 
+                    #     path :: redirct to path   
+
+                    cookies = Cookies(html="index.html")
+                    cookies["name"] = name 
+                    return cookies 
+            getCookies :
+                def get():
+                    return Cookies.get("name")
+
+            print all
+                def all_cookies():
+                    return str ( Cookies() )
+
+    """
+
+    def __init__(self,path="",html=""):
+        if path.strip() != "":
+            self.co = current_app.make_response(redirect(path))
+        elif path.strip() != "":
+            self.co = current_app.make_response(render_template(html))
+        else:
+            self.co = current_app.make_response("Cookies")
+        
+    def __setitem__(self,k,v):
+        self.co.set_cookie(k,v)
+
+    @staticmethod
+    def get(k):
+        return str(request.cookies.get(k))
+
+    def __str__(self):
+        return str (request.cookies)
+
+    def save(self):
+        return self.co
+
+
+
+
 def make_response(*args):
     """Sometimes it is necessary to set additional headers in a view.  Because
     views do not have to return response objects but can return a value that
