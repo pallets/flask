@@ -14,6 +14,7 @@ import ast
 import inspect
 import os
 import re
+import ssl
 import sys
 import traceback
 from functools import update_wrapper
@@ -21,9 +22,10 @@ from operator import attrgetter
 from threading import Lock, Thread
 
 import click
+from werkzeug.utils import import_string
 
 from . import __version__
-from ._compat import getargspec, iteritems, reraise
+from ._compat import getargspec, iteritems, reraise, text_type
 from .globals import current_app
 from .helpers import get_debug_flag, get_env
 
@@ -599,25 +601,110 @@ def show_server_banner(env, debug, app_import_path):
         print(' * Debug mode: {0}'.format('on' if debug else 'off'))
 
 
+class CertParamType(click.ParamType):
+    """Click option type for the ``--cert`` option. Allows either an
+    existing file, the string ``'adhoc'``, or an import for a
+    :class:`~ssl.SSLContext` object.
+    """
+
+    name = 'path'
+
+    def __init__(self):
+        self.path_type = click.Path(
+            exists=True, dir_okay=False, resolve_path=True)
+
+    def convert(self, value, param, ctx):
+        try:
+            return self.path_type(value, param, ctx)
+        except click.BadParameter:
+            value = click.STRING(value, param, ctx).lower()
+
+            if value == 'adhoc':
+                try:
+                    import OpenSSL
+                except ImportError:
+                    raise click.BadParameter(
+                        'Using ad-hoc certificates requires pyOpenSSL.',
+                        ctx, param)
+
+                return value
+
+            obj = import_string(value, silent=True)
+
+            if sys.version_info < (2, 7):
+                if obj:
+                    return obj
+            else:
+                if isinstance(obj, ssl.SSLContext):
+                    return obj
+
+            raise
+
+
+def _validate_key(ctx, param, value):
+    """The ``--key`` option must be specified when ``--cert`` is a file.
+    Modifies the ``cert`` param to be a ``(cert, key)`` pair if needed.
+    """
+    cert = ctx.params.get('cert')
+    is_adhoc = cert == 'adhoc'
+
+    if sys.version_info < (2, 7):
+        is_context = cert and not isinstance(cert, (text_type, bytes))
+    else:
+        is_context = isinstance(cert, ssl.SSLContext)
+
+    if value is not None:
+        if is_adhoc:
+            raise click.BadParameter(
+                'When "--cert" is "adhoc", "--key" is not used.',
+                ctx, param)
+
+        if is_context:
+            raise click.BadParameter(
+                'When "--cert" is an SSLContext object, "--key is not used.',
+                ctx, param)
+
+        if not cert:
+            raise click.BadParameter(
+                '"--cert" must also be specified.',
+                ctx, param)
+
+        ctx.params['cert'] = cert, value
+
+    else:
+        if cert and not (is_adhoc or is_context):
+            raise click.BadParameter(
+                'Required when using "--cert".',
+                ctx, param)
+
+    return value
+
+
 @click.command('run', short_help='Runs a development server.')
 @click.option('--host', '-h', default='127.0.0.1',
               help='The interface to bind to.')
 @click.option('--port', '-p', default=5000,
               help='The port to bind to.')
+@click.option('--cert', type=CertParamType(),
+              help='Specify a certificate file to use HTTPS.')
+@click.option('--key',
+              type=click.Path(exists=True, dir_okay=False, resolve_path=True),
+              callback=_validate_key, expose_value=False,
+              help='The key file to use when specifying a certificate.')
 @click.option('--reload/--no-reload', default=None,
-              help='Enable or disable the reloader.  By default the reloader '
+              help='Enable or disable the reloader. By default the reloader '
               'is active if debug is enabled.')
 @click.option('--debugger/--no-debugger', default=None,
-              help='Enable or disable the debugger.  By default the debugger '
+              help='Enable or disable the debugger. By default the debugger '
               'is active if debug is enabled.')
 @click.option('--eager-loading/--lazy-loader', default=None,
-              help='Enable or disable eager loading.  By default eager '
+              help='Enable or disable eager loading. By default eager '
               'loading is enabled if the reloader is disabled.')
 @click.option('--with-threads/--without-threads', default=True,
               help='Enable or disable multithreading.')
 @pass_script_info
 def run_command(info, host, port, reload, debugger, eager_loading,
-                with_threads):
+                with_threads, cert):
     """Run a local development server.
 
     This server is for development purposes only. It does not provide
@@ -642,7 +729,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
     from werkzeug.serving import run_simple
     run_simple(host, port, app, use_reloader=reload, use_debugger=debugger,
-               threaded=with_threads)
+               threaded=with_threads, ssl_context=cert)
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
