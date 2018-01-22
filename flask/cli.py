@@ -731,12 +731,12 @@ A general utility script for Flask applications.
 
 Provides commands from Flask, extensions, and the application. Loads the
 application defined in the FLASK_APP environment variable, or from a wsgi.py
-file. Debug mode can be controlled with the FLASK_DEBUG
-environment variable.
+file. Setting the FLASK_ENV environment variable to 'development' will enable
+debug mode.
 
 \b
   {prefix}{cmd} FLASK_APP=hello.py
-  {prefix}{cmd} FLASK_DEBUG=1
+  {prefix}{cmd} FLASK_ENV=development
   {prefix}flask run
 """.format(
     cmd='export' if os.name == 'posix' else 'set',
