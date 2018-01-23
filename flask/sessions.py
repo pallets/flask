@@ -250,9 +250,9 @@ class SessionInterface(object):
         return app.config['SESSION_COOKIE_SECURE']
 
     def get_cookie_samesite(self, app):
-        """Returns "Strict", "Lax" or None if the cookie should use
-        samesite attribute.  This currently just returns the value of
-        the ``SESSION_COOKIE_SAMESITE`` setting.
+        """Return ``'Strict'`` or ``'Lax'`` if the cookie should use the
+        ``SameSite`` attribute. This currently just returns the value of
+        the :data:`SESSION_COOKIE_SAMESITE` setting.
         """
         return app.config['SESSION_COOKIE_SAMESITE']
 

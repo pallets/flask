@@ -210,11 +210,13 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: SESSION_COOKIE_SAMESITE
 
-    Browser will only send cookies to the domain that created them.
-    There are two possible values for the same-site attribute: "Strict" and "Lax"
-    If set to "None", the samesite flag is not set.
+    Restrict how cookies are sent with requests from external sites. Can
+    be set to ``'Lax'`` (recommended) or ``'Strict'``.
+    See :ref:`security-cookie`.
 
     Default: ``None``
+
+    .. versionadded:: 1.0
 
 .. py:data:: PERMANENT_SESSION_LIFETIME
 
@@ -369,12 +371,14 @@ The following configuration values are used internally by Flask:
    ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
 
 .. versionchanged:: 1.0
-
     ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` were removed. See
     :ref:`logging` for information about configuration.
 
     Added :data:`ENV` to reflect the :envvar:`FLASK_ENV` environment
     variable.
+
+    Added :data:`SESSION_COOKIE_SAMESITE` to control the session
+    cookie's ``SameSite`` option.
 
 
 Configuring from Files
