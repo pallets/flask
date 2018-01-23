@@ -118,6 +118,8 @@ Major release, unreleased
 - The dev server now uses threads by default. (`#2529`_)
 - Loading config files with ``silent=True`` will ignore ``ENOTDIR``
   errors. (`#2581`_)
+- Pass ``--cert`` and ``--key`` options to ``flask run`` to run the
+  development server over HTTPS. (`#2606`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -154,6 +156,7 @@ Major release, unreleased
 .. _#2450: https://github.com/pallets/flask/pull/2450
 .. _#2529: https://github.com/pallets/flask/pull/2529
 .. _#2581: https://github.com/pallets/flask/pull/2581
+.. _#2606: https://github.com/pallets/flask/pull/2606
 
 
 Version 0.12.3
