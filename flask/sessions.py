@@ -249,6 +249,13 @@ class SessionInterface(object):
         """
         return app.config['SESSION_COOKIE_SECURE']
 
+    def get_cookie_samesite(self, app):
+        """Returns "Strict", "Lax" or None if the cookie should use
+        samesite attribute.  This currently just returns the value of
+        the ``SESSION_COOKIE_SAMESITE`` setting.
+        """
+        return app.config['SESSION_COOKIE_SAMESITE']
+
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
         or ``None`` if the session is linked to the browser session.  The
@@ -362,6 +369,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
+        samesite = self.get_cookie_samesite(app)
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
         response.set_cookie(
@@ -371,5 +379,6 @@ class SecureCookieSessionInterface(SessionInterface):
             httponly=httponly,
             domain=domain,
             path=path,
-            secure=secure
+            secure=secure,
+            samesite=samesite
         )

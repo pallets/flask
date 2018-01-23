@@ -319,6 +319,7 @@ def test_session_using_session_settings(app, client):
         SESSION_COOKIE_DOMAIN='.example.com',
         SESSION_COOKIE_HTTPONLY=False,
         SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_SAMESITE='Strict',
         SESSION_COOKIE_PATH='/'
     )
 
@@ -333,7 +334,44 @@ def test_session_using_session_settings(app, client):
     assert 'path=/' in cookie
     assert 'secure' in cookie
     assert 'httponly' not in cookie
+    assert 'samesite' in cookie
 
+
+def test_session_using_samesite_attribute(app, client):
+    app.config.update(
+        SERVER_NAME='www.example.com:8080',
+        APPLICATION_ROOT='/test',
+        SESSION_COOKIE_DOMAIN='.example.com',
+        SESSION_COOKIE_HTTPONLY=False,
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_SAMESITE='anyvalue',
+        SESSION_COOKIE_PATH='/'
+    )
+
+    @app.route('/')
+    def index():
+        flask.session['testing'] = 42
+        return 'Hello World'
+
+    # assert excption when samesite is not set to 'Strict', 'Lax' or None
+    with pytest.raises(ValueError):
+        rv = client.get('/', 'http://www.example.com:8080/test/')
+
+    # assert the samesite flag is not set in the cookie, when set to None
+    app.config.update(SESSION_COOKIE_SAMESITE=None)
+    rv = client.get('/', 'http://www.example.com:8080/test/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite' not in cookie
+
+    app.config.update(SESSION_COOKIE_SAMESITE='Strict')
+    rv = client.get('/', 'http://www.example.com:8080/test/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite=strict' in cookie
+
+    app.config.update(SESSION_COOKIE_SAMESITE='Lax')
+    rv = client.get('/', 'http://www.example.com:8080/test/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite=lax' in cookie
 
 def test_session_localhost_warning(recwarn, app, client):
     app.config.update(
