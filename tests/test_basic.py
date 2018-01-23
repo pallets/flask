@@ -319,6 +319,7 @@ def test_session_using_session_settings(app, client):
         SESSION_COOKIE_DOMAIN='.example.com',
         SESSION_COOKIE_HTTPONLY=False,
         SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_SAMESITE='Lax',
         SESSION_COOKIE_PATH='/'
     )
 
@@ -333,6 +334,34 @@ def test_session_using_session_settings(app, client):
     assert 'path=/' in cookie
     assert 'secure' in cookie
     assert 'httponly' not in cookie
+    assert 'samesite' in cookie
+
+
+def test_session_using_samesite_attribute(app, client):
+    @app.route('/')
+    def index():
+        flask.session['testing'] = 42
+        return 'Hello World'
+
+    app.config.update(SESSION_COOKIE_SAMESITE='invalid')
+
+    with pytest.raises(ValueError):
+        client.get('/')
+
+    app.config.update(SESSION_COOKIE_SAMESITE=None)
+    rv = client.get('/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite' not in cookie
+
+    app.config.update(SESSION_COOKIE_SAMESITE='Strict')
+    rv = client.get('/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite=strict' in cookie
+
+    app.config.update(SESSION_COOKIE_SAMESITE='Lax')
+    rv = client.get('/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite=lax' in cookie
 
 
 def test_session_localhost_warning(recwarn, app, client):
