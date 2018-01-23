@@ -284,6 +284,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_PATH':                  None,
         'SESSION_COOKIE_HTTPONLY':              True,
         'SESSION_COOKIE_SECURE':                False,
+        'SESSION_COOKIE_SAMESITE':              None,
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
         'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),

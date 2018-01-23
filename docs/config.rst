@@ -208,6 +208,14 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
+.. py:data:: SESSION_COOKIE_SAMESITE
+
+    Browser will only send cookies to the domain that created them.
+    There are two possible values for the same-site attribute: "Strict" and "Lax"
+    If set to "None", the samesite flag is not set.
+
+    Default: ``None``
+
 .. py:data:: PERMANENT_SESSION_LIFETIME
 
     If ``session.permanent`` is true, the cookie's expiration will be set this
@@ -635,4 +643,3 @@ Example usage for both::
     # or via open_instance_resource:
     with app.open_instance_resource('application.cfg') as f:
         config = f.read()
-

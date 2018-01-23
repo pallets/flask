@@ -195,16 +195,18 @@ They can be set on other cookies too.
 - ``HttpOnly`` protects the contents of cookies from being read with
   JavaScript.
 - ``SameSite`` ensures that cookies can only be requested from the same
-  domain that created them. It is not supported by Flask yet.
+  domain that created them. There are two possible values for the same-site
+  attribute: "Strict" and "Lax"
 
 ::
 
     app.config.update(
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Strict'
     )
 
-   response.set_cookie('username', 'flask', secure=True, httponly=True)
+   response.set_cookie('username', 'flask', secure=True, httponly=True, samesite='Strict')
 
 Specifying ``Expires`` or ``Max-Age`` options, will remove the cookie after
 the given time, or the current time plus the age, respectively. If neither
