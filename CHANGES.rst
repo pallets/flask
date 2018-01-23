@@ -87,17 +87,17 @@ unreleased
   if ``app.jinja_env`` was already accessed. (`#2373`_)
 - The following old deprecated code was removed. (`#2385`_)
 
-    - ``flask.ext`` - import extensions directly by their name instead of
-      through the ``flask.ext`` namespace. For example,
-      ``import flask.ext.sqlalchemy`` becomes ``import flask_sqlalchemy``.
-    - ``Flask.init_jinja_globals`` - extend ``Flask.create_jinja_environment``
-      instead.
-    - ``Flask.error_handlers`` - tracked by ``Flask.error_handler_spec``,
-      use ``@app.errorhandler`` to register handlers.
-    - ``Flask.request_globals_class`` - use ``Flask.app_ctx_globals_class``
-      instead.
-    - ``Flask.static_path`` - use ``Flask.static_url_path`` instead.
-    - ``Request.module`` - use ``Request.blueprint`` instead.
+  - ``flask.ext`` - import extensions directly by their name instead of
+    through the ``flask.ext`` namespace. For example,
+    ``import flask.ext.sqlalchemy`` becomes ``import flask_sqlalchemy``.
+  - ``Flask.init_jinja_globals`` - extend ``Flask.create_jinja_environment``
+    instead.
+  - ``Flask.error_handlers`` - tracked by ``Flask.error_handler_spec``,
+    use ``@app.errorhandler`` to register handlers.
+  - ``Flask.request_globals_class`` - use ``Flask.app_ctx_globals_class``
+    instead.
+  - ``Flask.static_path`` - use ``Flask.static_url_path`` instead.
+  - ``Request.module`` - use ``Request.blueprint`` instead.
 
 - The ``request.json`` property is no longer deprecated. (`#1421`_)
 - Support passing an existing ``EnvironBuilder`` or ``dict`` to
