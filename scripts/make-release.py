@@ -21,7 +21,7 @@ _date_clean_re = re.compile(r'(\d+)(st|nd|rd|th)')
 
 
 def parse_changelog():
-    with open('CHANGES') as f:
+    with open('CHANGES.rst') as f:
         lineiter = iter(f)
         for line in lineiter:
             match = re.search('^Version\s+(.*)', line.strip())
