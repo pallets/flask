@@ -1,16 +1,15 @@
 Flask Changelog
 ===============
 
-Here you can see the full list of changes between each Flask release.
 
+Version 1.0
+-----------
 
-Version 0.13
-------------
-
-Major release, unreleased
+unreleased
 
 - **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
-- Minimum Werkzeug version bumped to 0.9, but please use the latest version.
+- Minimum Werkzeug version bumped to 0.14, but please use the latest
+  version.
 - Minimum Click version bumped to 4, but please use the latest version.
 - Make ``app.run()`` into a noop if a Flask application is run from the
   development server on the command line. This avoids some behavior that
@@ -115,11 +114,15 @@ Major release, unreleased
   depending on ``app.debug``. No handlers are removed, and a handler is only
   added if no handlers are already configured. (`#2436`_)
 - Blueprint view function name may not contain dots. (`#2450`_)
+- Fix a ``ValueError`` caused by invalid Range requests in some cases.
+  (`#2526`_)
 - The dev server now uses threads by default. (`#2529`_)
 - Loading config files with ``silent=True`` will ignore ``ENOTDIR``
   errors. (`#2581`_)
 - Pass ``--cert`` and ``--key`` options to ``flask run`` to run the
   development server over HTTPS. (`#2606`_)
+- Added :data:`SESSION_COOKIE_SAMESITE` to control the ``SameSite``
+  attribute on the session cookie. (`#2607`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -154,17 +157,11 @@ Major release, unreleased
 .. _#2430: https://github.com/pallets/flask/pull/2430
 .. _#2436: https://github.com/pallets/flask/pull/2436
 .. _#2450: https://github.com/pallets/flask/pull/2450
+.. _#2526: https://github.com/pallets/flask/issues/2526
 .. _#2529: https://github.com/pallets/flask/pull/2529
 .. _#2581: https://github.com/pallets/flask/pull/2581
 .. _#2606: https://github.com/pallets/flask/pull/2606
-
-
-Version 0.12.3
---------------
-
-Bugfix release, unreleased
-
-- Fix a ValueError caused by invalid Range requests in some cases
+.. _#2607: https://github.com/pallets/flask/pull/2607
 
 
 Version 0.12.2
