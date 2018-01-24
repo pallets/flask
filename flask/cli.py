@@ -753,6 +753,30 @@ def shell_command():
         app.instance_path,
     )
     ctx = {'__doc__': None, '__name__': '__flaskshell__'}
+    try:
+        import readline
+        import rlcompleter
+    except ImportError:
+        pass
+    else:
+        # Reading the initialization (config) file may not be enough to set a
+        # completion key, so we set one first and then read the file.
+        readline_doc = getattr(readline, '__doc__', '')
+        if readline_doc is not None and 'libedit' in readline_doc:
+            readline.parse_and_bind('bind ^I rl_complete')
+        else:
+            readline.parse_and_bind('tab: complete')
+
+        try:
+            readline.read_init_file()
+        except OSError:
+            # An OSError here could have many causes, but the most likely one
+            # is that there's no .inputrc file (or .editrc file in the case of
+            # Mac OS X + libedit) in the expected location.  In that case, we
+            # want to ignore the exception.
+            pass
+
+        readline.set_completer(rlcompleter.Completer(ctx).complete)
 
     # Support the regular Python interpreter startup script if someone
     # is using it.
