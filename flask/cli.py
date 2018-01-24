@@ -752,7 +752,7 @@ def shell_command():
         app.env,
         app.instance_path,
     )
-    ctx = {}
+    ctx = {'__doc__': None, '__name__': '__flaskshell__'}
 
     # Support the regular Python interpreter startup script if someone
     # is using it.
