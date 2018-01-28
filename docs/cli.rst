@@ -355,15 +355,25 @@ script is available. Note that you don't need to set ``FLASK_APP``. ::
     $ pip install -e .
     $ wiki run
 
+.. admonition:: Errors in Custom Scripts
+
+    When using a custom script, if you introduce an error in your
+    module-level code, the reloader will fail because it can no longer
+    load the entry point.
+
+    The ``flask`` command, being separate from your code, does not have
+    this issue and is recommended in most cases.
+
 .. _console script: https://packaging.python.org/tutorials/distributing-packages/#console-scripts
 
 
 PyCharm Integration
 -------------------
 
-The Flask CLI features aren't yet fully integrated into the PyCharm IDE,
-so we have to do a few tweaks to get them working smoothly. These
-instructions should be similar for any other IDE you might want to use.
+Prior to PyCharm 2018.1, the Flask CLI features weren't yet fully
+integrated into PyCharm. We have to do a few tweaks to get them working
+smoothly. These instructions should be similar for any other IDE you
+might want to use.
 
 In PyCharm, with your project open, click on *Run* from the menu bar and
 go to *Edit Configurations*. You'll be greeted by a screen similar to
