@@ -135,6 +135,13 @@ def test_find_best_app(test_apps):
 
     pytest.raises(NoAppException, find_best_app, script_info, Module)
 
+    class Module:
+        @staticmethod
+        def create_app():
+            raise TypeError('bad bad factory!')
+
+    pytest.raises(TypeError, find_best_app, script_info, Module)
+
 
 @pytest.mark.parametrize('value,path,result', (
     ('test', cwd, 'test'),
