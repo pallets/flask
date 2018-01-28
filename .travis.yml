@@ -15,6 +15,9 @@ matrix:
       env: TOXENV=py,codecov
     - python: nightly
       env: TOXENV=py
+  allow_failures:
+    - python: nightly
+      env: TOXENV=py
 
 install:
   - pip install tox
