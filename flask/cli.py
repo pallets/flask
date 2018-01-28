@@ -33,14 +33,6 @@ except ImportError:
     dotenv = None
 
 
-def _called_with_wrong_args(factory, exc_info):
-    exc_type, exc_value, tb = exc_info
-    return exc_type is TypeError and \
-        str(exc_value).startswith((
-            '%s() takes' % factory.__name__,
-            '%s() missing' % factory.__name__))
-
-
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
@@ -83,7 +75,7 @@ def find_best_app(script_info, module):
                 if isinstance(app, Flask):
                     return app
             except TypeError:
-                if not _called_with_wrong_args(app_factory, sys.exc_info()):
+                if not _called_with_wrong_args(app_factory):
                     raise
                 raise NoAppException(
                     'Detected factory "{factory}" in module "{module}", but '
@@ -119,6 +111,30 @@ def call_factory(script_info, app_factory, arguments=()):
         return app_factory(script_info)
 
     return app_factory()
+
+
+def _called_with_wrong_args(factory):
+    """Check whether calling a function raised a ``TypeError`` because
+    the call failed or because something in the factory raised the
+    error.
+
+    :param factory: the factory function that was called
+    :return: true if the call failed
+    """
+    tb = sys.exc_info()[2]
+
+    try:
+        while tb is not None:
+            if tb.tb_frame.f_code is factory.__code__:
+                # in the factory, it was called successfully
+                return False
+
+            tb = tb.tb_next
+
+        # didn't reach the factory
+        return True
+    finally:
+        del tb
 
 
 def find_app_by_string(script_info, module, app_name):
@@ -158,8 +174,9 @@ def find_app_by_string(script_info, module, app_name):
         try:
             app = call_factory(script_info, attr, args)
         except TypeError as e:
-            if not _called_with_wrong_args(attr, sys.exc_info()):
+            if not _called_with_wrong_args(attr):
                 raise
+
             raise NoAppException(
                 '{e}\nThe factory "{app_name}" in module "{module}" could not '
                 'be called with the specified arguments.'.format(
