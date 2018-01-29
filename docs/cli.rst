@@ -247,6 +247,9 @@ group. This is useful if you want to organize multiple related commands. ::
 
     flask user create demo
 
+See :ref:`testing-cli` for an overview of how to test your custom
+commands.
+
 
 Application Context
 ~~~~~~~~~~~~~~~~~~~
