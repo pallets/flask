@@ -406,3 +406,50 @@ Passing the ``json`` argument in the test client methods sets the request data
 to the JSON-serialized object and sets the content type to
 ``application/json``. You can get the JSON data from the request or response
 with ``get_json``.
+
+
+.. _testing-cli:
+
+Testing CLI Commands
+--------------------
+
+Click comes with `utilities for testing`_ your CLI commands.
+
+Use :meth:`CliRunner.invoke <click.testing.CliRunner.invoke>` to call
+commands in the same way they would be called from the command line. The
+:class:`~click.testing.CliRunner` runs the command in isolation and
+captures the output in a :class:`~click.testing.Result` object. ::
+
+    import click
+    from click.testing import CliRunner
+
+    @app.cli.command('hello')
+    @click.option('--name', default='World')
+    def hello_command(name)
+        click.echo(f'Hello, {name}!')
+
+    def test_hello():
+        runner = CliRunner()
+        result = runner.invoke(hello_command, ['--name', 'Flask'])
+        assert 'Hello, Flask' in result.output
+
+If you want to test how your command parses parameters, without running
+the command, use the command's :meth:`~click.BaseCommand.make_context`
+method. This is useful for testing complex validation rules and custom
+types. ::
+
+    def upper(ctx, param, value):
+        if value is not None:
+            return value.upper()
+
+    @app.cli.command('hello')
+    @click.option('--name', default='World', callback=upper)
+    def hello_command(name)
+        click.echo(f'Hello, {name}!')
+
+    def test_hello_params():
+        context = hello_command.make_context('hello', ['--name', 'flask'])
+        assert context.params['name'] == 'FLASK'
+
+.. _click: http://click.pocoo.org/
+.. _utilities for testing: http://click.pocoo.org/testing
