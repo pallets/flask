@@ -204,14 +204,15 @@ class Config(dict):
         .. versionadded:: 0.11
         """
         mappings = []
-        if len(mapping) == 1:
+        mapping_len = len(mapping)
+        if mapping_len == 1:
             if hasattr(mapping[0], 'items'):
                 mappings.append(mapping[0].items())
             else:
                 mappings.append(mapping[0])
-        elif len(mapping) > 1:
+        elif mapping_len > 1:
             raise TypeError(
-                'expected at most 1 positional argument, got %d' % len(mapping)
+                'expected at most 1 positional argument, got %d' % mapping_len
             )
         mappings.append(kwargs.items())
         for mapping in mappings:
