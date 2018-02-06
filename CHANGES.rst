@@ -8,9 +8,9 @@ Version 1.0
 unreleased
 
 - **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
-- Minimum Werkzeug version bumped to 0.14, but please use the latest
-  version.
-- Minimum Click version bumped to 4, but please use the latest version.
+- Bump minimum dependency versions to the latest stable versions:
+  Werkzeug >= 0.14, Jinja >= 2.10, itsdangerous >= 0.24, Click >= 5.1.
+  (`#2586`_)
 - Make ``app.run()`` into a noop if a Flask application is run from the
   development server on the command line. This avoids some behavior that
   was confusing to debug for newcomers.
@@ -159,6 +159,7 @@ unreleased
 .. _#2450: https://github.com/pallets/flask/pull/2450
 .. _#2526: https://github.com/pallets/flask/issues/2526
 .. _#2529: https://github.com/pallets/flask/pull/2529
+.. _#2586: https://github.com/pallets/flask/issues/2586
 .. _#2581: https://github.com/pallets/flask/pull/2581
 .. _#2606: https://github.com/pallets/flask/pull/2606
 .. _#2607: https://github.com/pallets/flask/pull/2607
