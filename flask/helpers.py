@@ -608,18 +608,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                  'headers' % filename, stacklevel=2)
 
     if conditional:
-        if callable(getattr(Range, 'to_content_range_header', None)):
-            # Werkzeug supports Range Requests
-            # Remove this test when support for Werkzeug <0.12 is dropped
-            try:
-                rv = rv.make_conditional(request, accept_ranges=True,
-                                         complete_length=fsize)
-            except RequestedRangeNotSatisfiable:
-                if file is not None:
-                    file.close()
-                raise
-        else:
-            rv = rv.make_conditional(request)
+        try:
+            rv = rv.make_conditional(request, accept_ranges=True,
+                                     complete_length=fsize)
+        except RequestedRangeNotSatisfiable:
+            if file is not None:
+                file.close()
+            raise
         # make sure we don't send x-sendfile for servers that
         # ignore the 304 status code for x-sendfile.
         if rv.status_code == 304:

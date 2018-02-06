@@ -68,28 +68,26 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     install_requires=[
-        'Werkzeug>=0.9',
-        'Jinja2>=2.4',
-        'itsdangerous>=0.21',
-        'click>=4.0',
+        'Werkzeug>=0.14',
+        'Jinja2>=2.10',
+        'itsdangerous>=0.24',
+        'click>=5.1',
     ],
     extras_require={
         'dotenv': ['python-dotenv'],
         'dev': [
-            'blinker',
-            'python-dotenv',
-            'greenlet',
             'pytest>=3',
             'coverage',
             'tox',
             'sphinx',
-            'sphinxcontrib-log-cabinet'
         ],
     },
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
+        'Framework :: Flask',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
@@ -101,10 +99,13 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    entry_points='''
-        [console_scripts]
-        flask=flask.cli:main
-    '''
+    entry_points={
+        'console_scripts': [
+            'flask = flask.cli:main',
+        ],
+    },
 )
