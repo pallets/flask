@@ -131,8 +131,22 @@ Read more about `coverage <https://coverage.readthedocs.io>`_.
 Running the full test suite with ``tox`` will combine the coverage reports
 from all runs.
 
-``make`` targets
-~~~~~~~~~~~~~~~~
+
+Building the docs
+~~~~~~~~~~~~~~~~~
+
+Build the docs in the ``docs`` directory using Sphinx::
+
+    cd docs
+    make html
+
+Open ``_build/html/index.html`` in your browser to view the docs.
+
+Read more about `Sphinx <http://www.sphinx-doc.org>`_.
+
+
+make targets
+~~~~~~~~~~~~
 
 Flask provides a ``Makefile`` with various shortcuts. They will ensure that
 all dependencies are installed.
