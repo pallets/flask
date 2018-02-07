@@ -723,7 +723,6 @@ class Flask(_PackageBoundObject):
             session=session,
             g=g
         )
-        rv.filters['tojson'] = json.tojson_filter
         return rv
 
     def create_global_jinja_loader(self):
