@@ -267,7 +267,3 @@ def jsonify(*args, **kwargs):
         dumps(data, indent=indent, separators=separators) + '\n',
         mimetype=current_app.config['JSONIFY_MIMETYPE']
     )
-
-
-def tojson_filter(obj, **kwargs):
-    return Markup(htmlsafe_dumps(obj, **kwargs))
