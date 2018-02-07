@@ -1,4 +1,6 @@
 .DS_Store
+.env
+.flaskenv
 *.pyc
 *.pyo
 env
@@ -11,3 +13,9 @@ _mailinglist
 .tox
 .cache/
 .idea/
+
+# Coverage reports
+htmlcov
+.coverage
+.coverage.*
+*,cover

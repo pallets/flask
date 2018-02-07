@@ -12,22 +12,32 @@ but you can also continue using the :meth:`Flask.run` method.
 Command Line
 ------------
 
-The :command:`flask` command line script (:ref:`cli`) is strongly recommended for
-development because it provides a superior reload experience due to how it
-loads the application.  The basic usage is like this::
+The :command:`flask` command line script (:ref:`cli`) is strongly
+recommended for development because it provides a superior reload
+experience due to how it loads the application.  The basic usage is like
+this::
 
     $ export FLASK_APP=my_application
-    $ export FLASK_DEBUG=1
+    $ export FLASK_ENV=development
     $ flask run
 
-This will enable the debugger, the reloader and then start the server on
+This enables the development environment, including the interactive
+debugger and reloader, and then starts the server on
 *http://localhost:5000/*.
 
 The individual features of the server can be controlled by passing more
-arguments to the ``run`` option.  For instance the reloader can be
+arguments to the ``run`` option. For instance the reloader can be
 disabled::
 
     $ flask run --no-reload
+
+.. note::
+
+    Prior to Flask 1.0 the :envvar:`FLASK_ENV` environment variable was
+    not supported and you needed to enable debug mode by exporting
+    ``FLASK_DEBUG=1``. This can still be used to control debug mode, but
+    you should prefer setting the development environment as shown
+    above.
 
 In Code
 -------

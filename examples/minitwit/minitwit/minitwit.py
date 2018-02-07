@@ -22,10 +22,10 @@ from werkzeug import check_password_hash, generate_password_hash
 DATABASE = '/tmp/minitwit.db'
 PER_PAGE = 30
 DEBUG = True
-SECRET_KEY = 'development key'
+SECRET_KEY = b'_5#y2L"F4Q8z\n\xec]/'
 
 # create our little application :)
-app = Flask(__name__)
+app = Flask('minitwit')
 app.config.from_object(__name__)
 app.config.from_envvar('MINITWIT_SETTINGS', silent=True)
 
@@ -85,7 +85,7 @@ def format_datetime(timestamp):
 
 def gravatar_url(email, size=80):
     """Return the gravatar image for the given email address."""
-    return 'http://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
+    return 'https://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
         (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
 

@@ -1,55 +1,37 @@
 sudo: false
 language: python
 
-python:
-  - "2.6"
-  - "2.7"
-  - "pypy"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-
-env:
-  - REQUIREMENTS=lowest
-  - REQUIREMENTS=lowest-simplejson
-  - REQUIREMENTS=release
-  - REQUIREMENTS=release-simplejson
-  - REQUIREMENTS=devel
-  - REQUIREMENTS=devel-simplejson
-
 matrix:
-  exclude:
-    # Python 3 support currently does not work with lowest requirements
-    - python: "3.3"
-      env: REQUIREMENTS=lowest
-    - python: "3.3"
-      env: REQUIREMENTS=lowest-simplejson
-    - python: "3.4"
-      env: REQUIREMENTS=lowest
-    - python: "3.4"
-      env: REQUIREMENTS=lowest-simplejson
-    - python: "3.5"
-      env: REQUIREMENTS=lowest
-    - python: "3.5"
-      env: REQUIREMENTS=lowest-simplejson
-
+  include:
+    - python: 3.6
+      env: TOXENV=py,simplejson,devel,lowest,codecov,docs-html
+    - python: 3.5
+      env: TOXENV=py,codecov
+    - python: 3.4
+      env: TOXENV=py,codecov
+    - python: 2.7
+      env: TOXENV=py,simplejson,devel,lowest,codecov
+    - python: pypy
+      env: TOXENV=py,codecov
+    - python: nightly
+      env: TOXENV=py
+  allow_failures:
+    - python: nightly
+      env: TOXENV=py
 
 install:
-    - pip install tox
+  - pip install tox
 
 script:
-    - tox -e py-$REQUIREMENTS
+  - tox
+
+cache:
+  - pip
 
 branches:
-  except:
-    - website
+  only:
+    - master
+    - /^.*-maintenance$/
 
 notifications:
   email: false
-  irc:
-    channels:
-      - "chat.freenode.net#pocoo"
-    on_success: change
-    on_failure: always
-    use_notice: true
-    skip_join: true

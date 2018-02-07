@@ -14,15 +14,19 @@
          export an MINITWIT_SETTINGS environment variable
          pointing to a configuration file.
 
-      2. tell flask about the right application:
+      2. install the app from the root of the project directory
+
+         pip install --editable .
+
+      3. tell flask about the right application:
 
          export FLASK_APP=minitwit
 
-      2. fire up a shell and run this:
+      4. fire up a shell and run this:
 
          flask initdb
 
-      3. now you can run minitwit:
+      5. now you can run minitwit:
 
          flask run
 

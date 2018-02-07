@@ -1,0 +1,11 @@
+[run]
+branch = True
+source =
+    flask
+    tests
+
+[paths]
+source =
+    flask
+    .tox/*/lib/python*/site-packages/flask
+    .tox/pypy/site-packages/flask

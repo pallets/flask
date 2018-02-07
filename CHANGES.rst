@@ -1,10 +1,196 @@
 Flask Changelog
 ===============
 
-Here you can see the full list of changes between each Flask release.
+
+Version 1.0
+-----------
+
+unreleased
+
+- **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
+- Bump minimum dependency versions to the latest stable versions:
+  Werkzeug >= 0.14, Jinja >= 2.10, itsdangerous >= 0.24, Click >= 5.1.
+  (`#2586`_)
+- Make ``app.run()`` into a noop if a Flask application is run from the
+  development server on the command line. This avoids some behavior that
+  was confusing to debug for newcomers.
+- Change default configuration ``JSONIFY_PRETTYPRINT_REGULAR=False``.
+  ``jsonify()`` method returns compressed response by default, and pretty
+  response in debug mode. (`#2193`_)
+- Change ``Flask.__init__`` to accept two new keyword arguments,
+  ``host_matching`` and ``static_host``. This enables ``host_matching`` to be
+  set properly by the time the constructor adds the static route, and enables
+  the static route to be properly associated with the required host.
+  (``#1559``)
+- ``send_file`` supports Unicode in ``attachment_filename``. (`#2223`_)
+- Pass ``_scheme`` argument from ``url_for`` to ``handle_build_error``.
+  (`#2017`_)
+- Add support for ``provide_automatic_options`` in ``add_url_rule`` to disable
+  adding OPTIONS method when the ``view_func`` argument is not a class.
+  (`#1489`_).
+- ``MethodView`` can inherit method handlers from base classes. (`#1936`_)
+- Errors caused while opening the session at the beginning of the request are
+  handled by the app's error handlers. (`#2254`_)
+- Blueprints gained ``json_encoder`` and ``json_decoder`` attributes to
+  override the app's encoder and decoder. (`#1898`_)
+- ``Flask.make_response`` raises ``TypeError`` instead of ``ValueError`` for
+  bad response types. The error messages have been improved to describe why the
+  type is invalid. (`#2256`_)
+- Add ``routes`` CLI command to output routes registered on the application.
+  (`#2259`_)
+- Show warning when session cookie domain is a bare hostname or an IP
+  address, as these may not behave properly in some browsers, such as Chrome.
+  (`#2282`_)
+- Allow IP address as exact session cookie domain. (`#2282`_)
+- ``SESSION_COOKIE_DOMAIN`` is set if it is detected through ``SERVER_NAME``.
+  (`#2282`_)
+- Auto-detect zero-argument app factory called ``create_app`` or ``make_app``
+  from ``FLASK_APP``. (`#2297`_)
+- Factory functions are not required to take a ``script_info`` parameter to
+  work with the ``flask`` command. If they take a single parameter or a
+  parameter named ``script_info``, the ``ScriptInfo`` object will be passed.
+  (`#2319`_)
+- FLASK_APP=myproject.app:create_app('dev') support.
+- ``FLASK_APP`` can be set to an app factory, with arguments if needed, for
+  example ``FLASK_APP=myproject.app:create_app('dev')``. (`#2326`_)
+- ``FLASK_APP`` can point to local packages that are not installed in dev mode,
+  although `pip install -e` should still be preferred. (`#2414`_)
+- ``View.provide_automatic_options = True`` is set on the view function from
+  ``View.as_view``, to be detected in ``app.add_url_rule``. (`#2316`_)
+- Error handling will try handlers registered for ``blueprint, code``,
+  ``app, code``, ``blueprint, exception``, ``app, exception``. (`#2314`_)
+- ``Cookie`` is added to the response's ``Vary`` header if the session is
+  accessed at all during the request (and it wasn't deleted). (`#2288`_)
+- ``app.test_request_context()`` take ``subdomain`` and ``url_scheme``
+  parameters for use when building base URL. (`#1621`_)
+- Set ``APPLICATION_ROOT = '/'`` by default. This was already the implicit
+  default when it was set to ``None``.
+- ``TRAP_BAD_REQUEST_ERRORS`` is enabled by default in debug mode.
+  ``BadRequestKeyError`` has a message with the bad key in debug mode instead
+  of the generic bad request message. (`#2348`_)
+- Allow registering new tags with ``TaggedJSONSerializer`` to support
+  storing other types in the session cookie. (`#2352`_)
+- Only open the session if the request has not been pushed onto the context
+  stack yet. This allows ``stream_with_context`` generators to access the same
+  session that the containing view uses. (`#2354`_)
+- Add ``json`` keyword argument for the test client request methods. This will
+  dump the given object as JSON and set the appropriate content type.
+  (`#2358`_)
+- Extract JSON handling to a mixin applied to both the request and response
+  classes used by Flask. This adds the ``is_json`` and ``get_json`` methods to
+  the response to make testing JSON response much easier. (`#2358`_)
+- Removed error handler caching because it caused unexpected results for some
+  exception inheritance hierarchies. Register handlers explicitly for each
+  exception if you don't want to traverse the MRO. (`#2362`_)
+- Fix incorrect JSON encoding of aware, non-UTC datetimes. (`#2374`_)
+- Template auto reloading will honor the ``run`` command's ``debug`` flag even
+  if ``app.jinja_env`` was already accessed. (`#2373`_)
+- The following old deprecated code was removed. (`#2385`_)
+
+  - ``flask.ext`` - import extensions directly by their name instead of
+    through the ``flask.ext`` namespace. For example,
+    ``import flask.ext.sqlalchemy`` becomes ``import flask_sqlalchemy``.
+  - ``Flask.init_jinja_globals`` - extend ``Flask.create_jinja_environment``
+    instead.
+  - ``Flask.error_handlers`` - tracked by ``Flask.error_handler_spec``,
+    use ``@app.errorhandler`` to register handlers.
+  - ``Flask.request_globals_class`` - use ``Flask.app_ctx_globals_class``
+    instead.
+  - ``Flask.static_path`` - use ``Flask.static_url_path`` instead.
+  - ``Request.module`` - use ``Request.blueprint`` instead.
+
+- The ``request.json`` property is no longer deprecated. (`#1421`_)
+- Support passing an existing ``EnvironBuilder`` or ``dict`` to
+  ``test_client.open``. (`#2412`_)
+- The ``flask`` command and ``app.run`` will load environment variables using
+  from ``.env`` and ``.flaskenv`` files if python-dotenv is installed.
+  (`#2416`_)
+- When passing a full URL to the test client, use the scheme in the URL instead
+  of the ``PREFERRED_URL_SCHEME``. (`#2430`_)
+- ``app.logger`` has been simplified. ``LOGGER_NAME`` and
+  ``LOGGER_HANDLER_POLICY`` config was removed. The logger is always named
+  ``flask.app``. The level is only set on first access, it doesn't check
+  ``app.debug`` each time. Only one format is used, not different ones
+  depending on ``app.debug``. No handlers are removed, and a handler is only
+  added if no handlers are already configured. (`#2436`_)
+- Blueprint view function name may not contain dots. (`#2450`_)
+- Fix a ``ValueError`` caused by invalid Range requests in some cases.
+  (`#2526`_)
+- The dev server now uses threads by default. (`#2529`_)
+- Loading config files with ``silent=True`` will ignore ``ENOTDIR``
+  errors. (`#2581`_)
+- Pass ``--cert`` and ``--key`` options to ``flask run`` to run the
+  development server over HTTPS. (`#2606`_)
+- Added :data:`SESSION_COOKIE_SAMESITE` to control the ``SameSite``
+  attribute on the session cookie. (`#2607`_)
+
+.. _pallets/meta#24: https://github.com/pallets/meta/issues/24
+.. _#1421: https://github.com/pallets/flask/issues/1421
+.. _#1489: https://github.com/pallets/flask/pull/1489
+.. _#1621: https://github.com/pallets/flask/pull/1621
+.. _#1898: https://github.com/pallets/flask/pull/1898
+.. _#1936: https://github.com/pallets/flask/pull/1936
+.. _#2017: https://github.com/pallets/flask/pull/2017
+.. _#2193: https://github.com/pallets/flask/pull/2193
+.. _#2223: https://github.com/pallets/flask/pull/2223
+.. _#2254: https://github.com/pallets/flask/pull/2254
+.. _#2256: https://github.com/pallets/flask/pull/2256
+.. _#2259: https://github.com/pallets/flask/pull/2259
+.. _#2282: https://github.com/pallets/flask/pull/2282
+.. _#2288: https://github.com/pallets/flask/pull/2288
+.. _#2297: https://github.com/pallets/flask/pull/2297
+.. _#2314: https://github.com/pallets/flask/pull/2314
+.. _#2316: https://github.com/pallets/flask/pull/2316
+.. _#2319: https://github.com/pallets/flask/pull/2319
+.. _#2326: https://github.com/pallets/flask/pull/2326
+.. _#2348: https://github.com/pallets/flask/pull/2348
+.. _#2352: https://github.com/pallets/flask/pull/2352
+.. _#2354: https://github.com/pallets/flask/pull/2354
+.. _#2358: https://github.com/pallets/flask/pull/2358
+.. _#2362: https://github.com/pallets/flask/pull/2362
+.. _#2374: https://github.com/pallets/flask/pull/2374
+.. _#2373: https://github.com/pallets/flask/pull/2373
+.. _#2385: https://github.com/pallets/flask/issues/2385
+.. _#2412: https://github.com/pallets/flask/pull/2412
+.. _#2414: https://github.com/pallets/flask/pull/2414
+.. _#2416: https://github.com/pallets/flask/pull/2416
+.. _#2430: https://github.com/pallets/flask/pull/2430
+.. _#2436: https://github.com/pallets/flask/pull/2436
+.. _#2450: https://github.com/pallets/flask/pull/2450
+.. _#2526: https://github.com/pallets/flask/issues/2526
+.. _#2529: https://github.com/pallets/flask/pull/2529
+.. _#2586: https://github.com/pallets/flask/issues/2586
+.. _#2581: https://github.com/pallets/flask/pull/2581
+.. _#2606: https://github.com/pallets/flask/pull/2606
+.. _#2607: https://github.com/pallets/flask/pull/2607
+
+
+Version 0.12.2
+--------------
+
+Released on May 16 2017
+
+- Fix a bug in `safe_join` on Windows.
+
+Version 0.12.1
+--------------
+
+Bugfix release, released on March 31st 2017
+
+- Prevent `flask run` from showing a NoAppException when an ImportError occurs
+  within the imported application module.
+- Fix encoding behavior of ``app.config.from_pyfile`` for Python 3. Fix
+  ``#2118``.
+- Use the ``SERVER_NAME`` config if it is present as default values for
+  ``app.run``. ``#2109``, ``#2152``
+- Call `ctx.auto_pop` with the exception object instead of `None`, in the
+  event that a `BaseException` such as `KeyboardInterrupt` is raised in a
+  request handler.
 
 Version 0.12
 ------------
+
+Released on December 21st 2016, codename Punsch.
 
 - the cli command now responds to `--version`.
 - Mimetype guessing and ETag generation for file-like objects in ``send_file``
@@ -104,6 +290,8 @@ Released on May 29th 2016, codename Absinthe.
 - Don't leak exception info of already catched exceptions to context teardown
   handlers (pull request ``#1393``).
 - Allow custom Jinja environment subclasses (pull request ``#1422``).
+- Updated extension dev guidelines.
+
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
   (pull request ``#1515``).

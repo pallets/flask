@@ -11,15 +11,17 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 from __future__ import print_function
-from datetime import datetime
 import os
 import sys
 import pkg_resources
+import time
+import datetime
+
+BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.append(os.path.join(os.path.dirname(__file__), '_themes'))
 sys.path.append(os.path.dirname(__file__))
 
 # -- General configuration -----------------------------------------------------
@@ -35,6 +37,14 @@ extensions = [
     'flaskdocext'
 ]
 
+try:
+    __import__('sphinxcontrib.log_cabinet')
+except ImportError:
+    print('sphinxcontrib-log-cabinet is not installed.')
+    print('Changelog directives will not be re-organized.')
+else:
+    extensions.append('sphinxcontrib.log_cabinet')
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -49,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Flask'
-copyright = u'2010 - {0}, Armin Ronacher'.format(datetime.utcnow().year)
+copyright = u'2010 - {0}, Armin Ronacher'.format(BUILD_DATE.year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -110,7 +120,7 @@ exclude_patterns = ['_build']
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_themes']
+# html_theme_path = ['_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -231,7 +241,7 @@ latex_additional_files = ['flaskstyle.sty', 'logo.pdf']
 # The scheme of the identifier. Typical schemes are ISBN or URL.
 #epub_scheme = ''
 
-# The unique identifier of the text. This can be a ISBN number
+# The unique identifier of the text. This can be an ISBN number
 # or the project homepage.
 #epub_identifier = ''
 
@@ -257,26 +267,15 @@ intersphinx_mapping = {
     'werkzeug': ('http://werkzeug.pocoo.org/docs/', None),
     'click': ('http://click.pocoo.org/', None),
     'jinja': ('http://jinja.pocoo.org/docs/', None),
-    'sqlalchemy': ('http://docs.sqlalchemy.org/en/latest/', None),
+    'itsdangerous': ('https://pythonhosted.org/itsdangerous', None),
+    'sqlalchemy': ('https://docs.sqlalchemy.org/en/latest/', None),
     'wtforms': ('https://wtforms.readthedocs.io/en/latest/', None),
-    'blinker': ('https://pythonhosted.org/blinker/', None)
+    'blinker': ('https://pythonhosted.org/blinker/', None),
 }
 
-try:
-    __import__('flask_theme_support')
-    pygments_style = 'flask_theme_support.FlaskyStyle'
-    html_theme = 'flask'
-    html_theme_options = {
-        'touch_icon': 'touch-icon.png'
-    }
-except ImportError:
-    print('-' * 74)
-    print('Warning: Flask themes unavailable.  Building with default theme')
-    print('If you want the Flask themes, run this command and build again:')
-    print()
-    print('  git submodule update --init')
-    print('-' * 74)
-
+html_theme_options = {
+    'touch_icon': 'touch-icon.png'
+}
 
 # unwrap decorators
 def unwrap_decorators():

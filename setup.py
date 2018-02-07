@@ -31,9 +31,9 @@ And run it:
 
     $ pip install Flask
     $ python hello.py
-     * Running on http://localhost:5000/
+    * Running on http://localhost:5000/
 
- Ready for production? `Read this first <http://flask.pocoo.org/docs/deploying/>`.
+Ready for production? `Read this first <http://flask.pocoo.org/docs/deploying/>`.
 
 Links
 `````
@@ -41,13 +41,12 @@ Links
 * `website <http://flask.pocoo.org/>`_
 * `documentation <http://flask.pocoo.org/docs/>`_
 * `development version
-  <http://github.com/pallets/flask/zipball/master#egg=Flask-dev>`_
+  <https://github.com/pallets/flask/zipball/master#egg=Flask-dev>`_
 
 """
 import re
 import ast
 from setuptools import setup
-
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
@@ -55,46 +54,58 @@ with open('flask/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-
 setup(
     name='Flask',
     version=version,
-    url='http://github.com/pallets/flask/',
+    url='https://github.com/pallets/flask/',
     license='BSD',
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    packages=['flask', 'flask.ext'],
+    packages=['flask', 'flask.json'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     install_requires=[
-        'Werkzeug>=0.7',
-        'Jinja2>=2.4',
-        'itsdangerous>=0.21',
-        'click>=2.0',
+        'Werkzeug>=0.14',
+        'Jinja2>=2.10',
+        'itsdangerous>=0.24',
+        'click>=5.1',
     ],
+    extras_require={
+        'dotenv': ['python-dotenv'],
+        'dev': [
+            'pytest>=3',
+            'coverage',
+            'tox',
+            'sphinx',
+        ],
+    },
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
+        'Framework :: Flask',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    entry_points='''
-        [console_scripts]
-        flask=flask.cli:main
-    '''
+    entry_points={
+        'console_scripts': [
+            'flask = flask.cli:main',
+        ],
+    },
 )

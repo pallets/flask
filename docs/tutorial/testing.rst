@@ -46,7 +46,7 @@ At this point you can run the tests. Here ``pytest`` will be used.
 Run and watch the tests pass, within the top-level :file:`flaskr/` 
 directory as::
 
-    py.test
+    pytest
 
 Testing + setuptools
 --------------------

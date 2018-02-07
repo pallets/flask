@@ -5,31 +5,37 @@ The Application Context
 
 .. versionadded:: 0.9
 
-One of the design ideas behind Flask is that there are two different
-“states” in which code is executed.  The application setup state in which
-the application implicitly is on the module level.  It starts when the
-:class:`Flask` object is instantiated, and it implicitly ends when the
-first request comes in.  While the application is in this state a few
-assumptions are true:
+One of the design ideas behind Flask is that there are at least two
+different “states” in which code is executed:
 
--   the programmer can modify the application object safely.
--   no request handling happened so far
--   you have to have a reference to the application object in order to
-    modify it, there is no magic proxy that can give you a reference to
-    the application object you're currently creating or modifying.
+1.  The application setup state, in which the application implicitly is
+on the module level.
 
-In contrast, during request handling, a couple of other rules exist:
+    This state starts when the :class:`Flask` object is instantiated, and
+    it implicitly ends when the first request comes in.  While the
+    application is in this state, a few assumptions are true:
 
--   while a request is active, the context local objects
-    (:data:`flask.request` and others) point to the current request.
--   any code can get hold of these objects at any time.
+    -   the programmer can modify the application object safely.
+    -   no request handling happened so far
+    -   you have to have a reference to the application object in order to
+        modify it, there is no magic proxy that can give you a reference to
+        the application object you're currently creating or modifying.
 
-There is a third state which is sitting in between a little bit.
-Sometimes you are dealing with an application in a way that is similar to
-how you interact with applications during request handling; just that there
-is no request active.  Consider, for instance, that you're sitting in an
-interactive Python shell and interacting with the application, or a
-command line application.
+2.  In contrast, in the request handling state, a couple of other rules
+exist:
+
+    -   while a request is active, the context local objects
+        (:data:`flask.request` and others) point to the current request.
+    -   any code can get hold of these objects at any time.
+
+3.  There is also a third state somewhere in between 'module-level' and
+'request-handling':
+
+    Sometimes you are dealing with an application in a way that is similar to
+    how you interact with applications during request handling, but without
+    there being an active request.  Consider, for instance, that you're
+    sitting in an interactive Python shell and interacting with the
+    application, or a command line application.
 
 The application context is what powers the :data:`~flask.current_app`
 context local.

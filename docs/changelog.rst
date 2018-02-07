@@ -1,1 +1,1 @@
-.. include:: ../CHANGES
+.. include:: ../CHANGES.rst

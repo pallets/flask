@@ -14,26 +14,55 @@ import werkzeug
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
-
-try:
-    from werkzeug.urls import url_parse
-except ImportError:
-    from urlparse import urlsplit as url_parse
+from flask.json import dumps as json_dumps
+from werkzeug.urls import url_parse
 
 
-def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
+def make_test_environ_builder(
+    app, path='/', base_url=None, subdomain=None, url_scheme=None,
+    *args, **kwargs
+):
     """Creates a new test builder with some application defaults thrown in."""
-    http_host = app.config.get('SERVER_NAME')
-    app_root = app.config.get('APPLICATION_ROOT')
+
+    assert (
+        not (base_url or subdomain or url_scheme)
+        or (base_url is not None) != bool(subdomain or url_scheme)
+    ), 'Cannot pass "subdomain" or "url_scheme" with "base_url".'
+
     if base_url is None:
+        http_host = app.config.get('SERVER_NAME') or 'localhost'
+        app_root = app.config['APPLICATION_ROOT']
+
+        if subdomain:
+            http_host = '{0}.{1}'.format(subdomain, http_host)
+
+        if url_scheme is None:
+            url_scheme = app.config['PREFERRED_URL_SCHEME']
+
         url = url_parse(path)
-        base_url = 'http://%s/' % (url.netloc or http_host or 'localhost')
-        if app_root:
-            base_url += app_root.lstrip('/')
-        if url.netloc:
-            path = url.path
-            if url.query:
-                path += '?' + url.query
+        base_url = '{scheme}://{netloc}/{path}'.format(
+            scheme=url.scheme or url_scheme,
+            netloc=url.netloc or http_host,
+            path=app_root.lstrip('/')
+        )
+        path = url.path
+
+        if url.query:
+            sep = b'?' if isinstance(url.query, bytes) else '?'
+            path += sep + url.query
+
+    if 'json' in kwargs:
+        assert 'data' not in kwargs, (
+            "Client cannot provide both 'json' and 'data'."
+        )
+
+        # push a context so flask.json can use app's json attributes
+        with app.app_context():
+            kwargs['data'] = json_dumps(kwargs.pop('json'))
+
+        if 'content_type' not in kwargs:
+            kwargs['content_type'] = 'application/json'
+
     return EnvironBuilder(path, base_url, *args, **kwargs)
 
 
@@ -87,7 +116,8 @@ class FlaskClient(Client):
         self.cookie_jar.inject_wsgi(environ_overrides)
         outer_reqctx = _request_ctx_stack.top
         with app.test_request_context(*args, **kwargs) as c:
-            sess = app.open_session(c.request)
+            session_interface = app.session_interface
+            sess = session_interface.open_session(app, c.request)
             if sess is None:
                 raise RuntimeError('Session backend did not open a session. '
                                    'Check the configuration')
@@ -106,25 +136,47 @@ class FlaskClient(Client):
                 _request_ctx_stack.pop()
 
             resp = app.response_class()
-            if not app.session_interface.is_null_session(sess):
-                app.save_session(sess, resp)
+            if not session_interface.is_null_session(sess):
+                session_interface.save_session(app, sess, resp)
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
     def open(self, *args, **kwargs):
-        kwargs.setdefault('environ_overrides', {}) \
-            ['flask._preserve_context'] = self.preserve_context
-        kwargs.setdefault('environ_base', self.environ_base)
-
         as_tuple = kwargs.pop('as_tuple', False)
         buffered = kwargs.pop('buffered', False)
         follow_redirects = kwargs.pop('follow_redirects', False)
-        builder = make_test_environ_builder(self.application, *args, **kwargs)
 
-        return Client.open(self, builder,
-                           as_tuple=as_tuple,
-                           buffered=buffered,
-                           follow_redirects=follow_redirects)
+        if (
+            not kwargs and len(args) == 1
+            and isinstance(args[0], (EnvironBuilder, dict))
+        ):
+            environ = self.environ_base.copy()
+
+            if isinstance(args[0], EnvironBuilder):
+                environ.update(args[0].get_environ())
+            else:
+                environ.update(args[0])
+
+            environ['flask._preserve_context'] = self.preserve_context
+        else:
+            kwargs.setdefault('environ_overrides', {}) \
+                ['flask._preserve_context'] = self.preserve_context
+            kwargs.setdefault('environ_base', self.environ_base)
+            builder = make_test_environ_builder(
+                self.application, *args, **kwargs
+            )
+
+            try:
+                environ = builder.get_environ()
+            finally:
+                builder.close()
+
+        return Client.open(
+            self, environ,
+            as_tuple=as_tuple,
+            buffered=buffered,
+            follow_redirects=follow_redirects
+        )
 
     def __enter__(self):
         if self.preserve_context:

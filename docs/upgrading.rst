@@ -49,7 +49,7 @@ Any of the following is functionally equivalent::
     response = send_file(open(fname), attachment_filename=fname)
     response.set_etag(...)
 
-The reason for this is that some file-like objects have a invalid or even
+The reason for this is that some file-like objects have an invalid or even
 misleading ``name`` attribute. Silently swallowing errors in such cases was not
 a satisfying solution.
 
@@ -143,7 +143,7 @@ when there is no request context yet but an application context.  The old
 ``flask.Flask.request_globals_class`` attribute was renamed to
 :attr:`flask.Flask.app_ctx_globals_class`.
 
-.. _Flask-OldSessions: http://pythonhosted.org/Flask-OldSessions/
+.. _Flask-OldSessions: https://pythonhosted.org/Flask-OldSessions/
 
 Version 0.9
 -----------
@@ -198,7 +198,7 @@ applications with Flask.  Because we want to make upgrading as easy as
 possible we tried to counter the problems arising from these changes by
 providing a script that can ease the transition.
 
-The script scans your whole application and generates an unified diff with
+The script scans your whole application and generates a unified diff with
 changes it assumes are safe to apply.  However as this is an automated
 tool it won't be able to find all use cases and it might miss some.  We
 internally spread a lot of deprecation warnings all over the place to make

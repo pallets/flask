@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-    flask.jsonimpl
-    ~~~~~~~~~~~~~~
-
-    Implementation helpers for the JSON support in Flask.
-
-    :copyright: (c) 2015 by Armin Ronacher.
-    :license: BSD, see LICENSE for more details.
-"""
 import io
 import uuid
-from datetime import date
-from .globals import current_app, request
-from ._compat import text_type, PY2
+from datetime import date, datetime
+from flask.globals import current_app, request
+from flask._compat import text_type, PY2
 
 from werkzeug.http import http_date
 from jinja2 import Markup
@@ -71,6 +62,8 @@ class JSONEncoder(_json.JSONEncoder):
                     return list(iterable)
                 return JSONEncoder.default(self, o)
         """
+        if isinstance(o, datetime):
+            return http_date(o.utctimetuple())
         if isinstance(o, date):
             return http_date(o.timetuple())
         if isinstance(o, uuid.UUID):
@@ -91,9 +84,16 @@ class JSONDecoder(_json.JSONDecoder):
 def _dump_arg_defaults(kwargs):
     """Inject default arguments for dump functions."""
     if current_app:
-        kwargs.setdefault('cls', current_app.json_encoder)
+        bp = current_app.blueprints.get(request.blueprint) if request else None
+        kwargs.setdefault(
+            'cls',
+            bp.json_encoder if bp and bp.json_encoder
+                else current_app.json_encoder
+        )
+
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
+
         kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
     else:
         kwargs.setdefault('sort_keys', True)
@@ -103,7 +103,12 @@ def _dump_arg_defaults(kwargs):
 def _load_arg_defaults(kwargs):
     """Inject default arguments for load functions."""
     if current_app:
-        kwargs.setdefault('cls', current_app.json_decoder)
+        bp = current_app.blueprints.get(request.blueprint) if request else None
+        kwargs.setdefault(
+            'cls',
+            bp.json_decoder if bp and bp.json_decoder
+                else current_app.json_decoder
+        )
     else:
         kwargs.setdefault('cls', JSONDecoder)
 
@@ -236,11 +241,10 @@ def jsonify(*args, **kwargs):
        Added support for serializing top-level arrays. This introduces a
        security risk in ancient browsers. See :ref:`json-security` for details.
 
-    This function's response will be pretty printed if it was not requested
-    with ``X-Requested-With: XMLHttpRequest`` to simplify debugging unless
-    the ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to false.
-    Compressed (not pretty) formatting currently means no indents and no
-    spaces after separators.
+    This function's response will be pretty printed if the
+    ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to True or the
+    Flask app is running in debug mode. Compressed (not pretty) formatting
+    currently means no indents and no spaces after separators.
 
     .. versionadded:: 0.2
     """
@@ -248,7 +252,7 @@ def jsonify(*args, **kwargs):
     indent = None
     separators = (',', ':')
 
-    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] and not request.is_xhr:
+    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] or current_app.debug:
         indent = 2
         separators = (', ', ': ')
 
@@ -260,7 +264,7 @@ def jsonify(*args, **kwargs):
         data = args or kwargs
 
     return current_app.response_class(
-        (dumps(data, indent=indent, separators=separators), '\n'),
+        dumps(data, indent=indent, separators=separators) + '\n',
         mimetype=current_app.config['JSONIFY_MIMETYPE']
     )
 

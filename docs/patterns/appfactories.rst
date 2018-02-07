@@ -6,7 +6,7 @@ Application Factories
 If you are already using packages and blueprints for your application
 (:ref:`blueprints`) there are a couple of really nice ways to further improve
 the experience.  A common pattern is creating the application object when
-the blueprint is imported.  But if you move the creation of this object,
+the blueprint is imported.  But if you move the creation of this object
 into a function, you can then create multiple instances of this app later.
 
 So why would you want to do this?
@@ -60,7 +60,7 @@ Factories & Extensions
 It's preferable to create your extensions and app factories so that the
 extension object does not initially get bound to the application.
 
-Using `Flask-SQLAlchemy <http://pythonhosted.org/Flask-SQLAlchemy/>`_,
+Using `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/>`_,
 as an example, you should not do something along those lines::
 
     def create_app(config_filename):
@@ -89,28 +89,29 @@ For more information about the design of extensions refer to :doc:`/extensiondev
 Using Applications
 ------------------
 
-So to use such an application you then have to create the application
-first in a separate file otherwise the :command:`flask` command won't be able
-to find it.  Here an example :file:`exampleapp.py` file that creates such
-an application::
+To run such an application, you can use the :command:`flask` command::
 
-    from yourapplication import create_app
-    app = create_app('/path/to/config.cfg')
-
-It can then be used with the :command:`flask` command::
-
-    export FLASK_APP=exampleapp
+    export FLASK_APP=myapp
     flask run
+    
+Flask will automatically detect the factory (``create_app`` or ``make_app``) 
+in ``myapp``. You can also pass arguments to the factory like this::
+
+    export FLASK_APP="myapp:create_app('dev')"
+    flask run
+    
+Then the ``create_app`` factory in ``myapp`` is called with the string
+``'dev'`` as the argument. See :doc:`/cli` for more detail.
 
 Factory Improvements
 --------------------
 
-The factory function from above is not very clever so far, you can improve
-it.  The following changes are straightforward and possible:
+The factory function above is not very clever, but you can improve it.
+The following changes are straightforward to implement:
 
-1.  make it possible to pass in configuration values for unittests so that
-    you don't have to create config files on the filesystem
-2.  call a function from a blueprint when the application is setting up so
+1.  Make it possible to pass in configuration values for unit tests so that
+    you don't have to create config files on the filesystem.
+2.  Call a function from a blueprint when the application is setting up so
     that you have a place to modify attributes of the application (like
-    hooking in before / after request handlers etc.)
-3.  Add in WSGI middlewares when the application is creating if necessary.
+    hooking in before/after request handlers etc.)
+3.  Add in WSGI middlewares when the application is being created if necessary.

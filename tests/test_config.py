@@ -7,20 +7,23 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import pytest
 
-import os
 from datetime import timedelta
+import os
+import textwrap
+
 import flask
+from flask._compat import PY2
+import pytest
 
 
 # config keys used for the TestConfig
 TEST_KEY = 'foo'
-SECRET_KEY = 'devkey'
+SECRET_KEY = 'config'
 
 
 def common_object_test(app):
-    assert app.secret_key == 'devkey'
+    assert app.secret_key == 'config'
     assert app.config['TEST_KEY'] == 'foo'
     assert 'TestConfig' not in app.config
 
@@ -47,21 +50,21 @@ def test_config_from_json():
 def test_config_from_mapping():
     app = flask.Flask(__name__)
     app.config.from_mapping({
-        'SECRET_KEY': 'devkey',
+        'SECRET_KEY': 'config',
         'TEST_KEY': 'foo'
     })
     common_object_test(app)
 
     app = flask.Flask(__name__)
     app.config.from_mapping([
-        ('SECRET_KEY', 'devkey'),
+        ('SECRET_KEY', 'config'),
         ('TEST_KEY', 'foo')
     ])
     common_object_test(app)
 
     app = flask.Flask(__name__)
     app.config.from_mapping(
-        SECRET_KEY='devkey',
+        SECRET_KEY='config',
         TEST_KEY='foo'
     )
     common_object_test(app)
@@ -78,7 +81,8 @@ def test_config_from_class():
         TEST_KEY = 'foo'
 
     class Test(Base):
-        SECRET_KEY = 'devkey'
+        SECRET_KEY = 'config'
+
     app = flask.Flask(__name__)
     app.config.from_object(Test)
     common_object_test(app)
@@ -187,3 +191,18 @@ def test_get_namespace():
     assert 2 == len(bar_options)
     assert 'bar stuff 1' == bar_options['BAR_STUFF_1']
     assert 'bar stuff 2' == bar_options['BAR_STUFF_2']
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-15', 'latin-1'])
+def test_from_pyfile_weird_encoding(tmpdir, encoding):
+    f = tmpdir.join('my_config.py')
+    f.write_binary(textwrap.dedent(u'''
+    # -*- coding: {0} -*-
+    TEST_VALUE = "föö"
+    '''.format(encoding)).encode(encoding))
+    app = flask.Flask(__name__)
+    app.config.from_pyfile(str(f))
+    value = app.config['TEST_VALUE']
+    if PY2:
+        value = value.decode(encoding)
+    assert value == u'föö'

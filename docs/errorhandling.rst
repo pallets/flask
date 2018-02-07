@@ -34,7 +34,7 @@ Error Logging Tools
 Sending error mails, even if just for critical ones, can become
 overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
-<http://www.getsentry.com/>`_ for dealing with application errors.  It's
+<https://www.getsentry.com/>`_ for dealing with application errors.  It's
 available as an Open Source project `on GitHub
 <https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
 <https://getsentry.com/signup/>`_ which you can try for free. Sentry
@@ -42,9 +42,9 @@ aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
 frequency thresholds.
 
-To use Sentry you need to install the `raven` client::
+To use Sentry you need to install the `raven` client with extra `flask` dependencies::
 
-    $ pip install raven
+    $ pip install raven[flask]
 
 And then add this to your Flask app::
 
@@ -76,256 +76,78 @@ Error handlers
 You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
-Error handlers are normal :ref:`views` but instead of being registered for
-routes, they are registered for exceptions that are raised while trying to
-do something else.
+An error handler is a normal view function that return a response, but instead
+of being registered for a route, it is registered for an exception or HTTP
+status code that would is raised while trying to handle a request.
 
 Registering
 ```````````
 
-Register error handlers using :meth:`~flask.Flask.errorhandler` or
-:meth:`~flask.Flask.register_error_handler`::
+Register handlers by decorating a function with
+:meth:`~flask.Flask.errorhandler`. Or use
+:meth:`~flask.Flask.register_error_handler` to register the function later.
+Remember to set the error code when returning the response. ::
 
     @app.errorhandler(werkzeug.exceptions.BadRequest)
     def handle_bad_request(e):
-        return 'bad request!'
-    
-    app.register_error_handler(400, lambda e: 'bad request!')
+        return 'bad request!', 400
 
-Those two ways are equivalent, but the first one is more clear and leaves
-you with a function to call on your whim (and in tests).  Note that
+    # or, without the decorator
+    app.register_error_handler(400, handle_bad_request)
+
 :exc:`werkzeug.exceptions.HTTPException` subclasses like
-:exc:`~werkzeug.exceptions.BadRequest` from the example and their HTTP codes
-are interchangeable when handed to the registration methods or decorator
-(``BadRequest.code == 400``).
+:exc:`~werkzeug.exceptions.BadRequest` and their HTTP codes are interchangeable
+when registering handlers. (``BadRequest.code == 400``)
 
-You are however not limited to :exc:`~werkzeug.exceptions.HTTPException`
-or HTTP status codes but can register a handler for every exception class you
-like.
+Non-standard HTTP codes cannot be registered by code because they are not known
+by Werkzeug. Instead, define a subclass of
+:class:`~werkzeug.exceptions.HTTPException` with the appropriate code and
+register and raise that exception class. ::
 
-.. versionchanged:: 0.11
+    class InsufficientStorage(werkzeug.exceptions.HTTPException):
+        code = 507
+        description = 'Not enough storage space.'
 
-   Errorhandlers are now prioritized by specificity of the exception classes
-   they are registered for instead of the order they are registered in.
+    app.register_error_handler(InsuffcientStorage, handle_507)
+
+    raise InsufficientStorage()
+
+Handlers can be registered for any exception class, not just
+:exc:`~werkzeug.exceptions.HTTPException` subclasses or HTTP status
+codes. Handlers can be registered for a specific class, or for all subclasses
+of a parent class.
 
 Handling
 ````````
 
-Once an exception instance is raised, its class hierarchy is traversed,
-and searched for in the exception classes for which handlers are registered.
-The most specific handler is selected.
+When an exception is caught by Flask while handling a request, it is first
+looked up by code. If no handler is registered for the code, it is looked up
+by its class hierarchy; the most specific handler is chosen. If no handler is
+registered, :class:`~werkzeug.exceptions.HTTPException` subclasses show a
+generic message about their code, while other exceptions are converted to a
+generic 500 Internal Server Error.
 
-E.g. if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
+For example, if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
 is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
-the more specific :exc:`ConnectionRefusedError` handler is called on the
-exception instance, and its response is shown to the user.
+the more specific :exc:`ConnectionRefusedError` handler is called with the
+exception instance to generate the response.
 
-Error Mails
------------
+Handlers registered on the blueprint take precedence over those registered
+globally on the application, assuming a blueprint is handling the request that
+raises the exception. However, the blueprint cannot handle 404 routing errors
+because the 404 occurs at the routing level before the blueprint can be
+determined.
 
-If the application runs in production mode (which it will do on your
-server) you might not see any log messages.  The reason for that is that
-Flask by default will just report to the WSGI error stream or stderr
-(depending on what's available).  Where this ends up is sometimes hard to
-find.  Often it's in your webserver's log files.
+.. versionchanged:: 0.11
 
-I can pretty much promise you however that if you only use a logfile for
-the application errors you will never look at it except for debugging an
-issue when a user reported it for you.  What you probably want instead is
-a mail the second the exception happened.  Then you get an alert and you
-can do something about it.
+   Handlers are prioritized by specificity of the exception classes they are
+   registered for instead of the order they are registered in.
 
-Flask uses the Python builtin logging system, and it can actually send
-you mails for errors which is probably what you want.  Here is how you can
-configure the Flask logger to send you mails for exceptions::
+Logging
+-------
 
-    ADMINS = ['yourname@example.com']
-    if not app.debug:
-        import logging
-        from logging.handlers import SMTPHandler
-        mail_handler = SMTPHandler('127.0.0.1',
-                                   'server-error@example.com',
-                                   ADMINS, 'YourApplication Failed')
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
-
-So what just happened?  We created a new
-:class:`~logging.handlers.SMTPHandler` that will send mails with the mail
-server listening on ``127.0.0.1`` to all the `ADMINS` from the address
-*server-error@example.com* with the subject "YourApplication Failed".  If
-your mail server requires credentials, these can also be provided.  For
-that check out the documentation for the
-:class:`~logging.handlers.SMTPHandler`.
-
-We also tell the handler to only send errors and more critical messages.
-Because we certainly don't want to get a mail for warnings or other
-useless logs that might happen during request handling.
-
-Before you run that in production, please also look at :ref:`logformat` to
-put more information into that error mail.  That will save you from a lot
-of frustration.
-
-
-Logging to a File
------------------
-
-Even if you get mails, you probably also want to log warnings.  It's a
-good idea to keep as much information around that might be required to
-debug a problem.  By default as of Flask 0.11, errors are logged to your
-webserver's log automatically.  Warnings however are not.  Please note
-that Flask itself will not issue any warnings in the core system, so it's
-your responsibility to warn in the code if something seems odd.
-
-There are a couple of handlers provided by the logging system out of the
-box but not all of them are useful for basic error logging.  The most
-interesting are probably the following:
-
--   :class:`~logging.FileHandler` - logs messages to a file on the
-    filesystem.
--   :class:`~logging.handlers.RotatingFileHandler` - logs messages to a file
-    on the filesystem and will rotate after a certain number of messages.
--   :class:`~logging.handlers.NTEventLogHandler` - will log to the system
-    event log of a Windows system.  If you are deploying on a Windows box,
-    this is what you want to use.
--   :class:`~logging.handlers.SysLogHandler` - sends logs to a UNIX
-    syslog.
-
-Once you picked your log handler, do like you did with the SMTP handler
-above, just make sure to use a lower setting (I would recommend
-`WARNING`)::
-
-    if not app.debug:
-        import logging
-        from themodule import TheHandlerYouWant
-        file_handler = TheHandlerYouWant(...)
-        file_handler.setLevel(logging.WARNING)
-        app.logger.addHandler(file_handler)
-
-.. _logformat:
-
-Controlling the Log Format
---------------------------
-
-By default a handler will only write the message string into a file or
-send you that message as mail.  A log record stores more information,
-and it makes a lot of sense to configure your logger to also contain that
-information so that you have a better idea of why that error happened, and
-more importantly, where it did.
-
-A formatter can be instantiated with a format string.  Note that
-tracebacks are appended to the log entry automatically.  You don't have to
-do that in the log formatter format string.
-
-Here some example setups:
-
-Email
-`````
-
-::
-
-    from logging import Formatter
-    mail_handler.setFormatter(Formatter('''
-    Message type:       %(levelname)s
-    Location:           %(pathname)s:%(lineno)d
-    Module:             %(module)s
-    Function:           %(funcName)s
-    Time:               %(asctime)s
-
-    Message:
-
-    %(message)s
-    '''))
-
-File logging
-````````````
-
-::
-
-    from logging import Formatter
-    file_handler.setFormatter(Formatter(
-        '%(asctime)s %(levelname)s: %(message)s '
-        '[in %(pathname)s:%(lineno)d]'
-    ))
-
-
-Complex Log Formatting
-``````````````````````
-
-Here is a list of useful formatting variables for the format string.  Note
-that this list is not complete, consult the official documentation of the
-:mod:`logging` package for a full list.
-
-.. tabularcolumns:: |p{3cm}|p{12cm}|
-
-+------------------+----------------------------------------------------+
-| Format           | Description                                        |
-+==================+====================================================+
-| ``%(levelname)s``| Text logging level for the message                 |
-|                  | (``'DEBUG'``, ``'INFO'``, ``'WARNING'``,           |
-|                  | ``'ERROR'``, ``'CRITICAL'``).                      |
-+------------------+----------------------------------------------------+
-| ``%(pathname)s`` | Full pathname of the source file where the         |
-|                  | logging call was issued (if available).            |
-+------------------+----------------------------------------------------+
-| ``%(filename)s`` | Filename portion of pathname.                      |
-+------------------+----------------------------------------------------+
-| ``%(module)s``   | Module (name portion of filename).                 |
-+------------------+----------------------------------------------------+
-| ``%(funcName)s`` | Name of function containing the logging call.      |
-+------------------+----------------------------------------------------+
-| ``%(lineno)d``   | Source line number where the logging call was      |
-|                  | issued (if available).                             |
-+------------------+----------------------------------------------------+
-| ``%(asctime)s``  | Human-readable time when the LogRecord` was        |
-|                  | created.  By default this is of the form           |
-|                  | ``"2003-07-08 16:49:45,896"`` (the numbers after   |
-|                  | the comma are millisecond portion of the time).    |
-|                  | This can be changed by subclassing the formatter   |
-|                  | and overriding the                                 |
-|                  | :meth:`~logging.Formatter.formatTime` method.      |
-+------------------+----------------------------------------------------+
-| ``%(message)s``  | The logged message, computed as ``msg % args``     |
-+------------------+----------------------------------------------------+
-
-If you want to further customize the formatting, you can subclass the
-formatter.  The formatter has three interesting methods:
-
-:meth:`~logging.Formatter.format`:
-    handles the actual formatting.  It is passed a
-    :class:`~logging.LogRecord` object and has to return the formatted
-    string.
-:meth:`~logging.Formatter.formatTime`:
-    called for `asctime` formatting.  If you want a different time format
-    you can override this method.
-:meth:`~logging.Formatter.formatException`
-    called for exception formatting.  It is passed an :attr:`~sys.exc_info`
-    tuple and has to return a string.  The default is usually fine, you
-    don't have to override it.
-
-For more information, head over to the official documentation.
-
-
-Other Libraries
----------------
-
-So far we only configured the logger your application created itself.
-Other libraries might log themselves as well.  For example, SQLAlchemy uses
-logging heavily in its core.  While there is a method to configure all
-loggers at once in the :mod:`logging` package, I would not recommend using
-it.  There might be a situation in which you want to have multiple
-separate applications running side by side in the same Python interpreter
-and then it becomes impossible to have different logging setups for those.
-
-Instead, I would recommend figuring out which loggers you are interested
-in, getting the loggers with the :func:`~logging.getLogger` function and
-iterating over them to attach handlers::
-
-    from logging import getLogger
-    loggers = [app.logger, getLogger('sqlalchemy'),
-               getLogger('otherlibrary')]
-    for logger in loggers:
-        logger.addHandler(mail_handler)
-        logger.addHandler(file_handler)
+See :ref:`logging` for information on how to log exceptions, such as by
+emailing them to admins.
 
 
 Debugging Application Errors
