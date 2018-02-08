@@ -5,9 +5,10 @@
 
     A simple command line application to run flask apps.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 from __future__ import print_function
 
 import ast

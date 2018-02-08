@@ -3,14 +3,13 @@
     tests.test_cli
     ~~~~~~~~~~~~~~
 
-    :copyright: (c) 2016 by the Flask Team, see AUTHORS for more details.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-#
-# This file was part of Flask-CLI and was modified under the terms its license,
-# the Revised BSD License.
-# Copyright (C) 2015 CERN.
-#
+
+# This file was part of Flask-CLI and was modified under the terms of
+# its Revised BSD License. Copyright © 2015 CERN.
+
 from __future__ import absolute_import
 
 import os

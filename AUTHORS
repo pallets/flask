@@ -1,40 +1,12 @@
-Flask is written and maintained by Armin Ronacher and
-various contributors:
+Flask is developed and maintained by the Pallets team and community
+contributors. It was created by Armin Ronacher. The core maintainers
+are:
 
-Development Lead
-````````````````
+- David Lord (davidism)
+- Adrian Mönnich (ThiefMaster)
+- Armin Ronacher (mitsuhiko)
+- Marcus Unterwaditzer (untitaker)
 
-- Armin Ronacher <armin.ronacher@active-4.com>
+A full list of contributors is available from git with::
 
-Patches and Suggestions
-```````````````````````
-
-- Adam Byrtek
-- Adam Zapletal
-- Ali Afshar
-- Chris Edgemon
-- Chris Grindstaff
-- Christopher Grebs
-- Daniel Neuhäuser
-- Dan Sully
-- David Lord @davidism
-- Edmond Burnett
-- Florent Xicluna
-- Georg Brandl
-- Hsiaoming Yang @lepture
-- Jeff Widman @jeffwidman
-- Joshua Bronson @jab
-- Justin Quick
-- Kenneth Reitz
-- Keyan Pishdadian
-- Marian Sigler
-- Martijn Pieters
-- Matt Campell
-- Matthew Frazier
-- Michael van Tellingen
-- Ron DuPlain
-- Sebastien Estienne
-- Simon Sapin
-- Stephane Wirtel
-- Thomas Schranz
-- Zhao Xiaohong
+    git shortlog -sne

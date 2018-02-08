@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+flask.json
+~~~~~~~~~~
+
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
+"""
+
 import io
 import uuid
 from datetime import date, datetime

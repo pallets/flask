@@ -6,9 +6,10 @@
     Blueprints are the recommended way to implement larger or more
     pluggable applications in Flask 0.7 and later.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 from functools import update_wrapper
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
