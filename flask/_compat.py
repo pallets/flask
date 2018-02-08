@@ -7,9 +7,10 @@
     version of six so we don't have to depend on a specific version
     of it.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 import sys
 
 PY2 = sys.version_info[0] == 2

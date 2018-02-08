@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import io
 import re
 from setuptools import setup
@@ -16,6 +17,8 @@ setup(
     license='BSD',
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',
+    maintainer='Pallets team',
+    maintainer_email='contact@palletsprojects.com',
     description='A simple framework for building complex web applications.',
     long_description=readme,
     packages=['flask', 'flask.json'],

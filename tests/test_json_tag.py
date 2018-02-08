@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+tests.test_json_tag
+~~~~~~~~~~~~~~~~~~~
+
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
+"""
+
 from datetime import datetime
 from uuid import uuid4
 

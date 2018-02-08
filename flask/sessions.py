@@ -5,9 +5,10 @@
 
     Implements cookie based sessions based on itsdangerous.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 import hashlib
 import warnings
 from collections import MutableMapping

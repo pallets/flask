@@ -3,9 +3,10 @@
     tests.test_instance
     ~~~~~~~~~~~~~~~~~~~
 
-    :copyright: (c) 2015 by the Flask Team, see AUTHORS for more details.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 import os
 import sys
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Tagged JSON
 ~~~~~~~~~~~
@@ -37,6 +38,8 @@ processes dicts first, so insert the new tag at the front of the order since
 
     app.session_interface.serializer.register(TagOrderedDict, 0)
 
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
 """
 
 from base64 import b64decode, b64encode
