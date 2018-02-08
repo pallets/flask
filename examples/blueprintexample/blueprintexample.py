@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Blueprint Example
+~~~~~~~~~~~~~~~~~
+
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
+"""
+
 from flask import Flask
 from simple_page.simple_page import simple_page
 

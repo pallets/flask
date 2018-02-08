@@ -17,6 +17,8 @@ import pkg_resources
 import time
 import datetime
 
+from sphinx.application import Sphinx
+
 BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -296,3 +298,17 @@ def unwrap_decorators():
 
 unwrap_decorators()
 del unwrap_decorators
+
+
+def setup(app: Sphinx):
+    def cut_module_meta(app, what, name, obj, options, lines):
+        """Remove metadata from autodoc output."""
+        if what != 'module':
+            return
+
+        lines[:] = [
+            line for line in lines
+            if not line.startswith((':copyright:', ':license:'))
+        ]
+
+    app.connect('autodoc-process-docstring', cut_module_meta)
