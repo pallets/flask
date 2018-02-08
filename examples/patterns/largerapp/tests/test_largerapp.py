@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Larger App Tests
+~~~~~~~~~~~~~~~~
+
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
+"""
+
 from yourapplication import app
 import pytest
 

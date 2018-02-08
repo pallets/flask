@@ -1,3 +1,0 @@
-tox
-pytest
-pytest-cov
