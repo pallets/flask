@@ -104,6 +104,8 @@ On Windows:
 
     \Python27\Scripts\virtualenv.exe venv
 
+.. _install-activate-env:
+
 Activate the environment
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
