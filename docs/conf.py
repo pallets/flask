@@ -11,13 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 from __future__ import print_function
+
+import datetime
 import os
 import sys
-import pkg_resources
 import time
-import datetime
 
-from sphinx.application import Sphinx
+import pkg_resources
 
 BUILD_DATE = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
 
@@ -300,7 +300,7 @@ unwrap_decorators()
 del unwrap_decorators
 
 
-def setup(app: Sphinx):
+def setup(app):
     def cut_module_meta(app, what, name, obj, options, lines):
         """Remove metadata from autodoc output."""
         if what != 'module':
@@ -312,3 +312,34 @@ def setup(app: Sphinx):
         ]
 
     app.connect('autodoc-process-docstring', cut_module_meta)
+
+    def github_link(
+        name, rawtext, text, lineno, inliner,
+        options=None, content=None
+    ):
+        app = inliner.document.settings.env.app
+        release = app.config.release
+        base_url = 'https://github.com/pallets/flask/tree/'
+
+        if text.endswith('>'):
+            words, text = text[:-1].rsplit('<', 1)
+            words = words.strip()
+        else:
+            words = None
+
+        if release.endswith('dev'):
+            url = '{0}master/{1}'.format(base_url, text)
+        else:
+            url = '{0}{1}/{2}'.format(base_url, release, text)
+
+        if words is None:
+            words = url
+
+        from docutils.nodes import reference
+        from docutils.parsers.rst.roles import set_classes
+        options = options or {}
+        set_classes(options)
+        node = reference(rawtext, words, refuri=url, **options)
+        return [node], []
+
+    app.add_role('gh', github_link)
