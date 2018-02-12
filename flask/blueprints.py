@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import re
 from functools import update_wrapper
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
@@ -67,6 +68,7 @@ class BlueprintSetupState(object):
         """
         if self.url_prefix:
             rule = self.url_prefix + rule
+            rule = re.sub('/+', '/', rule)
         options.setdefault('subdomain', self.subdomain)
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
