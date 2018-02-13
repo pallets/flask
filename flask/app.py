@@ -2140,8 +2140,8 @@ class Flask(_PackageBoundObject):
         return RequestContext(self, environ)
 
     def test_request_context(self, *args, **kwargs):
-        """Creates a WSGI environment from the given values (see
-        :class:`werkzeug.test.EnvironBuilder` for more information, this
+        """Creates a :class:`~flask.ctx.RequestContext` from the given values
+        (see :class:`werkzeug.test.EnvironBuilder` for more information, this
         function accepts the same arguments plus two additional).
 
         Additional arguments (only if ``base_url`` is not specified):
