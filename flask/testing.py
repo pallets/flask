@@ -12,6 +12,9 @@
 
 import werkzeug
 from contextlib import contextmanager
+
+from click.testing import CliRunner
+from flask.cli import ScriptInfo
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
 from flask.json import dumps as json_dumps
@@ -193,3 +196,36 @@ class FlaskClient(Client):
         top = _request_ctx_stack.top
         if top is not None and top.preserved:
             top.pop()
+
+
+class FlaskCliRunner(CliRunner):
+    """A :class:`~click.testing.CliRunner` for testing a Flask app's
+    CLI commands. Typically created using
+    :meth:`~flask.Flask.test_cli_runner`. See :ref:`testing-cli`.
+    """
+    def __init__(self, app, **kwargs):
+        self.app = app
+        super(FlaskCliRunner, self).__init__(**kwargs)
+
+    def invoke(self, cli=None, args=None, **kwargs):
+        """Invokes a CLI command in an isolated environment. See
+        :meth:`CliRunner.invoke <click.testing.CliRunner.invoke>` for
+        full method documentation. See :ref:`testing-cli` for examples.
+
+        If the ``obj`` argument is not given, passes an instance of
+        :class:`~flask.cli.ScriptInfo` that knows how to load the Flask
+        app being tested.
+
+        :param cli: Command object to invoke. Default is the app's
+            :attr:`~flask.app.Flask.cli` group.
+        :param args: List of strings to invoke the command with.
+
+        :return: a :class:`~click.testing.Result` object.
+        """
+        if cli is None:
+            cli = self.app.cli
+
+        if 'obj' not in kwargs:
+            kwargs['obj'] = ScriptInfo(create_app=lambda: self.app)
+
+        return super(FlaskCliRunner, self).invoke(cli, args, **kwargs)

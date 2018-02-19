@@ -413,15 +413,17 @@ with ``get_json``.
 Testing CLI Commands
 --------------------
 
-Click comes with `utilities for testing`_ your CLI commands.
+Click comes with `utilities for testing`_ your CLI commands. A
+:class:`~click.testing.CliRunner` runs commands in isolation and
+captures the output in a :class:`~click.testing.Result` object.
 
-Use :meth:`CliRunner.invoke <click.testing.CliRunner.invoke>` to call
-commands in the same way they would be called from the command line. The
-:class:`~click.testing.CliRunner` runs the command in isolation and
-captures the output in a :class:`~click.testing.Result` object. ::
+Flask provides :meth:`~flask.Flask.test_cli_runner` to create a
+:class:`~flask.testing.FlaskCliRunner` that passes the Flask app to the
+CLI automatically. Use its :meth:`~flask.testing.FlaskCliRunner.invoke`
+method to call commands in the same way they would be called from the
+command line. ::
 
     import click
-    from click.testing import CliRunner
 
     @app.cli.command('hello')
     @click.option('--name', default='World')
@@ -429,14 +431,22 @@ captures the output in a :class:`~click.testing.Result` object. ::
         click.echo(f'Hello, {name}!')
 
     def test_hello():
-        runner = CliRunner()
+        runner = app.test_cli_runner()
+
+        # invoke the command directly
         result = runner.invoke(hello_command, ['--name', 'Flask'])
         assert 'Hello, Flask' in result.output
 
+        # or by name
+        result = runner.invoke(args=['hello'])
+        assert 'World' in result.output
+
+In the example above, invoking the command by name is useful because it
+verifies that the command was correctly registered with the app.
+
 If you want to test how your command parses parameters, without running
-the command, use the command's :meth:`~click.BaseCommand.make_context`
-method. This is useful for testing complex validation rules and custom
-types. ::
+the command, use its :meth:`~click.BaseCommand.make_context` method.
+This is useful for testing complex validation rules and custom types. ::
 
     def upper(ctx, param, value):
         if value is not None:
