@@ -188,6 +188,15 @@ Test Client
    :members:
 
 
+Test CLI Runner
+---------------
+
+.. currentmodule:: flask.testing
+
+.. autoclass:: FlaskCliRunner
+    :members:
+
+
 Application Globals
 -------------------
 

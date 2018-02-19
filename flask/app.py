@@ -311,6 +311,14 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.7
     test_client_class = None
 
+    #: The :class:`~click.testing.CliRunner` subclass, by default
+    #: :class:`~flask.testing.FlaskCliRunner` that is used by
+    #: :meth:`test_cli_runner`. Its ``__init__`` method should take a
+    #: Flask app object as the first argument.
+    #:
+    #: .. versionadded:: 1.0
+    test_cli_runner_class = None
+
     #: the session interface to use.  By default an instance of
     #: :class:`~flask.sessions.SecureCookieSessionInterface` is used here.
     #:
@@ -982,6 +990,23 @@ class Flask(_PackageBoundObject):
         if cls is None:
             from flask.testing import FlaskClient as cls
         return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
+
+    def test_cli_runner(self, **kwargs):
+        """Create a CLI runner for testing CLI commands.
+        See :ref:`testing-cli`.
+
+        Returns an instance of :attr:`test_cli_runner_class`, by default
+        :class:`~flask.testing.FlaskCliRunner`. The Flask app object is
+        passed as the first argument.
+
+        .. versionadded:: 1.0
+        """
+        cls = self.test_cli_runner_class
+
+        if cls is None:
+            from flask.testing import FlaskCliRunner as cls
+
+        return cls(self, **kwargs)
 
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
