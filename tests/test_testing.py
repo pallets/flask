@@ -8,15 +8,16 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
+import click
 import pytest
 
 import flask
 import werkzeug
 
 from flask._compat import text_type
+from flask.cli import ScriptInfo
 from flask.json import jsonify
-from flask.testing import make_test_environ_builder
+from flask.testing import make_test_environ_builder, FlaskCliRunner
 
 
 def test_environ_defaults_from_config(app, client):
@@ -335,3 +336,47 @@ def test_nosubdomain(app, client):
 
     assert 200 == response.status_code
     assert b'xxx' == response.data
+
+
+def test_cli_runner_class(app):
+    runner = app.test_cli_runner()
+    assert isinstance(runner, FlaskCliRunner)
+
+    class SubRunner(FlaskCliRunner):
+        pass
+
+    app.test_cli_runner_class = SubRunner
+    runner = app.test_cli_runner()
+    assert isinstance(runner, SubRunner)
+
+
+def test_cli_invoke(app):
+    @app.cli.command('hello')
+    def hello_command():
+        click.echo('Hello, World!')
+
+    runner = app.test_cli_runner()
+    # invoke with command name
+    result = runner.invoke(args=['hello'])
+    assert 'Hello' in result.output
+    # invoke with command object
+    result = runner.invoke(hello_command)
+    assert 'Hello' in result.output
+
+
+def test_cli_custom_obj(app):
+    class NS(object):
+        called = False
+
+    def create_app():
+        NS.called = True
+        return app
+
+    @app.cli.command('hello')
+    def hello_command():
+        click.echo('Hello, World!')
+
+    script_info = ScriptInfo(create_app=create_app)
+    runner = app.test_cli_runner()
+    runner.invoke(hello_command, obj=script_info)
+    assert NS.called

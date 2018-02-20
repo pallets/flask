@@ -137,6 +137,8 @@ unreleased
   development server over HTTPS. (`#2606`_)
 - Added :data:`SESSION_COOKIE_SAMESITE` to control the ``SameSite``
   attribute on the session cookie. (`#2607`_)
+- Added :meth:`~flask.Flask.test_cli_runner` to create a Click runner
+  that can invoke Flask CLI commands for testing. (`#2636`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -178,6 +180,7 @@ unreleased
 .. _#2581: https://github.com/pallets/flask/pull/2581
 .. _#2606: https://github.com/pallets/flask/pull/2606
 .. _#2607: https://github.com/pallets/flask/pull/2607
+.. _#2636: https://github.com/pallets/flask/pull/2636
 
 
 Version 0.12.2
