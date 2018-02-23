@@ -123,13 +123,13 @@ class Flask(_PackageBoundObject):
     .. versionadded:: 0.11
        The `root_path` parameter was added.
 
-    .. versionadded:: 0.13
-       The `host_matching` and `static_host` parameters were added.
+    .. versionadded:: 1.0
+       The ``host_matching`` and ``static_host`` parameters were added.
 
     .. versionadded:: 1.0
-       The `subdomain_matching` parameter was added.  Subdomain matching
-       needs to be enabled manually now.  Setting `SERVER_NAME` does not
-       implicitly enable it.
+       The ``subdomain_matching`` parameter was added. Subdomain
+       matching needs to be enabled manually now. Setting
+       :data:`SERVER_NAME` does not implicitly enable it.
 
     :param import_name: the name of the application package
     :param static_url_path: can be used to specify a different path for the
@@ -138,11 +138,13 @@ class Flask(_PackageBoundObject):
     :param static_folder: the folder with static files that should be served
                           at `static_url_path`.  Defaults to the ``'static'``
                           folder in the root path of the application.
-    :param host_matching: sets the app's ``url_map.host_matching`` to the given
-                          value. Defaults to False.
-    :param static_host: the host to use when adding the static route. Defaults
-                        to None. Required when using ``host_matching=True``
-                        with a ``static_folder`` configured.
+    :param static_host: the host to use when adding the static route.
+        Defaults to None. Required when using ``host_matching=True``
+        with a ``static_folder`` configured.
+    :param host_matching: set ``url_map.host_matching`` attribute.
+        Defaults to False.
+    :param subdomain_matching: consider the subdomain relative to
+        :data:`SERVER_NAME` when matching routes. Defaults to False.
     :param template_folder: the folder that contains the templates that should
                             be used by the application.  Defaults to
                             ``'templates'`` folder in the root path of the
@@ -1984,26 +1986,30 @@ class Flask(_PackageBoundObject):
         return rv
 
     def create_url_adapter(self, request):
-        """Creates a URL adapter for the given request.  The URL adapter
-        is created at a point where the request context is not yet set up
-        so the request is passed explicitly.
+        """Creates a URL adapter for the given request. The URL adapter
+        is created at a point where the request context is not yet set
+        up so the request is passed explicitly.
 
         .. versionadded:: 0.6
 
         .. versionchanged:: 0.9
            This can now also be called without a request object when the
            URL adapter is created for the application context.
+
+        .. versionchanged:: 1.0
+            :data:`SERVER_NAME` no longer implicitly enables subdomain
+            matching. Use :attr:`subdomain_matching` instead.
         """
         if request is not None:
-            rv = self.url_map.bind_to_environ(request.environ,
-                server_name=self.config['SERVER_NAME'])
-            # If subdomain matching is not enabled (which is the default
-            # we put back the default subdomain in all cases.  This really
-            # should be the default in Werkzeug but it currently does not
-            # have that feature.
-            if not self.subdomain_matching:
-                rv.subdomain = self.url_map.default_subdomain
-            return rv
+            # If subdomain matching is disabled (the default), use the
+            # default subdomain in all cases. This should be the default
+            # in Werkzeug but it currently does not have that feature.
+            subdomain = ((self.url_map.default_subdomain or None)
+                         if not self.subdomain_matching else None)
+            return self.url_map.bind_to_environ(
+                request.environ,
+                server_name=self.config['SERVER_NAME'],
+                subdomain=subdomain)
         # We need at the very least the server name to be set for this
         # to work.
         if self.config['SERVER_NAME'] is not None:

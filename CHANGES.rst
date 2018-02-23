@@ -139,8 +139,10 @@ unreleased
   attribute on the session cookie. (`#2607`_)
 - Added :meth:`~flask.Flask.test_cli_runner` to create a Click runner
   that can invoke Flask CLI commands for testing. (`#2636`_)
-- Subdomain matching is disabled by default now.  It can be turned on by
-  passing ``subdomain_matching=True`` to the Flask constructor.
+- Subdomain matching is disabled by default and setting
+  :data:`SERVER_NAME` does not implicily enable it. It can be enabled by
+  passing ``subdomain_matching=True`` to the ``Flask`` constructor.
+  (`#2635`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -183,6 +185,7 @@ unreleased
 .. _#2606: https://github.com/pallets/flask/pull/2606
 .. _#2607: https://github.com/pallets/flask/pull/2607
 .. _#2636: https://github.com/pallets/flask/pull/2636
+.. _#2635: https://github.com/pallets/flask/pull/2635
 
 
 Version 0.12.2
