@@ -1429,10 +1429,12 @@ def test_request_locals():
     assert not flask.g
 
 
-def test_test_app_proper_environ(app, client):
+def test_test_app_proper_environ():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config.update(
         SERVER_NAME='localhost.localdomain:5000'
     )
+    client = app.test_client()
 
     @app.route('/')
     def index():
@@ -1783,8 +1785,10 @@ def test_g_iteration_protocol(app_ctx):
     assert sorted(flask.g) == ['bar', 'foo']
 
 
-def test_subdomain_basic_support(app, client):
+def test_subdomain_basic_support():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config['SERVER_NAME'] = 'localhost.localdomain'
+    client = app.test_client()
 
     @app.route('/')
     def normal_index():
@@ -1801,7 +1805,9 @@ def test_subdomain_basic_support(app, client):
     assert rv.data == b'test index'
 
 
-def test_subdomain_matching(app, client):
+def test_subdomain_matching():
+    app = flask.Flask(__name__, subdomain_matching=True)
+    client = app.test_client()
     app.config['SERVER_NAME'] = 'localhost.localdomain'
 
     @app.route('/', subdomain='<user>')
@@ -1812,8 +1818,10 @@ def test_subdomain_matching(app, client):
     assert rv.data == b'index for mitsuhiko'
 
 
-def test_subdomain_matching_with_ports(app, client):
+def test_subdomain_matching_with_ports():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
+    client = app.test_client()
 
     @app.route('/', subdomain='<user>')
     def index(user):
@@ -1821,6 +1829,25 @@ def test_subdomain_matching_with_ports(app, client):
 
     rv = client.get('/', 'http://mitsuhiko.localhost.localdomain:3000/')
     assert rv.data == b'index for mitsuhiko'
+
+
+@pytest.mark.parametrize('matching', (False, True))
+def test_subdomain_matching_other_name(matching):
+    app = flask.Flask(__name__, subdomain_matching=matching)
+    app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
+    client = app.test_client()
+
+    @app.route('/')
+    def index():
+        return '', 204
+
+    # ip address can't match name
+    rv = client.get('/', 'http://127.0.0.1:3000/')
+    assert rv.status_code == 404 if matching else 204
+
+    # allow all subdomains if matching is disabled
+    rv = client.get('/', 'http://www.localhost.localdomain:3000/')
+    assert rv.status_code == 404 if matching else 204
 
 
 def test_multi_route_rules(app, client):

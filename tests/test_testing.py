@@ -114,9 +114,11 @@ def test_path_is_url(app):
     assert eb.path == '/'
 
 
-def test_blueprint_with_subdomain(app, client):
+def test_blueprint_with_subdomain():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config['SERVER_NAME'] = 'example.com:1234'
     app.config['APPLICATION_ROOT'] = '/foo'
+    client = app.test_client()
 
     bp = flask.Blueprint('company', __name__, subdomain='xxx')
 
@@ -304,8 +306,10 @@ def test_json_request_and_response(app, client):
         assert rv.get_json() == json_data
 
 
-def test_subdomain(app, client):
+def test_subdomain():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config['SERVER_NAME'] = 'example.com'
+    client = app.test_client()
 
     @app.route('/', subdomain='<company_id>')
     def view(company_id):
