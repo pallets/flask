@@ -9,8 +9,6 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
-import re
 from functools import update_wrapper
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
@@ -54,6 +52,9 @@ class BlueprintSetupState(object):
 
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
+        if url_prefix and url_prefix[-1] == '/':
+            url_prefix = url_prefix[:-1]
+
         self.url_prefix = url_prefix
 
         #: A dictionary with URL defaults that is added to each and every
@@ -68,7 +69,6 @@ class BlueprintSetupState(object):
         """
         if self.url_prefix:
             rule = self.url_prefix + rule
-            rule = re.sub('/+', '/', rule)
         options.setdefault('subdomain', self.subdomain)
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
