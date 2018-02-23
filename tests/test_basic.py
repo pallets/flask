@@ -1831,21 +1831,23 @@ def test_subdomain_matching_with_ports():
     assert rv.data == b'index for mitsuhiko'
 
 
-def test_subdomain_matching_behavior():
-    for matching in False, True:
-        app = flask.Flask(__name__, subdomain_matching=matching)
-        app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
-        client = app.test_client()
+@pytest.mark.parametrize('matching', (False, True))
+def test_subdomain_matching_other_name(matching):
+    app = flask.Flask(__name__, subdomain_matching=matching)
+    app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
+    client = app.test_client()
 
-        @app.route('/')
-        def index():
-            return 'matched without subdomain'
+    @app.route('/')
+    def index():
+        return '', 204
 
-        rv = client.get('/', 'http://127.0.0.1:3000/')
-        if matching:
-            assert rv.status_code == 404
-        else:
-            assert rv.data == b'matched without subdomain'
+    # ip address can't match name
+    rv = client.get('/', 'http://127.0.0.1:3000/')
+    assert rv.status_code == 404 if matching else 204
+
+    # allow all subdomains if matching is disabled
+    rv = client.get('/', 'http://www.localhost.localdomain:3000/')
+    assert rv.status_code == 404 if matching else 204
 
 
 def test_multi_route_rules(app, client):
