@@ -143,6 +143,8 @@ unreleased
   :data:`SERVER_NAME` does not implicily enable it. It can be enabled by
   passing ``subdomain_matching=True`` to the ``Flask`` constructor.
   (`#2635`_)
+- A single trailing slash is stripped from the blueprint ``url_prefix``
+  when it is registered with the app. (`#2629`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -186,6 +188,7 @@ unreleased
 .. _#2607: https://github.com/pallets/flask/pull/2607
 .. _#2636: https://github.com/pallets/flask/pull/2636
 .. _#2635: https://github.com/pallets/flask/pull/2635
+.. _#2629: https://github.com/pallets/flask/pull/2629
 
 
 Version 0.12.2
