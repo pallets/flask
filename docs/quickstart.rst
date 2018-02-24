@@ -228,7 +228,7 @@ Converter types:
 Unique URLs / Redirection Behavior
 ``````````````````````````````````
 
-Take these two rules::
+The following two rules differ in their use of a trailing slash. ::
 
     @app.route('/projects/')
     def projects():
@@ -238,20 +238,17 @@ Take these two rules::
     def about():
         return 'The about page'
 
-Though they look similar, they differ in their use of the trailing slash in
-the URL. In the first case, the canonical URL for the ``projects`` endpoint
-uses a trailing slash. It's similar to a folder in a file system; if you
-access the URL without a trailing slash, Flask redirects you to the
-canonical URL with the trailing slash.
+The canonical URL for the ``projects`` endpoint has a trailing slash.
+It's similar to a folder in a file system. If you access the URL without
+a trailing slash, Flask redirects you to the canonical URL with the
+trailing slash.
 
-In the second case, however, the URL definition lacks a trailing slash,
-like the pathname of a file on UNIX-like systems. Accessing the URL with a
-trailing slash produces a 404 “Not Found” error.
+The canonical URL for the ``about`` endpoint does not have a trailing
+slash. It's similar to the pathname of a file. Accessing the URL with a
+trailing slash produces a 404 "Not Found" error. This helps keep URLs
+unique for these resources, which helps search engines avoid indexing
+the same page twice.
 
-This behavior allows relative URLs to continue working even if the trailing
-slash is omitted, consistent with how Apache and other servers work. Also,
-the URLs will stay unique, which helps search engines avoid indexing the
-same page twice.
 
 .. _url-building:
 
@@ -271,7 +268,9 @@ Why would you want to build URLs using the URL reversing function
     manually change hard-coded URLs.
 3. URL building handles escaping of special characters and Unicode data
     transparently.
-4. If your application is placed outside the URL root, for example, in
+4. The generated paths are always absolute, avoiding unexpected behavior
+   of relative paths in browsers.
+5. If your application is placed outside the URL root, for example, in
     ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
     handles that for you.
 
