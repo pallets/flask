@@ -1308,7 +1308,7 @@ def test_url_generation(app, req_ctx):
 
     assert flask.url_for('hello', name='test x') == '/hello/test%20x'
     assert flask.url_for('hello', name='test x', _external=True) == \
-           'http://localhost/hello/test%20x'
+        'http://localhost/hello/test%20x'
 
 
 def test_build_error_handler(app):
@@ -1550,7 +1550,6 @@ def test_max_content_length(app, client):
 
 
 def test_url_processors(app, client):
-
     @app.url_defaults
     def add_language_code(endpoint, values):
         if flask.g.lang_code is not None and \
