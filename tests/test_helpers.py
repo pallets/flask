@@ -144,27 +144,27 @@ class TestJSON(object):
 
     def test_jsonify_dicts(self, app, client):
         """Test jsonify with dicts and kwargs unpacking."""
-        d = {'a': 0, 'b': 23, 'c': 3.14, 'd': 't',
+        data = {'a': 0, 'b': 23, 'c': 3.14, 'd': 't',
              'e': 'Hi', 'f': True, 'g': False,
              'h': ['test list', 10, False],
              'i': {'test': 'dict'}}
 
         @app.route('/kw')
         def return_kwargs():
-            return flask.jsonify(**d)
+            return flask.jsonify(**data)
 
         @app.route('/dict')
         def return_dict():
-            return flask.jsonify(d)
+            return flask.jsonify(data)
 
         for url in '/kw', '/dict':
             rv = client.get(url)
             assert rv.mimetype == 'application/json'
-            assert flask.json.loads(rv.data) == d
+            assert flask.json.loads(rv.data) == data
 
     def test_jsonify_arrays(self, app, client):
         """Test jsonify of lists and args unpacking."""
-        l = [
+        arr = [
             0, 42, 3.14, 't', 'hello', True, False,
             ['test list', 2, False],
             {'test': 'dict'}
@@ -172,16 +172,16 @@ class TestJSON(object):
 
         @app.route('/args_unpack')
         def return_args_unpack():
-            return flask.jsonify(*l)
+            return flask.jsonify(*arr)
 
         @app.route('/array')
         def return_array():
-            return flask.jsonify(l)
+            return flask.jsonify(arr)
 
         for url in '/args_unpack', '/array':
             rv = client.get(url)
             assert rv.mimetype == 'application/json'
-            assert flask.json.loads(rv.data) == l
+            assert flask.json.loads(rv.data) == arr
 
     def test_jsonify_date_types(self, app, client):
         """Test jsonify with datetime.date and datetime.datetime types."""
@@ -342,7 +342,7 @@ class TestJSON(object):
     def test_json_key_sorting(self, app, client):
         app.debug = True
 
-        assert app.config['JSON_SORT_KEYS'] == True
+        assert app.config['JSON_SORT_KEYS'] is True
         d = dict.fromkeys(range(20), 'foo')
 
         @app.route('/')
@@ -426,7 +426,7 @@ class TestSendfile(object):
         assert rv.direct_passthrough
         assert 'x-sendfile' in rv.headers
         assert rv.headers['x-sendfile'] == \
-               os.path.join(app.root_path, 'static/index.html')
+            os.path.join(app.root_path, 'static/index.html')
         assert rv.mimetype == 'text/html'
         rv.close()
 
@@ -686,7 +686,6 @@ class TestSendfile(object):
 
 class TestUrlFor(object):
     def test_url_for_with_anchor(self, app, req_ctx):
-
         @app.route('/')
         def index():
             return '42'
@@ -694,7 +693,6 @@ class TestUrlFor(object):
         assert flask.url_for('index', _anchor='x y') == '/#x%20y'
 
     def test_url_for_with_scheme(self, app, req_ctx):
-
         @app.route('/')
         def index():
             return '42'
@@ -702,7 +700,6 @@ class TestUrlFor(object):
         assert flask.url_for('index', _external=True, _scheme='https') == 'https://localhost/'
 
     def test_url_for_with_scheme_not_external(self, app, req_ctx):
-
         @app.route('/')
         def index():
             return '42'
@@ -713,7 +710,6 @@ class TestUrlFor(object):
                       _scheme='https')
 
     def test_url_for_with_alternating_schemes(self, app, req_ctx):
-
         @app.route('/')
         def index():
             return '42'
@@ -768,7 +764,6 @@ class TestNoImports(object):
 
 class TestStreaming(object):
     def test_streaming_with_context(self, app, client):
-
         @app.route('/')
         def index():
             def generate():
@@ -782,7 +777,6 @@ class TestStreaming(object):
         assert rv.data == b'Hello World!'
 
     def test_streaming_with_context_as_decorator(self, app, client):
-
         @app.route('/')
         def index():
             @flask.stream_with_context
@@ -882,6 +876,7 @@ class TestSafeJoin(object):
         for args in failing:
             with pytest.raises(NotFound):
                 print(flask.safe_join(*args))
+
 
 class TestHelpers(object):
 
