@@ -215,5 +215,5 @@ def test_clean_pop(app):
     except ZeroDivisionError:
         pass
 
-    assert called == ['conftest', 'TEARDOWN']
+    assert called == ['flask_test', 'TEARDOWN']
     assert not flask.current_app
