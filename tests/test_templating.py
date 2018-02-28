@@ -401,6 +401,7 @@ def test_templates_auto_reload_debug_run(app, monkeypatch):
 
 def test_template_loader_debugging(test_apps, monkeypatch):
     from blueprintapp import app
+    app.config['PROPAGATE_EXCEPTIONS'] = True
 
     called = []
 

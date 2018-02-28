@@ -338,6 +338,8 @@ def test_session_using_session_settings(app, client):
 
 
 def test_session_using_samesite_attribute(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+
     @app.route('/')
     def index():
         flask.session['testing'] = 42
@@ -1027,6 +1029,8 @@ def test_errorhandler_precedence(app, client):
 
 
 def test_trapping_of_bad_request_key_errors(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+
     @app.route('/fail')
     def fail():
         flask.request.form['missing_key']
@@ -1045,6 +1049,7 @@ def test_trapping_of_bad_request_key_errors(app, client):
 
 
 def test_trapping_of_all_http_exceptions(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.config['TRAP_HTTP_EXCEPTIONS'] = True
 
     @app.route('/fail')
@@ -1085,6 +1090,7 @@ def test_error_handler_after_processor_error(app, client):
 
 def test_enctype_debug_helper(app, client):
     from flask.debughelpers import DebugFilesKeyError
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.debug = True
 
     @app.route('/fail', methods=['POST'])
@@ -1180,6 +1186,7 @@ def test_response_types(app, client):
 
 def test_response_type_errors():
     app = flask.Flask(__name__)
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.testing = True
 
     @app.route('/none')
@@ -1671,6 +1678,7 @@ def test_before_first_request_functions_concurrent(app, client):
 
 
 def test_routing_redirect_debugging(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.debug = True
 
     @app.route('/foo/', methods=['GET', 'POST'])
@@ -1719,6 +1727,7 @@ def test_route_decorator_custom_endpoint(app, client):
 
 
 def test_preserve_only_once(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.debug = True
 
     @app.route('/fail')
@@ -1738,6 +1747,7 @@ def test_preserve_only_once(app, client):
 
 
 def test_preserve_remembers_exception(app, client):
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.debug = True
     errors = []
 
