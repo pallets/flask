@@ -129,7 +129,10 @@ The following configuration values are used internally by Flask:
     handlers. If not set, this is implicitly true if ``TESTING`` or ``DEBUG``
     is enabled.
 
-    Default: ``None``
+    Default: ``False``
+
+    .. versionchanged:: 1.0
+        Default value is ``False`` now.
 
 .. py:data:: PRESERVE_CONTEXT_ON_EXCEPTION
 

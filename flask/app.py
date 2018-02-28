@@ -280,7 +280,7 @@ class Flask(_PackageBoundObject):
         'ENV':                                  None,
         'DEBUG':                                None,
         'TESTING':                              False,
-        'PROPAGATE_EXCEPTIONS':                 None,
+        'PROPAGATE_EXCEPTIONS':                 False,
         'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
         'SECRET_KEY':                           None,
         'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
