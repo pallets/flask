@@ -692,6 +692,10 @@ Here are some examples::
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
         pass
+    
+    @app.route('/lang/<any(en, zh):lang_code>')  # or <any("en", "zh"):lang_code>
+    def set_language(lang_code):
+        pass
 
 An important detail to keep in mind is how Flask deals with trailing
 slashes.  The idea is to keep each URL unique so the following rules
