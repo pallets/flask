@@ -48,6 +48,7 @@ Links
 * Website: https://www.palletsprojects.com/p/flask/
 * Releases: https://pypi.org/project/Flask/
 * Code: https://github.com/pallets/flask
+* Documentation: http://flask.pocoo.org/docs/
 * Issue tracker: https://github.com/pallets/flask/issues
 * Test status:
 
