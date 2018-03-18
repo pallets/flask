@@ -89,6 +89,9 @@ class Blueprint(_PackageBoundObject):
     warn_on_modifications = False
     _got_registered_once = False
 
+    #: the session interface to use. If not set SessionInterface provided by application is used
+    session_interface = None
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
@@ -101,7 +104,6 @@ class Blueprint(_PackageBoundObject):
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.deferred_functions = []
-        self.session_interface = None
         if url_defaults is None:
             url_defaults = {}
         self.url_values_defaults = url_defaults
