@@ -331,7 +331,7 @@ class RequestContext(object):
         # stored on `g` instead of the appcontext).
         self.session = self.app.open_session(self.request)
         if self.session is None:
-            self.session = self.app.make_null_session()
+            self.session = self.app.make_null_session(self.request)
 
     def pop(self, exc=_sentinel):
         """Pops the request context and unbinds it by doing that.  This will

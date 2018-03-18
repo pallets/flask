@@ -919,7 +919,7 @@ class Flask(_PackageBoundObject):
         session_interface = self.resolve_session_interface(request.blueprint)
         return session_interface.open_session(self, request)
 
-    def save_session(self, session, response, blueprint=None):
+    def save_session(self, session, response, request=None):
         """Saves the session if it needs updates.  For the default
         implementation, check :meth:`open_session`.  Instead of overriding this
         method we recommend replacing the :class:`session_interface`.
@@ -929,16 +929,17 @@ class Flask(_PackageBoundObject):
                         object)
         :param response: an instance of :attr:`response_class`
         """
-        session_interface = self.resolve_session_interface(blueprint)
+        session_interface = self.resolve_session_interface(request.blueprint)
         return session_interface.save_session(self, session, response)
 
-    def make_null_session(self):
+    def make_null_session(self, request=None):
         """Creates a new instance of a missing session.  Instead of overriding
         this method we recommend replacing the :class:`session_interface`.
 
         .. versionadded:: 0.7
         """
-        return self.session_interface.make_null_session(self)
+        session_interface = self.resolve_session_interface(request.blueprint)
+        return session_interface.make_null_session(self)
 
     @setupmethod
     def register_blueprint(self, blueprint, **options):
@@ -1863,8 +1864,10 @@ class Flask(_PackageBoundObject):
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
             response = handler(response)
-        if not self.session_interface.is_null_session(ctx.session):
-            self.save_session(ctx.session, response)
+
+        session_interface = self.resolve_session_interface(bp)
+        if not session_interface.is_null_session(ctx.session):
+            self.save_session(ctx.session, response, ctx.request)
         return response
 
     def do_teardown_request(self, exc=_sentinel):
