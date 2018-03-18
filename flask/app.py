@@ -901,6 +901,12 @@ class Flask(_PackageBoundObject):
             from flask.testing import FlaskClient as cls
         return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
 
+    def resolve_session_interface(self, blueprint):
+        session_interface = None
+        if blueprint:
+            session_interface = self.blueprints[blueprint].session_interface
+        return session_interface or self.session_interface
+
     def open_session(self, request):
         """Creates or opens a new session.  Default implementation stores all
         session data in a signed cookie.  This requires that the
@@ -909,9 +915,11 @@ class Flask(_PackageBoundObject):
 
         :param request: an instance of :attr:`request_class`.
         """
-        return self.session_interface.open_session(self, request)
 
-    def save_session(self, session, response):
+        session_interface = self.resolve_session_interface(request.blueprint)
+        return session_interface.open_session(self, request)
+
+    def save_session(self, session, response, blueprint=None):
         """Saves the session if it needs updates.  For the default
         implementation, check :meth:`open_session`.  Instead of overriding this
         method we recommend replacing the :class:`session_interface`.
@@ -921,7 +929,8 @@ class Flask(_PackageBoundObject):
                         object)
         :param response: an instance of :attr:`response_class`
         """
-        return self.session_interface.save_session(self, session, response)
+        session_interface = self.resolve_session_interface(blueprint)
+        return session_interface.save_session(self, session, response)
 
     def make_null_session(self):
         """Creates a new instance of a missing session.  Instead of overriding
