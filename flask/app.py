@@ -901,10 +901,16 @@ class Flask(_PackageBoundObject):
             from flask.testing import FlaskClient as cls
         return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
 
-    def resolve_session_interface(self, blueprint):
+    def resolve_session_interface(self, request):
+        """Find a session interface for request. Current implementation looks in
+        current blueprint and app `session_interface` attributes
+
+        :param request: an instance of :attr:`request_class`.
+        """
+
         session_interface = None
-        if blueprint:
-            session_interface = self.blueprints[blueprint].session_interface
+        if request.blueprint:
+            session_interface = self.blueprints[request.blueprint].session_interface
         return session_interface or self.session_interface
 
     def open_session(self, request):
@@ -916,7 +922,7 @@ class Flask(_PackageBoundObject):
         :param request: an instance of :attr:`request_class`.
         """
 
-        session_interface = self.resolve_session_interface(request.blueprint)
+        session_interface = self.resolve_session_interface(request)
         return session_interface.open_session(self, request)
 
     def save_session(self, session, response, request=None):
@@ -928,8 +934,9 @@ class Flask(_PackageBoundObject):
                         :class:`~werkzeug.contrib.securecookie.SecureCookie`
                         object)
         :param response: an instance of :attr:`response_class`
+        :param request: an instance of :attr:`request_class`.
         """
-        session_interface = self.resolve_session_interface(request.blueprint)
+        session_interface = self.resolve_session_interface(request)
         return session_interface.save_session(self, session, response)
 
     def make_null_session(self, request=None):
@@ -937,8 +944,10 @@ class Flask(_PackageBoundObject):
         this method we recommend replacing the :class:`session_interface`.
 
         .. versionadded:: 0.7
+
+        :param request: an instance of :attr:`request_class`.
         """
-        session_interface = self.resolve_session_interface(request.blueprint)
+        session_interface = self.resolve_session_interface(request)
         return session_interface.make_null_session(self)
 
     @setupmethod
@@ -1865,7 +1874,7 @@ class Flask(_PackageBoundObject):
         for handler in funcs:
             response = handler(response)
 
-        session_interface = self.resolve_session_interface(bp)
+        session_interface = self.resolve_session_interface(ctx.request)
         if not session_interface.is_null_session(ctx.session):
             self.save_session(ctx.session, response, ctx.request)
         return response
