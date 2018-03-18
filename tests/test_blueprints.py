@@ -572,3 +572,49 @@ def test_add_template_test_with_name_and_template():
         return flask.render_template('template_test.html', value=False)
     rv = app.test_client().get('/')
     assert b'Success!' in rv.data
+
+
+def test_session_interface():
+    class MockSessionInterface(flask.sessions.SessionInterface):
+        opened = 0
+        saved = 0
+        null_checked = 0
+
+        def open_session(self, app, request):
+            self.opened += 1
+            return dict()
+
+        def save_session(self, app, session, response):
+            self.saved += 1
+
+        def is_null_session(self, obj):
+            self.null_checked += 1
+            return False
+
+    si = MockSessionInterface()
+    bp = flask.Blueprint('bp', __name__)
+    print(bp.session_interface)
+    bp.session_interface = si
+    app = flask.Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return "/", 200
+
+    @bp.route('/1')
+    def bp_index():
+        return "bp", 200
+
+    app.register_blueprint(bp, url_prefix='/bp')
+
+    client = app.test_client()
+    rv = client.get('/')
+    assert si.opened == 0
+    assert si.saved == 0
+    assert si.null_checked == 0
+
+    rv = client.get('/bp/1')
+    print(rv)
+    assert si.opened == 1
+    assert si.saved == 1
+    assert si.null_checked > 0

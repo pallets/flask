@@ -909,7 +909,7 @@ class Flask(_PackageBoundObject):
         """
 
         session_interface = None
-        if request.blueprint:
+        if request and request.blueprint:
             session_interface = self.blueprints[request.blueprint].session_interface
         return session_interface or self.session_interface
 
@@ -921,7 +921,6 @@ class Flask(_PackageBoundObject):
 
         :param request: an instance of :attr:`request_class`.
         """
-
         session_interface = self.resolve_session_interface(request)
         return session_interface.open_session(self, request)
 
