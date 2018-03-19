@@ -23,7 +23,7 @@ class JSONMixin(object):
     .. versionadded:: 1.0
     """
 
-    _cached_json = Ellipsis
+    _cached_json = (Ellipsis, Ellipsis)
 
     @property
     def is_json(self):
@@ -60,8 +60,8 @@ class JSONMixin(object):
         :param silent: Silence parsing errors and return ``None`` instead.
         :param cache: Store the parsed JSON to return for subsequent calls.
         """
-        if cache and self._cached_json is not Ellipsis:
-            return self._cached_json
+        if cache and self._cached_json[silent] is not Ellipsis:
+            return self._cached_json[silent]
 
         if not (force or self.is_json):
             return None
@@ -77,11 +77,17 @@ class JSONMixin(object):
         except ValueError as e:
             if silent:
                 rv = None
+                if cache:
+                    normal_rv, _ = self._cached_json
+                    self._cached_json = (normal_rv, rv)
             else:
                 rv = self.on_json_loading_failed(e)
-
-        if cache:
-            self._cached_json = rv
+                if cache:
+                    _, silent_rv = self._cached_json
+                    self._cached_json = (rv, silent_rv)
+        else:
+            if cache:
+                self._cached_json = (rv, rv)
 
         return rv
 
