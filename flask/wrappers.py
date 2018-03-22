@@ -5,9 +5,10 @@
 
     Implements the WSGI wrappers (request and response).
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 
@@ -122,7 +123,7 @@ class Request(RequestBase, JSONMixin):
     #: Though if the request's method was invalid for the URL rule,
     #: the valid list is available in ``routing_exception.valid_methods``
     #: instead (an attribute of the Werkzeug exception :exc:`~werkzeug.exceptions.MethodNotAllowed`)
-    #: because the request was never internally bound. 
+    #: because the request was never internally bound.
     #:
     #: .. versionadded:: 0.6
     url_rule = None

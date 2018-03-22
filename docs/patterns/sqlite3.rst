@@ -67,7 +67,7 @@ the application context by hand::
 Easy Querying
 -------------
 
-Now in each request handling function you can access `g.db` to get the
+Now in each request handling function you can access `get_db()` to get the
 current open database connection.  To simplify working with SQLite, a
 row factory function is useful.  It is executed for every result returned
 from the database to convert the result.  For instance, in order to get

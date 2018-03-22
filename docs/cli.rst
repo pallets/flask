@@ -117,21 +117,39 @@ context will be active, and the app instance will be imported. ::
 Use :meth:`~Flask.shell_context_processor` to add other automatic imports.
 
 
-Debug Mode
-----------
+Environments
+------------
 
-Set the :envvar:`FLASK_DEBUG` environment variable to override the
-application's :attr:`~Flask.debug` flag. The value ``1`` enables it, ``0``
-disables it. Forcing the debug flag on also enables the debugger and reloader
-when running the development server. ::
+.. versionadded:: 1.0
 
-    $ FLASK_DEBUG=1 flask run
+The environment in which the Flask app runs is set by the
+:envvar:`FLASK_ENV` environment variable. If not set it defaults to
+``production``. The other recognized environment is ``development``.
+Flask and extensions may choose to enable behaviors based on the
+environment.
+
+If the env is set to ``development``, the ``flask`` command will enable
+debug mode and ``flask run`` will enable the interactive debugger and
+reloader.
+
+::
+
+    $ FLASK_ENV=development flask run
      * Serving Flask app "hello"
-     * Forcing debug mode on
+     * Environment: development
+     * Debug mode: on
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
      * Restarting with inotify reloader
      * Debugger is active!
      * Debugger PIN: 223-456-919
+
+
+Debug Mode
+----------
+
+Debug mode will be enabled when :envvar:`FLASK_ENV` is ``development``,
+as described above. If you want to control debug mode separately, use
+:envvar:`FLASK_DEBUG`. The value ``1`` enables it, ``0`` disables it.
 
 
 .. _dotenv:
@@ -176,7 +194,7 @@ Unix Bash, :file:`venv/bin/activate`::
 
     export FLASK_APP=hello
 
-Windows CMD, :file:`venv\Scripts\activate.bat`::
+Windows CMD, :file:`venv\\Scripts\\activate.bat`::
 
     set FLASK_APP=hello
 
@@ -228,6 +246,9 @@ group. This is useful if you want to organize multiple related commands. ::
 ::
 
     flask user create demo
+
+See :ref:`testing-cli` for an overview of how to test your custom
+commands.
 
 
 Application Context
@@ -337,47 +358,67 @@ script is available. Note that you don't need to set ``FLASK_APP``. ::
     $ pip install -e .
     $ wiki run
 
+.. admonition:: Errors in Custom Scripts
+
+    When using a custom script, if you introduce an error in your
+    module-level code, the reloader will fail because it can no longer
+    load the entry point.
+
+    The ``flask`` command, being separate from your code, does not have
+    this issue and is recommended in most cases.
+
 .. _console script: https://packaging.python.org/tutorials/distributing-packages/#console-scripts
 
 
 PyCharm Integration
 -------------------
 
-The new Flask CLI features aren't yet fully integrated into the PyCharm IDE,
-so we have to do a few tweaks to get them working smoothly. These instructions
-should be similar for any other IDE you might want to use.
+Prior to PyCharm 2018.1, the Flask CLI features weren't yet fully
+integrated into PyCharm. We have to do a few tweaks to get them working
+smoothly. These instructions should be similar for any other IDE you
+might want to use.
 
-In PyCharm, with your project open, click on *Run* from the menu bar and go to
-*Edit Configurations*. You'll be greeted by a screen similar to this:
+In PyCharm, with your project open, click on *Run* from the menu bar and
+go to *Edit Configurations*. You'll be greeted by a screen similar to
+this:
 
 .. image:: _static/pycharm-runconfig.png
-   :align: center
-   :class: screenshot
-   :alt: screenshot of pycharm's run configuration settings
+    :align: center
+    :class: screenshot
+    :alt: screenshot of pycharm's run configuration settings
 
-There's quite a few options to change, but once we've done it for one command,
-we can easily copy the entire configuration and make a single tweak to give us
-access to other commands, including any custom ones you may implement yourself.
+There's quite a few options to change, but once we've done it for one
+command, we can easily copy the entire configuration and make a single
+tweak to give us access to other commands, including any custom ones you
+may implement yourself.
 
-For the *Script* input (**A**), navigate to your project's virtual environment.
-Within that folder, pick the ``flask`` executable which will reside in the
-``bin`` folder, or in the ``Scripts`` on Windows.
+Click the + (*Add New Configuration*) button and select *Python*. Give
+the configuration a good descriptive name such as "Run Flask Server".
+For the ``flask run`` command, check "Single instance only" since you
+can't run the server more than once at the same time.
 
-The *Script Parameter* field (**B**) is set to the CLI command you to execute.
-In this example we use ``run``, which will run the development server.
+Select *Module name* from the dropdown (**A**) then input ``flask``.
 
-You can skip this next step if you're using :ref:`dotenv`. We need to add an
-environment variable (**C**) to identify our application. Click on the browse
-button and add an entry with ``FLASK_APP`` on the left and the name of the
-Python file or package on the right (``app.py`` for example).
+The *Parameters* field (**B**) is set to the CLI command to execute
+(with any arguments). In this example we use ``run``, which will run
+the development server.
 
-Next we need to set the working directory (**D**) to be the same folder where
-our application file or package resides. PyCharm changed it to the directory
-with the ``flask`` executable when we selected it earlier, which is incorrect.
+You can skip this next step if you're using :ref:`dotenv`. We need to
+add an environment variable (**C**) to identify our application. Click
+on the browse button and add an entry with ``FLASK_APP`` on the left and
+the Python import or file on the right (``hello`` for example).
 
-Finally, untick the *PYTHONPATH* options (**E**) and give the configuration a
-good descriptive name, such as "Run Flask Server", and click *Apply*.
+Next we need to set the working directory (**D**) to be the folder where
+our application resides.
 
-Now that we have a configuration which runs ``flask run`` from within PyCharm,
-we can simply copy that configuration and alter the *Script* argument
+If you have installed your project as a package in your virtualenv, you
+may untick the *PYTHONPATH* options (**E**). This will more accurately
+match how you deploy the app later.
+
+Click *Apply* to save the configuration, or *OK* to save and close the
+window. Select the configuration in the main PyCharm window and click
+the play button next to it to run the server.
+
+Now that we have a configuration which runs ``flask run`` from within
+PyCharm, we can copy that configuration and alter the *Script* argument
 to run a different CLI command, e.g. ``flask shell``.

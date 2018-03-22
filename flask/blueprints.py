@@ -6,7 +6,7 @@
     Blueprints are the recommended way to implement larger or more
     pluggable applications in Flask 0.7 and later.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
 from functools import update_wrapper
@@ -52,6 +52,9 @@ class BlueprintSetupState(object):
 
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
+        if url_prefix and url_prefix[-1] == '/':
+            url_prefix = url_prefix[:-1]
+
         self.url_prefix = url_prefix
 
         #: A dictionary with URL defaults that is added to each and every

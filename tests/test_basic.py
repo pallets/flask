@@ -5,7 +5,7 @@
 
     The basic functionality.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
 
@@ -221,12 +221,21 @@ def test_endpoint_decorator(app, client):
 def test_session(app, client):
     @app.route('/set', methods=['POST'])
     def set():
+        assert not flask.session.accessed
+        assert not flask.session.modified
         flask.session['value'] = flask.request.form['value']
+        assert flask.session.accessed
+        assert flask.session.modified
         return 'value set'
 
     @app.route('/get')
     def get():
-        return flask.session['value']
+        assert not flask.session.accessed
+        assert not flask.session.modified
+        v = flask.session.get('value', 'None')
+        assert flask.session.accessed
+        assert not flask.session.modified
+        return v
 
     assert client.post('/set', data={'value': '42'}).data == b'value set'
     assert client.get('/get').data == b'42'
@@ -310,6 +319,7 @@ def test_session_using_session_settings(app, client):
         SESSION_COOKIE_DOMAIN='.example.com',
         SESSION_COOKIE_HTTPONLY=False,
         SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_SAMESITE='Lax',
         SESSION_COOKIE_PATH='/'
     )
 
@@ -324,6 +334,34 @@ def test_session_using_session_settings(app, client):
     assert 'path=/' in cookie
     assert 'secure' in cookie
     assert 'httponly' not in cookie
+    assert 'samesite' in cookie
+
+
+def test_session_using_samesite_attribute(app, client):
+    @app.route('/')
+    def index():
+        flask.session['testing'] = 42
+        return 'Hello World'
+
+    app.config.update(SESSION_COOKIE_SAMESITE='invalid')
+
+    with pytest.raises(ValueError):
+        client.get('/')
+
+    app.config.update(SESSION_COOKIE_SAMESITE=None)
+    rv = client.get('/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite' not in cookie
+
+    app.config.update(SESSION_COOKIE_SAMESITE='Strict')
+    rv = client.get('/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite=strict' in cookie
+
+    app.config.update(SESSION_COOKIE_SAMESITE='Lax')
+    rv = client.get('/')
+    cookie = rv.headers['set-cookie'].lower()
+    assert 'samesite=lax' in cookie
 
 
 def test_session_localhost_warning(recwarn, app, client):
@@ -1391,10 +1429,12 @@ def test_request_locals():
     assert not flask.g
 
 
-def test_test_app_proper_environ(app, client):
+def test_test_app_proper_environ():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config.update(
         SERVER_NAME='localhost.localdomain:5000'
     )
+    client = app.test_client()
 
     @app.route('/')
     def index():
@@ -1745,8 +1785,10 @@ def test_g_iteration_protocol(app_ctx):
     assert sorted(flask.g) == ['bar', 'foo']
 
 
-def test_subdomain_basic_support(app, client):
+def test_subdomain_basic_support():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config['SERVER_NAME'] = 'localhost.localdomain'
+    client = app.test_client()
 
     @app.route('/')
     def normal_index():
@@ -1763,7 +1805,9 @@ def test_subdomain_basic_support(app, client):
     assert rv.data == b'test index'
 
 
-def test_subdomain_matching(app, client):
+def test_subdomain_matching():
+    app = flask.Flask(__name__, subdomain_matching=True)
+    client = app.test_client()
     app.config['SERVER_NAME'] = 'localhost.localdomain'
 
     @app.route('/', subdomain='<user>')
@@ -1774,8 +1818,10 @@ def test_subdomain_matching(app, client):
     assert rv.data == b'index for mitsuhiko'
 
 
-def test_subdomain_matching_with_ports(app, client):
+def test_subdomain_matching_with_ports():
+    app = flask.Flask(__name__, subdomain_matching=True)
     app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
+    client = app.test_client()
 
     @app.route('/', subdomain='<user>')
     def index(user):
@@ -1783,6 +1829,25 @@ def test_subdomain_matching_with_ports(app, client):
 
     rv = client.get('/', 'http://mitsuhiko.localhost.localdomain:3000/')
     assert rv.data == b'index for mitsuhiko'
+
+
+@pytest.mark.parametrize('matching', (False, True))
+def test_subdomain_matching_other_name(matching):
+    app = flask.Flask(__name__, subdomain_matching=matching)
+    app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
+    client = app.test_client()
+
+    @app.route('/')
+    def index():
+        return '', 204
+
+    # ip address can't match name
+    rv = client.get('/', 'http://127.0.0.1:3000/')
+    assert rv.status_code == 404 if matching else 204
+
+    # allow all subdomains if matching is disabled
+    rv = client.get('/', 'http://www.localhost.localdomain:3000/')
+    assert rv.status_code == 404 if matching else 204
 
 
 def test_multi_route_rules(app, client):

@@ -159,19 +159,10 @@ The Extension Code
 Here's the contents of the `flask_sqlite3.py` for copy/paste::
 
     import sqlite3
-    from flask import current_app
-
-    # Find the stack on which we want to store the database connection.
-    # Starting with Flask 0.9, the _app_ctx_stack is the correct one,
-    # before that we need to use the _request_ctx_stack.
-    try:
-        from flask import _app_ctx_stack as stack
-    except ImportError:
-        from flask import _request_ctx_stack as stack
+    from flask import current_app, _app_ctx_stack
 
 
     class SQLite3(object):
-
         def __init__(self, app=None):
             self.app = app
             if app is not None:
@@ -179,24 +170,19 @@ Here's the contents of the `flask_sqlite3.py` for copy/paste::
 
         def init_app(self, app):
             app.config.setdefault('SQLITE3_DATABASE', ':memory:')
-            # Use the newstyle teardown_appcontext if it's available,
-            # otherwise fall back to the request context
-            if hasattr(app, 'teardown_appcontext'):
-                app.teardown_appcontext(self.teardown)
-            else:
-                app.teardown_request(self.teardown)
+            app.teardown_appcontext(self.teardown)
 
         def connect(self):
             return sqlite3.connect(current_app.config['SQLITE3_DATABASE'])
 
         def teardown(self, exception):
-            ctx = stack.top
+            ctx = _app_ctx_stack.top
             if hasattr(ctx, 'sqlite3_db'):
                 ctx.sqlite3_db.close()
 
         @property
         def connection(self):
-            ctx = stack.top
+            ctx = _app_ctx_stack.top
             if ctx is not None:
                 if not hasattr(ctx, 'sqlite3_db'):
                     ctx.sqlite3_db = self.connect()
@@ -212,9 +198,7 @@ So here's what these lines of code do:
     factory pattern for creating applications.  The ``init_app`` will set the
     configuration for the database, defaulting to an in memory database if
     no configuration is supplied.  In addition, the ``init_app`` method attaches
-    the ``teardown`` handler.  It will try to use the newstyle app context
-    handler and if it does not exist, falls back to the request context
-    one.
+    the ``teardown`` handler.
 3.  Next, we define a ``connect`` method that opens a database connection.
 4.  Finally, we add a ``connection`` property that on first access opens
     the database connection and stores it on the context.  This is also
@@ -224,9 +208,7 @@ So here's what these lines of code do:
     Note here that we're attaching our database connection to the top
     application context via ``_app_ctx_stack.top``. Extensions should use
     the top context for storing their own information with a sufficiently
-    complex name.  Note that we're falling back to the
-    ``_request_ctx_stack.top`` if the application is using an older
-    version of Flask that does not support it.
+    complex name.
 
 So why did we decide on a class-based approach here?  Because using our
 extension looks something like this::
@@ -245,9 +227,8 @@ You can then use the database from views like this::
         cur = db.connection.cursor()
         cur.execute(...)
 
-Likewise if you are outside of a request but you are using Flask 0.9 or
-later with the app context support, you can use the database in the same
-way::
+Likewise if you are outside of a request you can use the database by
+pushing an app context::
 
     with app.app_context():
         cur = db.connection.cursor()
@@ -291,34 +272,6 @@ teardown of a request, the ``sqlite3_db`` connection is closed.  By using
 this pattern, the *same* connection to the sqlite3 database is accessible
 to anything that needs it for the duration of the request.
 
-If the :data:`~flask._app_ctx_stack` does not exist because the user uses
-an old version of Flask, it is recommended to fall back to
-:data:`~flask._request_ctx_stack` which is bound to a request.
-
-Teardown Behavior
------------------
-
-*This is only relevant if you want to support Flask 0.6 and older*
-
-Due to the change in Flask 0.7 regarding functions that are run at the end
-of the request your extension will have to be extra careful there if it
-wants to continue to support older versions of Flask.  The following
-pattern is a good way to support both::
-
-    def close_connection(response):
-        ctx = _request_ctx_stack.top
-        ctx.sqlite3_db.close()
-        return response
-
-    if hasattr(app, 'teardown_request'):
-        app.teardown_request(close_connection)
-    else:
-        app.after_request(close_connection)
-
-Strictly speaking the above code is wrong, because teardown functions are
-passed the exception and typically don't return anything.  However because
-the return value is discarded this will just work assuming that the code
-in between does not touch the passed parameter.
 
 Learn from Others
 -----------------
@@ -383,26 +336,7 @@ extension to be approved you have to follow these guidelines:
     (``PackageName==dev``).
 9. The ``zip_safe`` flag in the setup script must be set to ``False``,
    even if the extension would be safe for zipping.
-10. An extension currently has to support Python 2.7, Python 3.3 and higher.
-
-
-
-Extension Import Transition
----------------------------
-
-In early versions of Flask we recommended using namespace packages for Flask
-extensions, of the form ``flaskext.foo``. This turned out to be problematic in
-practice because it meant that multiple ``flaskext`` packages coexist.
-Consequently we have recommended to name extensions ``flask_foo`` over
-``flaskext.foo`` for a long time.
-
-Flask 0.8 introduced a redirect import system as a compatibility aid for app
-developers: Importing ``flask.ext.foo`` would try ``flask_foo`` and
-``flaskext.foo`` in that order.
-
-As of Flask 0.11, most Flask extensions have transitioned to the new naming
-schema. The ``flask.ext.foo`` compatibility alias is still in Flask 0.11 but is
-now deprecated -- you should use ``flask_foo``.
+10. An extension currently has to support Python 3.4 and newer and 2.7.
 
 
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/

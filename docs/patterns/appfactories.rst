@@ -89,17 +89,19 @@ For more information about the design of extensions refer to :doc:`/extensiondev
 Using Applications
 ------------------
 
-To use such an application you have to create it in a separate file first,
-otherwise the :command:`flask` command won't be able to find it. Here's an
-example :file:`exampleapp.py` file that creates such an application::
+To run such an application, you can use the :command:`flask` command::
 
-    from yourapplication import create_app
-    app = create_app('/path/to/config.cfg')
-
-It can then be used with the :command:`flask` command::
-
-    export FLASK_APP=exampleapp
+    export FLASK_APP=myapp
     flask run
+    
+Flask will automatically detect the factory (``create_app`` or ``make_app``) 
+in ``myapp``. You can also pass arguments to the factory like this::
+
+    export FLASK_APP="myapp:create_app('dev')"
+    flask run
+    
+Then the ``create_app`` factory in ``myapp`` is called with the string
+``'dev'`` as the argument. See :doc:`/cli` for more detail.
 
 Factory Improvements
 --------------------

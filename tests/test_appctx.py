@@ -5,7 +5,7 @@
 
     Tests the application context.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
 
@@ -215,5 +215,5 @@ def test_clean_pop(app):
     except ZeroDivisionError:
         pass
 
-    assert called == ['conftest', 'TEARDOWN']
+    assert called == ['flask_test', 'TEARDOWN']
     assert not flask.current_app

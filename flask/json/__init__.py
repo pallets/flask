@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+flask.json
+~~~~~~~~~~
+
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
+"""
+
 import io
 import uuid
 from datetime import date, datetime
@@ -264,7 +272,7 @@ def jsonify(*args, **kwargs):
         data = args or kwargs
 
     return current_app.response_class(
-        (dumps(data, indent=indent, separators=separators), '\n'),
+        dumps(data, indent=indent, separators=separators) + '\n',
         mimetype=current_app.config['JSONIFY_MIMETYPE']
     )
 

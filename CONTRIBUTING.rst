@@ -109,8 +109,8 @@ depends on which part of Flask you're working on. Travis-CI will run the full
 suite when you submit your pull request.
 
 The full test suite takes a long time to run because it tests multiple
-combinations of Python and dependencies. You need to have Python 2.6, 2.7, 3.3,
-3.4, 3.5 3.6, and PyPy 2.7 installed to run all of the environments. Then run::
+combinations of Python and dependencies. You need to have Python 2.7, 3.4,
+3.5 3.6, and PyPy 2.7 installed to run all of the environments. Then run::
 
     tox
 
@@ -131,8 +131,22 @@ Read more about `coverage <https://coverage.readthedocs.io>`_.
 Running the full test suite with ``tox`` will combine the coverage reports
 from all runs.
 
-``make`` targets
-~~~~~~~~~~~~~~~~
+
+Building the docs
+~~~~~~~~~~~~~~~~~
+
+Build the docs in the ``docs`` directory using Sphinx::
+
+    cd docs
+    make html
+
+Open ``_build/html/index.html`` in your browser to view the docs.
+
+Read more about `Sphinx <http://www.sphinx-doc.org>`_.
+
+
+make targets
+~~~~~~~~~~~~
 
 Flask provides a ``Makefile`` with various shortcuts. They will ensure that
 all dependencies are installed.

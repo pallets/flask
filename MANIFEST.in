@@ -1,4 +1,4 @@
-include Makefile CHANGES LICENSE AUTHORS
+include Makefile CHANGES.rst LICENSE AUTHORS tox.ini
 
 graft artwork
 graft tests

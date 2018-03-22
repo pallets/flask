@@ -20,6 +20,7 @@ object.  This is the place where Flask itself puts certain configuration
 values and also where extensions can put their configuration values.  But
 this is also where you can have your own configuration.
 
+
 Configuration Basics
 --------------------
 
@@ -27,50 +28,92 @@ The :attr:`~flask.Flask.config` is actually a subclass of a dictionary and
 can be modified just like any dictionary::
 
     app = Flask(__name__)
-    app.config['DEBUG'] = True
+    app.config['TESTING'] = True
 
 Certain configuration values are also forwarded to the
 :attr:`~flask.Flask` object so you can read and write them from there::
 
-    app.debug = True
+    app.testing = True
 
 To update multiple keys at once you can use the :meth:`dict.update`
 method::
 
     app.config.update(
-        DEBUG=True,
+        TESTING=True,
         SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/'
     )
 
-.. admonition:: Debug Mode with the ``flask`` Script
 
-   If you use the :command:`flask` script to start a local development
-   server, to enable the debug mode, you need to export the ``FLASK_DEBUG``
-   environment variable before running the server::
+Environment and Debug Features
+------------------------------
 
-    $ export FLASK_DEBUG=1
+The :data:`ENV` and :data:`DEBUG` config values are special because they
+may behave inconsistently if changed after the app has begun setting up.
+In order to set the environment and debug mode reliably, Flask uses
+environment variables.
+
+The environment is used to indicate to Flask, extensions, and other
+programs, like Sentry, what context Flask is running in. It is
+controlled with the :envvar:`FLASK_ENV` environment variable and
+defaults to ``production``.
+
+Setting :envvar:`FLASK_ENV` to ``development`` will enable debug mode.
+``flask run`` will use the interactive debugger and reloader by default
+in debug mode. To control this separately from the environment, use the
+:envvar:`FLASK_DEBUG` flag.
+
+.. versionchanged:: 1.0
+    Added :envvar:`FLASK_ENV` to control the environment separately
+    from debug mode. The development environment enables debug mode.
+
+To switch Flask to the development environment and enable debug mode,
+set :envvar:`FLASK_ENV`::
+
+    $ export FLASK_ENV=development
     $ flask run
 
-   (On Windows you need to use ``set`` instead of ``export``).
+(On Windows, use ``set`` instead of ``export``.)
 
-   ``app.debug`` and ``app.config['DEBUG']`` are not compatible with
-   the :command:`flask` script. They only worked when using ``Flask.run()``
-   method.
+Using the environment variables as described above is recommended. While
+it is possible to set :data:`ENV` and :data:`DEBUG` in your config or
+code, this is strongly discouraged. They can't be read early by the
+``flask`` command, and some systems or extensions may have already
+configured themselves based on a previous value.
+
 
 Builtin Configuration Values
 ----------------------------
 
 The following configuration values are used internally by Flask:
 
+.. py:data:: ENV
+
+    What environment the app is running in. Flask and extensions may
+    enable behaviors based on the environment, such as enabling debug
+    mode. The :attr:`~flask.Flask.env` attribute maps to this config
+    key. This is set by the :envvar:`FLASK_ENV` environment variable and
+    may not behave as expected if set in code.
+
+    **Do not enable development when deploying in production.**
+
+    Default: ``'production'``
+
+    .. versionadded:: 1.0
+
 .. py:data:: DEBUG
 
-    Enable debug mode. When using the development server with ``flask run`` or
-    ``app.run``, an interactive debugger will be shown for unhanlded
-    exceptions, and the server will be reloaded when code changes.
+    Whether debug mode is enabled. When using ``flask run`` to start the
+    development server, an interactive debugger will be shown for
+    unhandled exceptions, and the server will be reloaded when code
+    changes. The :attr:`~flask.Flask.debug` attribute maps to this
+    config key. This is enabled when :data:`ENV` is ``'development'``
+    and is overridden by the ``FLASK_DEBUG`` environment variable. It
+    may not behave as expected if set in code.
 
-    **Do not enable debug mode in production.**
+    **Do not enable debug mode when deploying in production.**
 
-    Default: ``False``
+    Default: ``True`` if :data:`ENV` is ``'production'``, or ``False``
+    otherwise.
 
 .. py:data:: TESTING
 
@@ -104,7 +147,7 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
-.. py:data:: TRAP_BAD_REQUEST_ERRORS``
+.. py:data:: TRAP_BAD_REQUEST_ERRORS
 
     Trying to access a key that doesn't exist from request dicts like ``args``
     and ``form`` will return a 400 Bad Request error page. Enable this to treat
@@ -138,8 +181,8 @@ The following configuration values are used internally by Flask:
 .. py:data:: SESSION_COOKIE_DOMAIN
 
     The domain match rule that the session cookie will be valid for. If not
-    set, the cookie will be valid for all subdomains of ``SERVER_NAME``. If
-    ``False``, the cookie's domain will not be set.
+    set, the cookie will be valid for all subdomains of :data:`SERVER_NAME`.
+    If ``False``, the cookie's domain will not be set.
 
     Default: ``None``
 
@@ -164,6 +207,16 @@ The following configuration values are used internally by Flask:
     sense.
 
     Default: ``False``
+
+.. py:data:: SESSION_COOKIE_SAMESITE
+
+    Restrict how cookies are sent with requests from external sites. Can
+    be set to ``'Lax'`` (recommended) or ``'Strict'``.
+    See :ref:`security-cookie`.
+
+    Default: ``None``
+
+    .. versionadded:: 1.0
 
 .. py:data:: PERMANENT_SESSION_LIFETIME
 
@@ -204,13 +257,14 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: SERVER_NAME
 
-    Inform the application what host and port it is bound to. Required for
-    subdomain route matching support.
+    Inform the application what host and port it is bound to. Required
+    for subdomain route matching support.
 
     If set, will be used for the session cookie domain if
-    ``SESSION_COOKIE_DOMAIN`` is not set. Modern web browsers will not allow
-    setting cookies for domains without a dot. To use a domain locally,
-    add any names that should route to the app to your ``hosts`` file. ::
+    :data:`SESSION_COOKIE_DOMAIN` is not set. Modern web browsers will
+    not allow setting cookies for domains without a dot. To use a domain
+    locally, add any names that should route to the app to your
+    ``hosts`` file. ::
 
         127.0.0.1 localhost.dev
 
@@ -318,9 +372,15 @@ The following configuration values are used internally by Flask:
    ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
 
 .. versionchanged:: 1.0
-
     ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` were removed. See
     :ref:`logging` for information about configuration.
+
+    Added :data:`ENV` to reflect the :envvar:`FLASK_ENV` environment
+    variable.
+
+    Added :data:`SESSION_COOKIE_SAMESITE` to control the session
+    cookie's ``SameSite`` option.
+
 
 Configuring from Files
 ----------------------
@@ -588,4 +648,3 @@ Example usage for both::
     # or via open_instance_resource:
     with app.open_instance_resource('application.cfg') as f:
         config = f.read()
-

@@ -42,9 +42,9 @@ aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
 frequency thresholds.
 
-To use Sentry you need to install the `raven` client::
+To use Sentry you need to install the `raven` client with extra `flask` dependencies::
 
-    $ pip install raven
+    $ pip install raven[flask]
 
 And then add this to your Flask app::
 

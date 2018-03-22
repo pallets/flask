@@ -5,9 +5,10 @@
 
     This module provides class-based views inspired by the ones in Django.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 from .globals import request
 from ._compat import with_metaclass
 

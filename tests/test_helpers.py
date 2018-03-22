@@ -5,7 +5,7 @@
 
     Various helpers.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
 
@@ -21,7 +21,7 @@ from werkzeug.http import http_date, parse_cache_control_header, \
 
 import flask
 from flask._compat import StringIO, text_type
-from flask.helpers import get_debug_flag
+from flask.helpers import get_debug_flag, get_env
 
 
 def has_encoding(name):
@@ -506,7 +506,7 @@ class TestSendfile(object):
 
     @pytest.mark.skipif(
         not callable(getattr(Range, 'to_content_range_header', None)),
-        reason="not implement within werkzeug"
+        reason="not implemented within werkzeug"
     )
     def test_send_file_range_request(self, app, client):
         @app.route('/')
@@ -563,7 +563,32 @@ class TestSendfile(object):
         assert rv.status_code == 200
         rv.close()
 
+    @pytest.mark.skipif(
+        not callable(getattr(Range, 'to_content_range_header', None)),
+        reason="not implemented within werkzeug"
+    )
+    def test_send_file_range_request_xsendfile_invalid(self, app, client):
+        # https://github.com/pallets/flask/issues/2526
+        app.use_x_sendfile = True
+
+        @app.route('/')
+        def index():
+            return flask.send_file('static/index.html', conditional=True)
+
+        rv = client.get('/', headers={'Range': 'bytes=1000-'})
+        assert rv.status_code == 416
+        rv.close()
+
     def test_attachment(self, app, req_ctx):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            with open(os.path.join(app.root_path, 'static/index.html')) as f:
+                rv = flask.send_file(f, as_attachment=True,
+                                     attachment_filename='index.html')
+                value, options = \
+                    parse_options_header(rv.headers['Content-Disposition'])
+                assert value == 'attachment'
+                rv.close()
 
         with open(os.path.join(app.root_path, 'static/index.html')) as f:
             rv = flask.send_file(f, as_attachment=True,
@@ -861,7 +886,7 @@ class TestSafeJoin(object):
 class TestHelpers(object):
 
     @pytest.mark.parametrize('debug, expected_flag, expected_default_flag', [
-        ('', None, True),
+        ('', False, False),
         ('0', False, False),
         ('False', False, False),
         ('No', False, False),
@@ -873,7 +898,18 @@ class TestHelpers(object):
             assert get_debug_flag() is None
         else:
             assert get_debug_flag() == expected_flag
-        assert get_debug_flag(default=True) == expected_default_flag
+        assert get_debug_flag() == expected_default_flag
+
+    @pytest.mark.parametrize('env, ref_env, debug', [
+        ('', 'production', False),
+        ('production', 'production', False),
+        ('development', 'development', True),
+        ('other', 'other', False),
+    ])
+    def test_get_env(self, monkeypatch, env, ref_env, debug):
+        monkeypatch.setenv('FLASK_ENV', env)
+        assert get_debug_flag() == debug
+        assert get_env() == ref_env
 
     def test_make_response(self):
         app = flask.Flask(__name__)

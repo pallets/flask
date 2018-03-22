@@ -111,7 +111,7 @@ Set yourapplication.fcgi::
     #!/usr/bin/python
     #: optional path to your local python site-packages folder
     import sys
-    sys.path.insert(0, '<your_local_path>/lib/python2.6/site-packages')
+    sys.path.insert(0, '<your_local_path>/lib/python<your_python_version>/site-packages')
 
     from flup.server.fcgi import WSGIServer
     from yourapplication import app

@@ -5,7 +5,7 @@
 
     Implements various helpers.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
 
@@ -22,28 +22,18 @@ import unicodedata
 from werkzeug.routing import BuildError
 from functools import update_wrapper
 
-try:
-    from werkzeug.urls import url_quote
-except ImportError:
-    from urlparse import quote as url_quote
-
+from werkzeug.urls import url_quote
 from werkzeug.datastructures import Headers, Range
 from werkzeug.exceptions import BadRequest, NotFound, \
     RequestedRangeNotSatisfiable
 
-# this was moved in 0.7
-try:
-    from werkzeug.wsgi import wrap_file
-except ImportError:
-    from werkzeug.utils import wrap_file
-
+from werkzeug.wsgi import wrap_file
 from jinja2 import FileSystemLoader
 
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type
-
+from ._compat import string_types, text_type, PY2
 
 # sentinel
 _missing = object()
@@ -56,10 +46,25 @@ _os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
                     if sep not in (None, '/'))
 
 
-def get_debug_flag(default=None):
+def get_env():
+    """Get the environment the app is running in, indicated by the
+    :envvar:`FLASK_ENV` environment variable. The default is
+    ``'production'``.
+    """
+    return os.environ.get('FLASK_ENV') or 'production'
+
+
+def get_debug_flag():
+    """Get whether debug mode should be enabled for the app, indicated
+    by the :envvar:`FLASK_DEBUG` environment variable. The default is
+    ``True`` if :func:`.get_env` returns ``'development'``, or ``False``
+    otherwise.
+    """
     val = os.environ.get('FLASK_DEBUG')
+
     if not val:
-        return default
+        return get_env() == 'development'
+
     return val.lower() not in ('0', 'false', 'no')
 
 
@@ -603,17 +608,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                  'headers' % filename, stacklevel=2)
 
     if conditional:
-        if callable(getattr(Range, 'to_content_range_header', None)):
-            # Werkzeug supports Range Requests
-            # Remove this test when support for Werkzeug <0.12 is dropped
-            try:
-                rv = rv.make_conditional(request, accept_ranges=True,
-                                         complete_length=fsize)
-            except RequestedRangeNotSatisfiable:
+        try:
+            rv = rv.make_conditional(request, accept_ranges=True,
+                                     complete_length=fsize)
+        except RequestedRangeNotSatisfiable:
+            if file is not None:
                 file.close()
-                raise
-        else:
-            rv = rv.make_conditional(request)
+            raise
         # make sure we don't send x-sendfile for servers that
         # ignore the 304 status code for x-sendfile.
         if rv.status_code == 304:
@@ -1001,12 +1002,21 @@ def total_seconds(td):
 def is_ip(value):
     """Determine if the given string is an IP address.
 
+    Python 2 on Windows doesn't provide ``inet_pton``, so this only
+    checks IPv4 addresses in that environment.
+
     :param value: value to check
     :type value: str
 
     :return: True if string is an IP address
     :rtype: bool
     """
+    if PY2 and os.name == 'nt':
+        try:
+            socket.inet_aton(value)
+            return True
+        except socket.error:
+            return False
 
     for family in (socket.AF_INET, socket.AF_INET6):
         try:

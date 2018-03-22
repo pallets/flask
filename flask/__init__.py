@@ -6,7 +6,7 @@
     A microframework based on Werkzeug.  It's extensively documented
     and follows best practice patterns.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
 

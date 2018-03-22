@@ -3,17 +3,54 @@
     tests.conftest
     ~~~~~~~~~~~~~~
 
-    :copyright: (c) 2015 by the Flask Team, see AUTHORS for more details.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-import flask
+
 import gc
 import os
-import sys
 import pkgutil
-import pytest
+import sys
 import textwrap
+
+import pytest
+from _pytest import monkeypatch
+
+import flask
 from flask import Flask as _Flask
+
+
+@pytest.fixture(scope='session', autouse=True)
+def _standard_os_environ():
+    """Set up ``os.environ`` at the start of the test session to have
+    standard values. Returns a list of operations that is used by
+    :func:`._reset_os_environ` after each test.
+    """
+    mp = monkeypatch.MonkeyPatch()
+    out = (
+        (os.environ, 'FLASK_APP', monkeypatch.notset),
+        (os.environ, 'FLASK_ENV', monkeypatch.notset),
+        (os.environ, 'FLASK_DEBUG', monkeypatch.notset),
+        (os.environ, 'FLASK_RUN_FROM_CLI', monkeypatch.notset),
+        (os.environ, 'WERKZEUG_RUN_MAIN', monkeypatch.notset),
+    )
+
+    for _, key, value in out:
+        if value is monkeypatch.notset:
+            mp.delenv(key, False)
+        else:
+            mp.setenv(key, value)
+
+    yield out
+    mp.undo()
+
+
+@pytest.fixture(autouse=True)
+def _reset_os_environ(monkeypatch, _standard_os_environ):
+    """Reset ``os.environ`` to the standard environ after each test,
+    in case a test changed something without cleaning up.
+    """
+    monkeypatch._setitem.extend(_standard_os_environ)
 
 
 class Flask(_Flask):
@@ -23,7 +60,7 @@ class Flask(_Flask):
 
 @pytest.fixture
 def app():
-    app = Flask(__name__)
+    app = Flask('flask_test', root_path=os.path.dirname(__file__))
     return app
 
 

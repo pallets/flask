@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+tests.test_logging
+~~~~~~~~~~~~~~~~~~~
+
+:copyright: © 2010 by the Pallets team.
+:license: BSD, see LICENSE for more details.
+"""
+
 import logging
 import sys
 
@@ -9,13 +18,17 @@ from flask.logging import default_handler, has_level_handler, \
 
 
 @pytest.fixture(autouse=True)
-def reset_logging(monkeypatch):
+def reset_logging(pytestconfig):
     root_handlers = logging.root.handlers[:]
+    logging.root.handlers = []
     root_level = logging.root.level
 
     logger = logging.getLogger('flask.app')
     logger.handlers = []
     logger.setLevel(logging.NOTSET)
+
+    logging_plugin = pytestconfig.pluginmanager.unregister(
+        name='logging-plugin')
 
     yield
 
@@ -24,6 +37,9 @@ def reset_logging(monkeypatch):
 
     logger.handlers = []
     logger.setLevel(logging.NOTSET)
+
+    if logging_plugin:
+        pytestconfig.pluginmanager.register(logging_plugin, 'logging-plugin')
 
 
 def test_logger(app):

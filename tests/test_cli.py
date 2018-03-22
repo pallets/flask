@@ -3,18 +3,19 @@
     tests.test_cli
     ~~~~~~~~~~~~~~
 
-    :copyright: (c) 2016 by the Flask Team, see AUTHORS for more details.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-#
-# This file was part of Flask-CLI and was modified under the terms its license,
-# the Revised BSD License.
-# Copyright (C) 2015 CERN.
-#
+
+# This file was part of Flask-CLI and was modified under the terms of
+# its Revised BSD License. Copyright © 2015 CERN.
+
 from __future__ import absolute_import
 
 import os
+import ssl
 import sys
+import types
 from functools import partial
 
 import click
@@ -23,27 +24,16 @@ from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
 from flask import Flask, current_app
-from flask.cli import AppGroup, FlaskGroup, NoAppException, ScriptInfo, dotenv, \
-    find_best_app, get_version, load_dotenv, locate_app, prepare_import, \
+from flask.cli import (
+    AppGroup, FlaskGroup, NoAppException, ScriptInfo, dotenv, find_best_app,
+    get_version, load_dotenv, locate_app, prepare_import, run_command,
     with_appcontext
+)
 
 cwd = os.getcwd()
 test_path = os.path.abspath(os.path.join(
     os.path.dirname(__file__), 'test_apps'
 ))
-
-
-@pytest.fixture(autouse=True)
-def manage_os_environ(monkeypatch):
-    # can't use monkeypatch.delitem since we don't want to restore a value
-    os.environ.pop('FLASK_APP', None)
-    os.environ.pop('FLASK_DEBUG', None)
-    # use monkeypatch internals to force-delete environ keys
-    monkeypatch._setitem.extend((
-        (os.environ, 'FLASK_APP', notset),
-        (os.environ, 'FLASK_DEBUG', notset),
-        (os.environ, 'FLASK_RUN_FROM_CLI', notset),
-    ))
 
 
 @pytest.fixture
@@ -143,6 +133,13 @@ def test_find_best_app(test_apps):
             return Flask('appname2')
 
     pytest.raises(NoAppException, find_best_app, script_info, Module)
+
+    class Module:
+        @staticmethod
+        def create_app():
+            raise TypeError('bad bad factory!')
+
+    pytest.raises(TypeError, find_best_app, script_info, Module)
 
 
 @pytest.mark.parametrize('value,path,result', (
@@ -475,3 +472,62 @@ def test_dotenv_optional(monkeypatch):
     monkeypatch.chdir(test_path)
     load_dotenv()
     assert 'FOO' not in os.environ
+
+
+def test_run_cert_path():
+    # no key
+    with pytest.raises(click.BadParameter):
+        run_command.make_context('run', ['--cert', __file__])
+
+    # no cert
+    with pytest.raises(click.BadParameter):
+        run_command.make_context('run', ['--key', __file__])
+
+    ctx = run_command.make_context(
+        'run', ['--cert', __file__, '--key', __file__])
+    assert ctx.params['cert'] == (__file__, __file__)
+
+
+def test_run_cert_adhoc(monkeypatch):
+    monkeypatch.setitem(sys.modules, 'OpenSSL', None)
+
+    # pyOpenSSL not installed
+    with pytest.raises(click.BadParameter):
+        run_command.make_context('run', ['--cert', 'adhoc'])
+
+    # pyOpenSSL installed
+    monkeypatch.setitem(sys.modules, 'OpenSSL', types.ModuleType('OpenSSL'))
+    ctx = run_command.make_context('run', ['--cert', 'adhoc'])
+    assert ctx.params['cert'] == 'adhoc'
+
+    # no key with adhoc
+    with pytest.raises(click.BadParameter):
+        run_command.make_context('run', ['--cert', 'adhoc', '--key', __file__])
+
+
+def test_run_cert_import(monkeypatch):
+    monkeypatch.setitem(sys.modules, 'not_here', None)
+
+    # ImportError
+    with pytest.raises(click.BadParameter):
+        run_command.make_context('run', ['--cert', 'not_here'])
+
+    # not an SSLContext
+    if sys.version_info >= (2, 7):
+        with pytest.raises(click.BadParameter):
+            run_command.make_context('run', ['--cert', 'flask'])
+
+    # SSLContext
+    if sys.version_info < (2, 7):
+        ssl_context = object()
+    else:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+
+    monkeypatch.setitem(sys.modules, 'ssl_context', ssl_context)
+    ctx = run_command.make_context('run', ['--cert', 'ssl_context'])
+    assert ctx.params['cert'] is ssl_context
+
+    # no --key with SSLContext
+    with pytest.raises(click.BadParameter):
+        run_command.make_context(
+            'run', ['--cert', 'ssl_context', '--key', __file__])

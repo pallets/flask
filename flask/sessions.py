@@ -5,11 +5,13 @@
 
     Implements cookie based sessions based on itsdangerous.
 
-    :copyright: (c) 2015 by Armin Ronacher.
+    :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+
 import hashlib
 import warnings
+from collections import MutableMapping
 from datetime import datetime
 
 from itsdangerous import BadSignature, URLSafeTimedSerializer
@@ -19,43 +21,55 @@ from flask.helpers import is_ip, total_seconds
 from flask.json.tag import TaggedJSONSerializer
 
 
-class SessionMixin(object):
-    """Expands a basic dictionary with an accessors that are expected
-    by Flask extensions and users for the session.
-    """
+class SessionMixin(MutableMapping):
+    """Expands a basic dictionary with session attributes."""
 
-    def _get_permanent(self):
+    @property
+    def permanent(self):
+        """This reflects the ``'_permanent'`` key in the dict."""
         return self.get('_permanent', False)
 
-    def _set_permanent(self, value):
+    @permanent.setter
+    def permanent(self, value):
         self['_permanent'] = bool(value)
 
-    #: this reflects the ``'_permanent'`` key in the dict.
-    permanent = property(_get_permanent, _set_permanent)
-    del _get_permanent, _set_permanent
-
-    #: some session backends can tell you if a session is new, but that is
-    #: not necessarily guaranteed.  Use with caution.  The default mixin
-    #: implementation just hardcodes ``False`` in.
+    #: Some implementations can detect whether a session is newly
+    #: created, but that is not guaranteed. Use with caution. The mixin
+    # default is hard-coded ``False``.
     new = False
 
-    #: for some backends this will always be ``True``, but some backends will
-    #: default this to false and detect changes in the dictionary for as
-    #: long as changes do not happen on mutable structures in the session.
-    #: The default mixin implementation just hardcodes ``True`` in.
+    #: Some implementations can detect changes to the session and set
+    #: this when that happens. The mixin default is hard coded to
+    #: ``True``.
     modified = True
 
-    #: the accessed variable indicates whether or not the session object has
-    #: been accessed in that request. This allows flask to append a `Vary:
-    #: Cookie` header to the response if the session is being accessed. This
-    #: allows caching proxy servers, like Varnish, to use both the URL and the
-    #: session cookie as keys when caching pages, preventing multiple users
-    #: from being served the same cache.
+    #: Some implementations can detect when session data is read or
+    #: written and set this when that happens. The mixin default is hard
+    #: coded to ``True``.
     accessed = True
 
 
 class SecureCookieSession(CallbackDict, SessionMixin):
-    """Base class for sessions based on signed cookies."""
+    """Base class for sessions based on signed cookies.
+
+    This session backend will set the :attr:`modified` and
+    :attr:`accessed` attributes. It cannot reliably track whether a
+    session is new (vs. empty), so :attr:`new` remains hard coded to
+    ``False``.
+    """
+
+    #: When data is changed, this is set to ``True``. Only the session
+    #: dictionary itself is tracked; if the session contains mutable
+    #: data (for example a nested dict) then this must be set to
+    #: ``True`` manually when modifying that data. The session cookie
+    #: will only be written to the response if this is ``True``.
+    modified = False
+
+    #: When data is read or written, this is set to ``True``. Used by
+    # :class:`.SecureCookieSessionInterface` to add a ``Vary: Cookie``
+    #: header, which allows caching proxies to cache different pages for
+    #: different users.
+    accessed = False
 
     def __init__(self, initial=None):
         def on_update(self):
@@ -63,8 +77,6 @@ class SecureCookieSession(CallbackDict, SessionMixin):
             self.accessed = True
 
         super(SecureCookieSession, self).__init__(initial, on_update)
-        self.modified = False
-        self.accessed = False
 
     def __getitem__(self, key):
         self.accessed = True
@@ -238,6 +250,13 @@ class SessionInterface(object):
         """
         return app.config['SESSION_COOKIE_SECURE']
 
+    def get_cookie_samesite(self, app):
+        """Return ``'Strict'`` or ``'Lax'`` if the cookie should use the
+        ``SameSite`` attribute. This currently just returns the value of
+        the :data:`SESSION_COOKIE_SAMESITE` setting.
+        """
+        return app.config['SESSION_COOKIE_SAMESITE']
+
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
         or ``None`` if the session is linked to the browser session.  The
@@ -351,6 +370,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
+        samesite = self.get_cookie_samesite(app)
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
         response.set_cookie(
@@ -360,5 +380,6 @@ class SecureCookieSessionInterface(SessionInterface):
             httponly=httponly,
             domain=domain,
             path=path,
-            secure=secure
+            secure=secure,
+            samesite=samesite
         )
