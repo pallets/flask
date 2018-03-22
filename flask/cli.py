@@ -585,6 +585,11 @@ def load_dotenv(path=None):
     """
 
     if dotenv is None:
+        if path or os.path.exists('.env') or os.path.exists('.flaskenv'):
+            click.secho(
+                ' * Tip: There are .env files present.'
+                ' Do "pip install python-dotenv" to use them',
+                fg='yellow')
         return
 
     if path is not None:
