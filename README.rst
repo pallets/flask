@@ -36,10 +36,11 @@ A Simple Example
     def hello():
         return 'Hello, World!'
 
-.. code-block:: none
+.. code-block:: text
 
     $ FLASK_APP=hello.py flask run
-     * Running on http://localhost:5000/
+     * Serving Flask app "hello"
+     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 
 Links
