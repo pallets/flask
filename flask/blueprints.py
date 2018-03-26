@@ -114,6 +114,10 @@ class Blueprint(_PackageBoundObject):
     #: resources contained in the package.
     root_path = None
 
+    #: List of subblueprints, and order
+    blueprints = {}
+    _blueprint_order = []
+
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
@@ -185,6 +189,42 @@ class Blueprint(_PackageBoundObject):
         for deferred in self.deferred_functions:
             deferred(state)
 
+    def register_blueprint(self, blueprint, **options):
+        """
+        Register a :class:`~flask.Blueprint` on the blueprint. Keyword
+        arguments passed to this method will override the defaults set
+        on the blueprint to be registered.
+        Calls the blueprint's :meth:`~flask.Blueprint.register` method
+        after recording the blueprint in the blueprints :attr:`blueprints`.
+
+        :param blueprint: The blueprint to register.
+        :param url_prefix: Blueprint routes will be prefixed with this.
+        :param subdomain: Blueprint routes will match on this subdomain.
+        :param url_defaults: Blueprint routes will use these default values
+            for view arguments.
+        :param options: Additional keyword arguments are passed to
+            :class:`~flask.blueprints.BlueprintSetupState`. They can be
+            accessed in :meth:`~flask.Blueprint.record` callbacks.
+
+        .. versionadded:: 0.13
+        """
+        first_registration = False
+
+        if blueprint.name in self.blueprints:
+            assert self.blueprints[blueprint.name] is blueprint, (
+                'A name collision ocurred between blueprints %r and %r. Both'
+                ' share the same name "%s". Blueprints that are created on the'
+                ' fly need unique names.' % (
+                    blueprint, self.blueprints[blueprint.name], blueprint.name
+                )
+            )
+        else:
+            self.blueprints[blueprint.name] = blueprint
+            self._blueprint_order.append(blueprint)
+            first_registration = True
+
+        blueprint.register(self, options, first_registration)
+
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
         :func:`url_for` function is prefixed with the name of the blueprint.
@@ -199,8 +239,6 @@ class Blueprint(_PackageBoundObject):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the blueprint.
         """
-        if endpoint:
-            assert '.' not in endpoint, "Blueprint endpoints should not contain dots"
         if view_func:
             assert '.' not in view_func.__name__, "Blueprint view function name should not contain dots"
         self.record(lambda s:
