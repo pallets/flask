@@ -332,66 +332,6 @@ def test_route_decorator_custom_endpoint(app, client):
     assert client.get('/py/bar/foo').data == b'bp.bar_foo'
 
 
-def test_route_decorator_custom_endpoint_with_dots(app, client):
-    bp = flask.Blueprint('bp', __name__)
-
-    @bp.route('/foo')
-    def foo():
-        return flask.request.endpoint
-
-    try:
-        @bp.route('/bar', endpoint='bar.bar')
-        def foo_bar():
-            return flask.request.endpoint
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError('expected AssertionError not raised')
-
-    try:
-        @bp.route('/bar/123', endpoint='bar.123')
-        def foo_bar_foo():
-            return flask.request.endpoint
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError('expected AssertionError not raised')
-
-    def foo_foo_foo():
-        pass
-
-    pytest.raises(
-        AssertionError,
-        lambda: bp.add_url_rule(
-            '/bar/123', endpoint='bar.123', view_func=foo_foo_foo
-        )
-    )
-
-    pytest.raises(
-        AssertionError,
-        bp.route('/bar/123', endpoint='bar.123'),
-        lambda: None
-    )
-
-    foo_foo_foo.__name__ = 'bar.123'
-
-    pytest.raises(
-        AssertionError,
-        lambda: bp.add_url_rule(
-            '/bar/123', view_func=foo_foo_foo
-        )
-    )
-
-    app.register_blueprint(bp, url_prefix='/py')
-
-    assert client.get('/py/foo').data == b'bp.foo'
-    # The rule's didn't actually made it through
-    rv = client.get('/py/bar')
-    assert rv.status_code == 404
-    rv = client.get('/py/bar/123')
-    assert rv.status_code == 404
-
-
 def test_endpoint_decorator(app, client):
     from werkzeug.routing import Rule
     app.url_map.add(Rule('/foo', endpoint='bar'))
@@ -840,3 +780,17 @@ def test_app_url_processors(app, client):
 
     assert client.get('/de/').data == b'/de/about'
     assert client.get('/de/about').data == b'/de/'
+
+def test_sub_blueprint_route_register(app, client):
+    bp2 = flask.Blueprint('bp2', __name__)
+    @bp2.route('/test')
+    def bp2_test():
+        return "BP2"
+
+    bp1 = flask.Blueprint('bp1', __name__)
+    bp1.register_blueprint(bp2, url_prefix='/bp2')
+    app.register_blueprint(bp1, url_prefix='/bp1')
+    found_route = False
+    for rule in app.url_map.iter_rules():
+        if rule.rule == '/bp1/bp2/test': found_route = True
+    assert found_route is True, "Did not find route /bp1/bp2/test in app!"
