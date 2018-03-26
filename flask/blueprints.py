@@ -205,6 +205,7 @@ class Blueprint(_PackageBoundObject):
         :param options: Additional keyword arguments are passed to
             :class:`~flask.blueprints.BlueprintSetupState`. They can be
             accessed in :meth:`~flask.Blueprint.record` callbacks.
+        .. versionadded:: 0.13
         """
         first_registration = False
 
