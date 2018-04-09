@@ -162,7 +162,5 @@ explanation of the little bit of code above:
    argument.  Note that we can use the `$SCRIPT_ROOT` variable here that
    we set earlier.
 
-If you don't get the whole picture, download the `sourcecode
-for this example
-<https://github.com/pallets/flask/tree/master/examples/jqueryexample>`_
-from GitHub.
+If you don't get the whole picture, download the :gh:`sourcecode
+for this example <examples/jqueryexample>`.

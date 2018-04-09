@@ -28,10 +28,7 @@ The Application
 
 First, we need an application to test; we will use the application from
 the :ref:`tutorial`.  If you don't have that application yet, get the
-source code from `the examples`_.
-
-.. _the examples:
-   https://github.com/pallets/flask/tree/master/examples/flaskr/
+source code from :gh:`the examples <examples/tutorial>`.
 
 The Testing Skeleton
 --------------------
