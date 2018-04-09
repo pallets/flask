@@ -1,224 +1,267 @@
+.. currentmodule:: flask
+
 .. _request-context:
 
 The Request Context
 ===================
 
-This document describes the behavior in Flask 0.7 which is mostly in line
-with the old behavior but has some small, subtle differences.
+The request context keeps track of the request-level data during a
+request. Rather than passing the request object to each function that
+runs during a request, the :data:`request` and :data:`session` proxies
+are accessed instead.
 
-It is recommended that you read the :ref:`app-context` chapter first.
+This is similar to the :doc:`/appcontext`, which keeps track of the
+application-level data independent of a request. A corresponding
+application context is pushed when a request context is pushed.
 
-Diving into Context Locals
---------------------------
 
-Say you have a utility function that returns the URL the user should be
-redirected to.  Imagine it would always redirect to the URL's ``next``
-parameter or the HTTP referrer or the index page::
+Purpose of the Context
+----------------------
 
-    from flask import request, url_for
+When the :class:`Flask` application handles a request, it creates a
+:class:`Request` object based on the environment it received from the
+WSGI server. Because a *worker* (thread, process, or coroutine depending
+on the server) handles only one request at a time, the request data can
+be considered global to that worker during that request. Flask uses the
+term *context local* for this.
 
-    def redirect_url():
-        return request.args.get('next') or \
-               request.referrer or \
-               url_for('index')
+Flask automatically *pushes* a request context when handling a request.
+View functions, error handlers, and other functions that run during a
+request will have access to the :data:`request` proxy, which points to
+the request object for the current request.
 
-As you can see, it accesses the request object.  If you try to run this
-from a plain Python shell, this is the exception you will see:
 
->>> redirect_url()
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-AttributeError: 'NoneType' object has no attribute 'request'
+Lifetime of the Context
+-----------------------
 
-That makes a lot of sense because we currently do not have a request we
-could access.  So we have to make a request and bind it to the current
-context.  The :attr:`~flask.Flask.test_request_context` method can create
-us a :class:`~flask.ctx.RequestContext`:
+When a Flask application begins handling a request, it pushes a request
+context, which also pushes an :doc:`/appcontext`. When the request ends
+it pops the request context then the application context.
 
->>> ctx = app.test_request_context('/?next=http://example.com/')
+The context is unique to each thread (or other worker type).
+:data:`request` cannot be passed to another thread, the other thread
+will have a different context stack and will not know about the request
+the parent thread was pointing to.
 
-This context can be used in two ways.  Either with the ``with`` statement
-or by calling the :meth:`~flask.ctx.RequestContext.push` and
-:meth:`~flask.ctx.RequestContext.pop` methods:
+Context locals are implemented in Werkzeug. See :doc:`werkzeug:local`
+for more information on how this works internally.
 
->>> ctx.push()
 
-From that point onwards you can work with the request object:
+Manually Push a Context
+-----------------------
 
->>> redirect_url()
-u'http://example.com/'
+If you try to access :data:`request`, or anything that uses it, outside
+a request context, you'll get this error message:
 
-Until you call `pop`:
+.. code-block:: pytb
 
->>> ctx.pop()
+    RuntimeError: Working outside of request context.
 
-Because the request context is internally maintained as a stack you can
-push and pop multiple times.  This is very handy to implement things like
-internal redirects.
+    This typically means that you attempted to use functionality that
+    needed an active HTTP request. Consult the documentation on testing
+    for information about how to avoid this problem.
 
-For more information of how to utilize the request context from the
-interactive Python shell, head over to the :ref:`shell` chapter.
+This should typically only happen when testing code that expects an
+active request. One option is to use the
+:meth:`test client <Flask.test_client>` to simulate a full request. Or
+you can use :meth:`~Flask.test_request_context` in a ``with`` block, and
+everything that runs in the block will have access to :data:`request`,
+populated with your test data. ::
+
+    def generate_report(year):
+        format = request.args.get('format')
+        ...
+
+    with app.test_request_context(
+            '/make_report/2017', data={'format': 'short'}):
+        generate_report()
+
+If you see that error somewhere else in your code not related to
+testing, it most likely indicates that you should move that code into a
+view function.
+
+For information on how to use the request context from the interactive
+Python shell, see :doc:`/shell`.
+
 
 How the Context Works
 ---------------------
 
-If you look into how the Flask WSGI application internally works, you will
-find a piece of code that looks very much like this::
+The :meth:`Flask.wsgi_app` method is called to handle each request. It
+manages the contexts during the request. Internally, the request and
+application contexts work as stacks, :data:`_request_ctx_stack` and
+:data:`_app_ctx_stack`. When contexts are pushed onto the stack, the
+proxies that depend on them are available and point at information from
+the top context on the stack.
 
-    def wsgi_app(self, environ):
-        with self.request_context(environ):
-            try:
-                response = self.full_dispatch_request()
-            except Exception as e:
-                response = self.make_response(self.handle_exception(e))
-            return response(environ, start_response)
+When the request starts, a :class:`~ctx.RequestContext` is created and
+pushed, which creates and pushes an :class:`~ctx.AppContext` first if
+a context for that application is not already the top context. While
+these contexts are pushed, the :data:`current_app`, :data:`g`,
+:data:`request`, and :data:`session` proxies are available to the
+original thread handling the request.
 
-The method :meth:`~Flask.request_context` returns a new
-:class:`~flask.ctx.RequestContext` object and uses it in combination with
-the ``with`` statement to bind the context.  Everything that is called from
-the same thread from this point onwards until the end of the ``with``
-statement will have access to the request globals (:data:`flask.request`
-and others).
+Because the contexts are stacks, other contexts may be pushed to change
+the proxies during a request. While this is not a common pattern, it
+can be used in advanced applications to, for example, do internal
+redirects or chain different applications together.
 
-The request context internally works like a stack: The topmost level on
-the stack is the current active request.
-:meth:`~flask.ctx.RequestContext.push` adds the context to the stack on
-the very top, :meth:`~flask.ctx.RequestContext.pop` removes it from the
-stack again.  On popping the application's
-:func:`~flask.Flask.teardown_request` functions are also executed.
+After the request is dispatched and a response is generated and sent,
+the request context is popped, which then pops the application context.
+Immediately before they are popped, the :meth:`~Flask.teardown_request`
+and :meth:`~Flask.teardown_appcontext` functions are are executed. These
+execute even if an unhandled exception occurred during dispatch.
 
-Another thing of note is that the request context will automatically also
-create an :ref:`application context <app-context>` when it's pushed and
-there is no application context for that application so far.
 
 .. _callbacks-and-errors:
 
 Callbacks and Errors
 --------------------
 
-What happens if an error occurs in Flask during request processing?  This
-particular behavior changed in 0.7 because we wanted to make it easier to
-understand what is actually happening.  The new behavior is quite simple:
+Flask dispatches a request in multiple stages which can affect the
+request, response, and how errors are handled. The contexts are active
+during all of these stages.
 
-1.  Before each request, :meth:`~flask.Flask.before_request` functions are
-    executed.  If one of these functions return a response, the other
-    functions are no longer called.  In any case however the return value
-    is treated as a replacement for the view's return value.
+A :class:`Blueprint` can add handlers for these events that are specific
+to the blueprint. The handlers for a blueprint will run if the blueprint
+owns the route that matches the request.
 
-2.  If the :meth:`~flask.Flask.before_request` functions did not return a
-    response, the regular request handling kicks in and the view function
-    that was matched has the chance to return a response.
+#.  Before each request, :meth:`~Flask.before_request` functions are
+    called. If one of these functions return a value, the other
+    functions are skipped. The return value is treated as the response
+    and the view function is not called.
 
-3.  The return value of the view is then converted into an actual response
-    object and handed over to the :meth:`~flask.Flask.after_request`
-    functions which have the chance to replace it or modify it in place.
+#.  If the :meth:`~Flask.before_request` functions did not return a
+    response, the view function for the matched route is called and
+    returns a response.
 
-4.  At the end of the request the :meth:`~flask.Flask.teardown_request`
-    functions are executed.  This always happens, even in case of an
-    unhandled exception down the road or if a before-request handler was
-    not executed yet or at all (for example in test environments sometimes
-    you might want to not execute before-request callbacks).
+#.  The return value of the view is converted into an actual response
+    object and passed to the :meth:`~Flask.after_request`
+    functions. Each function returns a modified or new response object.
 
-Now what happens on errors?  If you are not in debug mode and an exception is not    
-caught, the 500 internal server handler is called.  In debug mode   
-however the exception is not further processed and bubbles up to the WSGI 
-server.  That way things like the interactive debugger can provide helpful
-debug information.
+#.  After the response is returned, the contexts are popped, which calls
+    the :meth:`~Flask.teardown_request` and
+    :meth:`~Flask.teardown_appcontext` functions. These functions are
+    called even if an unhandled exception was raised at any point above.
 
-An important change in 0.7 is that the internal server error is now no
-longer post processed by the after request callbacks and after request
-callbacks are no longer guaranteed to be executed.  This way the internal
-dispatching code looks cleaner and is easier to customize and understand.
+If an exception is raised before the teardown functions, Flask tries to
+match it with an :meth:`~Flask.errorhandler` function to handle the
+exception and return a response. If no error handler is found, or the
+handler itself raises an exception, Flask returns a generic
+``500 Internal Server Error`` response. The teardown functions are still
+called, and are passed the exception object.
 
-The new teardown functions are supposed to be used as a replacement for
-things that absolutely need to happen at the end of request.
+If debug mode is enabled, unhandled exceptions are not converted to a
+``500`` response and instead are propagated to the WSGI server. This
+allows the development server to present the interactive debugger with
+the traceback.
+
 
 Teardown Callbacks
-------------------
+~~~~~~~~~~~~~~~~~~
 
-The teardown callbacks are special callbacks in that they are executed at
-a different point.  Strictly speaking they are independent of the actual
-request handling as they are bound to the lifecycle of the
-:class:`~flask.ctx.RequestContext` object.  When the request context is
-popped, the :meth:`~flask.Flask.teardown_request` functions are called.
+The teardown callbacks are independent of the request dispatch, and are
+instead called by the contexts when they are popped. The functions are
+called even if there is an unhandled exception during dispatch, and for
+manually pushed contexts. This means there is no guarantee that any
+other parts of the request dispatch have run first. Be sure to write
+these functions in a way that does not depend on other callbacks and
+will not fail.
 
-This is important to know if the life of the request context is prolonged
-by using the test client in a with statement or when using the request
-context from the command line::
+During testing, it can be useful to defer popping the contexts after the
+request ends, so that their data can be accessed in the test function.
+Using the :meth:`~Flask.test_client` as a ``with`` block to preserve the
+contexts until the with block exits.
 
-    with app.test_client() as client:
-        resp = client.get('/foo')
-        # the teardown functions are still not called at that point
-        # even though the response ended and you have the response
-        # object in your hand
+.. code-block:: python
 
-    # only when the code reaches this point the teardown functions
-    # are called.  Alternatively the same thing happens if another
-    # request was triggered from the test client
+    from flask import Flask, request
 
-It's easy to see the behavior from the command line:
+    app = Flask(__name__)
 
->>> app = Flask(__name__)
->>> @app.teardown_request
-... def teardown_request(exception=None):
-...     print 'this runs after request'
-...
->>> ctx = app.test_request_context()
->>> ctx.push()
->>> ctx.pop()
-this runs after request
->>>
+    @app.route('/')
+    def hello():
+        print('during view')
+        return 'Hello, World!'
 
-Keep in mind that teardown callbacks are always executed, even if
-before-request callbacks were not executed yet but an exception happened.
-Certain parts of the test system might also temporarily create a request
-context without calling the before-request handlers.  Make sure to write
-your teardown-request handlers in a way that they will never fail.
+    @app.teardown_request
+    def show_teardown(exception):
+        print('after with block')
+
+    with app.test_request_context():
+        print('during with block')
+
+    # teardown functions are called after the context with block exits
+
+    with app.test_client():
+        client.get('/')
+        # the contexts are not popped even though the request ended
+        print(request.path)
+
+    # the contexts are popped and teardown functions are called after
+    # the client with block exists
+
+
+Signals
+~~~~~~~
+
+If :data:`~signals.signals_available` is true, the following signals are
+sent:
+
+#.  :data:`request_started` is sent before the
+    :meth:`~Flask.before_request` functions are called.
+
+#.  :data:`request_finished` is sent after the
+    :meth:`~Flask.after_request` functions are called.
+
+#.  :data:`got_request_exception` is sent when an exception begins to
+    be handled, but before an :meth:`~Flask.errorhandler` is looked up or
+    called.
+
+#.  :data:`request_tearing_down` is sent after the
+    :meth:`~Flask.teardown_request` functions are called.
+
+
+Context Preservation on Error
+-----------------------------
+
+At the end of a request, the request context is popped and all data
+associated with it is destroyed. If an error occurs during development,
+it is useful to delay destroying the data for debugging purposes.
+
+When the development server is running in development mode (the
+``FLASK_ENV`` environment variable is set to ``'development'``), the
+error and data will be preserved and shown in the interactive debugger.
+
+This behavior can be controlled with the
+:data:`PRESERVE_CONTEXT_ON_EXCEPTION` config. As described above, it
+defaults to ``True`` in the development environment.
+
+Do not enable :data:`PRESERVE_CONTEXT_ON_EXCEPTION` in production, as it
+will cause your application to leak memory on exceptions.
+
 
 .. _notes-on-proxies:
 
 Notes On Proxies
 ----------------
 
-Some of the objects provided by Flask are proxies to other objects.  The
-reason behind this is that these proxies are shared between threads and
-they have to dispatch to the actual object bound to a thread behind the
-scenes as necessary.
+Some of the objects provided by Flask are proxies to other objects. The
+proxies are accessed in the same way for each worker thread, but
+point to the unique object bound to each worker behind the scenes as
+described on this page.
 
 Most of the time you don't have to care about that, but there are some
 exceptions where it is good to know that this object is an actual proxy:
 
--   The proxy objects do not fake their inherited types, so if you want to
-    perform actual instance checks, you have to do that on the instance
-    that is being proxied (see `_get_current_object` below).
--   if the object reference is important (so for example for sending
-    :ref:`signals`)
+-   The proxy objects cannot fake their type as the actual object types.
+    If you want to perform instance checks, you have to do that on the
+    object being proxied.
+-   If the specific object reference is important, for example for
+    sending :ref:`signals` or passing data to a background thread.
 
-If you need to get access to the underlying object that is proxied, you
-can use the :meth:`~werkzeug.local.LocalProxy._get_current_object` method::
+If you need to access the underlying object that is proxied, use the
+:meth:`~werkzeug.local.LocalProxy._get_current_object` method::
 
     app = current_app._get_current_object()
     my_signal.send(app)
-
-Context Preservation on Error
------------------------------
-
-If an error occurs or not, at the end of the request the request context
-is popped and all data associated with it is destroyed.  During
-development however that can be problematic as you might want to have the
-information around for a longer time in case an exception occurred.  In
-Flask 0.6 and earlier in debug mode, if an exception occurred, the
-request context was not popped so that the interactive debugger can still
-provide you with important information.
-
-Starting with Flask 0.7 you have finer control over that behavior by
-setting the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.  By
-default it's linked to the setting of ``DEBUG``.  If the application is in
-debug mode the context is preserved. If debug mode is set to off, the context
-is not preserved.
-
-Do not force activate ``PRESERVE_CONTEXT_ON_EXCEPTION`` if debug mode is set to off
-as it will cause your application to leak memory on exceptions. However,
-it can be useful during development to get the same error preserving
-behavior as debug  mode when attempting to debug an error that
-only occurs under production settings.

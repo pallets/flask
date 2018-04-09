@@ -2106,15 +2106,25 @@ class Flask(_PackageBoundObject):
         return response
 
     def do_teardown_request(self, exc=_sentinel):
-        """Called after the actual request dispatching and will
-        call every as :meth:`teardown_request` decorated function.  This is
-        not actually called by the :class:`Flask` object itself but is always
-        triggered when the request context is popped.  That way we have a
-        tighter control over certain resources under testing environments.
+        """Called after the request is dispatched and the response is
+        returned, right before the request context is popped.
+
+        This calls all functions decorated with
+        :meth:`teardown_request`, and :meth:`Blueprint.teardown_request`
+        if a blueprint handled the request. Finally, the
+        :data:`request_tearing_down` signal is sent.
+
+        This is called by
+        :meth:`RequestContext.pop() <flask.ctx.RequestContext.pop>`,
+        which may be delayed during testing to maintain access to
+        resources.
+
+        :param exc: An unhandled exception raised while dispatching the
+            request. Detected from the current exception information if
+            not passed. Passed to each teardown function.
 
         .. versionchanged:: 0.9
-           Added the `exc` argument.  Previously this was always using the
-           current exception information.
+            Added the ``exc`` argument.
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
@@ -2127,9 +2137,17 @@ class Flask(_PackageBoundObject):
         request_tearing_down.send(self, exc=exc)
 
     def do_teardown_appcontext(self, exc=_sentinel):
-        """Called when an application context is popped.  This works pretty
-        much the same as :meth:`do_teardown_request` but for the application
-        context.
+        """Called right before the application context is popped.
+
+        When handling a request, the application context is popped
+        after the request context. See :meth:`do_teardown_request`.
+
+        This calls all functions decorated with
+        :meth:`teardown_appcontext`. Then the
+        :data:`appcontext_tearing_down` signal is sent.
+
+        This is called by
+        :meth:`AppContext.pop() <flask.ctx.AppContext.pop>`.
 
         .. versionadded:: 0.9
         """
@@ -2140,62 +2158,89 @@ class Flask(_PackageBoundObject):
         appcontext_tearing_down.send(self, exc=exc)
 
     def app_context(self):
-        """Binds the application only.  For as long as the application is bound
-        to the current context the :data:`flask.current_app` points to that
-        application.  An application context is automatically created when a
-        request context is pushed if necessary.
+        """Create an :class:`~flask.ctx.AppContext`. Use as a ``with``
+        block to push the context, which will make :data:`current_app`
+        point at this application.
 
-        Example usage::
+        An application context is automatically pushed by
+        :meth:`RequestContext.push() <flask.ctx.RequestContext.push>`
+        when handling a request, and when running a CLI command. Use
+        this to manually create a context outside of these situations.
+
+        ::
 
             with app.app_context():
-                ...
+                init_db()
+
+        See :doc:`/appcontext`.
 
         .. versionadded:: 0.9
         """
         return AppContext(self)
 
     def request_context(self, environ):
-        """Creates a :class:`~flask.ctx.RequestContext` from the given
-        environment and binds it to the current context.  This must be used in
-        combination with the ``with`` statement because the request is only bound
-        to the current context for the duration of the ``with`` block.
+        """Create a :class:`~flask.ctx.RequestContext` representing a
+        WSGI environment. Use a ``with`` block to push the context,
+        which will make :data:`request` point at this request.
 
-        Example usage::
+        See :doc:`/reqcontext`.
 
-            with app.request_context(environ):
-                do_something_with(request)
-
-        The object returned can also be used without the ``with`` statement
-        which is useful for working in the shell.  The example above is
-        doing exactly the same as this code::
-
-            ctx = app.request_context(environ)
-            ctx.push()
-            try:
-                do_something_with(request)
-            finally:
-                ctx.pop()
-
-        .. versionchanged:: 0.3
-           Added support for non-with statement usage and ``with`` statement
-           is now passed the ctx object.
+        Typically you should not call this from your own code. A request
+        context is automatically pushed by the :meth:`wsgi_app` when
+        handling a request. Use :meth:`test_request_context` to create
+        an environment and context instead of this method.
 
         :param environ: a WSGI environment
         """
         return RequestContext(self, environ)
 
     def test_request_context(self, *args, **kwargs):
-        """Creates a :class:`~flask.ctx.RequestContext` from the given values
-        (see :class:`werkzeug.test.EnvironBuilder` for more information, this
-        function accepts the same arguments plus two additional).
+        """Create a :class:`~flask.ctx.RequestContext` for a WSGI
+        environment created from the given values. This is mostly useful
+        during testing, where you may want to run a function that uses
+        request data without dispatching a full request.
 
-        Additional arguments (only if ``base_url`` is not specified):
+        See :doc:`/reqcontext`.
 
-        :param subdomain: subdomain to use for route matching
-        :param url_scheme: scheme for the request, default
-            ``PREFERRED_URL_SCHEME`` or ``http``.
+        Use a ``with`` block to push the context, which will make
+        :data:`request` point at the request for the created
+        environment. ::
+
+            with test_request_context(...):
+                generate_report()
+
+        When using the shell, it may be easier to push and pop the
+        context manually to avoid indentation. ::
+
+            ctx = app.test_request_context(...)
+            ctx.push()
+            ...
+            ctx.pop()
+
+        Takes the same arguments as Werkzeug's
+        :class:`~werkzeug.test.EnvironBuilder`, with some defaults from
+        the application. See the linked Werkzeug docs for most of the
+        available arguments. Flask-specific behavior is listed here.
+
+        :param path: URL path being requested.
+        :param base_url: Base URL where the app is being served, which
+            ``path`` is relative to. If not given, built from
+            :data:`PREFERRED_URL_SCHEME`, ``subdomain``,
+            :data:`SERVER_NAME`, and :data:`APPLICATION_ROOT`.
+        :param subdomain: Subdomain name to append to
+            :data:`SERVER_NAME`.
+        :param url_scheme: Scheme to use instead of
+            :data:`PREFERRED_URL_SCHEME`.
+        :param data: The request body, either as a string or a dict of
+            form keys and values.
+        :param json: If given, this is serialized as JSON and passed as
+            ``data``. Also defaults ``content_type`` to
+            ``application/json``.
+        :param args: other positional arguments passed to
+            :class:`~werkzeug.test.EnvironBuilder`.
+        :param kwargs: other keyword arguments passed to
+            :class:`~werkzeug.test.EnvironBuilder`.
         """
-
         from flask.testing import make_test_environ_builder
 
         builder = make_test_environ_builder(self, *args, **kwargs)
@@ -2206,9 +2251,9 @@ class Flask(_PackageBoundObject):
             builder.close()
 
     def wsgi_app(self, environ, start_response):
-        """The actual WSGI application.  This is not implemented in
-        `__call__` so that middlewares can be applied without losing a
-        reference to the class.  So instead of doing this::
+        """The actual WSGI application. This is not implemented in
+        :meth:`__call__` so that middlewares can be applied without
+        losing a reference to the app object. Instead of doing this::
 
             app = MyMiddleware(app)
 
@@ -2220,15 +2265,15 @@ class Flask(_PackageBoundObject):
         can continue to call methods on it.
 
         .. versionchanged:: 0.7
-           The behavior of the before and after request callbacks was changed
-           under error conditions and a new callback was added that will
-           always execute at the end of the request, independent on if an
-           error occurred or not.  See :ref:`callbacks-and-errors`.
+            Teardown events for the request and app contexts are called
+            even if an unhandled error occurs. Other events may not be
+            called depending on when an error occurs during dispatch.
+            See :ref:`callbacks-and-errors`.
 
-        :param environ: a WSGI environment
-        :param start_response: a callable accepting a status code,
-                               a list of headers and an optional
-                               exception context to start the response
+        :param environ: A WSGI environment.
+        :param start_response: A callable accepting a status code,
+            a list of headers, and an optional exception context to
+            start the response.
         """
         ctx = self.request_context(environ)
         error = None
@@ -2249,7 +2294,9 @@ class Flask(_PackageBoundObject):
             ctx.auto_pop(error)
 
     def __call__(self, environ, start_response):
-        """Shortcut for :attr:`wsgi_app`."""
+        """The WSGI server calls the Flask application object as the
+        WSGI application. This calls :meth:`wsgi_app` which can be
+        wrapped to applying middleware."""
         return self.wsgi_app(environ, start_response)
 
     def __repr__(self):

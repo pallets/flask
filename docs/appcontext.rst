@@ -1,144 +1,159 @@
+.. currentmodule:: flask
+
 .. _app-context:
 
 The Application Context
 =======================
 
-.. versionadded:: 0.9
+The application context keeps track of the application-level data during
+a request, CLI command, or other activity. Rather than passing the
+application around to each function, the :data:`current_app` and
+:data:`g` proxies are accessed instead.
 
-One of the design ideas behind Flask is that there are at least two
-different “states” in which code is executed:
+This is similar to the :doc:`/reqcontext`, which keeps track of
+request-level data during a request. A corresponding application context
+is pushed when a request context is pushed.
 
-1.  The application setup state, in which the application implicitly is
-on the module level.
+Purpose of the Context
+----------------------
 
-    This state starts when the :class:`Flask` object is instantiated, and
-    it implicitly ends when the first request comes in.  While the
-    application is in this state, a few assumptions are true:
+The :class:`Flask` application object has attributes, such as
+:attr:`~Flask.config`, that are useful to access within views and
+:doc:`CLI commands </cli>`. However, importing the ``app`` instance
+within the modules in your project is prone to circular import issues.
+When using the :doc:`app factory pattern </patterns/appfactories>` or
+writing reusable :doc:`blueprints </blueprints>` or
+:doc:`extensions </extensions>` there won't be an ``app`` instance to
+import at all.
 
-    -   the programmer can modify the application object safely.
-    -   no request handling happened so far
-    -   you have to have a reference to the application object in order to
-        modify it, there is no magic proxy that can give you a reference to
-        the application object you're currently creating or modifying.
+Flask solves this issue with the *application context*. Rather than
+referring to an ``app`` directly, you use the the :data:`current_app`
+proxy, which points to the application handling the current activity.
 
-2.  In contrast, in the request handling state, a couple of other rules
-exist:
+Flask automatically *pushes* an application context when handling a
+request. View functions, error handlers, and other functions that run
+during a request will have access to :data:`current_app`.
 
-    -   while a request is active, the context local objects
-        (:data:`flask.request` and others) point to the current request.
-    -   any code can get hold of these objects at any time.
+Flask will also automatically push an app context when running CLI
+commands registered with :attr:`Flask.cli` using ``@app.cli.command()``.
 
-3.  There is also a third state somewhere in between 'module-level' and
-'request-handling':
 
-    Sometimes you are dealing with an application in a way that is similar to
-    how you interact with applications during request handling, but without
-    there being an active request.  Consider, for instance, that you're
-    sitting in an interactive Python shell and interacting with the
-    application, or a command line application.
+Lifetime of the Context
+-----------------------
 
-The application context is what powers the :data:`~flask.current_app`
-context local.
+The application context is created and destroyed as necessary. When a
+Flask application begins handling a request, it pushes an application
+context and a :doc:`request context </reqcontext>`. When the request
+ends it pops the request context then the application context.
+Typically, an application context will have the same lifetime as a
+request.
 
-Purpose of the Application Context
-----------------------------------
+See :doc:`/reqcontext` for more information about how the contexts work
+and the full lifecycle of a request.
 
-The main reason for the application's context existence is that in the
-past a bunch of functionality was attached to the request context for lack
-of a better solution.  Since one of the pillars of Flask's design is that
-you can have more than one application in the same Python process.
 
-So how does the code find the “right” application?  In the past we
-recommended passing applications around explicitly, but that caused issues
-with libraries that were not designed with that in mind.
+Manually Push a Context
+-----------------------
 
-A common workaround for that problem was to use the
-:data:`~flask.current_app` proxy later on, which was bound to the current
-request's application reference.  Since creating such a request context is
-an unnecessarily expensive operation in case there is no request around,
-the application context was introduced.
+If you try to access :data:`current_app`, or anything that uses it,
+outside an application context, you'll get this error message:
 
-Creating an Application Context
--------------------------------
-
-There are two ways to make an application context.  The first one is
-implicit: whenever a request context is pushed, an application context
-will be created alongside if this is necessary.  As a result, you can
-ignore the existence of the application context unless you need it.
-
-The second way is the explicit way using the
-:meth:`~flask.Flask.app_context` method::
-
-    from flask import Flask, current_app
-
-    app = Flask(__name__)
-    with app.app_context():
-        # within this block, current_app points to app.
-        print current_app.name
-
-The application context is also used by the :func:`~flask.url_for`
-function in case a ``SERVER_NAME`` was configured.  This allows you to
-generate URLs even in the absence of a request.
-
-If no request context has been pushed and an application context has
-not been explicitly set, a ``RuntimeError`` will be raised. ::
+.. code-block:: pytb
 
     RuntimeError: Working outside of application context.
 
-Locality of the Context
------------------------
+    This typically means that you attempted to use functionality that
+    needed to interface with the current application object in some way.
+    To solve this, set up an application context with app.app_context().
 
-The application context is created and destroyed as necessary.  It never
-moves between threads and it will not be shared between requests.  As such
-it is the perfect place to store database connection information and other
-things.  The internal stack object is called :data:`flask._app_ctx_stack`.
-Extensions are free to store additional information on the topmost level,
-assuming they pick a sufficiently unique name and should put their
-information there, instead of on the :data:`flask.g` object which is reserved
-for user code.
+If you see that error while configuring your application, such as when
+initializing an extension, you can push a context manually since you
+have direct access to the ``app``. Use :meth:`~Flask.app_context` in a
+``with`` block, and everything that runs in the block will have access
+to :data:`current_app`. ::
 
-For more information about that, see :ref:`extension-dev`.
+    def create_app():
+        app = Flask(__name__)
 
-Context Usage
--------------
+        with app.app_context():
+            init_db()
 
-The context is typically used to cache resources that need to be created
-on a per-request or usage case.  For instance, database connections are
-destined to go there.  When storing things on the application context
-unique names should be chosen as this is a place that is shared between
-Flask applications and extensions.
+        return app
 
-The most common usage is to split resource management into two parts:
+If you see that error somewhere else in your code not related to
+configuring the application, it most likely indicates that you should
+move that code into a view function or CLI command.
 
-1.  an implicit resource caching on the context.
-2.  a context teardown based resource deallocation.
 
-Generally there would be a ``get_X()`` function that creates resource
-``X`` if it does not exist yet and otherwise returns the same resource,
-and a ``teardown_X()`` function that is registered as teardown handler.
+Storing Data
+------------
 
-This is an example that connects to a database::
+The application context is a good place to store common data during a
+request or CLI command. Flask provides the :data:`g object <g>` for this
+purpose. It is a simple namespace object that has the same lifetime as
+an application context.
 
-    import sqlite3
+.. note::
+    The ``g`` name stands for "global", but that is referring to the
+    data being global *within a context*. The data on ``g`` is lost
+    after the context ends, and it is not an appropriate place to store
+    data between requests. Use the :data:`session` or a database to
+    store data across requests.
+
+A common use for :data:`g` is to manage resources during a request.
+
+1.  ``get_X()`` creates resource ``X`` if it does not exist, caching it
+    as ``g.X``.
+2.  ``teardown_X()`` closes or otherwise deallocates the resource if it
+    exists. It is registered as a :meth:`~Flask.teardown_appcontext`
+    handler.
+
+For example, you can manage a database connection using this pattern::
+
     from flask import g
 
     def get_db():
-        db = getattr(g, '_database', None)
-        if db is None:
-            db = g._database = connect_to_database()
-        return db
+        if 'db' not in g:
+            g.db = connect_to_database()
+
+        return g.db
 
     @app.teardown_appcontext
-    def teardown_db(exception):
-        db = getattr(g, '_database', None)
+    def teardown_db():
+        db = g.pop('db', None)
+
         if db is not None:
             db.close()
 
-The first time ``get_db()`` is called the connection will be established.
-To make this implicit a :class:`~werkzeug.local.LocalProxy` can be used::
+During a request, every call to ``get_db()`` will return the same
+connection, and it will be closed automatically at the end of the
+request.
+
+You can use :class:`~werkzeug.local.LocalProxy` to make a new context
+local from ``get_db()``::
 
     from werkzeug.local import LocalProxy
     db = LocalProxy(get_db)
 
-That way a user can directly access ``db`` which internally calls
-``get_db()``.
+Accessing ``db`` will call ``get_db`` internally, in the same way that
+:data:`current_app` works.
+
+----
+
+If you're writing an extension, :data:`g` should be reserved for user
+code. You may store internal data on the context itself, but be sure to
+use a sufficiently unique name. The current context is accessed with
+:data:`_app_ctx_stack.top <_app_ctx_stack>`. For more information see
+:doc:`extensiondev`.
+
+
+Events and Signals
+------------------
+
+The application will call functions registered with
+:meth:`~Flask.teardown_appcontext` when the application context is
+popped.
+
+If :data:`~signals.signals_available` is true, the following signals are
+sent: :data:`appcontext_pushed`, :data:`appcontext_tearing_down`, and
+:data:`appcontext_popped`.
