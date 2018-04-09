@@ -211,29 +211,22 @@ thing, like it does for :class:`request` and :class:`session`.
 
 .. data:: g
 
-   Just store on this whatever you want.  For example a database
-   connection or the user that is currently logged in.
+    A namespace object that can store data during an
+    :doc:`application context </appcontext>`. This is an instance of
+    :attr:`Flask.app_ctx_globals_class`, which defaults to
+    :class:`ctx._AppCtxGlobals`.
 
-   Starting with Flask 0.10 this is stored on the application context and
-   no longer on the request context which means it becomes available if
-   only the application context is bound and not yet a request.  This
-   is especially useful when combined with the :ref:`faking-resources`
-   pattern for testing.
+    This is a good place to store resources during a request. During
+    testing, you can use the :ref:`faking-resources` pattern to
+    pre-configure such resources.
 
-   Additionally as of 0.10 you can use the :meth:`get` method to
-   get an attribute or ``None`` (or the second argument) if it's not set.
-   These two usages are now equivalent::
+    This is a proxy. See :ref:`notes-on-proxies` for more information.
 
-        user = getattr(flask.g, 'user', None)
-        user = flask.g.get('user', None)
+    .. versionchanged:: 0.10
+        Bound to the application context instead of the request context.
 
-   It's now also possible to use the ``in`` operator on it to see if an
-   attribute is defined and it yields all keys on iteration.
-
-   As of 0.11 you can use :meth:`pop` and :meth:`setdefault` in the same
-   way you would use them on a dictionary.
-
-   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+.. autoclass:: flask.ctx._AppCtxGlobals
+    :members:
 
 
 Useful Functions and Classes
@@ -241,13 +234,17 @@ Useful Functions and Classes
 
 .. data:: current_app
 
-   Points to the application handling the request.  This is useful for
-   extensions that want to support multiple applications running side
-   by side.  This is powered by the application context and not by the
-   request context, so you can change the value of this proxy by
-   using the :meth:`~flask.Flask.app_context` method.
+    A proxy to the application handling the current request. This is
+    useful to access the application without needing to import it, or if
+    it can't be imported, such as when using the application factory
+    pattern or in blueprints and extensions.
 
-   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+    This is only available when an
+    :doc:`application context </appcontext>` is pushed. This happens
+    automatically during requests and CLI commands. It can be controlled
+    manually with :meth:`~flask.Flask.app_context`.
+
+    This is a proxy. See :ref:`notes-on-proxies` for more information.
 
 .. autofunction:: has_request_context
 
@@ -384,50 +381,54 @@ Useful Internals
 
 .. data:: _request_ctx_stack
 
-   The internal :class:`~werkzeug.local.LocalStack` that is used to implement
-   all the context local objects used in Flask.  This is a documented
-   instance and can be used by extensions and application code but the
-   use is discouraged in general.
+    The internal :class:`~werkzeug.local.LocalStack` that holds
+    :class:`~flask.ctx.RequestContext` instances. Typically, the
+    :data:`request` and :data:`session` proxies should be accessed
+    instead of the stack. It may be useful to access the stack in
+    extension code.
 
-   The following attributes are always present on each layer of the
-   stack:
+    The following attributes are always present on each layer of the
+    stack:
 
-   `app`
+    `app`
       the active Flask application.
 
-   `url_adapter`
+    `url_adapter`
       the URL adapter that was used to match the request.
 
-   `request`
+    `request`
       the current request object.
 
-   `session`
+    `session`
       the active session object.
 
-   `g`
+    `g`
       an object with all the attributes of the :data:`flask.g` object.
 
-   `flashes`
+    `flashes`
       an internal cache for the flashed messages.
 
-   Example usage::
+    Example usage::
 
-      from flask import _request_ctx_stack
+        from flask import _request_ctx_stack
 
-      def get_session():
-          ctx = _request_ctx_stack.top
-          if ctx is not None:
-              return ctx.session
+        def get_session():
+            ctx = _request_ctx_stack.top
+            if ctx is not None:
+                return ctx.session
 
 .. autoclass:: flask.ctx.AppContext
    :members:
 
 .. data:: _app_ctx_stack
 
-   Works similar to the request context but only binds the application.
-   This is mainly there for extensions to store data.
+    The internal :class:`~werkzeug.local.LocalStack` that holds
+    :class:`~flask.ctx.AppContext` instances. Typically, the
+    :data:`current_app` and :data:`g` proxies should be accessed instead
+    of the stack. Extensions can access the contexts on the stack as a
+    namespace to store data.
 
-   .. versionadded:: 0.9
+    .. versionadded:: 0.9
 
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:
