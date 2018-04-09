@@ -145,6 +145,8 @@ unreleased
   (`#2635`_)
 - A single trailing slash is stripped from the blueprint ``url_prefix``
   when it is registered with the app. (`#2629`_)
+- :meth:`Request.get_json() <flask.Request.get_json>` doesn't cache the
+  result if parsing fails when ``silent`` is true. (`#2651`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -189,6 +191,7 @@ unreleased
 .. _#2636: https://github.com/pallets/flask/pull/2636
 .. _#2635: https://github.com/pallets/flask/pull/2635
 .. _#2629: https://github.com/pallets/flask/pull/2629
+.. _#2651: https://github.com/pallets/flask/issues/2651
 
 
 Version 0.12.2

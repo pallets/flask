@@ -62,6 +62,21 @@ class TestJSON(object):
             with pytest.raises(BadRequest):
                 flask.request.get_json(silent=False, cache=False)
 
+    def test_different_silent_on_bad_request(self, app):
+        with app.test_request_context(
+                '/', method='POST', data='malformed',
+                content_type='application/json'):
+            assert flask.request.get_json(silent=True) is None
+            with pytest.raises(BadRequest):
+                flask.request.get_json(silent=False)
+
+    def test_different_silent_on_normal_request(self, app):
+        with app.test_request_context('/', method='POST', json={'foo': 'bar'}):
+            silent_rv = flask.request.get_json(silent=True)
+            normal_rv = flask.request.get_json(silent=False)
+            assert silent_rv is normal_rv
+            assert normal_rv['foo'] == 'bar'
+
     def test_post_empty_json_adds_exception_to_response_content_in_debug(self, app, client):
         app.config['DEBUG'] = True
         app.config['TRAP_BAD_REQUEST_ERRORS'] = False
