@@ -144,17 +144,10 @@ class Request(RequestBase):
         if not (force or self.is_json):
             return None
 
-        # We accept a request charset against the specification as
-        # certain clients have been using this in the past.  This
-        # fits our general approach of being nice in what we accept
-        # and strict in what we send out.
-        request_charset = self.mimetype_params.get('charset')
+        data = _get_data(self, cache)
+
         try:
-            data = _get_data(self, cache)
-            if request_charset is not None:
-                rv = json.loads(data, encoding=request_charset)
-            else:
-                rv = json.loads(data)
+            rv = json.loads(data)
         except ValueError as e:
             if silent:
                 rv = None

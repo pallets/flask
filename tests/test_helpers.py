@@ -21,6 +21,8 @@ from werkzeug.datastructures import Range
 from werkzeug.exceptions import BadRequest, NotFound
 from werkzeug.http import parse_cache_control_header, parse_options_header
 from werkzeug.http import http_date
+
+from flask import json
 from flask._compat import StringIO, text_type
 
 
@@ -34,6 +36,20 @@ def has_encoding(name):
 
 
 class TestJSON(object):
+    @pytest.mark.parametrize('value', (
+        1, 't', True, False, None,
+        [], [1, 2, 3],
+        {}, {'foo': u'🐍'},
+    ))
+    @pytest.mark.parametrize('encoding', (
+        'utf-8', 'utf-8-sig',
+        'utf-16-le', 'utf-16-be', 'utf-16',
+        'utf-32-le', 'utf-32-be', 'utf-32',
+    ))
+    def test_detect_encoding(self, value, encoding):
+        data = json.dumps(value).encode(encoding)
+        assert json.detect_encoding(data) == encoding
+        assert json.loads(data) == value
 
     def test_ignore_cached_json(self):
         app = flask.Flask(__name__)
@@ -84,18 +100,6 @@ class TestJSON(object):
         c = app.test_client()
         rv = c.post('/json', data='"foo"', content_type='application/x+json')
         assert rv.data == b'foo'
-
-    def test_json_body_encoding(self):
-        app = flask.Flask(__name__)
-        app.testing = True
-        @app.route('/')
-        def index():
-            return flask.request.get_json()
-
-        c = app.test_client()
-        resp = c.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
-                     content_type='application/json; charset=iso-8859-15')
-        assert resp.data == u'Hällo Wörld'.encode('utf-8')
 
     def test_json_as_unicode(self):
         app = flask.Flask(__name__)
