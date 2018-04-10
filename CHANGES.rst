@@ -147,6 +147,9 @@ unreleased
   when it is registered with the app. (`#2629`_)
 - :meth:`Request.get_json() <flask.Request.get_json>` doesn't cache the
   result if parsing fails when ``silent`` is true. (`#2651`_)
+- :func:`request.get_json <flask.Request.get_json>` no longer accepts
+  arbitrary encodings. Incoming JSON should be encoded using UTF-8 per
+  :rfc:`8259`, but Flask will autodetect UTF-8, -16, or -32. (`#2691`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -192,6 +195,7 @@ unreleased
 .. _#2635: https://github.com/pallets/flask/pull/2635
 .. _#2629: https://github.com/pallets/flask/pull/2629
 .. _#2651: https://github.com/pallets/flask/issues/2651
+.. _#2691: https://github.com/pallets/flask/pull/2691
 
 
 Version 0.12.2
