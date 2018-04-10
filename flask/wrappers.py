@@ -191,9 +191,26 @@ class Response(ResponseBase, JSONMixin):
     .. versionchanged:: 1.0
         JSON support is added to the response, like the request. This is useful
         when testing to get the test client response data as JSON.
+
+    .. versionchanged:: 1.0
+
+        Added :attr:`max_cookie_size`.
     """
 
     default_mimetype = 'text/html'
 
     def _get_data_for_json(self, cache):
         return self.get_data()
+
+    @property
+    def max_cookie_size(self):
+        """Read-only view of the :data:`MAX_COOKIE_SIZE` config key.
+
+        See :attr:`~werkzeug.wrappers.BaseResponse.max_cookie_size` in
+        Werkzeug's docs.
+        """
+        if current_app:
+            return current_app.config['MAX_COOKIE_SIZE']
+
+        # return Werkzeug's default when not in an app context
+        return super(Response, self).max_cookie_size
