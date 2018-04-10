@@ -50,15 +50,17 @@ class JSONMixin(object):
         return self.get_data(cache=cache)
 
     def get_json(self, force=False, silent=False, cache=True):
-        """Parse and return the data as JSON. If the mimetype does not indicate
-        JSON (:mimetype:`application/json`, see :meth:`is_json`), this returns
-        ``None`` unless ``force`` is true. If parsing fails,
-        :meth:`on_json_loading_failed` is called and its return value is used
-        as the return value.
+        """Parse and return the data as JSON. If the mimetype does not
+        indicate JSON (:mimetype:`application/json`, see
+        :meth:`is_json`), this returns ``None`` unless ``force`` is
+        true. If parsing fails, :meth:`on_json_loading_failed` is called
+        and its return value is used as the return value.
 
         :param force: Ignore the mimetype and always try to parse JSON.
-        :param silent: Silence parsing errors and return ``None`` instead.
-        :param cache: Store the parsed JSON to return for subsequent calls.
+        :param silent: Silence parsing errors and return ``None``
+            instead.
+        :param cache: Store the parsed JSON to return for subsequent
+            calls.
         """
         if cache and self._cached_json[silent] is not Ellipsis:
             return self._cached_json[silent]
@@ -66,14 +68,10 @@ class JSONMixin(object):
         if not (force or self.is_json):
             return None
 
-        # We accept MIME charset against the specification as certain clients
-        # have used this in the past. For responses, we assume that if the
-        # charset is set then the data has been encoded correctly as well.
-        charset = self.mimetype_params.get('charset')
+        data = self._get_data_for_json(cache=cache)
 
         try:
-            data = self._get_data_for_json(cache=cache)
-            rv = json.loads(data, encoding=charset)
+            rv = json.loads(data)
         except ValueError as e:
             if silent:
                 rv = None
