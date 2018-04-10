@@ -16,10 +16,13 @@ import uuid
 import pytest
 from werkzeug.datastructures import Range
 from werkzeug.exceptions import BadRequest, NotFound
-from werkzeug.http import http_date, parse_cache_control_header, \
+from werkzeug.http import (
+    http_date, parse_cache_control_header,
     parse_options_header
+)
 
 import flask
+from flask import json
 from flask._compat import StringIO, text_type
 from flask.helpers import get_debug_flag, get_env
 
@@ -55,6 +58,21 @@ class FixedOffset(datetime.tzinfo):
 
 
 class TestJSON(object):
+    @pytest.mark.parametrize('value', (
+        1, 't', True, False, None,
+        [], [1, 2, 3],
+        {}, {'foo': u'🐍'},
+    ))
+    @pytest.mark.parametrize('encoding', (
+        'utf-8', 'utf-8-sig',
+        'utf-16-le', 'utf-16-be', 'utf-16',
+        'utf-32-le', 'utf-32-be', 'utf-32',
+    ))
+    def test_detect_encoding(self, value, encoding):
+        data = json.dumps(value).encode(encoding)
+        assert json.detect_encoding(data) == encoding
+        assert json.loads(data) == value
+
     def test_ignore_cached_json(self, app):
         with app.test_request_context('/', method='POST', data='malformed',
                                       content_type='application/json'):
@@ -120,16 +138,6 @@ class TestJSON(object):
 
         rv = client.post('/json', data='"foo"', content_type='application/x+json')
         assert rv.data == b'foo'
-
-    def test_json_body_encoding(self, app, client):
-
-        @app.route('/')
-        def index():
-            return flask.request.get_json()
-
-        resp = client.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
-                          content_type='application/json; charset=iso-8859-15')
-        assert resp.data == u'Hällo Wörld'.encode('utf-8')
 
     @pytest.mark.parametrize('test_value,expected', [(True, '"\\u2603"'), (False, u'"\u2603"')])
     def test_json_as_unicode(self, test_value, expected, app, app_ctx):
