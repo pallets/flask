@@ -343,6 +343,12 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
+.. py:data:: MAX_COOKIE_SIZE
+
+    Warn if cookie headers are larger than this many bytes. Defaults to
+    ``4093``. Larger cookies may be silently ignored by browsers. Set to
+    ``0`` to disable the warning.
+
 .. versionadded:: 0.4
    ``LOGGER_NAME``
 
@@ -380,6 +386,8 @@ The following configuration values are used internally by Flask:
 
     Added :data:`SESSION_COOKIE_SAMESITE` to control the session
     cookie's ``SameSite`` option.
+
+    Added :data:`MAX_COOKIE_SIZE` to control a warning from Werkzeug.
 
 
 Configuring from Files
