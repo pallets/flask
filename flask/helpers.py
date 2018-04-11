@@ -996,7 +996,7 @@ def total_seconds(td):
     :returns: number of seconds
     :rtype: int
     """
-    return td.days * 60 * 60 * 24 + td.seconds
+    return int(td.total_seconds())
 
 
 def is_ip(value):
