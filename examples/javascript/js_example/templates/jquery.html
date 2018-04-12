@@ -13,7 +13,7 @@
       ev.preventDefault();
       $.ajax({
         method: 'POST',
-        url: '{{ url_for('add') }}',
+        url: {{ url_for('add')|tojson }},
         data: $(this).serialize()
       }).done(addShow);
     }
@@ -22,6 +22,6 @@
       $('#result').text(data.result);
     }
 
-    $('form:first').on('submit', addSubmit);
+    $('#calc').on('submit', addSubmit);
   </script>
 {% endblock %}
