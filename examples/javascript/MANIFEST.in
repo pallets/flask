@@ -1,0 +1,4 @@
+include LICENSE
+graft js_example/templates
+graft tests
+global-exclude *.pyc

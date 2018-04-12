@@ -6,13 +6,13 @@ with io.open('README.rst', 'rt', encoding='utf8') as f:
     readme = f.read()
 
 setup(
-    name='flaskr',
+    name='js_example',
     version='1.0.0',
-    url='http://flask.pocoo.org/docs/tutorial/',
+    url='http://flask.pocoo.org/docs/patterns/jquery/',
     license='BSD',
     maintainer='Pallets team',
     maintainer_email='contact@palletsprojects.com',
-    description='The basic blog app built in the Flask tutorial.',
+    description='Demonstrates making Ajax requests to Flask.',
     long_description=readme,
     packages=find_packages(),
     include_package_data=True,
@@ -24,6 +24,7 @@ setup(
         'test': [
             'pytest',
             'coverage',
+            'blinker',
         ],
     },
 )
