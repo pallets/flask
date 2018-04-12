@@ -209,12 +209,6 @@ Running that should now give us three passing tests::
 
     ============= 3 passed in 0.23 seconds ==============
 
-For more complex tests with headers and status codes, check out the
-`MiniTwit Example`_ from the sources which contains a larger test
-suite.
-
-.. _MiniTwit Example:
-   https://github.com/pallets/flask/tree/master/examples/minitwit/
 
 Other Testing Tricks
 --------------------

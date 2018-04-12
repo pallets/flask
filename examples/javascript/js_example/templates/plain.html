@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block intro %}
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"><code>XMLHttpRequest</code></a>
+  is the plain JavaScript way to make requests. It's natively supported
+  by all browsers.
+{% endblock %}
+
+{% block script %}
+  <script>
+    function addSubmit(ev) {
+      ev.preventDefault();
+      var request = new XMLHttpRequest();
+      request.addEventListener('load', addShow);
+      request.open('POST', '{{ url_for('add') }}');
+      request.send(new FormData(this));
+    }
+
+    function addShow() {
+      var data = JSON.parse(this.responseText);
+      var span = document.getElementById('result');
+      span.innerText = data.result;
+    }
+
+    document.forms[0].addEventListener('submit', addSubmit);
+  </script>
+{% endblock %}

@@ -65,12 +65,11 @@ Test
 
 ::
 
-    pip install pytest
+    pip install '.[test]'
     pytest
 
 Run with coverage report::
 
-    pip install pytest coverage
     coverage run -m pytest
     coverage report
     coverage html  # open htmlcov/index.html in a browser
