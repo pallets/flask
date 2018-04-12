@@ -703,7 +703,7 @@ The following signals exist in Flask:
       operations, including connecting.
 
 
-.. _blinker: https://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.org/project/blinker/
 
 
 Class-Based Views
