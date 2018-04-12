@@ -237,4 +237,4 @@ python path.  Common problems are:
 .. _nginx: http://nginx.org/
 .. _lighttpd: http://www.lighttpd.net/
 .. _cherokee: http://cherokee-project.com/
-.. _flup: https://pypi.python.org/pypi/flup
+.. _flup: https://pypi.org/project/flup/
