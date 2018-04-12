@@ -162,5 +162,6 @@ explanation of the little bit of code above:
    argument.  Note that we can use the `$SCRIPT_ROOT` variable here that
    we set earlier.
 
-If you don't get the whole picture, download the :gh:`sourcecode
-for this example <examples/jqueryexample>`.
+Check out the :gh:`example source <examples/javascript>` for a full
+application demonstrating the jQuery on this page, as well as the same
+thing using ``XMLHttpRequest`` and ``fetch``.
