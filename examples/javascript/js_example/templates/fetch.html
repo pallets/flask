@@ -13,7 +13,7 @@
   <script>
     function addSubmit(ev) {
       ev.preventDefault();
-      fetch('{{ url_for('add') }}', {
+      fetch({{ url_for('add')|tojson }}, {
         method: 'POST',
         body: new FormData(this)
       })
@@ -30,6 +30,7 @@
       span.innerText = data.result;
     }
 
-    document.forms[0].addEventListener('submit', addSubmit);
+    var form = document.getElementById('calc');
+    form.addEventListener('submit', addSubmit);
   </script>
 {% endblock %}

@@ -163,5 +163,5 @@ explanation of the little bit of code above:
    we set earlier.
 
 Check out the :gh:`example source <examples/javascript>` for a full
-application demonstrating the jQuery on this page, as well as the same
+application demonstrating the code on this page, as well as the same
 thing using ``XMLHttpRequest`` and ``fetch``.

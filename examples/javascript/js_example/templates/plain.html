@@ -12,7 +12,7 @@
       ev.preventDefault();
       var request = new XMLHttpRequest();
       request.addEventListener('load', addShow);
-      request.open('POST', '{{ url_for('add') }}');
+      request.open('POST', {{ url_for('add')|tojson }});
       request.send(new FormData(this));
     }
 
@@ -22,6 +22,7 @@
       span.innerText = data.result;
     }
 
-    document.forms[0].addEventListener('submit', addSubmit);
+    var form = document.getElementById('calc');
+    form.addEventListener('submit', addSubmit);
   </script>
 {% endblock %}
