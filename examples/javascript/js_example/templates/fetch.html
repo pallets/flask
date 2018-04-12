@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block intro %}
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch"><code>fetch</code></a>
+  is the <em>new</em> plain JavaScript way to make requests. It's
+  supported in all modern browsers except IE, which requires a
+  <a href="https://github.com/github/fetch">polyfill</a>.
+{% endblock %}
+
+{% block script %}
+  <script src="https://unpkg.com/promise-polyfill@7.1.2/dist/polyfill.min.js"></script>
+  <script src="https://unpkg.com/whatwg-fetch@2.0.4/fetch.js"></script>
+  <script>
+    function addSubmit(ev) {
+      ev.preventDefault();
+      fetch('{{ url_for('add') }}', {
+        method: 'POST',
+        body: new FormData(this)
+      })
+        .then(parseJSON)
+        .then(addShow);
+    }
+
+    function parseJSON(response) {
+      return response.json();
+    }
+
+    function addShow(data) {
+      var span = document.getElementById('result');
+      span.innerText = data.result;
+    }
+
+    document.forms[0].addEventListener('submit', addSubmit);
+  </script>
+{% endblock %}
