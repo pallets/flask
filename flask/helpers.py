@@ -486,7 +486,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
        The `attachment_filename` is preferred over `filename` for MIME-type
        detection.
 
-    .. versionchanged:: 0.13
+    .. versionchanged:: 1.0
         UTF-8 filenames, as specified in `RFC 2231`_, are supported.
 
     .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4

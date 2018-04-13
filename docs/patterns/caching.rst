@@ -27,7 +27,7 @@ cache that keeps the item stored in the memory of the Python interpreter::
     cache = SimpleCache()
 
 If you want to use memcached, make sure to have one of the memcache modules
-supported (you get them from `PyPI <https://pypi.python.org/pypi>`_) and a
+supported (you get them from `PyPI <https://pypi.org/>`_) and a
 memcached server running somewhere.  This is how you connect to such an
 memcached server then::
 

@@ -38,7 +38,14 @@ setup(
             'coverage',
             'tox',
             'sphinx',
+            'pallets-sphinx-themes',
+            'sphinxcontrib-log-cabinet',
         ],
+        'docs': [
+            'sphinx',
+            'pallets-sphinx-themes',
+            'sphinxcontrib-log-cabinet',
+        ]
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
