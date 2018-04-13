@@ -14,6 +14,7 @@ _mailinglist
 .cache/
 .pytest_cache/
 .idea/
+docs/_build/
 
 # Coverage reports
 htmlcov/

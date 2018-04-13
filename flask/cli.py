@@ -243,7 +243,7 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
             )
         elif raise_if_not_found:
             raise NoAppException(
-                'Could not import "{name}"."'.format(name=module_name)
+                'Could not import "{name}".'.format(name=module_name)
             )
         else:
             return
