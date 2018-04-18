@@ -614,7 +614,7 @@ def load_dotenv(path=None):
     return new_dir is not None  # at least one file was located and loaded
 
 
-def show_server_banner(env, debug, app_import_path):
+def show_server_banner(env, debug, app_import_path, eager_loading):
     """Show extra startup messages the first time the server is run,
     ignoring the reloader.
     """
@@ -622,9 +622,14 @@ def show_server_banner(env, debug, app_import_path):
         return
 
     if app_import_path is not None:
-        print(' * Serving Flask app "{0}"'.format(app_import_path))
+        message = ' * Serving Flask app "{0}"'.format(app_import_path)
 
-    print(' * Environment: {0}'.format(env))
+        if not eager_loading:
+            message += ' (lazy loading)'
+
+        click.echo(message)
+
+    click.echo(' * Environment: {0}'.format(env))
 
     if env == 'production':
         click.secho(
@@ -633,7 +638,7 @@ def show_server_banner(env, debug, app_import_path):
         click.secho('   Use a production WSGI server instead.', dim=True)
 
     if debug is not None:
-        print(' * Debug mode: {0}'.format('on' if debug else 'off'))
+        click.echo(' * Debug mode: {0}'.format('on' if debug else 'off'))
 
 
 class CertParamType(click.ParamType):
@@ -759,7 +764,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     if eager_loading is None:
         eager_loading = not reload
 
-    show_server_banner(get_env(), debug, info.app_import_path)
+    show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
     from werkzeug.serving import run_simple
