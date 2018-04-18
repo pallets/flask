@@ -153,6 +153,11 @@ unreleased
 - Added :data:`MAX_COOKIE_SIZE` and :attr:`Response.max_cookie_size` to
   control when Werkzeug warns about large cookies that browsers may
   ignore. (`#2693`_)
+- Updated documentation theme to make docs look better in small
+  windows. (`#2709`_)
+- Rewrote the tutorial docs and example project to take a more
+  structured approach to help new users avoid common pitfalls.
+  (`#2676`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421
@@ -198,8 +203,10 @@ unreleased
 .. _#2635: https://github.com/pallets/flask/pull/2635
 .. _#2629: https://github.com/pallets/flask/pull/2629
 .. _#2651: https://github.com/pallets/flask/issues/2651
+.. _#2676: https://github.com/pallets/flask/pull/2676
 .. _#2691: https://github.com/pallets/flask/pull/2691
 .. _#2693: https://github.com/pallets/flask/pull/2693
+.. _#2709: https://github.com/pallets/flask/pull/2709
 
 
 Version 0.12.2
