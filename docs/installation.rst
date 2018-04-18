@@ -27,7 +27,7 @@ These distributions will be installed automatically when installing Flask.
 
 .. _Werkzeug: http://werkzeug.pocoo.org/
 .. _Jinja: http://jinja.pocoo.org/
-.. _MarkupSafe: https://pypi.python.org/pypi/MarkupSafe
+.. _MarkupSafe: https://pypi.org/project/MarkupSafe/
 .. _ItsDangerous: https://pythonhosted.org/itsdangerous/
 .. _Click: http://click.pocoo.org/
 

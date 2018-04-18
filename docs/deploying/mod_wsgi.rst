@@ -134,7 +134,7 @@ For more information consult the `mod_wsgi documentation`_.
 
 .. _mod_wsgi: https://github.com/GrahamDumpleton/mod_wsgi
 .. _installation instructions: https://modwsgi.readthedocs.io/en/develop/installation.html
-.. _virtual python: https://pypi.python.org/pypi/virtualenv
+.. _virtual python: https://pypi.org/project/virtualenv/
 .. _mod_wsgi documentation: https://modwsgi.readthedocs.io/en/develop/index.html
 
 Troubleshooting

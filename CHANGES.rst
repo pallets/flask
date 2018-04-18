@@ -711,7 +711,7 @@ Released on July 27th 2010, codename Whisky
   prefix.  This makes it possible to bind a whole module to a
   configurable subdomain.
 
-.. _blinker: https://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.org/project/blinker/
 
 Version 0.5.2
 -------------
