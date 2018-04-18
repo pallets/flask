@@ -21,10 +21,7 @@ The Application
 
 First, we need an application to test; we will use the application from
 the :ref:`tutorial`.  If you don't have that application yet, get the
-sources from `the examples`_.
-
-.. _the examples:
-   https://github.com/pallets/flask/tree/master/examples/flaskr/
+sources from :gh:`the examples <examples/flaskr>`.
 
 The Testing Skeleton
 --------------------
@@ -196,7 +193,7 @@ suite.
 
 
 .. _MiniTwit Example:
-   https://github.com/pallets/flask/tree/master/examples/minitwit/
+   https://github.com/pallets/flask/tree/0.12.3/examples/minitwit/
 
 
 Other Testing Tricks

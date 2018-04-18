@@ -173,5 +173,5 @@ folder instead of copying the data over.  You can then continue to work on
 the code without having to run ``install`` again after each change.
 
 
-.. _pip: https://pypi.python.org/pypi/pip
+.. _pip: https://pypi.org/project/pip/
 .. _Setuptools: https://pythonhosted.org/setuptools
