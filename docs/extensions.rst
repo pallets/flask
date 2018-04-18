@@ -50,4 +50,4 @@ extension.
 
 
 .. _Extension Registry: http://flask.pocoo.org/extensions/
-.. _pypi: https://pypi.python.org/pypi?:action=browse&c=585
+.. _pypi: https://pypi.org/search/?c=Framework+%3A%3A+Flask

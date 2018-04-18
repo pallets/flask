@@ -328,8 +328,8 @@ extension to be approved you have to follow these guidelines:
 6.  Approved extensions must define all their dependencies in the
     :file:`setup.py` file unless a dependency cannot be met because it is not
     available on PyPI.
-7.  The extension must have documentation that uses one of the two Flask
-    themes for Sphinx documentation.
+7.  The documentation must use the ``flask`` theme from the `Official
+    Pallets Themes`_.
 8.  The setup.py description (and thus the PyPI description) has to
     link to the documentation, website (if there is one) and there
     must be a link to automatically install the development version
@@ -342,3 +342,4 @@ extension to be approved you have to follow these guidelines:
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
+.. _Official Pallets Themes: https://pypi.org/project/pallets-sphinx-themes/
