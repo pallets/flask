@@ -66,10 +66,8 @@ Continue to :ref:`tutorial-dbinit`.
    ``get_db`` and ``close_db`` functions below your existing
    ``connect_db`` function (following the tutorial line-by-line).
 
-   If you need a moment to find your bearings, take a look at how the `example
-   source`_ is organized.  In Flask, you can put all of your application code
-   into a single Python module.  You don't have to, and if your app :ref:`grows
-   larger <larger-applications>`, it's a good idea not to.
-
-.. _example source:
-   https://github.com/pallets/flask/tree/master/examples/flaskr/
+   If you need a moment to find your bearings, take a look at how the
+   :gh:`example source <examples/flaskr>` is organized.  In Flask, you
+   can put all of your application code into a single Python module.
+   You don't have to, and if your app
+   :ref:`grows larger <larger-applications>`, it's a good idea not to.

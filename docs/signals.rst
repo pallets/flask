@@ -187,4 +187,4 @@ Core Signals
 Take a look at :ref:`core-signals-list` for a list of all builtin signals.
 
 
-.. _blinker: https://pypi.python.org/pypi/blinker
+.. _blinker: https://pypi.org/project/blinker/
