@@ -614,7 +614,7 @@ def load_dotenv(path=None):
     return new_dir is not None  # at least one file was located and loaded
 
 
-def show_server_banner(env, debug, app_import_path):
+def show_server_banner(env, debug, app_import_path, eager_loading=True):
     """Show extra startup messages the first time the server is run,
     ignoring the reloader.
     """
@@ -622,7 +622,10 @@ def show_server_banner(env, debug, app_import_path):
         return
 
     if app_import_path is not None:
-        print(' * Serving Flask app "{0}"'.format(app_import_path))
+        message = ' * Serving Flask app "{0}"'.format(app_import_path)
+        if not eager_loading:
+            message += ' (lazy loading)'
+        print(message)
 
     print(' * Environment: {0}'.format(env))
 
@@ -759,7 +762,7 @@ def run_command(info, host, port, reload, debugger, eager_loading,
     if eager_loading is None:
         eager_loading = not reload
 
-    show_server_banner(get_env(), debug, info.app_import_path)
+    show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
     from werkzeug.serving import run_simple
