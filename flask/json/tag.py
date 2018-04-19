@@ -36,7 +36,7 @@ processes dicts first, so insert the new tag at the front of the order since
         def to_python(self, value):
             return OrderedDict(value)
 
-    app.session_interface.serializer.register(TagOrderedDict, 0)
+    app.session_interface.serializer.register(TagOrderedDict, index=0)
 
 :copyright: © 2010 by the Pallets team.
 :license: BSD, see LICENSE for more details.
