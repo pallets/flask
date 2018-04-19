@@ -72,3 +72,19 @@ def test_tag_interface():
     pytest.raises(NotImplementedError, t.check, None)
     pytest.raises(NotImplementedError, t.to_json, None)
     pytest.raises(NotImplementedError, t.to_python, None)
+
+
+def test_tag_order():
+    class Tag1(JSONTag):
+        key = ' 1'
+
+    class Tag2(JSONTag):
+        key = ' 2'
+
+    s = TaggedJSONSerializer()
+
+    s.register(Tag1, index=-1)
+    assert isinstance(s.order[-2], Tag1)
+
+    s.register(Tag2, index=None)
+    assert isinstance(s.order[-1], Tag2)

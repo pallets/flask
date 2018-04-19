@@ -243,7 +243,7 @@ class TaggedJSONSerializer(object):
         for cls in self.default_tags:
             self.register(cls)
 
-    def register(self, tag_class, force=False, index=-1):
+    def register(self, tag_class, force=False, index=None):
         """Register a new tag with this serializer.
 
         :param tag_class: tag class to register. Will be instantiated with this
@@ -251,8 +251,8 @@ class TaggedJSONSerializer(object):
         :param force: overwrite an existing tag. If false (default), a
             :exc:`KeyError` is raised.
         :param index: index to insert the new tag in the tag order. Useful when
-            the new tag is a special case of an existing tag. If -1 (default),
-            the tag is appended to the end of the order.
+            the new tag is a special case of an existing tag. If ``None``
+            (default), the tag is appended to the end of the order.
 
         :raise KeyError: if the tag key is already registered and ``force`` is
             not true.
@@ -266,7 +266,7 @@ class TaggedJSONSerializer(object):
 
             self.tags[key] = tag
 
-        if index == -1:
+        if index is None:
             self.order.append(tag)
         else:
             self.order.insert(index, tag)
