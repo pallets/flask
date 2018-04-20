@@ -183,6 +183,24 @@ production, you should call :func:`~cli.load_dotenv` manually.
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 
 
+Setting Command Options
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Click is configured to load default values for command options from
+environment variables. The variables use the pattern
+``FLASK_COMMAND_OPTION``. For example, to set the port for the run
+command, instead of ``flask run --port 8000``:
+
+.. code-block:: none
+
+    export FLASK_RUN_PORT=8000
+    flask run
+     * Running on http://127.0.0.1:8000/
+
+These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
+control default command options.
+
+
 Environment Variables From virtualenv
 -------------------------------------
 
