@@ -12,16 +12,13 @@
   #result { font-weight: bold; }
 </style>
 <ul>
-  <li><span>Type:</span></li>
+  <li><span>Type:</span>
   <li class="{% if js == 'plain' %}active{% endif %}">
     <a href="{{ url_for('index', js='plain') }}">Plain</a>
-  </li>
   <li class="{% if js == 'fetch' %}active{% endif %}">
     <a href="{{ url_for('index', js='fetch') }}">Fetch</a>
-  </li>
   <li class="{% if js == 'jquery' %}active{% endif %}">
     <a href="{{ url_for('index', js='jquery') }}">jQuery</a>
-  </li>
 </ul>
 <hr>
 <p>{% block intro %}{% endblock %}</p>
