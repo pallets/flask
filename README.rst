@@ -48,6 +48,7 @@ Links
 
 * Website: https://www.palletsprojects.com/p/flask/
 * Documentation: http://flask.pocoo.org/docs/
+* License: https://github.com/pallets/flask/blob/master/LICENSE
 * Releases: https://pypi.org/project/Flask/
 * Code: https://github.com/pallets/flask
 * Issue tracker: https://github.com/pallets/flask/issues
