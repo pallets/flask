@@ -25,6 +25,11 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
+    project_urls={
+        'Bug Tracker': 'https://github.com/pallets/flask/issues',
+        'Documentation': 'http://flask.pocoo.org/',
+        'Source Code': 'https://github.com/pallets/flask',
+    },
     install_requires=[
         'Werkzeug>=0.14',
         'Jinja2>=2.10',
