@@ -53,6 +53,7 @@ html_sidebars = {
     'index': [
         'project.html',
         'versions.html',
+        'carbon_ads.html',
         'searchbox.html',
     ],
     '**': [
