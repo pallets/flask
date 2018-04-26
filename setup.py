@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import io
 import re
+from collections import OrderedDict
+
 from setuptools import setup
 
 with io.open('README.rst', 'rt', encoding='utf8') as f:
@@ -14,6 +16,11 @@ setup(
     name='Flask',
     version=version,
     url='https://www.palletsprojects.com/p/flask/',
+    project_urls=OrderedDict((
+        ('Documentation', 'http://flask.pocoo.org/docs/'),
+        ('Code', 'https://github.com/pallets/pallets-sphinx-themes'),
+        ('Issue tracker', 'https://github.com/pallets/pallets-sphinx-themes/issues'),
+    )),
     license='BSD',
     author='Armin Ronacher',
     author_email='armin.ronacher@active-4.com',
@@ -25,11 +32,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    project_urls={
-        'Bug Tracker': 'https://github.com/pallets/flask/issues',
-        'Documentation': 'http://flask.pocoo.org/',
-        'Source Code': 'https://github.com/pallets/flask',
-    },
     install_requires=[
         'Werkzeug>=0.14',
         'Jinja2>=2.10',
