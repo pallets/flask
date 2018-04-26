@@ -18,8 +18,8 @@ setup(
     url='https://www.palletsprojects.com/p/flask/',
     project_urls=OrderedDict((
         ('Documentation', 'http://flask.pocoo.org/docs/'),
-        ('Code', 'https://github.com/pallets/pallets-sphinx-themes'),
-        ('Issue tracker', 'https://github.com/pallets/pallets-sphinx-themes/issues'),
+        ('Code', 'https://github.com/pallets/flask'),
+        ('Issue tracker', 'https://github.com/pallets/flask/issues'),
     )),
     license='BSD',
     author='Armin Ronacher',
