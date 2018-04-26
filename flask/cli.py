@@ -544,7 +544,10 @@ class FlaskGroup(AppGroup):
         # script that is loaded here also attempts to start a server.
         os.environ['FLASK_RUN_FROM_CLI'] = 'true'
 
-        if self.load_dotenv:
+        val = os.environ.get('FLASK_DONT_LOAD_ENV')
+        load_dotenv =  not val or val in ('0', 'false', 'no')
+
+        if self.load_dotenv and load_dotenv:
             load_dotenv()
 
         obj = kwargs.get('obj')
