@@ -6,6 +6,7 @@ Welcome to Flask
 .. image:: _static/logo-full.png
     :alt: Flask: web development, one drop at a time
     :align: right
+   :align: right
 
 Welcome to Flask's documentation. Get started with :ref:`installation`
 and then get an overview with the :ref:`quickstart`. There is also a

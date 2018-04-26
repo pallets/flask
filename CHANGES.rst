@@ -213,6 +213,21 @@ unreleased
 .. _#2691: https://github.com/pallets/flask/pull/2691
 .. _#2693: https://github.com/pallets/flask/pull/2693
 .. _#2709: https://github.com/pallets/flask/pull/2709
+Version 0.12.3
+--------------
+
+Released on April 26th 2018
+
+-   :func:`Request.get_json` no longer accepts arbitrary encodings.
+    Incoming JSON should be encoded using UTF-8 per :rfc:`8259`, but
+    Flask will autodetect UTF-8, -16, or -32. (`#2692`_)
+-   Fix a Python warning about imports when using ``python -m flask``.
+    (`#2666`_)
+-   Fix a ``ValueError`` caused by invalid ``Range`` requests in some
+    cases.
+
+.. _#2666: https://github.com/pallets/flask/issues/2666
+.. _#2692: https://github.com/pallets/flask/issues/2692
 
 
 Version 0.12.2
