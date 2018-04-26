@@ -43,6 +43,17 @@ A Simple Example
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 
+Donate
+------
+
+The Pallets organization develops and supports Flask and the libraries
+it uses. In order to grow the community of contributors and users, and
+allow the maintainers to devote more time to the projects, `please
+donate today`_.
+
+.. _please donate today: https://psfmember.org/civicrm/contribute/transact?reset=1&id=20
+
+
 Links
 -----
 
