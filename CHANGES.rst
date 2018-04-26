@@ -4,6 +4,12 @@ Flask Changelog
 ===============
 
 
+Version 1.0.1
+-------------
+
+unreleased
+
+
 Version 1.0
 -----------
 
