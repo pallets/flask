@@ -7,7 +7,7 @@ Flask Changelog
 Version 1.0
 -----------
 
-unreleased
+Released on April 26th 2018
 
 -   **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
 -   Bump minimum dependency versions to the latest stable versions:
@@ -213,6 +213,8 @@ unreleased
 .. _#2691: https://github.com/pallets/flask/pull/2691
 .. _#2693: https://github.com/pallets/flask/pull/2693
 .. _#2709: https://github.com/pallets/flask/pull/2709
+
+
 Version 0.12.3
 --------------
 
