@@ -49,12 +49,10 @@ class BlueprintSetupState(object):
         url_prefix = self.options.get('url_prefix')
         if url_prefix is None:
             url_prefix = self.blueprint.url_prefix
-
+        if url_prefix:
+            url_prefix = url_prefix.rstrip('/')
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
-        if url_prefix and url_prefix[-1] == '/':
-            url_prefix = url_prefix[:-1]
-
         self.url_prefix = url_prefix
 
         #: A dictionary with URL defaults that is added to each and every
@@ -68,7 +66,7 @@ class BlueprintSetupState(object):
         blueprint's name.
         """
         if self.url_prefix:
-            rule = self.url_prefix + rule
+            rule = '/'.join((self.url_prefix, rule.lstrip('/')))
         options.setdefault('subdomain', self.subdomain)
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
