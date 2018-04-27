@@ -112,7 +112,7 @@ The following configuration values are used internally by Flask:
 
     **Do not enable debug mode when deploying in production.**
 
-    Default: ``True`` if :data:`ENV` is ``'production'``, or ``False``
+    Default: ``True`` if :data:`ENV` is ``'development'``, or ``False``
     otherwise.
 
 .. py:data:: TESTING
