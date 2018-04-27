@@ -719,6 +719,8 @@ definition for a URL that accepts an optional page::
 This specifies that ``/users/`` will be the URL for page one and
 ``/users/page/N`` will be the URL for page `N`.
 
+Note: Underlying behaviour in Werkzeug redirect URLs containing a default value to its simpler form with a 301 redirect.
+
 Here are the parameters that :meth:`~flask.Flask.route` and
 :meth:`~flask.Flask.add_url_rule` accept.  The only difference is that
 with the route parameter the view function is defined with the decorator
