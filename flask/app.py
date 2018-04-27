@@ -1923,7 +1923,7 @@ class Flask(_PackageBoundObject):
         status = headers = None
 
         # unpack tuple returns
-        if isinstance(rv, (tuple, list)):
+        if isinstance(rv, tuple):
             len_rv = len(rv)
 
             # a 3-tuple is unpacked directly
