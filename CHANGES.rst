@@ -10,6 +10,13 @@ Version 1.1
 unreleased
 
 
+Version 1.0.1
+-------------
+
+unreleased
+
+-   Fix registering partials (with no ``__name__``) as view functions
+
 Version 1.0
 -----------
 
