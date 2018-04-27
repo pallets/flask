@@ -201,7 +201,7 @@ class Blueprint(_PackageBoundObject):
         """
         if endpoint:
             assert '.' not in endpoint, "Blueprint endpoints should not contain dots"
-        if view_func:
+        if view_func and hasattr(view_func, '__name__'):
             assert '.' not in view_func.__name__, "Blueprint view function name should not contain dots"
         self.record(lambda s:
             s.add_url_rule(rule, endpoint, view_func, **options))
