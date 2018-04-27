@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import functools
 import pytest
 
 import flask
@@ -381,6 +382,8 @@ def test_route_decorator_custom_endpoint_with_dots(app, client):
             '/bar/123', view_func=foo_foo_foo
         )
     )
+
+    bp.add_url_rule('/bar/456', endpoint='foofoofoo', view_func=functools.partial(foo_foo_foo))
 
     app.register_blueprint(bp, url_prefix='/py')
 
