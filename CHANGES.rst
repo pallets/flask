@@ -9,7 +9,11 @@ Version 1.0.1
 
 unreleased
 
--   Fix registering partials (with no ``__name__``) as view functions
+-   Fix registering partials (with no ``__name__``) as view functions.
+    (`#2730`_)
+
+.. _#2730: https://github.com/pallets/flask/pull/2730
+
 
 Version 1.0
 -----------
