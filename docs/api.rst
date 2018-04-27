@@ -717,7 +717,18 @@ definition for a URL that accepts an optional page::
         pass
 
 This specifies that ``/users/`` will be the URL for page one and
-``/users/page/N`` will be the URL for page `N`.
+``/users/page/N`` will be the URL for page ``N``.
+
+If a URL contains a default value, it will be redirected to its simpler
+form with a 301 redirect. In the above example, ``/users/page/1`` will
+be redirected to ``/users/``. If your route handles ``GET`` and ``POST``
+requests, make sure the default route only handles ``GET``, as redirects
+can't preserve form data. ::
+
+   @app.route('/region/', defaults={'id': 1})
+   @app.route('/region/<id>', methods=['GET', 'POST'])
+   def region(id):
+      pass
 
 Here are the parameters that :meth:`~flask.Flask.route` and
 :meth:`~flask.Flask.add_url_rule` accept.  The only difference is that
