@@ -31,6 +31,11 @@ Or on Windows cmd::
     py -3 -m venv venv
     venv\Scripts\activate.bat
 
+Or on Windows PowerShell::
+
+    python -m venv venv
+    venv\Scripts\activate
+
 Install Flaskr::
 
     pip install -e .
@@ -55,6 +60,12 @@ Or on Windows cmd::
 
     set FLASK_APP=flaskr
     set FLASK_ENV=development
+    flask run
+
+Or on Windows PowerShell::
+
+    Set-Item Env:FLASK_APP "flaskr"
+    Set-Item Env:FLASK_ENV "development"
     flask run
 
 Open http://127.0.0.1:5000 in a browser.
