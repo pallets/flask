@@ -1027,21 +1027,34 @@ def test_errorhandler_precedence(app, client):
 
 
 def test_trapping_of_bad_request_key_errors(app, client):
-    @app.route('/fail')
+    @app.route('/key')
     def fail():
         flask.request.form['missing_key']
 
-    rv = client.get('/fail')
+    @app.route('/abort')
+    def allow_abort():
+        flask.abort(400)
+
+    rv = client.get('/key')
     assert rv.status_code == 400
     assert b'missing_key' not in rv.data
+    rv = client.get('/abort')
+    assert rv.status_code == 400
 
-    app.config['TRAP_BAD_REQUEST_ERRORS'] = True
-
+    app.debug = True
     with pytest.raises(KeyError) as e:
-        client.get("/fail")
-
+        client.get("/key")
     assert e.errisinstance(BadRequest)
     assert 'missing_key' in e.value.description
+    rv = client.get('/abort')
+    assert rv.status_code == 400
+
+    app.debug = False
+    app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+    with pytest.raises(KeyError):
+        client.get('/key')
+    with pytest.raises(BadRequest):
+        client.get('/abort')
 
 
 def test_trapping_of_all_http_exceptions(app, client):
