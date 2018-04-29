@@ -201,6 +201,30 @@ These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
 control default command options.
 
 
+Disable dotenv
+~~~~~~~~~~~~~~
+
+The ``flask`` command will show a message if it detects dotenv files but
+python-dotenv is not installed.
+
+.. code-block:: none
+
+    flask run
+     * Tip: There are .env files present. Do "pip install python-dotenv" to use them.
+
+You can tell Flask not to load dotenv files even when python-dotenv is
+installed by setting the ``FLASK_SKIP_DOTENV`` environment variable.
+This can be useful if you want to load them manually, or if you're using
+a project runner that loads them already. Keep in mind that the
+environment variables must be set before the app loads or it won't
+configure as expected.
+
+.. code-block:: none
+
+    export FLASK_SKIP_DOTENV=1
+    flask run
+
+
 Environment Variables From virtualenv
 -------------------------------------
 
