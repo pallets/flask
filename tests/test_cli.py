@@ -474,6 +474,14 @@ def test_dotenv_optional(monkeypatch):
     assert 'FOO' not in os.environ
 
 
+@need_dotenv
+def test_disable_dotenv_from_env(monkeypatch, runner):
+    monkeypatch.chdir(test_path)
+    monkeypatch.setitem(os.environ, 'FLASK_SKIP_DOTENV', '1')
+    runner.invoke(FlaskGroup())
+    assert 'FOO' not in os.environ
+
+
 def test_run_cert_path():
     # no key
     with pytest.raises(click.BadParameter):
