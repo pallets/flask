@@ -115,17 +115,22 @@ def test_blueprint_app_error_handling(app, client):
     assert client.get('/nope').data == b'you shall not pass'
 
 
-def test_blueprint_prefix_slash(app, client):
-    bp = flask.Blueprint('test', __name__, url_prefix='/bar/')
+@pytest.mark.parametrize(('prefix', 'rule', 'url'), (
+    ('/foo/', '/bar', '/foo/bar'),
+    ('/foo/', 'bar', '/foo/bar'),
+    ('/foo', '/bar', '/foo/bar'),
+    ('/foo/', '//bar', '/foo/bar'),
+    ('/foo//', '/bar', '/foo/bar'),
+))
+def test_blueprint_prefix_slash(app, client, prefix, rule, url):
+    bp = flask.Blueprint('test', __name__, url_prefix=prefix)
 
-    @bp.route('/foo')
-    def foo():
+    @bp.route(rule)
+    def index():
         return '', 204
 
     app.register_blueprint(bp)
-    app.register_blueprint(bp, url_prefix='/spam/')
-    assert client.get('/bar/foo').status_code == 204
-    assert client.get('/spam/foo').status_code == 204
+    assert client.get(url).status_code == 204
 
 
 def test_blueprint_url_defaults(app, client):

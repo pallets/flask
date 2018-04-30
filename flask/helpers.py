@@ -68,6 +68,21 @@ def get_debug_flag():
     return val.lower() not in ('0', 'false', 'no')
 
 
+def get_load_dotenv(default=True):
+    """Get whether the user has disabled loading dotenv files by setting
+    :envvar:`FLASK_SKIP_DOTENV`. The default is ``True``, load the
+    files.
+
+    :param default: What to return if the env var isn't set.
+    """
+    val = os.environ.get('FLASK_SKIP_DOTENV')
+
+    if not val:
+        return default
+
+    return val.lower() in ('0', 'false', 'no')
+
+
 def _endpoint_from_view_func(view_func):
     """Internal helper that returns the default endpoint for a given
     function.  This always is the function name.
