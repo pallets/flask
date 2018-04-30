@@ -27,9 +27,11 @@ from ._compat import integer_types, reraise, string_types, text_type
 from .config import Config, ConfigAttribute
 from .ctx import AppContext, RequestContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, g, request, session
-from .helpers import _PackageBoundObject, \
-    _endpoint_from_view_func, find_package, get_env, get_debug_flag, \
-    get_flashed_messages, locked_cached_property, url_for
+from .helpers import (
+    _PackageBoundObject,
+    _endpoint_from_view_func, find_package, get_env, get_debug_flag,
+    get_flashed_messages, locked_cached_property, url_for, get_load_dotenv
+)
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
 from .signals import appcontext_tearing_down, got_request_exception, \
@@ -904,7 +906,7 @@ class Flask(_PackageBoundObject):
             explain_ignored_app_run()
             return
 
-        if load_dotenv:
+        if get_load_dotenv(load_dotenv):
             cli.load_dotenv()
 
             # if set, let env vars override previous values
