@@ -254,6 +254,8 @@ Released on April 29 2018
 
 -   Repackage 0.12.3 to fix package layout issue. (`#2728`_)
 
+.. _#2728: https://github.com/pallets/flask/issues/2728
+
 
 Version 0.12.3
 --------------
