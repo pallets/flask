@@ -224,6 +224,12 @@ Released on April 26th 2018
 .. _#2691: https://github.com/pallets/flask/pull/2691
 .. _#2693: https://github.com/pallets/flask/pull/2693
 .. _#2709: https://github.com/pallets/flask/pull/2709
+Version 0.12.4
+--------------
+
+Released on April 29 2018
+
+-   Repackage 0.12.3 to fix package layout issue. (`#2728`_)
 
 
 Version 0.12.3
