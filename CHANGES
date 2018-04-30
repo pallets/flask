@@ -2,6 +2,14 @@ Flask Changelog
 ===============
 
 
+Version 0.12.4
+--------------
+
+Released on April 29 2018
+
+-   Repackage 0.12.3 to fix package layout issue. (`#2728`_)
+
+
 Version 0.12.3
 --------------
 
