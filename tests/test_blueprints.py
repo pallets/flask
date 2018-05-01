@@ -116,6 +116,7 @@ def test_blueprint_app_error_handling(app, client):
 
 
 @pytest.mark.parametrize(('prefix', 'rule', 'url'), (
+    ('/foo', '', '/foo'),
     ('/foo/', '/bar', '/foo/bar'),
     ('/foo/', 'bar', '/foo/bar'),
     ('/foo', '/bar', '/foo/bar'),
