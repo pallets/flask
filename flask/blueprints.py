@@ -66,7 +66,10 @@ class BlueprintSetupState(object):
         blueprint's name.
         """
         if self.url_prefix is not None:
-            rule = '/'.join((self.url_prefix, rule.lstrip('/')))
+            if rule:
+                rule = '/'.join((self.url_prefix, rule.lstrip('/')))
+            else:
+                rule = self.url_prefix
         options.setdefault('subdomain', self.subdomain)
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
