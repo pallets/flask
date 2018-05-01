@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from functools import update_wrapper
+from werkzeug.urls import url_join
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
 
@@ -49,8 +50,6 @@ class BlueprintSetupState(object):
         url_prefix = self.options.get('url_prefix')
         if url_prefix is None:
             url_prefix = self.blueprint.url_prefix
-        if url_prefix:
-            url_prefix = url_prefix.rstrip('/')
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
         self.url_prefix = url_prefix
@@ -67,7 +66,8 @@ class BlueprintSetupState(object):
         """
         if self.url_prefix is not None:
             if rule:
-                rule = '/'.join((self.url_prefix, rule.lstrip('/')))
+                rule = '/'.join((
+                    self.url_prefix.rstrip('/'), rule.lstrip('/')))
             else:
                 rule = self.url_prefix
         options.setdefault('subdomain', self.subdomain)
