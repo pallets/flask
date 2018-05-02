@@ -7,13 +7,21 @@ Flask Changelog
 Version 1.0.2
 -------------
 
-Unreleased
+Released on May 2nd 2018
+
+-   Fix more backwards compatibility issues with merging slashes between
+    a blueprint prefix and route. (`#2748`_)
+-   Fix error with ``flask routes`` command when there are no routes.
+    (`#2751`_)
+
+.. _#2748: https://github.com/pallets/flask/pull/2748
+.. _#2751: https://github.com/pallets/flask/issues/2751
 
 
 Version 1.0.1
 -------------
 
-Released on April 29 2018
+Released on April 29th 2018
 
 -   Fix registering partials (with no ``__name__``) as view functions.
     (`#2730`_)
