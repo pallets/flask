@@ -60,8 +60,7 @@ class Flask(_Flask):
 
 @pytest.fixture
 def app():
-    app = Flask('flask_test', root_path=os.path.dirname(__file__))
-    return app
+    yield Flask('flask_test', root_path=os.path.dirname(__file__))
 
 
 @pytest.fixture
