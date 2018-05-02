@@ -825,6 +825,10 @@ def routes_command(sort, all_methods):
     """Show all registered routes with endpoints and methods."""
 
     rules = list(current_app.url_map.iter_rules())
+    if not rules:
+        click.echo('No routes were registered.')
+        return
+
     ignored_methods = set(() if all_methods else ('HEAD', 'OPTIONS'))
 
     if sort in ('endpoint', 'rule'):
