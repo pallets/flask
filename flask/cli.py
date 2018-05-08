@@ -340,7 +340,8 @@ class ScriptInfo(object):
     onwards as click object.
     """
 
-    def __init__(self, app_import_path=None, create_app=None):
+    def __init__(self, app_import_path=None, create_app=None,
+                 set_debug_flag=True):
         #: Optionally the import path for the Flask application.
         self.app_import_path = app_import_path or os.environ.get('FLASK_APP')
         #: Optionally a function that is passed the script info to create
@@ -349,6 +350,7 @@ class ScriptInfo(object):
         #: A dictionary with arbitrary data that can be associated with
         #: this script info.
         self.data = {}
+        self.set_debug_flag = set_debug_flag
         self._loaded_app = None
 
     def load_app(self):
@@ -386,12 +388,10 @@ class ScriptInfo(object):
                 '"app.py" module was not found in the current directory.'
             )
 
-        debug = get_debug_flag()
-
-        # Update the app's debug flag through the descriptor so that other
-        # values repopulate as well.
-        if debug is not None:
-            app.debug = debug
+        if self.set_debug_flag:
+            # Update the app's debug flag through the descriptor so that
+            # other values repopulate as well.
+            app.debug = get_debug_flag()
 
         self._loaded_app = app
         return app
@@ -459,6 +459,8 @@ class FlaskGroup(AppGroup):
     :param load_dotenv: Load the nearest :file:`.env` and :file:`.flaskenv`
         files to set environment variables. Will also change the working
         directory to the directory containing the first file found.
+    :param set_debug_flag: Set the app's debug flag based on the active
+        environment
 
     .. versionchanged:: 1.0
         If installed, python-dotenv will be used to load environment variables
@@ -466,7 +468,8 @@ class FlaskGroup(AppGroup):
     """
 
     def __init__(self, add_default_commands=True, create_app=None,
-                 add_version_option=True, load_dotenv=True, **extra):
+                 add_version_option=True, load_dotenv=True,
+                 set_debug_flag=True, **extra):
         params = list(extra.pop('params', None) or ())
 
         if add_version_option:
@@ -475,6 +478,7 @@ class FlaskGroup(AppGroup):
         AppGroup.__init__(self, params=params, **extra)
         self.create_app = create_app
         self.load_dotenv = load_dotenv
+        self.set_debug_flag = set_debug_flag
 
         if add_default_commands:
             self.add_command(run_command)
@@ -550,7 +554,8 @@ class FlaskGroup(AppGroup):
         obj = kwargs.get('obj')
 
         if obj is None:
-            obj = ScriptInfo(create_app=self.create_app)
+            obj = ScriptInfo(create_app=self.create_app,
+                             set_debug_flag=self.set_debug_flag)
 
         kwargs['obj'] = obj
         kwargs.setdefault('auto_envvar_prefix', 'FLASK')
