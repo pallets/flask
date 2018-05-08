@@ -142,6 +142,8 @@ update the code from the master branch:
 
     pip install -U https://github.com/pallets/flask/archive/master.tar.gz
 
+Once you've installed Flask you can continue to :ref:`quickstart`.
+
 .. _install-install-virtualenv:
 
 Install virtualenv
