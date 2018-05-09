@@ -1,11 +1,17 @@
 \definecolor{TitleColor}{rgb}{0,0,0}
 \definecolor{InnerLinkColor}{rgb}{0,0,0}
 
+% Replace Unicode character 'PARTY POPPER' (U+1F389) with a non-breaking space.
+% pdfLaTeX doesn't support Unicode.
+\DeclareUnicodeCharacter{1F389}{\nobreakspace}
+
 \renewcommand{\maketitle}{%
   \begin{titlepage}%
     \let\footnotesize\small
     \let\footnoterule\relax
-    \ifsphinxpdfoutput
+    % Apply following fix only on PDF output, i.e. pdfoutput macro is not 
+    % undefined
+    \ifx\pdfoutput\undefined\else
       \begingroup
       % This \def is required to deal with multi-line authors; it
       % changes \\ to ', ' (comma-space), making it pass muster for
