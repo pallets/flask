@@ -132,6 +132,9 @@ Within the activated environment, use the following command to install Flask:
 
     pip install Flask
 
+Flask is now installed. Check out the :doc:`/quickstart` or go to the
+:doc:`Documentation Overview </index>`.
+
 Living on the edge
 ~~~~~~~~~~~~~~~~~~
 
@@ -177,7 +180,7 @@ On Windows, as an administrator:
     \Python27\python.exe Downloads\get-pip.py
     \Python27\python.exe -m pip install virtualenv
 
-Now you can continue to :ref:`install-create-env`.
+Now you can return above and :ref:`install-create-env`.
 
 .. _virtualenv: https://virtualenv.pypa.io/
 .. _get-pip.py: https://bootstrap.pypa.io/get-pip.py
