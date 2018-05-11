@@ -55,7 +55,7 @@ the following into the ``flaskr/static/style.css`` file:
 You can find a less compact version of ``style.css`` in the
 :gh:`example code <examples/tutorial/flaskr/static/style.css>`.
 
-Go to http://127.0.0.1/auth/login and the page should look like the
+Go to http://127.0.0.1:5000/auth/login and the page should look like the
 screenshot below.
 
 .. image:: flaskr_login.png

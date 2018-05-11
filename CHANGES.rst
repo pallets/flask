@@ -4,10 +4,62 @@ Flask Changelog
 ===============
 
 
+Version 1.1
+-----------
+
+Unreleased
+
+
+Version 1.0.3
+-------------
+
+Unreleased
+
+
+Version 1.0.2
+-------------
+
+Released on May 2nd 2018
+
+-   Fix more backwards compatibility issues with merging slashes between
+    a blueprint prefix and route. (`#2748`_)
+-   Fix error with ``flask routes`` command when there are no routes.
+    (`#2751`_)
+
+.. _#2748: https://github.com/pallets/flask/pull/2748
+.. _#2751: https://github.com/pallets/flask/issues/2751
+
+
+Version 1.0.1
+-------------
+
+Released on April 29th 2018
+
+-   Fix registering partials (with no ``__name__``) as view functions.
+    (`#2730`_)
+-   Don't treat lists returned from view functions the same as tuples.
+    Only tuples are interpreted as response data. (`#2736`_)
+-   Extra slashes between a blueprint's ``url_prefix`` and a route URL
+    are merged. This fixes some backwards compatibility issues with the
+    change in 1.0. (`#2731`_, `#2742`_)
+-   Only trap ``BadRequestKeyError`` errors in debug mode, not all
+    ``BadRequest`` errors. This allows ``abort(400)`` to continue
+    working as expected. (`#2735`_)
+-   The ``FLASK_SKIP_DOTENV`` environment variable can be set to ``1``
+    to skip automatically loading dotenv files. (`#2722`_)
+
+.. _#2722: https://github.com/pallets/flask/issues/2722
+.. _#2730: https://github.com/pallets/flask/pull/2730
+.. _#2731: https://github.com/pallets/flask/issues/2731
+.. _#2735: https://github.com/pallets/flask/issues/2735
+.. _#2736: https://github.com/pallets/flask/issues/2736
+.. _#2742: https://github.com/pallets/flask/issues/2742
+
+
 Version 1.0
 -----------
 
-unreleased
+Released on April 26th 2018
 
 -   **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
 -   Bump minimum dependency versions to the latest stable versions:
@@ -213,6 +265,33 @@ unreleased
 .. _#2691: https://github.com/pallets/flask/pull/2691
 .. _#2693: https://github.com/pallets/flask/pull/2693
 .. _#2709: https://github.com/pallets/flask/pull/2709
+
+
+Version 0.12.4
+--------------
+
+Released on April 29 2018
+
+-   Repackage 0.12.3 to fix package layout issue. (`#2728`_)
+
+.. _#2728: https://github.com/pallets/flask/issues/2728
+
+
+Version 0.12.3
+--------------
+
+Released on April 26th 2018
+
+-   :func:`Request.get_json` no longer accepts arbitrary encodings.
+    Incoming JSON should be encoded using UTF-8 per :rfc:`8259`, but
+    Flask will autodetect UTF-8, -16, or -32. (`#2692`_)
+-   Fix a Python warning about imports when using ``python -m flask``.
+    (`#2666`_)
+-   Fix a ``ValueError`` caused by invalid ``Range`` requests in some
+    cases.
+
+.. _#2666: https://github.com/pallets/flask/issues/2666
+.. _#2692: https://github.com/pallets/flask/issues/2692
 
 
 Version 0.12.2

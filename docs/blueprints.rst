@@ -158,7 +158,7 @@ It is either an absolute path or relative to the blueprint's location::
     admin = Blueprint('admin', __name__, static_folder='static')
 
 By default the rightmost part of the path is where it is exposed on the
-web. This can be changed with the ``static_url`` argument. Because the
+web. This can be changed with the ``static_url_path`` argument. Because the
 folder is called ``static`` here it will be available at the
 ``url_prefix`` of the blueprint + ``/static``. If the blueprint
 has the prefix ``/admin``, the static URL will be ``/admin/static``.

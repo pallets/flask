@@ -28,7 +28,7 @@ from werkzeug.utils import import_string
 from . import __version__
 from ._compat import getargspec, iteritems, reraise, text_type
 from .globals import current_app
-from .helpers import get_debug_flag, get_env
+from .helpers import get_debug_flag, get_env, get_load_dotenv
 
 try:
     import dotenv
@@ -544,7 +544,7 @@ class FlaskGroup(AppGroup):
         # script that is loaded here also attempts to start a server.
         os.environ['FLASK_RUN_FROM_CLI'] = 'true'
 
-        if self.load_dotenv:
+        if get_load_dotenv(self.load_dotenv):
             load_dotenv()
 
         obj = kwargs.get('obj')
@@ -583,12 +583,11 @@ def load_dotenv(path=None):
 
     .. versionadded:: 1.0
     """
-
     if dotenv is None:
         if path or os.path.exists('.env') or os.path.exists('.flaskenv'):
             click.secho(
                 ' * Tip: There are .env files present.'
-                ' Do "pip install python-dotenv" to use them',
+                ' Do "pip install python-dotenv" to use them.',
                 fg='yellow')
         return
 
@@ -826,6 +825,10 @@ def routes_command(sort, all_methods):
     """Show all registered routes with endpoints and methods."""
 
     rules = list(current_app.url_map.iter_rules())
+    if not rules:
+        click.echo('No routes were registered.')
+        return
+
     ignored_methods = set(() if all_methods else ('HEAD', 'OPTIONS'))
 
     if sort in ('endpoint', 'rule'):

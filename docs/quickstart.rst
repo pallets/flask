@@ -293,7 +293,7 @@ Python shell. See :ref:`context-locals`. ::
 
     @app.route('/user/<username>')
     def profile(username):
-        return '{}'s profile'.format(username)
+        return '{}\'s profile'.format(username)
 
     with app.test_request_context():
         print(url_for('index'))
@@ -315,6 +315,8 @@ a route only answers to ``GET`` requests. You can use the ``methods`` argument
 of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
 ::
 
+    from flask import request
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
@@ -323,7 +325,7 @@ of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
             return show_the_login_form()
 
 If ``GET`` is present, Flask automatically adds support for the ``HEAD`` method
-and handles ``HEAD`` requests according to the the `HTTP RFC`_. Likewise,
+and handles ``HEAD`` requests according to the `HTTP RFC`_. Likewise,
 ``OPTIONS`` is automatically implemented for you.
 
 .. _HTTP RFC: https://www.ietf.org/rfc/rfc2068.txt

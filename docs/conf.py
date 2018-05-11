@@ -39,6 +39,7 @@ intersphinx_mapping = {
 html_theme = 'flask'
 html_context = {
     'project_links': [
+        ProjectLink('Donate to Pallets', 'https://psfmember.org/civicrm/contribute/transact?reset=1&id=20'),
         ProjectLink('Flask Website', 'https://palletsprojects.com/p/flask/'),
         ProjectLink('PyPI releases', 'https://pypi.org/project/Flask/'),
         ProjectLink('Source Code', 'https://github.com/pallets/flask/'),
@@ -57,6 +58,7 @@ html_sidebars = {
     'index': [
         'project.html',
         'versions.html',
+        'carbon_ads.html',
         'searchbox.html',
     ],
     '**': [

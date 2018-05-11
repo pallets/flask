@@ -43,11 +43,23 @@ A Simple Example
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 
+Donate
+------
+
+The Pallets organization develops and supports Flask and the libraries
+it uses. In order to grow the community of contributors and users, and
+allow the maintainers to devote more time to the projects, `please
+donate today`_.
+
+.. _please donate today: https://psfmember.org/civicrm/contribute/transact?reset=1&id=20
+
+
 Links
 -----
 
 * Website: https://www.palletsprojects.com/p/flask/
 * Documentation: http://flask.pocoo.org/docs/
+* License: `BSD <https://github.com/pallets/flask/blob/master/LICENSE>`_
 * Releases: https://pypi.org/project/Flask/
 * Code: https://github.com/pallets/flask
 * Issue tracker: https://github.com/pallets/flask/issues
