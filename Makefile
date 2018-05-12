@@ -1,4 +1,4 @@
-.PHONY: all install-dev test coverage cov test-all tox docs audit release clean-pyc upload-docs ebook
+.PHONY: all install-dev test coverage cov test-all tox docs release clean-pyc upload-docs ebook
 
 all: test
 
@@ -22,9 +22,6 @@ tox: test-all
 
 docs: clean-pyc install-dev
 	$(MAKE) -C docs html
-
-audit:
-	python setup.py audit
 
 release:
 	python scripts/make-release.py
