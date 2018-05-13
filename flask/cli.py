@@ -874,6 +874,50 @@ debug mode.
 ))
 
 
+def run_from_app_run(app, host=None, port=None, debug=None):
+    if 'FLASK_APP' not in os.environ:
+        # attempt to determine the value of FLASK_APP through introspection
+        import inspect
+
+        app_name = None
+        for name, value in inspect.getmembers(sys.modules['__main__']):
+            if value == app:
+                app_name = name
+                break
+        if app_name is None:
+            return False
+
+        os.environ['FLASK_APP'] = '{}:{}'.format(sys.argv[0], app_name)
+
+    if 'FLASK_ENV' not in os.environ:
+        os.environ['FLASK_ENV'] = 'development' if debug else 'production'
+
+    # look for the flask executable in the same location where python is
+    executable = os.path.join(os.path.dirname(sys.executable), 'flask')
+    if not os.path.exists(executable):
+        # flask was not found in the expected location, let's assume that it
+        # is in the path
+        executable = 'flask'
+
+    # generate the cli arguments
+    if len(sys.argv) == 1:
+        # if no arguments were given in the command, default to "run",
+        # and add custom host and port if needed
+        args = ['run']
+        if host:
+            args += ['-h', host]
+        if port:
+            args += ['-p', port]
+    else:
+        # pass all the original arguments directly into the cli
+        args = sys.argv[1:]
+
+    sys.argv = [executable] + args
+    os.environ['FLASK_RUN_FROM_APP_RUN'] = 'true'
+    main()
+    return True
+
+
 def main(as_module=False):
     args = sys.argv[1:]
 

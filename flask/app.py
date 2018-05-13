@@ -899,12 +899,28 @@ class Flask(_PackageBoundObject):
             The default port is now picked from the ``SERVER_NAME``
             variable.
         """
+        # determine if this method is being invoked in the standard way (from
+        # the global scope of the __main__ module) by checking the length of
+        # the call stack
+        from inspect import stack
+        called_from_main = len(stack()) == 2
+
         # Change this into a no-op if the server is invoked from the
         # command line. Have a look at cli.py for more information.
-        if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
-            from .debughelpers import explain_ignored_app_run
-            explain_ignored_app_run()
-            return
+        if called_from_main:
+            if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
+                if os.environ.get('FLASK_RUN_FROM_APP_RUN') != 'true':
+                    from .debughelpers import explain_ignored_app_run
+                    explain_ignored_app_run()
+                return
+
+            if load_dotenv and not options:
+                # Since this is a call with no custom settings besides host,
+                # port and debug, we can attempt to route it through the cli
+                # runner, and only fall back to the implementation in this
+                # function if that does not work
+                if cli.run_from_app_run(self, host, port, debug):
+                    return
 
         if get_load_dotenv(load_dotenv):
             cli.load_dotenv()
