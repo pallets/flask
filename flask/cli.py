@@ -887,7 +887,7 @@ def main(as_module=False):
 
         # Python rewrites "python -m flask" to the path to the file in argv.
         # Restore the original command so that the reloader works.
-        sys.argv = ['-m', this_module] + args
+        sys.argv = [sys.executable, '-m', this_module] + args
     else:
         name = None
 
