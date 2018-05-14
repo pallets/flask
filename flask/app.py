@@ -1270,7 +1270,7 @@ class Flask(_PackageBoundObject):
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
         """Ensure that we register only exceptions as handler keys"""
-        if isinstance(exc_class_or_code, integer_types):
+        if issubclass(type(exc_class_or_code), integer_types):
             exc_class = default_exceptions[exc_class_or_code]
         else:
             exc_class = exc_class_or_code
@@ -1334,12 +1334,13 @@ class Flask(_PackageBoundObject):
         :type code_or_exception: int|T<=Exception
         :type f: callable
         """
-        if not issubclass(code_or_exception, (HTTPException, Exception)):
-            raise ValueError(
-                'Tried to register a handler for an exception instance {0!r}.'
-                ' Handlers can only be registered for exception classes or'
-                ' HTTP error codes.'.format(code_or_exception)
-            )
+        if type(code_or_exception) is not int:
+            if not issubclass(code_or_exception, (Exception)):
+                raise ValueError(
+                    'Tried to register a handler for an exception instance {0!r}.'
+                    ' Handlers can only be registered for exception classes or'
+                    ' HTTP error codes.'.format(code_or_exception)
+                )
 
         try:
             exc_class, code = self._get_exc_class_and_code(code_or_exception)
