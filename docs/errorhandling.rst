@@ -125,7 +125,7 @@ looked up by code. If no handler is registered for the code, it is looked up
 by its class hierarchy; the most specific handler is chosen. If no handler is
 registered, :class:`~werkzeug.exceptions.HTTPException` subclasses show a
 generic message about their code, while other exceptions are converted to a
-generic 500 Internal Server Error.
+generic 500 Internal Server Error. Hence, while defining your own custom error handlers for HTTPException and Internal Server Error, keep in mind that your handler should be generic enough to handle any exception.
 
 For example, if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
 is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
