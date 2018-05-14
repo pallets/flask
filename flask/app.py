@@ -1334,7 +1334,7 @@ class Flask(_PackageBoundObject):
         :type code_or_exception: int|T<=Exception
         :type f: callable
         """
-        if isinstance(code_or_exception, HTTPException):  # old broken behavior
+        if not issubclass(code_or_exception, (HTTPException, Exception)):
             raise ValueError(
                 'Tried to register a handler for an exception instance {0!r}.'
                 ' Handlers can only be registered for exception classes or'
