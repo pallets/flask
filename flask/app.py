@@ -562,13 +562,14 @@ class Flask(_PackageBoundObject):
                 view_func=self.send_static_file
             )
 
-        #: The click command line context for this application.  Commands
+        #: Set the name of the cli context for this application.  Commands
         #: registered here show up in the :command:`flask` command once the
         #: application has been discovered.  The default commands are
         #: provided by Flask itself and can be overridden.
         #:
-        #: This is an instance of a :class:`click.Group` object.
-        self.cli = cli.AppGroup(self.name)
+        #: Set the name of the :class:``cli.AppGroup`` instance to allow
+        #: commands to be registered on the application.
+        self.cli.name = self.name
 
     @locked_cached_property
     def name(self):
