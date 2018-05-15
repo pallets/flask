@@ -15,7 +15,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
-from . import cli
+import flask.cli
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -894,7 +894,7 @@ class _PackageBoundObject(object):
         #: and blueprints optionally registered.
         #:
         #: This is an instance of a :class:`click.Group` object.
-        self.cli = cli.AppGroup()
+        self.cli = flask.cli.AppGroup()
 
     def _get_static_folder(self):
         if self._static_folder is not None:
