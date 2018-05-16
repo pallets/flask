@@ -626,7 +626,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
         if not eager_loading:
             message += ' (lazy loading)'
 
-        click.echo(message)
+        click.echo(message, sys.stdout)
 
     click.echo(' * Environment: {0}'.format(env))
 
