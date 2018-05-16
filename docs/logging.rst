@@ -124,7 +124,7 @@ handler. ::
         def format(self, record):
             record.url = request.url
             record.remote_addr = request.remote_addr
-            return super().format(record)
+            return super(RequestFormatter, self).format(record)
 
     formatter = RequestFormatter(
         '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
