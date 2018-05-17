@@ -521,12 +521,12 @@ def test_run_cert_import(monkeypatch):
         run_command.make_context('run', ['--cert', 'not_here'])
 
     # not an SSLContext
-    if sys.version_info >= (2, 7):
+    if sys.version_info >= (2, 7, 9):
         with pytest.raises(click.BadParameter):
             run_command.make_context('run', ['--cert', 'flask'])
 
     # SSLContext
-    if sys.version_info < (2, 7):
+    if sys.version_info < (2, 7, 9):
         ssl_context = object()
     else:
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
