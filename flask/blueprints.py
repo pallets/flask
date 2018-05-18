@@ -14,6 +14,9 @@ from werkzeug.urls import url_join
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
 
+# a singleton sentinel value for parameter defaults
+_sentinel = object()
+
 
 class BlueprintSetupState(object):
     """Temporary holder object for registering a blueprint with the
@@ -118,7 +121,7 @@ class Blueprint(_PackageBoundObject):
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
-                 root_path=None, cli_group=-1):
+                 root_path=None, cli_group=_sentinel):
         _PackageBoundObject.__init__(self, import_name, template_folder,
                                      root_path=root_path)
         self.name = name
@@ -190,7 +193,7 @@ class Blueprint(_PackageBoundObject):
         cli_resolved_group = options.get('cli_group', self.cli_group)
         if cli_resolved_group is None:
             app.cli.commands.update(self.cli.commands)
-        elif cli_resolved_group == -1:
+        elif cli_resolved_group is _sentinel:
             self.cli.name = self.name
             app.cli.add_command(self.cli)
         else:
