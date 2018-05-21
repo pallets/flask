@@ -198,7 +198,7 @@ Released on April 26th 2018
 -   Added :meth:`~flask.Flask.test_cli_runner` to create a Click runner
     that can invoke Flask CLI commands for testing. (`#2636`_)
 -   Subdomain matching is disabled by default and setting
-    :data:`SERVER_NAME` does not implicily enable it. It can be enabled
+    :data:`SERVER_NAME` does not implicitly enable it. It can be enabled
     by passing ``subdomain_matching=True`` to the ``Flask`` constructor.
     (`#2635`_)
 -   A single trailing slash is stripped from the blueprint
@@ -329,7 +329,7 @@ Released on December 21st 2016, codename Punsch.
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
   (pull request ``#1730``).
 - Revert a behavior change that made the dev server crash instead of returning
-  a Internal Server Error (pull request ``#2006``).
+  an Internal Server Error (pull request ``#2006``).
 - Correctly invoke response handlers for both regular request dispatching as
   well as error handlers.
 - Disable logger propagation by default for the app logger.
@@ -855,7 +855,7 @@ Released on June 18th 2010, codename Rakia
 - :meth:`~flask.Flask.after_request` handlers are now also invoked
   if the request dies with an exception and an error handling page
   kicks in.
-- test client has not the ability to preserve the request context
+- test client has the ability to preserve the request context
   for a little longer.  This can also be used to trigger custom
   requests that do not pop the request stack for testing.
 - because the Python standard library caches loggers, the name of
