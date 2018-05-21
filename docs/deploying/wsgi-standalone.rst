@@ -50,7 +50,7 @@ Gevent
 `greenlet`_ to provide a high-level synchronous API on top of `libev`_
 event loop::
 
-    from gevent.wsgi import WSGIServer
+    from gevent.pywsgi import WSGIServer
     from yourapplication import app
 
     http_server = WSGIServer(('', 5000), app)
