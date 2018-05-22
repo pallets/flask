@@ -206,7 +206,7 @@ The following configuration values are used internally by Flask:
     marked "secure". The application must be served over HTTPS for this to make
     sense.
 
-    Default: ``False``
+    Default: ``True``
 
 .. py:data:: SESSION_COOKIE_SAMESITE
 

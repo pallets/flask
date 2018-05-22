@@ -293,7 +293,7 @@ class Flask(_PackageBoundObject):
         'SESSION_COOKIE_DOMAIN':                None,
         'SESSION_COOKIE_PATH':                  None,
         'SESSION_COOKIE_HTTPONLY':              True,
-        'SESSION_COOKIE_SECURE':                False,
+        'SESSION_COOKIE_SECURE':                True,
         'SESSION_COOKIE_SAMESITE':              None,
         'SESSION_REFRESH_EACH_REQUEST':         True,
         'MAX_CONTENT_LENGTH':                   None,
