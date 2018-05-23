@@ -687,7 +687,7 @@ def _validate_key(ctx, param, value):
     cert = ctx.params.get('cert')
     is_adhoc = cert == 'adhoc'
 
-    if sys.version_info < (2, 7):
+    if sys.version_info < (2, 7, 9):
         is_context = cert and not isinstance(cert, (text_type, bytes))
     else:
         is_context = isinstance(cert, ssl.SSLContext)
