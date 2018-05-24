@@ -59,7 +59,7 @@ Released on April 29th 2018
 Version 1.0
 -----------
 
-Released on April 26th 2018
+Released on April 26th 2018, codename Vodka.
 
 -   **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
 -   Bump minimum dependency versions to the latest stable versions:
