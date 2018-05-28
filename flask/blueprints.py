@@ -14,6 +14,9 @@ from werkzeug.urls import url_join
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
 
+# a singleton sentinel value for parameter defaults
+_sentinel = object()
+
 
 class BlueprintSetupState(object):
     """Temporary holder object for registering a blueprint with the
@@ -118,7 +121,7 @@ class Blueprint(_PackageBoundObject):
     def __init__(self, name, import_name, static_folder=None,
                  static_url_path=None, template_folder=None,
                  url_prefix=None, subdomain=None, url_defaults=None,
-                 root_path=None):
+                 root_path=None, cli_group=_sentinel):
         _PackageBoundObject.__init__(self, import_name, template_folder,
                                      root_path=root_path)
         self.name = name
@@ -130,6 +133,7 @@ class Blueprint(_PackageBoundObject):
         if url_defaults is None:
             url_defaults = {}
         self.url_values_defaults = url_defaults
+        self.cli_group = cli_group
 
     def record(self, func):
         """Registers a function that is called when the blueprint is
@@ -185,6 +189,16 @@ class Blueprint(_PackageBoundObject):
 
         for deferred in self.deferred_functions:
             deferred(state)
+
+        cli_resolved_group = options.get('cli_group', self.cli_group)
+        if cli_resolved_group is None:
+            app.cli.commands.update(self.cli.commands)
+        elif cli_resolved_group is _sentinel:
+            self.cli.name = self.name
+            app.cli.add_command(self.cli)
+        else:
+            self.cli.name = cli_resolved_group
+            app.cli.add_command(self.cli)
 
     def route(self, rule, **options):
         """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the

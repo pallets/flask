@@ -15,6 +15,7 @@ import sys
 import pkgutil
 import posixpath
 import mimetypes
+import flask.cli
 from time import time
 from zlib import adler32
 from threading import RLock
@@ -886,6 +887,14 @@ class _PackageBoundObject(object):
         self.root_path = root_path
         self._static_folder = None
         self._static_url_path = None
+
+        #: The click command line context for registration of cli commands
+        #: on the application and associated blueprints, accessible via the
+        #: :command:`flask` command once the application has been discovered
+        #: and blueprints optionally registered.
+        #:
+        #: This is an instance of a :class:`click.Group` object.
+        self.cli = flask.cli.AppGroup()
 
     def _get_static_folder(self):
         if self._static_folder is not None:

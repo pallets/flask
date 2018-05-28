@@ -23,7 +23,7 @@ import pytest
 from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
-from flask import Flask, current_app
+from flask import Flask, current_app, Blueprint
 from flask.cli import (
     AppGroup, FlaskGroup, NoAppException, ScriptInfo, dotenv, find_best_app,
     get_version, load_dotenv, locate_app, prepare_import, run_command,
@@ -539,3 +539,47 @@ def test_run_cert_import(monkeypatch):
     with pytest.raises(click.BadParameter):
         run_command.make_context(
             'run', ['--cert', 'ssl_context', '--key', __file__])
+
+
+def test_cli_blueprints(app):
+    """Test blueprint commands register correctly to the application"""
+    custom = Blueprint('custom', __name__, cli_group='customized')
+    nested = Blueprint('nested', __name__)
+    merged = Blueprint('merged', __name__, cli_group=None)
+    late = Blueprint('late', __name__)
+
+    @custom.cli.command('custom')
+    def custom_command():
+        click.echo('custom_result')
+
+    @nested.cli.command('nested')
+    def nested_command():
+        click.echo('nested_result')
+
+    @merged.cli.command('merged')
+    def merged_command():
+        click.echo('merged_result')
+
+    @late.cli.command('late')
+    def late_command():
+        click.echo('late_result')
+
+    app.register_blueprint(custom)
+    app.register_blueprint(nested)
+    app.register_blueprint(merged)
+    app.register_blueprint(late, cli_group='late_registration')
+
+    app_runner = app.test_cli_runner()
+
+    result = app_runner.invoke(args=['customized', 'custom'])
+    assert 'custom_result' in result.output
+
+    result = app_runner.invoke(args=['nested', 'nested'])
+    assert 'nested_result' in result.output
+
+    result = app_runner.invoke(args=['merged'])
+    assert 'merged_result' in result.output
+
+    result = app_runner.invoke(args=['late_registration', 'late'])
+    assert 'late_result' in result.output
+
