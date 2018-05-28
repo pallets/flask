@@ -37,11 +37,10 @@ Running `uWSGI HTTP Router`_::
 
     uwsgi --http 127.0.0.1:5000 --module myproject:app
 
-For a more optimized setup, see `configuring uWSGI and NGINX`_.
+For a more optimized setup, see :ref:`configuring uWSGI and NGINX <deploying-uwsgi>`.
 
 .. _uWSGI: http://uwsgi-docs.readthedocs.io/en/latest/
 .. _uWSGI HTTP Router: http://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
-.. _configuring uWSGI and NGINX: uwsgi.html#starting-your-app-with-uwsgi
 
 Gevent
 -------
