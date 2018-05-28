@@ -638,15 +638,22 @@ class TestSendfile(object):
         assert options['filename'] == 'index.txt'
         rv.close()
 
-    def test_attachment_with_utf8_filename(self, app, req_ctx):
-        rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=u'Ñandú／pingüino.txt')
-        content_disposition = set(rv.headers['Content-Disposition'].split('; '))
-        assert content_disposition == set((
-            'attachment',
-            'filename="Nandu/pinguino.txt"',
-            "filename*=UTF-8''%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt"
-        ))
+    @pytest.mark.usefixtures('req_ctx')
+    @pytest.mark.parametrize(('filename', 'ascii', 'utf8'), (
+        ('index.html', 'index.html', False),
+        (u'Ñandú／pingüino.txt', '"Nandu/pinguino.txt"',
+        '%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt'),
+        (u'Vögel.txt', 'Vogel.txt', 'V%C3%B6gel.txt'),
+    ))
+    def test_attachment_filename_encoding(self, filename, ascii, utf8):
+        rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=filename)
         rv.close()
+        content_disposition = rv.headers['Content-Disposition']
+        assert 'filename=%s' % ascii in content_disposition
+        if utf8:
+            assert "filename*=UTF-8''" + utf8 in content_disposition
+        else:
+            assert "filename*=UTF-8''" not in content_disposition
 
     def test_static_file(self, app, req_ctx):
         # default cache timeout is 12 hours
