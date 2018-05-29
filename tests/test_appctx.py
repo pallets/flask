@@ -160,7 +160,7 @@ def test_app_ctx_globals_methods(app, app_ctx):
     # __iter__
     assert list(flask.g) == ['foo']
     #__repr__
-    assert flask.g.__repr__() == '<flask.g of \'flask_test\'>'
+    assert repr(flask.g) == "<flask.g of 'flask_test'>"
 
 
 def test_custom_app_ctx_globals_class(app):
