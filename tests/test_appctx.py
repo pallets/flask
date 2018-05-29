@@ -159,6 +159,8 @@ def test_app_ctx_globals_methods(app, app_ctx):
     assert flask.g.pop('bar', 'more cake') == 'more cake'
     # __iter__
     assert list(flask.g) == ['foo']
+    #__repr__
+    assert flask.g.__repr__() == '<flask.g of \'flask_test\'>'
 
 
 def test_custom_app_ctx_globals_class(app):
