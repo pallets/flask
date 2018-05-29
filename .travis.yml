@@ -14,27 +14,30 @@ matrix:
       env: TOXENV=py,codecov
     - python: 2.7
       env: TOXENV=py,simplejson,devel,lowest,codecov
-    - python: pypy
+    - python: pypy3
       env: TOXENV=py,codecov
     - python: nightly
       env: TOXENV=py
     - os: osx
       language: generic
-      env: TOXENV=py
+      env: TOXENV=py3,py2,codecov
+      cache:
+        pip: false
+        directories:
+          - $HOME/Library/Caches/Homebrew
+          - $HOME/Library/Caches/pip
   allow_failures:
+    - python: pypy3
     - python: nightly
-      env: TOXENV=py
     - os: osx
-      language: generic
-      env: TOXENV=py
   fast_finish: true
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update;
-      brew install python3 redis memcached;
-      virtualenv -p python3 ~/py-env;
-      . ~/py-env/bin/activate;
+  - |
+    if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+      brew upgrade python
+      brew install python@2;
+      export PATH="/usr/local/opt/python/libexec/bin:${PATH}"
     fi
 
 install:
