@@ -393,6 +393,17 @@ class TestRoutes:
         cli = FlaskGroup(create_app=create_app)
         return partial(runner.invoke, cli)
 
+    @pytest.fixture
+    def invoke_no_routes(self, runner):
+        def create_app(info):
+            app = Flask(__name__, static_folder=None)
+            app.testing = True
+
+            return app
+
+        cli = FlaskGroup(create_app=create_app)
+        return partial(runner.invoke, cli)
+
     def expect_order(self, order, output):
         # skip the header and match the start of each row
         for expect, line in zip(order, output.splitlines()[2:]):
@@ -429,6 +440,11 @@ class TestRoutes:
         assert 'GET, HEAD, OPTIONS, POST' not in output
         output = invoke(['routes', '--all-methods']).output
         assert 'GET, HEAD, OPTIONS, POST' in output
+
+    def test_no_routes(self, invoke_no_routes):
+        result = invoke_no_routes(['routes'])
+        assert result.exit_code == 0
+        assert 'No routes were registered.' in result.output
 
 
 need_dotenv = pytest.mark.skipif(
