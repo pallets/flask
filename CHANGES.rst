@@ -323,34 +323,42 @@ Released on December 21st 2016, codename Punsch.
 
 - the cli command now responds to `--version`.
 - Mimetype guessing and ETag generation for file-like objects in ``send_file``
-  has been removed, as per issue ``#104``.  See pull request ``#1849``.
+  has been removed, as per issue ``#104``. (`#1849`_)
 - Mimetype guessing in ``send_file`` now fails loudly and doesn't fall back to
-  ``application/octet-stream``. See pull request ``#1988``.
+  ``application/octet-stream``. (`#1988`_)
 - Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
-  (pull request ``#1730``).
+  (`#1730`_).
 - Revert a behavior change that made the dev server crash instead of returning
-  an Internal Server Error (pull request ``#2006``).
+  an Internal Server Error (`#2006`_).
 - Correctly invoke response handlers for both regular request dispatching as
   well as error handlers.
 - Disable logger propagation by default for the app logger.
 - Add support for range requests in ``send_file``.
 - ``app.test_client`` includes preset default environment, which can now be
   directly set, instead of per ``client.get``.
+  
+.. _#1849: https://github.com/pallets/flask/pull/1849
+.. _#1988: https://github.com/pallets/flask/pull/1988
+.. _#1730: https://github.com/pallets/flask/pull/1730
+.. _#2006: https://github.com/pallets/flask/pull/2006
 
 Version 0.11.2
 --------------
 
 Bugfix release, unreleased
 
-- Fix crash when running under PyPy3, see pull request ``#1814``.
+- Fix crash when running under PyPy3. (`#1814`_)
+
+.. _#1814: https://github.com/pallets/flask/pull/1814
 
 Version 0.11.1
 --------------
 
 Bugfix release, released on June 7th 2016.
 
-- Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. See
-  pull request ``#1872``.
+- Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. (`#1872`_)
+  
+.. _#1872: https://github.com/pallets/flask/pull/1872
 
 Version 0.11
 ------------
@@ -414,22 +422,29 @@ Released on May 29th 2016, codename Absinthe.
 - The automatically provided ``OPTIONS`` method is now correctly disabled if
   the user registered an overriding rule with the lowercase-version
   ``options`` (issue ``#1288``).
-- ``flask.json.jsonify`` now supports the ``datetime.date`` type (pull request
-  ``#1326``).
+- ``flask.json.jsonify`` now supports the ``datetime.date`` type (`#1326`_).
 - Don't leak exception info of already catched exceptions to context teardown
-  handlers (pull request ``#1393``).
-- Allow custom Jinja environment subclasses (pull request ``#1422``).
+  handlers (`#1393`_).
+- Allow custom Jinja environment subclasses (`#1422`_).
 - Updated extension dev guidelines.
 
 - ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
 - Turn on autoescape for ``flask.templating.render_template_string`` by default
-  (pull request ``#1515``).
-- ``flask.ext`` is now deprecated (pull request ``#1484``).
+  (`#1515`_).
+- ``flask.ext`` is now deprecated (`#1484`_).
 - ``send_from_directory`` now raises BadRequest if the filename is invalid on
-  the server OS (pull request ``#1763``).
-- Added the ``JSONIFY_MIMETYPE`` configuration variable (pull request ``#1728``).
+  the server OS (`#1763`_).
+- Added the ``JSONIFY_MIMETYPE`` configuration variable (`#1728`_).
 - Exceptions during teardown handling will no longer leave bad application
   contexts lingering around.
+  
+.. _#1326: https://github.com/pallets/flask/pull/1326
+.. _#1393: https://github.com/pallets/flask/pull/1393
+.. _#1422: https://github.com/pallets/flask/pull/1422
+.. _#1515: https://github.com/pallets/flask/pull/1515
+.. _#1484: https://github.com/pallets/flask/pull/1484
+.. _#1763: https://github.com/pallets/flask/pull/1763
+.. _#1728: https://github.com/pallets/flask/pull/1728
 
 Version 0.10.2
 --------------
