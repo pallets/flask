@@ -15,6 +15,15 @@ Version 1.0.3
 
 Unreleased
 
+-   :func:`send_file` encodes filenames as ASCII instead of Latin-1
+    (ISO-8859-1). This fixes compatibility with Gunicorn, which is
+    stricter about header encodings than PEP 3333. (`#2766`_)
+-   Allow custom CLIs using ``FlaskGroup`` to set the debug flag without
+    it always being overwritten based on environment variables. (`#2765`_)
+
+.. _#2766: https://github.com/pallets/flask/issues/2766
+.. _#2765: https://github.com/pallets/flask/pull/2765
+
 
 Version 1.0.2
 -------------

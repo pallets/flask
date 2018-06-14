@@ -1,16 +1,16 @@
 environment:
   global:
-    TOXENV: py
+    TOXENV: py,codecov
 
   matrix:
-    - PYTHON: C:\Python36
-    - PYTHON: C:\Python27
+    - PYTHON: C:\Python36-x64
+    - PYTHON: C:\Python27-x64
 
 init:
   - SET PATH=%PYTHON%;%PATH%
 
 install:
-  - python -m pip install -U pip setuptools wheel tox
+  - python -m pip install -U tox
 
 build: false
 
@@ -21,3 +21,6 @@ branches:
   only:
     - master
     - /^.*-maintenance$/
+
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
