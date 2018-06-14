@@ -356,6 +356,28 @@ def test_flaskgroup(runner):
     assert result.output == 'flaskgroup\n'
 
 
+@pytest.mark.parametrize('set_debug_flag', (True, False))
+def test_flaskgroup_debug(runner, set_debug_flag):
+    """Test FlaskGroup debug flag behavior."""
+
+    def create_app(info):
+        app = Flask("flaskgroup")
+        app.debug = True
+        return app
+
+    @click.group(cls=FlaskGroup, create_app=create_app, set_debug_flag=set_debug_flag)
+    def cli(**params):
+        pass
+
+    @cli.command()
+    def test():
+        click.echo(str(current_app.debug))
+
+    result = runner.invoke(cli, ['test'])
+    assert result.exit_code == 0
+    assert result.output == '%s\n' % str(not set_debug_flag)
+
+
 def test_print_exceptions(runner):
     """Print the stacktrace if the CLI."""
 
@@ -537,12 +559,12 @@ def test_run_cert_import(monkeypatch):
         run_command.make_context('run', ['--cert', 'not_here'])
 
     # not an SSLContext
-    if sys.version_info >= (2, 7):
+    if sys.version_info >= (2, 7, 9):
         with pytest.raises(click.BadParameter):
             run_command.make_context('run', ['--cert', 'flask'])
 
     # SSLContext
-    if sys.version_info < (2, 7):
+    if sys.version_info < (2, 7, 9):
         ssl_context = object()
     else:
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)

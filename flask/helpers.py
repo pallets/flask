@@ -506,6 +506,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
 
+    .. versionchanged:: 1.0.3
+        Filenames are encoded with ASCII instead of Latin-1 for broader
+        compatibility with WSGI servers.
+
     :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
@@ -564,11 +568,11 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                             'sending as attachment')
 
         try:
-            attachment_filename = attachment_filename.encode('latin-1')
+            attachment_filename = attachment_filename.encode('ascii')
         except UnicodeEncodeError:
             filenames = {
                 'filename': unicodedata.normalize(
-                    'NFKD', attachment_filename).encode('latin-1', 'ignore'),
+                    'NFKD', attachment_filename).encode('ascii', 'ignore'),
                 'filename*': "UTF-8''%s" % url_quote(attachment_filename),
             }
         else:
