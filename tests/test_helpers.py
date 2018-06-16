@@ -155,7 +155,7 @@ class TestJSON(object):
         rv = flask.json.load(out)
         assert rv == test_data
 
-    @pytest.mark.parametrize('test_value', [0, -1, 1, 23, 3.14, 's', "longer string", True, False, None])
+    @pytest.mark.parametrize('test_value', [0, -1, 1, 23, 3.14, float('Infinity'), 's', "longer string", True, False, None])
     def test_jsonify_basic_types(self, test_value, app, client):
         """Test jsonify with basic types."""
 

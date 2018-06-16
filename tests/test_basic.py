@@ -1298,6 +1298,14 @@ def test_jsonify_prettyprint(app, req_ctx):
     assert rv.data == pretty_response
 
 
+@pytest.mark.parametrize('test_value', [float('nan'), float('Infinity')])
+def test_json_strict(app, req_ctx, test_value):
+    app.config.update({'JSON_STRICT': True})
+
+    with pytest.raises(ValueError) as e:
+        flask.jsonify(test_value)
+    assert 'not JSON compliant' in str(e.value)
+
 def test_jsonify_mimetype(app, req_ctx):
     app.config.update({"JSONIFY_MIMETYPE": 'application/vnd.api+json'})
     msg = {

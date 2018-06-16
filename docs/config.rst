@@ -315,6 +315,14 @@ The following configuration values are used internally by Flask:
 
     Default: ``True``
 
+.. py:data:: JSON_STRICT
+
+    Raise an error when encountering values that cannot be serialized in a
+    strictly JSON compliant manner (such as ``NaN`` and ``Infinity``),
+    rather than encoding them as such.
+
+    Default: ``False``
+
 .. py:data:: JSONIFY_PRETTYPRINT_REGULAR
 
     ``jsonify`` responses will be output with newlines, spaces, and indentation

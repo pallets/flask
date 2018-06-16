@@ -102,6 +102,9 @@ def _dump_arg_defaults(kwargs):
         if not current_app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
 
+        if current_app.config['JSON_STRICT']:
+            kwargs.setdefault('allow_nan', False)
+
         kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
     else:
         kwargs.setdefault('sort_keys', True)
@@ -173,6 +176,10 @@ def dumps(obj, **kwargs):
     default which coerce into unicode strings automatically.  That behavior by
     default is controlled by the ``JSON_AS_ASCII`` configuration variable
     and can be overridden by the simplejson ``ensure_ascii`` parameter.
+
+    If the ``JSON_STRICT`` config parameter is set to True, this function will
+    raise a :exc:`ValueError` if it encounters values that cannot be represented in
+    a JSON specification compliant manner.
     """
     _dump_arg_defaults(kwargs)
     encoding = kwargs.pop('encoding', None)
