@@ -40,7 +40,7 @@ pytest.
 
 Next, we create a `pytest fixture`_ called
 :func:`client` that configures
-the application for testing and initializes a new database.::
+the application for testing and initializes a new database::
 
     import os
     import tempfile
