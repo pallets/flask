@@ -83,6 +83,7 @@ if hasattr(sys, 'pypy_version_info'):
     class _Mgr(object):
         def __enter__(self):
             return self
+        
         def __exit__(self, *args):
             if hasattr(sys, 'exc_clear'):
                 # Python 3 (PyPy3) doesn't have exc_clear
