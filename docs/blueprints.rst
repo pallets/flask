@@ -95,9 +95,10 @@ So how do you register that blueprint?  Like this::
 If you check the rules registered on the application, you will find
 these::
 
-    [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+    >>> app.url_map
+    Map([<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
      <Rule '/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
-     <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>]
+     <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>])
 
 The first one is obviously from the application itself for the static
 files.  The other two are for the `show` function of the ``simple_page``
@@ -110,9 +111,10 @@ Blueprints however can also be mounted at different locations::
 
 And sure enough, these are the generated rules::
 
-    [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+    >>> app.url_map
+    Map([<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
      <Rule '/pages/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
-     <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>]
+     <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>])
 
 On top of that you can register blueprints multiple times though not every
 blueprint might respond properly to that.  In fact it depends on how the
