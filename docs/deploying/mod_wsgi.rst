@@ -221,7 +221,7 @@ Deploying to shared hosting
 
 You can deploy flask application to shared hosting.
 
-`Requirements:`
+Requirements:
 
 1. Shared hosting with ``SSH`` and ``mod_wsgi`` support
 
