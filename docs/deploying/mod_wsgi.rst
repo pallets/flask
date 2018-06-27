@@ -215,3 +215,58 @@ For Python 3 add the following lines to the top of your ``.wsgi`` file::
 
 This sets up the load paths according to the settings of the virtual
 environment.  Keep in mind that the path has to be absolute.
+
+Deploying to shared hosting
+---------------------------------
+
+You can deploy flask application to shared hosting.
+
+`Requirements:`
+
+1. Shared hosting with ``SSH`` and ``mod_wsgi`` support
+
+2. Python with pip and virtualenv module (pre-installed or compiled from source to ``~/.local/``)
+
+3. Virtual enviroment with flask application dependencies
+
+4. Flask application inside your ``/public_html`` folder
+
+5. ``.htaccess`` file and ``wsgi-script`` (e.g. ``wsgi.py``)
+
+Content of ``.htaccess`` file:
+
+.. sourcecode:: apache
+
+    AddDefaultCharset utf-8
+    AddHandler wsgi-script .py
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ /wsgi.py/$1 [QSA,L]
+
+Content of ``wsgi.py`` file:
+
+.. sourcecode:: python
+
+    #!/home/u/username/.local/bin/python
+    # -*- coding: utf-8 -*-
+
+    import logging
+    import sys
+    # Adding dependencies for flask application to $PATH
+    sys.path.insert(0, '/home/u/username/public_html/venv/lib/python3.6/site-packages/')
+    # Adding flask application folder to $PATH
+    sys.path.insert(0, '/home/u/username/public_html/')
+    
+    # Importing flask application
+    from app import app
+    
+    # Removing wsgi.py file name from url
+    class ScriptNameStripper(object):
+        def __init__(self, app):
+            self.app = app
+
+        def __call__(self, environ, start_response):
+            environ['SCRIPT_NAME'] = ''
+            return self.app(environ, start_response)
+
+    application = ScriptNameStripper(app)
