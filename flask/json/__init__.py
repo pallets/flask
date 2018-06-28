@@ -292,7 +292,7 @@ def jsonify(*args, **kwargs):
         }
 
 
-    .. versionchanged:: 0.11
+    .. versionchanged:: 1.1
        Added support for status parameter
 
     This function's response will be pretty printed if the
