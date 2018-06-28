@@ -115,7 +115,7 @@ To access the current session you can use the :class:`session` object:
 .. class:: session
 
    The session object works pretty much like an ordinary dict, with the
-   difference that it keeps track on modifications.
+   difference that it keeps track of modifications.
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
