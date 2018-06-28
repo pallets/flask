@@ -243,6 +243,9 @@ class TestJSON(object):
         rv_uuid = uuid.UUID(rv_x)
         assert rv_uuid == test_uuid
 
+    def test_jsonify_status(self, app, client):
+        flask.jsonify({'code': 400}, status=400)
+
     def test_json_attr(self, app, client):
 
         @app.route('/add', methods=['POST'])
