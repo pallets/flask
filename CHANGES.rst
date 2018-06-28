@@ -9,6 +9,10 @@ Version 1.1
 
 Unreleased
 
+-   :func:`jsonify` allows for a ``status`` kwarg (`#2845`_)
+
+.. _#2845: https://github.com/pallets/flask/pull/2845
+
 
 Version 1.0.3
 -------------

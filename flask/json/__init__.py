@@ -271,6 +271,7 @@ def jsonify(*args, **kwargs):
     3. Multiple keyword arguments: Converted to a dict before being passed to
        :func:`dumps`.
     4. Both args and kwargs: Behavior undefined and will throw an exception.
+    5. ``status`` kwarg: Set the status
 
     Example usage::
 
@@ -291,9 +292,8 @@ def jsonify(*args, **kwargs):
         }
 
 
-    .. versionchanged:: 0.11
-       Added support for serializing top-level arrays. This introduces a
-       security risk in ancient browsers. See :ref:`json-security` for details.
+    .. versionchanged:: 1.1
+       Added support for status parameter
 
     This function's response will be pretty printed if the
     ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to True or the
@@ -310,6 +310,10 @@ def jsonify(*args, **kwargs):
         indent = 2
         separators = (', ', ': ')
 
+    status = kwargs.get('status')
+    if status:
+        del kwargs['status']
+
     if args and kwargs:
         raise TypeError('jsonify() behavior undefined when passed both args and kwargs')
     elif len(args) == 1:  # single args are passed directly to dumps()
@@ -319,7 +323,8 @@ def jsonify(*args, **kwargs):
 
     return current_app.response_class(
         dumps(data, indent=indent, separators=separators) + '\n',
-        mimetype=current_app.config['JSONIFY_MIMETYPE']
+        mimetype=current_app.config['JSONIFY_MIMETYPE'],
+        status=status
     )
 
 
