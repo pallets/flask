@@ -34,9 +34,5 @@ from .signals import (signals_available, template_rendered, request_started,
      appcontext_tearing_down, appcontext_pushed,
      appcontext_popped, message_flashed, before_render_template)
 
-# Expose a convenient wrapper around python's builtin json module.
+# Expose a convenient wrapper around json module.
 from .json import jsonify
-
-# backwards compat, goes away in 1.0
-from .sessions import SecureCookieSession as Session
-json_available = True
