@@ -31,7 +31,7 @@ A Flask application can be as simple as a single file.
     def hello():
         return 'Hello, World!'
 
-However, as a project get bigger, it becomes overwhelming to keep all
+However, as a project gets bigger, it becomes overwhelming to keep all
 the code in one file. Python projects use *packages* to organize code
 into multiple modules that can be imported where needed, and the
 tutorial will do this as well.
