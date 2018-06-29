@@ -26,6 +26,17 @@ def test_basic_url_generation(app):
         rv = flask.url_for('index')
         assert rv == 'https://localhost/'
 
+def test_url_generation_with_parameter(app):
+    app.config['SERVER_NAME'] = 'localhost'
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+
+    @app.route('/test/<id>')
+    def test():
+        pass
+
+    with app.app_context():
+        rv = flask.url_for('test', id=1)
+        assert rv == 'https://localhost/test/1'
 
 def test_url_generation_requires_server_name(app):
     with app.app_context():
