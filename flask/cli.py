@@ -26,7 +26,7 @@ import click
 from werkzeug.utils import import_string
 
 from . import __version__
-from ._compat import getargspec, iteritems, reraise, text_type
+from ._compat import getargspec, itervalues, reraise, text_type
 from .globals import current_app
 from .helpers import get_debug_flag, get_env, get_load_dotenv
 
@@ -55,7 +55,7 @@ def find_best_app(script_info, module):
 
     # Otherwise find the only object that is a Flask instance.
     matches = [
-        v for k, v in iteritems(module.__dict__) if isinstance(v, Flask)
+        v for v in itervalues(module.__dict__) if isinstance(v, Flask)
     ]
 
     if len(matches) == 1:
