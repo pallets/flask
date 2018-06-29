@@ -708,6 +708,11 @@ class Flask(_PackageBoundObject):
     def _set_templates_auto_reload(self, value):
         self.config['TEMPLATES_AUTO_RELOAD'] = value
 
+        # workaround to not create jinja_env if it has not been created
+        if 'jinja_env' in self.__dict__:
+            # if it was created, also modify the underlying (jinja) config
+            self.jinja_env.auto_reload = value
+
     templates_auto_reload = property(
         _get_templates_auto_reload, _set_templates_auto_reload
     )
