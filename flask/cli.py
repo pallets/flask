@@ -786,7 +786,6 @@ def shell_command():
     This is useful for executing small snippets of management code
     without having to manually configure the application.
     """
-    import code
     from flask.globals import _app_ctx_stack
     app = _app_ctx_stack.top.app
     banner = 'Python %s on %s\nApp: %s [%s]\nInstance: %s' % (
@@ -807,7 +806,14 @@ def shell_command():
 
     ctx.update(app.make_shell_context())
 
-    code.interact(banner=banner, local=ctx)
+    try:
+        from IPython import embed
+        # try use ipyton as default shell
+        h, kwargs = embed, dict(banner1=banner, user_ns=ctx)
+    except ImportError:
+        import code
+        h, kwargs = code.interact, dict(banner=banner, local=ctx)
+    h(**kwargs)
 
 
 @click.command('routes', short_help='Show the routes for the app.')
