@@ -2,6 +2,12 @@ Flask Changelog
 ===============
 
 
+Version 0.12.5
+--------------
+
+-   Remove check against deprecated property ``Request.is_xhr``.
+
+
 Version 0.12.4
 --------------
 
