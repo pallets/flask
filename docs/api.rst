@@ -114,14 +114,6 @@ Incoming Request Data
       `url_root`    ``u'http://www.example.com/myapplication/'``
       ============= ======================================================
 
-   .. attribute:: is_xhr
-
-      ``True`` if the request was triggered via a JavaScript
-      `XMLHttpRequest`. This only works with libraries that support the
-      ``X-Requested-With`` header and set it to `XMLHttpRequest`.
-      Libraries that do that are prototype, jQuery and Mochikit and
-      probably some more.
-
 .. class:: request
 
    To access incoming request data, you can use the global `request`
