@@ -295,7 +295,7 @@ def jsonify(*args, **kwargs):
     indent = None
     separators = (',', ':')
 
-    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] and not request.is_xhr:
+    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR']:
         indent = 2
         separators = (', ', ': ')
 
