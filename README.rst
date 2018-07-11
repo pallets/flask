@@ -43,6 +43,15 @@ A Simple Example
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 
+Contributing
+------------
+
+For guidance on setting up a development environment and how to make a
+contribution to Flask, see the `contributing guidelines`_.
+
+.. _contributing guidelines: https://github.com/pallets/flask/blob/master/CONTRIBUTING.rst
+
+
 Donate
 ------
 
