@@ -4,13 +4,13 @@ uWSGI
 =====
 
 uWSGI is a deployment option on servers like `nginx`_, `lighttpd`_, and
-`cherokee`_; see :ref:`deploying-fastcgi` and :ref:`deploying-wsgi-standalone`
-for other options.  To use your WSGI application with uWSGI protocol you will
-need a uWSGI server first. uWSGI is both a protocol and an application server;
-the application server can serve uWSGI, FastCGI, and HTTP protocols.
+`cherokee`_; see :doc:`fastcgi` and :doc:`wsgi-standalone` for other options.
+To use your WSGI application with uWSGI protocol you will need a uWSGI server
+first. uWSGI is both a protocol and an application server; the application
+server can serve uWSGI, FastCGI, and HTTP protocols.
 
 The most popular uWSGI server is `uwsgi`_, which we will use for this
-guide.  Make sure to have it installed to follow along.
+guide. Make sure to have it installed to follow along.
 
 .. admonition:: Watch Out
 
@@ -32,13 +32,13 @@ Given a flask application in myapp.py, use the following command:
     $ uwsgi -s /tmp/yourapplication.sock --manage-script-name --mount /yourapplication=myapp:app
 
 The ``--manage-script-name`` will move the handling of ``SCRIPT_NAME`` to uwsgi,
-since its smarter about that. It is used together with the ``--mount`` directive
-which will make requests to ``/yourapplication`` be directed to ``myapp:app``.
-If your application is accessible at root level, you can use a single ``/``
-instead of ``/yourapplication``. ``myapp`` refers to the name of the file of
-your flask application (without extension) or the module which provides ``app``.
-``app`` is the callable inside of your application (usually the line reads
-``app = Flask(__name__)``.
+since it is smarter about that. It is used together with the ``--mount``
+directive which will make requests to ``/yourapplication`` be directed to
+``myapp:app``. If your application is accessible at root level, you can use a
+single ``/`` instead of ``/yourapplication``. ``myapp`` refers to the name of
+the file of your flask application (without extension) or the module which
+provides ``app``. ``app`` is the callable inside of your application (usually
+the line reads ``app = Flask(__name__)``.
 
 If you want to deploy your flask application inside of a virtual environment,
 you need to also add ``--virtualenv /path/to/virtual/environment``. You might
