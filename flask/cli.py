@@ -30,6 +30,9 @@ from ._compat import getargspec, itervalues, reraise, text_type
 from .globals import current_app
 from .helpers import get_debug_flag, get_env, get_load_dotenv
 
+from werkzeug import __version__ as werkzeug_version
+from jinja2 import __version__ as jinja2_version
+
 try:
     import dotenv
 except ImportError:
@@ -259,11 +262,16 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
 def get_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    message = 'Flask %(version)s\nPython %(python_version)s'
-    click.echo(message % {
-        'version': __version__,
-        'python_version': sys.version,
-    }, color=ctx.color)
+    message = 'Flask version: {flask_version}\n' \
+              'Jinja2 version: {jinja2_version}\n' \
+              'Werkzeug version: {werkzeug_version}\n' \
+              'Python version: {python_version}'
+    click.echo(message.format(
+        flask_version=__version__,
+        jinja2_version=jinja2_version,
+        werkzeug_version=werkzeug_version,
+        python_version=sys.version,
+    ), color=ctx.color)
     ctx.exit()
 
 
