@@ -243,6 +243,8 @@ def test_locate_app_suppress_raise():
 def test_get_version(test_apps, capsys):
     """Test of get_version."""
     from flask import __version__ as flask_ver
+    from werkzeug import __version__ as werkzeug_ver
+    from jinja2 import __version__ as jinja2_ver
     from sys import version as py_ver
 
     class MockCtx(object):
@@ -255,6 +257,8 @@ def test_get_version(test_apps, capsys):
     get_version(ctx, None, "test")
     out, err = capsys.readouterr()
     assert flask_ver in out
+    assert werkzeug_ver in out
+    assert jinja2_ver in out
     assert py_ver in out
 
 
