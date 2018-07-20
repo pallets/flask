@@ -78,10 +78,12 @@ found, the command looks for a factory function named ``create_app`` or
 ``make_app`` that returns an instance.
 
 When calling an application factory, if the factory takes an argument named
-``info``, then the :class:`~cli.ScriptInfo` instance is passed as a keyword
-argument. If parentheses follow the factory name, their contents are parsed
-as Python literals and passes as arguments to the function. This means that
-strings must still be in quotes.
+``script_info``, then the :class:`~cli.ScriptInfo` instance is passed as a
+keyword argument. If the application factory takes only one argument and no
+parentheses follow the factory name, the :class:`~cli.ScriptInfo` instance
+is passed as a positional argument. If parentheses follow the factory name,
+their contents are parsed as Python literals and passes as arguments to the
+function. This means that strings must still be in quotes.
 
 
 Run the Development Server
