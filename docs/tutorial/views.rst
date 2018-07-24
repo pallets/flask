@@ -157,7 +157,7 @@ Here's what the ``register`` view function is doing:
     stores messages that can be retrieved when rendering the template.
 
 #.  When the user initially navigates to ``auth/register``, or
-    there was an validation error, an HTML page with the registration
+    there was a validation error, an HTML page with the registration
     form should be shown. :func:`render_template` will render a template
     containing the HTML, which you'll write in the next step of the
     tutorial.
