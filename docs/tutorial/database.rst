@@ -185,7 +185,7 @@ the end of the factory function before returning the app.
 
 
 Initializing the Database File
-----------------------------
+------------------------------
 
 Now that ``init-db`` has been registered with the app, it can be called
 using the ``flask`` command, similar to the ``run`` command from the
