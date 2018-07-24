@@ -7,12 +7,12 @@ The application will use a `SQLite`_ database to store users and posts.
 Python comes with built-in support for SQLite in the :mod:`sqlite3`
 module.
 
-SQLite is convenient because it doesn't require setting up a separate
-database server and is built-in to Python. However, if concurrent
-requests try to write to the database at the same time, they will slow
-down as each write happens sequentially. Small applications won't notice
-this. Once you become big, you may want to switch to a different
-database.
+SQLite is convenient because it doesn't require setting up an external
+database server. However, if concurrent requests try to write to the 
+database at the same time, the program will slow down as each write 
+happens sequentially. Since the database written is light weighted,
+the changes are insignificant for an applications. Once the database
+starts to complicate, you may need to switch to a different database.
 
 The tutorial doesn't go into detail about SQL. If you are not familiar
 with it, the SQLite docs describe the `language`_.
@@ -24,10 +24,10 @@ with it, the SQLite docs describe the `language`_.
 Connect to the Database
 -----------------------
 
-The first thing to do when working with a SQLite database (and most
+The first thing to do when working with SQLite database (and most
 other Python database libraries) is to create a connection to it. Any
-queries and operations are performed using the connection, which is
-closed after the work is finished.
+queries and operations are performed using the connection. However, the
+database has to be closed after the commencement of those works.
 
 In web applications this connection is typically tied to the request. It
 is created at some point when handling a request, and closed before the
@@ -90,8 +90,8 @@ Create the Tables
 
 In SQLite, data is stored in *tables* and *columns*. These need to be
 created before you can store and retrieve data. Flaskr will store users
-in the ``user`` table, and posts in the ``post`` table. Create a file
-with the SQL commands needed to create empty tables:
+in the ``user`` table, and posts in the ``post`` table. The empty tables
+can be created using SQL command:
 
 .. code-block:: sql
     :caption: ``flaskr/schema.sql``
@@ -114,7 +114,7 @@ with the SQL commands needed to create empty tables:
       FOREIGN KEY (author_id) REFERENCES user (id)
     );
 
-Add the Python functions that will run these SQL commands to the
+Next, add the Python functions that will run these SQL commands to the
 ``db.py`` file:
 
 .. code-block:: python
@@ -140,7 +140,7 @@ where that location is when deploying the application later. ``get_db``
 returns a database connection, which is used to execute the commands
 read from the file.
 
-:func:`click.command` defines a command line command called ``init-db``
+:func:`click.command` defines a command line called ``init-db`` 
 that calls the ``init_db`` function and shows a success message to the
 user. You can read :ref:`cli` to learn more about writing commands.
 
@@ -184,8 +184,8 @@ the end of the factory function before returning the app.
         return app
 
 
-Initialize the Database File
-----------------------------
+Initializing the Database File
+------------------------------
 
 Now that ``init-db`` has been registered with the app, it can be called
 using the ``flask`` command, similar to the ``run`` command from the
