@@ -10,7 +10,7 @@ Read the Source.
 
 Flask started in part to demonstrate how to build your own framework on top of
 existing well-used tools Werkzeug (WSGI) and Jinja (templating), and as it
-developed, it became useful to a wide audience.  As you grow your codebase,
+developed, it became useful to wide audience. As you grow your codebase,
 don't just use Flask -- understand it.  Read the source.  Flask's code is
 written to be read; its documentation is published so you can use its internal
 APIs.  Flask sticks to documented APIs in upstream libraries, and documents its
@@ -53,7 +53,7 @@ If none of the above options work, fork Flask.  The majority of code of Flask
 is within Werkzeug and Jinja2.  These libraries do the majority of the work.
 Flask is just the paste that glues those together.  For every project there is
 the point where the underlying framework gets in the way (due to assumptions
-the original developers had).  This is natural because if this would not be the
+the original developers had). This is natural because if this would not be the
 case, the framework would be a very complex system to begin with which causes a
 steep learning curve and a lot of user frustration.
 
@@ -96,6 +96,6 @@ Discuss with the community.
 
 The Flask developers keep the framework accessible to users with codebases big
 and small. If you find an obstacle in your way, caused by Flask, don't hesitate
-to contact the developers on the mailinglist or IRC channel.  The best way for
+to contact the developers on the mailing list or IRC channel.  The best way for
 the Flask and Flask extension developers to improve the tools for larger
 applications is getting feedback from users.
