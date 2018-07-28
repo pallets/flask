@@ -3,8 +3,7 @@ from __future__ import print_function
 
 import inspect
 import re
-
-from pallets_sphinx_themes import DocVersion, ProjectLink, get_version
+from pallets_sphinx_themes import ProjectLink, get_version
 
 # Project --------------------------------------------------------------
 
@@ -21,6 +20,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.log_cabinet',
+    'pallets_sphinx_themes',
 ]
 
 intersphinx_mapping = {
@@ -39,42 +39,34 @@ intersphinx_mapping = {
 html_theme = 'flask'
 html_context = {
     'project_links': [
-        ProjectLink('Donate to Pallets', 'https://psfmember.org/civicrm/contribute/transact?reset=1&id=20'),
+        ProjectLink('Donate to Pallets', 'https://www.palletsprojects.com/donate'),
         ProjectLink('Flask Website', 'https://palletsprojects.com/p/flask/'),
         ProjectLink('PyPI releases', 'https://pypi.org/project/Flask/'),
         ProjectLink('Source Code', 'https://github.com/pallets/flask/'),
-        ProjectLink(
-            'Issue Tracker', 'https://github.com/pallets/flask/issues/'),
+        ProjectLink('Issue Tracker', 'https://github.com/pallets/flask/issues/'),
     ],
-    'versions': [
-        DocVersion('dev', 'Development', 'unstable'),
-        DocVersion('1.0', 'Flask 1.0', 'stable'),
-        DocVersion('0.12', 'Flask 0.12'),
-    ],
-    'canonical_url': 'http://flask.pocoo.org/docs/{}/'.format(version),
-    'carbon_ads_args': 'zoneid=1673&serve=C6AILKT&placement=pocooorg',
 }
 html_sidebars = {
     'index': [
         'project.html',
         'versions.html',
-        'carbon_ads.html',
         'searchbox.html',
     ],
     '**': [
         'localtoc.html',
         'relations.html',
         'versions.html',
-        'carbon_ads.html',
         'searchbox.html',
     ]
 }
+singlehtml_sidebars = [
+    "project.html",
+    "versions.html",
+    "localtoc.html",
+]
 html_static_path = ['_static']
 html_favicon = '_static/flask-favicon.ico'
 html_logo = '_static/flask.png'
-html_additional_pages = {
-    '404': '404.html',
-}
 html_show_sourcelink = False
 
 # LaTeX ----------------------------------------------------------------

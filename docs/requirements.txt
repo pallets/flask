@@ -1,0 +1,3 @@
+sphinx
+sphinxcontrib-log-cabinet
+https://github.com/pallets/pallets-sphinx-themes/archive/master.zip
