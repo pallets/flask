@@ -27,21 +27,21 @@ follows:
 
 .. sourcecode:: text
 
-    # apt-get install libapache2-mod-wsgi
+    $ apt-get install libapache2-mod-wsgi
 
 If you are using a yum based distribution (Fedora, OpenSUSE, etc..) you
 can install it as follows:
 
 .. sourcecode:: text
 
-    # yum install mod_wsgi
+    $ yum install mod_wsgi
 
 On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by
 using pkg_add:
 
 .. sourcecode:: text
 
-    # pkg install ap22-mod_wsgi2
+    $ pkg install ap22-mod_wsgi2
 
 If you are using pkgsrc you can install `mod_wsgi` by compiling the
 `www/ap2-wsgi` package.

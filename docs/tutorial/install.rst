@@ -80,7 +80,7 @@ Use ``pip`` to install your project in the virtual environment.
 
 .. code-block:: none
 
-    pip install -e .
+    $ pip install -e .
 
 This tells pip to find ``setup.py`` in the current directory and install
 it in *editable* or *development* mode. Editable mode means that as you
@@ -91,7 +91,7 @@ You can observe that the project is now installed with ``pip list``.
 
 .. code-block:: none
 
-    pip list
+    $ pip list
 
     Package        Version   Location
     -------------- --------- ----------------------------------

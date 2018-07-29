@@ -218,12 +218,12 @@ To apply the upgrade script do the following:
     <https://raw.githubusercontent.com/pallets/flask/0.12.3/scripts/flask-07-upgrade.py>`_
 2.  Run it in the directory of your application::
 
-        python flask-07-upgrade.py > patchfile.diff
+        $ python flask-07-upgrade.py > patchfile.diff
 
 3.  Review the generated patchfile.
 4.  Apply the patch::
 
-        patch -p1 < patchfile.diff
+        $ patch -p1 < patchfile.diff
 
 5.  If you were using per-module template folders you need to move some
     templates around.  Previously if you had a folder named :file:`templates`

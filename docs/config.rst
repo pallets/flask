@@ -164,7 +164,7 @@ The following configuration values are used internally by Flask:
     application. It should be a long random string of bytes, although unicode
     is accepted too. For example, copy the output of this to your config::
 
-        python -c 'import os; print(os.urandom(16))'
+        $ python -c 'import os; print(os.urandom(16))'
         b'_5#y2L"F4Q8z\n\xec]/'
 
     **Do not reveal the secret key when posting questions or committing code.**
@@ -419,7 +419,7 @@ server::
 
 On Windows systems use the `set` builtin instead::
 
-    >set YOURAPPLICATION_SETTINGS=\path\to\settings.cfg
+    > set YOURAPPLICATION_SETTINGS=\path\to\settings.cfg
 
 The configuration files themselves are actual Python files.  Only values
 in uppercase are actually stored in the config object later on.  So make
@@ -455,8 +455,8 @@ the shell before starting the server::
 
 On Windows systems use the `set` builtin instead::
 
-    >set SECRET_KEY='5f352379324c22463451387a0aec5d2f'
-    >set DEBUG=False
+    > set SECRET_KEY='5f352379324c22463451387a0aec5d2f'
+    > set DEBUG=False
 
 While this approach is straightforward to use, it is important to remember that
 environment variables are strings -- they are not automatically deserialized
