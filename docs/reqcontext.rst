@@ -193,13 +193,20 @@ contexts until the with block exits.
 
     # teardown functions are called after the context with block exits
 
-    with app.test_client():
+    with app.test_client() as client:
         client.get('/')
         # the contexts are not popped even though the request ended
         print(request.path)
 
     # the contexts are popped and teardown functions are called after
     # the client with block exists
+    
+    # prints:
+    # during with block
+    # after with block
+    # during view
+    # /
+    # after with block
 
 
 Signals
