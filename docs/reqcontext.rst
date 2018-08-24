@@ -200,14 +200,6 @@ contexts until the with block exits.
 
     # the contexts are popped and teardown functions are called after
     # the client with block exists
-    
-    # prints:
-    # during with block
-    # after with block
-    # during view
-    # /
-    # after with block
-
 
 Signals
 ~~~~~~~
