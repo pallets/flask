@@ -778,8 +778,12 @@ def _validate_key(ctx, param, value):
     default=True,
     help="Enable or disable multithreading.",
 )
+@click.option('--extra-files', '-f',
+              multiple=True, default=None, type=click.Path(),
+              help='Files reloader should watch additionally to the modules')
 @pass_script_info
-def run_command(info, host, port, reload, debugger, eager_loading, with_threads, cert):
+def run_command(info, host, port, reload, debugger, eager_loading,
+                with_threads, cert, extra_files):
     """Run a local development server.
 
     This server is for development purposes only. It does not provide
@@ -812,6 +816,7 @@ def run_command(info, host, port, reload, debugger, eager_loading, with_threads,
         use_debugger=debugger,
         threaded=with_threads,
         ssl_context=cert,
+        extra_files=extra_files
     )
 
 
