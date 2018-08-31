@@ -57,6 +57,9 @@ Unreleased
 .. _#3179: https://github.com/pallets/flask/pull/3179
 .. _#3125: https://github.com/pallets/flask/pull/3125
 
+-   Added support to ``extra_files`` argument in `flask run` CLI. (`#2898`_)
+
+.. _#2898: https://github.com/pallets/flask/pull/2898
 
 Version 1.0.3
 -------------
@@ -86,7 +89,6 @@ Released 2019-05-17
 .. _#2900: https://github.com/pallets/flask/issues/2900
 .. _#2933: https://github.com/pallets/flask/issues/2933
 .. _#2986: https://github.com/pallets/flask/pull/2986
-
 
 Version 1.0.2
 -------------
