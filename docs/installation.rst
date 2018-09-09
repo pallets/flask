@@ -81,28 +81,28 @@ Create a project folder and a :file:`venv` folder within:
 
 .. code-block:: sh
 
-    mkdir myproject
-    cd myproject
-    python3 -m venv venv
+    $ mkdir myproject
+    $ cd myproject
+    $ python3 -m venv venv
 
 On Windows:
 
 .. code-block:: bat
 
-    py -3 -m venv venv
+    $ py -3 -m venv venv
 
 If you needed to install virtualenv because you are on an older version of
 Python, use the following command instead:
 
 .. code-block:: sh
 
-    virtualenv venv
+    $ virtualenv venv
 
 On Windows:
 
 .. code-block:: bat
 
-    \Python27\Scripts\virtualenv.exe venv
+    > \Python27\Scripts\virtualenv.exe venv
 
 .. _install-activate-env:
 
@@ -113,13 +113,13 @@ Before you work on your project, activate the corresponding environment:
 
 .. code-block:: sh
 
-    . venv/bin/activate
+    $ . venv/bin/activate
 
 On Windows:
 
 .. code-block:: bat
 
-    venv\Scripts\activate
+    > venv\Scripts\activate
 
 Your shell prompt will change to show the name of the activated environment.
 
@@ -130,7 +130,7 @@ Within the activated environment, use the following command to install Flask:
 
 .. code-block:: sh
 
-    pip install Flask
+    $ pip install Flask
 
 Flask is now installed. Check out the :doc:`/quickstart` or go to the
 :doc:`Documentation Overview </index>`.
@@ -143,7 +143,7 @@ update the code from the master branch:
 
 .. code-block:: sh
 
-    pip install -U https://github.com/pallets/flask/archive/master.tar.gz
+    $ pip install -U https://github.com/pallets/flask/archive/master.tar.gz
 
 .. _install-install-virtualenv:
 
@@ -158,27 +158,27 @@ On Linux, virtualenv is provided by your package manager:
 .. code-block:: sh
 
     # Debian, Ubuntu
-    sudo apt-get install python-virtualenv
+    $ sudo apt-get install python-virtualenv
 
     # CentOS, Fedora
-    sudo yum install python-virtualenv
+    $ sudo yum install python-virtualenv
 
     # Arch
-    sudo pacman -S python-virtualenv
+    $ sudo pacman -S python-virtualenv
 
 If you are on Mac OS X or Windows, download `get-pip.py`_, then:
 
 .. code-block:: sh
 
-    sudo python2 Downloads/get-pip.py
-    sudo python2 -m pip install virtualenv
+    $ sudo python2 Downloads/get-pip.py
+    $ sudo python2 -m pip install virtualenv
 
 On Windows, as an administrator:
 
 .. code-block:: bat
 
-    \Python27\python.exe Downloads\get-pip.py
-    \Python27\python.exe -m pip install virtualenv
+    > \Python27\python.exe Downloads\get-pip.py
+    > \Python27\python.exe -m pip install virtualenv
 
 Now you can return above and :ref:`install-create-env`.
 

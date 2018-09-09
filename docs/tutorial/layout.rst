@@ -5,8 +5,8 @@ Create a project directory and enter it:
 
 .. code-block:: none
 
-    mkdir flask-tutorial
-    cd flask-tutorial
+    $ mkdir flask-tutorial
+    $ cd flask-tutorial
 
 Then follow the :doc:`installation instructions </installation>` to set
 up a Python virtual environment and install Flask for your project.

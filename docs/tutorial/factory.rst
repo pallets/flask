@@ -30,7 +30,7 @@ directory should be treated as a package.
 
 .. code-block:: none
 
-    mkdir flaskr
+    $ mkdir flaskr
 
 .. code-block:: python
     :caption: ``flaskr/__init__.py``
@@ -138,25 +138,25 @@ For Linux and Mac:
 
 .. code-block:: none
 
-    export FLASK_APP=flaskr
-    export FLASK_ENV=development
-    flask run
+    $ export FLASK_APP=flaskr
+    $ export FLASK_ENV=development
+    $ flask run
 
 For Windows cmd, use ``set`` instead of ``export``:
 
 .. code-block:: none
 
-    set FLASK_APP=flaskr
-    set FLASK_ENV=development
-    flask run
+    > set FLASK_APP=flaskr
+    > set FLASK_ENV=development
+    > flask run
 
 For Windows PowerShell, use ``$env:`` instead of ``export``:
 
 .. code-block:: none
 
-    $env:FLASK_APP = "flaskr"
-    $env:FLASK_ENV = "development"
-    flask run
+    > $env:FLASK_APP = "flaskr"
+    > $env:FLASK_ENV = "development"
+    > flask run
 
 You'll see output similar to this:
 

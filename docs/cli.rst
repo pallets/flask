@@ -195,8 +195,8 @@ command, instead of ``flask run --port 8000``:
 
 .. code-block:: none
 
-    export FLASK_RUN_PORT=8000
-    flask run
+    $ export FLASK_RUN_PORT=8000
+    $ flask run
      * Running on http://127.0.0.1:8000/
 
 These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
@@ -211,7 +211,7 @@ python-dotenv is not installed.
 
 .. code-block:: none
 
-    flask run
+    $ flask run
      * Tip: There are .env files present. Do "pip install python-dotenv" to use them.
 
 You can tell Flask not to load dotenv files even when python-dotenv is
@@ -223,8 +223,8 @@ configure as expected.
 
 .. code-block:: none
 
-    export FLASK_SKIP_DOTENV=1
-    flask run
+    $ export FLASK_SKIP_DOTENV=1
+    $ flask run
 
 
 Environment Variables From virtualenv
@@ -236,11 +236,11 @@ script. Activating the virtualenv will set the variables.
 
 Unix Bash, :file:`venv/bin/activate`::
 
-    export FLASK_APP=hello
+    $ export FLASK_APP=hello
 
 Windows CMD, :file:`venv\\Scripts\\activate.bat`::
 
-    set FLASK_APP=hello
+    > set FLASK_APP=hello
 
 It is preferred to use dotenv support over this, since :file:`.flaskenv` can be
 committed to the repository so that it works automatically wherever the project
@@ -268,7 +268,7 @@ This example adds the command ``create_user`` that takes the argument
 
 ::
 
-    flask create_user admin
+    $ flask create_user admin
 
 This example adds the same command, but as ``user create``, a command in a
 group. This is useful if you want to organize multiple related commands. ::
@@ -289,7 +289,7 @@ group. This is useful if you want to organize multiple related commands. ::
 
 ::
 
-    flask user create demo
+    $ flask user create demo
 
 See :ref:`testing-cli` for an overview of how to test your custom
 commands.
