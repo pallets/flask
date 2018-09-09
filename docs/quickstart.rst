@@ -85,7 +85,7 @@ should see your hello world greeting.
    you can make the server publicly available simply by adding
    ``--host=0.0.0.0`` to the command line::
 
-       flask run --host=0.0.0.0
+       $ flask run --host=0.0.0.0
 
    This tells your operating system to listen on all public IPs.
 

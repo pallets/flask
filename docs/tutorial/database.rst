@@ -204,7 +204,7 @@ Run the ``init-db`` command:
 
 .. code-block:: none
 
-    flask init-db
+    $ flask init-db
     Initialized the database.
 
 There will now be a ``flaskr.sqlite`` file in the ``instance`` folder in

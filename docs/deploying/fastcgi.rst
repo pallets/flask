@@ -49,7 +49,7 @@ can execute it:
 
 .. sourcecode:: text
 
-    # chmod +x /var/www/yourapplication/yourapplication.fcgi
+    $ chmod +x /var/www/yourapplication/yourapplication.fcgi
 
 Configuring Apache
 ------------------

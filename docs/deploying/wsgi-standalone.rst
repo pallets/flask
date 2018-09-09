@@ -15,13 +15,13 @@ Gunicorn
 worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
 and `greenlet`_. Running a Flask application on this server is quite simple::
 
-    gunicorn myproject:app
+    $ gunicorn myproject:app
 
 `Gunicorn`_ provides many command-line options -- see ``gunicorn -h``.
 For example, to run a Flask application with 4 worker processes (``-w
 4``) binding to localhost port 4000 (``-b 127.0.0.1:4000``)::
 
-    gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
+    $ gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
 
 .. _Gunicorn: http://gunicorn.org/
 .. _eventlet: http://eventlet.net/
@@ -35,7 +35,7 @@ which makes it more complicated to setup than gunicorn.
 
 Running `uWSGI HTTP Router`_::
 
-    uwsgi --http 127.0.0.1:5000 --module myproject:app
+    $ uwsgi --http 127.0.0.1:5000 --module myproject:app
 
 For a more optimized setup, see :doc:`configuring uWSGI and NGINX <uwsgi>`.
 
@@ -67,7 +67,7 @@ non-blocking event-driven networking library. Twisted Web comes with a
 standard WSGI container which can be controlled from the command line using
 the ``twistd`` utility::
 
-    twistd web --wsgi myproject.app
+    $ twistd web --wsgi myproject.app
 
 This example will run a Flask application called ``app`` from a module named
 ``myproject``.
@@ -77,7 +77,7 @@ as well; see ``twistd -h`` and ``twistd web -h`` for more information. For
 example, to run a Twisted Web server in the foreground, on port 8080, with an
 application from ``myproject``::
 
-    twistd -n web --port tcp:8080 --wsgi myproject.app
+    $ twistd -n web --port tcp:8080 --wsgi myproject.app
 
 .. _Twisted: https://twistedmatrix.com/
 .. _Twisted Web: https://twistedmatrix.com/trac/wiki/TwistedWeb

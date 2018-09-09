@@ -18,7 +18,7 @@ You can then use that with your favourite testing solution.
 In this documentation we will use the `pytest`_ package as the base
 framework for our tests. You can install it with ``pip``, like so::
 
-    pip install pytest
+    $ pip install pytest
 
 .. _pytest:
    https://pytest.org
