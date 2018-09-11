@@ -1,6 +1,38 @@
 Flask
 =====
 
+
+.. start-badges
+
+.. list-table::
+    :stub-columns: 1
+
+    * - build
+      - | |travis| |appveyor| |coverage|
+    * - package
+      - | |version| |supported-versions|
+
+
+.. |version| image:: https://img.shields.io/pypi/v/flask.svg
+   :target: https://pypi.python.org/pypi/flask
+   :alt: Package on PyPi
+
+.. |coverage| image:: https://codecov.io/gh/pallets/flask/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/pallets/flask
+
+.. |travis| image:: https://img.shields.io/travis/pallets/flask.svg?logo=travis
+    :target: https://travis-ci.org/pallets/flask
+    :alt: Travis (.org)
+
+.. |appveyor| image:: https://img.shields.io/appveyor/ci/pallets/flask.svg?logo=appveyor
+    :alt: AppVeyor
+    :target: https://ci.appveyor.com/project/pallets/flask
+
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/flask.svg
+    :alt: Supported versions
+    :target: https://pypi.python.org/pypi/flask
+
+
 Flask is a lightweight `WSGI`_ web application framework. It is designed
 to make getting started quick and easy, with the ability to scale up to
 complex applications. It began as a simple wrapper around `Werkzeug`_
