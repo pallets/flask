@@ -1,11 +1,14 @@
 :orphan:
 
+.. rst-class:: hide-header
+
 Welcome to Flask
 ================
 
-.. image:: _static/logo-full.png
+.. image:: _static/flask-logo.png
     :alt: Flask: web development, one drop at a time
-    :align: right
+    :align: center
+    :target: https://palletsprojects.com/p/flask/
 
 Welcome to Flask's documentation. Get started with :ref:`installation`
 and then get an overview with the :ref:`quickstart`. There is also a
