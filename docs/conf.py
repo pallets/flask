@@ -21,6 +21,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.log_cabinet',
+    'pallets_sphinx_themes',
 ]
 
 intersphinx_mapping = {
