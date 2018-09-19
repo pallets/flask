@@ -308,7 +308,7 @@ decorator instead of the Flask decorator, you can use
     import click
     from flask.cli import with_appcontext
 
-    @click.command
+    @click.command()
     @with_appcontext
     def do_work():
         ...
