@@ -301,10 +301,10 @@ Python shell. See :ref:`context-locals`. ::
         print(url_for('login', next='/'))
         print(url_for('profile', username='John Doe'))
 
-    /
-    /login
-    /login?next=/
-    /user/John%20Doe
+    # /
+    # /login
+    # /login?next=/
+    # /user/John%20Doe
 
 HTTP Methods
 ````````````
