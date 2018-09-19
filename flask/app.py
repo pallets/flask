@@ -1728,9 +1728,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.3
         """
         exc_type, exc_value, tb = sys.exc_info()
-
         got_request_exception.send(self, exception=e)
-        handler = self._find_error_handler(InternalServerError())
 
         if self.propagate_exceptions:
             # if we want to repropagate the exception, we can attempt to
@@ -1743,6 +1741,7 @@ class Flask(_PackageBoundObject):
                 raise e
 
         self.log_exception((exc_type, exc_value, tb))
+        handler = self._find_error_handler(InternalServerError())
         if handler is None:
             return InternalServerError()
         return self.finalize_request(handler(e), from_error_handler=True)
