@@ -277,7 +277,9 @@ Why would you want to build URLs using the URL reversing function
 For example, here we use the :meth:`~flask.Flask.test_request_context` method
 to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
 tells Flask to behave as though it's handling a request even while we use a
-Python shell. See :ref:`context-locals`. ::
+Python shell. See :ref:`context-locals`.
+
+.. code-block:: python
 
     from flask import Flask, url_for
 
@@ -301,10 +303,13 @@ Python shell. See :ref:`context-locals`. ::
         print(url_for('login', next='/'))
         print(url_for('profile', username='John Doe'))
 
-    # /
-    # /login
-    # /login?next=/
-    # /user/John%20Doe
+.. code-block:: text
+
+    /
+    /login
+    /login?next=/
+    /user/John%20Doe
+
 
 HTTP Methods
 ````````````
