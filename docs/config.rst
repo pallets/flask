@@ -301,8 +301,8 @@ The following configuration values are used internally by Flask:
 
     Serialize objects to ASCII-encoded JSON. If this is disabled, the JSON
     will be returned as a Unicode string, or encoded as ``UTF-8`` by
-    ``jsonify``. This has security implications when rendering the JSON in
-    to JavaScript in templates, and should typically remain enabled.
+    ``jsonify``. This has security implications when rendering the JSON into
+    JavaScript in templates, and should typically remain enabled.
 
     Default: ``True``
 
@@ -674,7 +674,7 @@ root” (the default) to “relative to instance folder” via the
     app = Flask(__name__, instance_relative_config=True)
 
 Here is a full example of how to configure Flask to preload the config
-from a module and then override the config from a file in the config
+from a module and then override the config from a file in the instance
 folder if it exists::
 
     app = Flask(__name__, instance_relative_config=True)
