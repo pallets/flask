@@ -76,9 +76,9 @@ Error handlers
 You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
 
-An error handler is a normal view function that return a response, but instead
+An error handler is a normal view function that returns a response, but instead
 of being registered for a route, it is registered for an exception or HTTP
-status code that would is raised while trying to handle a request.
+status code that would be raised while trying to handle a request.
 
 Registering
 ```````````
@@ -184,7 +184,7 @@ options in order to use your favorite debugger:
 
 * ``debug``        - whether to enable debug mode and catch exceptions
 * ``use_debugger`` - whether to use the internal Flask debugger
-* ``use_reloader`` - whether to reload and fork the process on exception
+* ``use_reloader`` - whether to reload and fork the process if modules were changed
 
 ``debug`` must be True (i.e., exceptions must be caught) in order for the other
 two options to have any value.
@@ -205,11 +205,6 @@ Then in your application's entry-point (main.py), you could have something like:
        # To allow aptana to receive errors, set use_debugger=False
        app = create_app(config="config.yaml")
 
-       if app.debug: use_debugger = True
-       try:
-           # Disable Flask's debugger if external debugger is requested
-           use_debugger = not(app.config.get('DEBUG_WITH_APTANA'))
-       except:
-           pass
+       use_debugger = app.debug and not(app.config.get('DEBUG_WITH_APTANA'))
        app.run(use_debugger=use_debugger, debug=app.debug,
                use_reloader=use_debugger, host='0.0.0.0')
