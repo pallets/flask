@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from click.testing import CliRunner
 from flask.cli import ScriptInfo
 from werkzeug.test import Client, EnvironBuilder
-from flask import _request_ctx_stack
+from flask import _request_ctx_stack, _app_ctx_stack
 from flask.json import dumps as json_dumps
 from werkzeug.urls import url_parse
 
@@ -78,9 +78,15 @@ def make_test_environ_builder(
             "Client cannot provide both 'json' and 'data'."
         )
 
-        # push a context so flask.json can use app's json attributes
-        with app.app_context():
+        # push a context so flask.json can use app's json attributes.
+        # Note that it's important to not use the push and pop methods
+        # of the actual app context object since that would mean the
+        # cleanup handlers will be called.
+        _app_ctx_stack.push(app.app_context())
+        try:
             kwargs['data'] = json_dumps(kwargs.pop('json'))
+        finally:
+            _app_ctx_stack.pop()
 
         if 'content_type' not in kwargs:
             kwargs['content_type'] = 'application/json'
