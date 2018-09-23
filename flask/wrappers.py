@@ -145,8 +145,7 @@ class Request(RequestBase, JSONMixin):
     @property
     def max_content_length(self):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
-        if current_app:
-            return current_app.config['MAX_CONTENT_LENGTH']
+        return current_app.config.get('MAX_CONTENT_LENGTH') if current_app else None
 
     @property
     def endpoint(self):
@@ -155,14 +154,14 @@ class Request(RequestBase, JSONMixin):
         modified URL.  If an exception happened when matching, this will
         be ``None``.
         """
-        if self.url_rule is not None:
-            return self.url_rule.endpoint
+        return self.url_rule.endpoint if self.url_rule else None
 
     @property
     def blueprint(self):
         """The name of the current blueprint"""
         if self.url_rule and '.' in self.url_rule.endpoint:
             return self.url_rule.endpoint.rsplit('.', 1)[0]
+        return ''
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
