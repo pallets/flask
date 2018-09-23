@@ -145,7 +145,7 @@ class Request(RequestBase, JSONMixin):
     @property
     def max_content_length(self):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
-        return current_app.config.get('MAX_CONTENT_LENGTH') if current_app else None:
+        return current_app.config.get('MAX_CONTENT_LENGTH') if current_app else None
 
     @property
     def endpoint(self):
