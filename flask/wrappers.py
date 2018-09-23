@@ -154,14 +154,14 @@ class Request(RequestBase, JSONMixin):
         modified URL.  If an exception happened when matching, this will
         be ``None``.
         """
-        if self.url_rule is not None:
-            return self.url_rule.endpoint
+        return self.url_rule.endpoint if self.url_rule else None
 
     @property
     def blueprint(self):
         """The name of the current blueprint"""
         if self.url_rule and '.' in self.url_rule.endpoint:
             return self.url_rule.endpoint.rsplit('.', 1)[0]
+        return ''
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
