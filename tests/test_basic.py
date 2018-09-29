@@ -1916,21 +1916,24 @@ def test_run_server_port(monkeypatch, app):
 
 
 @pytest.mark.parametrize(
-    "host,port,expect_host,expect_port",
+    "host,port,server_name,expect_host,expect_port",
     (
-        (None, None, "pocoo.org", 8080),
-        ("localhost", None, "localhost", 8080),
-        (None, 80, "pocoo.org", 80),
-        ("localhost", 80, "localhost", 80),
+        (None, None, "pocoo.org:8080", "pocoo.org", 8080),
+        ("localhost", None, "pocoo.org:8080", "localhost", 8080),
+        (None, 80, "pocoo.org:8080", "pocoo.org", 80),
+        ("localhost", 80, "pocoo.org:8080", "localhost", 80),
+        ("localhost", 0, "localhost:8080", "localhost", 0),
+        (None, None, "localhost:8080", "localhost", 8080),
+        (None, None, "localhost:0", "localhost", 0),
     ),
 )
-def test_run_from_config(monkeypatch, host, port, expect_host, expect_port, app):
+def test_run_from_config(monkeypatch, host, port, server_name, expect_host, expect_port, app):
     def run_simple_mock(hostname, port, *args, **kwargs):
         assert hostname == expect_host
         assert port == expect_port
 
     monkeypatch.setattr(werkzeug.serving, "run_simple", run_simple_mock)
-    app.config["SERVER_NAME"] = "pocoo.org:8080"
+    app.config["SERVER_NAME"] = server_name
     app.run(host, port)
 
 

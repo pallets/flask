@@ -972,7 +972,8 @@ class Flask(_PackageBoundObject):
             sn_host, _, sn_port = server_name.partition(":")
 
         host = host or sn_host or _host
-        port = int(port or sn_port or _port)
+        # pick the first value that's not None (0 is allowed)
+        port = int(next((p for p in (port, sn_port) if p is not None), _port))
 
         options.setdefault("use_reloader", self.debug)
         options.setdefault("use_debugger", self.debug)
