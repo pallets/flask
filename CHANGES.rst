@@ -42,6 +42,8 @@ Unreleased
     :pr:`3195`
 -   Allow customizing the :attr:`Flask.url_map_class` used for routing.
     :pr:`3069`
+-   The development server port can be set to 0, which tells the OS to
+    pick an available port. :issue:`2926`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
