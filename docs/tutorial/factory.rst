@@ -35,6 +35,7 @@ directory should be treated as a package.
 .. code-block:: python
     :caption: ``flaskr/__init__.py``
 
+    import errno
     import os
 
     from flask import Flask
@@ -58,8 +59,9 @@ directory should be treated as a package.
         # ensure the instance folder exists
         try:
             os.makedirs(app.instance_path)
-        except OSError:
-            pass
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
 
         # a simple page that says hello
         @app.route('/hello')
