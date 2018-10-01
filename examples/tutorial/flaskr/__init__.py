@@ -1,3 +1,4 @@
+import errno
 import os
 
 from flask import Flask
@@ -23,8 +24,9 @@ def create_app(test_config=None):
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
 
     @app.route('/hello')
     def hello():
