@@ -13,13 +13,17 @@ Unreleased
     (ISO-8859-1). This fixes compatibility with Gunicorn, which is
     stricter about header encodings than PEP 3333. (`#2766`_)
 -   Allow custom CLIs using ``FlaskGroup`` to set the debug flag without
-    it always being overwritten based on environment variables. (`#2765`_)
+    it always being overwritten based on environment variables.
+    (`#2765`_)
 -   ``flask --version`` outputs Werkzeug's version and simplifies the
     Python version. (`#2825`_)
+-   :func:`send_file` handles an ``attachment_filename`` that is a
+    native Python 2 string (bytes) with UTF-8 coded bytes. (`#2933`_)
 
 .. _#2766: https://github.com/pallets/flask/issues/2766
 .. _#2765: https://github.com/pallets/flask/pull/2765
 .. _#2825: https://github.com/pallets/flask/pull/2825
+.. _#2933: https://github.com/pallets/flask/issues/2933
 
 
 Version 1.0.2
