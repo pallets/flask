@@ -156,7 +156,9 @@ class TestGreenletContextCopying(object):
 
         @app.route('/')
         def index():
+            flask.session['fizz'] = 'buzz'
             reqctx = flask._request_ctx_stack.top.copy()
+            reqctx.session = flask.session.copy()
 
             def g():
                 assert not flask.request
@@ -166,6 +168,7 @@ class TestGreenletContextCopying(object):
                     assert flask.current_app == app
                     assert flask.request.path == '/'
                     assert flask.request.args['foo'] == 'bar'
+                    assert flask.session.get('fizz') == 'buzz'
                 assert not flask.request
                 return 42
 
@@ -183,6 +186,7 @@ class TestGreenletContextCopying(object):
 
         @app.route('/')
         def index():
+            flask.session['fizz'] = 'buzz'
             reqctx = flask._request_ctx_stack.top.copy()
 
             @flask.copy_current_request_context
@@ -191,6 +195,7 @@ class TestGreenletContextCopying(object):
                 assert flask.current_app == app
                 assert flask.request.path == '/'
                 assert flask.request.args['foo'] == 'bar'
+                assert flask.session.get('fizz') == 'buzz'
                 return 42
 
             greenlets.append(greenlet(g))

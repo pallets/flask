@@ -20,9 +20,13 @@ Unreleased
     stricter about header encodings than PEP 3333. (`#2766`_)
 -   Allow custom CLIs using ``FlaskGroup`` to set the debug flag without
     it always being overwritten based on environment variables. (`#2765`_)
+-   :func:`flask.copy_current_request_context` adds a copy of the current
+    session object to the request context copy. This prevents
+    ``flask.session`` pointing to an out-of-date object. (`#2935`)
 
 .. _#2766: https://github.com/pallets/flask/issues/2766
 .. _#2765: https://github.com/pallets/flask/pull/2765
+.. _#2935: https://github.com/pallets/flask/issues/2935
 
 
 Version 1.0.2
