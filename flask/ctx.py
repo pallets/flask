@@ -14,7 +14,7 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import HTTPException
 
-from .globals import _request_ctx_stack, _app_ctx_stack
+from .globals import session, _request_ctx_stack, _app_ctx_stack
 from .signals import appcontext_pushed, appcontext_popped
 from ._compat import BROKEN_PYPY_CTXMGR_EXIT, reraise
 
@@ -147,6 +147,7 @@ def copy_current_request_context(f):
             'when a request context is on the stack.  For instance within '
             'view functions.')
     reqctx = top.copy()
+    reqctx.session = session.copy()
     def wrapper(*args, **kwargs):
         with reqctx:
             return f(*args, **kwargs)
