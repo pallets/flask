@@ -1686,7 +1686,7 @@ class Flask(_PackageBoundObject):
         exception with the same traceback.
 
         .. versionchanged:: 1.0
-            Key errors raised from request data like ``form`` show the the bad
+            Key errors raised from request data like ``form`` show the bad
             key in debug mode rather than a generic bad request message.
 
         .. versionadded:: 0.7
