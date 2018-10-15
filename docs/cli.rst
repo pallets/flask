@@ -270,6 +270,16 @@ This example adds the command ``create_user`` that takes the argument
 
     $ flask create_user admin
 
+.. warning:: `Click`_ v7.0 has introduced a change (see `v7.0 changelogs`_):
+    "Subcommands that are named by the function now automatically have the
+    underscore replaced with a dash. If you register a function named
+    ``my_command`` it becomes ``my-command`` in the command line interface."
+    So starting with `Click`_ v7.0  the command is: ::
+
+    $ flask create-user admin
+
+.. _v7.0 changelogs: http://click.palletsprojects.com/en/7.x/changelog/
+
 This example adds the same command, but as ``user create``, a command in a
 group. This is useful if you want to organize multiple related commands. ::
 
