@@ -10,6 +10,7 @@
 """
 
 import datetime
+import io
 import os
 import uuid
 
@@ -606,6 +607,23 @@ class TestSendfile(object):
         rv = client.get('/', headers={'Range': 'bytes=4-15', 'If-Range': http_date(
             datetime.datetime(1999, 1, 1))})
         assert rv.status_code == 200
+        rv.close()
+
+    @pytest.mark.skipif(
+        not callable(getattr(Range, 'to_content_range_header', None)),
+        reason="not implemented within werkzeug"
+    )
+    def test_send_file_range_request_bytesio(self, app, client):
+        @app.route('/')
+        def index():
+            file = io.BytesIO(b'somethingsomething')
+            return flask.send_file(
+                file, attachment_filename='filename', conditional=True
+            )
+
+        rv = client.get('/', headers={'Range': 'bytes=4-15'})
+        assert rv.status_code == 206
+        assert rv.data == b'somethingsomething'[4:16]
         rv.close()
 
     @pytest.mark.skipif(
