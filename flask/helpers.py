@@ -8,7 +8,7 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
+import io
 import os
 import socket
 import sys
@@ -512,6 +512,8 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     .. versionchanged:: 1.1
         Filenames may be a `PathLike` object.
+    .. versionadded:: 1.1
+        Partial content supports ``BytesIO``.
 
     :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
@@ -599,6 +601,12 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
+            headers['Content-Length'] = fsize
+        elif isinstance(file, io.BytesIO):
+            try:
+                fsize = file.getbuffer().nbytes
+            except AttributeError:
+                fsize = len(file.getvalue())
             headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
 
