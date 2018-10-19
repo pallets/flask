@@ -36,7 +36,7 @@ setup(
     install_requires=[
         'Werkzeug>=0.14',
         'Jinja2>=2.10',
-        'itsdangerous>=0.24',
+        'itsdangerous>=0.24,<1',
         'click>=5.1',
     ],
     extras_require={
