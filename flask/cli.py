@@ -206,8 +206,9 @@ def prepare_import(path):
     """
     path = os.path.realpath(path)
 
-    if os.path.splitext(path)[1] == '.py':
-        path = os.path.splitext(path)[0]
+    fname, ext = os.path.splitext(path)
+    if ext == '.py':
+        path = fname
 
     if os.path.basename(path) == '__init__':
         path = os.path.dirname(path)
