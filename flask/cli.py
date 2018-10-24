@@ -369,7 +369,7 @@ class ScriptInfo(object):
             app = call_factory(self, self.create_app)
         else:
             if self.app_import_path:
-                path, name = (self.app_import_path.split(':', 1) + [None])[:2]
+                path, name = (re.split(r':(?![\\/])', self.app_import_path, 1) + [None])[:2]
                 import_name = prepare_import(path)
                 app = locate_app(self, import_name, name)
             else:
