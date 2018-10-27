@@ -11,7 +11,7 @@ Python primitives (numbers, strings, dicts and lists) look like which is
 widely supported and very easy to parse.  It became popular a few years
 ago and quickly replaced XML as transport format in web applications.
 
-.. _jQuery: http://jquery.com/
+.. _jQuery: https://jquery.com/
 
 Loading jQuery
 --------------

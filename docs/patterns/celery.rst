@@ -10,7 +10,7 @@ immediately.
 Celery is a powerful task queue that can be used for simple background tasks
 as well as complex multi-stage programs and schedules. This guide will show you
 how to configure Celery using Flask, but assumes you've already read the
-`First Steps with Celery <http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html>`_
+`First Steps with Celery <https://celery.readthedocs.io/en/latest/getting-started/first-steps-with-celery.html>`_
 guide in the Celery documentation.
 
 Install

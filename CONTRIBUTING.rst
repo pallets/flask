@@ -91,7 +91,7 @@ Start coding
 - Push your commits to GitHub and `create a pull request`_.
 - Celebrate 🎉
 
-.. _committing as you go: http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
 .. _PEP8: https://pep8.org/
 .. _create a pull request: https://help.github.com/articles/creating-a-pull-request/
 
@@ -142,7 +142,7 @@ Build the docs in the ``docs`` directory using Sphinx::
 
 Open ``_build/html/index.html`` in your browser to view the docs.
 
-Read more about `Sphinx <http://www.sphinx-doc.org>`_.
+Read more about `Sphinx <https://www.sphinx-doc.org>`_.
 
 
 make targets

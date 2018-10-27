@@ -571,7 +571,7 @@ your configuration files.  However here a list of good recommendations:
     details about how to do that, head over to the
     :ref:`fabric-deployment` pattern.
 
-.. _fabric: http://www.fabfile.org/
+.. _fabric: https://www.fabfile.org/
 
 
 .. _instance-folders:
