@@ -6,7 +6,7 @@ text.  Not only these libraries, also the majority of web related Python
 libraries that deal with text.  If you don't know Unicode so far, you
 should probably read `The Absolute Minimum Every Software Developer
 Absolutely, Positively Must Know About Unicode and Character Sets
-<http://www.joelonsoftware.com/articles/Unicode.html>`_.  This part of the
+<https://www.joelonsoftware.com/articles/Unicode.html>`_.  This part of the
 documentation just tries to cover the very basics so that you have a
 pleasant experience with Unicode related things.
 

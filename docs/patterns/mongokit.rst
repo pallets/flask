@@ -103,7 +103,7 @@ Querying is simple as well:
 >>> collection.User.find_one({'name': u'admin'})
 <User u'admin'>
 
-.. _MongoKit: http://bytebucket.org/namlook/mongokit/
+.. _MongoKit: https://github.com/namlook/mongokit
 
 
 PyMongo Compatibility Layer

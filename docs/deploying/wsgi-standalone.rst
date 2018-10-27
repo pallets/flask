@@ -23,8 +23,8 @@ For example, to run a Flask application with 4 worker processes (``-w
 
     $ gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
 
-.. _Gunicorn: http://gunicorn.org/
-.. _eventlet: http://eventlet.net/
+.. _Gunicorn: https://gunicorn.org/
+.. _eventlet: https://eventlet.net/
 .. _greenlet: https://greenlet.readthedocs.io/en/latest/
 
 uWSGI
@@ -39,8 +39,8 @@ Running `uWSGI HTTP Router`_::
 
 For a more optimized setup, see :doc:`configuring uWSGI and NGINX <uwsgi>`.
 
-.. _uWSGI: http://uwsgi-docs.readthedocs.io/en/latest/
-.. _uWSGI HTTP Router: http://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
+.. _uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
+.. _uWSGI HTTP Router: https://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
 
 Gevent
 -------
