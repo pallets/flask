@@ -183,4 +183,4 @@ type ``fab deploy`` and see your application being deployed automatically
 to one or more remote servers.
 
 
-.. _Fabric: http://www.fabfile.org/
+.. _Fabric: https://www.fabfile.org/

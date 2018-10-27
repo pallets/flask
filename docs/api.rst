@@ -44,7 +44,7 @@ Incoming Request Data
    .. attribute:: url_root
 
       Provides different ways to look at the current `IRI
-      <http://tools.ietf.org/html/rfc3987>`_.  Imagine your application is
+      <https://tools.ietf.org/html/rfc3987>`_.  Imagine your application is
       listening on the following application root::
 
           http://www.example.com/myapplication
