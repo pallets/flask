@@ -126,7 +126,7 @@ Run The Application
 -------------------
 
 Now you can run your application using the ``flask`` command. From the
-terminal, tell Flask where to find your application, then run it in
+terminal, change directories to the parent of the flaskr directory: ``flask-tutorial``, then run it in
 development mode.
 
 Development mode shows an interactive debugger whenever a page raises an
