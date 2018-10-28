@@ -125,9 +125,9 @@ later in the tutorial, but it already does a lot.
 Run The Application
 -------------------
 
-Now you can run your application using the ``flask`` command. From the
-terminal, tell Flask where to find your application, then run it in
-development mode.
+Now you can run your application using the ``flask run`` command. From 
+the terminal, make sure you are sitting in the project's root directory, 
+tell Flask where to find your application, then run it in development mode.
 
 Development mode shows an interactive debugger whenever a page raises an
 exception, and restarts the server whenever you make changes to the
