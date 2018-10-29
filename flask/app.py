@@ -17,6 +17,7 @@ from functools import update_wrapper
 from itertools import chain
 from threading import Lock
 
+from jinja2 import FileSystemLoader
 from werkzeug.datastructures import Headers, ImmutableDict
 from werkzeug.exceptions import BadRequest, BadRequestKeyError, HTTPException, \
     InternalServerError, MethodNotAllowed, default_exceptions
@@ -634,6 +635,17 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.3
         """
         return create_logger(self)
+
+    @locked_cached_property
+    def jinja_loader(self):
+        """The Jinja loader for the app. Allows overriding templates
+        using templates in the instance directory.
+        """
+        if self.template_folder is not None:
+            return FileSystemLoader([
+                os.path.join(self.instance_path, self.template_folder),
+                os.path.join(self.root_path, self.template_folder)
+            ])
 
     @locked_cached_property
     def jinja_env(self):

@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import os
+
 import pytest
 
 import flask
@@ -321,7 +323,8 @@ def test_add_template_global(app, app_ctx):
 
 def test_custom_template_loader(client):
     class MyFlask(flask.Flask):
-        def create_global_jinja_loader(self):
+        @flask.helpers.locked_cached_property
+        def jinja_loader(self):
             from jinja2 import DictLoader
             return DictLoader({'index.html': 'Hello Custom World!'})
 
@@ -441,3 +444,24 @@ def test_custom_jinja_env():
 
     app = CustomFlask(__name__)
     assert isinstance(app.jinja_env, CustomEnvironment)
+
+def test_instance_folder_templates(modules_tmpdir, purge_module):
+    app = modules_tmpdir.join('config_module_app.py').write(
+        'import os\n'
+        'import flask\n'
+        'here = os.path.abspath(os.path.dirname(__file__))\n'
+        'app = flask.Flask(__name__)\n'
+    )
+    purge_module('config_module_app')
+    instance_folder = modules_tmpdir.mkdir('instance')
+    template_folder = instance_folder.mkdir('templates')
+    instance_simple = template_folder.join('simple_template.html')
+    instance_simple.write(r'<h1>{{ not_whiskey }}</h1>')
+
+    from config_module_app import app
+    @app.route('/')
+    def index():
+        return flask.render_template('simple_template.html', whiskey='Jameson')
+
+    rv = app.test_client().get('/')
+    assert rv.data == b'<h1></h1>'
