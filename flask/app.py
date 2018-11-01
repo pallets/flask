@@ -20,7 +20,8 @@ from threading import Lock
 from werkzeug.datastructures import Headers, ImmutableDict
 from werkzeug.exceptions import BadRequest, BadRequestKeyError, HTTPException, \
     InternalServerError, MethodNotAllowed, default_exceptions
-from werkzeug.routing import BuildError, Map, RequestRedirect, Rule
+from werkzeug.routing import BuildError, Map, RequestRedirect, \
+    RoutingException, Rule
 
 from . import cli, json
 from ._compat import integer_types, reraise, string_types, text_type
@@ -1636,6 +1637,12 @@ class Flask(_PackageBoundObject):
         # Proxy exceptions don't have error codes.  We want to always return
         # those unchanged as errors
         if e.code is None:
+            return e
+
+        # RoutingExceptions such as RequestRedirects are special exceptions
+        # used to trigger routing actions such as redirects, and also behave
+        # like proxy exceptions. We return these unchanged as well.
+        if isinstance(e, RoutingException):
             return e
 
         handler = self._find_error_handler(e)
