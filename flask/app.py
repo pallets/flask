@@ -1269,18 +1269,18 @@ class Flask(_PackageBoundObject):
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
-        """Ensure that we register only exceptions as handler keys"""
+        """Ensure that we register only codes or exceptions as handler keys"""
         if isinstance(exc_class_or_code, integer_types):
-            exc_class = default_exceptions[exc_class_or_code]
-        else:
-            exc_class = exc_class_or_code
+            if exc_class_or_code not in default_exceptions:
+                raise KeyError('unrecognized status code')
 
-        assert issubclass(exc_class, Exception)
+            return None, exc_class_or_code
 
-        if issubclass(exc_class, HTTPException):
-            return exc_class, exc_class.code
-        else:
-            return exc_class, None
+        if issubclass(exc_class_or_code, HTTPException):
+            return exc_class_or_code, exc_class_or_code.code
+
+        assert issubclass(exc_class_or_code, Exception)
+        return exc_class_or_code, None
 
     @setupmethod
     def errorhandler(self, code_or_exception):
@@ -1620,11 +1620,13 @@ class Flask(_PackageBoundObject):
             if not handler_map:
                 continue
 
-            for cls in exc_class.__mro__:
+            for cls in exc_class.__mro__ + (None,):
                 handler = handler_map.get(cls)
 
                 if handler is not None:
-                    return handler
+                    return handler, cls
+
+        return None, None
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the
@@ -1638,7 +1640,7 @@ class Flask(_PackageBoundObject):
         if e.code is None:
             return e
 
-        handler = self._find_error_handler(e)
+        handler, _ = self._find_error_handler(e)
         if handler is None:
             return e
         return handler(e)
@@ -1712,7 +1714,7 @@ class Flask(_PackageBoundObject):
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
 
-        handler = self._find_error_handler(e)
+        handler, _ = self._find_error_handler(e)
 
         if handler is None:
             reraise(exc_type, exc_value, tb)
@@ -1741,10 +1743,14 @@ class Flask(_PackageBoundObject):
                 raise e
 
         self.log_exception((exc_type, exc_value, tb))
-        handler = self._find_error_handler(InternalServerError())
+        http_exception = InternalServerError()
+        handler, handled_cls = self._find_error_handler(http_exception)
         if handler is None:
-            return InternalServerError()
-        return self.finalize_request(handler(e), from_error_handler=True)
+            return http_exception
+        return self.finalize_request(
+            handler(http_exception if handled_cls else e),
+            from_error_handler=True,
+        )
 
     def log_exception(self, exc_info):
         """Logs an exception.  This is called by :meth:`handle_exception`

@@ -167,6 +167,18 @@ def test_default_error_handler():
     def bp_forbidden_test():
         raise Forbidden()
 
+    bp2 = flask.Blueprint('bp2', __name__)
+
+    @bp2.errorhandler(HTTPException)
+    def bp_exception_handler(e):
+        assert isinstance(e, HTTPException)
+        assert isinstance(e, InternalServerError)
+        return 'bp2-default'
+
+    @bp2.route('/keyerror')
+    def bp2_key_error():
+        raise KeyError()
+
     app = flask.Flask(__name__)
 
     @app.errorhandler(HTTPException)
@@ -185,11 +197,12 @@ def test_default_error_handler():
         raise Forbidden()
 
     app.register_blueprint(bp, url_prefix='/bp')
+    app.register_blueprint(bp2, url_prefix='/bp2')
 
     c = app.test_client()
+
     assert c.get('/bp/undefined').data == b'bp-default'
     assert c.get('/bp/forbidden').data == b'bp-forbidden'
+    assert c.get('/bp2/keyerror').data == b'bp2-default'
     assert c.get('/undefined').data == b'default'
     assert c.get('/forbidden').data == b'forbidden'
-
-
