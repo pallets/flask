@@ -9,6 +9,12 @@ Version 1.1
 
 Unreleased
 
+-   :meth:`flask.RequestContext.copy` includes the current session
+    object in the request context copy. This prevents ``flask.session`` 
+    pointing to an out-of-date object. (`#2935`)
+
+.. _#2935: https://github.com/pallets/flask/issues/2935
+
 
 Version 1.0.3
 -------------
