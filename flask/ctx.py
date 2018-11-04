@@ -14,7 +14,7 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import HTTPException
 
-from .globals import session, _request_ctx_stack, _app_ctx_stack
+from .globals import _request_ctx_stack, _app_ctx_stack
 from .signals import appcontext_pushed, appcontext_popped
 from ._compat import BROKEN_PYPY_CTXMGR_EXIT, reraise
 
@@ -141,10 +141,6 @@ def copy_current_request_context(f):
             return 'Regular response'
 
     .. versionadded:: 0.10
-
-    .. versionchanged:: 1.0.3
-       A copy of the current session object is added to the request context
-       copy. This prevents `flask.session` pointing to an out-of-date object.
     """
     top = _request_ctx_stack.top
     if top is None:
@@ -152,7 +148,6 @@ def copy_current_request_context(f):
             'when a request context is on the stack.  For instance within '
             'view functions.')
     reqctx = top.copy()
-    reqctx.session = session.copy()
     def wrapper(*args, **kwargs):
         with reqctx:
             return f(*args, **kwargs)
@@ -282,14 +277,14 @@ class RequestContext(object):
     that situation, otherwise your unittests will leak memory.
     """
 
-    def __init__(self, app, environ, request=None):
+    def __init__(self, app, environ, request=None, session=None):
         self.app = app
         if request is None:
             request = app.request_class(environ)
         self.request = request
         self.url_adapter = app.create_url_adapter(self.request)
         self.flashes = None
-        self.session = None
+        self.session = session
 
         # Request contexts can be pushed multiple times and interleaved with
         # other request contexts.  Now only if the last level is popped we
@@ -327,10 +322,15 @@ class RequestContext(object):
         request object is locked.
 
         .. versionadded:: 0.10
+
+        .. versionchanged:: 1.1
+           A copy of the current session object is added to the request context
+           copy. This prevents `flask.session` pointing to an out-of-date object.
         """
         return self.__class__(self.app,
             environ=self.request.environ,
-            request=self.request
+            request=self.request,
+            session=self.session
         )
 
     def match_request(self):

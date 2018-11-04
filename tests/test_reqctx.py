@@ -158,7 +158,6 @@ class TestGreenletContextCopying(object):
         def index():
             flask.session['fizz'] = 'buzz'
             reqctx = flask._request_ctx_stack.top.copy()
-            reqctx.session = flask.session.copy()
 
             def g():
                 assert not flask.request
