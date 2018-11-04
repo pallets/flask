@@ -122,8 +122,8 @@ def copy_current_request_context(f):
     """A helper function that decorates a function to retain the current
     request context.  This is useful when working with greenlets.  The moment
     the function is decorated a copy of the request context is created and
-    then pushed when the function is called.  A copy of the current session is
-    also included in the copied request context.
+    then pushed when the function is called.  The current session is also
+    included in the copied request context.
 
     Example::
 
@@ -324,8 +324,8 @@ class RequestContext(object):
         .. versionadded:: 0.10
 
         .. versionchanged:: 1.1
-           A copy of the current session object is added to the request context
-           copy. This prevents `flask.session` pointing to an out-of-date object.
+           The current session object is used instead of reloading the original
+           data. This prevents `flask.session` pointing to an out-of-date object.
         """
         return self.__class__(self.app,
             environ=self.request.environ,
