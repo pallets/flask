@@ -57,19 +57,15 @@ The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
 from your Sentry installation.
 
 After installation, failures leading to an Internal Server Error are automatically reported to 
-Sentry and from there you can receive error notifications. Sentry also supports 
-capturing custom exceptions::
-    
-    import sentry_sdk
-    
-    try:
-        throwing_function()
-    except Exception as e:
-        with sentry_sdk.push_scope() as scope:
-            sentry_sdk.capture_exception(e)
+Sentry and from there you can receive error notifications.
 
-See the `Python <https://docs.sentry.io/platforms/python/>`_ and `Flask-specific <https://docs.sentry.io/platforms/python/flask/>`_ 
-Sentry SDK documentation for more detailed information.
+Follow-up reads:
+
+* Sentry also supports catching errors from your worker queue (RQ, Celery) in a
+  similar fashion.  See the `Python SDK docs
+  <https://docs.sentry.io/platforms/python/>`_ for more information.
+* `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
+* `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
 
 .. _error-handlers:
 
