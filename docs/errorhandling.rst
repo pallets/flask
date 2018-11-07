@@ -34,39 +34,42 @@ Error Logging Tools
 Sending error mails, even if just for critical ones, can become
 overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
-<https://www.getsentry.com/>`_ for dealing with application errors.  It's
+<https://sentry.io/>`_ for dealing with application errors.  It's
 available as an Open Source project `on GitHub
-<https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
-<https://getsentry.com/signup/>`_ which you can try for free. Sentry
+<https://github.com/getsentry/sentry>`_ and is also available as a `hosted version
+<https://sentry.io/signup/>`_ which you can try for free. Sentry
 aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
 frequency thresholds.
 
-To use Sentry you need to install the `raven` client with extra `flask` dependencies::
+To use Sentry you need to install the `sentry-sdk` client with extra `flask` dependencies::
 
-    $ pip install raven[flask]
+    $ pip install sentry-sdk[flask]
 
 And then add this to your Flask app::
 
-    from raven.contrib.flask import Sentry
-    sentry = Sentry(app, dsn='YOUR_DSN_HERE')
-
-Or if you are using factories you can also init it later::
-
-    from raven.contrib.flask import Sentry
-    sentry = Sentry(dsn='YOUR_DSN_HERE')
-
-    def create_app():
-        app = Flask(__name__)
-        sentry.init_app(app)
-        ...
-        return app
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    
+    sentry_sdk.init('YOUR_DSN_HERE',integrations=[FlaskIntegration()])
 
 The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
 from your Sentry installation.
 
-Afterwards failures are automatically reported to Sentry and from there
-you can receive error notifications.
+After installation, failures leading to an Internal Server Error are automatically reported to 
+Sentry and from there you can receive error notifications. Sentry also supports 
+capturing custom exceptions::
+    
+    import sentry_sdk
+    
+    try:
+        throwing_function()
+    except Exception as e:
+        with sentry_sdk.push_scope() as scope:
+            sentry_sdk.capture_exception(e)
+
+See the `Python <https://docs.sentry.io/platforms/python/>`_ and `Flask-specific <https://docs.sentry.io/platforms/python/flask/>`_ 
+Sentry SDK documentation for more detailed information.
 
 .. _error-handlers:
 
