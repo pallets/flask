@@ -229,3 +229,26 @@ def test_session_error_pops_context():
     assert response.status_code == 500
     assert not flask.request
     assert not flask.current_app
+
+
+def test_bad_environ_raises_bad_request():
+    app = flask.Flask(__name__)
+
+    @app.route('/')
+    def index():
+        # shouldn't get here anyway
+        assert False
+
+    response = app.test_client().get('/', headers={'host': 'ąśź.com'})
+    assert response.status_code == 400
+
+
+def test_normal_environ_completes():
+    app = flask.Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return 'Hello World!'
+
+    response = app.test_client().get('/', headers={'host': 'xn--on-0ia.com'})
+    assert response.status_code == 200
