@@ -282,7 +282,11 @@ class RequestContext(object):
         if request is None:
             request = app.request_class(environ)
         self.request = request
-        self.url_adapter = app.create_url_adapter(self.request)
+        self.url_adapter = None
+        try:
+            self.url_adapter = app.create_url_adapter(self.request)
+        except HTTPException as e:
+            self.request.routing_exception = e
         self.flashes = None
         self.session = session
 
@@ -305,7 +309,8 @@ class RequestContext(object):
         # functions.
         self._after_request_functions = []
 
-        self.match_request()
+        if self.url_adapter is not None:
+            self.match_request()
 
     def _get_g(self):
         return _app_ctx_stack.top.g
