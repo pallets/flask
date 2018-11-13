@@ -12,8 +12,12 @@ Unreleased
 -   :meth:`flask.RequestContext.copy` includes the current session
     object in the request context copy. This prevents ``flask.session`` 
     pointing to an out-of-date object. (`#2935`)
+-   Using built-in RequestContext, unprintable Unicode characters in Host
+    header will result in a HTTP 400 response and not HTTP 500 as previously.
+    (`#2994`)
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
+.. _#2994: https://github.com/pallets/flask/pull/2994
 
 
 Version 1.0.3
