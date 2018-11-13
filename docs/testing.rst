@@ -388,7 +388,7 @@ very convenient::
 
     with app.test_client() as c:
         rv = c.post('/api/auth', json={
-            'username': 'flask', 'password': 'secret'
+            'email': 'flask@example.com', 'password': 'secret'
         })
         json_data = rv.get_json()
         assert verify_token(email, json_data['token'])
