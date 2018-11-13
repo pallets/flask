@@ -234,13 +234,44 @@ def test_session_error_pops_context():
 def test_bad_environ_raises_bad_request():
     app = flask.Flask(__name__)
 
+    # We cannot use app.test_client() for the Unicode-rich Host header,
+    # because werkzeug enforces latin1 on Python 2.
+    # However it works when actually passed to the server.
+
+    from flask.testing import make_test_environ_builder
+    builder = make_test_environ_builder(app)
+    environ = builder.get_environ()
+
+    # use a non-printable character in the Host - this is key to this test
+    environ['HTTP_HOST'] = u'\x8a'
+
+    with app.request_context(environ):
+        response = app.full_dispatch_request()
+    assert response.status_code == 400
+
+
+def test_environ_for_valid_idna_completes():
+    app = flask.Flask(__name__)
+
     @app.route('/')
     def index():
-        # shouldn't get here anyway
-        assert False
+        return 'Hello World!'
 
-    response = app.test_client().get('/', headers={'host': 'ąśź.com'})
-    assert response.status_code == 400
+    # We cannot use app.test_client() for the Unicode-rich Host header,
+    # because werkzeug enforces latin1 on Python 2.
+    # However it works when actually passed to the server.
+
+    from flask.testing import make_test_environ_builder
+    builder = make_test_environ_builder(app)
+    environ = builder.get_environ()
+
+    # these characters are all IDNA-compatible
+    environ['HTTP_HOST'] = u'ąśźäüжŠßя.com'
+
+    with app.request_context(environ):
+        response = app.full_dispatch_request()
+
+    assert response.status_code == 200
 
 
 def test_normal_environ_completes():
