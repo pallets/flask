@@ -42,3 +42,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    requestchecksum
    celery
    subclassing
+   singlepageapplications
