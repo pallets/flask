@@ -1186,7 +1186,7 @@ class Flask(_PackageBoundObject):
         # a tuple of only ``GET`` as default.
         if methods is None:
             methods = getattr(view_func, 'methods', None) or ('GET',)
-        if isinstance(methods, string_types):
+        if not isinstance(methods, string_types):
             raise TypeError('Allowed methods have to be iterables of strings, '
                             'for example: @app.route(..., methods=["POST"])')
         methods = set(item.upper() for item in methods)
