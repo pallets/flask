@@ -725,7 +725,9 @@ def _validate_key(ctx, param, value):
     return value
 
 
-@click.command('run', short_help='Runs a development server.')
+@click.command('run',
+               short_help='Runs a development server (flask run --help for '
+               'more info).')
 @click.option('--host', '-h', default='127.0.0.1',
               help='The interface to bind to.')
 @click.option('--port', '-p', default=5000,

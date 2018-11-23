@@ -395,6 +395,37 @@ def test_print_exceptions(runner):
     assert 'Traceback' in result.output
 
 
+def test_help_mentions_run_help(runner):
+    """Print information about host and port in help output"""
+
+    def create_app(info):
+        return Flask("flaskgroup")
+
+    @click.group(cls=FlaskGroup, create_app=create_app)
+    def cli(**params):
+        pass
+
+    result = runner.invoke(cli, ['--help'])
+    assert result.exit_code == 0
+    assert 'run --help' in result.output
+
+
+def test_run_help_documents_host_and_port(runner):
+    """Print information about host and port in help output"""
+
+    def create_app(info):
+        return Flask("flaskgroup")
+
+    @click.group(cls=FlaskGroup, create_app=create_app)
+    def cli(**params):
+        pass
+
+    result = runner.invoke(cli, ['run', '--help'])
+    assert result.exit_code == 0
+    assert '--host' in result.output
+    assert '--port' in result.output
+
+
 class TestRoutes:
     @pytest.fixture
     def invoke(self, runner):
