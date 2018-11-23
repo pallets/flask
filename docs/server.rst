@@ -31,6 +31,10 @@ disabled::
 
     $ flask run --no-reload
 
+To see descriptions of the arguments that may be passed, run::
+
+    $ flask run --help
+
 .. note::
 
     Prior to Flask 1.0 the :envvar:`FLASK_ENV` environment variable was

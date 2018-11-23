@@ -101,6 +101,8 @@ replaces the :meth:`Flask.run` method in most cases. ::
     is provided for convenience, but is not designed to be particularly secure,
     stable, or efficient. See :ref:`deployment` for how to run in production.
 
+To run the development server on a specific interface or port, use the
+``--host`` or ``--port`` arguments.  Run ``flask run --help`` for details.
 
 Open a Shell
 ------------
@@ -190,14 +192,15 @@ Setting Command Options
 
 Click is configured to load default values for command options from
 environment variables. The variables use the pattern
-``FLASK_COMMAND_OPTION``. For example, to set the port for the run
-command, instead of ``flask run --port 8000``:
+``FLASK_COMMAND_OPTION``. For example, to set the port and host for the run
+command, instead of ``flask run --port 8000 --host 0.0.0.0``:
 
 .. code-block:: none
 
     $ export FLASK_RUN_PORT=8000
+    $ export FLASK_RUN_HOST=0.0.0.0
     $ flask run
-     * Running on http://127.0.0.1:8000/
+     * Running on http://0.0.0.0:8000/
 
 These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
 control default command options.
