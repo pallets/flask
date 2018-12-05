@@ -135,7 +135,7 @@ Configuring lighttpd
 Add ``mod_alias``, ``mod_fastcgi``, ``mod_rewrite`` to the ``server.modules``
 variable of ``lighttpd.conf``.
 
-**NOTE**: you can easily deploy a basic flask app using this ``deploy_flask_lighttpd.py`` 
+.. note::  You can easily deploy a basic flask app using this ``deploy_flask_lighttpd.py`` 
 `script <https://gist.github.com/surik00/2fef149e2f1ea716d891283ef857cc00>`_.
 
 A basic FastCGI configuration for lighttpd looks like that::
