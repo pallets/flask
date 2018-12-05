@@ -132,6 +132,12 @@ Set yourapplication.fcgi::
 Configuring lighttpd
 --------------------
 
+Add ``mod_alias``, ``mod_fastcgi``, ``mod_rewrite`` to the ``server.modules``
+variable of ``lighttpd.conf``.
+
+**NOTE**: you can easily deploy a basic flask app using this ``deploy_flask_lighttpd.py`` 
+`script <https://gist.github.com/surik00/2fef149e2f1ea716d891283ef857cc00>`_.
+
 A basic FastCGI configuration for lighttpd looks like that::
 
     fastcgi.server = ("/yourapplication.fcgi" =>
@@ -152,15 +158,15 @@ A basic FastCGI configuration for lighttpd looks like that::
         "^(/.*)$" => "/yourapplication.fcgi$1"
     )
 
-Remember to enable the FastCGI, alias and rewrite modules. This configuration
-binds the application to ``/yourapplication``.  If you want the application to
-work in the URL root you have to work around a lighttpd bug with the
+This configuration binds the application to ``/yourapplication``.
+If you want the application to work in the URL root you have to work 
+around a lighttpd bug with the
 :class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix` middleware.
 
 Make sure to apply it only if you are mounting the application the URL
 root. Also, see the Lighty docs for more information on `FastCGI and Python
 <https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModFastCGI>`_ (note that
-explicitly passing a socket to run() is no longer necessary).
+explicitly passing a socket to run() is no longer necessary).hlh
 
 Configuring nginx
 -----------------
