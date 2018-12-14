@@ -149,7 +149,7 @@ Register with the Application
 -----------------------------
 
 The ``close_db`` and ``init_db_command`` functions need to be registered
-with the application instance, otherwise they won't be used by the
+with the application instance; otherwise, they won't be used by the
 application. However, since you're using a factory function, that
 instance isn't available when writing the functions. Instead, write a
 function that takes an application and does the registration.
