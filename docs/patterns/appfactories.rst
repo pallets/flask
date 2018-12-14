@@ -9,6 +9,11 @@ the experience.  A common pattern is creating the application object when
 the blueprint is imported.  But if you move the creation of this object
 into a function, you can then create multiple instances of this app later.
 
+Think of it as one of those custom sandwich parlors: the factory creates an
+application instance and then fills it with all the extras you want
+(extensions, blueprints, etc), delivering a delicious, finished warm app.
+Cookie and soda included!
+
 So why would you want to do this?
 
 1.  Testing.  You can have instances of the application with different
@@ -93,13 +98,13 @@ To run such an application, you can use the :command:`flask` command::
 
     $ export FLASK_APP=myapp
     $ flask run
-    
-Flask will automatically detect the factory (``create_app`` or ``make_app``) 
+
+Flask will automatically detect the factory (``create_app`` or ``make_app``)
 in ``myapp``. You can also pass arguments to the factory like this::
 
     $ export FLASK_APP="myapp:create_app('dev')"
     $ flask run
-    
+
 Then the ``create_app`` factory in ``myapp`` is called with the string
 ``'dev'`` as the argument. See :doc:`/cli` for more detail.
 
