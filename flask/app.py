@@ -1229,6 +1229,17 @@ class Flask(_PackageBoundObject):
             @app.route('/')
             def index():
                 return 'Hello World'
+        
+        You can also specify methods explicitly with the decorator usage::
+        
+            from flask import request
+
+            @app.route('/login', methods=['GET', 'POST'])
+            def login():
+                if request.method == 'POST':
+                    return do_the_login()
+                else:
+                    return show_the_login_form()
 
         For more information refer to :ref:`url-route-registrations`.
 
