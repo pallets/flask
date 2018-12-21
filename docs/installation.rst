@@ -98,6 +98,14 @@ Python, use the following command instead:
 
     virtualenv venv
 
+On Fedora (the `virtualenv` executable is reserved for
+`python3-virtualenv`, installable via `yum install virtualenv`, but we
+are using python2's virtualenv here):
+
+.. code-block:: sh
+
+    python -m venv venv
+
 On Windows:
 
 .. code-block:: bat
