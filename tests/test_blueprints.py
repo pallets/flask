@@ -38,6 +38,7 @@ def test_blueprint_specific_error_handling(app, client):
 
     @backend.route('/backend-no')
     def backend_no():
+        assert False
         flask.abort(403)
 
     @sideend.route('/what-is-a-sideend')
