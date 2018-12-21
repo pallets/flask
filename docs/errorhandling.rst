@@ -107,7 +107,7 @@ register and raise that exception class. ::
         code = 507
         description = 'Not enough storage space.'
 
-    app.register_error_handler(InsuffcientStorage, handle_507)
+    app.register_error_handler(InsufficientStorage, handle_507)
 
     raise InsufficientStorage()
 
