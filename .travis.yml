@@ -1,13 +1,16 @@
 os: linux
+dist: xenial
 sudo: false
 language: python
 
 matrix:
   include:
+    - python: 3.7
+      env: TOXENV=py,simplejson,devel,lowest,codecov
+    - python: 3.7
+      env: TOXENV=docs-html
     - python: 3.6
       env: TOXENV=py,simplejson,devel,lowest,codecov
-    - python: 3.6
-      env: TOXENV=docs-html
     - python: 3.5
       env: TOXENV=py,codecov
     - python: 3.4
