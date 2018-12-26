@@ -237,3 +237,11 @@ def test_remove_method_from_parent(app, client):
     assert client.get('/').data == b'GET'
     assert client.post('/').status_code == 405
     assert sorted(View.methods) == ['GET']
+
+
+def test_unicode_endpoint_for_py2(app, client):
+    class Index(flask.views.MethodView):
+        def get(self):
+            return 'GET'
+
+    app.add_url_rule('/', view_func=Index.as_view(u'index'))
