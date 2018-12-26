@@ -10,7 +10,7 @@
 """
 
 from .globals import request
-from ._compat import with_metaclass
+from ._compat import with_metaclass, PY2, text_type
 
 
 http_method_funcs = frozenset(['get', 'post', 'head', 'options',
@@ -83,6 +83,9 @@ class View(object):
         The arguments passed to :meth:`as_view` are forwarded to the
         constructor of the class.
         """
+        if PY2 and isinstance(name, text_type):
+            name = str(name)
+
         def view(*args, **kwargs):
             self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
