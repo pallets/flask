@@ -739,6 +739,8 @@ def _validate_key(ctx, param, value):
 @click.option('--reload/--no-reload', default=None,
               help='Enable or disable the reloader. By default the reloader '
               'is active if debug is enabled.')
+@click.option('--reloader-interval', default=1,
+              help='The interval for the reloader in seconds.')
 @click.option('--debugger/--no-debugger', default=None,
               help='Enable or disable the debugger. By default the debugger '
               'is active if debug is enabled.')
@@ -749,7 +751,7 @@ def _validate_key(ctx, param, value):
               help='Enable or disable multithreading.')
 @pass_script_info
 def run_command(info, host, port, reload, debugger, eager_loading,
-                with_threads, cert):
+                with_threads, cert, reloader_interval):
     """Run a local development server.
 
     This server is for development purposes only. It does not provide
@@ -774,7 +776,8 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
     from werkzeug.serving import run_simple
     run_simple(host, port, app, use_reloader=reload, use_debugger=debugger,
-               threaded=with_threads, ssl_context=cert)
+               threaded=with_threads, ssl_context=cert,
+               reloader_interval=reloader_interval)
 
 
 @click.command('shell', short_help='Runs a shell in the app context.')
