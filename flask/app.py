@@ -691,7 +691,8 @@ class Flask(_PackageBoundObject):
         """
         return open(os.path.join(self.instance_path, resource), mode)
 
-    def _get_templates_auto_reload(self):
+    @property
+    def templates_auto_reload(self):
         """Reload templates when they are changed. Used by
         :meth:`create_jinja_environment`.
 
@@ -705,13 +706,9 @@ class Flask(_PackageBoundObject):
         rv = self.config['TEMPLATES_AUTO_RELOAD']
         return rv if rv is not None else self.debug
 
-    def _set_templates_auto_reload(self, value):
+    @templates_auto_reload.setter
+    def templates_auto_reload(self, value):
         self.config['TEMPLATES_AUTO_RELOAD'] = value
-
-    templates_auto_reload = property(
-        _get_templates_auto_reload, _set_templates_auto_reload
-    )
-    del _get_templates_auto_reload, _set_templates_auto_reload
 
     def create_jinja_environment(self):
         """Creates the Jinja2 environment based on :attr:`jinja_options`
@@ -818,13 +815,6 @@ class Flask(_PackageBoundObject):
     #: Default: ``'production'``
     env = ConfigAttribute('ENV')
 
-    def _get_debug(self):
-        return self.config['DEBUG']
-
-    def _set_debug(self, value):
-        self.config['DEBUG'] = value
-        self.jinja_env.auto_reload = self.templates_auto_reload
-
     #: Whether debug mode is enabled. When using ``flask run`` to start
     #: the development server, an interactive debugger will be shown for
     #: unhandled exceptions, and the server will be reloaded when code
@@ -837,8 +827,14 @@ class Flask(_PackageBoundObject):
     #:
     #: Default: ``True`` if :attr:`env` is ``'development'``, or
     #: ``False`` otherwise.
-    debug = property(_get_debug, _set_debug)
-    del _get_debug, _set_debug
+    @property
+    def debug(self):
+        return self.config['DEBUG']
+
+    @debug.setter
+    def debug(self, value):
+        self.config['DEBUG'] = value
+        self.jinja_env.auto_reload = self.templates_auto_reload
 
     def run(self, host=None, port=None, debug=None,
             load_dotenv=True, **options):
