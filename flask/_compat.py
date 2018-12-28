@@ -14,7 +14,6 @@
 import sys
 
 PY2 = sys.version_info[0] == 2
-_identity = lambda x: x
 
 
 if not PY2:
@@ -34,7 +33,7 @@ if not PY2:
             raise value.with_traceback(tb)
         raise value
 
-    implements_to_string = _identity
+    implements_to_string = lambda x: x
 
 else:
     text_type = unicode
