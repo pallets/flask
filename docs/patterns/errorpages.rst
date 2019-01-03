@@ -54,6 +54,9 @@ which is most likely a :exc:`~werkzeug.exceptions.HTTPException`. An error
 handler for "500 Internal Server Error" will be passed uncaught exceptions in
 addition to explicit 500 errors.
 
+An error handler may optionally skip handling by returning the original
+exception. This is useful for skipping a subset of captured exceptions.
+
 An error handler is registered with the :meth:`~flask.Flask.errorhandler`
 decorator or the :meth:`~flask.Flask.register_error_handler` method. A handler
 can be registered for a status code, like 404, or for an exception class.
@@ -97,3 +100,15 @@ An example template might be this:
       <p>What you were looking for is just not there.
       <p><a href="{{ url_for('index') }}">go somewhere nice</a>
     {% endblock %}
+
+Here is an example of skipping a subset of captured exceptions::
+
+    from flask import render_template
+    from werkzeug.exceptions import HTTPException
+
+    @app.errorhandler(HTTPException)
+    def generic_error(e):
+        # skip 3XX
+        if e.code < 400:
+            return e
+        return render_template('generic_error.html', code=e.code), e.code
