@@ -61,6 +61,11 @@ For most applications the following file should be sufficient::
 
     from yourapplication import app as application
 
+If a factory function is used in a :file:`__init__.py` file, then the function should be imported::
+
+    from yourapplication import create_app
+    application = create_app()
+
 If you don't have a factory function for application creation but a singleton
 instance you can directly import that one as `application`.
 
