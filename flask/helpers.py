@@ -33,7 +33,7 @@ from jinja2 import FileSystemLoader
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type, PY2
+from ._compat import string_types, text_type, PY2, fspath
 
 # sentinel
 _missing = object()
@@ -510,6 +510,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         Filenames are encoded with ASCII instead of Latin-1 for broader
         compatibility with WSGI servers.
 
+    .. versionchanged:: 1.1
+        Filenames may be a `PathLike` object.
+
     :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
@@ -538,6 +541,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     """
     mtime = None
     fsize = None
+
+    if hasattr(filename_or_fp, '__fspath__'):
+        filename_or_fp = fspath(filename_or_fp)
+
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
         if not os.path.isabs(filename):
@@ -705,6 +712,8 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
+    filename = fspath(filename)
+    directory = fspath(directory)
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
