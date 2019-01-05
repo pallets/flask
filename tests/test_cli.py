@@ -261,8 +261,21 @@ def test_get_version(test_apps, capsys):
 def test_scriptinfo(test_apps, monkeypatch):
     """Test of ScriptInfo."""
     obj = ScriptInfo(app_import_path="cliapp.app:testapp")
-    assert obj.load_app().name == "testapp"
-    assert obj.load_app().name == "testapp"
+    app = obj.load_app()
+    assert app.name == "testapp"
+    assert obj.load_app() is app
+
+    # import app with module's absolute path
+    cli_app_path = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), 'test_apps', 'cliapp', 'app.py'))
+    obj = ScriptInfo(app_import_path=cli_app_path)
+    app = obj.load_app()
+    assert app.name == 'testapp'
+    assert obj.load_app() is app
+    obj = ScriptInfo(app_import_path=cli_app_path + ':testapp')
+    app = obj.load_app()
+    assert app.name == 'testapp'
+    assert obj.load_app() is app
 
     def create_app(info):
         return Flask("createapp")
@@ -270,7 +283,7 @@ def test_scriptinfo(test_apps, monkeypatch):
     obj = ScriptInfo(create_app=create_app)
     app = obj.load_app()
     assert app.name == "createapp"
-    assert obj.load_app() == app
+    assert obj.load_app() is app
 
     obj = ScriptInfo()
     pytest.raises(NoAppException, obj.load_app)

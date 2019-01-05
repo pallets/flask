@@ -41,5 +41,6 @@ user in a cookie in a :meth:`~flask.Flask.before_request` callback::
             @after_this_request
             def remember_language(response):
                 response.set_cookie('user_lang', language)
+                return response
 
         g.language = language

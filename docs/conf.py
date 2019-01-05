@@ -22,11 +22,11 @@ extensions = [
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "werkzeug": ("http://werkzeug.pocoo.org/docs/", None),
-    "click": ("http://click.pocoo.org/", None),
+    "click": ("https://click.palletsprojects.com/", None),
     "jinja": ("http://jinja.pocoo.org/docs/", None),
-    "itsdangerous": ("https://pythonhosted.org/itsdangerous", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
-    "wtforms": ("https://wtforms.readthedocs.io/en/latest/", None),
+    "itsdangerous": ("https://itsdangerous.palletsprojects.com/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/", None),
+    "wtforms": ("https://wtforms.readthedocs.io/en/stable/", None),
     "blinker": ("https://pythonhosted.org/blinker/", None),
 }
 
