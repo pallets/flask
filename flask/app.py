@@ -1698,16 +1698,17 @@ class Flask(_PackageBoundObject):
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
 
-        # MultiDict passes the key to the exception, but that's ignored
-        # when generating the response message. Set an informative
-        # description for key errors in debug mode or when trapping errors.
-        if (
-            (self.debug or self.config['TRAP_BAD_REQUEST_ERRORS'])
-            and isinstance(e, BadRequestKeyError)
-            # only set it if it's still the default description
-            and e.description is BadRequestKeyError.description
-        ):
-            e.description = "KeyError: '{0}'".format(*e.args)
+        if isinstance(e, BadRequestKeyError):
+            if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
+                # Werkzeug < 0.15 doesn't add the KeyError to the 400
+                # message, add it in manually.
+                description = e.get_description()
+
+                if e.args[0] not in description:
+                    e.description = "KeyError: '{}'".format(*e.args)
+            else:
+                # Werkzeug >= 0.15 does add it, remove it in production
+                e.args = ()
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
