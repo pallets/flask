@@ -1045,7 +1045,7 @@ def test_trapping_of_bad_request_key_errors(app, client):
     with pytest.raises(KeyError) as e:
         client.get("/key")
     assert e.errisinstance(BadRequest)
-    assert 'missing_key' in e.value.description
+    assert 'missing_key' in e.value.get_description()
     rv = client.get('/abort')
     assert rv.status_code == 400
 
