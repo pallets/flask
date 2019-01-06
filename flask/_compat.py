@@ -28,6 +28,7 @@ if not PY2:
 
     from inspect import getfullargspec as getargspec
     from io import StringIO
+    import collections.abc as collections_abc
 
     def reraise(tp, value, tb=None):
         if value.__traceback__ is not tb:
@@ -47,6 +48,7 @@ else:
 
     from inspect import getargspec
     from cStringIO import StringIO
+    import collections as collections_abc
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 
