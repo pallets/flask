@@ -301,8 +301,8 @@ The following configuration values are used internally by Flask:
 
     Serialize objects to ASCII-encoded JSON. If this is disabled, the JSON
     will be returned as a Unicode string, or encoded as ``UTF-8`` by
-    ``jsonify``. This has security implications when rendering the JSON in
-    to JavaScript in templates, and should typically remain enabled.
+    ``jsonify``. This has security implications when rendering the JSON into
+    JavaScript in templates, and should typically remain enabled.
 
     Default: ``True``
 
@@ -553,6 +553,44 @@ To enable such a config you just have to call into
 
     app.config.from_object('configmodule.ProductionConfig')
 
+Note that :meth:`~flask.Config.from_object` does not instantiate the class
+object. If you need to instantiate the class, such as to access a property,
+then you must do so before calling :meth:`~flask.Config.from_object`::
+
+    from configmodule import ProductionConfig
+    app.config.from_object(ProductionConfig())
+
+    # Alternatively, import via string:
+    from werkzeug.utils import import_string
+    cfg = import_string('configmodule.ProductionConfig')()
+    app.config.from_object(cfg)
+
+Instantiating the configutation object allows you to use ``@property`` in
+your configuration classes::
+
+    class Config(object):
+        """Base config, uses staging database server."""
+        DEBUG = False
+        TESTING = False
+        DB_SERVER = '192.168.1.56'
+
+        @property
+        def DATABASE_URI(self):         # Note: all caps
+            return 'mysql://user@{}/foo'.format(self.DB_SERVER)
+
+    class ProductionConfig(Config):
+        """Uses production database server."""
+        DB_SERVER = '192.168.19.32'
+
+    class DevelopmentConfig(Config):
+        DB_SERVER = 'localhost'
+        DEBUG = True
+
+    class TestingConfig(Config):
+        DB_SERVER = 'localhost'
+        DEBUG = True
+        DATABASE_URI = 'sqlite:///:memory:'
+
 There are many different ways and it's up to you how you want to manage
 your configuration files.  However here a list of good recommendations:
 
@@ -636,7 +674,7 @@ root” (the default) to “relative to instance folder” via the
     app = Flask(__name__, instance_relative_config=True)
 
 Here is a full example of how to configure Flask to preload the config
-from a module and then override the config from a file in the config
+from a module and then override the config from a file in the instance
 folder if it exists::
 
     app = Flask(__name__, instance_relative_config=True)
