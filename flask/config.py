@@ -156,6 +156,10 @@ class Config(dict):
             from yourapplication import default_config
             app.config.from_object(default_config)
 
+        Nothing is done to the object before loading. If the object is a
+        class and has ``@property`` attributes, it needs to be
+        instantiated before being passed to this method.
+
         You should not use this function to load the actual configuration but
         rather configuration defaults.  The actual config should be loaded
         with :meth:`from_pyfile` and ideally from a location not within the
