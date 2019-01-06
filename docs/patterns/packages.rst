@@ -3,9 +3,7 @@
 Larger Applications
 ===================
 
-For larger applications it's a good idea to use a package instead of a
-module.  That is quite simple.  Imagine a small application looks like
-this::
+Imagine a simple flask application structure that looks like this::
 
     /yourapplication
         yourapplication.py
@@ -17,8 +15,10 @@ this::
             login.html
             ...
 
-The :ref:`tutorial <tutorial>` is structured this way, see the
-:gh:`example code <examples/tutorial>`.
+While this is fine for small applications, for larger applications
+it's a good idea to use a package instead of a module.
+The :ref:`tutorial <tutorial>` is structured to use the package pattern,
+see the :gh:`example code <examples/tutorial>`.
 
 Simple Packages
 ---------------
