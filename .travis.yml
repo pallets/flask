@@ -15,13 +15,14 @@ matrix:
   include:
     - env: TOXENV=docs-html
     - env: TOXENV=devel,lowest,codecov
-    - os: osx
-      language: generic
-      env: TOXENV=py3,codecov
-      cache:
-        directories:
-          - $HOME/Library/Caches/Homebrew
-          - $HOME/Library/Caches/pip
+# disabled because before_install is too slow
+#    - os: osx
+#      language: generic
+#      env: TOXENV=py3,codecov
+#      cache:
+#        directories:
+#          - $HOME/Library/Caches/Homebrew
+#          - $HOME/Library/Caches/pip
   allow_failures:
     - python: nightly
     - python: pypy3.5-6.0
