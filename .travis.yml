@@ -1,37 +1,30 @@
 os: linux
 dist: xenial
-sudo: false
 language: python
+python:
+  - "3.7"
+  - "3.6"
+  - "3.5"
+  - "3.4"
+  - "2.7"
+  - nightly
+  - pypy3.5-6.0
+env: TOXENV=py,codecov
 
 matrix:
   include:
-    - python: 3.7
-      env: TOXENV=py,simplejson,devel,lowest,codecov
-    - python: 3.7
-      env: TOXENV=docs-html
-    - python: 3.6
-      env: TOXENV=py,simplejson,devel,lowest,codecov
-    - python: 3.5
-      env: TOXENV=py,codecov
-    - python: 3.4
-      env: TOXENV=py,codecov
-    - python: 2.7
-      env: TOXENV=py,simplejson,devel,lowest,codecov
-    - python: pypy3
-      env: TOXENV=py,codecov
-    - python: nightly
-      env: TOXENV=py
+    - env: TOXENV=docs-html
+    - env: TOXENV=devel,lowest,codecov
     - os: osx
       language: generic
-      env: TOXENV=py3,py2,codecov
+      env: TOXENV=py3,codecov
       cache:
-        pip: false
         directories:
           - $HOME/Library/Caches/Homebrew
           - $HOME/Library/Caches/pip
   allow_failures:
-    - python: pypy3
     - python: nightly
+    - python: pypy3.5-6.0
     - os: osx
   fast_finish: true
 
@@ -39,7 +32,6 @@ before_install:
   - |
     if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
       brew upgrade python
-      brew install python@2;
       export PATH="/usr/local/opt/python/libexec/bin:${PATH}"
     fi
 
@@ -50,12 +42,15 @@ script:
   - tox
 
 cache:
-  - pip
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.cache/pre-commit
 
 branches:
   only:
     - master
-    - /^.*-maintenance$/
+    - /^\d+(\.\d+)*-maintenance$/
+    - /^\d+(\.\d+)*(\.x)?$/
 
 notifications:
   email: false
