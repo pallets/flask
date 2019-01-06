@@ -108,6 +108,7 @@ You can observe that the project is now installed with ``pip list``.
 
 Nothing changes from how you've been running your project so far.
 ``FLASK_APP`` is still set to ``flaskr`` and ``flask run`` still runs
-the application.
+the application, but you can call it from anywhere, not just the
+``flask-tutorial`` directory.
 
 Continue to :doc:`tests`.
