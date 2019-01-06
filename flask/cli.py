@@ -332,7 +332,7 @@ class DispatchingApp(object):
 
 
 class ScriptInfo(object):
-    """Help object to deal with Flask applications.  This is usually not
+    """Helper object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
     to click.  In future versions of Flask this object will most likely play
     a bigger role.  Typically it's created automatically by the
