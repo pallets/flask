@@ -1,32 +1,30 @@
-.. mongoengine-pattern:
+MongoDB with MongoEngine
+========================
 
-MongoEngine in Flask
-====================
+Using a document database like MongoDB is a common alternative to
+relational SQL databases. This pattern shows how to use
+`MongoEngine`_, a document mapper library, to integrate with MongoDB.
 
-Using a document database rather than a full DBMS gets more common these days.
-This pattern shows how to use MongoEngine, a document mapper library, to
-integrate with MongoDB.
-
-This pattern requires a running MongoDB server, MongoEngine_ and Flask-MongoEngine_
-libraries installed::
+A running MongoDB server and `Flask-MongoEngine`_ are required. ::
 
     pip install flask-mongoengine
 
 .. _MongoEngine: http://mongoengine.org
-.. _Flask-MongoEngine: http://docs.mongoengine.org/projects/flask-mongoengine/en/latest/>`_
+.. _Flask-MongoEngine: https://flask-mongoengine.readthedocs.io
+
 
 Configuration
 -------------
 
-Basic setup can be done by defining ``MONGODB_SETTINGS`` on App config and then
-creating a ``MongoEngine`` instance::
+Basic setup can be done by defining ``MONGODB_SETTINGS`` on
+``app.config`` and creating a ``MongoEngine`` instance. ::
 
     from flask import Flask
     from flask_mongoengine import MongoEngine
 
     app = Flask(__name__)
     app.config['MONGODB_SETTINGS'] = {
-        'host': "mongodb://localhost:27017/mydb"
+        "db": "myapp",
     }
     db = MongoEngine(app)
 
@@ -34,40 +32,38 @@ creating a ``MongoEngine`` instance::
 Mapping Documents
 -----------------
 
-To declare models that will represent your Mongo documents, just create a class that
-inherits from ``Document`` and declare each of the fields::
+To declare a model that represents a Mongo document, create a class that
+inherits from ``Document`` and declare each of the fields. ::
 
-    from mongoengine import *
+    import mongoengine as me
 
+    class Movie(me.Document):
+        title = me.StringField(required=True)
+        year = me.IntField()
+        rated = me.StringField()
+        director = me.StringField()
+        actors = me.ListField()
 
-    class Movie(Document):
+If the document has nested fields, use ``EmbeddedDocument`` to
+defined the fields of the embedded document and
+``EmbeddedDocumentField`` to declare it on the parent document. ::
 
-        title = StringField(required=True)
-        year = IntField()
-        rated = StringField()
-        director = StringField()
-        actors = ListField()
+    class Imdb(me.EmbeddedDocument):
+        imdb_id = me.StringField()
+        rating = me.DecimalField()
+        votes = me.IntField()
 
-If the model has embedded documents, use ``EmbeddedDocument`` to defined the fields of
-the embedded document and ``EmbeddedDocumentField`` to declare it on the parent document::
-
-    class Imdb(EmbeddedDocument):
-
-        imdb_id = StringField()
-        rating = DecimalField()
-        votes = IntField()
-
-
-    class Movie(Document):
-
+    class Movie(me.Document):
         ...
-        imdb = EmbeddedDocumentField(Imdb)
+        imdb = me.EmbeddedDocumentField(Imdb)
 
 
 Creating Data
 -------------
 
-Just create the objects and call ``save()``::
+Instantiate your document class with keyword arguments for the fields.
+You can also assign values to the field attributes after instantiation.
+Then call ``doc.save()``. ::
 
     bttf = Movie(title="Back To The Future", year=1985)
     bttf.actors = [
@@ -81,73 +77,27 @@ Just create the objects and call ``save()``::
 Queries
 -------
 
-Use the class ``objects`` attribute to make queries::
+Use the class ``objects`` attribute to make queries. A keyword argument
+looks for an equal value on the field. ::
 
-    bttf = Movies.objects(title="Back To The Future").get()  # Throw error if not unique
+    bttf = Movies.objects(title="Back To The Future").get_or_404()
 
-``objects`` is an iterable. Query operators may be user by concatenating it with the document
-key using a double-underscore::
+Query operators may be used by concatenating them with the field name
+using a double-underscore. ``objects``, and queries returned by
+calling it, are iterable. ::
 
     some_theron_movie = Movie.objects(actors__in=["Charlize Theron"]).first()
 
     for recents in Movie.objects(year__gte=2017):
         print(recents.title)
 
-Available operators are as follows:
 
-* ``ne`` -- not equal to
-* ``lt`` -- less than
-* ``lte`` -- less than or equal to
-* ``gt`` -- greater than
-* ``gte`` -- greater than or equal to
-* ``not`` -- negate a standard check, may be used before other operators (e.g.
-  ``Q(age__not__mod=5)``)
-* ``in`` -- value is in list (a list of values should be provided)
-* ``nin`` -- value is not in list (a list of values should be provided)
-* ``mod`` -- ``value % x == y``, where ``x`` and ``y`` are two provided values
-* ``all`` -- every item in list of values provided is in array
-* ``size`` -- the size of the array is
-* ``exists`` -- value for field exists
+Documentation
+-------------
 
-String queries
-::::::::::::::
+There are many more ways to define and query documents with MongoEngine.
+For more information, check out the `official documentation
+<MongoEngine_>`_.
 
-The following operators are available as shortcuts to querying with regular
-expressions:
-
-* ``exact`` -- string field exactly matches value
-* ``iexact`` -- string field exactly matches value (case insensitive)
-* ``contains`` -- string field contains value
-* ``icontains`` -- string field contains value (case insensitive)
-* ``startswith`` -- string field starts with value
-* ``istartswith`` -- string field starts with value (case insensitive)
-* ``endswith`` -- string field ends with value
-* ``iendswith`` -- string field ends with value (case insensitive)
-* ``match``  -- performs an $elemMatch so you can match an entire document within an array
-
-Some Tips
----------
-
-* Attributes can be set as ``unique``
-* ``MongoEngine`` creates the ``_id`` attribute automatically to acess ``ObjectIds``
-* You can add choices to string fields: ``StringField(choices=['Apple', 'Banana'])``
-* If you don't want your class name to be the same name as the collection, you can define
-  a ``meta`` class member and use the ``collection`` parameter::
-
-    class Movie(Document):
-
-        meta ={'collection': 'movie_documents'}
-
-Accessing PyMongo MongoClient
------------------------------
-
-If, for some reason, you want to access PyMongo instance, use ``get_connection`` function::
-
-    from mongoengine.connection import get_connection
-
-    conn = get_connection()
-    collection = conn.mydb.movie
-    collection({'title': u'Days of Thunder'})
-
-For more information about MongoEngine, head over to the
-`website <http://docs.mongoengine.org/>`_.
+Flask-MongoEngine adds helpful utilities on top of MongoEngine. Check
+out their `documentation <Flask-MongoEngine_>`_ as well.
