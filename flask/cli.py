@@ -333,7 +333,7 @@ class DispatchingApp(object):
 
 
 class ScriptInfo(object):
-    """Help object to deal with Flask applications.  This is usually not
+    """Helper object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
     to click.  In future versions of Flask this object will most likely play
     a bigger role.  Typically it's created automatically by the
@@ -725,7 +725,7 @@ def _validate_key(ctx, param, value):
     return value
 
 
-@click.command('run', short_help='Runs a development server.')
+@click.command('run', short_help='Run a development server.')
 @click.option('--host', '-h', default='127.0.0.1',
               help='The interface to bind to.')
 @click.option('--port', '-p', default=5000,
@@ -777,10 +777,10 @@ def run_command(info, host, port, reload, debugger, eager_loading,
                threaded=with_threads, ssl_context=cert)
 
 
-@click.command('shell', short_help='Runs a shell in the app context.')
+@click.command('shell', short_help='Run a shell in the app context.')
 @with_appcontext
 def shell_command():
-    """Runs an interactive Python shell in the context of a given
+    """Run an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
     namespace of this shell according to it's configuration.
 

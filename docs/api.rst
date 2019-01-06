@@ -312,10 +312,10 @@ JSON module:
     as string.
 
 The :func:`~htmlsafe_dumps` function of this json module is also available
-as filter called ``|tojson`` in Jinja2.  Note that inside ``script``
-tags no escaping must take place, so make sure to disable escaping
-with ``|safe`` if you intend to use it inside ``script`` tags unless
-you are using Flask 0.10 which implies that:
+as a filter called ``|tojson`` in Jinja2.  Note that in versions of Flask prior
+to Flask 0.10, you must disable escaping with ``|safe`` if you intend to use
+``|tojson`` output inside ``script`` tags. In Flask 0.10 and above, this
+happens automatically (but it's harmless to include ``|safe`` anyway).
 
 .. sourcecode:: html+jinja
 

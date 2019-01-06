@@ -75,11 +75,12 @@ implement a blueprint that does simple rendering of static templates::
             abort(404)
 
 When you bind a function with the help of the ``@simple_page.route``
-decorator the blueprint will record the intention of registering the
-function `show` on the application when it's later registered.
+decorator, the blueprint will record the intention of registering the
+function ``show`` on the application when it's later registered.
 Additionally it will prefix the endpoint of the function with the
 name of the blueprint which was given to the :class:`Blueprint`
-constructor (in this case also ``simple_page``).
+constructor (in this case also ``simple_page``). The blueprint's name
+does not modify the URL, only the endpoint.
 
 Registering Blueprints
 ----------------------
