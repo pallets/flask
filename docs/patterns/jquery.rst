@@ -105,7 +105,7 @@ example that shows how you would use jQuery and Flask nonetheless::
         return render_template('index.html')
 
 As you can see I also added an `index` method here that renders a
-template.  This template will load jQuery as above and have a little form
+template.  This template will load jQuery as above and have a little form where
 we can add two numbers and a link to trigger the function on the server
 side.
 
