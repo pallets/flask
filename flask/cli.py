@@ -14,6 +14,7 @@ from __future__ import print_function
 import ast
 import inspect
 import os
+import platform
 import re
 import ssl
 import sys
@@ -21,7 +22,6 @@ import traceback
 from functools import update_wrapper
 from operator import attrgetter
 from threading import Lock, Thread
-import werkzeug
 
 import click
 from werkzeug.utils import import_string
@@ -260,11 +260,16 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
 def get_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    message = 'Python %(python_version)s\nFlask %(version)s\nWerkzeug %(werkzeug_version)s'
+    import werkzeug
+    message = (
+        'Python %(python)s\n'
+        'Flask %(flask)s\n'
+        'Werkzeug %(werkzeug)s'
+    )
     click.echo(message % {
-        'version': __version__,
-        'python_version': sys.version,
-        'werkzeug_version': werkzeug.__version__,
+        'python': platform.python_version(),
+        'flask': __version__,
+        'werkzeug': werkzeug.__version__,
     }, color=ctx.color)
     ctx.exit()
 
