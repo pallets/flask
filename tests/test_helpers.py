@@ -609,10 +609,6 @@ class TestSendfile(object):
         assert rv.status_code == 200
         rv.close()
 
-    @pytest.mark.skipif(
-        not callable(getattr(Range, 'to_content_range_header', None)),
-        reason="not implemented within werkzeug"
-    )
     def test_send_file_range_request_bytesio(self, app, client):
         @app.route('/')
         def index():
