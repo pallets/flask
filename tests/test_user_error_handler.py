@@ -184,9 +184,9 @@ def test_default_error_handler():
     def forbidden():
         raise Forbidden()
 
-    @app.route('/slash/')
+    @app.route("/slash/")
     def slash():
-        return ''
+        return "slash"
 
     app.register_blueprint(bp, url_prefix='/bp')
 
@@ -195,6 +195,5 @@ def test_default_error_handler():
     assert c.get('/bp/forbidden').data == b'bp-forbidden'
     assert c.get('/undefined').data == b'default'
     assert c.get('/forbidden').data == b'forbidden'
-    assert c.get('/slash').location.endswith('/slash/')
-
-
+    # Don't handle RequestRedirect raised when adding slash.
+    assert c.get("/slash", follow_redirects=True).data == b"slash"
