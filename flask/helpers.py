@@ -577,6 +577,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
 
+        if not isinstance(attachment_filename, text_type):
+            attachment_filename = attachment_filename.decode('utf-8')
+
         try:
             attachment_filename = attachment_filename.encode('ascii')
         except UnicodeEncodeError:
