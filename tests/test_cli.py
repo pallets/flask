@@ -241,9 +241,9 @@ def test_locate_app_suppress_raise():
 
 
 def test_get_version(test_apps, capsys):
-    """Test of get_version."""
-    from flask import __version__ as flask_ver
-    from sys import version as py_ver
+    from flask import __version__ as flask_version
+    from werkzeug import __version__ as werkzeug_version
+    from platform import python_version
 
     class MockCtx(object):
         resilient_parsing = False
@@ -254,8 +254,9 @@ def test_get_version(test_apps, capsys):
     ctx = MockCtx()
     get_version(ctx, None, "test")
     out, err = capsys.readouterr()
-    assert flask_ver in out
-    assert py_ver in out
+    assert "Python " + python_version() in out
+    assert "Flask " + flask_version in out
+    assert "Werkzeug " + werkzeug_version in out
 
 
 def test_scriptinfo(test_apps, monkeypatch):
