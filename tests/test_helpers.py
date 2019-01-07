@@ -644,6 +644,8 @@ class TestSendfile(object):
         (u'Ñandú／pingüino.txt', '"Nandu/pinguino.txt"',
         '%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt'),
         (u'Vögel.txt', 'Vogel.txt', 'V%C3%B6gel.txt'),
+        # Native string not marked as Unicode on Python 2
+        ('tést.txt', 'test.txt', 't%C3%A9st.txt'),
     ))
     def test_attachment_filename_encoding(self, filename, ascii, utf8):
         rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=filename)
