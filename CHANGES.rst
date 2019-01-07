@@ -10,15 +10,19 @@ Version 1.1
 Unreleased
 
 -   :meth:`flask.RequestContext.copy` includes the current session
-    object in the request context copy. This prevents ``flask.session``
-    pointing to an out-of-date object. (`#2935`)
--   Using built-in RequestContext, unprintable Unicode characters in Host
-    header will result in a HTTP 400 response and not HTTP 500 as previously.
-    (`#2994`)
--   :func:`send_file` supports ``PathLike`` objects as describe in
-    PEP 0519, to support ``pathlib`` in Python 3. (`#3059`_)
+    object in the request context copy. This prevents ``session``
+    pointing to an out-of-date object. (`#2935`_)
+-   Using built-in RequestContext, unprintable Unicode characters in
+    Host header will result in a HTTP 400 response and not HTTP 500 as
+    previously. (`#2994`_)
+-   :func:`send_file` supports :class:`~os.PathLike` objects as
+    described in PEP 0519, to support :mod:`pathlib` in Python 3.
+    (`#3059`_)
+-   :func:`send_file` supports :class:`~io.BytesIO` partial content.
+    (`#2957`_)
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
+.. _#2957: https://github.com/pallets/flask/issues/2957
 .. _#2994: https://github.com/pallets/flask/pull/2994
 .. _#3059: https://github.com/pallets/flask/pull/3059
 
