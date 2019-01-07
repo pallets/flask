@@ -14,6 +14,7 @@ from __future__ import print_function
 import ast
 import inspect
 import os
+import platform
 import re
 import ssl
 import sys
@@ -260,10 +261,16 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
 def get_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    message = 'Flask %(version)s\nPython %(python_version)s'
+    import werkzeug
+    message = (
+        'Python %(python)s\n'
+        'Flask %(flask)s\n'
+        'Werkzeug %(werkzeug)s'
+    )
     click.echo(message % {
-        'version': __version__,
-        'python_version': sys.version,
+        'python': platform.python_version(),
+        'flask': __version__,
+        'werkzeug': werkzeug.__version__,
     }, color=ctx.color)
     ctx.exit()
 
