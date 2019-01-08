@@ -350,6 +350,12 @@ class Flask(_PackageBoundObject):
     #: .. versionadded:: 0.7
     url_rule_class = Rule
 
+    #: The map object to use for storing the URL rules and routing
+    #: configuration parameters. Defaults to :class:`werkzeug.routing.Map`.
+    #:
+    #: .. versionadded:: 1.1.0
+    url_map_class = Map
+
     #: the test client that is used with when `test_client` is used.
     #:
     #: .. versionadded:: 0.7
@@ -567,7 +573,7 @@ class Flask(_PackageBoundObject):
         #:
         #:    app = Flask(__name__)
         #:    app.url_map.converters['list'] = ListConverter
-        self.url_map = Map()
+        self.url_map = self.url_map_class()
 
         self.url_map.host_matching = host_matching
         self.subdomain_matching = subdomain_matching
