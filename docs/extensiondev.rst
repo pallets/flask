@@ -240,7 +240,7 @@ automatically.
 Additionally, the ``init_app`` method is used to support the factory pattern
 for creating apps::
 
-    db = Sqlite3()
+    db = SQLite3()
     # Then later on.
     app = create_app('the-config.cfg')
     db.init_app(app)
