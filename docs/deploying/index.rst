@@ -24,6 +24,7 @@ Hosted options
 - `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
 - `Deploying on Azure (IIS) <https://azure.microsoft.com/documentation/articles/web-sites-python-configure/>`_
 - `Deploying on PythonAnywhere <https://help.pythonanywhere.com/pages/Flask/>`_
+- `Deploying Flask on Render <https://render.com/docs/deploy-flask/>`_
 
 Self-hosted options
 -------------------
