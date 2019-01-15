@@ -270,6 +270,25 @@ This example adds the command ``create_user`` that takes the argument
 
     $ flask create_user admin
 
+If you are using Click version 7 or higher, commands with underscores (`_`)
+will automatically be converted to dashes (`-`). The command above can be
+executed like this:
+
+::
+
+    $ flask create-user admin
+
+If you want to use underscores and Click 7, you need to explicitly specify
+the command name.
+
+::
+
+    @app.cli.command('create_user')
+    @click.argument('name')
+    def create_user(name):
+        ...
+
+
 This example adds the same command, but as ``user create``, a command in a
 group. This is useful if you want to organize multiple related commands. ::
 
