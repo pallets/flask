@@ -43,7 +43,7 @@ Unreleased
 -   :func:`send_file` handles an ``attachment_filename`` that is a
     native Python 2 string (bytes) with UTF-8 coded bytes. (`#2933`_)
 -   A catch-all error handler registered for ``HTTPException`` will not
-    handle ``RoutingExcpetion``, which is used internally during
+    handle ``RoutingException``, which is used internally during
     routing. This fixes the unexpected behavior that had been introduced
     in 1.0. (`#2986`_)
 
