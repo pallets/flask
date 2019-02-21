@@ -166,7 +166,9 @@ On Linux, virtualenv is provided by your package manager:
     # Arch
     $ sudo pacman -S python-virtualenv
 
-If you are on Mac OS X or Windows, download `get-pip.py`_, then:
+If you are on Mac OS X or Windows, download `get-pip.py`_.
+
+Then, on Mac OS X:
 
 .. code-block:: sh
 
