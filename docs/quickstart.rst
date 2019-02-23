@@ -265,14 +265,14 @@ Why would you want to build URLs using the URL reversing function
 
 1. Reversing is often more descriptive than hard-coding the URLs.
 2. You can change your URLs in one go instead of needing to remember to
-    manually change hard-coded URLs.
+   manually change hard-coded URLs.
 3. URL building handles escaping of special characters and Unicode data
-    transparently.
+   transparently.
 4. The generated paths are always absolute, avoiding unexpected behavior
    of relative paths in browsers.
 5. If your application is placed outside the URL root, for example, in
-    ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
-    handles that for you.
+   ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
+   handles that for you.
 
 For example, here we use the :meth:`~flask.Flask.test_request_context` method
 to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
