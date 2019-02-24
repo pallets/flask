@@ -565,7 +565,7 @@ then you must do so before calling :meth:`~flask.Config.from_object`::
     cfg = import_string('configmodule.ProductionConfig')()
     app.config.from_object(cfg)
 
-Instantiating the configutation object allows you to use ``@property`` in
+Instantiating the configuration object allows you to use ``@property`` in
 your configuration classes::
 
     class Config(object):
