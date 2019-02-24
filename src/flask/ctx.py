@@ -314,9 +314,6 @@ class RequestContext(object):
         # functions.
         self._after_request_functions = []
 
-        if self.url_adapter is not None:
-            self.match_request()
-
     @property
     def g(self):
         return _app_ctx_stack.top.g
@@ -383,6 +380,9 @@ class RequestContext(object):
             sys.exc_clear()
 
         _request_ctx_stack.push(self)
+
+        if self.url_adapter is not None:
+            self.match_request()
 
         # Open the session at the moment that the request context is available.
         # This allows a custom open_session method to use the request context.

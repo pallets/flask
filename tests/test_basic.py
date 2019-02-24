@@ -1384,26 +1384,6 @@ def test_url_for_passes_special_values_to_build_error_handler(app):
         flask.url_for("/")
 
 
-def test_custom_converters(app, client):
-    from werkzeug.routing import BaseConverter
-
-    class ListConverter(BaseConverter):
-        def to_python(self, value):
-            return value.split(",")
-
-        def to_url(self, value):
-            base_to_url = super(ListConverter, self).to_url
-            return ",".join(base_to_url(x) for x in value)
-
-    app.url_map.converters["list"] = ListConverter
-
-    @app.route("/<list:args>")
-    def index(args):
-        return "|".join(args)
-
-    assert client.get("/1,2,3").data == b"1|2|3"
-
-
 def test_static_files(app, client):
     rv = client.get("/static/index.html")
     assert rv.status_code == 200
