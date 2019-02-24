@@ -153,7 +153,6 @@ def test_blueprint_with_subdomain():
 
     ctx = app.test_request_context("/", subdomain="xxx")
     assert ctx.request.url == "http://xxx.example.com:1234/foo/"
-    assert ctx.request.blueprint == bp.name
 
     rv = client.get("/", subdomain="xxx")
     assert rv.data == b"http://xxx.example.com:1234/foo/"
