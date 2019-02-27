@@ -122,7 +122,8 @@ def copy_current_request_context(f):
     """A helper function that decorates a function to retain the current
     request context.  This is useful when working with greenlets.  The moment
     the function is decorated a copy of the request context is created and
-    then pushed when the function is called.
+    then pushed when the function is called.  The current session is also
+    included in the copied request context.
 
     Example::
 
@@ -133,8 +134,8 @@ def copy_current_request_context(f):
         def index():
             @copy_current_request_context
             def do_some_work():
-                # do some work here, it can access flask.request like you
-                # would otherwise in the view function.
+                # do some work here, it can access flask.request or
+                # flask.session like you would otherwise in the view function.
                 ...
             gevent.spawn(do_some_work)
             return 'Regular response'
@@ -276,14 +277,18 @@ class RequestContext(object):
     that situation, otherwise your unittests will leak memory.
     """
 
-    def __init__(self, app, environ, request=None):
+    def __init__(self, app, environ, request=None, session=None):
         self.app = app
         if request is None:
             request = app.request_class(environ)
         self.request = request
-        self.url_adapter = app.create_url_adapter(self.request)
+        self.url_adapter = None
+        try:
+            self.url_adapter = app.create_url_adapter(self.request)
+        except HTTPException as e:
+            self.request.routing_exception = e
         self.flashes = None
-        self.session = None
+        self.session = session
 
         # Request contexts can be pushed multiple times and interleaved with
         # other request contexts.  Now only if the last level is popped we
@@ -304,7 +309,8 @@ class RequestContext(object):
         # functions.
         self._after_request_functions = []
 
-        self.match_request()
+        if self.url_adapter is not None:
+            self.match_request()
 
     def _get_g(self):
         return _app_ctx_stack.top.g
@@ -321,10 +327,15 @@ class RequestContext(object):
         request object is locked.
 
         .. versionadded:: 0.10
+
+        .. versionchanged:: 1.1
+           The current session object is used instead of reloading the original
+           data. This prevents `flask.session` pointing to an out-of-date object.
         """
         return self.__class__(self.app,
             environ=self.request.environ,
-            request=self.request
+            request=self.request,
+            session=self.session
         )
 
     def match_request(self):

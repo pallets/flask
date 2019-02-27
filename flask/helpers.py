@@ -8,7 +8,7 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
+import io
 import os
 import socket
 import sys
@@ -33,7 +33,7 @@ from jinja2 import FileSystemLoader
 from .signals import message_flashed
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
      current_app, request
-from ._compat import string_types, text_type, PY2
+from ._compat import string_types, text_type, PY2, fspath
 
 # sentinel
 _missing = object()
@@ -510,6 +510,12 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         Filenames are encoded with ASCII instead of Latin-1 for broader
         compatibility with WSGI servers.
 
+    .. versionchanged:: 1.1
+        Filename may be a :class:`~os.PathLike` object.
+
+    .. versionadded:: 1.1
+        Partial content supports :class:`~io.BytesIO`.
+
     :param filename_or_fp: the filename of the file to send.
                            This is relative to the :attr:`~Flask.root_path`
                            if a relative path is specified.
@@ -538,6 +544,10 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     """
     mtime = None
     fsize = None
+
+    if hasattr(filename_or_fp, '__fspath__'):
+        filename_or_fp = fspath(filename_or_fp)
+
     if isinstance(filename_or_fp, string_types):
         filename = filename_or_fp
         if not os.path.isabs(filename):
@@ -567,6 +577,9 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             raise TypeError('filename unavailable, required for '
                             'sending as attachment')
 
+        if not isinstance(attachment_filename, text_type):
+            attachment_filename = attachment_filename.decode('utf-8')
+
         try:
             attachment_filename = attachment_filename.encode('ascii')
         except UnicodeEncodeError:
@@ -592,6 +605,13 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             file = open(filename, 'rb')
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
+            headers['Content-Length'] = fsize
+        elif isinstance(file, io.BytesIO):
+            try:
+                fsize = file.getbuffer().nbytes
+            except AttributeError:
+                # Python 2 doesn't have getbuffer
+                fsize = len(file.getvalue())
             headers['Content-Length'] = fsize
         data = wrap_file(request.environ, file)
 
@@ -705,6 +725,8 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
+    filename = fspath(filename)
+    directory = fspath(directory)
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)

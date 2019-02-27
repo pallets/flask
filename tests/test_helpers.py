@@ -10,6 +10,7 @@
 """
 
 import datetime
+import io
 import os
 import uuid
 
@@ -34,6 +35,19 @@ def has_encoding(name):
         return True
     except LookupError:
         return False
+
+
+class FakePath(object):
+    """Fake object to represent a ``PathLike object``.
+
+    This represents a ``pathlib.Path`` object in python 3.
+    See: https://www.python.org/dev/peps/pep-0519/
+    """
+    def __init__(self, path):
+        self.path = path
+
+    def __fspath__(self):
+        return self.path
 
 
 class FixedOffset(datetime.tzinfo):
@@ -527,6 +541,15 @@ class TestSendfile(object):
         assert 'x-sendfile' not in rv.headers
         rv.close()
 
+    def test_send_file_pathlike(self, app, req_ctx):
+        rv = flask.send_file(FakePath('static/index.html'))
+        assert rv.direct_passthrough
+        assert rv.mimetype == 'text/html'
+        with app.open_resource('static/index.html') as f:
+            rv.direct_passthrough = False
+            assert rv.data == f.read()
+        rv.close()
+
     @pytest.mark.skipif(
         not callable(getattr(Range, 'to_content_range_header', None)),
         reason="not implemented within werkzeug"
@@ -584,6 +607,19 @@ class TestSendfile(object):
         rv = client.get('/', headers={'Range': 'bytes=4-15', 'If-Range': http_date(
             datetime.datetime(1999, 1, 1))})
         assert rv.status_code == 200
+        rv.close()
+
+    def test_send_file_range_request_bytesio(self, app, client):
+        @app.route('/')
+        def index():
+            file = io.BytesIO(b'somethingsomething')
+            return flask.send_file(
+                file, attachment_filename='filename', conditional=True
+            )
+
+        rv = client.get('/', headers={'Range': 'bytes=4-15'})
+        assert rv.status_code == 206
+        assert rv.data == b'somethingsomething'[4:16]
         rv.close()
 
     @pytest.mark.skipif(
@@ -644,6 +680,8 @@ class TestSendfile(object):
         (u'Ñandú／pingüino.txt', '"Nandu/pinguino.txt"',
         '%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt'),
         (u'Vögel.txt', 'Vogel.txt', 'V%C3%B6gel.txt'),
+        # Native string not marked as Unicode on Python 2
+        ('tést.txt', 'test.txt', 't%C3%A9st.txt'),
     ))
     def test_attachment_filename_encoding(self, filename, ascii, utf8):
         rv = flask.send_file('static/index.html', as_attachment=True, attachment_filename=filename)
@@ -681,6 +719,12 @@ class TestSendfile(object):
         assert cc.max_age == 3600
         rv.close()
 
+        # Test with static file handler.
+        rv = app.send_static_file(FakePath('index.html'))
+        cc = parse_cache_control_header(rv.headers['Cache-Control'])
+        assert cc.max_age == 3600
+        rv.close()
+
         class StaticFileApp(flask.Flask):
             def get_send_file_max_age(self, filename):
                 return 10
@@ -702,6 +746,14 @@ class TestSendfile(object):
         app.root_path = os.path.join(os.path.dirname(__file__),
                                      'test_apps', 'subdomaintestmodule')
         rv = flask.send_from_directory('static', 'hello.txt')
+        rv.direct_passthrough = False
+        assert rv.data.strip() == b'Hello Subdomain'
+        rv.close()
+
+    def test_send_from_directory_pathlike(self, app, req_ctx):
+        app.root_path = os.path.join(os.path.dirname(__file__),
+                                     'test_apps', 'subdomaintestmodule')
+        rv = flask.send_from_directory(FakePath('static'), FakePath('hello.txt'))
         rv.direct_passthrough = False
         assert rv.data.strip() == b'Hello Subdomain'
         rv.close()

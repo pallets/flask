@@ -16,18 +16,23 @@ import sys
 PY2 = sys.version_info[0] == 2
 _identity = lambda x: x
 
-
-if not PY2:
+try:  # Python 2
+    text_type = unicode
+    string_types = (str, unicode)
+    integer_types = (int, long)
+except NameError:  # Python 3
     text_type = str
     string_types = (str,)
     integer_types = (int,)
 
+if not PY2:
     iterkeys = lambda d: iter(d.keys())
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
 
     from inspect import getfullargspec as getargspec
     from io import StringIO
+    import collections.abc as collections_abc
 
     def reraise(tp, value, tb=None):
         if value.__traceback__ is not tb:
@@ -37,16 +42,13 @@ if not PY2:
     implements_to_string = _identity
 
 else:
-    text_type = unicode
-    string_types = (str, unicode)
-    integer_types = (int, long)
-
     iterkeys = lambda d: d.iterkeys()
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
 
     from inspect import getargspec
     from cStringIO import StringIO
+    import collections as collections_abc
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 
@@ -97,3 +99,12 @@ if hasattr(sys, 'pypy_version_info'):
         BROKEN_PYPY_CTXMGR_EXIT = True
     except AssertionError:
         pass
+
+
+try:
+    from os import fspath
+except ImportError:
+    # Backwards compatibility as proposed in PEP 0519:
+    # https://www.python.org/dev/peps/pep-0519/#backwards-compatibility
+    def fspath(path):
+        return path.__fspath__() if hasattr(path, '__fspath__') else path

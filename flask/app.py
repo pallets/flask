@@ -20,7 +20,8 @@ from threading import Lock
 from werkzeug.datastructures import Headers, ImmutableDict
 from werkzeug.exceptions import BadRequest, BadRequestKeyError, HTTPException, \
     InternalServerError, MethodNotAllowed, default_exceptions
-from werkzeug.routing import BuildError, Map, RequestRedirect, Rule
+from werkzeug.routing import BuildError, Map, RequestRedirect, \
+    RoutingException, Rule
 
 from . import cli, json
 from ._compat import integer_types, reraise, string_types, text_type
@@ -1633,11 +1634,27 @@ class Flask(_PackageBoundObject):
         registered error handlers and fall back to returning the
         exception as response.
 
+        .. versionchanged:: 1.0.3
+            ``RoutingException``, used internally for actions such as
+             slash redirects during routing, is not passed to error
+             handlers.
+
+        .. versionchanged:: 1.0
+            Exceptions are looked up by code *and* by MRO, so
+            ``HTTPExcpetion`` subclasses can be handled with a catch-all
+            handler for the base ``HTTPException``.
+
         .. versionadded:: 0.3
         """
         # Proxy exceptions don't have error codes.  We want to always return
         # those unchanged as errors
         if e.code is None:
+            return e
+
+        # RoutingExceptions are used internally to trigger routing
+        # actions, such as slash redirects raising RequestRedirect. They
+        # are not raised or handled in user code.
+        if isinstance(e, RoutingException):
             return e
 
         handler, _ = self._find_error_handler(e)
@@ -1680,16 +1697,17 @@ class Flask(_PackageBoundObject):
         return False
 
     def handle_user_exception(self, e):
-        """This method is called whenever an exception occurs that should be
-        handled.  A special case are
-        :class:`~werkzeug.exception.HTTPException`\s which are forwarded by
-        this function to the :meth:`handle_http_exception` method.  This
-        function will either return a response value or reraise the
-        exception with the same traceback.
+        """This method is called whenever an exception occurs that
+        should be handled. A special case is :class:`~werkzeug
+        .exceptions.HTTPException` which is forwarded to the
+        :meth:`handle_http_exception` method. This function will either
+        return a response value or reraise the exception with the same
+        traceback.
 
         .. versionchanged:: 1.0
-            Key errors raised from request data like ``form`` show the bad
-            key in debug mode rather than a generic bad request message.
+            Key errors raised from request data like ``form`` show the
+            bad key in debug mode rather than a generic bad request
+            message.
 
         .. versionadded:: 0.7
         """
@@ -1700,16 +1718,17 @@ class Flask(_PackageBoundObject):
         # we cannot prevent users from trashing it themselves in a custom
         # trap_http_exception method so that's their fault then.
 
-        # MultiDict passes the key to the exception, but that's ignored
-        # when generating the response message. Set an informative
-        # description for key errors in debug mode or when trapping errors.
-        if (
-            (self.debug or self.config['TRAP_BAD_REQUEST_ERRORS'])
-            and isinstance(e, BadRequestKeyError)
-            # only set it if it's still the default description
-            and e.description is BadRequestKeyError.description
-        ):
-            e.description = "KeyError: '{0}'".format(*e.args)
+        if isinstance(e, BadRequestKeyError):
+            if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
+                # Werkzeug < 0.15 doesn't add the KeyError to the 400
+                # message, add it in manually.
+                description = e.get_description()
+
+                if e.args[0] not in description:
+                    e.description = "KeyError: '{}'".format(*e.args)
+            else:
+                # Werkzeug >= 0.15 does add it, remove it in production
+                e.args = ()
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)

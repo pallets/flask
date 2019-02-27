@@ -91,12 +91,12 @@ On Windows:
 
     $ py -3 -m venv venv
 
-If you needed to install virtualenv because you are on an older version of
-Python, use the following command instead:
+If you needed to install virtualenv because you are using Python 2, use
+the following command instead:
 
 .. code-block:: sh
 
-    $ virtualenv venv
+    $ python2 -m virtualenv venv
 
 On Windows:
 

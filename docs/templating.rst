@@ -110,15 +110,24 @@ by Jinja2 itself:
    is for example very helpful if you try to generate JavaScript on the
    fly.
 
-   Note that inside ``script`` tags no escaping must take place, so make
-   sure to disable escaping with ``|safe`` before Flask 0.10 if you intend
-   to use it inside ``script`` tags:
-
    .. sourcecode:: html+jinja
 
        <script type=text/javascript>
-           doSomethingWith({{ user.username|tojson|safe }});
+           doSomethingWith({{ user.username|tojson }});
        </script>
+
+   It is also safe to use the output of `|tojson` in a *single-quoted* HTML
+   attribute:
+
+   .. sourcecode:: html+jinja
+
+       <button onclick='doSomethingWith({{ user.username|tojson }})'>
+           Click me
+       </button>
+
+   Note that in versions of Flask prior to 0.10, if using the output of
+   ``|tojson`` inside ``script``, make sure to disable escaping with ``|safe``.
+   In Flask 0.10 and above, this happens automatically.
 
 Controlling Autoescaping
 ------------------------

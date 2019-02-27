@@ -25,7 +25,7 @@ Consult each extension's documentation for installation, configuration,
 and usage instructions. Generally, extensions pull their own
 configuration from :attr:`app.config <flask.Flask.config>` and are
 passed an application instance during initialization. For example,
-an extension caled "Flask-Foo" might be used like this::
+an extension called "Flask-Foo" might be used like this::
 
     from flask_foo import Foo
 

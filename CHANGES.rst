@@ -9,6 +9,23 @@ Version 1.1
 
 Unreleased
 
+-   :meth:`flask.RequestContext.copy` includes the current session
+    object in the request context copy. This prevents ``session``
+    pointing to an out-of-date object. (`#2935`_)
+-   Using built-in RequestContext, unprintable Unicode characters in
+    Host header will result in a HTTP 400 response and not HTTP 500 as
+    previously. (`#2994`_)
+-   :func:`send_file` supports :class:`~os.PathLike` objects as
+    described in PEP 0519, to support :mod:`pathlib` in Python 3.
+    (`#3059`_)
+-   :func:`send_file` supports :class:`~io.BytesIO` partial content.
+    (`#2957`_)
+
+.. _#2935: https://github.com/pallets/flask/issues/2935
+.. _#2957: https://github.com/pallets/flask/issues/2957
+.. _#2994: https://github.com/pallets/flask/pull/2994
+.. _#3059: https://github.com/pallets/flask/pull/3059
+
 
 Version 1.0.3
 -------------
@@ -19,10 +36,22 @@ Unreleased
     (ISO-8859-1). This fixes compatibility with Gunicorn, which is
     stricter about header encodings than PEP 3333. (`#2766`_)
 -   Allow custom CLIs using ``FlaskGroup`` to set the debug flag without
-    it always being overwritten based on environment variables. (`#2765`_)
+    it always being overwritten based on environment variables.
+    (`#2765`_)
+-   ``flask --version`` outputs Werkzeug's version and simplifies the
+    Python version. (`#2825`_)
+-   :func:`send_file` handles an ``attachment_filename`` that is a
+    native Python 2 string (bytes) with UTF-8 coded bytes. (`#2933`_)
+-   A catch-all error handler registered for ``HTTPException`` will not
+    handle ``RoutingException``, which is used internally during
+    routing. This fixes the unexpected behavior that had been introduced
+    in 1.0. (`#2986`_)
 
 .. _#2766: https://github.com/pallets/flask/issues/2766
 .. _#2765: https://github.com/pallets/flask/pull/2765
+.. _#2825: https://github.com/pallets/flask/pull/2825
+.. _#2933: https://github.com/pallets/flask/issues/2933
+.. _#2986: https://github.com/pallets/flask/pull/2986
 
 
 Version 1.0.2
@@ -345,7 +374,7 @@ Released on December 21st 2016, codename Punsch.
 - Add support for range requests in ``send_file``.
 - ``app.test_client`` includes preset default environment, which can now be
   directly set, instead of per ``client.get``.
-  
+
 .. _#1849: https://github.com/pallets/flask/pull/1849
 .. _#1988: https://github.com/pallets/flask/pull/1988
 .. _#1730: https://github.com/pallets/flask/pull/1730
@@ -366,7 +395,7 @@ Version 0.11.1
 Bugfix release, released on June 7th 2016.
 
 - Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. (`#1872`_)
-  
+
 .. _#1872: https://github.com/pallets/flask/pull/1872
 
 Version 0.11
@@ -446,7 +475,7 @@ Released on May 29th 2016, codename Absinthe.
 - Added the ``JSONIFY_MIMETYPE`` configuration variable (`#1728`_).
 - Exceptions during teardown handling will no longer leave bad application
   contexts lingering around.
-  
+
 .. _#1326: https://github.com/pallets/flask/pull/1326
 .. _#1393: https://github.com/pallets/flask/pull/1393
 .. _#1422: https://github.com/pallets/flask/pull/1422
