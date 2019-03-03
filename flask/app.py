@@ -44,6 +44,7 @@ from .helpers import (
     url_for,
     get_load_dotenv,
 )
+from .json import jsonify
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
 from .signals import (
@@ -2001,6 +2002,9 @@ class Flask(_PackageBoundObject):
             ``bytes`` (``str`` in Python 2)
                 A response object is created with the bytes as the body.
 
+            ``dict``
+                A dictionary that will be jsonify'd before being returned.
+
             ``tuple``
                 Either ``(body, status, headers)``, ``(body, status)``, or
                 ``(body, headers)``, where ``body`` is any of the other types
@@ -2064,6 +2068,8 @@ class Flask(_PackageBoundObject):
                 # special logic
                 rv = self.response_class(rv, status=status, headers=headers)
                 status = headers = None
+            elif isinstance(rv, dict):
+                rv = jsonify(rv)
             else:
                 # evaluate a WSGI callable, or coerce a different response
                 # class to the correct type
