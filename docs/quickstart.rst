@@ -690,7 +690,7 @@ converting return values into response objects is as follows:
     default parameters.
 3.  If a tuple is returned the items in the tuple can provide extra
     information.  Such tuples have to be in the form ``(response, status,
-    headers)`` or ``(response, headers)`` where at least one item has
+    headers)`` or ``(response, status)`` where at least one item has
     to be in the tuple.  The ``status`` value will override the status code
     and ``headers`` can be a list or dictionary of additional header values.
 4.  If none of that works, Flask will assume the return value is a
