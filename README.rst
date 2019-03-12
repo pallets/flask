@@ -26,6 +26,8 @@ Install and update using `pip`_:
 A Simple Example
 ----------------
 
+1.Create hello.py
+
 .. code-block:: python
 
     from flask import Flask
@@ -35,6 +37,8 @@ A Simple Example
     @app.route('/')
     def hello():
         return 'Hello, World!'
+
+2.Set hello.py in FLASK_APP environment valiable and type flask run command
 
 .. code-block:: text
 
