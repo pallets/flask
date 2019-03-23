@@ -203,7 +203,7 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
-        return 'User %s' % username
+        return 'User %s' % escape(username)
 
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
@@ -213,7 +213,7 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/path/<path:subpath>')
     def show_subpath(subpath):
         # show the subpath after /path/
-        return 'Subpath %s' % subpath
+        return 'Subpath %s' % escape(subpath)
 
 Converter types:
 
@@ -279,7 +279,7 @@ to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
 tells Flask to behave as though it's handling a request even while we use a
 Python shell. See :ref:`context-locals`. ::
 
-    from flask import Flask, url_for
+    from flask import Flask, escape, url_for
 
     app = Flask(__name__)
 
@@ -293,7 +293,7 @@ Python shell. See :ref:`context-locals`. ::
 
     @app.route('/user/<username>')
     def profile(username):
-        return '{}\'s profile'.format(username)
+        return '{}\'s profile'.format(escape(username))
 
     with app.test_request_context():
         print(url_for('index'))
