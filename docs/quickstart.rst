@@ -448,8 +448,8 @@ Accessing Request Data
 For web applications it's crucial to react to the data a client sends to
 the server.  In Flask this information is provided by the global
 :class:`~flask.request` object.  If you have some experience with Python
-you might be wondering how that object can be global and how Flask
-manages to still be threadsafe.  The answer is context locals:
+you might be wondering how does that object be global and Flask still
+manages to keep it thread-safe.  The answer is: context locals.
 
 
 .. _context-locals:
