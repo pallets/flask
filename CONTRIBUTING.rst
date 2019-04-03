@@ -11,6 +11,7 @@ resources for questions about your own code:
 
 * The IRC channel ``#pocoo`` on FreeNode.
 * The IRC channel ``#python`` on FreeNode for more general questions.
+* Our Discord server is here: `https://discordapp.com/invite/3TDRQsx`_
 * The mailing list flask@python.org for long term discussion or larger issues.
 * Ask on `Stack Overflow`_. Search with Google first using:
   ``site:stackoverflow.com flask {search term, exception message, etc.}``
@@ -39,6 +40,7 @@ Submitting patches
   without your patch.
 - Try to follow `PEP8`_, but you may ignore the line length limit if following
   it would make the code uglier.
+- We don't accept style-related patches.
 
 First time setup
 ~~~~~~~~~~~~~~~~
