@@ -18,10 +18,10 @@ from itertools import chain
 from threading import Lock
 
 from werkzeug.datastructures import Headers, ImmutableDict
-from werkzeug.exceptions import BadRequest, BadRequestKeyError, HTTPException, \
-    InternalServerError, MethodNotAllowed, default_exceptions
-from werkzeug.routing import BuildError, Map, RequestRedirect, \
-    RoutingException, Rule
+from werkzeug.exceptions import ( BadRequest, BadRequestKeyError, HTTPException,
+    InternalServerError, MethodNotAllowed, default_exceptions )
+from werkzeug.routing import ( BuildError, Map, RequestRedirect,
+    RoutingException, Rule )
 
 from . import cli, json
 from ._compat import integer_types, reraise, string_types, text_type
@@ -35,10 +35,10 @@ from .helpers import (
 )
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
-from .signals import appcontext_tearing_down, got_request_exception, \
-    request_finished, request_started, request_tearing_down
-from .templating import DispatchingJinjaLoader, Environment, \
-    _default_template_ctx_processor
+from .signals import ( appcontext_tearing_down, got_request_exception,
+    request_finished, request_started, request_tearing_down )
+from .templating import ( DispatchingJinjaLoader, Environment,
+    _default_template_ctx_processor )
 from .wrappers import Request, Response
 
 # a singleton sentinel value for parameter defaults
