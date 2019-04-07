@@ -124,8 +124,8 @@ If your httpd is not providing these headers, the most common setup invokes the
 host being set from ``X-Forwarded-Host`` and the remote address from
 ``X-Forwarded-For``::
 
-    from werkzeug.contrib.fixers import ProxyFix
-    app.wsgi_app = ProxyFix(app.wsgi_app)
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 .. admonition:: Trusting Headers
 
