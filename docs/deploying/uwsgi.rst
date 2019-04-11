@@ -50,7 +50,9 @@ Configuring nginx
 
 A basic flask nginx configuration looks like this::
 
-    location = /yourapplication { rewrite ^ /yourapplication/; }
+    location = /yourapplication {
+      return 301 $scheme://$host$uri/$is_args$args;
+    }
     location /yourapplication { try_files $uri @yourapplication; }
     location @yourapplication {
       include uwsgi_params;
