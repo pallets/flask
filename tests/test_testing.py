@@ -411,3 +411,18 @@ def test_cli_custom_obj(app):
     runner = app.test_cli_runner()
     runner.invoke(hello_command, obj=script_info)
     assert NS.called
+
+
+def test_client_pop_all_preserved(app, req_ctx, client):
+    @app.route("/")
+    def index():
+        # stream_with_context pushes a third context, preserved by client
+        return flask.Response(flask.stream_with_context("hello"))
+
+    # req_ctx fixture pushed an initial context, not marked preserved
+    with client:
+        # request pushes a second request context, preserved by client
+        client.get("/")
+
+    # only req_ctx fixture should still be pushed
+    assert flask._request_ctx_stack.top is req_ctx

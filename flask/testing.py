@@ -206,12 +206,17 @@ class FlaskClient(Client):
     def __exit__(self, exc_type, exc_value, tb):
         self.preserve_context = False
 
-        # on exit we want to clean up earlier.  Normally the request context
-        # stays preserved until the next request in the same thread comes
-        # in.  See RequestGlobals.push() for the general behavior.
-        top = _request_ctx_stack.top
-        if top is not None and top.preserved:
-            top.pop()
+        # Normally the request context is preserved until the next
+        # request in the same thread comes. When the client exits we
+        # want to clean up earlier. Pop request contexts until the stack
+        # is empty or a non-preserved one is found.
+        while True:
+            top = _request_ctx_stack.top
+
+            if top is not None and top.preserved:
+                top.pop()
+            else:
+                break
 
 
 class FlaskCliRunner(CliRunner):
