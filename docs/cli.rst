@@ -68,9 +68,9 @@ parts:
     The ``create_app`` factory in ``hello`` is called with the string ``'dev'``
     as the argument.
 
-If ``FLASK_APP`` is not set, the command will look for a file called
-:file:`wsgi.py` or :file:`app.py` and try to detect an application instance or
-factory.
+If ``FLASK_APP`` is not set, the command will try to import "app" or
+"wsgi" (as a ".py" file, or package) and try to detect an application
+instance or factory.
 
 Within the given import, the command looks for an application instance named
 ``app`` or ``application``, then any application instance. If no instance is
