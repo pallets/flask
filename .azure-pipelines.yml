@@ -1,0 +1,51 @@
+trigger:
+- master
+
+variables:
+  vmImage: ubuntu-latest
+  python.version: '3.7'
+  TOXENV: 'py,codecov'
+  python.architecture: 'x64'
+
+strategy:
+  matrix:
+    Python37Linux:
+      python.version: '3.7'
+    Python37Windows:
+      python.version: '3.7'
+      vmImage: 'windows-latest'
+    Python37Mac:
+      python.version: '3.7'
+      vmImage: 'macos-latest'
+    Pypy3Linux:
+      python.version: 'pypy3'
+    Python36Linux:
+      python.version: '3.6'
+    Python35Linux:
+      python.version: '3.5'
+    Python34Linux:
+      python.version: '3.4'
+    Python27Linux:
+      python.version: '2.7'
+    Python27Windows:
+      python.version: '2.7'
+      vmImage: 'windows-latest'
+    DocsHtml:
+      TOXENV: docs-html
+    VersionRange:
+      TOXENV: devel,lowest,codecov
+
+pool:
+  vmImage: $[ variables.vmImage ]
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: $(python.version)
+    architecture: $(python.architecture)
+
+- script: pip install -U tox
+  displayName: 'Install tox'
+
+- script: tox
+  displayName: 'Run tox'
