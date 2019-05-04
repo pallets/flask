@@ -23,8 +23,6 @@ strategy:
       python.version: '3.6'
     Python35Linux:
       python.version: '3.5'
-    Python34Linux:
-      python.version: '3.4'
     Python27Linux:
       python.version: '2.7'
     Python27Windows:
