@@ -45,9 +45,8 @@ steps:
 - script: pip install -U tox
   displayName: 'Install tox'
 
-- script: tox
+- script: tox --junitxml=unittests/TEST-$(Agent.JobName).xml
   displayName: 'Run tox'
 
 # TODO: add codecov token
-# TODO: emit JUnit test results
 # TODO: build on nightly
