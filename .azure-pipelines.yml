@@ -50,3 +50,4 @@ steps:
 
 # TODO: add codecov token
 # TODO: emit JUnit test results
+# TODO: build on nightly
