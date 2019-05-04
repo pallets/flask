@@ -49,3 +49,6 @@ steps:
 
 - script: tox
   displayName: 'Run tox'
+
+# TODO: add codecov token
+# TODO: emit JUnit test results
