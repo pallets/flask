@@ -1,53 +1,78 @@
 trigger:
-- master
+- 'master'
+- '*-maintenance'
 
-variables:
-  vmImage: ubuntu-latest
-  python.version: '3.7'
-  TOXENV: 'py,codecov'
-  python.architecture: 'x64'
+jobs:
+- job: Flask
+  variables:
+    vmImage: ubuntu-latest
+    python.version: '3.7'
+    TOXENV: 'py,codecov'
+    python.architecture: 'x64'
+    publish.test.results: 'true'
 
-strategy:
-  matrix:
-    Python37Linux:
-      python.version: '3.7'
-    Python37Windows:
-      python.version: '3.7'
-      vmImage: 'windows-latest'
-    Python37Mac:
-      python.version: '3.7'
-      vmImage: 'macos-latest'
-    Pypy3Linux:
-      python.version: 'pypy3'
-    Python36Linux:
-      python.version: '3.6'
-    Python35Linux:
-      python.version: '3.5'
-    Python27Linux:
-      python.version: '2.7'
-    Python27Windows:
-      python.version: '2.7'
-      vmImage: 'windows-latest'
-    DocsHtml:
-      TOXENV: docs-html
-    VersionRange:
-      TOXENV: devel,lowest,codecov
+  strategy:
+    matrix:
+      Python37Linux:
+        python.version: '3.7'
+      Python37Windows:
+        python.version: '3.7'
+        vmImage: 'windows-latest'
+      Python37Mac:
+        python.version: '3.7'
+        vmImage: 'macos-latest'
+      Pypy3Linux:
+        python.version: 'pypy3'
+      Python36Linux:
+        python.version: '3.6'
+      Python35Linux:
+        python.version: '3.5'
+      Python27Linux:
+        python.version: '2.7'
+      Python27Windows:
+        python.version: '2.7'
+        vmImage: 'windows-latest'
+      DocsHtml:
+        TOXENV: docs-html
+        publish.test.results: 'false'
+      VersionRange:
+        TOXENV: devel,lowest,codecov
 
-pool:
-  vmImage: $[ variables.vmImage ]
+  pool:
+    vmImage: $[ variables.vmImage ]
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: $(python.version)
-    architecture: $(python.architecture)
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: $(python.version)
+      architecture: $(python.architecture)
 
-- script: pip install -U tox
-  displayName: 'Install tox'
+  - script: pip install -U tox
+    displayName: 'Install tox'
 
-- script: tox
-  displayName: 'Run tox'
+  - script: tox -- --junitxml=unittests/TEST-$(Agent.JobName).xml
+    displayName: 'Run tox'
 
-# TODO: add codecov token
-# TODO: emit JUnit test results
-# TODO: build on nightly
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/TEST-*.xml'
+      testRunTitle: '$(Agent.JobName)'
+    condition: eq(variables['publish.test.results'], 'true')
+  
+  # TODO: add codecov token
+
+# As a courtesy, try this on the dev version of Python
+# Use a container since Azure Pipelines may not have the bleeding-edge Python RC
+- job: FlaskOnLatest
+  pool: { vmImage: ubuntu-latest }
+  container: python:rc-stretch
+  steps:
+  - script: |
+      echo "##vso[task.prependPath]$HOME/.local/bin"
+      pip install -U --user tox
+    displayName: 'Install tox'
+  
+  - script: |
+      tox
+      exit 0  # don't fail the build if this doesn't work!
+    displayName: 'Run tox'
