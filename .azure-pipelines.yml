@@ -50,12 +50,12 @@ jobs:
   - script: pip install -U tox
     displayName: 'Install tox'
 
-  - script: tox -- --junitxml=unittests/TEST-$(Agent.JobName).xml
+  - script: tox
     displayName: 'Run tox'
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFiles: '**/TEST-*.xml'
+      testResultsFiles: 'test-results.xml'
       testRunTitle: '$(Agent.JobName)'
     condition: eq(variables['publish.test.results'], 'true')
   
