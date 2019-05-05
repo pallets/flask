@@ -72,7 +72,7 @@ jobs:
       pip install -U --user tox
     displayName: 'Install tox'
   
+  # don't fail the build if this doesn't work!
   - script: |
-      tox
-      exit 0  # don't fail the build if this doesn't work!
+      tox --ignore-outcome=true
     displayName: 'Run tox'
