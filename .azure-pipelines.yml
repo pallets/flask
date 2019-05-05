@@ -65,6 +65,8 @@ jobs:
 # Use a container since Azure Pipelines may not have the bleeding-edge Python RC
 - job: FlaskOnLatest
   pool: { vmImage: ubuntu-latest }
+  variables:
+    TOXENV: 'future'
   container: python:rc-stretch
   steps:
   - script: |
@@ -73,6 +75,5 @@ jobs:
     displayName: 'Install tox'
   
   # don't fail the build if this doesn't work!
-  - script: |
-      tox --ignore-outcome=true
+  - script: tox
     displayName: 'Run tox'
