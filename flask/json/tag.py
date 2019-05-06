@@ -56,7 +56,7 @@ from flask.json import dumps, loads
 class JSONTag(object):
     """Base class for defining type tags for :class:`TaggedJSONSerializer`."""
 
-    __slots__ = ('serializer',)
+    __slots__ = ("serializer",)
 
     #: The tag to mark the serialized object with. If ``None``, this tag is
     #: only used as an intermediate step during tagging.
@@ -94,7 +94,7 @@ class TagDict(JSONTag):
     """
 
     __slots__ = ()
-    key = ' di'
+    key = " di"
 
     def check(self, value):
         return (
@@ -105,7 +105,7 @@ class TagDict(JSONTag):
 
     def to_json(self, value):
         key = next(iter(value))
-        return {key + '__': self.serializer.tag(value[key])}
+        return {key + "__": self.serializer.tag(value[key])}
 
     def to_python(self, value):
         key = next(iter(value))
@@ -128,7 +128,7 @@ class PassDict(JSONTag):
 
 class TagTuple(JSONTag):
     __slots__ = ()
-    key = ' t'
+    key = " t"
 
     def check(self, value):
         return isinstance(value, tuple)
@@ -154,13 +154,13 @@ class PassList(JSONTag):
 
 class TagBytes(JSONTag):
     __slots__ = ()
-    key = ' b'
+    key = " b"
 
     def check(self, value):
         return isinstance(value, bytes)
 
     def to_json(self, value):
-        return b64encode(value).decode('ascii')
+        return b64encode(value).decode("ascii")
 
     def to_python(self, value):
         return b64decode(value)
@@ -172,10 +172,10 @@ class TagMarkup(JSONTag):
     deserializes to an instance of :class:`~flask.Markup`."""
 
     __slots__ = ()
-    key = ' m'
+    key = " m"
 
     def check(self, value):
-        return callable(getattr(value, '__html__', None))
+        return callable(getattr(value, "__html__", None))
 
     def to_json(self, value):
         return text_type(value.__html__())
@@ -186,7 +186,7 @@ class TagMarkup(JSONTag):
 
 class TagUUID(JSONTag):
     __slots__ = ()
-    key = ' u'
+    key = " u"
 
     def check(self, value):
         return isinstance(value, UUID)
@@ -200,7 +200,7 @@ class TagUUID(JSONTag):
 
 class TagDateTime(JSONTag):
     __slots__ = ()
-    key = ' d'
+    key = " d"
 
     def check(self, value):
         return isinstance(value, datetime)
@@ -227,12 +227,18 @@ class TaggedJSONSerializer(object):
     * :class:`~datetime.datetime`
     """
 
-    __slots__ = ('tags', 'order')
+    __slots__ = ("tags", "order")
 
     #: Tag classes to bind when creating the serializer. Other tags can be
     #: added later using :meth:`~register`.
     default_tags = [
-        TagDict, PassDict, TagTuple, PassList, TagBytes, TagMarkup, TagUUID,
+        TagDict,
+        PassDict,
+        TagTuple,
+        PassList,
+        TagBytes,
+        TagMarkup,
+        TagUUID,
         TagDateTime,
     ]
 
@@ -293,7 +299,7 @@ class TaggedJSONSerializer(object):
 
     def dumps(self, value):
         """Tag the value and dump it to a compact JSON string."""
-        return dumps(self.tag(value), separators=(',', ':'))
+        return dumps(self.tag(value), separators=(",", ":"))
 
     def loads(self, value):
         """Load data from a JSON string and deserialized any tagged objects."""

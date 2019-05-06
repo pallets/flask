@@ -27,7 +27,7 @@ def wsgi_errors_stream():
     can't import this directly, you can refer to it as
     ``ext://flask.logging.wsgi_errors_stream``.
     """
-    return request.environ['wsgi.errors'] if request else sys.stderr
+    return request.environ["wsgi.errors"] if request else sys.stderr
 
 
 def has_level_handler(logger):
@@ -52,9 +52,9 @@ def has_level_handler(logger):
 #: Log messages to :func:`~flask.logging.wsgi_errors_stream` with the format
 #: ``[%(asctime)s] %(levelname)s in %(module)s: %(message)s``.
 default_handler = logging.StreamHandler(wsgi_errors_stream)
-default_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
-))
+default_handler.setFormatter(
+    logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+)
 
 
 def create_logger(app):
@@ -67,7 +67,7 @@ def create_logger(app):
     :class:`~logging.StreamHandler` for
     :func:`~flask.logging.wsgi_errors_stream` with a basic format.
     """
-    logger = logging.getLogger('flask.app')
+    logger = logging.getLogger("flask.app")
 
     if app.debug and logger.level == logging.NOTSET:
         logger.setLevel(logging.DEBUG)
