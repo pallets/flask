@@ -1399,6 +1399,17 @@ def test_static_url_path():
         assert flask.url_for("static", filename="index.html") == "/foo/index.html"
 
 
+def test_static_url_path_with_ending_slash():
+    app = flask.Flask(__name__, static_url_path="/foo/")
+    app.testing = True
+    rv = app.test_client().get("/foo/index.html")
+    assert rv.status_code == 200
+    rv.close()
+
+    with app.test_request_context():
+        assert flask.url_for("static", filename="index.html") == "/foo/index.html"
+
+
 def test_static_route_with_host_matching():
     app = flask.Flask(__name__, host_matching=True, static_host="example.com")
     c = app.test_client()
