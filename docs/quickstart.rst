@@ -249,67 +249,7 @@ trailing slash produces a 404 "Not Found" error. This helps keep URLs
 unique for these resources, which helps search engines avoid indexing
 the same page twice.
 
-
-.. _url-building:
-
-URL Building
-````````````
-
-To build a URL to a specific function, use the :func:`~flask.url_for` function.
-It accepts the name of the function as its first argument and any number of
-keyword arguments, each corresponding to a variable part of the URL rule.
-Unknown variable parts are appended to the URL as query parameters.
-
-Why would you want to build URLs using the URL reversing function
-:func:`~flask.url_for` instead of hard-coding them into your templates?
-
-1. Reversing is often more descriptive than hard-coding the URLs.
-2. You can change your URLs in one go instead of needing to remember to
-   manually change hard-coded URLs.
-3. URL building handles escaping of special characters and Unicode data
-   transparently.
-4. The generated paths are always absolute, avoiding unexpected behavior
-   of relative paths in browsers.
-5. If your application is placed outside the URL root, for example, in
-   ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
-   handles that for you.
-
-For example, here we use the :meth:`~flask.Flask.test_request_context` method
-to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
-tells Flask to behave as though it's handling a request even while we use a
-Python shell. See :ref:`context-locals`.
-
-.. code-block:: python
-
-    from flask import Flask, url_for
-
-    app = Flask(__name__)
-
-    @app.route('/')
-    def index():
-        return 'index'
-
-    @app.route('/login')
-    def login():
-        return 'login'
-
-    @app.route('/user/<username>')
-    def profile(username):
-        return '{}\'s profile'.format(username)
-
-    with app.test_request_context():
-        print(url_for('index'))
-        print(url_for('login'))
-        print(url_for('login', next='/'))
-        print(url_for('profile', username='John Doe'))
-
-.. code-block:: text
-
-    /
-    /login
-    /login?next=/
-    /user/John%20Doe
-
+A more dynamic way for handling URLs with :func:`url_for()` is explained later on in the section :ref:`url-building`
 
 HTTP Methods
 ````````````
@@ -635,8 +575,11 @@ object does not exist yet.  This is possible by utilizing the
 
 For this also see :ref:`about-responses`.
 
-Redirects and Errors
+Redirects, Errors and URL Building
 --------------------
+
+Redirects, Errors
+`````````````````
 
 To redirect a user to another endpoint, use the :func:`~flask.redirect`
 function; to abort a request early with an error code, use the
@@ -672,6 +615,68 @@ tells Flask that the status code of that page should be 404 which means
 not found.  By default 200 is assumed which translates to: all went well.
 
 See :ref:`error-handlers` for more details.
+
+.. _url-building:
+
+URL Building using :func:`url_for()`
+```````````````````````````````````
+
+To build a URL to a specific function, use the :func:`~flask.url_for` function.
+It accepts the name of the function as its first argument and any number of
+keyword arguments, each corresponding to a variable part of the URL rule.
+Unknown variable parts are appended to the URL as query parameters.
+
+Why would you want to build URLs using the URL reversing function
+:func:`~flask.url_for` instead of hard-coding them into your templates?
+
+1. Reversing is often more descriptive than hard-coding the URLs.
+2. You can change your URLs in one go instead of needing to remember to
+   manually change hard-coded URLs.
+3. URL building handles escaping of special characters and Unicode data
+   transparently.
+4. The generated paths are always absolute, avoiding unexpected behavior
+   of relative paths in browsers.
+5. If your application is placed outside the URL root, for example, in
+   ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
+   handles that for you.
+
+For example, here we use the :meth:`~flask.Flask.test_request_context` method
+to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
+tells Flask to behave as though it's handling a request even while we use a
+Python shell. See :ref:`context-locals`.
+
+.. code-block:: python
+
+    from flask import Flask, url_for
+
+    app = Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return 'index'
+
+    @app.route('/login')
+    def login():
+        return 'login'
+
+    @app.route('/user/<username>')
+    def profile(username):
+        return '{}\'s profile'.format(username)
+
+    with app.test_request_context():
+        print(url_for('index'))
+        print(url_for('login'))
+        print(url_for('login', next='/'))
+        print(url_for('profile', username='John Doe'))
+
+With this code, when you run :command:`flask run` there is an extra output expected for the URLs, something like this:
+
+.. code-block:: text
+
+    /
+    /login
+    /login?next=/
+    /user/John%20Doe
 
 .. _about-responses:
 
@@ -799,6 +804,7 @@ To flash a message use the :func:`~flask.flash` method, to get hold of the
 messages you can use :func:`~flask.get_flashed_messages` which is also
 available in the templates.  Check out the :ref:`message-flashing-pattern`
 for a full example.
+
 
 Logging
 -------
