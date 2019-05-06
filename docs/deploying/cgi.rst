@@ -46,9 +46,9 @@ In Apache for example you can put something like this into the config:
     ScriptAlias /app /path/to/the/application.cgi
 
 On shared webhosting, though, you might not have access to your Apache config.
-In this case, a file called ``.htaccess``, sitting in the public directory you want
-your app to be available, works too but the ``ScriptAlias`` directive won't
-work in that case:
+In this case, a file called ``.htaccess``, sitting in the public directory
+you want your app to be available, works too but the ``ScriptAlias`` directive
+won't work in that case:
 
 .. sourcecode:: apache
 

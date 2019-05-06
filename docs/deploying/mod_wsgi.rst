@@ -52,10 +52,10 @@ reload you can safely ignore them.  Just restart the server.
 Creating a `.wsgi` file
 -----------------------
 
-To run your application you need a :file:`yourapplication.wsgi` file.  This file
-contains the code `mod_wsgi` is executing on startup to get the application
-object.  The object called `application` in that file is then used as
-application.
+To run your application you need a :file:`yourapplication.wsgi` file.
+This file contains the code `mod_wsgi` is executing on startup
+to get the application object.  The object called `application`
+in that file is then used as application.
 
 For most applications the following file should be sufficient::
 
@@ -108,16 +108,17 @@ refuse to run with the above configuration. On a Windows system, eliminate those
 
 .. sourcecode:: apache
 
-	<VirtualHost *>
-		ServerName example.com
-		WSGIScriptAlias / C:\yourdir\yourapp.wsgi
-		<Directory C:\yourdir>
-			Order deny,allow
-			Allow from all
-		</Directory>
-	</VirtualHost>
+    <VirtualHost *>
+        ServerName example.com
+        WSGIScriptAlias / C:\yourdir\yourapp.wsgi
+        <Directory C:\yourdir>
+            Order deny,allow
+            Allow from all
+        </Directory>
+    </VirtualHost>
 
-Note: There have been some changes in access control configuration for `Apache 2.4`_.
+Note: There have been some changes in access control configuration
+for `Apache 2.4`_.
 
 .. _Apache 2.4: https://httpd.apache.org/docs/trunk/upgrading.html
 
