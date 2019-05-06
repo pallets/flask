@@ -69,6 +69,7 @@ Links
   * Windows: https://ci.appveyor.com/project/pallets/flask
 
 * Test coverage: https://codecov.io/gh/pallets/flask
+* Official chat: https://discord.gg/t6rrQZH
 
 .. _WSGI: https://wsgi.readthedocs.io
 .. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/
