@@ -92,33 +92,9 @@ class TestJSON(object):
         assert json.detect_encoding(data) == encoding
         assert json.loads(data) == value
 
-    def test_ignore_cached_json(self, app):
-        with app.test_request_context(
-            "/", method="POST", data="malformed", content_type="application/json"
-        ):
-            assert flask.request.get_json(silent=True, cache=True) is None
-            with pytest.raises(BadRequest):
-                flask.request.get_json(silent=False, cache=False)
-
-    def test_different_silent_on_bad_request(self, app):
-        with app.test_request_context(
-            "/", method="POST", data="malformed", content_type="application/json"
-        ):
-            assert flask.request.get_json(silent=True) is None
-            with pytest.raises(BadRequest):
-                flask.request.get_json(silent=False)
-
-    def test_different_silent_on_normal_request(self, app):
-        with app.test_request_context("/", method="POST", json={"foo": "bar"}):
-            silent_rv = flask.request.get_json(silent=True)
-            normal_rv = flask.request.get_json(silent=False)
-            assert silent_rv is normal_rv
-            assert normal_rv["foo"] == "bar"
-
-    def test_post_empty_json_adds_exception_to_response_content_in_debug(
-        self, app, client
-    ):
-        app.config["DEBUG"] = True
+    @pytest.mark.parametrize("debug", (True, False))
+    def test_bad_request_debug_message(self, app, client, debug):
+        app.config["DEBUG"] = debug
         app.config["TRAP_BAD_REQUEST_ERRORS"] = False
 
         @app.route("/json", methods=["POST"])
@@ -128,22 +104,8 @@ class TestJSON(object):
 
         rv = client.post("/json", data=None, content_type="application/json")
         assert rv.status_code == 400
-        assert b"Failed to decode JSON object" in rv.data
-
-    def test_post_empty_json_wont_add_exception_to_response_if_no_debug(
-        self, app, client
-    ):
-        app.config["DEBUG"] = False
-        app.config["TRAP_BAD_REQUEST_ERRORS"] = False
-
-        @app.route("/json", methods=["POST"])
-        def post_json():
-            flask.request.get_json()
-            return None
-
-        rv = client.post("/json", data=None, content_type="application/json")
-        assert rv.status_code == 400
-        assert b"Failed to decode JSON object" not in rv.data
+        contains = b"Failed to decode JSON object" in rv.data
+        assert contains == debug
 
     def test_json_bad_requests(self, app, client):
         @app.route("/json", methods=["POST"])

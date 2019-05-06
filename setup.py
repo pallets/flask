@@ -36,7 +36,7 @@ setup(
     platforms="any",
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*",
     install_requires=[
-        "Werkzeug>=0.14",
+        "Werkzeug>=0.15",
         "Jinja2>=2.10.1",
         "itsdangerous>=0.24",
         "click>=5.1",
