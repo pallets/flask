@@ -89,7 +89,7 @@ class _AppCtxGlobals(object):
     def __repr__(self):
         top = _app_ctx_stack.top
         if top is not None:
-            return '<flask.g of %r>' % top.app.name
+            return "<flask.g of %r>" % top.app.name
         return object.__repr__(self)
 
 
@@ -144,13 +144,17 @@ def copy_current_request_context(f):
     """
     top = _request_ctx_stack.top
     if top is None:
-        raise RuntimeError('This decorator can only be used at local scopes '
-            'when a request context is on the stack.  For instance within '
-            'view functions.')
+        raise RuntimeError(
+            "This decorator can only be used at local scopes "
+            "when a request context is on the stack.  For instance within "
+            "view functions."
+        )
     reqctx = top.copy()
+
     def wrapper(*args, **kwargs):
         with reqctx:
             return f(*args, **kwargs)
+
     return update_wrapper(wrapper, f)
 
 
@@ -217,7 +221,7 @@ class AppContext(object):
     def push(self):
         """Binds the app context to the current context."""
         self._refcnt += 1
-        if hasattr(sys, 'exc_clear'):
+        if hasattr(sys, "exc_clear"):
             sys.exc_clear()
         _app_ctx_stack.push(self)
         appcontext_pushed.send(self.app)
@@ -232,8 +236,7 @@ class AppContext(object):
                 self.app.do_teardown_appcontext(exc)
         finally:
             rv = _app_ctx_stack.pop()
-        assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
-            % (rv, self)
+        assert rv is self, "Popped wrong app context.  (%r instead of %r)" % (rv, self)
         appcontext_popped.send(self.app)
 
     def __enter__(self):
@@ -314,8 +317,10 @@ class RequestContext(object):
 
     def _get_g(self):
         return _app_ctx_stack.top.g
+
     def _set_g(self, value):
         _app_ctx_stack.top.g = value
+
     g = property(_get_g, _set_g)
     del _get_g, _set_g
 
@@ -332,10 +337,11 @@ class RequestContext(object):
            The current session object is used instead of reloading the original
            data. This prevents `flask.session` pointing to an out-of-date object.
         """
-        return self.__class__(self.app,
+        return self.__class__(
+            self.app,
             environ=self.request.environ,
             request=self.request,
-            session=self.session
+            session=self.session,
         )
 
     def match_request(self):
@@ -343,8 +349,7 @@ class RequestContext(object):
         of the request.
         """
         try:
-            url_rule, self.request.view_args = \
-                self.url_adapter.match(return_rule=True)
+            url_rule, self.request.view_args = self.url_adapter.match(return_rule=True)
             self.request.url_rule = url_rule
         except HTTPException as e:
             self.request.routing_exception = e
@@ -373,7 +378,7 @@ class RequestContext(object):
         else:
             self._implicit_app_ctx_stack.append(None)
 
-        if hasattr(sys, 'exc_clear'):
+        if hasattr(sys, "exc_clear"):
             sys.exc_clear()
 
         _request_ctx_stack.push(self)
@@ -384,9 +389,7 @@ class RequestContext(object):
         # pushed, otherwise stream_with_context loses the session.
         if self.session is None:
             session_interface = self.app.session_interface
-            self.session = session_interface.open_session(
-                self.app, self.request
-            )
+            self.session = session_interface.open_session(self.app, self.request)
 
             if self.session is None:
                 self.session = session_interface.make_null_session(self.app)
@@ -414,10 +417,10 @@ class RequestContext(object):
                 # we do that now.  This will only go into effect on Python 2.x,
                 # on 3.x it disappears automatically at the end of the exception
                 # stack.
-                if hasattr(sys, 'exc_clear'):
+                if hasattr(sys, "exc_clear"):
                     sys.exc_clear()
 
-                request_close = getattr(self.request, 'close', None)
+                request_close = getattr(self.request, "close", None)
                 if request_close is not None:
                     request_close()
                 clear_request = True
@@ -427,18 +430,20 @@ class RequestContext(object):
             # get rid of circular dependencies at the end of the request
             # so that we don't require the GC to be active.
             if clear_request:
-                rv.request.environ['werkzeug.request'] = None
+                rv.request.environ["werkzeug.request"] = None
 
             # Get rid of the app as well if necessary.
             if app_ctx is not None:
                 app_ctx.pop(exc)
 
-            assert rv is self, 'Popped wrong request context.  ' \
-                '(%r instead of %r)' % (rv, self)
+            assert (
+                rv is self
+            ), "Popped wrong request context.  " "(%r instead of %r)" % (rv, self)
 
     def auto_pop(self, exc):
-        if self.request.environ.get('flask._preserve_context') or \
-           (exc is not None and self.app.preserve_context_on_exception):
+        if self.request.environ.get("flask._preserve_context") or (
+            exc is not None and self.app.preserve_context_on_exception
+        ):
             self.preserved = True
             self._preserved_exc = exc
         else:
@@ -460,7 +465,7 @@ class RequestContext(object):
             reraise(exc_type, exc_value, tb)
 
     def __repr__(self):
-        return '<%s \'%s\' [%s] of %s>' % (
+        return "<%s '%s' [%s] of %s>" % (
             self.__class__.__name__,
             self.request.url,
             self.request.method,

@@ -50,11 +50,11 @@ else:
     from cStringIO import StringIO
     import collections as collections_abc
 
-    exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
+    exec("def reraise(tp, value, tb=None):\n raise tp, value, tb")
 
     def implements_to_string(cls):
         cls.__unicode__ = cls.__str__
-        cls.__str__ = lambda x: x.__unicode__().encode('utf-8')
+        cls.__str__ = lambda x: x.__unicode__().encode("utf-8")
         return cls
 
 
@@ -66,7 +66,8 @@ def with_metaclass(meta, *bases):
     class metaclass(type):
         def __new__(cls, name, this_bases, d):
             return meta(name, bases, d)
-    return type.__new__(metaclass, 'temporary_class', (), {})
+
+    return type.__new__(metaclass, "temporary_class", (), {})
 
 
 # Certain versions of pypy have a bug where clearing the exception stack
@@ -81,14 +82,17 @@ def with_metaclass(meta, *bases):
 #
 # Ubuntu 14.04 has PyPy 2.2.1, which does exhibit this bug.
 BROKEN_PYPY_CTXMGR_EXIT = False
-if hasattr(sys, 'pypy_version_info'):
+if hasattr(sys, "pypy_version_info"):
+
     class _Mgr(object):
         def __enter__(self):
             return self
+
         def __exit__(self, *args):
-            if hasattr(sys, 'exc_clear'):
+            if hasattr(sys, "exc_clear"):
                 # Python 3 (PyPy3) doesn't have exc_clear
                 sys.exc_clear()
+
     try:
         try:
             with _Mgr():
@@ -107,4 +111,4 @@ except ImportError:
     # Backwards compatibility as proposed in PEP 0519:
     # https://www.python.org/dev/peps/pep-0519/#backwards-compatibility
     def fspath(path):
-        return path.__fspath__() if hasattr(path, '__fspath__') else path
+        return path.__fspath__() if hasattr(path, "__fspath__") else path

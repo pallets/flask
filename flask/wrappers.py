@@ -34,8 +34,9 @@ class JSONMixin(object):
         """
         mt = self.mimetype
         return (
-            mt == 'application/json'
-            or (mt.startswith('application/')) and mt.endswith('+json')
+            mt == "application/json"
+            or (mt.startswith("application/"))
+            and mt.endswith("+json")
         )
 
     @property
@@ -103,7 +104,7 @@ class JSONMixin(object):
         .. versionadded:: 0.8
         """
         if current_app is not None and current_app.debug:
-            raise BadRequest('Failed to decode JSON object: {0}'.format(e))
+            raise BadRequest("Failed to decode JSON object: {0}".format(e))
 
         raise BadRequest()
 
@@ -146,7 +147,7 @@ class Request(RequestBase, JSONMixin):
     def max_content_length(self):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         if current_app:
-            return current_app.config['MAX_CONTENT_LENGTH']
+            return current_app.config["MAX_CONTENT_LENGTH"]
 
     @property
     def endpoint(self):
@@ -161,8 +162,8 @@ class Request(RequestBase, JSONMixin):
     @property
     def blueprint(self):
         """The name of the current blueprint"""
-        if self.url_rule and '.' in self.url_rule.endpoint:
-            return self.url_rule.endpoint.rsplit('.', 1)[0]
+        if self.url_rule and "." in self.url_rule.endpoint:
+            return self.url_rule.endpoint.rsplit(".", 1)[0]
 
     def _load_form_data(self):
         RequestBase._load_form_data(self)
@@ -172,10 +173,11 @@ class Request(RequestBase, JSONMixin):
         if (
             current_app
             and current_app.debug
-            and self.mimetype != 'multipart/form-data'
+            and self.mimetype != "multipart/form-data"
             and not self.files
         ):
             from .debughelpers import attach_enctype_error_multidict
+
             attach_enctype_error_multidict(self)
 
 
@@ -197,7 +199,7 @@ class Response(ResponseBase, JSONMixin):
         Added :attr:`max_cookie_size`.
     """
 
-    default_mimetype = 'text/html'
+    default_mimetype = "text/html"
 
     def _get_data_for_json(self, cache):
         return self.get_data()
@@ -210,7 +212,7 @@ class Response(ResponseBase, JSONMixin):
         Werkzeug's docs.
         """
         if current_app:
-            return current_app.config['MAX_COOKIE_SIZE']
+            return current_app.config["MAX_COOKIE_SIZE"]
 
         # return Werkzeug's default when not in an app context
         return super(Response, self).max_cookie_size
