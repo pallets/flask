@@ -587,7 +587,7 @@ class Flask(_PackageBoundObject):
                 bool(static_host) == host_matching
             ), "Invalid static_host/host_matching combination"
             self.add_url_rule(
-                self.static_url_path + "/<path:filename>",
+                self.static_url_path.rstrip("/") + "/<path:filename>",
                 endpoint="static",
                 host=static_host,
                 view_func=self.send_static_file,
