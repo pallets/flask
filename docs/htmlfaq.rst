@@ -16,8 +16,8 @@ However, barely any websites on the Internet are actual XHTML (which is
 HTML processed using XML rules).  There are a couple of major reasons
 why this is the case.  One of them is Internet Explorer's lack of proper
 XHTML support. The XHTML spec states that XHTML must be served with the MIME
-type :mimetype:`application/xhtml+xml`, but Internet Explorer refuses to read files
-with that MIME type.
+type :mimetype:`application/xhtml+xml`, but Internet Explorer refuses
+to read files with that MIME type.
 While it is relatively easy to configure Web servers to serve XHTML properly,
 few people do.  This is likely because properly using XHTML can be quite
 painful.

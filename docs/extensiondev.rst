@@ -197,8 +197,8 @@ So here's what these lines of code do:
     instantiated without requiring an app object.  This method supports the
     factory pattern for creating applications.  The ``init_app`` will set the
     configuration for the database, defaulting to an in memory database if
-    no configuration is supplied.  In addition, the ``init_app`` method attaches
-    the ``teardown`` handler.
+    no configuration is supplied.  In addition, the ``init_app`` method
+    attaches the ``teardown`` handler.
 3.  Next, we define a ``connect`` method that opens a database connection.
 4.  Finally, we add a ``connection`` property that on first access opens
     the database connection and stores it on the context.  This is also
@@ -312,8 +312,8 @@ extension to be approved you have to follow these guidelines:
     or ``python setup.py test``.  For test suites invoked with ``make
     test`` the extension has to ensure that all dependencies for the test
     are installed automatically.  If tests are invoked with ``python setup.py
-    test``, test dependencies can be specified in the :file:`setup.py` file.  The
-    test suite also has to be part of the distribution.
+    test``, test dependencies can be specified in the :file:`setup.py` file.
+    The test suite also has to be part of the distribution.
 3.  APIs of approved extensions will be checked for the following
     characteristics:
 

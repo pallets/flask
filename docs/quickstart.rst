@@ -93,9 +93,9 @@ should see your hello world greeting.
 What to do if the Server does not Start
 ---------------------------------------
 
-In case the :command:`python -m flask` fails or :command:`flask` does not exist,
-there are multiple reasons this might be the case.  First of all you need
-to look at the error message.
+In case the :command:`python -m flask` fails or :command:`flask`
+does not exist, there are multiple reasons this might be the case.
+First of all you need to look at the error message.
 
 Old Version of Flask
 ````````````````````
@@ -560,9 +560,9 @@ filesystem.  You can access those files by looking at the
 :attr:`~flask.request.files` attribute on the request object.  Each
 uploaded file is stored in that dictionary.  It behaves just like a
 standard Python :class:`file` object, but it also has a
-:meth:`~werkzeug.datastructures.FileStorage.save` method that allows you to store that
-file on the filesystem of the server.  Here is a simple example showing how
-that works::
+:meth:`~werkzeug.datastructures.FileStorage.save` method that
+allows you to store that file on the filesystem of the server.
+Here is a simple example showing how that works::
 
     from flask import request
 
@@ -575,10 +575,11 @@ that works::
 
 If you want to know how the file was named on the client before it was
 uploaded to your application, you can access the
-:attr:`~werkzeug.datastructures.FileStorage.filename` attribute.  However please keep in
-mind that this value can be forged so never ever trust that value.  If you
-want to use the filename of the client to store the file on the server,
-pass it through the :func:`~werkzeug.utils.secure_filename` function that
+:attr:`~werkzeug.datastructures.FileStorage.filename` attribute.
+However please keep in mind that this value can be forged
+so never ever trust that value.  If you want to use the filename
+of the client to store the file on the server, pass it through the
+:func:`~werkzeug.utils.secure_filename` function that
 Werkzeug provides for you::
 
     from flask import request
@@ -681,8 +682,9 @@ About Responses
 The return value from a view function is automatically converted into a
 response object for you.  If the return value is a string it's converted
 into a response object with the string as response body, a ``200 OK``
-status code and a :mimetype:`text/html` mimetype.  The logic that Flask applies to
-converting return values into response objects is as follows:
+status code and a :mimetype:`text/html` mimetype.
+The logic that Flask applies to converting return values into
+response objects is as follows:
 
 1.  If a response object of the correct type is returned it's directly
     returned from the view.
@@ -806,12 +808,12 @@ Logging
 .. versionadded:: 0.3
 
 Sometimes you might be in a situation where you deal with data that
-should be correct, but actually is not.  For example you may have some client-side
-code that sends an HTTP request to the server but it's obviously
-malformed.  This might be caused by a user tampering with the data, or the
-client code failing.  Most of the time it's okay to reply with ``400 Bad
-Request`` in that situation, but sometimes that won't do and the code has
-to continue working.
+should be correct, but actually is not.  For example you may have
+some client-side code that sends an HTTP request to the server
+but it's obviously malformed.  This might be caused by a user tampering
+with the data, or the client code failing.  Most of the time it's okay
+to reply with ``400 Bad Request`` in that situation, but sometimes
+that won't do and the code has to continue working.
 
 You may still want to log that something fishy happened.  This is where
 loggers come in handy.  As of Flask 0.3 a logger is preconfigured for you

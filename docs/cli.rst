@@ -193,7 +193,7 @@ environment variables. The variables use the pattern
 ``FLASK_COMMAND_OPTION``. For example, to set the port for the run
 command, instead of ``flask run --port 8000``:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ export FLASK_RUN_PORT=8000
     $ flask run
@@ -209,7 +209,7 @@ Disable dotenv
 The ``flask`` command will show a message if it detects dotenv files but
 python-dotenv is not installed.
 
-.. code-block:: none
+.. code-block:: bash
 
     $ flask run
      * Tip: There are .env files present. Do "pip install python-dotenv" to use them.
@@ -221,7 +221,7 @@ a project runner that loads them already. Keep in mind that the
 environment variables must be set before the app loads or it won't
 configure as expected.
 
-.. code-block:: none
+.. code-block:: bash
 
     $ export FLASK_SKIP_DOTENV=1
     $ flask run
