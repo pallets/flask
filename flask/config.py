@@ -101,11 +101,12 @@ class Config(dict):
         if not rv:
             if silent:
                 return False
-            raise RuntimeError('The environment variable %r is not set '
-                               'and as such configuration could not be '
-                               'loaded.  Set this variable and make it '
-                               'point to a configuration file' %
-                               variable_name)
+            raise RuntimeError(
+                "The environment variable %r is not set "
+                "and as such configuration could not be "
+                "loaded.  Set this variable and make it "
+                "point to a configuration file" % variable_name
+            )
         return self.from_pyfile(rv, silent=silent)
 
     def from_pyfile(self, filename, silent=False):
@@ -123,17 +124,15 @@ class Config(dict):
            `silent` parameter.
         """
         filename = os.path.join(self.root_path, filename)
-        d = types.ModuleType('config')
+        d = types.ModuleType("config")
         d.__file__ = filename
         try:
-            with open(filename, mode='rb') as config_file:
-                exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
+            with open(filename, mode="rb") as config_file:
+                exec(compile(config_file.read(), filename, "exec"), d.__dict__)
         except IOError as e:
-            if silent and e.errno in (
-                errno.ENOENT, errno.EISDIR, errno.ENOTDIR
-            ):
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
                 return False
-            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
+            e.strerror = "Unable to load configuration file (%s)" % e.strerror
             raise
         self.from_object(d)
         return True
@@ -197,7 +196,7 @@ class Config(dict):
         except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
-            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
+            e.strerror = "Unable to load configuration file (%s)" % e.strerror
             raise
         return self.from_mapping(obj)
 
@@ -209,13 +208,13 @@ class Config(dict):
         """
         mappings = []
         if len(mapping) == 1:
-            if hasattr(mapping[0], 'items'):
+            if hasattr(mapping[0], "items"):
                 mappings.append(mapping[0].items())
             else:
                 mappings.append(mapping[0])
         elif len(mapping) > 1:
             raise TypeError(
-                'expected at most 1 positional argument, got %d' % len(mapping)
+                "expected at most 1 positional argument, got %d" % len(mapping)
             )
         mappings.append(kwargs.items())
         for mapping in mappings:
@@ -257,7 +256,7 @@ class Config(dict):
             if not k.startswith(namespace):
                 continue
             if trim_namespace:
-                key = k[len(namespace):]
+                key = k[len(namespace) :]
             else:
                 key = k
             if lowercase:
@@ -266,4 +265,4 @@ class Config(dict):
         return rv
 
     def __repr__(self):
-        return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
+        return "<%s %s>" % (self.__class__.__name__, dict.__repr__(self))

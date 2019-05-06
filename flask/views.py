@@ -13,8 +13,9 @@ from .globals import request
 from ._compat import with_metaclass
 
 
-http_method_funcs = frozenset(['get', 'post', 'head', 'options',
-                               'delete', 'put', 'trace', 'patch'])
+http_method_funcs = frozenset(
+    ["get", "post", "head", "options", "delete", "put", "trace", "patch"]
+)
 
 
 class View(object):
@@ -83,6 +84,7 @@ class View(object):
         The arguments passed to :meth:`as_view` are forwarded to the
         constructor of the class.
         """
+
         def view(*args, **kwargs):
             self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
@@ -115,7 +117,7 @@ class MethodViewType(type):
     def __init__(cls, name, bases, d):
         super(MethodViewType, cls).__init__(name, bases, d)
 
-        if 'methods' not in d:
+        if "methods" not in d:
             methods = set()
 
             for key in http_method_funcs:
@@ -151,8 +153,8 @@ class MethodView(with_metaclass(MethodViewType, View)):
 
         # If the request method is HEAD and we don't have a handler for it
         # retry with GET.
-        if meth is None and request.method == 'HEAD':
-            meth = getattr(self, 'get', None)
+        if meth is None and request.method == "HEAD":
+            meth = getattr(self, "get", None)
 
-        assert meth is not None, 'Unimplemented method %r' % request.method
+        assert meth is not None, "Unimplemented method %r" % request.method
         return meth(*args, **kwargs)

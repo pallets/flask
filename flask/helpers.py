@@ -24,15 +24,13 @@ from functools import update_wrapper
 
 from werkzeug.urls import url_quote
 from werkzeug.datastructures import Headers, Range
-from werkzeug.exceptions import BadRequest, NotFound, \
-    RequestedRangeNotSatisfiable
+from werkzeug.exceptions import BadRequest, NotFound, RequestedRangeNotSatisfiable
 
 from werkzeug.wsgi import wrap_file
 from jinja2 import FileSystemLoader
 
 from .signals import message_flashed
-from .globals import session, _request_ctx_stack, _app_ctx_stack, \
-     current_app, request
+from .globals import session, _request_ctx_stack, _app_ctx_stack, current_app, request
 from ._compat import string_types, text_type, PY2, fspath
 
 # sentinel
@@ -42,8 +40,9 @@ _missing = object()
 # what separators does this operating system provide that are not a slash?
 # this is used by the send_from_directory function to ensure that nobody is
 # able to access files from outside the filesystem.
-_os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]
-                    if sep not in (None, '/'))
+_os_alt_seps = list(
+    sep for sep in [os.path.sep, os.path.altsep] if sep not in (None, "/")
+)
 
 
 def get_env():
@@ -51,7 +50,7 @@ def get_env():
     :envvar:`FLASK_ENV` environment variable. The default is
     ``'production'``.
     """
-    return os.environ.get('FLASK_ENV') or 'production'
+    return os.environ.get("FLASK_ENV") or "production"
 
 
 def get_debug_flag():
@@ -60,12 +59,12 @@ def get_debug_flag():
     ``True`` if :func:`.get_env` returns ``'development'``, or ``False``
     otherwise.
     """
-    val = os.environ.get('FLASK_DEBUG')
+    val = os.environ.get("FLASK_DEBUG")
 
     if not val:
-        return get_env() == 'development'
+        return get_env() == "development"
 
-    return val.lower() not in ('0', 'false', 'no')
+    return val.lower() not in ("0", "false", "no")
 
 
 def get_load_dotenv(default=True):
@@ -75,20 +74,19 @@ def get_load_dotenv(default=True):
 
     :param default: What to return if the env var isn't set.
     """
-    val = os.environ.get('FLASK_SKIP_DOTENV')
+    val = os.environ.get("FLASK_SKIP_DOTENV")
 
     if not val:
         return default
 
-    return val.lower() in ('0', 'false', 'no')
+    return val.lower() in ("0", "false", "no")
 
 
 def _endpoint_from_view_func(view_func):
     """Internal helper that returns the default endpoint for a given
     function.  This always is the function name.
     """
-    assert view_func is not None, 'expected view func if endpoint ' \
-                                  'is not provided.'
+    assert view_func is not None, "expected view func if endpoint " "is not provided."
     return view_func.__name__
 
 
@@ -129,16 +127,20 @@ def stream_with_context(generator_or_function):
     try:
         gen = iter(generator_or_function)
     except TypeError:
+
         def decorator(*args, **kwargs):
             gen = generator_or_function(*args, **kwargs)
             return stream_with_context(gen)
+
         return update_wrapper(decorator, generator_or_function)
 
     def generator():
         ctx = _request_ctx_stack.top
         if ctx is None:
-            raise RuntimeError('Attempted to stream with context but '
-                'there was no context in the first place to keep around.')
+            raise RuntimeError(
+                "Attempted to stream with context but "
+                "there was no context in the first place to keep around."
+            )
         with ctx:
             # Dummy sentinel.  Has to be inside the context block or we're
             # not actually keeping the context around.
@@ -152,7 +154,7 @@ def stream_with_context(generator_or_function):
                 for item in gen:
                     yield item
             finally:
-                if hasattr(gen, 'close'):
+                if hasattr(gen, "close"):
                     gen.close()
 
     # The trick is to start the generator.  Then the code execution runs until
@@ -291,9 +293,9 @@ def url_for(endpoint, **values):
 
     if appctx is None:
         raise RuntimeError(
-            'Attempted to generate a URL without the application context being'
-            ' pushed. This has to be executed when application context is'
-            ' available.'
+            "Attempted to generate a URL without the application context being"
+            " pushed. This has to be executed when application context is"
+            " available."
         )
 
     # If request specific information is available we have some extra
@@ -302,13 +304,13 @@ def url_for(endpoint, **values):
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
 
-        if endpoint[:1] == '.':
+        if endpoint[:1] == ".":
             if blueprint_name is not None:
                 endpoint = blueprint_name + endpoint
             else:
                 endpoint = endpoint[1:]
 
-        external = values.pop('_external', False)
+        external = values.pop("_external", False)
 
     # Otherwise go with the url adapter from the appctx and make
     # the URLs external by default.
@@ -317,16 +319,16 @@ def url_for(endpoint, **values):
 
         if url_adapter is None:
             raise RuntimeError(
-                'Application was not able to create a URL adapter for request'
-                ' independent URL generation. You might be able to fix this by'
-                ' setting the SERVER_NAME config variable.'
+                "Application was not able to create a URL adapter for request"
+                " independent URL generation. You might be able to fix this by"
+                " setting the SERVER_NAME config variable."
             )
 
-        external = values.pop('_external', True)
+        external = values.pop("_external", True)
 
-    anchor = values.pop('_anchor', None)
-    method = values.pop('_method', None)
-    scheme = values.pop('_scheme', None)
+    anchor = values.pop("_anchor", None)
+    method = values.pop("_method", None)
+    scheme = values.pop("_scheme", None)
     appctx.app.inject_url_defaults(endpoint, values)
 
     # This is not the best way to deal with this but currently the
@@ -335,28 +337,29 @@ def url_for(endpoint, **values):
     old_scheme = None
     if scheme is not None:
         if not external:
-            raise ValueError('When specifying _scheme, _external must be True')
+            raise ValueError("When specifying _scheme, _external must be True")
         old_scheme = url_adapter.url_scheme
         url_adapter.url_scheme = scheme
 
     try:
         try:
-            rv = url_adapter.build(endpoint, values, method=method,
-                                   force_external=external)
+            rv = url_adapter.build(
+                endpoint, values, method=method, force_external=external
+            )
         finally:
             if old_scheme is not None:
                 url_adapter.url_scheme = old_scheme
     except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
-        values['_external'] = external
-        values['_anchor'] = anchor
-        values['_method'] = method
-        values['_scheme'] = scheme
+        values["_external"] = external
+        values["_anchor"] = anchor
+        values["_method"] = method
+        values["_scheme"] = scheme
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
-        rv += '#' + url_quote(anchor)
+        rv += "#" + url_quote(anchor)
     return rv
 
 
@@ -379,11 +382,10 @@ def get_template_attribute(template_name, attribute):
     :param template_name: the name of the template
     :param attribute: the name of the variable of macro to access
     """
-    return getattr(current_app.jinja_env.get_template(template_name).module,
-                   attribute)
+    return getattr(current_app.jinja_env.get_template(template_name).module, attribute)
 
 
-def flash(message, category='message'):
+def flash(message, category="message"):
     """Flashes a message to the next request.  In order to remove the
     flashed message from the session and to display it to the user,
     the template has to call :func:`get_flashed_messages`.
@@ -405,11 +407,12 @@ def flash(message, category='message'):
     # This assumed that changes made to mutable structures in the session are
     # always in sync with the session object, which is not true for session
     # implementations that use external storage for keeping their keys/values.
-    flashes = session.get('_flashes', [])
+    flashes = session.get("_flashes", [])
     flashes.append((category, message))
-    session['_flashes'] = flashes
-    message_flashed.send(current_app._get_current_object(),
-                         message=message, category=category)
+    session["_flashes"] = flashes
+    message_flashed.send(
+        current_app._get_current_object(), message=message, category=category
+    )
 
 
 def get_flashed_messages(with_categories=False, category_filter=[]):
@@ -442,8 +445,9 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     """
     flashes = _request_ctx_stack.top.flashes
     if flashes is None:
-        _request_ctx_stack.top.flashes = flashes = session.pop('_flashes') \
-            if '_flashes' in session else []
+        _request_ctx_stack.top.flashes = flashes = (
+            session.pop("_flashes") if "_flashes" in session else []
+        )
     if category_filter:
         flashes = list(filter(lambda f: f[0] in category_filter, flashes))
     if not with_categories:
@@ -451,9 +455,16 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
     return flashes
 
 
-def send_file(filename_or_fp, mimetype=None, as_attachment=False,
-              attachment_filename=None, add_etags=True,
-              cache_timeout=None, conditional=False, last_modified=None):
+def send_file(
+    filename_or_fp,
+    mimetype=None,
+    as_attachment=False,
+    attachment_filename=None,
+    add_etags=True,
+    cache_timeout=None,
+    conditional=False,
+    last_modified=None,
+):
     """Sends the contents of a file to the client.  This will use the
     most efficient method available and configured.  By default it will
     try to use the WSGI server's file_wrapper support.  Alternatively
@@ -545,7 +556,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
     mtime = None
     fsize = None
 
-    if hasattr(filename_or_fp, '__fspath__'):
+    if hasattr(filename_or_fp, "__fspath__"):
         filename_or_fp = fspath(filename_or_fp)
 
     if isinstance(filename_or_fp, string_types):
@@ -561,62 +572,67 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
 
     if mimetype is None:
         if attachment_filename is not None:
-            mimetype = mimetypes.guess_type(attachment_filename)[0] \
-                or 'application/octet-stream'
+            mimetype = (
+                mimetypes.guess_type(attachment_filename)[0]
+                or "application/octet-stream"
+            )
 
         if mimetype is None:
             raise ValueError(
-                'Unable to infer MIME-type because no filename is available. '
-                'Please set either `attachment_filename`, pass a filepath to '
-                '`filename_or_fp` or set your own MIME-type via `mimetype`.'
+                "Unable to infer MIME-type because no filename is available. "
+                "Please set either `attachment_filename`, pass a filepath to "
+                "`filename_or_fp` or set your own MIME-type via `mimetype`."
             )
 
     headers = Headers()
     if as_attachment:
         if attachment_filename is None:
-            raise TypeError('filename unavailable, required for '
-                            'sending as attachment')
+            raise TypeError(
+                "filename unavailable, required for " "sending as attachment"
+            )
 
         if not isinstance(attachment_filename, text_type):
-            attachment_filename = attachment_filename.decode('utf-8')
+            attachment_filename = attachment_filename.decode("utf-8")
 
         try:
-            attachment_filename = attachment_filename.encode('ascii')
+            attachment_filename = attachment_filename.encode("ascii")
         except UnicodeEncodeError:
             filenames = {
-                'filename': unicodedata.normalize(
-                    'NFKD', attachment_filename).encode('ascii', 'ignore'),
-                'filename*': "UTF-8''%s" % url_quote(attachment_filename),
+                "filename": unicodedata.normalize("NFKD", attachment_filename).encode(
+                    "ascii", "ignore"
+                ),
+                "filename*": "UTF-8''%s" % url_quote(attachment_filename),
             }
         else:
-            filenames = {'filename': attachment_filename}
+            filenames = {"filename": attachment_filename}
 
-        headers.add('Content-Disposition', 'attachment', **filenames)
+        headers.add("Content-Disposition", "attachment", **filenames)
 
     if current_app.use_x_sendfile and filename:
         if file is not None:
             file.close()
-        headers['X-Sendfile'] = filename
+        headers["X-Sendfile"] = filename
         fsize = os.path.getsize(filename)
-        headers['Content-Length'] = fsize
+        headers["Content-Length"] = fsize
         data = None
     else:
         if file is None:
-            file = open(filename, 'rb')
+            file = open(filename, "rb")
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
-            headers['Content-Length'] = fsize
+            headers["Content-Length"] = fsize
         elif isinstance(file, io.BytesIO):
             try:
                 fsize = file.getbuffer().nbytes
             except AttributeError:
                 # Python 2 doesn't have getbuffer
                 fsize = len(file.getvalue())
-            headers['Content-Length'] = fsize
+            headers["Content-Length"] = fsize
         data = wrap_file(request.environ, file)
 
-    rv = current_app.response_class(data, mimetype=mimetype, headers=headers,
-                                    direct_passthrough=True)
+    rv = current_app.response_class(
+        data, mimetype=mimetype, headers=headers, direct_passthrough=True
+    )
 
     if last_modified is not None:
         rv.last_modified = last_modified
@@ -634,22 +650,29 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         from warnings import warn
 
         try:
-            rv.set_etag('%s-%s-%s' % (
-                os.path.getmtime(filename),
-                os.path.getsize(filename),
-                adler32(
-                    filename.encode('utf-8') if isinstance(filename, text_type)
-                    else filename
-                ) & 0xffffffff
-            ))
+            rv.set_etag(
+                "%s-%s-%s"
+                % (
+                    os.path.getmtime(filename),
+                    os.path.getsize(filename),
+                    adler32(
+                        filename.encode("utf-8")
+                        if isinstance(filename, text_type)
+                        else filename
+                    )
+                    & 0xFFFFFFFF,
+                )
+            )
         except OSError:
-            warn('Access %s failed, maybe it does not exist, so ignore etags in '
-                 'headers' % filename, stacklevel=2)
+            warn(
+                "Access %s failed, maybe it does not exist, so ignore etags in "
+                "headers" % filename,
+                stacklevel=2,
+            )
 
     if conditional:
         try:
-            rv = rv.make_conditional(request, accept_ranges=True,
-                                     complete_length=fsize)
+            rv = rv.make_conditional(request, accept_ranges=True, complete_length=fsize)
         except RequestedRangeNotSatisfiable:
             if file is not None:
                 file.close()
@@ -657,7 +680,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         # make sure we don't send x-sendfile for servers that
         # ignore the 304 status code for x-sendfile.
         if rv.status_code == 304:
-            rv.headers.pop('x-sendfile', None)
+            rv.headers.pop("x-sendfile", None)
     return rv
 
 
@@ -682,14 +705,14 @@ def safe_join(directory, *pathnames):
     parts = [directory]
 
     for filename in pathnames:
-        if filename != '':
+        if filename != "":
             filename = posixpath.normpath(filename)
 
         if (
             any(sep in filename for sep in _os_alt_seps)
             or os.path.isabs(filename)
-            or filename == '..'
-            or filename.startswith('../')
+            or filename == ".."
+            or filename.startswith("../")
         ):
             raise NotFound()
 
@@ -735,7 +758,7 @@ def send_from_directory(directory, filename, **options):
             raise NotFound()
     except (TypeError, ValueError):
         raise BadRequest()
-    options.setdefault('conditional', True)
+    options.setdefault("conditional", True)
     return send_file(filename, **options)
 
 
@@ -747,7 +770,7 @@ def get_root_path(import_name):
     """
     # Module already imported and has a file attribute.  Use that first.
     mod = sys.modules.get(import_name)
-    if mod is not None and hasattr(mod, '__file__'):
+    if mod is not None and hasattr(mod, "__file__"):
         return os.path.dirname(os.path.abspath(mod.__file__))
 
     # Next attempt: check the loader.
@@ -756,30 +779,32 @@ def get_root_path(import_name):
     # Loader does not exist or we're referring to an unloaded main module
     # or a main module without path (interactive sessions), go with the
     # current working directory.
-    if loader is None or import_name == '__main__':
+    if loader is None or import_name == "__main__":
         return os.getcwd()
 
     # For .egg, zipimporter does not have get_filename until Python 2.7.
     # Some other loaders might exhibit the same behavior.
-    if hasattr(loader, 'get_filename'):
+    if hasattr(loader, "get_filename"):
         filepath = loader.get_filename(import_name)
     else:
         # Fall back to imports.
         __import__(import_name)
         mod = sys.modules[import_name]
-        filepath = getattr(mod, '__file__', None)
+        filepath = getattr(mod, "__file__", None)
 
         # If we don't have a filepath it might be because we are a
         # namespace package.  In this case we pick the root path from the
         # first module that is contained in our package.
         if filepath is None:
-            raise RuntimeError('No root path can be found for the provided '
-                               'module "%s".  This can happen because the '
-                               'module came from an import hook that does '
-                               'not provide file name information or because '
-                               'it\'s a namespace package.  In this case '
-                               'the root path needs to be explicitly '
-                               'provided.' % import_name)
+            raise RuntimeError(
+                "No root path can be found for the provided "
+                'module "%s".  This can happen because the '
+                "module came from an import hook that does "
+                "not provide file name information or because "
+                "it's a namespace package.  In this case "
+                "the root path needs to be explicitly "
+                "provided." % import_name
+            )
 
     # filepath is import_name.py for a module, or __init__.py for a package.
     return os.path.dirname(os.path.abspath(filepath))
@@ -791,21 +816,26 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     """
     # If the loader can tell us if something is a package, we can
     # directly ask the loader.
-    if hasattr(loader, 'is_package'):
+    if hasattr(loader, "is_package"):
         return loader.is_package(mod_name)
     # importlib's namespace loaders do not have this functionality but
     # all the modules it loads are packages, so we can take advantage of
     # this information.
-    elif (loader.__class__.__module__ == '_frozen_importlib' and
-          loader.__class__.__name__ == 'NamespaceLoader'):
+    elif (
+        loader.__class__.__module__ == "_frozen_importlib"
+        and loader.__class__.__name__ == "NamespaceLoader"
+    ):
         return True
     # Otherwise we need to fail with an error that explains what went
     # wrong.
     raise AttributeError(
-        ('%s.is_package() method is missing but is required by Flask of '
-         'PEP 302 import hooks.  If you do not use import hooks and '
-         'you encounter this error please file a bug against Flask.') %
-        loader.__class__.__name__)
+        (
+            "%s.is_package() method is missing but is required by Flask of "
+            "PEP 302 import hooks.  If you do not use import hooks and "
+            "you encounter this error please file a bug against Flask."
+        )
+        % loader.__class__.__name__
+    )
 
 
 def find_package(import_name):
@@ -816,16 +846,16 @@ def find_package(import_name):
     import the module.  The prefix is the path below which a UNIX like
     folder structure exists (lib, share etc.).
     """
-    root_mod_name = import_name.split('.')[0]
+    root_mod_name = import_name.split(".")[0]
     loader = pkgutil.get_loader(root_mod_name)
-    if loader is None or import_name == '__main__':
+    if loader is None or import_name == "__main__":
         # import name is not found, or interactive/main module
         package_path = os.getcwd()
     else:
         # For .egg, zipimporter does not have get_filename until Python 2.7.
-        if hasattr(loader, 'get_filename'):
+        if hasattr(loader, "get_filename"):
             filename = loader.get_filename(root_mod_name)
-        elif hasattr(loader, 'archive'):
+        elif hasattr(loader, "archive"):
             # zipimporter's loader.archive points to the .egg or .zip
             # archive filename is dropped in call to dirname below.
             filename = loader.archive
@@ -841,21 +871,20 @@ def find_package(import_name):
         # In case the root module is a package we need to chop of the
         # rightmost part.  This needs to go through a helper function
         # because of python 3.3 namespace packages.
-        if _matching_loader_thinks_module_is_package(
-                loader, root_mod_name):
+        if _matching_loader_thinks_module_is_package(loader, root_mod_name):
             package_path = os.path.dirname(package_path)
 
     site_parent, site_folder = os.path.split(package_path)
     py_prefix = os.path.abspath(sys.prefix)
     if package_path.startswith(py_prefix):
         return py_prefix, package_path
-    elif site_folder.lower() == 'site-packages':
+    elif site_folder.lower() == "site-packages":
         parent, folder = os.path.split(site_parent)
         # Windows like installations
-        if folder.lower() == 'lib':
+        if folder.lower() == "lib":
             base_dir = parent
         # UNIX like installations
-        elif os.path.basename(parent).lower() == 'lib':
+        elif os.path.basename(parent).lower() == "lib":
             base_dir = os.path.dirname(parent)
         else:
             base_dir = site_parent
@@ -921,8 +950,9 @@ class _PackageBoundObject(object):
         self._static_folder = value
 
     static_folder = property(
-        _get_static_folder, _set_static_folder,
-        doc='The absolute path to the configured static folder.'
+        _get_static_folder,
+        _set_static_folder,
+        doc="The absolute path to the configured static folder.",
     )
     del _get_static_folder, _set_static_folder
 
@@ -931,14 +961,15 @@ class _PackageBoundObject(object):
             return self._static_url_path
 
         if self.static_folder is not None:
-            return '/' + os.path.basename(self.static_folder)
+            return "/" + os.path.basename(self.static_folder)
 
     def _set_static_url_path(self, value):
         self._static_url_path = value
 
     static_url_path = property(
-        _get_static_url_path, _set_static_url_path,
-        doc='The URL prefix that the static route will be registered for.'
+        _get_static_url_path,
+        _set_static_url_path,
+        doc="The URL prefix that the static route will be registered for.",
     )
     del _get_static_url_path, _set_static_url_path
 
@@ -958,8 +989,7 @@ class _PackageBoundObject(object):
         .. versionadded:: 0.5
         """
         if self.template_folder is not None:
-            return FileSystemLoader(os.path.join(self.root_path,
-                                                 self.template_folder))
+            return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
 
     def get_send_file_max_age(self, filename):
         """Provides default cache_timeout for the :func:`send_file` functions.
@@ -994,14 +1024,15 @@ class _PackageBoundObject(object):
         .. versionadded:: 0.5
         """
         if not self.has_static_folder:
-            raise RuntimeError('No static folder for this object')
+            raise RuntimeError("No static folder for this object")
         # Ensure get_send_file_max_age is called in all cases.
         # Here, we ensure get_send_file_max_age is called for Blueprints.
         cache_timeout = self.get_send_file_max_age(filename)
-        return send_from_directory(self.static_folder, filename,
-                                   cache_timeout=cache_timeout)
+        return send_from_directory(
+            self.static_folder, filename, cache_timeout=cache_timeout
+        )
 
-    def open_resource(self, resource, mode='rb'):
+    def open_resource(self, resource, mode="rb"):
         """Opens a resource from the application's resource folder.  To see
         how this works, consider the following folder structure::
 
@@ -1024,8 +1055,8 @@ class _PackageBoundObject(object):
                          subfolders use forward slashes as separator.
         :param mode: resource file opening mode, default is 'rb'.
         """
-        if mode not in ('r', 'rb'):
-            raise ValueError('Resources can only be opened for reading')
+        if mode not in ("r", "rb"):
+            raise ValueError("Resources can only be opened for reading")
         return open(os.path.join(self.root_path, resource), mode)
 
 
@@ -1052,7 +1083,7 @@ def is_ip(value):
     :return: True if string is an IP address
     :rtype: bool
     """
-    if PY2 and os.name == 'nt':
+    if PY2 and os.name == "nt":
         try:
             socket.inet_aton(value)
             return True
