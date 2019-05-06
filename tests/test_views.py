@@ -10,11 +10,10 @@
 """
 
 import pytest
+from werkzeug.http import parse_set_header
 
 import flask
 import flask.views
-
-from werkzeug.http import parse_set_header
 
 
 def common_test(app):
@@ -197,6 +196,24 @@ def test_endpoint_override(app):
 
     # But these tests should still pass. We just log a warning.
     common_test(app)
+
+
+def test_methods_var_inheritance(app, client):
+    class BaseView(flask.views.MethodView):
+        methods = ["GET", "PROPFIND"]
+
+    class ChildView(BaseView):
+        def get(self):
+            return "GET"
+
+        def propfind(self):
+            return "PROPFIND"
+
+    app.add_url_rule("/", view_func=ChildView.as_view("index"))
+
+    assert client.get("/").data == b"GET"
+    assert client.open("/", method="PROPFIND").data == b"PROPFIND"
+    assert ChildView.methods == {"PROPFIND", "GET"}
 
 
 def test_multiple_inheritance(app, client):

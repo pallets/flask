@@ -120,6 +120,10 @@ class MethodViewType(type):
         if "methods" not in d:
             methods = set()
 
+            for base in bases:
+                if getattr(base, "methods", None):
+                    methods.update(base.methods)
+
             for key in http_method_funcs:
                 if hasattr(cls, key):
                     methods.add(key.upper())
