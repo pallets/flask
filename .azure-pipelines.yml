@@ -41,13 +41,20 @@ steps:
   inputs:
     versionSpec: $(python.version)
     architecture: $(python.architecture)
+  displayName: 'Use Python $(python.version)'
 
 - script: pip install -U tox
   displayName: 'Install tox'
 
-- script: tox
+- script: tox -- --junit-xml=junit/tox-run-$(python.version).xml
   displayName: 'Run tox'
 
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: junit/*.xml
+    testRunTitle: 'Python $(python.version)'
+  condition: succeededOrFailed()
+  displayName: 'Publish test results'
+
 # TODO: add codecov token
-# TODO: emit JUnit test results
 # TODO: build on nightly
