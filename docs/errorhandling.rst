@@ -50,14 +50,15 @@ And then add this to your Flask app::
 
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
-    
+
     sentry_sdk.init('YOUR_DSN_HERE',integrations=[FlaskIntegration()])
 
 The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
 from your Sentry installation.
 
-After installation, failures leading to an Internal Server Error are automatically reported to 
-Sentry and from there you can receive error notifications.
+After installation, failures leading to an Internal Server Error
+are automatically reported to Sentry and from there you can
+receive error notifications.
 
 Follow-up reads:
 
@@ -126,8 +127,9 @@ registered, :class:`~werkzeug.exceptions.HTTPException` subclasses show a
 generic message about their code, while other exceptions are converted to a
 generic 500 Internal Server Error.
 
-For example, if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
-is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
+For example, if an instance of :exc:`ConnectionRefusedError` is raised,
+and a handler is registered for :exc:`ConnectionError` and
+:exc:`ConnectionRefusedError`,
 the more specific :exc:`ConnectionRefusedError` handler is called with the
 exception instance to generate the response.
 
@@ -183,7 +185,8 @@ options in order to use your favorite debugger:
 
 * ``debug``        - whether to enable debug mode and catch exceptions
 * ``use_debugger`` - whether to use the internal Flask debugger
-* ``use_reloader`` - whether to reload and fork the process if modules were changed
+* ``use_reloader`` - whether to reload and fork the process if modules
+  were changed
 
 ``debug`` must be True (i.e., exceptions must be caught) in order for the other
 two options to have any value.
@@ -198,7 +201,8 @@ config.yaml (change the block as appropriate for your application, of course)::
        DEBUG: True
        DEBUG_WITH_APTANA: True
 
-Then in your application's entry-point (main.py), you could have something like::
+Then in your application's entry-point (main.py),
+you could have something like::
 
    if __name__ == "__main__":
        # To allow aptana to receive errors, set use_debugger=False
