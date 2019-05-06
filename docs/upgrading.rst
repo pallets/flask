@@ -68,9 +68,9 @@ to the release we decided to push out a 0.11 release first with some
 changes removed to make the transition easier.  If you have been tracking
 the master branch which was 1.0 you might see some unexpected changes.
 
-In case you did track the master branch you will notice that :command:`flask --app`
-is removed now.  You need to use the environment variable to specify an
-application.
+In case you did track the master branch you will notice that
+:command:`flask --app` is removed now.
+You need to use the environment variable to specify an application.
 
 Debugging
 `````````
