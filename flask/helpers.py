@@ -1024,7 +1024,7 @@ class _PackageBoundObject(object):
                          subfolders use forward slashes as separator.
         :param mode: resource file opening mode, default is 'rb'.
         """
-        if mode not in ('r', 'rb'):
+        if mode not in ('r', 'rb', 'rt'):
             raise ValueError('Resources can only be opened for reading')
         return open(os.path.join(self.root_path, resource), mode)
 
