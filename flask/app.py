@@ -18,10 +18,15 @@ from itertools import chain
 from threading import Lock
 
 from werkzeug.datastructures import Headers, ImmutableDict
-from werkzeug.exceptions import BadRequest, BadRequestKeyError, HTTPException, \
-    InternalServerError, MethodNotAllowed, default_exceptions
-from werkzeug.routing import BuildError, Map, RequestRedirect, \
-    RoutingException, Rule
+from werkzeug.exceptions import (
+    BadRequest,
+    BadRequestKeyError,
+    HTTPException,
+    InternalServerError,
+    MethodNotAllowed,
+    default_exceptions,
+)
+from werkzeug.routing import BuildError, Map, RequestRedirect, RoutingException, Rule
 
 from . import cli, json
 from ._compat import integer_types, reraise, string_types, text_type
@@ -30,15 +35,29 @@ from .ctx import AppContext, RequestContext, _AppCtxGlobals
 from .globals import _request_ctx_stack, g, request, session
 from .helpers import (
     _PackageBoundObject,
-    _endpoint_from_view_func, find_package, get_env, get_debug_flag,
-    get_flashed_messages, locked_cached_property, url_for, get_load_dotenv
+    _endpoint_from_view_func,
+    find_package,
+    get_env,
+    get_debug_flag,
+    get_flashed_messages,
+    locked_cached_property,
+    url_for,
+    get_load_dotenv,
 )
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
-from .signals import appcontext_tearing_down, got_request_exception, \
-    request_finished, request_started, request_tearing_down
-from .templating import DispatchingJinjaLoader, Environment, \
-    _default_template_ctx_processor
+from .signals import (
+    appcontext_tearing_down,
+    got_request_exception,
+    request_finished,
+    request_started,
+    request_tearing_down,
+)
+from .templating import (
+    DispatchingJinjaLoader,
+    Environment,
+    _default_template_ctx_processor,
+)
 from .wrappers import Request, Response
 
 # a singleton sentinel value for parameter defaults
@@ -55,16 +74,20 @@ def setupmethod(f):
     """Wraps a method so that it performs a check in debug mode if the
     first request was already handled.
     """
+
     def wrapper_func(self, *args, **kwargs):
         if self.debug and self._got_first_request:
-            raise AssertionError('A setup function was called after the '
-                'first request was handled.  This usually indicates a bug '
-                'in the application where a module was not imported '
-                'and decorators or other functionality was called too late.\n'
-                'To fix this make sure to import all your view modules, '
-                'database models and everything related at a central place '
-                'before the application starts serving requests.')
+            raise AssertionError(
+                "A setup function was called after the "
+                "first request was handled.  This usually indicates a bug "
+                "in the application where a module was not imported "
+                "and decorators or other functionality was called too late.\n"
+                "To fix this make sure to import all your view modules, "
+                "database models and everything related at a central place "
+                "before the application starts serving requests."
+            )
         return f(self, *args, **kwargs)
+
     return update_wrapper(wrapper_func, f)
 
 
@@ -217,7 +240,7 @@ class Flask(_PackageBoundObject):
     #:
     #: This attribute can also be configured from the config with the
     #: ``TESTING`` configuration key.  Defaults to ``False``.
-    testing = ConfigAttribute('TESTING')
+    testing = ConfigAttribute("TESTING")
 
     #: If a secret key is set, cryptographic components can use this to
     #: sign cookies and other things. Set this to a complex random value
@@ -225,13 +248,13 @@ class Flask(_PackageBoundObject):
     #:
     #: This attribute can also be configured from the config with the
     #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
-    secret_key = ConfigAttribute('SECRET_KEY')
+    secret_key = ConfigAttribute("SECRET_KEY")
 
     #: The secure cookie uses this for the name of the session cookie.
     #:
     #: This attribute can also be configured from the config with the
     #: ``SESSION_COOKIE_NAME`` configuration key.  Defaults to ``'session'``
-    session_cookie_name = ConfigAttribute('SESSION_COOKIE_NAME')
+    session_cookie_name = ConfigAttribute("SESSION_COOKIE_NAME")
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
     #: date of a permanent session.  The default is 31 days which makes a
@@ -240,8 +263,9 @@ class Flask(_PackageBoundObject):
     #: This attribute can also be configured from the config with the
     #: ``PERMANENT_SESSION_LIFETIME`` configuration key.  Defaults to
     #: ``timedelta(days=31)``
-    permanent_session_lifetime = ConfigAttribute('PERMANENT_SESSION_LIFETIME',
-        get_converter=_make_timedelta)
+    permanent_session_lifetime = ConfigAttribute(
+        "PERMANENT_SESSION_LIFETIME", get_converter=_make_timedelta
+    )
 
     #: A :class:`~datetime.timedelta` which is used as default cache_timeout
     #: for the :func:`send_file` functions. The default is 12 hours.
@@ -250,8 +274,9 @@ class Flask(_PackageBoundObject):
     #: ``SEND_FILE_MAX_AGE_DEFAULT`` configuration key. This configuration
     #: variable can also be set with an integer value used as seconds.
     #: Defaults to ``timedelta(hours=12)``
-    send_file_max_age_default = ConfigAttribute('SEND_FILE_MAX_AGE_DEFAULT',
-        get_converter=_make_timedelta)
+    send_file_max_age_default = ConfigAttribute(
+        "SEND_FILE_MAX_AGE_DEFAULT", get_converter=_make_timedelta
+    )
 
     #: Enable this if you want to use the X-Sendfile feature.  Keep in
     #: mind that the server has to support this.  This only affects files
@@ -261,7 +286,7 @@ class Flask(_PackageBoundObject):
     #:
     #: This attribute can also be configured from the config with the
     #: ``USE_X_SENDFILE`` configuration key.  Defaults to ``False``.
-    use_x_sendfile = ConfigAttribute('USE_X_SENDFILE')
+    use_x_sendfile = ConfigAttribute("USE_X_SENDFILE")
 
     #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
     #:
@@ -275,41 +300,43 @@ class Flask(_PackageBoundObject):
 
     #: Options that are passed directly to the Jinja2 environment.
     jinja_options = ImmutableDict(
-        extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
+        extensions=["jinja2.ext.autoescape", "jinja2.ext.with_"]
     )
 
     #: Default configuration parameters.
-    default_config = ImmutableDict({
-        'ENV':                                  None,
-        'DEBUG':                                None,
-        'TESTING':                              False,
-        'PROPAGATE_EXCEPTIONS':                 None,
-        'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
-        'SECRET_KEY':                           None,
-        'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
-        'USE_X_SENDFILE':                       False,
-        'SERVER_NAME':                          None,
-        'APPLICATION_ROOT':                     '/',
-        'SESSION_COOKIE_NAME':                  'session',
-        'SESSION_COOKIE_DOMAIN':                None,
-        'SESSION_COOKIE_PATH':                  None,
-        'SESSION_COOKIE_HTTPONLY':              True,
-        'SESSION_COOKIE_SECURE':                False,
-        'SESSION_COOKIE_SAMESITE':              None,
-        'SESSION_REFRESH_EACH_REQUEST':         True,
-        'MAX_CONTENT_LENGTH':                   None,
-        'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
-        'TRAP_BAD_REQUEST_ERRORS':              None,
-        'TRAP_HTTP_EXCEPTIONS':                 False,
-        'EXPLAIN_TEMPLATE_LOADING':             False,
-        'PREFERRED_URL_SCHEME':                 'http',
-        'JSON_AS_ASCII':                        True,
-        'JSON_SORT_KEYS':                       True,
-        'JSONIFY_PRETTYPRINT_REGULAR':          False,
-        'JSONIFY_MIMETYPE':                     'application/json',
-        'TEMPLATES_AUTO_RELOAD':                None,
-        'MAX_COOKIE_SIZE': 4093,
-    })
+    default_config = ImmutableDict(
+        {
+            "ENV": None,
+            "DEBUG": None,
+            "TESTING": False,
+            "PROPAGATE_EXCEPTIONS": None,
+            "PRESERVE_CONTEXT_ON_EXCEPTION": None,
+            "SECRET_KEY": None,
+            "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
+            "USE_X_SENDFILE": False,
+            "SERVER_NAME": None,
+            "APPLICATION_ROOT": "/",
+            "SESSION_COOKIE_NAME": "session",
+            "SESSION_COOKIE_DOMAIN": None,
+            "SESSION_COOKIE_PATH": None,
+            "SESSION_COOKIE_HTTPONLY": True,
+            "SESSION_COOKIE_SECURE": False,
+            "SESSION_COOKIE_SAMESITE": None,
+            "SESSION_REFRESH_EACH_REQUEST": True,
+            "MAX_CONTENT_LENGTH": None,
+            "SEND_FILE_MAX_AGE_DEFAULT": timedelta(hours=12),
+            "TRAP_BAD_REQUEST_ERRORS": None,
+            "TRAP_HTTP_EXCEPTIONS": False,
+            "EXPLAIN_TEMPLATE_LOADING": False,
+            "PREFERRED_URL_SCHEME": "http",
+            "JSON_AS_ASCII": True,
+            "JSON_SORT_KEYS": True,
+            "JSONIFY_PRETTYPRINT_REGULAR": False,
+            "JSONIFY_MIMETYPE": "application/json",
+            "TEMPLATES_AUTO_RELOAD": None,
+            "MAX_COOKIE_SIZE": 4093,
+        }
+    )
 
     #: The rule object to use for URL rules created.  This is used by
     #: :meth:`add_url_rule`.  Defaults to :class:`werkzeug.routing.Rule`.
@@ -355,20 +382,17 @@ class Flask(_PackageBoundObject):
         self,
         import_name,
         static_url_path=None,
-        static_folder='static',
+        static_folder="static",
         static_host=None,
         host_matching=False,
         subdomain_matching=False,
-        template_folder='templates',
+        template_folder="templates",
         instance_path=None,
         instance_relative_config=False,
-        root_path=None
+        root_path=None,
     ):
         _PackageBoundObject.__init__(
-            self,
-            import_name,
-            template_folder=template_folder,
-            root_path=root_path
+            self, import_name, template_folder=template_folder, root_path=root_path
         )
 
         if static_url_path is not None:
@@ -381,8 +405,8 @@ class Flask(_PackageBoundObject):
             instance_path = self.auto_find_instance_path()
         elif not os.path.isabs(instance_path):
             raise ValueError(
-                'If an instance path is provided it must be absolute.'
-                ' A relative path was given instead.'
+                "If an instance path is provided it must be absolute."
+                " A relative path was given instead."
             )
 
         #: Holds the path to the instance folder.
@@ -490,9 +514,7 @@ class Flask(_PackageBoundObject):
         #: requests.  Each returns a dictionary that the template context is
         #: updated with.  To register a function here, use the
         #: :meth:`context_processor` decorator.
-        self.template_context_processors = {
-            None: [_default_template_ctx_processor]
-        }
+        self.template_context_processors = {None: [_default_template_ctx_processor]}
 
         #: A list of shell context processor functions that should be run
         #: when a shell context is created.
@@ -555,12 +577,14 @@ class Flask(_PackageBoundObject):
         # For one, it might be created while the server is running (e.g. during
         # development). Also, Google App Engine stores static files somewhere
         if self.has_static_folder:
-            assert bool(static_host) == host_matching, 'Invalid static_host/host_matching combination'
+            assert (
+                bool(static_host) == host_matching
+            ), "Invalid static_host/host_matching combination"
             self.add_url_rule(
-                self.static_url_path + '/<path:filename>',
-                endpoint='static',
+                self.static_url_path + "/<path:filename>",
+                endpoint="static",
                 host=static_host,
-                view_func=self.send_static_file
+                view_func=self.send_static_file,
             )
 
         #: The click command line context for this application.  Commands
@@ -581,10 +605,10 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.8
         """
-        if self.import_name == '__main__':
-            fn = getattr(sys.modules['__main__'], '__file__', None)
+        if self.import_name == "__main__":
+            fn = getattr(sys.modules["__main__"], "__file__", None)
             if fn is None:
-                return '__main__'
+                return "__main__"
             return os.path.splitext(os.path.basename(fn))[0]
         return self.import_name
 
@@ -595,7 +619,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        rv = self.config['PROPAGATE_EXCEPTIONS']
+        rv = self.config["PROPAGATE_EXCEPTIONS"]
         if rv is not None:
             return rv
         return self.testing or self.debug
@@ -608,7 +632,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        rv = self.config['PRESERVE_CONTEXT_ON_EXCEPTION']
+        rv = self.config["PRESERVE_CONTEXT_ON_EXCEPTION"]
         if rv is not None:
             return rv
         return self.debug
@@ -663,8 +687,8 @@ class Flask(_PackageBoundObject):
         if instance_relative:
             root_path = self.instance_path
         defaults = dict(self.default_config)
-        defaults['ENV'] = get_env()
-        defaults['DEBUG'] = get_debug_flag()
+        defaults["ENV"] = get_env()
+        defaults["DEBUG"] = get_debug_flag()
         return self.config_class(root_path, defaults)
 
     def auto_find_instance_path(self):
@@ -677,10 +701,10 @@ class Flask(_PackageBoundObject):
         """
         prefix, package_path = find_package(self.import_name)
         if prefix is None:
-            return os.path.join(package_path, 'instance')
-        return os.path.join(prefix, 'var', self.name + '-instance')
+            return os.path.join(package_path, "instance")
+        return os.path.join(prefix, "var", self.name + "-instance")
 
-    def open_instance_resource(self, resource, mode='rb'):
+    def open_instance_resource(self, resource, mode="rb"):
         """Opens a resource from the application's instance folder
         (:attr:`instance_path`).  Otherwise works like
         :meth:`open_resource`.  Instance resources can also be opened for
@@ -703,11 +727,11 @@ class Flask(_PackageBoundObject):
             This property was added but the underlying config and behavior
             already existed.
         """
-        rv = self.config['TEMPLATES_AUTO_RELOAD']
+        rv = self.config["TEMPLATES_AUTO_RELOAD"]
         return rv if rv is not None else self.debug
 
     def _set_templates_auto_reload(self, value):
-        self.config['TEMPLATES_AUTO_RELOAD'] = value
+        self.config["TEMPLATES_AUTO_RELOAD"] = value
 
     templates_auto_reload = property(
         _get_templates_auto_reload, _set_templates_auto_reload
@@ -727,11 +751,11 @@ class Flask(_PackageBoundObject):
         """
         options = dict(self.jinja_options)
 
-        if 'autoescape' not in options:
-            options['autoescape'] = self.select_jinja_autoescape
+        if "autoescape" not in options:
+            options["autoescape"] = self.select_jinja_autoescape
 
-        if 'auto_reload' not in options:
-            options['auto_reload'] = self.templates_auto_reload
+        if "auto_reload" not in options:
+            options["auto_reload"] = self.templates_auto_reload
 
         rv = self.jinja_environment(self, **options)
         rv.globals.update(
@@ -743,9 +767,9 @@ class Flask(_PackageBoundObject):
             # templates we also want the proxies in there.
             request=request,
             session=session,
-            g=g
+            g=g,
         )
-        rv.filters['tojson'] = json.tojson_filter
+        rv.filters["tojson"] = json.tojson_filter
         return rv
 
     def create_global_jinja_loader(self):
@@ -769,7 +793,7 @@ class Flask(_PackageBoundObject):
         """
         if filename is None:
             return True
-        return filename.endswith(('.html', '.htm', '.xml', '.xhtml'))
+        return filename.endswith((".html", ".htm", ".xml", ".xhtml"))
 
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.
@@ -803,7 +827,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.11
         """
-        rv = {'app': self, 'g': g}
+        rv = {"app": self, "g": g}
         for processor in self.shell_context_processors:
             rv.update(processor())
         return rv
@@ -817,13 +841,13 @@ class Flask(_PackageBoundObject):
     #: **Do not enable development when deploying in production.**
     #:
     #: Default: ``'production'``
-    env = ConfigAttribute('ENV')
+    env = ConfigAttribute("ENV")
 
     def _get_debug(self):
-        return self.config['DEBUG']
+        return self.config["DEBUG"]
 
     def _set_debug(self, value):
-        self.config['DEBUG'] = value
+        self.config["DEBUG"] = value
         self.jinja_env.auto_reload = self.templates_auto_reload
 
     #: Whether debug mode is enabled. When using ``flask run`` to start
@@ -841,8 +865,7 @@ class Flask(_PackageBoundObject):
     debug = property(_get_debug, _set_debug)
     del _get_debug, _set_debug
 
-    def run(self, host=None, port=None, debug=None,
-            load_dotenv=True, **options):
+    def run(self, host=None, port=None, debug=None, load_dotenv=True, **options):
         """Runs the application on a local development server.
 
         Do not use ``run()`` in a production setting. It is not intended to
@@ -902,8 +925,9 @@ class Flask(_PackageBoundObject):
         """
         # Change this into a no-op if the server is invoked from the
         # command line. Have a look at cli.py for more information.
-        if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
+        if os.environ.get("FLASK_RUN_FROM_CLI") == "true":
             from .debughelpers import explain_ignored_app_run
+
             explain_ignored_app_run()
             return
 
@@ -911,30 +935,30 @@ class Flask(_PackageBoundObject):
             cli.load_dotenv()
 
             # if set, let env vars override previous values
-            if 'FLASK_ENV' in os.environ:
+            if "FLASK_ENV" in os.environ:
                 self.env = get_env()
                 self.debug = get_debug_flag()
-            elif 'FLASK_DEBUG' in os.environ:
+            elif "FLASK_DEBUG" in os.environ:
                 self.debug = get_debug_flag()
 
         # debug passed to method overrides all other sources
         if debug is not None:
             self.debug = bool(debug)
 
-        _host = '127.0.0.1'
+        _host = "127.0.0.1"
         _port = 5000
-        server_name = self.config.get('SERVER_NAME')
+        server_name = self.config.get("SERVER_NAME")
         sn_host, sn_port = None, None
 
         if server_name:
-            sn_host, _, sn_port = server_name.partition(':')
+            sn_host, _, sn_port = server_name.partition(":")
 
         host = host or sn_host or _host
         port = int(port or sn_port or _port)
 
-        options.setdefault('use_reloader', self.debug)
-        options.setdefault('use_debugger', self.debug)
-        options.setdefault('threaded', True)
+        options.setdefault("use_reloader", self.debug)
+        options.setdefault("use_debugger", self.debug)
+        options.setdefault("threaded", True)
 
         cli.show_server_banner(self.env, self.debug, self.name, False)
 
@@ -1034,10 +1058,12 @@ class Flask(_PackageBoundObject):
         :param request: an instance of :attr:`request_class`.
         """
 
-        warnings.warn(DeprecationWarning(
-            '"open_session" is deprecated and will be removed in 1.1. Use'
-            ' "session_interface.open_session" instead.'
-        ))
+        warnings.warn(
+            DeprecationWarning(
+                '"open_session" is deprecated and will be removed in 1.1. Use'
+                ' "session_interface.open_session" instead.'
+            )
+        )
         return self.session_interface.open_session(self, request)
 
     def save_session(self, session, response):
@@ -1055,10 +1081,12 @@ class Flask(_PackageBoundObject):
         :param response: an instance of :attr:`response_class`
         """
 
-        warnings.warn(DeprecationWarning(
-            '"save_session" is deprecated and will be removed in 1.1. Use'
-            ' "session_interface.save_session" instead.'
-        ))
+        warnings.warn(
+            DeprecationWarning(
+                '"save_session" is deprecated and will be removed in 1.1. Use'
+                ' "session_interface.save_session" instead.'
+            )
+        )
         return self.session_interface.save_session(self, session, response)
 
     def make_null_session(self):
@@ -1072,10 +1100,12 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
 
-        warnings.warn(DeprecationWarning(
-            '"make_null_session" is deprecated and will be removed in 1.1. Use'
-            ' "session_interface.make_null_session" instead.'
-        ))
+        warnings.warn(
+            DeprecationWarning(
+                '"make_null_session" is deprecated and will be removed in 1.1. Use'
+                ' "session_interface.make_null_session" instead.'
+            )
+        )
         return self.session_interface.make_null_session(self)
 
     @setupmethod
@@ -1102,11 +1132,10 @@ class Flask(_PackageBoundObject):
 
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, (
-                'A name collision occurred between blueprints %r and %r. Both'
+                "A name collision occurred between blueprints %r and %r. Both"
                 ' share the same name "%s". Blueprints that are created on the'
-                ' fly need unique names.' % (
-                    blueprint, self.blueprints[blueprint.name], blueprint.name
-                )
+                " fly need unique names."
+                % (blueprint, self.blueprints[blueprint.name], blueprint.name)
             )
         else:
             self.blueprints[blueprint.name] = blueprint
@@ -1123,8 +1152,14 @@ class Flask(_PackageBoundObject):
         return iter(self._blueprint_order)
 
     @setupmethod
-    def add_url_rule(self, rule, endpoint=None, view_func=None,
-                     provide_automatic_options=None, **options):
+    def add_url_rule(
+        self,
+        rule,
+        endpoint=None,
+        view_func=None,
+        provide_automatic_options=None,
+        **options
+    ):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
         endpoint.
@@ -1179,32 +1214,35 @@ class Flask(_PackageBoundObject):
         """
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
-        options['endpoint'] = endpoint
-        methods = options.pop('methods', None)
+        options["endpoint"] = endpoint
+        methods = options.pop("methods", None)
 
         # if the methods are not given and the view_func object knows its
         # methods we can use that instead.  If neither exists, we go with
         # a tuple of only ``GET`` as default.
         if methods is None:
-            methods = getattr(view_func, 'methods', None) or ('GET',)
+            methods = getattr(view_func, "methods", None) or ("GET",)
         if isinstance(methods, string_types):
-            raise TypeError('Allowed methods have to be iterables of strings, '
-                            'for example: @app.route(..., methods=["POST"])')
+            raise TypeError(
+                "Allowed methods have to be iterables of strings, "
+                'for example: @app.route(..., methods=["POST"])'
+            )
         methods = set(item.upper() for item in methods)
 
         # Methods that should always be added
-        required_methods = set(getattr(view_func, 'required_methods', ()))
+        required_methods = set(getattr(view_func, "required_methods", ()))
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
         if provide_automatic_options is None:
-            provide_automatic_options = getattr(view_func,
-                'provide_automatic_options', None)
+            provide_automatic_options = getattr(
+                view_func, "provide_automatic_options", None
+            )
 
         if provide_automatic_options is None:
-            if 'OPTIONS' not in methods:
+            if "OPTIONS" not in methods:
                 provide_automatic_options = True
-                required_methods.add('OPTIONS')
+                required_methods.add("OPTIONS")
             else:
                 provide_automatic_options = False
 
@@ -1218,8 +1256,10 @@ class Flask(_PackageBoundObject):
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
-                raise AssertionError('View function mapping is overwriting an '
-                                     'existing endpoint function: %s' % endpoint)
+                raise AssertionError(
+                    "View function mapping is overwriting an "
+                    "existing endpoint function: %s" % endpoint
+                )
             self.view_functions[endpoint] = view_func
 
     def route(self, rule, **options):
@@ -1246,10 +1286,12 @@ class Flask(_PackageBoundObject):
                         Starting with Flask 0.6, ``OPTIONS`` is implicitly
                         added and handled by the standard request handling.
         """
+
         def decorator(f):
-            endpoint = options.pop('endpoint', None)
+            endpoint = options.pop("endpoint", None)
             self.add_url_rule(rule, endpoint, f, **options)
             return f
+
         return decorator
 
     @setupmethod
@@ -1263,9 +1305,11 @@ class Flask(_PackageBoundObject):
 
         :param endpoint: the name of the endpoint
         """
+
         def decorator(f):
             self.view_functions[endpoint] = f
             return f
+
         return decorator
 
     @staticmethod
@@ -1313,9 +1357,11 @@ class Flask(_PackageBoundObject):
         :param code_or_exception: the code as integer for the handler, or
                                   an arbitrary exception
         """
+
         def decorator(f):
             self._register_error_handler(None, code_or_exception, f)
             return f
+
         return decorator
 
     @setupmethod
@@ -1337,9 +1383,9 @@ class Flask(_PackageBoundObject):
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
-                'Tried to register a handler for an exception instance {0!r}.'
-                ' Handlers can only be registered for exception classes or'
-                ' HTTP error codes.'.format(code_or_exception)
+                "Tried to register a handler for an exception instance {0!r}."
+                " Handlers can only be registered for exception classes or"
+                " HTTP error codes.".format(code_or_exception)
             )
 
         try:
@@ -1366,9 +1412,11 @@ class Flask(_PackageBoundObject):
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
         """
+
         def decorator(f):
             self.add_template_filter(f, name=name)
             return f
+
         return decorator
 
     @setupmethod
@@ -1401,9 +1449,11 @@ class Flask(_PackageBoundObject):
         :param name: the optional name of the test, otherwise the
                      function name will be used.
         """
+
         def decorator(f):
             self.add_template_test(f, name=name)
             return f
+
         return decorator
 
     @setupmethod
@@ -1433,9 +1483,11 @@ class Flask(_PackageBoundObject):
         :param name: the optional name of the global function, otherwise the
                      function name will be used.
         """
+
         def decorator(f):
             self.add_template_global(f, name=name)
             return f
+
         return decorator
 
     @setupmethod
@@ -1613,8 +1665,10 @@ class Flask(_PackageBoundObject):
         exc_class, code = self._get_exc_class_and_code(type(e))
 
         for name, c in (
-            (request.blueprint, code), (None, code),
-            (request.blueprint, None), (None, None)
+            (request.blueprint, code),
+            (None, code),
+            (request.blueprint, None),
+            (None, None),
         ):
             handler_map = self.error_handler_spec.setdefault(name, {}).get(c)
 
@@ -1677,14 +1731,15 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.8
         """
-        if self.config['TRAP_HTTP_EXCEPTIONS']:
+        if self.config["TRAP_HTTP_EXCEPTIONS"]:
             return True
 
-        trap_bad_request = self.config['TRAP_BAD_REQUEST_ERRORS']
+        trap_bad_request = self.config["TRAP_BAD_REQUEST_ERRORS"]
 
         # if unset, trap key errors in debug mode
         if (
-            trap_bad_request is None and self.debug
+            trap_bad_request is None
+            and self.debug
             and isinstance(e, BadRequestKeyError)
         ):
             return True
@@ -1773,10 +1828,9 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.8
         """
-        self.logger.error('Exception on %s [%s]' % (
-            request.path,
-            request.method
-        ), exc_info=exc_info)
+        self.logger.error(
+            "Exception on %s [%s]" % (request.path, request.method), exc_info=exc_info
+        )
 
     def raise_routing_exception(self, request):
         """Exceptions that are recording during routing are reraised with
@@ -1786,12 +1840,15 @@ class Flask(_PackageBoundObject):
 
         :internal:
         """
-        if not self.debug \
-           or not isinstance(request.routing_exception, RequestRedirect) \
-           or request.method in ('GET', 'HEAD', 'OPTIONS'):
+        if (
+            not self.debug
+            or not isinstance(request.routing_exception, RequestRedirect)
+            or request.method in ("GET", "HEAD", "OPTIONS")
+        ):
             raise request.routing_exception
 
         from .debughelpers import FormDataRoutingRedirect
+
         raise FormDataRoutingRedirect(request)
 
     def dispatch_request(self):
@@ -1810,8 +1867,10 @@ class Flask(_PackageBoundObject):
         rule = req.url_rule
         # if we provide automatic options for this URL and the
         # request came with the OPTIONS method, reply automatically
-        if getattr(rule, 'provide_automatic_options', False) \
-           and req.method == 'OPTIONS':
+        if (
+            getattr(rule, "provide_automatic_options", False)
+            and req.method == "OPTIONS"
+        ):
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
         return self.view_functions[rule.endpoint](**req.view_args)
@@ -1853,8 +1912,9 @@ class Flask(_PackageBoundObject):
         except Exception:
             if not from_error_handler:
                 raise
-            self.logger.exception('Request finalizing failed with an '
-                                  'error while handling an error')
+            self.logger.exception(
+                "Request finalizing failed with an " "error while handling an error"
+            )
         return response
 
     def try_trigger_before_first_request_functions(self):
@@ -1881,13 +1941,13 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         adapter = _request_ctx_stack.top.url_adapter
-        if hasattr(adapter, 'allowed_methods'):
+        if hasattr(adapter, "allowed_methods"):
             methods = adapter.allowed_methods()
         else:
             # fallback for Werkzeug < 0.7
             methods = []
             try:
-                adapter.match(method='--')
+                adapter.match(method="--")
             except MethodNotAllowed as e:
                 methods = e.valid_methods
             except HTTPException as e:
@@ -1964,17 +2024,17 @@ class Flask(_PackageBoundObject):
             # other sized tuples are not allowed
             else:
                 raise TypeError(
-                    'The view function did not return a valid response tuple.'
-                    ' The tuple must have the form (body, status, headers),'
-                    ' (body, status), or (body, headers).'
+                    "The view function did not return a valid response tuple."
+                    " The tuple must have the form (body, status, headers),"
+                    " (body, status), or (body, headers)."
                 )
 
         # the body must not be None
         if rv is None:
             raise TypeError(
-                'The view function did not return a valid response. The'
-                ' function either returned None or ended without a return'
-                ' statement.'
+                "The view function did not return a valid response. The"
+                " function either returned None or ended without a return"
+                " statement."
             )
 
         # make sure the body is an instance of the response class
@@ -1992,10 +2052,10 @@ class Flask(_PackageBoundObject):
                     rv = self.response_class.force_type(rv, request.environ)
                 except TypeError as e:
                     new_error = TypeError(
-                        '{e}\nThe view function did not return a valid'
-                        ' response. The return type must be a string, tuple,'
-                        ' Response instance, or WSGI callable, but it was a'
-                        ' {rv.__class__.__name__}.'.format(e=e, rv=rv)
+                        "{e}\nThe view function did not return a valid"
+                        " response. The return type must be a string, tuple,"
+                        " Response instance, or WSGI callable, but it was a"
+                        " {rv.__class__.__name__}.".format(e=e, rv=rv)
                     )
                     reraise(TypeError, new_error, sys.exc_info()[2])
 
@@ -2031,19 +2091,24 @@ class Flask(_PackageBoundObject):
             # If subdomain matching is disabled (the default), use the
             # default subdomain in all cases. This should be the default
             # in Werkzeug but it currently does not have that feature.
-            subdomain = ((self.url_map.default_subdomain or None)
-                         if not self.subdomain_matching else None)
+            subdomain = (
+                (self.url_map.default_subdomain or None)
+                if not self.subdomain_matching
+                else None
+            )
             return self.url_map.bind_to_environ(
                 request.environ,
-                server_name=self.config['SERVER_NAME'],
-                subdomain=subdomain)
+                server_name=self.config["SERVER_NAME"],
+                subdomain=subdomain,
+            )
         # We need at the very least the server name to be set for this
         # to work.
-        if self.config['SERVER_NAME'] is not None:
+        if self.config["SERVER_NAME"] is not None:
             return self.url_map.bind(
-                self.config['SERVER_NAME'],
-                script_name=self.config['APPLICATION_ROOT'],
-                url_scheme=self.config['PREFERRED_URL_SCHEME'])
+                self.config["SERVER_NAME"],
+                script_name=self.config["APPLICATION_ROOT"],
+                url_scheme=self.config["PREFERRED_URL_SCHEME"],
+            )
 
     def inject_url_defaults(self, endpoint, values):
         """Injects the URL defaults for the given endpoint directly into
@@ -2053,8 +2118,8 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         funcs = self.url_default_functions.get(None, ())
-        if '.' in endpoint:
-            bp = endpoint.rsplit('.', 1)[0]
+        if "." in endpoint:
+            bp = endpoint.rsplit(".", 1)[0]
             funcs = chain(funcs, self.url_default_functions.get(bp, ()))
         for func in funcs:
             func(endpoint, values)
@@ -2327,7 +2392,4 @@ class Flask(_PackageBoundObject):
         return self.wsgi_app(environ, start_response)
 
     def __repr__(self):
-        return '<%s %r>' % (
-            self.__class__.__name__,
-            self.name,
-        )
+        return "<%s %r>" % (self.__class__.__name__, self.name)

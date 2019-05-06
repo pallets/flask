@@ -27,11 +27,11 @@ class SessionMixin(collections_abc.MutableMapping):
     @property
     def permanent(self):
         """This reflects the ``'_permanent'`` key in the dict."""
-        return self.get('_permanent', False)
+        return self.get("_permanent", False)
 
     @permanent.setter
     def permanent(self, value):
-        self['_permanent'] = bool(value)
+        self["_permanent"] = bool(value)
 
     #: Some implementations can detect whether a session is newly
     #: created, but that is not guaranteed. Use with caution. The mixin
@@ -98,11 +98,13 @@ class NullSession(SecureCookieSession):
     """
 
     def _fail(self, *args, **kwargs):
-        raise RuntimeError('The session is unavailable because no secret '
-                           'key was set.  Set the secret_key on the '
-                           'application to something unique and secret.')
-    __setitem__ = __delitem__ = clear = pop = popitem = \
-        update = setdefault = _fail
+        raise RuntimeError(
+            "The session is unavailable because no secret "
+            "key was set.  Set the secret_key on the "
+            "application to something unique and secret."
+        )
+
+    __setitem__ = __delitem__ = clear = pop = popitem = update = setdefault = _fail
     del _fail
 
 
@@ -180,52 +182,52 @@ class SessionInterface(object):
         updated to avoid re-running the logic.
         """
 
-        rv = app.config['SESSION_COOKIE_DOMAIN']
+        rv = app.config["SESSION_COOKIE_DOMAIN"]
 
         # set explicitly, or cached from SERVER_NAME detection
         # if False, return None
         if rv is not None:
             return rv if rv else None
 
-        rv = app.config['SERVER_NAME']
+        rv = app.config["SERVER_NAME"]
 
         # server name not set, cache False to return none next time
         if not rv:
-            app.config['SESSION_COOKIE_DOMAIN'] = False
+            app.config["SESSION_COOKIE_DOMAIN"] = False
             return None
 
         # chop off the port which is usually not supported by browsers
         # remove any leading '.' since we'll add that later
-        rv = rv.rsplit(':', 1)[0].lstrip('.')
+        rv = rv.rsplit(":", 1)[0].lstrip(".")
 
-        if '.' not in rv:
+        if "." not in rv:
             # Chrome doesn't allow names without a '.'
             # this should only come up with localhost
             # hack around this by not setting the name, and show a warning
             warnings.warn(
                 '"{rv}" is not a valid cookie domain, it must contain a ".".'
-                ' Add an entry to your hosts file, for example'
+                " Add an entry to your hosts file, for example"
                 ' "{rv}.localdomain", and use that instead.'.format(rv=rv)
             )
-            app.config['SESSION_COOKIE_DOMAIN'] = False
+            app.config["SESSION_COOKIE_DOMAIN"] = False
             return None
 
         ip = is_ip(rv)
 
         if ip:
             warnings.warn(
-                'The session cookie domain is an IP address. This may not work'
-                ' as intended in some browsers. Add an entry to your hosts'
+                "The session cookie domain is an IP address. This may not work"
+                " as intended in some browsers. Add an entry to your hosts"
                 ' file, for example "localhost.localdomain", and use that'
-                ' instead.'
+                " instead."
             )
 
         # if this is not an ip and app is mounted at the root, allow subdomain
         # matching by adding a '.' prefix
-        if self.get_cookie_path(app) == '/' and not ip:
-            rv = '.' + rv
+        if self.get_cookie_path(app) == "/" and not ip:
+            rv = "." + rv
 
-        app.config['SESSION_COOKIE_DOMAIN'] = rv
+        app.config["SESSION_COOKIE_DOMAIN"] = rv
         return rv
 
     def get_cookie_path(self, app):
@@ -234,28 +236,27 @@ class SessionInterface(object):
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's ``None``.
         """
-        return app.config['SESSION_COOKIE_PATH'] \
-               or app.config['APPLICATION_ROOT']
+        return app.config["SESSION_COOKIE_PATH"] or app.config["APPLICATION_ROOT"]
 
     def get_cookie_httponly(self, app):
         """Returns True if the session cookie should be httponly.  This
         currently just returns the value of the ``SESSION_COOKIE_HTTPONLY``
         config var.
         """
-        return app.config['SESSION_COOKIE_HTTPONLY']
+        return app.config["SESSION_COOKIE_HTTPONLY"]
 
     def get_cookie_secure(self, app):
         """Returns True if the cookie should be secure.  This currently
         just returns the value of the ``SESSION_COOKIE_SECURE`` setting.
         """
-        return app.config['SESSION_COOKIE_SECURE']
+        return app.config["SESSION_COOKIE_SECURE"]
 
     def get_cookie_samesite(self, app):
         """Return ``'Strict'`` or ``'Lax'`` if the cookie should use the
         ``SameSite`` attribute. This currently just returns the value of
         the :data:`SESSION_COOKIE_SAMESITE` setting.
         """
-        return app.config['SESSION_COOKIE_SAMESITE']
+        return app.config["SESSION_COOKIE_SAMESITE"]
 
     def get_expiration_time(self, app, session):
         """A helper method that returns an expiration date for the session
@@ -279,7 +280,7 @@ class SessionInterface(object):
         """
 
         return session.modified or (
-            session.permanent and app.config['SESSION_REFRESH_EACH_REQUEST']
+            session.permanent and app.config["SESSION_REFRESH_EACH_REQUEST"]
         )
 
     def open_session(self, app, request):
@@ -306,14 +307,15 @@ class SecureCookieSessionInterface(SessionInterface):
     """The default session interface that stores sessions in signed cookies
     through the :mod:`itsdangerous` module.
     """
+
     #: the salt that should be applied on top of the secret key for the
     #: signing of cookie based sessions.
-    salt = 'cookie-session'
+    salt = "cookie-session"
     #: the hash function to use for the signature.  The default is sha1
     digest_method = staticmethod(hashlib.sha1)
     #: the name of the itsdangerous supported key derivation.  The default
     #: is hmac.
-    key_derivation = 'hmac'
+    key_derivation = "hmac"
     #: A python serializer for the payload.  The default is a compact
     #: JSON derived serializer with support for some extra Python types
     #: such as datetime objects or tuples.
@@ -324,12 +326,14 @@ class SecureCookieSessionInterface(SessionInterface):
         if not app.secret_key:
             return None
         signer_kwargs = dict(
-            key_derivation=self.key_derivation,
-            digest_method=self.digest_method
+            key_derivation=self.key_derivation, digest_method=self.digest_method
         )
-        return URLSafeTimedSerializer(app.secret_key, salt=self.salt,
-                                      serializer=self.serializer,
-                                      signer_kwargs=signer_kwargs)
+        return URLSafeTimedSerializer(
+            app.secret_key,
+            salt=self.salt,
+            serializer=self.serializer,
+            signer_kwargs=signer_kwargs,
+        )
 
     def open_session(self, app, request):
         s = self.get_signing_serializer(app)
@@ -354,16 +358,14 @@ class SecureCookieSessionInterface(SessionInterface):
         if not session:
             if session.modified:
                 response.delete_cookie(
-                    app.session_cookie_name,
-                    domain=domain,
-                    path=path
+                    app.session_cookie_name, domain=domain, path=path
                 )
 
             return
 
         # Add a "Vary: Cookie" header if the session was accessed at all.
         if session.accessed:
-            response.vary.add('Cookie')
+            response.vary.add("Cookie")
 
         if not self.should_set_cookie(app, session):
             return
@@ -381,5 +383,5 @@ class SecureCookieSessionInterface(SessionInterface):
             domain=domain,
             path=path,
             secure=secure,
-            samesite=samesite
+            samesite=samesite,
         )
