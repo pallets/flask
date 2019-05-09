@@ -31,8 +31,8 @@ def create_app(test_config=None):
         return "Hello, World!"
 
     # register the database commands
-    from flaskr import db
-
+    from flaskr.db import get_db
+    db = get_db()
     db.init_app(app)
 
     # apply the blueprints to the app
