@@ -38,6 +38,8 @@ Unreleased
     dependency to >= 0.15. :issue:`3022`
 -   Support ``static_url_path`` that ends with a forward slash.
     :issue:`3134`
+-   :meth:`jsonify` supports :class:`dataclasses.dataclass` objects.
+    :pr:`3195`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
