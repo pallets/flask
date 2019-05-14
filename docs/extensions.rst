@@ -6,7 +6,7 @@ Extensions
 Extensions are extra packages that add functionality to a Flask
 application. For example, an extension might add support for sending
 email or connecting to a database. Some extensions add entire new
-frameworks to help build certain types of applications, like a ReST API.
+frameworks to help build certain types of applications, like a REST API.
 
 
 Finding Extensions
