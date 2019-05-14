@@ -43,8 +43,8 @@ The Golden Rule
 So the rule of thumb: if you are not dealing with binary data, work with
 Unicode.  What does working with Unicode in Python 2.x mean?
 
--   as long as you are using ASCII charpoints only (basically numbers,
-    some special characters of latin letters without umlauts or anything
+-   as long as you are using ASCII code points only (basically numbers,
+    some special characters of Latin letters without umlauts or anything
     fancy) you can use regular string literals (``'Hello World'``).
 -   if you need anything else than ASCII in a string you have to mark
     this string as Unicode string by prefixing it with a lowercase `u`.
