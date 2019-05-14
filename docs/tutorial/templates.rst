@@ -53,11 +53,11 @@ specific sections.
       <h1>Flaskr</h1>
       <ul>
         {% if g.user %}
-          <li><span>{{ g.user['username'] }}</span>
-          <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+          <li><span>{{ g.user['username'] }}</span></li>
+          <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
         {% else %}
-          <li><a href="{{ url_for('auth.register') }}">Register</a>
-          <li><a href="{{ url_for('auth.login') }}">Log In</a>
+          <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+          <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
         {% endif %}
       </ul>
     </nav>
