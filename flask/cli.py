@@ -807,9 +807,50 @@ def run_command(info, host, port, reload, debugger, eager_loading, with_threads,
     )
 
 
+def _start_bpython_shell(banner, ctx):
+    import bpython
+    bpython.embed(ctx, banner=banner)
+
+
+def _start_ipython_shell(banner, ctx):
+    from IPython import start_ipython
+    from traitlets.config import Config
+    c = Config()
+    c.InteractiveShell.confirm_exit = False
+    c.TerminalInteractiveShell.banner1 = banner
+    start_ipython(argv=(), config=c, user_ns=ctx)
+
+
+def _start_standard_shell(banner, ctx):
+    import code
+    code.interact(banner=banner, local=ctx)
+
+
 @click.command("shell", short_help="Run a shell in the app context.")
+@click.option(
+    "--standard",
+    "start_shell",
+    flag_value=_start_standard_shell,
+    help=(
+        "Use the standard Python shell (default). If the selected shell "
+        "is not installed, this will be the fallback."
+    ),
+)
+@click.option(
+    "--bpython",
+    "start_shell",
+    flag_value=_start_bpython_shell,
+    default=True,
+    help="Use the ipython shell.",
+)
+@click.option(
+    "--ipython",
+    "start_shell",
+    flag_value=_start_ipython_shell,
+    help="Use the IPython shell.",
+)
 @with_appcontext
-def shell_command():
+def shell_command(start_shell):
     """Run an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
     namespace of this shell according to it's configuration.
@@ -839,7 +880,11 @@ def shell_command():
 
     ctx.update(app.make_shell_context())
 
-    code.interact(banner=banner, local=ctx)
+    try:
+        start_shell(banner, ctx)
+    except ImportError:
+        click.echo("Selected shell is not installed, falling back to standard Python.")
+        _start_standard_shell(banner, ctx)
 
 
 @click.command("routes", short_help="Show the routes for the app.")
