@@ -82,14 +82,26 @@ First time setup
 Start coding
 ~~~~~~~~~~~~
 
-- Create a branch to identify the issue you would like to work on (e.g.
-  ``2287-dry-test-suite``)
+-   Create a branch to identify the issue you would like to work on. If
+    you're submitting a bug or documentation fix, branch off of the
+    latest ".x" branch::
+
+        git checkout -b your-branch-name origin/1.0.x
+
+    If you're submitting a feature addition or change, branch off of the
+    "master" branch::
+
+        git checkout -b your-branch-name origin/master
+
 - Using your favorite editor, make your changes, `committing as you go`_.
 - Try to follow `PEP8`_, but you may ignore the line length limit if following
   it would make the code uglier.
 - Include tests that cover any code changes you make. Make sure the test fails
   without your patch. `Run the tests. <contributing-testsuite_>`_.
-- Push your commits to GitHub and `create a pull request`_.
+- Push your commits to GitHub and `create a pull request`_ by using::
+
+        git push --set-upstream origin your-branch-name
+
 - Celebrate 🎉
 
 .. _committing as you go: http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
