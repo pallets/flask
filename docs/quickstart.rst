@@ -203,7 +203,7 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
-        return 'User %s' % username
+        return 'User %s' % escape(username)
 
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
@@ -213,7 +213,7 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/path/<path:subpath>')
     def show_subpath(subpath):
         # show the subpath after /path/
-        return 'Subpath %s' % subpath
+        return 'Subpath %s' % escape(subpath)
 
 Converter types:
 
@@ -281,7 +281,7 @@ Python shell. See :ref:`context-locals`.
 
 .. code-block:: python
 
-    from flask import Flask, url_for
+    from flask import Flask, escape, url_for
 
     app = Flask(__name__)
 
@@ -295,7 +295,7 @@ Python shell. See :ref:`context-locals`.
 
     @app.route('/user/<username>')
     def profile(username):
-        return '{}\'s profile'.format(username)
+        return '{}\'s profile'.format(escape(username))
 
     with app.test_request_context():
         print(url_for('index'))
@@ -690,10 +690,10 @@ response objects is as follows:
     returned from the view.
 2.  If it's a string, a response object is created with that data and the
     default parameters.
-3.  If a tuple is returned the items in the tuple can provide extra
-    information.  Such tuples have to be in the form ``(response, status,
-    headers)`` or ``(response, headers)`` where at least one item has
-    to be in the tuple.  The ``status`` value will override the status code
+3.  If a tuple is returned the items in the tuple can provide extra information.
+    Such tuples have to be in the form ``(response, status, headers)``,
+    ``(response, headers)`` or ``(response, status)`` where at least one item
+    has to be in the tuple. The ``status`` value will override the status code
     and ``headers`` can be a list or dictionary of additional header values.
 4.  If none of that works, Flask will assume the return value is a
     valid WSGI application and convert that into a response object.

@@ -97,6 +97,6 @@ Discuss with the community.
 
 The Flask developers keep the framework accessible to users with codebases big
 and small. If you find an obstacle in your way, caused by Flask, don't hesitate
-to contact the developers on the mailinglist or IRC channel.  The best way for
+to contact the developers on the mailing list or IRC channel.  The best way for
 the Flask and Flask extension developers to improve the tools for larger
 applications is getting feedback from users.

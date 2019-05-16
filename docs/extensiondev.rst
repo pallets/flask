@@ -287,7 +287,7 @@ also avoids having multiple developers working in isolation on pretty much the
 same problem.
 
 Remember: good API design is hard, so introduce your project on the
-mailinglist, and let other developers give you a helping hand with
+mailing list, and let other developers give you a helping hand with
 designing the API.
 
 The best Flask extensions are extensions that share common idioms for the
