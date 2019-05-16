@@ -23,9 +23,15 @@ For example, to run a Flask application with 4 worker processes (``-w
 
     gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
 
-.. _Gunicorn: http://gunicorn.org/
-.. _eventlet: http://eventlet.net/
-.. _greenlet: https://greenlet.readthedocs.io/en/latest/
+The ``gunicorn`` command expects the names of your application module or
+package and the application instance within the module. If you use the
+application factory pattern, you can pass a call to that::
+
+    $ gunicorn "myproject:create_app()"
+
+.. _Gunicorn: https://gunicorn.org/
+.. _eventlet: https://eventlet.net/
+
 
 uWSGI
 --------
