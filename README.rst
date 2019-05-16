@@ -63,11 +63,7 @@ Links
 * Releases: https://pypi.org/project/Flask/
 * Code: https://github.com/pallets/flask
 * Issue tracker: https://github.com/pallets/flask/issues
-* Test status:
-
-  * Linux, Mac: https://travis-ci.org/pallets/flask
-  * Windows: https://ci.appveyor.com/project/pallets/flask
-
+* Test status: https://dev.azure.com/pallets/pallets/_build?definitionId=2
 * Test coverage: https://codecov.io/gh/pallets/flask
 * Official chat: https://discord.gg/t6rrQZH
 
