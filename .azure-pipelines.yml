@@ -1,14 +1,14 @@
 trigger:
 - 'master'
-- '*-maintenance'
+- '*.x'
 
 jobs:
 - job: Flask
   variables:
     vmImage: ubuntu-latest
     python.version: '3.7'
-    TOXENV: 'py,codecov'
     python.architecture: 'x64'
+    TOXENV: 'py,codecov'
     publish.test.results: 'true'
 
   strategy:
@@ -33,10 +33,10 @@ jobs:
         python.version: '2.7'
         vmImage: 'windows-latest'
       DocsHtml:
-        TOXENV: docs-html
+        TOXENV: 'docs-html'
         publish.test.results: 'false'
       VersionRange:
-        TOXENV: devel,lowest,codecov
+        TOXENV: 'devel,lowest,codecov'
 
   pool:
     vmImage: $[ variables.vmImage ]
@@ -46,6 +46,7 @@ jobs:
     inputs:
       versionSpec: $(python.version)
       architecture: $(python.architecture)
+    displayName: 'Use Python $(python.version)'
 
   - script: pip install -U tox
     displayName: 'Install tox'
@@ -58,22 +59,24 @@ jobs:
       testResultsFiles: 'test-results.xml'
       testRunTitle: '$(Agent.JobName)'
     condition: eq(variables['publish.test.results'], 'true')
-  
+    displayName: 'Publish test results'
+
   # TODO: add codecov token
 
 # As a courtesy, try this on the dev version of Python
 # Use a container since Azure Pipelines may not have the bleeding-edge Python RC
 - job: FlaskOnLatest
-  pool: { vmImage: ubuntu-latest }
+  pool:
+    vmImage: ubuntu-latest
+  container: python:rc-stretch
   variables:
     TOXENV: 'future'
-  container: python:rc-stretch
   steps:
   - script: |
       echo "##vso[task.prependPath]$HOME/.local/bin"
       pip install -U --user tox
     displayName: 'Install tox'
-  
+
   # don't fail the build if this doesn't work!
   - script: tox
     displayName: 'Run tox'
