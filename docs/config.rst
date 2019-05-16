@@ -9,7 +9,7 @@ toggling the debug mode, setting the secret key, and other such
 environment-specific things.
 
 The way Flask is designed usually requires the configuration to be
-available when the application starts up.  You can hardcode the
+available when the application starts up.  You can hard code the
 configuration in the code, which for many small applications is not
 actually that bad, but there are better ways.
 
@@ -494,7 +494,7 @@ that experience:
 
 1.  Create your application in a function and register blueprints on it.
     That way you can create multiple instances of your application with
-    different configurations attached which makes unittesting a lot
+    different configurations attached which makes unit testing a lot
     easier.  You can use this to pass in configuration as needed.
 
 2.  Do not write code that needs the configuration at import time.  If you
@@ -527,7 +527,7 @@ the config file by adding ``from yourapplication.default_settings
 import *`` to the top of the file and then overriding the changes by hand.
 You could also inspect an environment variable like
 ``YOURAPPLICATION_MODE`` and set that to `production`, `development` etc
-and import different hardcoded files based on that.
+and import different hard-coded files based on that.
 
 An interesting pattern is also to use classes and inheritance for
 configuration::

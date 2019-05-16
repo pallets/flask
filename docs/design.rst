@@ -41,7 +41,7 @@ the time.  There are ways to fake multiple applications with a single
 application object, like maintaining a stack of applications, but this
 causes some problems I won't outline here in detail.  Now the question is:
 when does a microframework need more than one application at the same
-time?  A good example for this is unittesting.  When you want to test
+time?  A good example for this is unit testing.  When you want to test
 something it can be very helpful to create a minimal application to test
 specific behavior.  When the application object is deleted everything it
 allocated will be freed again.
@@ -76,7 +76,7 @@ there are better ways to do that so that you do not lose the reference
 to the application object :meth:`~flask.Flask.wsgi_app`).
 
 Furthermore this design makes it possible to use a factory function to
-create the application which is very helpful for unittesting and similar
+create the application which is very helpful for unit testing and similar
 things (:ref:`app-factories`).
 
 The Routing System
