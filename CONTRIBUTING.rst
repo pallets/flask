@@ -82,19 +82,18 @@ First time setup
 Start coding
 ~~~~~~~~~~~~
 
-- Create a branch to identify the issue you would like to work on::
+-   Create a branch to identify the issue you would like to work on. If
+    you're submitting a bug or documentation fix, branch off of the
+    latest ".x" branch::
 
-        git branch your-branch-name
+        git checkout -b your-branch-name origin/1.0.x
 
-- Then switch to make sure that we are working on that branch by using::
+    If you're submitting a feature addition or change, branch off of the
+    "master" branch::
 
-        git checkout your-branch-name
+        git checkout -b your-branch-name origin/master
 
-- Using your favorite editor, make your changes, `committing as you go`_ by using the following::
-
-        git add -A
-        git commit
-
+- Using your favorite editor, make your changes, `committing as you go`_.
 - Try to follow `PEP8`_, but you may ignore the line length limit if following
   it would make the code uglier.
 - Include tests that cover any code changes you make. Make sure the test fails
