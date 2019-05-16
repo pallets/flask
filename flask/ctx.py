@@ -175,7 +175,7 @@ def has_request_context():
                 self.remote_addr = remote_addr
 
     Alternatively you can also just test any of the context bound objects
-    (such as :class:`request` or :class:`g` for truthness)::
+    (such as :class:`request` or :class:`g`) for truthness::
 
         class User(db.Model):
 

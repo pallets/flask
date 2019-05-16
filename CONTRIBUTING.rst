@@ -9,8 +9,9 @@ Support questions
 Please, don't use the issue tracker for this. Use one of the following
 resources for questions about your own code:
 
-* The IRC channel ``#pocoo`` on FreeNode.
-* The IRC channel ``#python`` on FreeNode for more general questions.
+* The ``#get-help`` channel on our Discord chat: https://discord.gg/t6rrQZH
+  * The IRC channel ``#pocoo`` on FreeNode is linked to Discord, but
+    Discord is preferred.
 * The mailing list flask@python.org for long term discussion or larger issues.
 * Ask on `Stack Overflow`_. Search with Google first using:
   ``site:stackoverflow.com flask {search term, exception message, etc.}``
@@ -81,14 +82,26 @@ First time setup
 Start coding
 ~~~~~~~~~~~~
 
-- Create a branch to identify the issue you would like to work on (e.g.
-  ``2287-dry-test-suite``)
+-   Create a branch to identify the issue you would like to work on. If
+    you're submitting a bug or documentation fix, branch off of the
+    latest ".x" branch::
+
+        git checkout -b your-branch-name origin/1.0.x
+
+    If you're submitting a feature addition or change, branch off of the
+    "master" branch::
+
+        git checkout -b your-branch-name origin/master
+
 - Using your favorite editor, make your changes, `committing as you go`_.
 - Try to follow `PEP8`_, but you may ignore the line length limit if following
   it would make the code uglier.
 - Include tests that cover any code changes you make. Make sure the test fails
   without your patch. `Run the tests. <contributing-testsuite_>`_.
-- Push your commits to GitHub and `create a pull request`_.
+- Push your commits to GitHub and `create a pull request`_ by using::
+
+        git push --set-upstream origin your-branch-name
+
 - Celebrate 🎉
 
 .. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes

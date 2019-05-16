@@ -49,7 +49,7 @@ Typically, an application context will have the same lifetime as a
 request.
 
 See :doc:`/reqcontext` for more information about how the contexts work
-and the full lifecycle of a request.
+and the full life cycle of a request.
 
 
 Manually Push a Context

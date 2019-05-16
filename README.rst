@@ -75,6 +75,7 @@ Links
 * Test status: https://dev.azure.com/pallets/pallets/_build?definitionId=2
 
 * Test coverage: https://codecov.io/gh/pallets/flask
+* Official chat: https://discord.gg/t6rrQZH
 
 .. _WSGI: https://wsgi.readthedocs.io
 .. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/

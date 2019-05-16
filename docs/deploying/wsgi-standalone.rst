@@ -23,9 +23,15 @@ For example, to run a Flask application with 4 worker processes (``-w
 
     $ gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
 
+The ``gunicorn`` command expects the names of your application module or
+package and the application instance within the module. If you use the
+application factory pattern, you can pass a call to that::
+
+    $ gunicorn "myproject:create_app()"
+
 .. _Gunicorn: https://gunicorn.org/
 .. _eventlet: https://eventlet.net/
-.. _greenlet: https://greenlet.readthedocs.io/en/latest/
+
 
 uWSGI
 --------
@@ -123,8 +129,8 @@ If your httpd is not providing these headers, the most common setup invokes the
 host being set from ``X-Forwarded-Host`` and the remote address from
 ``X-Forwarded-For``::
 
-    from werkzeug.contrib.fixers import ProxyFix
-    app.wsgi_app = ProxyFix(app.wsgi_app)
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 .. admonition:: Trusting Headers
 

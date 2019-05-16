@@ -246,7 +246,7 @@ was dispatched to any other admin blueprint endpoint.
 Error Handlers
 --------------
 
-Blueprints support the errorhandler decorator just like the :class:`Flask`
+Blueprints support the ``errorhandler`` decorator just like the :class:`Flask`
 application object, so it is easy to make Blueprint-specific custom error
 pages.
 
@@ -258,14 +258,13 @@ Here is an example for a "404 Page Not Found" exception::
 
 Most errorhandlers will simply work as expected; however, there is a caveat
 concerning handlers for 404 and 405 exceptions.  These errorhandlers are only
-invoked from an appropriate ``raise`` statement or a call to ``abort``
-in another of the blueprint's view functions; they are not invoked by,
-e.g., an invalid URL access.  This is because the blueprint does not
-"own" a certain URL space, so the application instance has no way of
-knowing which blueprint errorhandler it should run if given an invalid URL.
-If you would like to execute different handling strategies for these errors
-based on URL prefixes, they may be defined at the application level using
-the ``request`` proxy object::
+invoked from an appropriate ``raise`` statement or a call to ``abort`` in another
+of the blueprint's view functions; they are not invoked by, e.g., an invalid URL
+access.  This is because the blueprint does not "own" a certain URL space, so
+the application instance has no way of knowing which blueprint error handler it
+should run if given an invalid URL.  If you would like to execute different
+handling strategies for these errors based on URL prefixes, they may be defined
+at the application level using the ``request`` proxy object::
 
     @app.errorhandler(404)
     @app.errorhandler(405)

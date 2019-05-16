@@ -20,7 +20,7 @@ can you do?
 
 This is where some helper functions come in handy.  Keep in mind however
 that these functions are not only there for interactive shell usage, but
-also for unittesting and other situations that require a faked request
+also for unit testing and other situations that require a faked request
 context.
 
 Generally it's recommended that you read the :ref:`request-context`
