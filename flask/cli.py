@@ -909,6 +909,7 @@ debug mode.
 
 
 def main(as_module=False):
+    1/0
     args = sys.argv[1:]
 
     if as_module:
