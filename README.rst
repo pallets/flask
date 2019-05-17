@@ -73,7 +73,6 @@ Links
 * Code: https://github.com/pallets/flask
 * Issue tracker: https://github.com/pallets/flask/issues
 * Test status: https://dev.azure.com/pallets/pallets/_build?definitionId=2
-
 * Test coverage: https://codecov.io/gh/pallets/flask
 * Official chat: https://discord.gg/t6rrQZH
 
