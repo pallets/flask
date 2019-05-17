@@ -644,8 +644,8 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
 
     if env == 'production':
         click.secho(
-            '   WARNING: Do not use the development server in a production'
-            ' environment.', fg='red')
+            '   WARNING: This is a development server. '
+            'Do not use it in a production deployment.', fg='red')
         click.secho('   Use a production WSGI server instead.', dim=True)
 
     if debug is not None:
