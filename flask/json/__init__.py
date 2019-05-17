@@ -89,33 +89,37 @@ class JSONDecoder(_json.JSONDecoder):
     """
 
 
-def _dump_arg_defaults(kwargs):
+def _dump_arg_defaults(kwargs, app=None):
     """Inject default arguments for dump functions."""
-    if current_app:
-        bp = current_app.blueprints.get(request.blueprint) if request else None
+    if app is None:
+        app = current_app
+
+    if app:
+        bp = app.blueprints.get(request.blueprint) if request else None
         kwargs.setdefault(
-            'cls',
-            bp.json_encoder if bp and bp.json_encoder
-                else current_app.json_encoder
+            'cls', bp.json_encoder if bp and bp.json_encoder else app.json_encoder
         )
 
-        if not current_app.config['JSON_AS_ASCII']:
+        if not app.config['JSON_AS_ASCII']:
             kwargs.setdefault('ensure_ascii', False)
 
-        kwargs.setdefault('sort_keys', current_app.config['JSON_SORT_KEYS'])
+        kwargs.setdefault('sort_keys', app.config['JSON_SORT_KEYS'])
     else:
         kwargs.setdefault('sort_keys', True)
         kwargs.setdefault('cls', JSONEncoder)
 
 
-def _load_arg_defaults(kwargs):
+def _load_arg_defaults(kwargs, app=None):
     """Inject default arguments for load functions."""
-    if current_app:
-        bp = current_app.blueprints.get(request.blueprint) if request else None
+    if app is None:
+        app = current_app
+
+    if app:
+        bp = app.blueprints.get(request.blueprint) if request else None
         kwargs.setdefault(
             'cls',
             bp.json_decoder if bp and bp.json_decoder
-                else current_app.json_decoder
+                else app.json_decoder
         )
     else:
         kwargs.setdefault('cls', JSONDecoder)
@@ -164,17 +168,28 @@ def detect_encoding(data):
     return 'utf-8'
 
 
-def dumps(obj, **kwargs):
-    """Serialize ``obj`` to a JSON formatted ``str`` by using the application's
-    configured encoder (:attr:`~flask.Flask.json_encoder`) if there is an
-    application on the stack.
+def dumps(obj, app=None, **kwargs):
+    """Serialize ``obj`` to a JSON-formatted string. If there is an
+    app context pushed, use the current app's configured encoder
+    (:attr:`~flask.Flask.json_encoder`), or fall back to the default
+    :class:`JSONEncoder`.
 
-    This function can return ``unicode`` strings or ascii-only bytestrings by
-    default which coerce into unicode strings automatically.  That behavior by
-    default is controlled by the ``JSON_AS_ASCII`` configuration variable
-    and can be overridden by the simplejson ``ensure_ascii`` parameter.
+    Takes the same arguments as the built-in :func:`json.dumps`, and
+    does some extra configuration based on the application. If the
+    simplejson package is installed, it is preferred.
+
+    :param obj: Object to serialize to JSON.
+    :param app: App instance to use to configure the JSON encoder.
+        Uses ``current_app`` if not given, and falls back to the default
+        encoder when not in an app context.
+    :param kwargs: Extra arguments passed to :func:`json.dumps`.
+
+    .. versionchanged:: 1.0.3
+
+        ``app`` can be passed directly, rather than requiring an app
+        context for configuration.
     """
-    _dump_arg_defaults(kwargs)
+    _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop('encoding', None)
     rv = _json.dumps(obj, **kwargs)
     if encoding is not None and isinstance(rv, text_type):
@@ -182,21 +197,37 @@ def dumps(obj, **kwargs):
     return rv
 
 
-def dump(obj, fp, **kwargs):
+def dump(obj, fp, app=None, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
-    _dump_arg_defaults(kwargs)
+    _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop('encoding', None)
     if encoding is not None:
         fp = _wrap_writer_for_text(fp, encoding)
     _json.dump(obj, fp, **kwargs)
 
 
-def loads(s, **kwargs):
-    """Unserialize a JSON object from a string ``s`` by using the application's
-    configured decoder (:attr:`~flask.Flask.json_decoder`) if there is an
-    application on the stack.
+def loads(s, app=None, **kwargs):
+    """Deserialize an object from a JSON-formatted string ``s``. If
+    there is an app context pushed, use the current app's configured
+    decoder (:attr:`~flask.Flask.json_decoder`), or fall back to the
+    default :class:`JSONDecoder`.
+
+    Takes the same arguments as the built-in :func:`json.loads`, and
+    does some extra configuration based on the application. If the
+    simplejson package is installed, it is preferred.
+
+    :param s: JSON string to deserialize.
+    :param app: App instance to use to configure the JSON decoder.
+        Uses ``current_app`` if not given, and falls back to the default
+        encoder when not in an app context.
+    :param kwargs: Extra arguments passed to :func:`json.dumps`.
+
+    .. versionchanged:: 1.0.3
+
+        ``app`` can be passed directly, rather than requiring an app
+        context for configuration.
     """
-    _load_arg_defaults(kwargs)
+    _load_arg_defaults(kwargs, app=app)
     if isinstance(s, bytes):
         encoding = kwargs.pop('encoding', None)
         if encoding is None:
@@ -205,10 +236,9 @@ def loads(s, **kwargs):
     return _json.loads(s, **kwargs)
 
 
-def load(fp, **kwargs):
-    """Like :func:`loads` but reads from a file object.
-    """
-    _load_arg_defaults(kwargs)
+def load(fp, app=None, **kwargs):
+    """Like :func:`loads` but reads from a file object."""
+    _load_arg_defaults(kwargs, app=app)
     if not PY2:
         fp = _wrap_reader_for_text(fp, kwargs.pop('encoding', None) or 'utf-8')
     return _json.load(fp, **kwargs)
