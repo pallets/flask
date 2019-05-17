@@ -10,8 +10,10 @@ Please, don't use the issue tracker for this. Use one of the following
 resources for questions about your own code:
 
 * The ``#get-help`` channel on our Discord chat: https://discord.gg/t6rrQZH
+
   * The IRC channel ``#pocoo`` on FreeNode is linked to Discord, but
     Discord is preferred.
+
 * The mailing list flask@python.org for long term discussion or larger issues.
 * Ask on `Stack Overflow`_. Search with Google first using:
   ``site:stackoverflow.com flask {search term, exception message, etc.}``
