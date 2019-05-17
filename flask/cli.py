@@ -92,7 +92,7 @@ def find_best_app(script_info, module):
     )
 
 
-def call_factory(script_info, app_factory, arguments=()):
+def call_factory(script_info, app_factory, arguments=(), keyword_arguments={}):
     """Takes an app factory, a ``script_info` object and  optionally a tuple
     of arguments. Checks for the existence of a script_info argument and calls
     the app_factory depending on that and the arguments provided.
@@ -102,10 +102,13 @@ def call_factory(script_info, app_factory, arguments=()):
     arg_defaults = args_spec.defaults
 
     if "script_info" in arg_names:
-        return app_factory(*arguments, script_info=script_info)
-    elif arguments:
-        return app_factory(*arguments)
-    elif not arguments and len(arg_names) == 1 and arg_defaults is None:
+        return app_factory(*arguments,
+                           **keyword_arguments,
+                           script_info=script_info)
+    elif arguments or keyword_arguments:
+        return app_factory(*arguments, **keyword_arguments)
+    elif (not (arguments or keyword_arguments) and
+          len(arg_names) == 1 and arg_defaults is None):
         return app_factory(script_info)
 
     return app_factory()
@@ -158,20 +161,32 @@ def find_app_by_string(script_info, module, app_name):
     except AttributeError as e:
         raise NoAppException(e.args[0])
 
+    positional_args, keyword_args = (), {}
+
     if inspect.isfunction(attr):
         if args:
+            args = 'f({})'.format(args)
+
             try:
-                args = ast.literal_eval("({args},)".format(args=args))
+                tree = ast.parse(args)
+                func_args = tree.body[0].value
+                positional_args = [
+                    ast.literal_eval(arg) for arg in func_args.args
+                ]
+                keyword_args = {
+                    arg.arg: ast.literal_eval(arg.value)
+                    for arg in func_args.keywords
+                }
             except (ValueError, SyntaxError) as e:
                 raise NoAppException(
                     "Could not parse the arguments in "
                     '"{app_name}".'.format(e=e, app_name=app_name)
                 )
-        else:
-            args = ()
-
         try:
-            app = call_factory(script_info, attr, args)
+            app = call_factory(script_info,
+                               attr,
+                               positional_args,
+                               keyword_args)
         except TypeError as e:
             if not _called_with_wrong_args(attr):
                 raise
