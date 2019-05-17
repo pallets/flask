@@ -357,14 +357,15 @@ This however does not make it possible to also modify the session or to
 access the session before a request was fired.  Starting with Flask 0.8 we
 provide a so called “session transaction” which simulates the appropriate
 calls to open a session in the context of the test client and to modify
-it.  At the end of the transaction the session is stored.  This works
-independently of the session backend used::
+it. At the end of the transaction the session is stored and ready to be
+used by the test client. This works independently of the session backend used::
 
     with app.test_client() as c:
         with c.session_transaction() as sess:
             sess['a_key'] = 'a value'
 
-        # once this is reached the session was stored
+        # once this is reached the session was stored and ready to be used by the client
+        c.get(...)
 
 Note that in this case you have to use the ``sess`` object instead of the
 :data:`flask.session` proxy.  The object however itself will provide the
