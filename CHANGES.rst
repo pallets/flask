@@ -23,10 +23,13 @@ Unreleased
     handle ``RoutingExcpetion``, which is used internally during
     routing. This fixes the unexpected behavior that had been introduced
     in 1.0. (`#2986`_)
+-   Passing the ``json`` argument to ``app.test_client`` does not
+    push/pop an extra app context. (`#2900`_)
 
 .. _#2766: https://github.com/pallets/flask/issues/2766
 .. _#2765: https://github.com/pallets/flask/pull/2765
 .. _#2825: https://github.com/pallets/flask/pull/2825
+.. _#2900: https://github.com/pallets/flask/issues/2900
 .. _#2933: https://github.com/pallets/flask/issues/2933
 .. _#2986: https://github.com/pallets/flask/pull/2986
 
