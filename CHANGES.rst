@@ -21,12 +21,15 @@ Unreleased
 -   :func:`send_file` supports :class:`~io.BytesIO` partial content.
     (`#2957`_)
 -   :func:`open_resource` accepts the "rt" file mode. This still does
-    the same thing as "r". (:issue:`3163`)
+    the same thing as "r". :issue:`3163`
+-   The :attr:`MethodView.methods` attribute set in a base class is used
+    by subclasses. :issue:`3138`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
 .. _#2994: https://github.com/pallets/flask/pull/2994
 .. _#3059: https://github.com/pallets/flask/pull/3059
+.. _#3179: https://github.com/pallets/flask/pull/3179
 
 
 Version 1.0.3
