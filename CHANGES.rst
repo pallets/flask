@@ -20,6 +20,8 @@ Unreleased
     (`#3059`_)
 -   :func:`send_file` supports :class:`~io.BytesIO` partial content.
     (`#2957`_)
+-   :func:`open_resource` accepts the "rt" file mode. This still does
+    the same thing as "r". (:issue:`3163`)
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957

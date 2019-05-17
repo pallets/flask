@@ -18,6 +18,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinxcontrib.log_cabinet",
     "pallets_sphinx_themes",
+    "sphinx_issues",
 ]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
@@ -29,6 +30,7 @@ intersphinx_mapping = {
     "wtforms": ("https://wtforms.readthedocs.io/en/stable/", None),
     "blinker": ("https://pythonhosted.org/blinker/", None),
 }
+issues_github_path = "pallets/flask"
 
 # HTML -----------------------------------------------------------------
 
