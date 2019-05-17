@@ -1062,26 +1062,16 @@ class TestHelpers(object):
             assert rv.data == b"Hello"
             assert rv.mimetype == "text/html"
 
-    @pytest.mark.parametrize('mode', [
-        'r',
-        'rb',
-        'rt'
-    ])
+    @pytest.mark.parametrize("mode", ("r", "rb", "rt"))
     def test_open_resource(self, mode):
         app = flask.Flask(__name__)
-        with app.open_resource('static/index.html', mode) as f:
-            assert '<h1>Hello World!</h1>' in str(f.read())
 
-    @pytest.mark.parametrize('mode', [
-        'w',
-        'x',
-        'a',
-        'b',
-        't',
-        '+'
-    ])
+        with app.open_resource("static/index.html", mode) as f:
+            assert "<h1>Hello World!</h1>" in str(f.read())
+
+    @pytest.mark.parametrize("mode", ("w", "x", "a", "r+"))
     def test_open_resource_exceptions(self, mode):
         app = flask.Flask(__name__)
-        with pytest.raises(ValueError):
-            app.open_resource('static/index.html', mode)
 
+        with pytest.raises(ValueError):
+            app.open_resource("static/index.html", mode)
