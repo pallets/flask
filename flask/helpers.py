@@ -1053,12 +1053,12 @@ class _PackageBoundObject(object):
 
         :param resource: the name of the resource.  To access resources within
                          subfolders use forward slashes as separator.
-        :param mode: resource file opening mode, default is 'rb'.
+        :param mode: Open file in this mode. Only reading is supported,
+            valid values are "r" (or "rt") and "rb".
         """
-        if mode == 'rt':
-            mode = 'r'
-        if mode not in ("r", "rb"):
+        if mode not in {"r", "rt", "rb"}:
             raise ValueError("Resources can only be opened for reading")
+
         return open(os.path.join(self.root_path, resource), mode)
 
 
