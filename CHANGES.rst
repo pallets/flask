@@ -7,7 +7,7 @@ Flask Changelog
 Version 1.0.3
 -------------
 
-Unreleased
+Released 2019-05-17
 
 -   :func:`send_file` encodes filenames as ASCII instead of Latin-1
     (ISO-8859-1). This fixes compatibility with Gunicorn, which is
@@ -37,7 +37,7 @@ Unreleased
 Version 1.0.2
 -------------
 
-Released on May 2nd 2018
+Released 2018-05-02
 
 -   Fix more backwards compatibility issues with merging slashes between
     a blueprint prefix and route. (`#2748`_)
@@ -51,7 +51,7 @@ Released on May 2nd 2018
 Version 1.0.1
 -------------
 
-Released on April 29th 2018
+Released 2018-04-29
 
 -   Fix registering partials (with no ``__name__``) as view functions.
     (`#2730`_)
@@ -77,7 +77,7 @@ Released on April 29th 2018
 Version 1.0
 -----------
 
-Released on April 26th 2018
+Released 2018-04-26
 
 -   **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
 -   Bump minimum dependency versions to the latest stable versions:
