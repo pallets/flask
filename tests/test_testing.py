@@ -14,10 +14,16 @@ import pytest
 import flask
 import werkzeug
 
+from flask import appcontext_popped
 from flask._compat import text_type
 from flask.cli import ScriptInfo
 from flask.json import jsonify
 from flask.testing import make_test_environ_builder, FlaskCliRunner
+
+try:
+    import blinker
+except ImportError:
+    blinker = None
 
 
 def test_environ_defaults_from_config(app, client):
@@ -304,6 +310,27 @@ def test_json_request_and_response(app, client):
         assert rv.status_code == 200
         assert rv.is_json
         assert rv.get_json() == json_data
+
+
+@pytest.mark.skipif(blinker is None, reason="blinker is not installed")
+def test_client_json_no_app_context(app, client):
+    @app.route("/hello", methods=["POST"])
+    def hello():
+        return "Hello, {}!".format(flask.request.json["name"])
+
+    class Namespace(object):
+        count = 0
+
+        def add(self, app):
+            self.count += 1
+
+    ns = Namespace()
+
+    with appcontext_popped.connected_to(ns.add, app):
+        rv = client.post("/hello", json={"name": "Flask"})
+
+    assert rv.get_data(as_text=True) == "Hello, Flask!"
+    assert ns.count == 1
 
 
 def test_subdomain():

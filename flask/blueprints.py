@@ -10,7 +10,6 @@
     :license: BSD, see LICENSE for more details.
 """
 from functools import update_wrapper
-from werkzeug.urls import url_join
 
 from .helpers import _PackageBoundObject, _endpoint_from_view_func
 

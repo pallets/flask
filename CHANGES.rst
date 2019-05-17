@@ -30,7 +30,7 @@ Unreleased
 Version 1.0.3
 -------------
 
-Unreleased
+Released 2019-05-17
 
 -   :func:`send_file` encodes filenames as ASCII instead of Latin-1
     (ISO-8859-1). This fixes compatibility with Gunicorn, which is
@@ -46,10 +46,13 @@ Unreleased
     handle ``RoutingException``, which is used internally during
     routing. This fixes the unexpected behavior that had been introduced
     in 1.0. (`#2986`_)
+-   Passing the ``json`` argument to ``app.test_client`` does not
+    push/pop an extra app context. (`#2900`_)
 
 .. _#2766: https://github.com/pallets/flask/issues/2766
 .. _#2765: https://github.com/pallets/flask/pull/2765
 .. _#2825: https://github.com/pallets/flask/pull/2825
+.. _#2900: https://github.com/pallets/flask/issues/2900
 .. _#2933: https://github.com/pallets/flask/issues/2933
 .. _#2986: https://github.com/pallets/flask/pull/2986
 
@@ -57,7 +60,7 @@ Unreleased
 Version 1.0.2
 -------------
 
-Released on May 2nd 2018
+Released 2018-05-02
 
 -   Fix more backwards compatibility issues with merging slashes between
     a blueprint prefix and route. (`#2748`_)
@@ -71,7 +74,7 @@ Released on May 2nd 2018
 Version 1.0.1
 -------------
 
-Released on April 29th 2018
+Released 2018-04-29
 
 -   Fix registering partials (with no ``__name__``) as view functions.
     (`#2730`_)
@@ -97,7 +100,7 @@ Released on April 29th 2018
 Version 1.0
 -----------
 
-Released on April 26th 2018
+Released 2018-04-26
 
 -   **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
 -   Bump minimum dependency versions to the latest stable versions:
