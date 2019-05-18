@@ -4,8 +4,8 @@ Flask Changelog
 ===============
 
 
-Version 1.1
------------
+Version 1.1.0
+-------------
 
 Unreleased
 
@@ -24,6 +24,9 @@ Unreleased
     the same thing as "r". :issue:`3163`
 -   The :attr:`MethodView.methods` attribute set in a base class is used
     by subclasses. :issue:`3138`
+-   :attr:`Flask.jinja_options` is a ``dict`` instead of an
+    ``ImmutableDict`` to allow easier configuration. Changes must still
+    be made before creating the environment. :pr:`3190`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
