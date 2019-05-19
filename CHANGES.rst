@@ -9,6 +9,8 @@ Version 1.1.0
 
 Unreleased
 
+-   Bump minimum Werkzeug version to >= 0.15.
+-   Drop support for Python 3.4.
 -   :meth:`flask.RequestContext.copy` includes the current session
     object in the request context copy. This prevents ``session``
     pointing to an out-of-date object. (`#2935`_)
@@ -27,12 +29,17 @@ Unreleased
 -   :attr:`Flask.jinja_options` is a ``dict`` instead of an
     ``ImmutableDict`` to allow easier configuration. Changes must still
     be made before creating the environment. :pr:`3190`
+-   Flask's ``JSONMixin`` for the request and response wrappers was
+    moved into Werkzeug. Use Werkzeug's version with Flask-specific
+    support. This bumps the Werkzeug dependency to >= 0.15.
+    :issue:`3125`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
 .. _#2994: https://github.com/pallets/flask/pull/2994
 .. _#3059: https://github.com/pallets/flask/pull/3059
 .. _#3179: https://github.com/pallets/flask/pull/3179
+.. _#3125: https://github.com/pallets/flask/pull/3125
 
 
 Version 1.0.3
