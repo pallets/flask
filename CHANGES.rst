@@ -36,6 +36,8 @@ Unreleased
 -   The ``flask`` command entry point is simplified to take advantage
     of Werkzeug 0.15's better reloader support. This bumps the Werkzeug
     dependency to >= 0.15. :issue:`3022`
+-   Support ``static_url_path`` that ends with a forward slash.
+    :issue:`3134`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
