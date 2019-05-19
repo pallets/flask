@@ -40,6 +40,8 @@ Unreleased
     :issue:`3134`
 -   :meth:`jsonify` supports :class:`dataclasses.dataclass` objects.
     :pr:`3195`
+-   Allow customizing the :attr:`Flask.url_map_class` used for routing.
+    :pr:`3069`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
