@@ -598,6 +598,10 @@ def load_dotenv(path=None):
     :param path: Load the file at this location instead of searching.
     :return: ``True`` if a file was loaded.
 
+    .. versionchanged:: 1.1.0
+        Returns ``False`` when python-dotenv is not installed, or when
+        the given path isn't a file.
+
     .. versionadded:: 1.0
     """
     if dotenv is None:
@@ -607,10 +611,16 @@ def load_dotenv(path=None):
                 ' Do "pip install python-dotenv" to use them.',
                 fg="yellow",
             )
-        return
 
+        return False
+
+    # if the given path specifies the actual file then return True,
+    # else False
     if path is not None:
-        return dotenv.load_dotenv(path)
+        if os.path.isfile(path):
+            return dotenv.load_dotenv(path)
+
+        return False
 
     new_dir = None
 

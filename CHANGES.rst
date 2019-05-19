@@ -44,6 +44,9 @@ Unreleased
     :pr:`3069`
 -   The development server port can be set to 0, which tells the OS to
     pick an available port. :issue:`2926`
+-   The return value from :meth:`cli.load_dotenv` is more consistent
+    with the documentation. It will return ``False`` if python-dotenv is
+    not installed, or if the given path isn't a file. :issue:`2937`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957

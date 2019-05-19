@@ -513,7 +513,7 @@ def test_load_dotenv(monkeypatch):
 
     monkeypatch.setenv("EGGS", "3")
     monkeypatch.chdir(os.path.join(test_path, "cliapp", "inner1"))
-    load_dotenv()
+    assert load_dotenv()
     assert os.getcwd() == test_path
     # .flaskenv doesn't overwrite .env
     assert os.environ["FOO"] == "env"
@@ -523,6 +523,9 @@ def test_load_dotenv(monkeypatch):
     assert os.environ["SPAM"] == "1"
     # set manually, files don't overwrite
     assert os.environ["EGGS"] == "3"
+
+    # Non existent file should not load
+    assert not load_dotenv('non-existent-file')
 
 
 @need_dotenv
