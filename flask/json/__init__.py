@@ -20,6 +20,10 @@ from jinja2 import Markup
 # depend anyways.
 from itsdangerous import json as _json
 
+try:
+    import dataclasses
+except ImportError:
+    dataclasses = None
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
@@ -54,11 +58,15 @@ def _wrap_writer_for_text(fp, encoding):
 
 
 class JSONEncoder(_json.JSONEncoder):
-    """The default Flask JSON encoder.  This one extends the default simplejson
-    encoder by also supporting ``datetime`` objects, ``UUID`` as well as
-    ``Markup`` objects which are serialized as RFC 822 datetime strings (same
-    as the HTTP date format).  In order to support more data types override the
-    :meth:`default` method.
+    """The default Flask JSON encoder. This one extends the default
+    encoder by also supporting ``datetime``, ``UUID``, ``dataclasses``,
+    and ``Markup`` objects.
+
+    ``datetime`` objects are serialized as RFC 822 datetime strings.
+    This is the same as the HTTP date format.
+
+    In order to support more data types, override the :meth:`default`
+    method.
     """
 
     def default(self, o):
@@ -84,6 +92,8 @@ class JSONEncoder(_json.JSONEncoder):
             return http_date(o.timetuple())
         if isinstance(o, uuid.UUID):
             return str(o)
+        if dataclasses and dataclasses.is_dataclass(o):
+            return dataclasses.asdict(o)
         if hasattr(o, "__html__"):
             return text_type(o.__html__())
         return _json.JSONEncoder.default(self, o)

@@ -10,6 +10,7 @@
 """
 
 import re
+import sys
 import time
 import uuid
 from datetime import datetime
@@ -1288,6 +1289,14 @@ def test_jsonify_mimetype(app, req_ctx):
     rv = flask.make_response(flask.jsonify(msg), 200)
     assert rv.mimetype == "application/vnd.api+json"
 
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
+def test_json_dump_dataclass(app, req_ctx):
+    from dataclasses import make_dataclass
+    Data = make_dataclass("Data", [("name", str)])
+    value = flask.json.dumps(Data("Flask"), app=app)
+    value = flask.json.loads(value, app=app)
+    assert value == {"name": "Flask"}
 
 def test_jsonify_args_and_kwargs_check(app, req_ctx):
     with pytest.raises(TypeError) as e:
