@@ -50,6 +50,7 @@ setup(
             "sphinx",
             "pallets-sphinx-themes",
             "sphinxcontrib-log-cabinet",
+            "pre-commit",
         ],
         "docs": ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"],
     },

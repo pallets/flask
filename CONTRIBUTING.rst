@@ -37,11 +37,12 @@ Reporting issues
 Submitting patches
 ------------------
 
+- Use `Black`_ to autoformat your code. This should be done for you as a
+  git `pre-commit`_ hook, which gets installed when you run ``pip install -e .[dev]``.
+  You may also wish to use Black's `Editor integration`_.
 - Include tests if your patch is supposed to solve a bug, and explain
   clearly under which circumstances the bug happens. Make sure the test fails
   without your patch.
-- Try to follow `PEP8`_, but you may ignore the line length limit if following
-  it would make the code uglier.
 
 First time setup
 ~~~~~~~~~~~~~~~~
@@ -96,8 +97,6 @@ Start coding
         git checkout -b your-branch-name origin/master
 
 - Using your favorite editor, make your changes, `committing as you go`_.
-- Try to follow `PEP8`_, but you may ignore the line length limit if following
-  it would make the code uglier.
 - Include tests that cover any code changes you make. Make sure the test fails
   without your patch. `Run the tests. <contributing-testsuite_>`_.
 - Push your commits to GitHub and `create a pull request`_ by using::
@@ -107,7 +106,9 @@ Start coding
 - Celebrate 🎉
 
 .. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
-.. _PEP8: https://pep8.org/
+.. _Black: https://black.readthedocs.io
+.. _Editor integration: https://black.readthedocs.io/en/stable/editor_integration.html
+.. _pre-commit: https://pre-commit.com
 .. _create a pull request: https://help.github.com/articles/creating-a-pull-request/
 
 .. _contributing-testsuite:
