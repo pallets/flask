@@ -52,6 +52,10 @@ Unreleased
 -   Add an ``--extra-files`` option to the ``flask run`` CLI command to
     specify extra files that will trigger the reloader on change.
     :issue:`2897`
+-   Allow returning a dictionary from a view function. Similar to how
+    returning a string will produce a ``text/html`` response, returning
+    a dict will call ``jsonify`` to produce a ``application/json``
+    response. :pr:`3111`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
