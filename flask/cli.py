@@ -742,6 +742,18 @@ def _validate_key(ctx, param, value):
     return value
 
 
+class SeparatedPathType(click.Path):
+    """Click option type that accepts a list of values separated by the
+    OS's path separator (``:``, ``;`` on Windows). Each value is
+    validated as a :class:`click.Path` type.
+    """
+
+    def convert(self, value, param, ctx):
+        items = self.split_envvar_value(value)
+        super_convert = super(SeparatedPathType, self).convert
+        return [super_convert(item, param, ctx) for item in items]
+
+
 @click.command("run", short_help="Run a development server.")
 @click.option("--host", "-h", default="127.0.0.1", help="The interface to bind to.")
 @click.option("--port", "-p", default=5000, help="The port to bind to.")
@@ -778,8 +790,19 @@ def _validate_key(ctx, param, value):
     default=True,
     help="Enable or disable multithreading.",
 )
+@click.option(
+    "--extra-files",
+    default=None,
+    type=SeparatedPathType(),
+    help=(
+        "Extra files that trigger a reload on change. Multiple paths"
+        " are separated by '{}'.".format(os.path.pathsep)
+    ),
+)
 @pass_script_info
-def run_command(info, host, port, reload, debugger, eager_loading, with_threads, cert):
+def run_command(
+    info, host, port, reload, debugger, eager_loading, with_threads, cert, extra_files
+):
     """Run a local development server.
 
     This server is for development purposes only. It does not provide
@@ -812,6 +835,7 @@ def run_command(info, host, port, reload, debugger, eager_loading, with_threads,
         use_debugger=debugger,
         threaded=with_threads,
         ssl_context=cert,
+        extra_files=extra_files,
     )
 
 
