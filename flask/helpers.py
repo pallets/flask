@@ -942,6 +942,15 @@ class _PackageBoundObject(object):
         self._static_folder = None
         self._static_url_path = None
 
+        # circular import
+        from .cli import AppGroup
+
+        #: The Click command group for registration of CLI commands
+        #: on the application and associated blueprints. These commands
+        #: are accessible via the :command:`flask` command once the
+        #: application has been discovered and blueprints registered.
+        self.cli = AppGroup()
+
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
