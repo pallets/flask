@@ -146,6 +146,25 @@ reloader.
      * Debugger PIN: 223-456-919
 
 
+Watch Extra Files with the Reloader
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using development mode, the reloader will trigger whenever your
+Python code or imported modules change. The reloader can watch
+additional files with the ``--extra-files`` option, or the
+``FLASK_RUN_EXTRA_FILES`` environment variable. Multiple paths are
+separated with ``:``, or ``;`` on Windows.
+
+.. code-block:: none
+
+    $ flask run --extra-files file1:dirA/file2:dirB/
+    # or
+    $ export FLASK_RUN_EXTRA_FILES=file1:dirA/file2:dirB/
+    $ flask run
+     * Running on http://127.0.0.1:8000/
+     * Detected change in '/path/to/file1', reloading
+
+
 Debug Mode
 ----------
 
@@ -202,20 +221,6 @@ command, instead of ``flask run --port 8000``:
 These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
 control default command options.
 
-To define a list of files the reloader should watch additionally to the modules
-as in ``extra_files`` argument used in the ``app.run`` and ``werkzeug.serving.run_simple``
-you can either use the ``--extra-files`` (or multiple ``-f``) option or define the
-``FLASK_RUN_EXTRA_FILES`` environment variable.
-
-.. code-block:: none
-
-    # on windows use ``;`` instead of ``:`` to separate paths
-    export FLASK_RUN_EXTRA_FILES=/path/to/file1:/path/to/file2
-    flask run
-     * Running on http://127.0.0.1:8000/
-     * Detected change in '/path/to/file1', reloading
-
-On command line the same can be achieved with ``flask run -f /path/to/file1 -f /path/to/file2``.
 
 Disable dotenv
 ~~~~~~~~~~~~~~
