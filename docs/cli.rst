@@ -310,8 +310,64 @@ group. This is useful if you want to organize multiple related commands. ::
 
     $ flask user create demo
 
+
 See :ref:`testing-cli` for an overview of how to test your custom
 commands.
+
+
+Registering Commands with Blueprints
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If your application uses blueprints, you can optionally register CLI
+commands directly onto them. When your blueprint is registered onto your
+application, the associated commands will be available to the ``flask``
+command. By default, those commands will be nested in a group matching
+the name of the blueprint.
+
+.. code-block:: python
+
+    from flask import Blueprint
+
+    bp = Blueprint('students', __name__)
+
+    @bp.cli.command('create')
+    @click.argument('name')
+    def create(name):
+        ...
+
+    app.register_blueprint(bp)
+
+.. code-block:: text
+
+    $ flask students create alice
+
+You can alter the group name by specifying the ``cli_group`` parameter
+when creating the :class:`Blueprint` object, or later with
+:meth:`app.register_blueprint(bp, cli_group='...') <Flask.register_blueprint>`.
+The following are equivalent:
+
+.. code-block:: python
+
+    bp = Blueprint('students', __name__, cli_group='other')
+    # or
+    app.register_blueprint(bp, cli_group='other')
+
+.. code-block:: text
+
+    $ flask other create alice
+
+Specifying ``cli_group=None`` will remove the nesting and merge the
+commands directly to the application's level:
+
+.. code-block:: python
+
+    bp = Blueprint('students', __name__, cli_group=None)
+    # or
+    app.register_blueprint(bp, cli_group=None)
+
+.. code-block:: text
+
+    $ flask create alice
 
 
 Application Context
