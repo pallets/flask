@@ -49,6 +49,9 @@ Unreleased
     not installed, or if the given path isn't a file. :issue:`2937`
 -   Signaling support has a stub for the ``connect_via`` method when
     the Blinker library is not installed. :pr:`3208`
+-   Add an ``--extra-files`` option to the ``flask run`` CLI command to
+    specify extra files that will trigger the reloader on change.
+    :issue:`2897`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
@@ -86,7 +89,6 @@ Released 2019-05-17
 .. _#2900: https://github.com/pallets/flask/issues/2900
 .. _#2933: https://github.com/pallets/flask/issues/2933
 .. _#2986: https://github.com/pallets/flask/pull/2986
-
 
 Version 1.0.2
 -------------
