@@ -683,7 +683,7 @@ The return value from a view function is automatically converted into
 a response object for you. If the return value is a string it's
 converted into a response object with the string as response body, a
 ``200 OK`` status code and a :mimetype:`text/html` mimetype. If the
-return value is a dict, ``jsonify`` is called to produce a response.
+return value is a dict, :func:`jsonify` is called to produce a response.
 The logic that Flask applies to converting return values into response
 objects is as follows:
 
@@ -719,6 +719,39 @@ return it::
         resp = make_response(render_template('error.html'), 404)
         resp.headers['X-Something'] = 'A value'
         return resp
+
+
+APIs with JSON
+``````````````
+
+A common response format when writing an API is JSON. It's easy to get
+started writing such an API with Flask. If you return a ``dict`` from a
+view, it will be converted to a JSON response.
+
+.. code-block:: python
+
+    @app.route("/me")
+    def me_api():
+        user = get_current_user()
+        return {
+            "username": user.username,
+            "theme": user.theme,
+            "image": url_for("user_image", filename=user.image),
+        }
+
+Depending on your API design, you may want to create JSON responses for
+types other than ``dict``. In that case, use the
+:func:`~flask.json.jsonify` function, which will serialize any supported
+JSON data type. Or look into Flask community extensions that support
+more complex applications.
+
+.. code-block:: python
+
+    @app.route("/users")
+    def users_api():
+        users = get_all_users()
+        return jsonify([user.to_json() for user in users])
+
 
 .. _sessions:
 
