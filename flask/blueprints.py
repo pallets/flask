@@ -208,7 +208,7 @@ class Blueprint(_PackageBoundObject):
 
         if self.has_static_folder:
             state.add_url_rule(
-                self.static_url_path.rstrip("/") + "/<path:filename>",
+                self.static_url_path + "/<path:filename>",
                 view_func=self.send_static_file,
                 endpoint="static",
             )
