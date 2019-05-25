@@ -1427,14 +1427,14 @@ def test_static_url_path_with_ending_slash():
         assert flask.url_for("static", filename="index.html") == "/foo/index.html"
 
 
-def test_static_url_null_path(app):
+def test_static_url_empty_path(app):
     app = flask.Flask(__name__, static_folder='', static_url_path='')
     rv = app.test_client().open('/static/index.html', method='GET')
     assert rv.status_code == 200
     rv.close()
 
 
-def test_static_url_null_path_defaulting(app):
+def test_static_url_empty_path_default(app):
     app = flask.Flask(__name__, static_folder='')
     rv = app.test_client().open('/static/index.html', method='GET')
     assert rv.status_code == 200
