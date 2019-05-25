@@ -965,23 +965,26 @@ class _PackageBoundObject(object):
     )
     del _get_static_folder, _set_static_folder
 
-    def _get_static_url_path(self):
+    @property
+    def static_url_path(self):
+        """The URL prefix that the static route will be accessible from.
+
+        If it was not configured during init, it is derived from
+        :attr:`static_folder`.
+        """
         if self._static_url_path is not None:
             return self._static_url_path
 
         if self.static_folder is not None:
             basename = os.path.basename(self.static_folder)
-            return "/" + basename if basename else ""
+            return ("/" + basename).rstrip("/")
 
-    def _set_static_url_path(self, value):
+    @static_url_path.setter
+    def static_url_path(self, value):
+        if value is not None:
+            value = value.rstrip("/")
+
         self._static_url_path = value
-
-    static_url_path = property(
-        _get_static_url_path,
-        _set_static_url_path,
-        doc="The URL prefix that the static route will be registered for.",
-    )
-    del _get_static_url_path, _set_static_url_path
 
     @property
     def has_static_folder(self):

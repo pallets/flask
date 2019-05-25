@@ -408,11 +408,8 @@ class Flask(_PackageBoundObject):
             self, import_name, template_folder=template_folder, root_path=root_path
         )
 
-        if static_url_path is not None:
-            self.static_url_path = static_url_path
-
-        if static_folder is not None:
-            self.static_folder = static_folder
+        self.static_url_path = static_url_path
+        self.static_folder = static_folder
 
         if instance_path is None:
             instance_path = self.auto_find_instance_path()
@@ -594,7 +591,7 @@ class Flask(_PackageBoundObject):
                 bool(static_host) == host_matching
             ), "Invalid static_host/host_matching combination"
             self.add_url_rule(
-                self.static_url_path.rstrip("/") + "/<path:filename>",
+                self.static_url_path + "/<path:filename>",
                 endpoint="static",
                 host=static_host,
                 view_func=self.send_static_file,
