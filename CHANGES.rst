@@ -61,6 +61,9 @@ Unreleased
 -   Blueprints have a ``cli`` Click group like ``app.cli``. CLI commands
     registered with a blueprint will be available as a group under the
     ``flask`` command. :issue:`1357`.
+-   When using the test client as a context manager (``with client:``),
+    all preserved request contexts are popped when the block exits,
+    ensuring nested contexts are cleaned up correctly. :pr:`3157`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
