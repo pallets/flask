@@ -38,6 +38,8 @@ Unreleased
     dependency to >= 0.15. :issue:`3022`
 -   Support ``static_url_path`` that ends with a forward slash.
     :issue:`3134`
+-   Support empty ``static_folder`` without requiring setting an empty
+    ``static_url_path`` as well. :pr:`3124`
 -   :meth:`jsonify` supports :class:`dataclasses.dataclass` objects.
     :pr:`3195`
 -   Allow customizing the :attr:`Flask.url_map_class` used for routing.
