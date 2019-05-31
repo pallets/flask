@@ -98,6 +98,8 @@ if hasattr(sys, "pypy_version_info"):
             with _Mgr():
                 raise AssertionError()
         except:
+            # We intentionally use a bare except here. See the comment above
+            # regarding a pypy bug as to why.
             raise
     except TypeError:
         BROKEN_PYPY_CTXMGR_EXIT = True
