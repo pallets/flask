@@ -36,6 +36,9 @@ jobs:
         DocsHtml:
           TOXENV: 'docs-html'
           publish.test.results: 'false'
+        Style:
+          TOXENV: stylecheck
+          publish.test.results: 'false'
         VersionRange:
           TOXENV: 'devel,lowest,coverage-ci'
 
