@@ -75,6 +75,10 @@ First time setup
 
         pip install -e ".[dev]"
 
+- Install the pre-commit hooks:
+
+        pre-commit install --install-hooks
+
 .. _GitHub account: https://github.com/join
 .. _latest version of git: https://git-scm.com/downloads
 .. _username: https://help.github.com/articles/setting-your-username-in-git/
