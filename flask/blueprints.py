@@ -218,6 +218,9 @@ class Blueprint(_PackageBoundObject):
 
         cli_resolved_group = options.get("cli_group", self.cli_group)
 
+        if not self.cli.commands:
+            return
+
         if cli_resolved_group is None:
             app.cli.commands.update(self.cli.commands)
         elif cli_resolved_group is _sentinel:

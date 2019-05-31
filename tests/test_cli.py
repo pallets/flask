@@ -652,3 +652,12 @@ def test_cli_blueprints(app):
 
     result = app_runner.invoke(args=["late_registration", "late"])
     assert "late_result" in result.output
+
+
+def test_cli_empty(app):
+    """If a Blueprint's CLI group is empty, do not register it."""
+    bp = Blueprint("blue", __name__, cli_group="blue")
+    app.register_blueprint(bp)
+
+    result = app.test_cli_runner().invoke(args=["blue", "--help"])
+    assert result.exit_code == 2, "Unexpected success:\n\n" + result.output
