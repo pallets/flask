@@ -315,14 +315,13 @@ class RequestContext(object):
         if self.url_adapter is not None:
             self.match_request()
 
-    def _get_g(self):
+    @property
+    def g(self):
         return _app_ctx_stack.top.g
 
-    def _set_g(self, value):
+    @g.setter
+    def g(self, value):
         _app_ctx_stack.top.g = value
-
-    g = property(_get_g, _set_g)
-    del _get_g, _set_g
 
     def copy(self):
         """Creates a copy of this request context with the same request object.

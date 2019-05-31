@@ -727,7 +727,8 @@ class Flask(_PackageBoundObject):
         """
         return open(os.path.join(self.instance_path, resource), mode)
 
-    def _get_templates_auto_reload(self):
+    @property
+    def templates_auto_reload(self):
         """Reload templates when they are changed. Used by
         :meth:`create_jinja_environment`.
 
@@ -741,13 +742,9 @@ class Flask(_PackageBoundObject):
         rv = self.config["TEMPLATES_AUTO_RELOAD"]
         return rv if rv is not None else self.debug
 
-    def _set_templates_auto_reload(self, value):
+    @templates_auto_reload.setter
+    def templates_auto_reload(self, value):
         self.config["TEMPLATES_AUTO_RELOAD"] = value
-
-    templates_auto_reload = property(
-        _get_templates_auto_reload, _set_templates_auto_reload
-    )
-    del _get_templates_auto_reload, _set_templates_auto_reload
 
     def create_jinja_environment(self):
         """Create the Jinja environment based on :attr:`jinja_options`
@@ -855,27 +852,27 @@ class Flask(_PackageBoundObject):
     #: Default: ``'production'``
     env = ConfigAttribute("ENV")
 
-    def _get_debug(self):
+    @property
+    def debug(self):
+        """Whether debug mode is enabled. When using ``flask run`` to start
+        the development server, an interactive debugger will be shown for
+        unhandled exceptions, and the server will be reloaded when code
+        changes. This maps to the :data:`DEBUG` config key. This is
+        enabled when :attr:`env` is ``'development'`` and is overridden
+        by the ``FLASK_DEBUG`` environment variable. It may not behave as
+        expected if set in code.
+
+        **Do not enable debug mode when deploying in production.**
+
+        Default: ``True`` if :attr:`env` is ``'development'``, or
+        ``False`` otherwise.
+        """
         return self.config["DEBUG"]
 
-    def _set_debug(self, value):
+    @debug.setter
+    def debug(self, value):
         self.config["DEBUG"] = value
         self.jinja_env.auto_reload = self.templates_auto_reload
-
-    #: Whether debug mode is enabled. When using ``flask run`` to start
-    #: the development server, an interactive debugger will be shown for
-    #: unhandled exceptions, and the server will be reloaded when code
-    #: changes. This maps to the :data:`DEBUG` config key. This is
-    #: enabled when :attr:`env` is ``'development'`` and is overridden
-    #: by the ``FLASK_DEBUG`` environment variable. It may not behave as
-    #: expected if set in code.
-    #:
-    #: **Do not enable debug mode when deploying in production.**
-    #:
-    #: Default: ``True`` if :attr:`env` is ``'development'``, or
-    #: ``False`` otherwise.
-    debug = property(_get_debug, _set_debug)
-    del _get_debug, _set_debug
 
     def run(self, host=None, port=None, debug=None, load_dotenv=True, **options):
         """Runs the application on a local development server.
