@@ -136,11 +136,6 @@ def test_environbuilder_json_dumps(app):
     assert eb.input_stream.read().decode("utf8") == u'"\u20ac"'
 
 
-def test_environbuilder_json_dumps_static():
-    """EnvironBuilder.json_dumps() can be called as a static method."""
-    assert EnvironBuilder.json_dumps(u"\u20ac") == u'"\\u20ac"'
-
-
 def test_blueprint_with_subdomain():
     app = flask.Flask(__name__, subdomain_matching=True)
     app.config["SERVER_NAME"] = "example.com:1234"

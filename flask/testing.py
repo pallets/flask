@@ -82,17 +82,17 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
                 sep = b"?" if isinstance(url.query, bytes) else "?"
                 path += sep + url.query
 
-        if "json" in kwargs:
-            assert "data" not in kwargs, "Client cannot provide both 'json' and 'data'."
-            kwargs["data"] = self.json_dumps(kwargs.pop("json"), app=app)
-
-            if "content_type" not in kwargs:
-                kwargs["content_type"] = "application/json"
-
-        super(EnvironBuilder, self).__init__(path, base_url, *args, **kwargs)
         self.app = app
+        super(EnvironBuilder, self).__init__(path, base_url, *args, **kwargs)
 
-    json_dumps = staticmethod(json_dumps)
+    def json_dumps(self, obj, **args):
+        """Serialize ``obj`` to a JSON-formatted string.
+
+        The serialization will be configured according to the config associated
+        with this EnvironBuilder's ``app``.
+        """
+        args.setdefault("app", self.app)
+        return json_dumps(obj, **args)
 
 
 def make_test_environ_builder(*args, **kwargs):
