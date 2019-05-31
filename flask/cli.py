@@ -132,6 +132,8 @@ def _called_with_wrong_args(factory):
         # didn't reach the factory
         return True
     finally:
+        # explicitly delete tb as it is circular referenced
+        # https://docs.python.org/2/library/sys.html#sys.exc_info
         del tb
 
 
