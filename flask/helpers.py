@@ -23,7 +23,7 @@ from werkzeug.routing import BuildError
 from functools import update_wrapper
 
 from werkzeug.urls import url_quote
-from werkzeug.datastructures import Headers, Range
+from werkzeug.datastructures import Headers
 from werkzeug.exceptions import BadRequest, NotFound, RequestedRangeNotSatisfiable
 
 from werkzeug.wsgi import wrap_file
