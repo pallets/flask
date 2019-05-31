@@ -27,6 +27,7 @@ from werkzeug.exceptions import (
     default_exceptions,
 )
 from werkzeug.routing import BuildError, Map, RequestRedirect, RoutingException, Rule
+from werkzeug.wrappers import BaseResponse
 
 from . import cli, json
 from ._compat import integer_types, reraise, string_types, text_type
@@ -2063,7 +2064,7 @@ class Flask(_PackageBoundObject):
                 status = headers = None
             elif isinstance(rv, dict):
                 rv = jsonify(rv)
-            else:
+            elif isinstance(rv, BaseResponse) or callable(rv):
                 # evaluate a WSGI callable, or coerce a different response
                 # class to the correct type
                 try:
@@ -2071,11 +2072,18 @@ class Flask(_PackageBoundObject):
                 except TypeError as e:
                     new_error = TypeError(
                         "{e}\nThe view function did not return a valid"
-                        " response. The return type must be a string, tuple,"
+                        " response. The return type must be a string, dict, tuple,"
                         " Response instance, or WSGI callable, but it was a"
                         " {rv.__class__.__name__}.".format(e=e, rv=rv)
                     )
                     reraise(TypeError, new_error, sys.exc_info()[2])
+            else:
+                raise TypeError(
+                    "The view function did not return a valid"
+                    " response. The return type must be a string, dict, tuple,"
+                    " Response instance, or WSGI callable, but it was a"
+                    " {rv.__class__.__name__}.".format(rv=rv)
+                )
 
         # prefer the status if it was provided
         if status is not None:
