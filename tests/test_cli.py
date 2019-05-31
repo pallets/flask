@@ -525,7 +525,7 @@ def test_load_dotenv(monkeypatch):
     assert os.environ["EGGS"] == "3"
 
     # Non existent file should not load
-    assert not load_dotenv('non-existent-file')
+    assert not load_dotenv("non-existent-file")
 
 
 @need_dotenv
