@@ -2359,9 +2359,9 @@ class Flask(_PackageBoundObject):
         :param kwargs: other keyword arguments passed to
             :class:`~werkzeug.test.EnvironBuilder`.
         """
-        from flask.testing import make_test_environ_builder
+        from flask.testing import EnvironBuilder
 
-        builder = make_test_environ_builder(self, *args, **kwargs)
+        builder = EnvironBuilder(self, *args, **kwargs)
 
         try:
             return self.request_context(builder.get_environ())

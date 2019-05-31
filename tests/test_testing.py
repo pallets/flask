@@ -18,7 +18,7 @@ from flask import appcontext_popped
 from flask._compat import text_type
 from flask.cli import ScriptInfo
 from flask.json import jsonify
-from flask.testing import make_test_environ_builder, FlaskCliRunner
+from flask.testing import make_test_environ_builder, FlaskCliRunner, EnvironBuilder
 
 try:
     import blinker
@@ -88,7 +88,7 @@ def test_client_open_environ(app, client, request):
     def index():
         return flask.request.remote_addr
 
-    builder = make_test_environ_builder(app, path="/index", method="GET")
+    builder = EnvironBuilder(app, path="/index", method="GET")
     request.addfinalizer(builder.close)
 
     rv = client.open(builder)
@@ -113,11 +113,32 @@ def test_specify_url_scheme(app, client):
 
 
 def test_path_is_url(app):
-    eb = make_test_environ_builder(app, "https://example.com/")
+    eb = EnvironBuilder(app, "https://example.com/")
     assert eb.url_scheme == "https"
     assert eb.host == "example.com"
     assert eb.script_root == ""
     assert eb.path == "/"
+
+
+def test_make_test_environ_builder(app):
+    with pytest.deprecated_call():
+        eb = make_test_environ_builder(app, "https://example.com/")
+    assert eb.url_scheme == "https"
+    assert eb.host == "example.com"
+    assert eb.script_root == ""
+    assert eb.path == "/"
+
+
+def test_environbuilder_json_dumps(app):
+    """EnvironBuilder.json_dumps() takes settings from the app."""
+    app.config["JSON_AS_ASCII"] = False
+    eb = EnvironBuilder(app, json=u"\u20ac")
+    assert eb.input_stream.read().decode("utf8") == u'"\u20ac"'
+
+
+def test_environbuilder_json_dumps_static():
+    """EnvironBuilder.json_dumps() can be called as a static method."""
+    assert EnvironBuilder.json_dumps(u"\u20ac") == u'"\\u20ac"'
 
 
 def test_blueprint_with_subdomain():

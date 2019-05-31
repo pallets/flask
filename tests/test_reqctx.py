@@ -243,9 +243,9 @@ def test_bad_environ_raises_bad_request():
     # because werkzeug enforces latin1 on Python 2.
     # However it works when actually passed to the server.
 
-    from flask.testing import make_test_environ_builder
+    from flask.testing import EnvironBuilder
 
-    builder = make_test_environ_builder(app)
+    builder = EnvironBuilder(app)
     environ = builder.get_environ()
 
     # use a non-printable character in the Host - this is key to this test
@@ -267,9 +267,9 @@ def test_environ_for_valid_idna_completes():
     # because werkzeug enforces latin1 on Python 2.
     # However it works when actually passed to the server.
 
-    from flask.testing import make_test_environ_builder
+    from flask.testing import EnvironBuilder
 
-    builder = make_test_environ_builder(app)
+    builder = EnvironBuilder(app)
     environ = builder.get_environ()
 
     # these characters are all IDNA-compatible

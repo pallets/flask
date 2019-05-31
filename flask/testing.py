@@ -9,8 +9,9 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
+import warnings
 import werkzeug
+import werkzeug.test
 from contextlib import contextmanager
 
 from click.testing import CliRunner
@@ -21,11 +22,9 @@ from flask.json import dumps as json_dumps
 from werkzeug.urls import url_parse
 
 
-def make_test_environ_builder(
-    app, path="/", base_url=None, subdomain=None, url_scheme=None, *args, **kwargs
-):
-    """Create a :class:`~werkzeug.test.EnvironBuilder`, taking some
-    defaults from the application.
+class EnvironBuilder(werkzeug.test.EnvironBuilder):
+    """An :class:`~werkzeug.test.EnvironBuilder`, that takes defaults from the
+    application.
 
     :param app: The Flask application to configure the environment from.
     :param path: URL path being requested.
@@ -45,41 +44,72 @@ def make_test_environ_builder(
         :class:`~werkzeug.test.EnvironBuilder`.
     """
 
-    assert not (base_url or subdomain or url_scheme) or (base_url is not None) != bool(
-        subdomain or url_scheme
-    ), 'Cannot pass "subdomain" or "url_scheme" with "base_url".'
+    def __init__(
+        self,
+        app,
+        path="/",
+        base_url=None,
+        subdomain=None,
+        url_scheme=None,
+        *args,
+        **kwargs
+    ):
+        assert not (base_url or subdomain or url_scheme) or (
+            base_url is not None
+        ) != bool(
+            subdomain or url_scheme
+        ), 'Cannot pass "subdomain" or "url_scheme" with "base_url".'
 
-    if base_url is None:
-        http_host = app.config.get("SERVER_NAME") or "localhost"
-        app_root = app.config["APPLICATION_ROOT"]
+        if base_url is None:
+            http_host = app.config.get("SERVER_NAME") or "localhost"
+            app_root = app.config["APPLICATION_ROOT"]
 
-        if subdomain:
-            http_host = "{0}.{1}".format(subdomain, http_host)
+            if subdomain:
+                http_host = "{0}.{1}".format(subdomain, http_host)
 
-        if url_scheme is None:
-            url_scheme = app.config["PREFERRED_URL_SCHEME"]
+            if url_scheme is None:
+                url_scheme = app.config["PREFERRED_URL_SCHEME"]
 
-        url = url_parse(path)
-        base_url = "{scheme}://{netloc}/{path}".format(
-            scheme=url.scheme or url_scheme,
-            netloc=url.netloc or http_host,
-            path=app_root.lstrip("/"),
+            url = url_parse(path)
+            base_url = "{scheme}://{netloc}/{path}".format(
+                scheme=url.scheme or url_scheme,
+                netloc=url.netloc or http_host,
+                path=app_root.lstrip("/"),
+            )
+            path = url.path
+
+            if url.query:
+                sep = b"?" if isinstance(url.query, bytes) else "?"
+                path += sep + url.query
+
+        if "json" in kwargs:
+            assert "data" not in kwargs, "Client cannot provide both 'json' and 'data'."
+            kwargs["data"] = self.json_dumps(kwargs.pop("json"), app=app)
+
+            if "content_type" not in kwargs:
+                kwargs["content_type"] = "application/json"
+
+        super(EnvironBuilder, self).__init__(path, base_url, *args, **kwargs)
+        self.app = app
+
+    json_dumps = staticmethod(json_dumps)
+
+
+def make_test_environ_builder(*args, **kwargs):
+    """Create a :class:`flask.testing.EnvironBuilder`.
+
+    .. deprecated: 1.1
+        Will be removed in 1.2. Construct ``flask.testing.EnvironBuilder``
+        directly instead.
+    """
+    warnings.warn(
+        DeprecationWarning(
+            '"make_test_environ_builder()" is deprecated and will be removed '
+            'in 1.2. Construct "flask.testing.EnvironBuilder" directly '
+            "instead."
         )
-        path = url.path
-
-        if url.query:
-            sep = b"?" if isinstance(url.query, bytes) else "?"
-            path += sep + url.query
-
-    # TODO use EnvironBuilder.json_dumps once we require Werkzeug 0.15
-    if "json" in kwargs:
-        assert "data" not in kwargs, "Client cannot provide both 'json' and 'data'."
-        kwargs["data"] = json_dumps(kwargs.pop("json"), app=app)
-
-        if "content_type" not in kwargs:
-            kwargs["content_type"] = "application/json"
-
-    return EnvironBuilder(path, base_url, *args, **kwargs)
+    )
+    return EnvironBuilder(*args, **kwargs)
 
 
 class FlaskClient(Client):
@@ -167,11 +197,11 @@ class FlaskClient(Client):
         if (
             not kwargs
             and len(args) == 1
-            and isinstance(args[0], (EnvironBuilder, dict))
+            and isinstance(args[0], (werkzeug.test.EnvironBuilder, dict))
         ):
             environ = self.environ_base.copy()
 
-            if isinstance(args[0], EnvironBuilder):
+            if isinstance(args[0], werkzeug.test.EnvironBuilder):
                 environ.update(args[0].get_environ())
             else:
                 environ.update(args[0])
@@ -182,7 +212,7 @@ class FlaskClient(Client):
                 "flask._preserve_context"
             ] = self.preserve_context
             kwargs.setdefault("environ_base", self.environ_base)
-            builder = make_test_environ_builder(self.application, *args, **kwargs)
+            builder = EnvironBuilder(self.application, *args, **kwargs)
 
             try:
                 environ = builder.get_environ()
