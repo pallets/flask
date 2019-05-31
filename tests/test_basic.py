@@ -1218,17 +1218,21 @@ def test_response_type_errors():
 
     with pytest.raises(TypeError) as e:
         c.get("/none")
-        assert "returned None" in str(e)
+
+    assert "returned None" in str(e)
 
     with pytest.raises(TypeError) as e:
         c.get("/small_tuple")
-        assert "tuple must have the form" in str(e)
+
+    assert "tuple must have the form" in str(e)
 
     pytest.raises(TypeError, c.get, "/large_tuple")
 
     with pytest.raises(TypeError) as e:
         c.get("/bad_type")
-        assert "it was a bool" in str(e)
+
+    assert "object is not callable" not in str(e)
+    assert "it was a bool" in str(e)
 
     pytest.raises(TypeError, c.get, "/bad_wsgi")
 
