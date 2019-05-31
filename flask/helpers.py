@@ -951,19 +951,15 @@ class _PackageBoundObject(object):
         #: application has been discovered and blueprints registered.
         self.cli = AppGroup()
 
-    def _get_static_folder(self):
+    @property
+    def static_folder(self):
+        """The absolute path to the configured static folder."""
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
 
-    def _set_static_folder(self, value):
+    @static_folder.setter
+    def static_folder(self, value):
         self._static_folder = value
-
-    static_folder = property(
-        _get_static_folder,
-        _set_static_folder,
-        doc="The absolute path to the configured static folder.",
-    )
-    del _get_static_folder, _set_static_folder
 
     @property
     def static_url_path(self):
