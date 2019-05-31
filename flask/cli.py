@@ -16,7 +16,6 @@ import inspect
 import os
 import platform
 import re
-import ssl
 import sys
 import traceback
 from functools import update_wrapper
@@ -35,6 +34,11 @@ try:
     import dotenv
 except ImportError:
     dotenv = None
+
+try:
+    import ssl
+except ImportError:
+    ssl = None
 
 
 class NoAppException(click.UsageError):
@@ -684,6 +688,13 @@ class CertParamType(click.ParamType):
         self.path_type = click.Path(exists=True, dir_okay=False, resolve_path=True)
 
     def convert(self, value, param, ctx):
+        if ssl is None:
+            raise click.BadParameter(
+                'Using "--cert" requires Python to be compiled with SSL support.',
+                ctx,
+                param,
+            )
+
         try:
             return self.path_type(value, param, ctx)
         except click.BadParameter:
