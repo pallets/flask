@@ -230,6 +230,9 @@ def url_for(endpoint, **values):
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
+    Configuration values ``APPLICATION_ROOT`` and ``SERVER_NAME`` are only used when 
+    generating URLs outside of a request context.
+
     To integrate applications, :class:`Flask` has a hook to intercept URL build
     errors through :attr:`Flask.url_build_error_handlers`.  The `url_for`
     function results in a :exc:`~werkzeug.routing.BuildError` when the current
