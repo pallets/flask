@@ -64,6 +64,8 @@ Unreleased
 -   When using the test client as a context manager (``with client:``),
     all preserved request contexts are popped when the block exits,
     ensuring nested contexts are cleaned up correctly. :pr:`3157`
+-   Show a better error message when the view return type is not
+    supported. :issue:`3214`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
