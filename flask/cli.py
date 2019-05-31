@@ -230,7 +230,7 @@ def prepare_import(path):
 
 
 def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
-    __traceback_hide__ = True
+    __traceback_hide__ = True  # noqa: F841
 
     try:
         __import__(module_name)
@@ -302,7 +302,7 @@ class DispatchingApp(object):
 
     def _load_in_background(self):
         def _load_app():
-            __traceback_hide__ = True
+            __traceback_hide__ = True  # noqa: F841
             with self._lock:
                 try:
                     self._load_unlocked()
@@ -313,20 +313,20 @@ class DispatchingApp(object):
         t.start()
 
     def _flush_bg_loading_exception(self):
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa: F841
         exc_info = self._bg_loading_exc_info
         if exc_info is not None:
             self._bg_loading_exc_info = None
             reraise(*exc_info)
 
     def _load_unlocked(self):
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa: F841
         self._app = rv = self.loader()
         self._bg_loading_exc_info = None
         return rv
 
     def __call__(self, environ, start_response):
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa: F841
         if self._app is not None:
             return self._app(environ, start_response)
         self._flush_bg_loading_exception()
@@ -364,7 +364,7 @@ class ScriptInfo(object):
         this multiple times will just result in the already loaded app to
         be returned.
         """
-        __traceback_hide__ = True
+        __traceback_hide__ = True  # noqa: F841
 
         if self._loaded_app is not None:
             return self._loaded_app
@@ -702,7 +702,7 @@ class CertParamType(click.ParamType):
 
             if value == "adhoc":
                 try:
-                    import OpenSSL
+                    import OpenSSL  # noqa: F401
                 except ImportError:
                     raise click.BadParameter(
                         "Using ad-hoc certificates requires pyOpenSSL.", ctx, param

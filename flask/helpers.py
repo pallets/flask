@@ -230,7 +230,7 @@ def url_for(endpoint, **values):
 
     For more information, head over to the :ref:`Quickstart <url-building>`.
 
-    Configuration values ``APPLICATION_ROOT`` and ``SERVER_NAME`` are only used when 
+    Configuration values ``APPLICATION_ROOT`` and ``SERVER_NAME`` are only used when
     generating URLs outside of a request context.
 
     To integrate applications, :class:`Flask` has a hook to intercept URL build
@@ -418,7 +418,7 @@ def flash(message, category="message"):
     )
 
 
-def get_flashed_messages(with_categories=False, category_filter=[]):
+def get_flashed_messages(with_categories=False, category_filter=()):
     """Pulls all flashed messages from the session and returns them.
     Further calls in the same request to the function will return
     the same messages.  By default just the messages are returned,

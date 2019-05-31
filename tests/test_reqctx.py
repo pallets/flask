@@ -191,7 +191,6 @@ class TestGreenletContextCopying(object):
         @app.route("/")
         def index():
             flask.session["fizz"] = "buzz"
-            reqctx = flask._request_ctx_stack.top.copy()
 
             @flask.copy_current_request_context
             def g():
@@ -228,7 +227,7 @@ def test_session_error_pops_context():
     @app.route("/")
     def index():
         # shouldn't get here
-        assert False
+        AssertionError()
 
     response = app.test_client().get("/")
     assert response.status_code == 500

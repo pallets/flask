@@ -64,7 +64,7 @@ def with_metaclass(meta, *bases):
     # dummy metaclass for one level of class instantiation that replaces
     # itself with the actual metaclass.
     class metaclass(type):
-        def __new__(cls, name, this_bases, d):
+        def __new__(mcs, name, this_bases, d):
             return meta(name, bases, d)
 
     return type.__new__(metaclass, "temporary_class", (), {})
@@ -97,7 +97,7 @@ if hasattr(sys, "pypy_version_info"):
         try:
             with _Mgr():
                 raise AssertionError()
-        except:
+        except:  # noqa: B001
             # We intentionally use a bare except here. See the comment above
             # regarding a pypy bug as to why.
             raise

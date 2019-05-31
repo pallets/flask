@@ -16,7 +16,7 @@ from contextlib import contextmanager
 
 from click.testing import CliRunner
 from flask.cli import ScriptInfo
-from werkzeug.test import Client, EnvironBuilder
+from werkzeug.test import Client
 from flask import _request_ctx_stack
 from flask.json import dumps as json_dumps
 from werkzeug.urls import url_parse
