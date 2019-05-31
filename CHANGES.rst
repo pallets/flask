@@ -68,6 +68,9 @@ Unreleased
     supported. :issue:`3214`
 -   ``flask.testing.make_test_environ_builder()`` has been deprecated in
     favour of a new class ``flask.testing.EnvironBuilder``. :pr:`3232`
+-   The ``flask run`` command no longer fails if Python is not built
+    with SSL support. Using the ``--cert`` option will show an
+    appropriate error message. :issue:`3211`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
