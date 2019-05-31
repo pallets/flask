@@ -211,13 +211,13 @@ def test_session_transactions_no_null_sessions():
 
     with app.test_client() as c:
         with pytest.raises(RuntimeError) as e:
-            with c.session_transaction() as sess:
+            with c.session_transaction():
                 pass
         assert "Session backend did not open a session" in str(e.value)
 
 
 def test_session_transactions_keep_context(app, client, req_ctx):
-    rv = client.get("/")
+    client.get("/")
     req = flask.request._get_current_object()
     assert req is not None
     with client.session_transaction():
@@ -227,7 +227,7 @@ def test_session_transactions_keep_context(app, client, req_ctx):
 def test_session_transaction_needs_cookies(app):
     c = app.test_client(use_cookies=False)
     with pytest.raises(RuntimeError) as e:
-        with c.session_transaction() as s:
+        with c.session_transaction():
             pass
     assert "cookies" in str(e.value)
 

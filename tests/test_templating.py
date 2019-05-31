@@ -398,12 +398,12 @@ def test_templates_auto_reload_debug_run(app, monkeypatch):
     monkeypatch.setattr(werkzeug.serving, "run_simple", run_simple_mock)
 
     app.run()
-    assert app.templates_auto_reload == False
-    assert app.jinja_env.auto_reload == False
+    assert not app.templates_auto_reload
+    assert not app.jinja_env.auto_reload
 
     app.run(debug=True)
-    assert app.templates_auto_reload == True
-    assert app.jinja_env.auto_reload == True
+    assert app.templates_auto_reload
+    assert app.jinja_env.auto_reload
 
 
 def test_template_loader_debugging(test_apps, monkeypatch):
@@ -412,7 +412,7 @@ def test_template_loader_debugging(test_apps, monkeypatch):
     called = []
 
     class _TestHandler(logging.Handler):
-        def handle(x, record):
+        def handle(self, record):
             called.append(True)
             text = str(record.msg)
             assert '1: trying loader of application "blueprintapp"' in text
