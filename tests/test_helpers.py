@@ -976,7 +976,6 @@ class TestSafeJoin(object):
                 print(flask.safe_join(*args))
 
 
-
 class TestHelpers(object):
     @pytest.mark.parametrize(
         "debug, expected_flag, expected_default_flag",

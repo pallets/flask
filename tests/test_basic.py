@@ -1147,12 +1147,12 @@ def test_response_types(app, client):
     def from_wsgi():
         return NotFound()
 
-    @app.route('/dict')
+    @app.route("/dict")
     def from_dict():
         return {"foo": "bar"}, 201
 
-    assert client.get('/text').data == u'Hällo Wörld'.encode('utf-8')
-    assert client.get('/bytes').data == u'Hällo Wörld'.encode('utf-8')
+    assert client.get("/text").data == u"Hällo Wörld".encode("utf-8")
+    assert client.get("/bytes").data == u"Hällo Wörld".encode("utf-8")
 
     rv = client.get("/full_tuple")
     assert rv.data == b"Meh"
@@ -1185,7 +1185,7 @@ def test_response_types(app, client):
     assert b"Not Found" in rv.data
     assert rv.status_code == 404
 
-    rv = client.get('/dict')
+    rv = client.get("/dict")
     assert rv.json == {"foo": "bar"}
     assert rv.status_code == 201
 
@@ -1301,10 +1301,12 @@ def test_jsonify_mimetype(app, req_ctx):
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
 def test_json_dump_dataclass(app, req_ctx):
     from dataclasses import make_dataclass
+
     Data = make_dataclass("Data", [("name", str)])
     value = flask.json.dumps(Data("Flask"), app=app)
     value = flask.json.loads(value, app=app)
     assert value == {"name": "Flask"}
+
 
 def test_jsonify_args_and_kwargs_check(app, req_ctx):
     with pytest.raises(TypeError) as e:
@@ -1428,15 +1430,15 @@ def test_static_url_path_with_ending_slash():
 
 
 def test_static_url_empty_path(app):
-    app = flask.Flask(__name__, static_folder='', static_url_path='')
-    rv = app.test_client().open('/static/index.html', method='GET')
+    app = flask.Flask(__name__, static_folder="", static_url_path="")
+    rv = app.test_client().open("/static/index.html", method="GET")
     assert rv.status_code == 200
     rv.close()
 
 
 def test_static_url_empty_path_default(app):
-    app = flask.Flask(__name__, static_folder='')
-    rv = app.test_client().open('/static/index.html', method='GET')
+    app = flask.Flask(__name__, static_folder="")
+    rv = app.test_client().open("/static/index.html", method="GET")
     assert rv.status_code == 200
     rv.close()
 
@@ -1949,7 +1951,9 @@ def test_run_server_port(monkeypatch, app):
         (None, None, "localhost:0", "localhost", 0),
     ),
 )
-def test_run_from_config(monkeypatch, host, port, server_name, expect_host, expect_port, app):
+def test_run_from_config(
+    monkeypatch, host, port, server_name, expect_host, expect_port, app
+):
     def run_simple_mock(hostname, port, *args, **kwargs):
         assert hostname == expect_host
         assert port == expect_port

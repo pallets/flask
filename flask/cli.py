@@ -660,9 +660,11 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
 
     if env == "production":
         click.secho(
-            '   WARNING: This is a development server. '
-            'Do not use it in a production deployment.', fg='red')
-        click.secho('   Use a production WSGI server instead.', dim=True)
+            "   WARNING: This is a development server. "
+            "Do not use it in a production deployment.",
+            fg="red",
+        )
+        click.secho("   Use a production WSGI server instead.", dim=True)
 
     if debug is not None:
         click.echo(" * Debug mode: {0}".format("on" if debug else "off"))
