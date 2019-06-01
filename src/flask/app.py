@@ -1931,7 +1931,7 @@ class Flask(_PackageBoundObject):
             if not from_error_handler:
                 raise
             self.logger.exception(
-                "Request finalizing failed with an " "error while handling an error"
+                "Request finalizing failed with an error while handling an error"
             )
         return response
 

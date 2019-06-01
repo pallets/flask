@@ -437,9 +437,10 @@ class RequestContext(object):
             if app_ctx is not None:
                 app_ctx.pop(exc)
 
-            assert (
-                rv is self
-            ), "Popped wrong request context.  " "(%r instead of %r)" % (rv, self)
+            assert rv is self, "Popped wrong request context. (%r instead of %r)" % (
+                rv,
+                self,
+            )
 
     def auto_pop(self, exc):
         if self.request.environ.get("flask._preserve_context") or (
