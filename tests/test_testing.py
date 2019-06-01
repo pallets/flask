@@ -10,15 +10,16 @@
 """
 import click
 import pytest
-
-import flask
 import werkzeug
 
+import flask
 from flask import appcontext_popped
 from flask._compat import text_type
 from flask.cli import ScriptInfo
 from flask.json import jsonify
-from flask.testing import make_test_environ_builder, FlaskCliRunner, EnvironBuilder
+from flask.testing import EnvironBuilder
+from flask.testing import FlaskCliRunner
+from flask.testing import make_test_environ_builder
 
 try:
     import blinker

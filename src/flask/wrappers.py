@@ -8,13 +8,13 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 from werkzeug.exceptions import BadRequest
-from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
+from werkzeug.wrappers import Request as RequestBase
+from werkzeug.wrappers import Response as ResponseBase
 from werkzeug.wrappers.json import JSONMixin as _JSONMixin
 
-from flask import json
-from flask.globals import current_app
+from . import json
+from .globals import current_app
 
 
 class JSONMixin(_JSONMixin):

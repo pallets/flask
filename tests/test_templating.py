@@ -8,13 +8,13 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+import logging
 
 import pytest
+import werkzeug.serving
+from jinja2 import TemplateNotFound
 
 import flask
-import logging
-from jinja2 import TemplateNotFound
-import werkzeug.serving
 
 
 def test_context_processing(app, client):

@@ -8,7 +8,6 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 from __future__ import print_function
 
 import ast
@@ -20,15 +19,20 @@ import sys
 import traceback
 from functools import update_wrapper
 from operator import attrgetter
-from threading import Lock, Thread
+from threading import Lock
+from threading import Thread
 
 import click
 from werkzeug.utils import import_string
 
-from . import __version__
-from ._compat import getargspec, itervalues, reraise, text_type
+from ._compat import getargspec
+from ._compat import itervalues
+from ._compat import reraise
+from ._compat import text_type
 from .globals import current_app
-from .helpers import get_debug_flag, get_env, get_load_dotenv
+from .helpers import get_debug_flag
+from .helpers import get_env
+from .helpers import get_load_dotenv
 
 try:
     import dotenv
@@ -147,7 +151,7 @@ def find_app_by_string(script_info, module, app_name):
     ``script_info`` argument and calls the function with the appropriate
     arguments.
     """
-    from flask import Flask
+    from . import Flask
 
     match = re.match(r"^ *([^ ()]+) *(?:\((.*?) *,? *\))? *$", app_name)
 
@@ -258,7 +262,9 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
 def get_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
+
     import werkzeug
+    from . import __version__
 
     message = "Python %(python)s\n" "Flask %(flask)s\n" "Werkzeug %(werkzeug)s"
     click.echo(
@@ -865,7 +871,7 @@ def shell_command():
     without having to manually configure the application.
     """
     import code
-    from flask.globals import _app_ctx_stack
+    from .globals import _app_ctx_stack
 
     app = _app_ctx_stack.top.app
     banner = "Python %s on %s\nApp: %s [%s]\nInstance: %s" % (
