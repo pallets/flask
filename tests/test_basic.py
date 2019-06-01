@@ -163,7 +163,8 @@ def test_url_mapping(app, client):
     app.add_url_rule("/", "index", index)
     app.add_url_rule("/more", "more", more, methods=["GET", "POST"])
 
-    # Issue 1288: Test that automatic options are not added when non-uppercase 'options' in methods
+    # Issue 1288: Test that automatic options are not added
+    #             when non-uppercase 'options' in methods
     app.add_url_rule("/options", "options", options, methods=["options"])
 
     assert client.get("/").data == b"GET"
@@ -779,7 +780,7 @@ def test_teardown_request_handler_error(app, client):
         # exception.
         try:
             raise TypeError()
-        except:
+        except Exception:
             pass
 
     @app.teardown_request
@@ -791,7 +792,7 @@ def test_teardown_request_handler_error(app, client):
         # exception.
         try:
             raise TypeError()
-        except:
+        except Exception:
             pass
 
     @app.route("/")
@@ -963,7 +964,7 @@ def test_http_error_subclass_handling(app, client):
         return "banana"
 
     @app.errorhandler(403)
-    def handle_forbidden_subclass(e):
+    def handle_403(e):
         assert not isinstance(e, ForbiddenSubclass)
         assert isinstance(e, Forbidden)
         return "apple"
@@ -1065,12 +1066,12 @@ def test_error_handler_after_processor_error(app, client):
 
     @app.before_request
     def before_request():
-        if trigger == "before":
+        if _trigger == "before":
             1 // 0
 
     @app.after_request
     def after_request(response):
-        if trigger == "after":
+        if _trigger == "after":
             1 // 0
         return response
 
@@ -1082,7 +1083,7 @@ def test_error_handler_after_processor_error(app, client):
     def internal_server_error(e):
         return "Hello Server Error", 500
 
-    for trigger in "before", "after":
+    for _trigger in "before", "after":
         rv = client.get("/")
         assert rv.status_code == 500
         assert rv.data == b"Hello Server Error"
@@ -1459,10 +1460,12 @@ def test_static_route_with_host_matching():
     # Providing static_host without host_matching=True should error.
     with pytest.raises(Exception):
         flask.Flask(__name__, static_host="example.com")
-    # Providing host_matching=True with static_folder but without static_host should error.
+    # Providing host_matching=True with static_folder
+    # but without static_host should error.
     with pytest.raises(Exception):
         flask.Flask(__name__, host_matching=True)
-    # Providing host_matching=True without static_host but with static_folder=None should not error.
+    # Providing host_matching=True without static_host
+    # but with static_folder=None should not error.
     flask.Flask(__name__, host_matching=True, static_folder=None)
 
 
@@ -1574,12 +1577,12 @@ def test_max_content_length(app, client):
     @app.before_request
     def always_first():
         flask.request.form["myfile"]
-        assert False
+        AssertionError()
 
     @app.route("/accept", methods=["POST"])
     def accept_file():
         flask.request.form["myfile"]
-        assert False
+        AssertionError()
 
     @app.errorhandler(413)
     def catcher(error):
@@ -1765,7 +1768,7 @@ def test_preserve_only_once(app, client):
     def fail_func():
         1 // 0
 
-    for x in range(3):
+    for _x in range(3):
         with pytest.raises(ZeroDivisionError):
             client.get("/fail")
 

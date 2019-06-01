@@ -149,7 +149,7 @@ def test_default_error_handler():
         return "bp-default"
 
     @bp.errorhandler(Forbidden)
-    def bp_exception_handler(e):
+    def bp_forbidden_handler(e):
         assert isinstance(e, Forbidden)
         return "bp-forbidden"
 
@@ -164,13 +164,13 @@ def test_default_error_handler():
     app = flask.Flask(__name__)
 
     @app.errorhandler(HTTPException)
-    def catchall_errorhandler(e):
+    def catchall_exception_handler(e):
         assert isinstance(e, HTTPException)
         assert isinstance(e, NotFound)
         return "default"
 
     @app.errorhandler(Forbidden)
-    def catchall_errorhandler(e):
+    def catchall_forbidden_handler(e):
         assert isinstance(e, Forbidden)
         return "forbidden"
 

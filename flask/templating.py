@@ -78,7 +78,7 @@ class DispatchingJinjaLoader(BaseLoader):
         raise TemplateNotFound(template)
 
     def _get_source_fast(self, environment, template):
-        for srcobj, loader in self._iter_loaders(template):
+        for _srcobj, loader in self._iter_loaders(template):
             try:
                 return loader.get_source(environment, template)
             except TemplateNotFound:

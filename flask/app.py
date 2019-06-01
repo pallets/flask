@@ -1961,7 +1961,7 @@ class Flask(_PackageBoundObject):
                 adapter.match(method="--")
             except MethodNotAllowed as e:
                 methods = e.valid_methods
-            except HTTPException as e:
+            except HTTPException:
                 pass
         rv = self.response_class()
         rv.allow.update(methods)
@@ -2399,7 +2399,7 @@ class Flask(_PackageBoundObject):
             except Exception as e:
                 error = e
                 response = self.handle_exception(e)
-            except:
+            except:  # noqa: B001
                 error = sys.exc_info()[1]
                 raise
             return response(environ, start_response)

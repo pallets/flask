@@ -56,7 +56,7 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    """Test if `find_best_app` behaves as expected with different combinations of input."""
+    """Test if `find_best_app` behaves as expected with different combinations of input."""  # noqa: B950
     script_info = ScriptInfo()
 
     class Module:
