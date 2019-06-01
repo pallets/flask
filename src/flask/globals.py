@@ -9,9 +9,10 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 from functools import partial
-from werkzeug.local import LocalStack, LocalProxy
+
+from werkzeug.local import LocalProxy
+from werkzeug.local import LocalStack
 
 
 _request_ctx_err_msg = """\

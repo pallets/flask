@@ -9,29 +9,37 @@
     :license: BSD, see LICENSE for more details.
 """
 import io
+import mimetypes
 import os
-import socket
-import sys
 import pkgutil
 import posixpath
-import mimetypes
+import socket
+import sys
+import unicodedata
+from functools import update_wrapper
+from threading import RLock
 from time import time
 from zlib import adler32
-from threading import RLock
-import unicodedata
-from werkzeug.routing import BuildError
-from functools import update_wrapper
 
-from werkzeug.urls import url_quote
-from werkzeug.datastructures import Headers
-from werkzeug.exceptions import BadRequest, NotFound, RequestedRangeNotSatisfiable
-
-from werkzeug.wsgi import wrap_file
 from jinja2 import FileSystemLoader
+from werkzeug.datastructures import Headers
+from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import RequestedRangeNotSatisfiable
+from werkzeug.routing import BuildError
+from werkzeug.urls import url_quote
+from werkzeug.wsgi import wrap_file
 
+from ._compat import fspath
+from ._compat import PY2
+from ._compat import string_types
+from ._compat import text_type
+from .globals import _app_ctx_stack
+from .globals import _request_ctx_stack
+from .globals import current_app
+from .globals import request
+from .globals import session
 from .signals import message_flashed
-from .globals import session, _request_ctx_stack, _app_ctx_stack, current_app, request
-from ._compat import string_types, text_type, PY2, fspath
 
 # sentinel
 _missing = object()

@@ -1,4 +1,6 @@
-from flask import jsonify, render_template, request
+from flask import jsonify
+from flask import render_template
+from flask import request
 
 from js_example import app
 

@@ -41,16 +41,19 @@ processes dicts first, so insert the new tag at the front of the order since
 :copyright: © 2010 by the Pallets team.
 :license: BSD, see LICENSE for more details.
 """
-
-from base64 import b64decode, b64encode
+from base64 import b64decode
+from base64 import b64encode
 from datetime import datetime
 from uuid import UUID
 
 from jinja2 import Markup
-from werkzeug.http import http_date, parse_date
+from werkzeug.http import http_date
+from werkzeug.http import parse_date
 
-from flask._compat import iteritems, text_type
-from flask.json import dumps, loads
+from .._compat import iteritems
+from .._compat import text_type
+from ..json import dumps
+from ..json import loads
 
 
 class JSONTag(object):

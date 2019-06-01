@@ -6,10 +6,8 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 # This file was part of Flask-CLI and was modified under the terms of
 # its Revised BSD License. Copyright © 2015 CERN.
-
 from __future__ import absolute_import
 
 import os
@@ -23,21 +21,21 @@ import pytest
 from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
-from flask import Flask, current_app, Blueprint
-from flask.cli import (
-    AppGroup,
-    FlaskGroup,
-    NoAppException,
-    ScriptInfo,
-    dotenv,
-    find_best_app,
-    get_version,
-    load_dotenv,
-    locate_app,
-    prepare_import,
-    run_command,
-    with_appcontext,
-)
+from flask import Blueprint
+from flask import current_app
+from flask import Flask
+from flask.cli import AppGroup
+from flask.cli import dotenv
+from flask.cli import find_best_app
+from flask.cli import FlaskGroup
+from flask.cli import get_version
+from flask.cli import load_dotenv
+from flask.cli import locate_app
+from flask.cli import NoAppException
+from flask.cli import prepare_import
+from flask.cli import run_command
+from flask.cli import ScriptInfo
+from flask.cli import with_appcontext
 
 cwd = os.getcwd()
 test_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "test_apps"))

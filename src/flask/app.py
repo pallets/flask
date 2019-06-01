@@ -8,7 +8,6 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 import os
 import sys
 import warnings
@@ -17,50 +16,58 @@ from functools import update_wrapper
 from itertools import chain
 from threading import Lock
 
-from werkzeug.datastructures import Headers, ImmutableDict
-from werkzeug.exceptions import (
-    BadRequest,
-    BadRequestKeyError,
-    HTTPException,
-    InternalServerError,
-    MethodNotAllowed,
-    default_exceptions,
-)
-from werkzeug.routing import BuildError, Map, RequestRedirect, RoutingException, Rule
+from werkzeug.datastructures import Headers
+from werkzeug.datastructures import ImmutableDict
+from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequestKeyError
+from werkzeug.exceptions import default_exceptions
+from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import MethodNotAllowed
+from werkzeug.routing import BuildError
+from werkzeug.routing import Map
+from werkzeug.routing import RequestRedirect
+from werkzeug.routing import RoutingException
+from werkzeug.routing import Rule
 from werkzeug.wrappers import BaseResponse
 
-from . import cli, json
-from ._compat import integer_types, reraise, string_types, text_type
-from .config import Config, ConfigAttribute
-from .ctx import AppContext, RequestContext, _AppCtxGlobals
-from .globals import _request_ctx_stack, g, request, session
-from .helpers import (
-    _PackageBoundObject,
-    _endpoint_from_view_func,
-    find_package,
-    get_env,
-    get_debug_flag,
-    get_flashed_messages,
-    locked_cached_property,
-    url_for,
-    get_load_dotenv,
-)
+from . import cli
+from . import json
+from ._compat import integer_types
+from ._compat import reraise
+from ._compat import string_types
+from ._compat import text_type
+from .config import Config
+from .config import ConfigAttribute
+from .ctx import _AppCtxGlobals
+from .ctx import AppContext
+from .ctx import RequestContext
+from .globals import _request_ctx_stack
+from .globals import g
+from .globals import request
+from .globals import session
+from .helpers import _endpoint_from_view_func
+from .helpers import _PackageBoundObject
+from .helpers import find_package
+from .helpers import get_debug_flag
+from .helpers import get_env
+from .helpers import get_flashed_messages
+from .helpers import get_load_dotenv
+from .helpers import locked_cached_property
+from .helpers import url_for
 from .json import jsonify
 from .logging import create_logger
 from .sessions import SecureCookieSessionInterface
-from .signals import (
-    appcontext_tearing_down,
-    got_request_exception,
-    request_finished,
-    request_started,
-    request_tearing_down,
-)
-from .templating import (
-    DispatchingJinjaLoader,
-    Environment,
-    _default_template_ctx_processor,
-)
-from .wrappers import Request, Response
+from .signals import appcontext_tearing_down
+from .signals import got_request_exception
+from .signals import request_finished
+from .signals import request_started
+from .signals import request_tearing_down
+from .templating import _default_template_ctx_processor
+from .templating import DispatchingJinjaLoader
+from .templating import Environment
+from .wrappers import Request
+from .wrappers import Response
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
@@ -1036,7 +1043,7 @@ class Flask(_PackageBoundObject):
         """
         cls = self.test_client_class
         if cls is None:
-            from flask.testing import FlaskClient as cls
+            from .testing import FlaskClient as cls
         return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
 
     def test_cli_runner(self, **kwargs):
@@ -1052,7 +1059,7 @@ class Flask(_PackageBoundObject):
         cls = self.test_cli_runner_class
 
         if cls is None:
-            from flask.testing import FlaskCliRunner as cls
+            from .testing import FlaskCliRunner as cls
 
         return cls(self, **kwargs)
 
@@ -2356,7 +2363,7 @@ class Flask(_PackageBoundObject):
         :param kwargs: other keyword arguments passed to
             :class:`~werkzeug.test.EnvironBuilder`.
         """
-        from flask.testing import EnvironBuilder
+        from .testing import EnvironBuilder
 
         builder = EnvironBuilder(self, *args, **kwargs)
 

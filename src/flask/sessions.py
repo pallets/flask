@@ -8,17 +8,18 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 import hashlib
 import warnings
 from datetime import datetime
 
-from itsdangerous import BadSignature, URLSafeTimedSerializer
+from itsdangerous import BadSignature
+from itsdangerous import URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 
-from flask._compat import collections_abc
-from flask.helpers import is_ip, total_seconds
-from flask.json.tag import TaggedJSONSerializer
+from ._compat import collections_abc
+from .helpers import is_ip
+from .helpers import total_seconds
+from .json.tag import TaggedJSONSerializer
 
 
 class SessionMixin(collections_abc.MutableMapping):
