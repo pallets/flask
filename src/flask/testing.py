@@ -10,16 +10,16 @@
     :license: BSD, see LICENSE for more details.
 """
 import warnings
-import werkzeug
-import werkzeug.test
 from contextlib import contextmanager
 
+import werkzeug.test
 from click.testing import CliRunner
-from flask.cli import ScriptInfo
 from werkzeug.test import Client
-from flask import _request_ctx_stack
-from flask.json import dumps as json_dumps
 from werkzeug.urls import url_parse
+
+from . import _request_ctx_stack
+from .cli import ScriptInfo
+from .json import dumps as json_dumps
 
 
 class EnvironBuilder(werkzeug.test.EnvironBuilder):

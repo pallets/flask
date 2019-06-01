@@ -9,16 +9,17 @@ flask.json
 import codecs
 import io
 import uuid
-from datetime import date, datetime
-from flask.globals import current_app, request
-from flask._compat import text_type, PY2
+from datetime import date
+from datetime import datetime
 
-from werkzeug.http import http_date
-from jinja2 import Markup
-
-# Use the same json implementation as itsdangerous on which we
-# depend anyways.
 from itsdangerous import json as _json
+from jinja2 import Markup
+from werkzeug.http import http_date
+
+from .._compat import PY2
+from .._compat import text_type
+from ..globals import current_app
+from ..globals import request
 
 try:
     import dataclasses

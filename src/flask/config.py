@@ -8,14 +8,15 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
+import errno
 import os
 import types
-import errno
 
 from werkzeug.utils import import_string
-from ._compat import string_types, iteritems
+
 from . import json
+from ._compat import iteritems
+from ._compat import string_types
 
 
 class ConfigAttribute(object):

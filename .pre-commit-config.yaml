@@ -1,4 +1,11 @@
 repos:
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v1.4.0
+    hooks:
+      - id: reorder-python-imports
+        name: Reorder Python imports (src, tests)
+        files: "^(?!examples/)"
+        args: ["--application-directories", ".:src"]
   - repo: https://github.com/python/black
     rev: 19.3b0
     hooks:
@@ -9,7 +16,7 @@ repos:
       - id: flake8
         additional_dependencies: [flake8-bugbear]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
+    rev: v2.2.3
     hooks:
       - id: check-byte-order-marker
       - id: trailing-whitespace
