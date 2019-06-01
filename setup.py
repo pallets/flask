@@ -4,12 +4,13 @@ import io
 import re
 from collections import OrderedDict
 
+from setuptools import find_packages
 from setuptools import setup
 
 with io.open("README.rst", "rt", encoding="utf8") as f:
     readme = f.read()
 
-with io.open("flask/__init__.py", "rt", encoding="utf8") as f:
+with io.open("src/flask/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r"__version__ = \"(.*?)\"", f.read()).group(1)
 
 setup(
@@ -30,7 +31,8 @@ setup(
     maintainer_email="contact@palletsprojects.com",
     description="A simple framework for building complex web applications.",
     long_description=readme,
-    packages=["flask", "flask.json"],
+    packages=find_packages("src"),
+    package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
     platforms="any",
