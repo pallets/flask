@@ -276,7 +276,10 @@ The following configuration values are used internally by Flask:
 .. py:data:: APPLICATION_ROOT
 
     Inform the application what path it is mounted under by the application /
-    web server.
+    web server.  This is used for generating URLs outside the context of a
+    request (inside a request, the dispatcher is responsible for setting
+    ``SCRIPT_NAME`` instead; see :ref:`Application Dispatching <app-dispatch>`
+    for examples of dispatch configuration).
 
     Will be used for the session cookie path if ``SESSION_COOKIE_PATH`` is not
     set.
