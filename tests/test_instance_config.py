@@ -140,4 +140,4 @@ def test_meta_path_loader_without_is_package(request, modules_tmpdir):
     request.addfinalizer(sys.meta_path.pop)
 
     with pytest.raises(AttributeError):
-        import unimportable
+        import unimportable  # noqa: F401

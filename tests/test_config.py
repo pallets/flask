@@ -76,39 +76,32 @@ def test_config_from_class():
     common_object_test(app)
 
 
-def test_config_from_envvar():
-    env = os.environ
-    try:
-        os.environ = {}
-        app = flask.Flask(__name__)
-        with pytest.raises(RuntimeError) as e:
-            app.config.from_envvar("FOO_SETTINGS")
+def test_config_from_envvar(monkeypatch):
+    monkeypatch.setattr("os.environ", {})
+    app = flask.Flask(__name__)
+    with pytest.raises(RuntimeError) as e:
+        app.config.from_envvar("FOO_SETTINGS")
         assert "'FOO_SETTINGS' is not set" in str(e.value)
-        assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
+    assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
 
-        os.environ = {"FOO_SETTINGS": __file__.rsplit(".", 1)[0] + ".py"}
-        assert app.config.from_envvar("FOO_SETTINGS")
-        common_object_test(app)
-    finally:
-        os.environ = env
+    monkeypatch.setattr(
+        "os.environ", {"FOO_SETTINGS": __file__.rsplit(".", 1)[0] + ".py"}
+    )
+    assert app.config.from_envvar("FOO_SETTINGS")
+    common_object_test(app)
 
 
-def test_config_from_envvar_missing():
-    env = os.environ
-    try:
-        os.environ = {"FOO_SETTINGS": "missing.cfg"}
-        with pytest.raises(IOError) as e:
-            app = flask.Flask(__name__)
-            app.config.from_envvar("FOO_SETTINGS")
-        msg = str(e.value)
-        assert msg.startswith(
-            "[Errno 2] Unable to load configuration "
-            "file (No such file or directory):"
-        )
-        assert msg.endswith("missing.cfg'")
-        assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
-    finally:
-        os.environ = env
+def test_config_from_envvar_missing(monkeypatch):
+    monkeypatch.setattr("os.environ", {"FOO_SETTINGS": "missing.cfg"})
+    with pytest.raises(IOError) as e:
+        app = flask.Flask(__name__)
+        app.config.from_envvar("FOO_SETTINGS")
+    msg = str(e.value)
+    assert msg.startswith(
+        "[Errno 2] Unable to load configuration " "file (No such file or directory):"
+    )
+    assert msg.endswith("missing.cfg'")
+    assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
 
 
 def test_config_missing():

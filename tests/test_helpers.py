@@ -182,7 +182,7 @@ class TestJSON(object):
 
     def test_jsonify_arrays(self, app, client):
         """Test jsonify of lists and args unpacking."""
-        l = [
+        a_list = [
             0,
             42,
             3.14,
@@ -196,16 +196,16 @@ class TestJSON(object):
 
         @app.route("/args_unpack")
         def return_args_unpack():
-            return flask.jsonify(*l)
+            return flask.jsonify(*a_list)
 
         @app.route("/array")
         def return_array():
-            return flask.jsonify(l)
+            return flask.jsonify(a_list)
 
         for url in "/args_unpack", "/array":
             rv = client.get(url)
             assert rv.mimetype == "application/json"
-            assert flask.json.loads(rv.data) == l
+            assert flask.json.loads(rv.data) == a_list
 
     def test_jsonify_date_types(self, app, client):
         """Test jsonify with datetime.date and datetime.datetime types."""
@@ -278,7 +278,7 @@ class TestJSON(object):
         assert rv == '<a ng-data=\'{"x": ["foo", "bar", "baz\\u0027"]}\'></a>'
 
     def test_json_customization(self, app, client):
-        class X(object):
+        class X(object):  # noqa: B903, for Python2 compatibility
             def __init__(self, val):
                 self.val = val
 
@@ -313,7 +313,7 @@ class TestJSON(object):
         assert rv.data == b'"<42>"'
 
     def test_blueprint_json_customization(self, app, client):
-        class X(object):
+        class X(object):  # noqa: B903, for Python2 compatibility
             def __init__(self, val):
                 self.val = val
 
@@ -352,6 +352,9 @@ class TestJSON(object):
         )
         assert rv.data == b'"<42>"'
 
+    @pytest.mark.skipif(
+        not has_encoding("euc-kr"), reason="The euc-kr encoding is required."
+    )
     def test_modified_url_encoding(self, app, client):
         class ModifiedRequest(flask.Request):
             url_charset = "euc-kr"
@@ -367,13 +370,10 @@ class TestJSON(object):
         assert rv.status_code == 200
         assert rv.data == u"정상처리".encode("utf-8")
 
-    if not has_encoding("euc-kr"):
-        test_modified_url_encoding = None
-
     def test_json_key_sorting(self, app, client):
         app.debug = True
 
-        assert app.config["JSON_SORT_KEYS"] == True
+        assert app.config["JSON_SORT_KEYS"]
         d = dict.fromkeys(range(20), "foo")
 
         @app.route("/")
@@ -858,7 +858,7 @@ class TestNoImports(object):
         try:
             flask.Flask("importerror")
         except NotImplementedError:
-            assert False, "Flask(import_name) is importing import_name."
+            AssertionError("Flask(import_name) is importing import_name.")
 
 
 class TestStreaming(object):
