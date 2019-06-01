@@ -6,8 +6,11 @@ tests.test_user_error_handler
 :copyright: © 2010 by the Pallets team.
 :license: BSD, see LICENSE for more details.
 """
+from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import NotFound
 
-from werkzeug.exceptions import Forbidden, InternalServerError, HTTPException, NotFound
 import flask
 
 

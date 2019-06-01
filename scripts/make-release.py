@@ -4,8 +4,10 @@ from __future__ import print_function
 import os
 import re
 import sys
-from datetime import date, datetime
-from subprocess import PIPE, Popen
+from datetime import date
+from datetime import datetime
+from subprocess import PIPE
+from subprocess import Popen
 
 _date_strip_re = re.compile(r"(?<=\d)(st|nd|rd|th)")
 

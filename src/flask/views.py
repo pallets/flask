@@ -8,9 +8,8 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
-from .globals import request
 from ._compat import with_metaclass
+from .globals import request
 
 
 http_method_funcs = frozenset(

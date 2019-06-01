@@ -6,14 +6,14 @@ tests.test_json_tag
 :copyright: © 2010 by the Pallets team.
 :license: BSD, see LICENSE for more details.
 """
-
 from datetime import datetime
 from uuid import uuid4
 
 import pytest
 
 from flask import Markup
-from flask.json.tag import TaggedJSONSerializer, JSONTag
+from flask.json.tag import JSONTag
+from flask.json.tag import TaggedJSONSerializer
 
 
 @pytest.mark.parametrize(

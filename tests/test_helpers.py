@@ -8,7 +8,6 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 import datetime
 import io
 import os
@@ -16,13 +15,18 @@ import uuid
 
 import pytest
 from werkzeug.datastructures import Range
-from werkzeug.exceptions import BadRequest, NotFound
-from werkzeug.http import http_date, parse_cache_control_header, parse_options_header
+from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import NotFound
+from werkzeug.http import http_date
+from werkzeug.http import parse_cache_control_header
+from werkzeug.http import parse_options_header
 
 import flask
 from flask import json
-from flask._compat import StringIO, text_type
-from flask.helpers import get_debug_flag, get_env
+from flask._compat import StringIO
+from flask._compat import text_type
+from flask.helpers import get_debug_flag
+from flask.helpers import get_env
 
 
 def has_encoding(name):

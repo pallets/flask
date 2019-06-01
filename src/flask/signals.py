@@ -9,13 +9,12 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
-signals_available = False
 try:
     from blinker import Namespace
 
     signals_available = True
 except ImportError:
+    signals_available = False
 
     class Namespace(object):
         def signal(self, name, doc=None):

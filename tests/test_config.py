@@ -6,14 +6,14 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
-from datetime import timedelta
 import os
 import textwrap
+from datetime import timedelta
+
+import pytest
 
 import flask
 from flask._compat import PY2
-import pytest
 
 
 # config keys used for the TestConfig

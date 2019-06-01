@@ -6,7 +6,6 @@ flask.logging
 :copyright: © 2010 by the Pallets team.
 :license: BSD, see LICENSE for more details.
 """
-
 from __future__ import absolute_import
 
 import logging

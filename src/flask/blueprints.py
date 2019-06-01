@@ -11,7 +11,8 @@
 """
 from functools import update_wrapper
 
-from .helpers import _PackageBoundObject, _endpoint_from_view_func
+from .helpers import _endpoint_from_view_func
+from .helpers import _PackageBoundObject
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()

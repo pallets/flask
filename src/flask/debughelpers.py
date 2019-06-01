@@ -8,11 +8,11 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 import os
 from warnings import warn
 
-from ._compat import implements_to_string, text_type
+from ._compat import implements_to_string
+from ._compat import text_type
 from .app import Flask
 from .blueprints import Blueprint
 from .globals import _request_ctx_stack

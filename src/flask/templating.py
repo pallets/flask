@@ -8,11 +8,14 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
+from jinja2 import BaseLoader
+from jinja2 import Environment as BaseEnvironment
+from jinja2 import TemplateNotFound
 
-from jinja2 import BaseLoader, Environment as BaseEnvironment, TemplateNotFound
-
-from .globals import _request_ctx_stack, _app_ctx_stack
-from .signals import template_rendered, before_render_template
+from .globals import _app_ctx_stack
+from .globals import _request_ctx_stack
+from .signals import before_render_template
+from .signals import template_rendered
 
 
 def _default_template_ctx_processor():

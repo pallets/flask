@@ -8,15 +8,17 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-
 import sys
 from functools import update_wrapper
 
 from werkzeug.exceptions import HTTPException
 
-from .globals import _request_ctx_stack, _app_ctx_stack
-from .signals import appcontext_pushed, appcontext_popped
-from ._compat import BROKEN_PYPY_CTXMGR_EXIT, reraise
+from ._compat import BROKEN_PYPY_CTXMGR_EXIT
+from ._compat import reraise
+from .globals import _app_ctx_stack
+from .globals import _request_ctx_stack
+from .signals import appcontext_popped
+from .signals import appcontext_pushed
 
 
 # a singleton sentinel value for parameter defaults
