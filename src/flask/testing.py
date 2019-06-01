@@ -156,7 +156,7 @@ class FlaskClient(Client):
         """
         if self.cookie_jar is None:
             raise RuntimeError(
-                "Session transactions only make sense " "with cookies enabled."
+                "Session transactions only make sense with cookies enabled."
             )
         app = self.application
         environ_overrides = kwargs.setdefault("environ_overrides", {})
@@ -167,7 +167,7 @@ class FlaskClient(Client):
             sess = session_interface.open_session(app, c.request)
             if sess is None:
                 raise RuntimeError(
-                    "Session backend did not open a session. " "Check the configuration"
+                    "Session backend did not open a session. Check the configuration"
                 )
 
             # Since we have to open a new request context for the session

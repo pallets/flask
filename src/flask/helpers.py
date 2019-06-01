@@ -94,7 +94,7 @@ def _endpoint_from_view_func(view_func):
     """Internal helper that returns the default endpoint for a given
     function.  This always is the function name.
     """
-    assert view_func is not None, "expected view func if endpoint " "is not provided."
+    assert view_func is not None, "expected view func if endpoint is not provided."
     return view_func.__name__
 
 
@@ -598,9 +598,7 @@ def send_file(
     headers = Headers()
     if as_attachment:
         if attachment_filename is None:
-            raise TypeError(
-                "filename unavailable, required for " "sending as attachment"
-            )
+            raise TypeError("filename unavailable, required for sending as attachment")
 
         if not isinstance(attachment_filename, text_type):
             attachment_filename = attachment_filename.decode("utf-8")

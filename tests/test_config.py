@@ -98,7 +98,7 @@ def test_config_from_envvar_missing(monkeypatch):
         app.config.from_envvar("FOO_SETTINGS")
     msg = str(e.value)
     assert msg.startswith(
-        "[Errno 2] Unable to load configuration " "file (No such file or directory):"
+        "[Errno 2] Unable to load configuration file (No such file or directory):"
     )
     assert msg.endswith("missing.cfg'")
     assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
@@ -110,7 +110,7 @@ def test_config_missing():
         app.config.from_pyfile("missing.cfg")
     msg = str(e.value)
     assert msg.startswith(
-        "[Errno 2] Unable to load configuration " "file (No such file or directory):"
+        "[Errno 2] Unable to load configuration file (No such file or directory):"
     )
     assert msg.endswith("missing.cfg'")
     assert not app.config.from_pyfile("missing.cfg", silent=True)
@@ -122,7 +122,7 @@ def test_config_missing_json():
         app.config.from_json("missing.json")
     msg = str(e.value)
     assert msg.startswith(
-        "[Errno 2] Unable to load configuration " "file (No such file or directory):"
+        "[Errno 2] Unable to load configuration file (No such file or directory):"
     )
     assert msg.endswith("missing.json'")
     assert not app.config.from_json("missing.json", silent=True)

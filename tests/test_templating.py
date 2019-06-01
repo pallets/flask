@@ -46,7 +46,7 @@ def test_request_less_rendering(app, app_ctx):
     def context_processor():
         return dict(foo=42)
 
-    rv = flask.render_template_string("Hello {{ config.WORLD_NAME }} " "{{ foo }}")
+    rv = flask.render_template_string("Hello {{ config.WORLD_NAME }} {{ foo }}")
     assert rv == "Hello Special World 42"
 
 

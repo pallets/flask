@@ -69,7 +69,7 @@ def test_installed_module_paths(
     modules_tmpdir, modules_tmpdir_prefix, purge_module, site_packages, limit_loader
 ):
     site_packages.join("site_app.py").write(
-        "import flask\n" "app = flask.Flask(__name__)\n"
+        "import flask\napp = flask.Flask(__name__)\n"
     )
     purge_module("site_app")
 
