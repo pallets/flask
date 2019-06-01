@@ -266,7 +266,7 @@ def get_version(ctx, param, value):
     import werkzeug
     from . import __version__
 
-    message = "Python %(python)s\n" "Flask %(flask)s\n" "Werkzeug %(werkzeug)s"
+    message = "Python %(python)s\nFlask %(flask)s\nWerkzeug %(werkzeug)s"
     click.echo(
         message
         % {
