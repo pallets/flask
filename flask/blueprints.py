@@ -87,6 +87,24 @@ class Blueprint(_PackageBoundObject):
     information.
 
     .. versionadded:: 0.7
+
+    :param name: the name of the Blueprint
+    :param import_name: the name of the Blueprint package, __name__ most of the time.
+            The module folder will be the blueprint resource folder by default.
+    :param static_folder: you can serve your Blueprint static files by setting `static_folder`
+            to the folder with static files to serve at `static_url`.
+            The path can be absolute or relative to the Blueprint resource folder
+    :param static_url: the url to serve static files from. Defaults to ``static_folder``.
+            If your app's static_url is the same, your Blueprint's files won't be accessible.
+    :param template_folder: your blueprint can expose template from this folder by adding this path
+            to the search path of templates. The path can be absolute or relative to
+            the Blueprint resource folder.
+    :param url_prefix: url to prefix all the Blueprint routes.
+    :param subdomain: If set up, Blueprint routes will match on this subdomain.
+    :param url_defaults: Blueprint routes will use these default values for
+            view arguments.
+    :param root_path: you can specify a different root_path than the module folder.
+            to become your Blueprint resource folder.
     """
 
     warn_on_modifications = False
