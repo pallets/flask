@@ -1270,7 +1270,11 @@ class Flask(_PackageBoundObject):
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
-        """Ensure that we register only exceptions as handler keys"""
+        """Ensure that we register only exceptions as handler keys
+
+        :param exc_class_or_code: the class for the exception, or
+                                  exception code as integer
+        """
         if isinstance(exc_class_or_code, integer_types):
             exc_class = default_exceptions[exc_class_or_code]
         else:
