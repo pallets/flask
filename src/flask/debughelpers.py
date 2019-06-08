@@ -122,7 +122,11 @@ def _dump_loader_info(loader):
 
 
 def explain_template_loading_attempts(app, template, attempts):
-    """This should help developers understand what failed"""
+    """This should help developers understand what failed
+
+    .. versionchanged:: 1.0.x
+       Refactored codes.
+    """
     info = ['Locating template "%s":' % template]
     total_found = 0
     blueprint = None
