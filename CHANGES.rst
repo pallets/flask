@@ -71,6 +71,7 @@ Unreleased
 -   The ``flask run`` command no longer fails if Python is not built
     with SSL support. Using the ``--cert`` option will show an
     appropriate error message. :issue:`3211`
+-   Refactored explain_template_loading_attempts. :issue: `3254`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
