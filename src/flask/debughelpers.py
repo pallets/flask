@@ -155,8 +155,6 @@ def explain_template_loading_attempts(app, template, attempts):
 
         info.append("       -> %s" % detail)
 
-    seems_fishy = False
-
     info_msg = "Error: the template could not be found."
     seems_fishy = True
     if total_found > 1:
