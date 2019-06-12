@@ -10,7 +10,6 @@ jobs:
       python.architecture: 'x64'
       TOXENV: 'py,coverage-ci'
       publish.test.results: 'true'
-      CODECOV_TOKEN: '$(codecov.token)'
 
     strategy:
       matrix:

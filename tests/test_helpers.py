@@ -455,7 +455,7 @@ class TestSendfile(object):
             assert rv.data == f.read()
         rv.close()
 
-    def test_send_file_xsendfile(self, app, req_ctx, catch_deprecation_warnings):
+    def test_send_file_xsendfile(self, app, req_ctx):
         app.use_x_sendfile = True
         rv = flask.send_file("static/index.html")
         assert rv.direct_passthrough

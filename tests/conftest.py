@@ -6,7 +6,6 @@
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
 """
-import gc
 import os
 import pkgutil
 import sys
@@ -201,10 +200,3 @@ def purge_module(request):
         request.addfinalizer(lambda: sys.modules.pop(name, None))
 
     return inner
-
-
-@pytest.fixture(autouse=True)
-def catch_deprecation_warnings(recwarn):
-    yield
-    gc.collect()
-    assert not recwarn.list, "\n".join(str(w.message) for w in recwarn.list)

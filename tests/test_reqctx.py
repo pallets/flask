@@ -89,17 +89,12 @@ def test_proper_test_request_context(app):
             == "http://foo.localhost.localdomain:5000/"
         )
 
-    try:
+    # suppress Werkzeug 0.15 warning about name mismatch
+    with pytest.warns(None):
         with app.test_request_context(
             "/", environ_overrides={"HTTP_HOST": "localhost"}
         ):
             pass
-    except ValueError as e:
-        assert str(e) == (
-            "the server name provided "
-            "('localhost.localdomain:5000') does not match the "
-            "server name from the WSGI environment ('localhost')"
-        )
 
     app.config.update(SERVER_NAME="localhost")
     with app.test_request_context("/", environ_overrides={"SERVER_NAME": "localhost"}):
