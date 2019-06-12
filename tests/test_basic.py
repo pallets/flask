@@ -1475,60 +1475,46 @@ def test_request_locals():
     assert not flask.g
 
 
-def test_test_app_proper_environ():
+def test_server_name_subdomain():
     app = flask.Flask(__name__, subdomain_matching=True)
-    app.config.update(SERVER_NAME="localhost.localdomain:5000")
     client = app.test_client()
 
     @app.route("/")
     def index():
-        return "Foo"
+        return "default"
 
     @app.route("/", subdomain="foo")
     def subdomain():
-        return "Foo SubDomain"
+        return "subdomain"
 
+    app.config["SERVER_NAME"] = "dev.local:5000"
     rv = client.get("/")
-    assert rv.data == b"Foo"
+    assert rv.data == b"default"
 
-    rv = client.get("/", "http://localhost.localdomain:5000")
-    assert rv.data == b"Foo"
+    rv = client.get("/", "http://dev.local:5000")
+    assert rv.data == b"default"
 
-    rv = client.get("/", "https://localhost.localdomain:5000")
-    assert rv.data == b"Foo"
+    rv = client.get("/", "https://dev.local:5000")
+    assert rv.data == b"default"
 
-    app.config.update(SERVER_NAME="localhost.localdomain")
-    rv = client.get("/", "https://localhost.localdomain")
-    assert rv.data == b"Foo"
+    app.config["SERVER_NAME"] = "dev.local:443"
+    rv = client.get("/", "https://dev.local")
 
-    try:
-        app.config.update(SERVER_NAME="localhost.localdomain:443")
-        rv = client.get("/", "https://localhost.localdomain")
-        # Werkzeug 0.8
-        assert rv.status_code == 404
-    except ValueError as e:
-        # Werkzeug 0.7
-        assert str(e) == (
-            "the server name provided "
-            "('localhost.localdomain:443') does not match the "
-            "server name from the WSGI environment ('localhost.localdomain')"
-        )
+    # Werkzeug 1.0 fixes matching https scheme with 443 port
+    if rv.status_code != 404:
+        assert rv.data == b"default"
 
-    try:
-        app.config.update(SERVER_NAME="localhost.localdomain")
+    app.config["SERVER_NAME"] = "dev.local"
+    rv = client.get("/", "https://dev.local")
+    assert rv.data == b"default"
+
+    # suppress Werkzeug 1.0 warning about name mismatch
+    with pytest.warns(None):
         rv = client.get("/", "http://foo.localhost")
-        # Werkzeug 0.8
         assert rv.status_code == 404
-    except ValueError as e:
-        # Werkzeug 0.7
-        assert str(e) == (
-            "the server name provided "
-            "('localhost.localdomain') does not match the "
-            "server name from the WSGI environment ('foo.localhost')"
-        )
 
-    rv = client.get("/", "http://foo.localhost.localdomain")
-    assert rv.data == b"Foo SubDomain"
+    rv = client.get("/", "http://foo.dev.local")
+    assert rv.data == b"subdomain"
 
 
 def test_exception_propagation(app, client):
@@ -1885,9 +1871,11 @@ def test_subdomain_matching_other_name(matching):
     def index():
         return "", 204
 
-    # ip address can't match name
-    rv = client.get("/", "http://127.0.0.1:3000/")
-    assert rv.status_code == 404 if matching else 204
+    # suppress Werkzeug 0.15 warning about name mismatch
+    with pytest.warns(None):
+        # ip address can't match name
+        rv = client.get("/", "http://127.0.0.1:3000/")
+        assert rv.status_code == 404 if matching else 204
 
     # allow all subdomains if matching is disabled
     rv = client.get("/", "http://www.localhost.localdomain:3000/")

@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
