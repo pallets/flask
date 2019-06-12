@@ -97,3 +97,30 @@ An example template might be this:
       <p>What you were looking for is just not there.
       <p><a href="{{ url_for('index') }}">go somewhere nice</a>
     {% endblock %}
+
+
+Handling API Errors with Abort
+------------------------------
+
+When using Flask for web APIs, handling errors is as simple as the previous examples but with minor changes.
+
+Register the error handler::
+
+    from flask import jsonify
+
+    @app.errorhandler(404)
+    def resource_not_found(e):
+        # if passing in an Exception object directly, you may need to convert it to a string
+        return jsonify(error=str(e)), 404
+
+To use this error handler::
+
+    @app.route('/cheese', methods=['GET'])
+    def get_one_cheese():
+        # logic to find your resource
+        if (resource is None):
+            abort(404, 'Resource not found')
+        else:
+            return jsonify(resource=resource)
+
+In the above example, the error handler is invoked with the second argument passed to it. It returns the json message with the response.
