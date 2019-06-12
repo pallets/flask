@@ -99,28 +99,27 @@ An example template might be this:
     {% endblock %}
 
 
-Handling API Errors with Abort
-------------------------------
+Returning API errors as JSON
+----------------------------
 
-When using Flask for web APIs, handling errors is as simple as the previous examples but with minor changes.
+When using Flask for web APIs, you can use the same techniques as above
+to return JSON responses to API errors.  :func:`~flask.abort` is called
+with a ``description`` parameter. The :meth:`~flask.errorhandler` will
+use that as the JSON error message, and set the status code to 404.
 
-Register the error handler::
+.. code-block:: python
 
-    from flask import jsonify
+    from flask import abort, jsonify
 
     @app.errorhandler(404)
     def resource_not_found(e):
-        # if passing in an Exception object directly, you may need to convert it to a string
         return jsonify(error=str(e)), 404
 
-To use this error handler::
-
-    @app.route('/cheese', methods=['GET'])
+    @app.route("/cheese")
     def get_one_cheese():
-        # logic to find your resource
-        if (resource is None):
-            abort(404, 'Resource not found')
-        else:
-            return jsonify(resource=resource)
+        resource = get_resource()
 
-In the above example, the error handler is invoked with the second argument passed to it. It returns the json message with the response.
+        if resource is None:
+            abort(404, description="Resource not found")
+
+        return jsonify(resource)
