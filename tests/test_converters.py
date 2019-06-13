@@ -1,9 +1,10 @@
-from flask.globals import _app_ctx_stack
+from werkzeug.routing import BaseConverter
+
+from flask import has_request_context
+from flask import url_for
 
 
 def test_custom_converters(app, client):
-    from werkzeug.routing import BaseConverter
-
     class ListConverter(BaseConverter):
         def to_python(self, value):
             return value.split(",")
@@ -20,19 +21,20 @@ def test_custom_converters(app, client):
 
     assert client.get("/1,2,3").data == b"1|2|3"
 
+    with app.test_request_context():
+        assert url_for("index", args=[4, 5, 6]) == "/4,5,6"
 
-def test_model_converters(app, client):
-    from werkzeug.routing import BaseConverter
 
-    class ModelConverterTester(BaseConverter):
+def test_context_available(app, client):
+    class ContextConverter(BaseConverter):
         def to_python(self, value):
-            assert _app_ctx_stack.top is not None
+            assert has_request_context()
             return value
 
-    app.url_map.converters["model"] = ModelConverterTester
+    app.url_map.converters["ctx"] = ContextConverter
 
-    @app.route("/<model:user_name>")
-    def index(user_name):
-        return user_name, 200
+    @app.route("/<ctx:name>")
+    def index(name):
+        return name
 
-    client.get("/admin").data
+    assert client.get("/admin").data == b"admin"

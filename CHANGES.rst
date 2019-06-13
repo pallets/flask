@@ -71,6 +71,10 @@ Unreleased
 -   The ``flask run`` command no longer fails if Python is not built
     with SSL support. Using the ``--cert`` option will show an
     appropriate error message. :issue:`3211`
+-   URL matching now occurs after the request context is pushed, rather
+    than when it's created. This allows custom URL converters to access
+    the app and request contexts, such as to query a database for an id.
+    :issue:`3088`
 
 .. _#2935: https://github.com/pallets/flask/issues/2935
 .. _#2957: https://github.com/pallets/flask/issues/2957
