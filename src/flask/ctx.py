@@ -314,9 +314,6 @@ class RequestContext(object):
         # functions.
         self._after_request_functions = []
 
-        if self.url_adapter is not None:
-            self.match_request()
-
     @property
     def g(self):
         return _app_ctx_stack.top.g
@@ -350,8 +347,8 @@ class RequestContext(object):
         of the request.
         """
         try:
-            url_rule, self.request.view_args = self.url_adapter.match(return_rule=True)
-            self.request.url_rule = url_rule
+            result = self.url_adapter.match(return_rule=True)
+            self.request.url_rule, self.request.view_args = result
         except HTTPException as e:
             self.request.routing_exception = e
 
@@ -394,6 +391,9 @@ class RequestContext(object):
 
             if self.session is None:
                 self.session = session_interface.make_null_session(self.app)
+
+        if self.url_adapter is not None:
+            self.match_request()
 
     def pop(self, exc=_sentinel):
         """Pops the request context and unbinds it by doing that.  This will
