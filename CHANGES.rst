@@ -16,7 +16,7 @@ Unreleased
     due to an unhandled exception, that original exception is now
     available as ``e.original_exception`` rather than being passed
     directly to the handler. The same is true if the handler is for the
-    base ``HTTPException``.This makes error handler behavior more
+    base ``HTTPException``. This makes error handler behavior more
     consistent. :pr:`3266`
 
     -   :meth:`Flask.finalize_request` is called for all unhandled
