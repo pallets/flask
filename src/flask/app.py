@@ -1829,7 +1829,7 @@ class Flask(_PackageBoundObject):
 
         .. note::
             Prior to Werkzeug 1.0.0, ``InternalServerError`` will not
-            always have a ``original_exception`` attribute. Use
+            always have an ``original_exception`` attribute. Use
             ``getattr(e, "original_exception", None)`` to simulate the
             behavior for compatibility.
 
