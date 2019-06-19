@@ -11,6 +11,17 @@ Unreleased
 
 -   Bump minimum Werkzeug version to >= 0.15.
 -   Drop support for Python 3.4.
+-   Error handlers for ``InternalServerError`` or ``500`` will always be
+    passed an instance of ``InternalServerError``. If they are invoked
+    due to an unhandled exception, that original exception is now
+    available as ``e.original_exception`` rather than being passed
+    directly to the handler. The same is true if the handler is for the
+    base ``HTTPException``.This makes error handler behavior more
+    consistent. :pr:`3266`
+
+    -   :meth:`Flask.finalize_request` is called for all unhandled
+        exceptions even if there is no ``500`` error handler.
+
 -   :meth:`flask.RequestContext.copy` includes the current session
     object in the request context copy. This prevents ``session``
     pointing to an out-of-date object. (`#2935`_)
