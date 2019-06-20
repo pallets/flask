@@ -164,7 +164,7 @@ The following configuration values are used internally by Flask:
     application. It should be a long random string of bytes, although unicode
     is accepted too. For example, copy the output of this to your config::
 
-        $ python -c 'import os; print(os.urandom(16))'
+        $ python -c 'import random; rnd = random.SystemRandom(); print("".join(chr(rnd.randint(32, 127)) for i in range(16)))'
         b'_5#y2L"F4Q8z\n\xec]/'
 
     **Do not reveal the secret key when posting questions or committing code.**

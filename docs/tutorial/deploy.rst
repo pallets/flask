@@ -70,7 +70,7 @@ You can use the following command to output a random secret key:
 
 .. code-block:: none
 
-    $ python -c 'import os; print(os.urandom(16))'
+    $ python -c 'import random; rnd = random.SystemRandom(); print("".join(chr(rnd.randint(32, 127)) for i in range(16)))'
 
     b'_5#y2L"F4Q8z\n\xec]/'
 

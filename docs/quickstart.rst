@@ -809,7 +809,7 @@ not using the template engine (as in this example).
     generator. Use the following command to quickly generate a value for
     :attr:`Flask.secret_key` (or :data:`SECRET_KEY`)::
 
-        $ python -c 'import os; print(os.urandom(16))'
+        $ python -c 'import random; rnd = random.SystemRandom(); print("".join(chr(rnd.randint(32, 127)) for i in range(16)))'
         b'_5#y2L"F4Q8z\n\xec]/'
 
 A note on cookie-based sessions: Flask will take the values you put into the
