@@ -139,10 +139,94 @@ raises the exception. However, the blueprint cannot handle 404 routing errors
 because the 404 occurs at the routing level before the blueprint can be
 determined.
 
-.. versionchanged:: 0.11
 
-   Handlers are prioritized by specificity of the exception classes they are
-   registered for instead of the order they are registered in.
+Generic Exception Handlers
+``````````````````````````
+
+It is possible to register error handlers for very generic base classes
+such as ``HTTPException`` or even ``Exception``. However, be aware that
+these will catch more than you might expect.
+
+An error handler for ``HTTPException`` might be useful for turning
+the default HTML errors pages into JSON, for example. However, this
+handler will trigger for things you don't cause directly, such as 404
+and 405 errors during routing. Be sure to craft your handler carefully
+so you don't lose information about the HTTP error.
+
+.. code-block:: python
+
+    from flask import json
+    from werkzeug.exceptions import HTTPException
+
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        """Return JSON instead of HTML for HTTP errors."""
+        # start with the correct headers and status code from the error
+        response = e.get_response()
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
+
+
+An error handler for ``Exception`` might seem useful for changing how
+all errors, even unhandled ones, are presented to the user. However,
+this is similar to doing ``except Exception:`` in Python, it will
+capture *all* otherwise unhandled errors, including all HTTP status
+codes. In most cases it will be safer to register handlers for more
+specific exceptions. Since ``HTTPException`` instances are valid WSGI
+responses, you could also pass them through directly.
+
+.. code-block:: python
+
+    from werkzeug.exceptions import HTTPException
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        # pass through HTTP errors
+        if isinstance(e, HTTPException):
+            return e
+
+        # now you're handling non-HTTP exceptions only
+        return render_template("500_generic.html", e=e), 500
+
+Error handlers still respect the exception class hierarchy. If you
+register handlers for both ``HTTPException`` and ``Exception``, the
+``Exception`` handler will not handle ``HTTPException`` subclasses
+because it the ``HTTPException`` handler is more specific.
+
+Unhandled Exceptions
+````````````````````
+
+When there is no error handler registered for an exception, a 500
+Internal Server Error will be returned instead. See
+:meth:`flask.Flask.handle_exception` for information about this
+behavior.
+
+If there is an error handler registered for ``InternalServerError``,
+this will be invoked. As of Flask 1.1.0, this error handler will always
+be passed an instance of ``InternalServerError``, not the original
+unhandled error. The original error is available as ``e.original_error``.
+Until Werkzeug 1.0.0, this attribute will only exist during unhandled
+errors, use ``getattr`` to get access it for compatibility.
+
+.. code-block:: python
+
+    @app.errorhandler(InternalServerError)
+    def handle_500(e):
+        original = getattr(e, "original_exception", None)
+
+        if original is None:
+            # direct 500 error, such as abort(500)
+            return render_template("500.html"), 500
+
+        # wrapped unhandled error
+        return render_template("500_unhandled.html", e=original), 500
+
 
 Logging
 -------
