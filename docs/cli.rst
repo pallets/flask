@@ -191,10 +191,10 @@ environment variables. The variables use the pattern
 ``FLASK_COMMAND_OPTION``. For example, to set the port for the run
 command, instead of ``flask run --port 8000``:
 
-.. code-block:: none
+.. code-block:: bash
 
-    export FLASK_RUN_PORT=8000
-    flask run
+    $ export FLASK_RUN_PORT=8000
+    $ flask run
      * Running on http://127.0.0.1:8000/
 
 These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
@@ -207,9 +207,9 @@ Disable dotenv
 The ``flask`` command will show a message if it detects dotenv files but
 python-dotenv is not installed.
 
-.. code-block:: none
+.. code-block:: bash
 
-    flask run
+    $ flask run
      * Tip: There are .env files present. Do "pip install python-dotenv" to use them.
 
 You can tell Flask not to load dotenv files even when python-dotenv is
@@ -219,10 +219,10 @@ a project runner that loads them already. Keep in mind that the
 environment variables must be set before the app loads or it won't
 configure as expected.
 
-.. code-block:: none
+.. code-block:: bash
 
-    export FLASK_SKIP_DOTENV=1
-    flask run
+    $ export FLASK_SKIP_DOTENV=1
+    $ flask run
 
 
 Environment Variables From virtualenv
@@ -234,11 +234,11 @@ script. Activating the virtualenv will set the variables.
 
 Unix Bash, :file:`venv/bin/activate`::
 
-    export FLASK_APP=hello
+    $ export FLASK_APP=hello
 
 Windows CMD, :file:`venv\\Scripts\\activate.bat`::
 
-    set FLASK_APP=hello
+    > set FLASK_APP=hello
 
 It is preferred to use dotenv support over this, since :file:`.flaskenv` can be
 committed to the repository so that it works automatically wherever the project
@@ -251,7 +251,7 @@ Custom Commands
 The ``flask`` command is implemented using `Click`_. See that project's
 documentation for full information about writing commands.
 
-This example adds the command ``create_user`` that takes the argument
+This example adds the command ``create-user`` that takes the argument
 ``name``. ::
 
     import click
@@ -259,14 +259,14 @@ This example adds the command ``create_user`` that takes the argument
 
     app = Flask(__name__)
 
-    @app.cli.command()
-    @click.argument('name')
+    @app.cli.command("create-user")
+    @click.argument("name")
     def create_user(name):
         ...
 
 ::
 
-    flask create_user admin
+    $ flask create-user admin
 
 This example adds the same command, but as ``user create``, a command in a
 group. This is useful if you want to organize multiple related commands. ::
@@ -287,7 +287,7 @@ group. This is useful if you want to organize multiple related commands. ::
 
 ::
 
-    flask user create demo
+    $ flask user create demo
 
 See :ref:`testing-cli` for an overview of how to test your custom
 commands.
