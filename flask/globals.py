@@ -6,8 +6,8 @@
     Defines all the global objects that are proxies to the current
     active context.
 
-    :copyright: © 2010 by the Pallets team.
-    :license: BSD, see LICENSE for more details.
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
 """
 
 from functools import partial

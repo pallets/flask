@@ -38,8 +38,8 @@ processes dicts first, so insert the new tag at the front of the order since
 
     app.session_interface.serializer.register(TagOrderedDict, index=0)
 
-:copyright: © 2010 by the Pallets team.
-:license: BSD, see LICENSE for more details.
+:copyright: 2010 Pallets
+:license: BSD-3-Clause
 """
 
 from base64 import b64decode, b64encode
