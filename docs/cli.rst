@@ -10,7 +10,7 @@ interface, in your virtualenv. Executed from the terminal, this script gives
 access to built-in, extension, and application-defined commands. The ``--help``
 option will give more information about any commands and options.
 
-.. _Click: http://click.pocoo.org/
+.. _Click: https://click.palletsprojects.com/
 
 
 Application Discovery
@@ -340,7 +340,7 @@ they are installed. Entry points are specified in :file:`setup.py` ::
     )
 
 
-.. _entry point: https://packaging.python.org/tutorials/distributing-packages/#entry-points
+.. _entry point: https://packaging.python.org/tutorials/packaging-projects/#entry-points
 
 Inside :file:`flask_my_extension/commands.py` you can then export a Click
 object::
@@ -409,7 +409,7 @@ script is available. Note that you don't need to set ``FLASK_APP``. ::
     The ``flask`` command, being separate from your code, does not have
     this issue and is recommended in most cases.
 
-.. _console script: https://packaging.python.org/tutorials/distributing-packages/#console-scripts
+.. _console script: https://packaging.python.org/tutorials/packaging-projects/#console-scripts
 
 
 PyCharm Integration

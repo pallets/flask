@@ -4,9 +4,8 @@ Flask Extension Development
 ===========================
 
 Flask, being a microframework, often requires some repetitive steps to get
-a third party library working.  Because very often these steps could be
-abstracted to support multiple projects the `Flask Extension Registry`_
-was created.
+a third party library working. Many such extensions are already available
+on `PyPI <https://pypi.org/search/?c=Framework+%3A%3A+Flask>`_.
 
 If you want to create your own Flask extension for something that does not
 exist yet, this guide to extension development will help you get your
@@ -328,8 +327,8 @@ extension to be approved you have to follow these guidelines:
 6.  Approved extensions must define all their dependencies in the
     :file:`setup.py` file unless a dependency cannot be met because it is not
     available on PyPI.
-7.  The documentation must use the ``flask`` theme from the `Official
-    Pallets Themes`_.
+7.  The documentation must use the ``flask`` theme from the
+    `Official Pallets Themes`_.
 8.  The setup.py description (and thus the PyPI description) has to
     link to the documentation, website (if there is one) and there
     must be a link to automatically install the development version
@@ -342,4 +341,4 @@ extension to be approved you have to follow these guidelines:
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
-.. _Official Pallets Themes: https://pypi.org/project/pallets-sphinx-themes/
+.. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/

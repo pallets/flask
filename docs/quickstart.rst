@@ -69,8 +69,8 @@ This launches a very simple builtin server, which is good enough for testing
 but probably not what you want to use in production. For deployment options see
 :ref:`deployment`.
 
-Now head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, and you
-should see your hello world greeting.
+Now head over to http://127.0.0.1:5000/, and you should see your hello
+world greeting.
 
 .. _public-server:
 
@@ -167,7 +167,7 @@ Screenshot of the debugger in action:
 More information on using the debugger can be found in the `Werkzeug
 documentation`_.
 
-.. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
+.. _Werkzeug documentation: https://werkzeug.palletsprojects.com/debug/#using-the-debugger
 
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 
@@ -384,7 +384,7 @@ package it's actually inside your package:
 
 For templates you can use the full power of Jinja2 templates.  Head over
 to the official `Jinja2 Template Documentation
-<http://jinja.pocoo.org/docs/templates>`_ for more information.
+<http://jinja.pocoo.org/docs/templates/>`_ for more information.
 
 Here is an example template:
 
@@ -819,9 +819,8 @@ Here are some example log calls::
     app.logger.error('An error occurred')
 
 The attached :attr:`~flask.Flask.logger` is a standard logging
-:class:`~logging.Logger`, so head over to the official `logging
-documentation <https://docs.python.org/library/logging.html>`_ for more
-information.
+:class:`~logging.Logger`, so head over to the official :mod:`logging`
+docs for more information.
 
 Read more on :ref:`application-errors`.
 
