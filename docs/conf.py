@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
-from pallets_sphinx_themes import ProjectLink, get_version
+from pallets_sphinx_themes import get_version
+from pallets_sphinx_themes import ProjectLink
 
 # Project --------------------------------------------------------------
 
 project = "Flask"
-copyright = "2010 Pallets Team"
-author = "Pallets Team"
+copyright = "2010 Pallets"
+author = "Pallets"
 release, version = get_version("Flask")
 
 # General --------------------------------------------------------------
@@ -18,10 +16,11 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinxcontrib.log_cabinet",
     "pallets_sphinx_themes",
+    "sphinx_issues",
 ]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "werkzeug": ("http://werkzeug.pocoo.org/docs/", None),
+    "werkzeug": ("https://werkzeug.palletsprojects.com/", None),
     "click": ("https://click.palletsprojects.com/", None),
     "jinja": ("http://jinja.pocoo.org/docs/", None),
     "itsdangerous": ("https://itsdangerous.palletsprojects.com/", None),
@@ -29,6 +28,7 @@ intersphinx_mapping = {
     "wtforms": ("https://wtforms.readthedocs.io/en/stable/", None),
     "blinker": ("https://pythonhosted.org/blinker/", None),
 }
+issues_github_path = "pallets/flask"
 
 # HTML -----------------------------------------------------------------
 
@@ -49,25 +49,16 @@ html_sidebars = {
 }
 singlehtml_sidebars = {"index": ["project.html", "localtoc.html"]}
 html_static_path = ["_static"]
-html_favicon = "_static/flask-favicon.ico"
-html_logo = "_static/flask.png"
+html_favicon = "_static/flask-icon.png"
+html_logo = "_static/flask-icon.png"
 html_title = "Flask Documentation ({})".format(version)
 html_show_sourcelink = False
 
 # LaTeX ----------------------------------------------------------------
 
 latex_documents = [
-    (master_doc, "Flask.tex", "Flask Documentation", "Pallets Team", "manual")
+    (master_doc, "Flask-{}.tex".format(version), html_title, author, "manual")
 ]
-latex_use_modindex = False
-latex_elements = {
-    "papersize": "a4paper",
-    "pointsize": "12pt",
-    "fontpkg": r"\usepackage{mathpazo}",
-    "preamble": r"\usepackage{flaskstyle}",
-}
-latex_use_parts = True
-latex_additional_files = ["flaskstyle.sty", "logo.pdf"]
 
 # Local Extensions -----------------------------------------------------
 
