@@ -70,7 +70,7 @@ files.
 See the `official packaging guide`_ for another explanation of the files
 and options used.
 
-.. _official packaging guide: https://packaging.python.org/tutorials/distributing-packages/
+.. _official packaging guide: https://packaging.python.org/tutorials/packaging-projects/
 
 
 Install the Project

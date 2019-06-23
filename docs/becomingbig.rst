@@ -45,7 +45,7 @@ The :ref:`app-dispatch` chapter shows in detail how to apply middleware. You
 can introduce WSGI middleware to wrap your Flask instances and introduce fixes
 and changes at the layer between your Flask application and your HTTP
 server. Werkzeug includes several `middlewares
-<http://werkzeug.pocoo.org/docs/middlewares/>`_.
+<https://werkzeug.palletsprojects.com/middleware/>`_.
 
 Fork.
 -----

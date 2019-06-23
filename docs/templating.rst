@@ -11,7 +11,7 @@ An extension can depend on Jinja2 being present.
 This section only gives a very quick introduction into how Jinja2
 is integrated into Flask.  If you want information on the template
 engine's syntax itself, head over to the official `Jinja2 Template
-Documentation <http://jinja.pocoo.org/docs/templates>`_ for
+Documentation <http://jinja.pocoo.org/docs/templates/>`_ for
 more information.
 
 Jinja Setup

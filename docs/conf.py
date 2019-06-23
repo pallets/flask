@@ -1,13 +1,11 @@
-from __future__ import print_function
-
 from pallets_sphinx_themes import get_version
 from pallets_sphinx_themes import ProjectLink
 
 # Project --------------------------------------------------------------
 
 project = "Flask"
-copyright = "2010 Pallets Team"
-author = "Pallets Team"
+copyright = "2010 Pallets"
+author = "Pallets"
 release, version = get_version("Flask")
 
 # General --------------------------------------------------------------
@@ -22,7 +20,7 @@ extensions = [
 ]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "werkzeug": ("http://werkzeug.pocoo.org/docs/", None),
+    "werkzeug": ("https://werkzeug.palletsprojects.com/", None),
     "click": ("https://click.palletsprojects.com/", None),
     "jinja": ("http://jinja.pocoo.org/docs/", None),
     "itsdangerous": ("https://itsdangerous.palletsprojects.com/", None),
@@ -46,31 +44,21 @@ html_context = {
     ]
 }
 html_sidebars = {
-    "index": ["project.html", "localtoc.html", "versions.html", "searchbox.html"],
-    "**": ["localtoc.html", "relations.html", "versions.html", "searchbox.html"],
+    "index": ["project.html", "localtoc.html", "searchbox.html"],
+    "**": ["localtoc.html", "relations.html", "searchbox.html"],
 }
-singlehtml_sidebars = {"index": ["project.html", "versions.html", "localtoc.html"]}
+singlehtml_sidebars = {"index": ["project.html", "localtoc.html"]}
 html_static_path = ["_static"]
 html_favicon = "_static/flask-icon.png"
-html_logo = "_static/flask-logo-sidebar.png"
+html_logo = "_static/flask-icon.png"
 html_title = "Flask Documentation ({})".format(version)
 html_show_sourcelink = False
-html_domain_indices = False
 
 # LaTeX ----------------------------------------------------------------
 
 latex_documents = [
     (master_doc, "Flask-{}.tex".format(version), html_title, author, "manual")
 ]
-latex_use_modindex = False
-latex_elements = {
-    "papersize": "a4paper",
-    "pointsize": "12pt",
-    "fontpkg": r"\usepackage{mathpazo}",
-    "preamble": r"\usepackage{flaskstyle}",
-}
-latex_use_parts = True
-latex_additional_files = ["flaskstyle.sty", "logo.pdf"]
 
 # Local Extensions -----------------------------------------------------
 

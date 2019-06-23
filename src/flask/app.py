@@ -5,8 +5,8 @@
 
     This module implements the central WSGI application object.
 
-    :copyright: © 2010 by the Pallets team.
-    :license: BSD, see LICENSE for more details.
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
 """
 import os
 import sys
@@ -1332,7 +1332,13 @@ class Flask(_PackageBoundObject):
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
-        """Ensure that we register only exceptions as handler keys"""
+        """Get the exception class being handled. For HTTP status codes
+        or ``HTTPException`` subclasses, return both the exception and
+        status code.
+
+        :param exc_class_or_code: Any exception class, or an HTTP status
+            code as an integer.
+        """
         if isinstance(exc_class_or_code, integer_types):
             exc_class = default_exceptions[exc_class_or_code]
         else:

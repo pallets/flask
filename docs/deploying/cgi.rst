@@ -58,4 +58,4 @@ won't work in that case:
 
 For more information consult the documentation of your webserver.
 
-.. _App Engine: https://developers.google.com/appengine/
+.. _App Engine: https://cloud.google.com/appengine/docs/
