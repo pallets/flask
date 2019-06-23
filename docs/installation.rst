@@ -25,11 +25,11 @@ These distributions will be installed automatically when installing Flask.
 * `Click`_ is a framework for writing command line applications. It provides
   the ``flask`` command and allows adding custom management commands.
 
-.. _Werkzeug: http://werkzeug.pocoo.org/
-.. _Jinja: http://jinja.pocoo.org/
-.. _MarkupSafe: https://pypi.org/project/MarkupSafe/
-.. _ItsDangerous: https://pythonhosted.org/itsdangerous/
-.. _Click: http://click.pocoo.org/
+.. _Werkzeug: https://palletsprojects.com/p/werkzeug/
+.. _Jinja: https://palletsprojects.com/p/jinja/
+.. _MarkupSafe: https://palletsprojects.com/p/markupsafe/
+.. _ItsDangerous: https://palletsprojects.com/p/itsdangerous/
+.. _Click: https://palletsprojects.com/p/click/
 
 Optional dependencies
 ~~~~~~~~~~~~~~~~~~~~~

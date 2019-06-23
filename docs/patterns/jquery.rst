@@ -27,7 +27,7 @@ to add a script statement to the bottom of your ``<body>`` to load jQuery:
      url_for('static', filename='jquery.js') }}"></script>
 
 Another method is using Google's `AJAX Libraries API
-<https://developers.google.com/speed/libraries/devguide>`_ to load jQuery:
+<https://developers.google.com/speed/libraries/>`_ to load jQuery:
 
 .. sourcecode:: html
 

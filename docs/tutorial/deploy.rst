@@ -116,6 +116,6 @@ your application. Waitress is just an example, chosen for the tutorial
 because it supports both Windows and Linux. There are many more WSGI
 servers and deployment options that you may choose for your project.
 
-.. _Waitress: https://docs.pylonsproject.org/projects/waitress/
+.. _Waitress: https://docs.pylonsproject.org/projects/waitress/en/stable/
 
 Continue to :doc:`next`.

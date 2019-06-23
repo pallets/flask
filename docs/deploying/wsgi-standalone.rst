@@ -85,7 +85,7 @@ application from ``myproject``::
 
     $ twistd -n web --port tcp:8080 --wsgi myproject.app
 
-.. _Twisted: https://twistedmatrix.com/
+.. _Twisted: https://twistedmatrix.com/trac/
 .. _Twisted Web: https://twistedmatrix.com/trac/wiki/TwistedWeb
 
 .. _deploying-proxy-setups:
