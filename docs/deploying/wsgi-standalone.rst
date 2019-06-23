@@ -43,11 +43,10 @@ Running `uWSGI HTTP Router`_::
 
     uwsgi --http 127.0.0.1:5000 --module myproject:app
 
-For a more optimized setup, see `configuring uWSGI and NGINX`_.
+For a more optimized setup, see :doc:`/deploying/uwsgi`.
 
-.. _uWSGI: http://uwsgi-docs.readthedocs.io/en/latest/
-.. _uWSGI HTTP Router: http://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
-.. _configuring uWSGI and NGINX: uwsgi.html#starting-your-app-with-uwsgi
+.. _uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
+.. _uWSGI HTTP Router: https://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
 
 Gevent
 -------
@@ -86,7 +85,7 @@ application from ``myproject``::
 
     twistd -n web --port tcp:8080 --wsgi myproject.app
 
-.. _Twisted: https://twistedmatrix.com/
+.. _Twisted: https://twistedmatrix.com/trac/
 .. _Twisted Web: https://twistedmatrix.com/trac/wiki/TwistedWeb
 
 .. _deploying-proxy-setups:

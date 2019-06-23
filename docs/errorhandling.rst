@@ -34,10 +34,10 @@ Error Logging Tools
 Sending error mails, even if just for critical ones, can become
 overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
-<https://www.getsentry.com/>`_ for dealing with application errors.  It's
+<https://sentry.io/welcome/>`_ for dealing with application errors.  It's
 available as an Open Source project `on GitHub
 <https://github.com/getsentry/sentry>`__ and is also available as a `hosted version
-<https://getsentry.com/signup/>`_ which you can try for free. Sentry
+<https://sentry.io/signup/>`_ which you can try for free. Sentry
 aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
 frequency thresholds.

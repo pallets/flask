@@ -9,7 +9,7 @@ Support questions
 Please, don't use the issue tracker for this. Use one of the following
 resources for questions about your own code:
 
-* The ``#get-help`` channel on our Discord chat: https://discord.gg/t6rrQZH
+* The ``#get-help`` channel on our Discord chat: https://discordapp.com/invite/t6rrQZH
 
   * The IRC channel ``#pocoo`` on FreeNode is linked to Discord, but
     Discord is preferred.
@@ -24,15 +24,15 @@ Reporting issues
 ----------------
 
 - Describe what you expected to happen.
-- If possible, include a `minimal, complete, and verifiable example`_ to help
-  us identify the issue. This also helps check that the issue is not with your
-  own code.
+- If possible, include a `minimal reproducible example`_ to help us
+  identify the issue. This also helps check that the issue is not with
+  your own code.
 - Describe what actually happened. Include the full traceback if there was an
   exception.
 - List your Python, Flask, and Werkzeug versions. If possible, check if this
   issue is already fixed in the repository.
 
-.. _minimal, complete, and verifiable example: https://stackoverflow.com/help/mcve
+.. _minimal reproducible example: https://stackoverflow.com/help/minimal-reproducible-example
 
 Submitting patches
 ------------------
@@ -76,10 +76,10 @@ First time setup
 
 .. _GitHub account: https://github.com/join
 .. _latest version of git: https://git-scm.com/downloads
-.. _username: https://help.github.com/articles/setting-your-username-in-git/
-.. _email: https://help.github.com/articles/setting-your-email-in-git/
+.. _username: https://help.github.com/en/articles/setting-your-username-in-git
+.. _email: https://help.github.com/en/articles/setting-your-commit-email-address-in-git
 .. _Fork: https://github.com/pallets/flask/fork
-.. _Clone: https://help.github.com/articles/fork-a-repo/#step-2-create-a-local-clone-of-your-fork
+.. _Clone: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
 Start coding
 ~~~~~~~~~~~~
@@ -96,8 +96,8 @@ Start coding
         git checkout -b your-branch-name origin/master
 
 - Using your favorite editor, make your changes, `committing as you go`_.
-- Try to follow `PEP8`_, but you may ignore the line length limit if following
-  it would make the code uglier.
+- Try to follow `PEP8`_. We have a pre-commit config and tests that will
+  ensure the code follows our style guide.
 - Include tests that cover any code changes you make. Make sure the test fails
   without your patch. `Run the tests. <contributing-testsuite_>`_.
 - Push your commits to GitHub and `create a pull request`_ by using::
@@ -106,9 +106,9 @@ Start coding
 
 - Celebrate 🎉
 
-.. _committing as you go: http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
 .. _PEP8: https://pep8.org/
-.. _create a pull request: https://help.github.com/articles/creating-a-pull-request/
+.. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
 
 .. _contributing-testsuite:
 
@@ -157,19 +157,8 @@ Build the docs in the ``docs`` directory using Sphinx::
 
 Open ``_build/html/index.html`` in your browser to view the docs.
 
-Read more about `Sphinx <http://www.sphinx-doc.org>`_.
+Read more about `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
 
-
-make targets
-~~~~~~~~~~~~
-
-Flask provides a ``Makefile`` with various shortcuts. They will ensure that
-all dependencies are installed.
-
-- ``make test`` runs the basic test suite with ``pytest``
-- ``make cov`` runs the basic test suite with ``coverage``
-- ``make test-all`` runs the full test suite with ``tox``
-- ``make docs`` builds the HTML documentation
 
 Caution: zero-padded file modes
 -------------------------------
