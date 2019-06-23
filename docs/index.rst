@@ -19,7 +19,7 @@ Flask depends on the `Jinja`_ template engine and the `Werkzeug`_ WSGI
 toolkit. The documentation for these libraries can be found at:
 
 - `Jinja documentation <http://jinja.pocoo.org/docs>`_
-- `Werkzeug documentation <http://werkzeug.pocoo.org/docs>`_
+- `Werkzeug documentation <https://werkzeug.palletsprojects.com/>`_
 
 .. _Jinja: https://www.palletsprojects.com/p/jinja/
 .. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/

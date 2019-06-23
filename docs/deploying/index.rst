@@ -17,12 +17,9 @@ Hosted options
 --------------
 
 - `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/getting-started-with-python>`_
-- `Deploying Flask on OpenShift <https://developers.openshift.com/en/python-flask.html>`_
-- `Deploying Flask on Webfaction <http://flask.pocoo.org/snippets/65/>`_
 - `Deploying Flask on Google App Engine <https://cloud.google.com/appengine/docs/standard/python/getting-started/python-standard-env>`_
 - `Deploying Flask on AWS Elastic Beanstalk <https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html>`_
-- `Sharing your Localhost Server with Localtunnel <http://flask.pocoo.org/snippets/89/>`_
-- `Deploying on Azure (IIS) <https://azure.microsoft.com/documentation/articles/web-sites-python-configure/>`_
+- `Deploying on Azure (IIS) <https://docs.microsoft.com/en-us/azure/app-service/containers/how-to-configure-python>`_
 - `Deploying on PythonAnywhere <https://help.pythonanywhere.com/pages/Flask/>`_
 
 Self-hosted options
