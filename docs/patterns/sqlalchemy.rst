@@ -22,7 +22,7 @@ if you want to get started quickly.
 You can download `Flask-SQLAlchemy`_ from `PyPI
 <https://pypi.org/project/Flask-SQLAlchemy/>`_.
 
-.. _Flask-SQLAlchemy: http://flask-sqlalchemy.pocoo.org/
+.. _Flask-SQLAlchemy: https://flask-sqlalchemy.palletsprojects.com/
 
 
 Declarative

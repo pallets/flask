@@ -20,8 +20,7 @@ framework for our tests. You can install it with ``pip``, like so::
 
     pip install pytest
 
-.. _pytest:
-   https://pytest.org
+.. _pytest: https://docs.pytest.org/
 
 The Application
 ---------------
@@ -453,5 +452,5 @@ This is useful for testing complex validation rules and custom types. ::
         context = hello_command.make_context('hello', ['--name', 'flask'])
         assert context.params['name'] == 'FLASK'
 
-.. _click: http://click.pocoo.org/
-.. _utilities for testing: http://click.pocoo.org/testing
+.. _click: https://click.palletsprojects.com/
+.. _utilities for testing: https://click.palletsprojects.com/testing/
