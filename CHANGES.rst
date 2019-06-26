@@ -1,5 +1,15 @@
 .. currentmodule:: flask
 
+Version 1.0.4
+-------------
+
+Unreleased
+
+-   The key information for ``BadRequestKeyError`` is no longer cleared
+    outside debug mode, so error handlers can still access it. This
+    requires upgrading to Werkzeug 0.15.5. :issue:`3249`
+
+
 Version 1.0.3
 -------------
 
