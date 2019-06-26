@@ -1797,14 +1797,14 @@ class Flask(_PackageBoundObject):
 
         if isinstance(e, BadRequestKeyError):
             if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
+                e.show_exception = True
+
                 # Werkzeug < 0.15 doesn't add the KeyError to the 400
                 # message, add it in manually.
-                description = e.get_description()
-
-                if e.args[0] not in description:
+                # TODO: clean up once Werkzeug >= 0.15.5 is required
+                if e.args[0] not in e.get_description():
                     e.description = "KeyError: '{}'".format(*e.args)
-            else:
-                # Werkzeug >= 0.15 does add it, remove it in production
+            elif not hasattr(BadRequestKeyError, "show_exception"):
                 e.args = ()
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
