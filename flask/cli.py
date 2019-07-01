@@ -459,7 +459,7 @@ class FlaskGroup(AppGroup):
     For information as of why this is useful see :ref:`custom-scripts`.
 
     :param add_default_commands: if this is True then the default run and
-        shell commands wil be added.
+        shell commands will be added.
     :param add_version_option: adds the ``--version`` option.
     :param create_app: an optional callback that is passed the script info and
         returns the loaded app.
