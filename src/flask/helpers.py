@@ -610,7 +610,7 @@ def send_file(
                 "filename": unicodedata.normalize("NFKD", attachment_filename).encode(
                     "ascii", "ignore"
                 ),
-                "filename*": "UTF-8''%s" % url_quote(attachment_filename),
+                'filename*': "UTF-8''%s" % url_quote(attachment_filename, safe=b""),
             }
         else:
             filenames = {"filename": attachment_filename}

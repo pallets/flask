@@ -697,6 +697,8 @@ class TestSendfile(object):
             (u"Vögel.txt", "Vogel.txt", "V%C3%B6gel.txt"),
             # Native string not marked as Unicode on Python 2
             ("tést.txt", "test.txt", "t%C3%A9st.txt"),
+            # ":/" are not safe in filename* value
+            (u"те:/ст", '":/"', "%D1%82%D0%B5%3A%2F%D1%81%D1%82"),
         ),
     )
     def test_attachment_filename_encoding(self, filename, ascii, utf8):
