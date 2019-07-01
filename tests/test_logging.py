@@ -23,7 +23,7 @@ def reset_logging(pytestconfig):
     logging.root.handlers = []
     root_level = logging.root.level
 
-    logger = logging.getLogger("flask.app")
+    logger = logging.getLogger("flask_test")
     logger.handlers = []
     logger.setLevel(logging.NOTSET)
 
@@ -42,7 +42,7 @@ def reset_logging(pytestconfig):
 
 
 def test_logger(app):
-    assert app.logger.name == "flask.app"
+    assert app.logger.name == "flask_test"
     assert app.logger.level == logging.NOTSET
     assert app.logger.handlers == [default_handler]
 

@@ -430,7 +430,9 @@ def test_template_loader_debugging(test_apps, monkeypatch):
 
     with app.test_client() as c:
         monkeypatch.setitem(app.config, "EXPLAIN_TEMPLATE_LOADING", True)
-        monkeypatch.setattr(logging.getLogger("flask"), "handlers", [_TestHandler()])
+        monkeypatch.setattr(
+            logging.getLogger("blueprintapp"), "handlers", [_TestHandler()]
+        )
 
         with pytest.raises(TemplateNotFound) as excinfo:
             c.get("/missing")
