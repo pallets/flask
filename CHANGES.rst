@@ -10,6 +10,7 @@ Unreleased
     requires upgrading to Werkzeug 0.15.5. :issue:`3249`
 -   ``send_file`` url quotes the ":" and "/" characters for more
     compatible UTF-8 filename support in some browsers. :issue:`3074`
+-   Fixes for PEP451 import loaders and pytest 5.x.  :issue:`3275`
 
 
 Version 1.0.3
