@@ -1219,17 +1219,17 @@ def test_response_type_errors():
 
     with pytest.raises(TypeError) as e:
         c.get('/none')
-        assert 'returned None' in str(e)
+        assert 'returned None' in str(e.value)
 
     with pytest.raises(TypeError) as e:
         c.get('/small_tuple')
-        assert 'tuple must have the form' in str(e)
+        assert 'tuple must have the form' in str(e.value)
 
     pytest.raises(TypeError, c.get, '/large_tuple')
 
     with pytest.raises(TypeError) as e:
         c.get('/bad_type')
-        assert 'it was a bool' in str(e)
+        assert 'it was a bool' in str(e.value)
 
     pytest.raises(TypeError, c.get, '/bad_wsgi')
 
@@ -1622,7 +1622,7 @@ def test_debug_mode_complains_after_first_request(app, client):
         @app.route('/foo')
         def broken():
             return 'Meh'
-    assert 'A setup function was called' in str(e)
+    assert 'A setup function was called' in str(e.value)
 
     app.debug = False
 
@@ -1677,9 +1677,9 @@ def test_routing_redirect_debugging(app, client):
     with client:
         with pytest.raises(AssertionError) as e:
             client.post('/foo', data={})
-        assert 'http://localhost/foo/' in str(e)
+        assert 'http://localhost/foo/' in str(e.value)
         assert ('Make sure to directly send '
-                'your POST-request to this URL') in str(e)
+                'your POST-request to this URL') in str(e.value)
 
         rv = client.get('/foo', data={}, follow_redirects=True)
         assert rv.data == b'success'
