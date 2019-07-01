@@ -188,7 +188,7 @@ should be closed.
         with pytest.raises(sqlite3.ProgrammingError) as e:
             db.execute('SELECT 1')
 
-        assert 'closed' in str(e)
+        assert 'closed' in str(e.value)
 
 The ``init-db`` command should call the ``init_db`` function and output
 a message.
