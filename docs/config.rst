@@ -382,7 +382,7 @@ The following configuration values are used internally by Flask:
 
 .. versionchanged:: 1.0
     ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` were removed. See
-    :ref:`logging` for information about configuration.
+    :doc:`/logging` for information about configuration.
 
     Added :data:`ENV` to reflect the :envvar:`FLASK_ENV` environment
     variable.

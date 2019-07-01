@@ -18,6 +18,12 @@ Unreleased
     -   :meth:`Flask.finalize_request` is called for all unhandled
         exceptions even if there is no ``500`` error handler.
 
+-   :attr:`Flask.logger` takes the same name as
+    :attr:`Flask.name` (the value passed as
+    ``Flask(import_name)``. This reverts 1.0's behavior of always
+    logging to ``"flask.app"``, in order to support multiple apps in the
+    same process. This may require adjusting logging configuration.
+    :issue:`2866`.
 -   :meth:`flask.RequestContext.copy` includes the current session
     object in the request context copy. This prevents ``session``
     pointing to an out-of-date object. :issue:`2935`
