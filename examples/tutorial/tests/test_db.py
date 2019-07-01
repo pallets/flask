@@ -13,7 +13,7 @@ def test_get_close_db(app):
     with pytest.raises(sqlite3.ProgrammingError) as e:
         db.execute("SELECT 1")
 
-    assert "closed" in str(e)
+    assert "closed" in str(e.value)
 
 
 def test_init_db_command(runner, monkeypatch):
