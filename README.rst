@@ -62,7 +62,7 @@ Links
 * Releases: https://pypi.org/project/Flask/
 * Code: https://github.com/pallets/flask
 * Issue tracker: https://github.com/pallets/flask/issues
-* Test status: https://dev.azure.com/pallets/pallets/_build?definitionId=2
+* Test status: https://dev.azure.com/pallets/flask/_build
 * Official chat: https://discord.gg/t6rrQZH
 
 .. _WSGI: https://wsgi.readthedocs.io
