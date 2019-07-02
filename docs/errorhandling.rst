@@ -231,7 +231,7 @@ errors, use ``getattr`` to get access it for compatibility.
 Logging
 -------
 
-See :ref:`logging` for information on how to log exceptions, such as by
+See :doc:`/logging` for information on how to log exceptions, such as by
 emailing them to admins.
 
 
