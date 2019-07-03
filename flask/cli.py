@@ -600,7 +600,7 @@ def load_dotenv(path=None):
             click.secho(
                 ' * Tip: There are .env files present.'
                 ' Do "pip install python-dotenv" to use them.',
-                fg='yellow')
+                fg='yellow', err=True)
         return
 
     if path is not None:
