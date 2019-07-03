@@ -622,6 +622,7 @@ def load_dotenv(path=None):
                 " * Tip: There are .env or .flaskenv files present."
                 ' Do "pip install python-dotenv" to use them.',
                 fg="yellow",
+                err=True,
             )
 
         return False
