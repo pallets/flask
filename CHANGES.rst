@@ -93,7 +93,7 @@ Unreleased
 Version 1.0.4
 -------------
 
-Unreleased
+Released 2019-07-04
 
 -   The key information for ``BadRequestKeyError`` is no longer cleared
     outside debug mode, so error handlers can still access it. This
