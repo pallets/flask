@@ -13,6 +13,15 @@ libraries they want to use. There are many extensions provided by the
 community that make adding new functionality easy.
 
 
+Table of Contents
+-----------------
+ - `Installing`_
+ - `A Simple Example`_
+ - `Contributing`_
+ - `Donate`_
+ - `Links`_
+
+
 Installing
 ----------
 
