@@ -3,15 +3,15 @@
 Version 1.0.4
 -------------
 
-Unreleased
+Released 2019-07-04
 
 -   The key information for ``BadRequestKeyError`` is no longer cleared
     outside debug mode, so error handlers can still access it. This
     requires upgrading to Werkzeug 0.15.5. :issue:`3249`
 -   ``send_file`` url quotes the ":" and "/" characters for more
     compatible UTF-8 filename support in some browsers. :issue:`3074`
--   Fixes for PEP451 import loaders and pytest 5.x.  :issue:`3275`
--   Show message about dotenv on stderr instead of stdout.  :issue:`3285`
+-   Fixes for PEP451 import loaders and pytest 5.x. :issue:`3275`
+-   Show message about dotenv on stderr instead of stdout. :issue:`3285`
 
 
 Version 1.0.3
