@@ -3,7 +3,7 @@
 Version 1.1.0
 -------------
 
-Unreleased
+Released 2019-07-04
 
 -   Bump minimum Werkzeug version to >= 0.15.
 -   Drop support for Python 3.4.
