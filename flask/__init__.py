@@ -10,7 +10,7 @@
     :license: BSD-3-Clause
 """
 
-__version__ = '1.0.4.dev'
+__version__ = '1.0.4'
 
 # utilities we import from Werkzeug and Jinja2 that are unused
 # in the module but are exported as public interface.
