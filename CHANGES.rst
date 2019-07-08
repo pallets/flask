@@ -3,7 +3,7 @@
 Version 1.1.1
 -------------
 
-Unreleased
+Released 2019-07-08
 
 -   The ``flask.json_available`` flag was added back for compatibility
     with some extensions. It will raise a deprecation warning when used,
