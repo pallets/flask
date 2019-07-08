@@ -1,5 +1,15 @@
 .. currentmodule:: flask
 
+Version 1.1.1
+-------------
+
+Unreleased
+
+-   The ``flask.json_available`` flag was added back for compatibility
+    with some extensions. It will raise a deprecation warning when used,
+    and will be removed in version 2.0.0. :issue:`3288`
+
+
 Version 1.1.0
 -------------
 
