@@ -15,7 +15,7 @@ setup(
     version=version,
     url="https://palletsprojects.com/p/flask/",
     project_urls={
-        "Documentation": "http://flask.palletsprojects.com/",
+        "Documentation": "https://flask.palletsprojects.com/",
         "Code": "https://github.com/pallets/flask",
         "Issue tracker": "https://github.com/pallets/flask/issues",
     },
