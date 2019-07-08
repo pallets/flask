@@ -17,6 +17,7 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 from . import json
+from ._compat import json_available
 from .app import Flask
 from .app import Request
 from .app import Response
@@ -56,4 +57,4 @@ from .signals import template_rendered
 from .templating import render_template
 from .templating import render_template_string
 
-__version__ = "1.1.0"
+__version__ = "1.1.1.dev"
