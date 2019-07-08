@@ -66,8 +66,8 @@ donate today`_.
 Links
 -----
 
-* Website: https://www.palletsprojects.com/p/flask/
-* Documentation: http://flask.pocoo.org/docs/
+* Website: https://palletsprojects.com/p/flask/
+* Documentation: https://flask.palletsprojects.com/
 * Releases: https://pypi.org/project/Flask/
 * Code: https://github.com/pallets/flask
 * Issue tracker: https://github.com/pallets/flask/issues
