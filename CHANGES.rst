@@ -1,5 +1,14 @@
 .. currentmodule:: flask
 
+Version 1.1.2
+-------------
+
+Unreleased
+
+-   Work around an issue when running the ``flask`` command with an
+    external debugger on Windows. :issue:`3297`
+
+
 Version 1.1.1
 -------------
 
