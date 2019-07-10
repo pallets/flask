@@ -45,7 +45,7 @@ executes them, but who has PHP installed on their server, right?  :)
 Next the functions that check if an extension is valid and that uploads
 the file and redirects the user to the URL for the uploaded file::
 
-    def allowed_file(filename):
+    def allowed_ext(filename):
         return '.' in filename and \
                filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -56,16 +56,16 @@ the file and redirects the user to the URL for the uploaded file::
             if 'file' not in request.files:
                 flash('No file part')
                 return redirect(request.url)
-            file = request.files['file']
+            uploaded_file = request.files['file']
             # if user does not select file, browser also
             # submit an empty part without filename
-            if file.filename == '':
+            if uploaded_file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                return redirect(url_for('uploaded_file',
+            if uploaded_file and allowed_ext(file.filename):
+                filename = secure_filename(uploaded_file.filename)
+                uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return redirect(url_for('upload_file',
                                         filename=filename))
         return '''
         <!doctype html>
