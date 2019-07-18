@@ -12,10 +12,8 @@ frameworks to help build certain types of applications, like a REST API.
 Finding Extensions
 ------------------
 
-Flask extensions are usually named "Flask-Foo" or "Foo-Flask". Many
-extensions are listed in the `Extension Registry`_, which can be updated
-by extension developers. You can also search PyPI for packages tagged
-with `Framework :: Flask <pypi_>`_.
+Flask extensions are usually named "Flask-Foo" or "Foo-Flask". You can
+search PyPI for packages tagged with `Framework :: Flask <pypi_>`_.
 
 
 Using Extensions
@@ -43,11 +41,10 @@ an extension caled "Flask-Foo" might be used like this::
 Building Extensions
 -------------------
 
-While the `Extension Registry`_ contains many Flask extensions, you may
+While the `PyPI <pypi_>`_ contains many Flask extensions, you may
 not find an extension that fits your need. If this is the case, you can
 create your own. Read :ref:`extension-dev` to develop your own Flask
 extension.
 
 
-.. _Extension Registry: http://flask.pocoo.org/extensions/
 .. _pypi: https://pypi.org/search/?c=Framework+%3A%3A+Flask
