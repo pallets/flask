@@ -134,7 +134,7 @@ suite when you submit your pull request.
 
 The full test suite takes a long time to run because it tests multiple
 combinations of Python and dependencies. You need to have Python 2.7, 3.4,
-3.5 3.6, and PyPy 2.7 installed to run all of the environments. Then run::
+3.5, 3.6, 3.7 and PyPy 2.7 installed to run all of the environments. Then run::
 
     tox
 
