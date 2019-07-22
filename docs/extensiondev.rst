@@ -5,14 +5,12 @@ Flask Extension Development
 
 Flask, being a microframework, often requires some repetitive steps to get
 a third party library working. Many such extensions are already available
-on `PyPI <https://pypi.org/search/?c=Framework+%3A%3A+Flask>`_.
+on `PyPI`_.
 
 If you want to create your own Flask extension for something that does not
 exist yet, this guide to extension development will help you get your
 extension running in no time and to feel like users would expect your
 extension to behave.
-
-.. _Flask Extension Registry: http://flask.pocoo.org/extensions/
 
 Anatomy of an Extension
 -----------------------
@@ -275,15 +273,14 @@ to anything that needs it for the duration of the request.
 Learn from Others
 -----------------
 
-This documentation only touches the bare minimum for extension
-development.  If you want to learn more, it's a very good idea to check
-out existing extensions on the `Flask Extension Registry`_.  If you feel
-lost there is still the `mailinglist`_ and the `IRC channel`_ to get some
-ideas for nice looking APIs.  Especially if you do something nobody before
-you did, it might be a very good idea to get some more input.  This not only
-generates useful feedback on what people might want from an extension, but
-also avoids having multiple developers working in isolation on pretty much the
-same problem.
+This documentation only touches the bare minimum for extension development.
+If you want to learn more, it's a very good idea to check out existing extensions
+on the `PyPI`_.  If you feel lost there is still the `mailinglist`_ and the
+`IRC channel`_ to get some ideas for nice looking APIs.  Especially if you do
+something nobody before you did, it might be a very good idea to get some more
+input.  This not only generates useful feedback on what people might want from
+an extension, but also avoids having multiple developers working in isolation
+on pretty much the same problem.
 
 Remember: good API design is hard, so introduce your project on the
 mailing list, and let other developers give you a helping hand with
@@ -297,9 +294,8 @@ Approved Extensions
 
 Flask also has the concept of approved extensions.  Approved extensions
 are tested as part of Flask itself to ensure extensions do not break on
-new releases.  These approved extensions are listed on the `Flask
-Extension Registry`_ and marked appropriately.  If you want your own
-extension to be approved you have to follow these guidelines:
+new releases.  If you want your own extension to be approved you have to
+follow these guidelines:
 
 0.  An approved Flask extension requires a maintainer. In the event an
     extension author would like to move beyond the project, the project should
@@ -338,6 +334,7 @@ extension to be approved you have to follow these guidelines:
 10. An extension currently has to support Python 3.4 and newer and 2.7.
 
 
+.. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: http://flask.pocoo.org/mailinglist/
 .. _IRC channel: http://flask.pocoo.org/community/irc/
