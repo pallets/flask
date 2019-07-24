@@ -2000,17 +2000,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         adapter = _request_ctx_stack.top.url_adapter
-        if hasattr(adapter, "allowed_methods"):
-            methods = adapter.allowed_methods()
-        else:
-            # fallback for Werkzeug < 0.7
-            methods = []
-            try:
-                adapter.match(method="--")
-            except MethodNotAllowed as e:
-                methods = e.valid_methods
-            except HTTPException:
-                pass
+        methods = adapter.allowed_methods()
         rv = self.response_class()
         rv.allow.update(methods)
         return rv
