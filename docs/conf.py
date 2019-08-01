@@ -1,3 +1,5 @@
+import packaging
+
 from pallets_sphinx_themes import get_version
 from pallets_sphinx_themes import ProjectLink
 
@@ -74,7 +76,7 @@ def github_link(name, rawtext, text, lineno, inliner, options=None, content=None
     else:
         words = None
 
-    if release.endswith("dev"):
+    if packaging.version.parse(release).is_devrelease:
         url = "{0}master/{1}".format(base_url, text)
     else:
         url = "{0}{1}/{2}".format(base_url, release, text)
