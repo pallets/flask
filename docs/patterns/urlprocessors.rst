@@ -39,8 +39,8 @@ generate URLs from one function to another you would have to still provide
 the language code explicitly which can be annoying.
 
 For the latter, this is where :func:`~flask.Flask.url_defaults` functions
-come in.  They can automatically inject values into a call for
-:func:`~flask.url_for` automatically.  The code below checks if the
+come in.  They can automatically inject values into a call to
+:func:`~flask.url_for`.  The code below checks if the
 language code is not yet in the dictionary of URL values and if the
 endpoint wants a value named ``'lang_code'``::
 
