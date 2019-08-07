@@ -661,6 +661,12 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         return
 
+    # If all you want to do is avoid the startup messages, define
+    # "FLASK_SILENCE_STARTUP" = "true"". WERKZEUG_RUN_MAIN above is
+    # recognized in werkzeug code and has other effects.
+    if os.environ.get("FLASK_SILENCE_STARTUP") == "true":
+        return
+
     if app_import_path is not None:
         message = ' * Serving Flask app "{0}"'.format(app_import_path)
 
