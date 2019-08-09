@@ -72,7 +72,7 @@ def _has_config(logger):
 
 
 def create_logger(app):
-    """Get the the Flask apps's logger and configure it if needed.
+    """Get the Flask app's logger and configure it if needed.
 
     The logger name will be the same as
     :attr:`app.import_name <flask.Flask.name>`.
