@@ -38,6 +38,12 @@ disabled::
     ``FLASK_DEBUG=1``. This can still be used to control debug mode, but
     you should prefer setting the development environment as shown
     above.
+    
+Troubleshooting
+    When running into an error like ``No module named flask``, run flask 
+    explicitely as a python module::
+    
+    $ python -m flask run
 
 In Code
 -------
