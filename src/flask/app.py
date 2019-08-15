@@ -633,9 +633,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         rv = self.config["PROPAGATE_EXCEPTIONS"]
-        if rv is not None:
-            return rv
-        return self.testing or self.debug
+        return rv if rv is not None else self.testing or self.debug
 
     @property
     def preserve_context_on_exception(self):
@@ -646,9 +644,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         rv = self.config["PRESERVE_CONTEXT_ON_EXCEPTION"]
-        if rv is not None:
-            return rv
-        return self.debug
+        return rv if rv is not None else self.debug
 
     @locked_cached_property
     def logger(self):
