@@ -61,7 +61,7 @@ class _AppCtxGlobals(object):
 
         :param name: Name of attribute to pop.
         :param default: Value to return if the attribute is not present,
-            instead of raise a ``KeyError``.
+            instead of raising a ``KeyError``.
 
         .. versionadded:: 0.11
         """
