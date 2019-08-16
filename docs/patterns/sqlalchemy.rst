@@ -214,5 +214,17 @@ You can also pass strings of SQL statements to the
 >>> engine.execute('select * from users where id = :1', [1]).first()
 (1, u'admin', u'admin@localhost')
 
+note: you *MUST* use this stupid [{}] method to pass in arguments for bindparams,
+you apparenlty can't just do 
+
+>>> engine.execute('select * from users where id = :id', id=1).first()
+
+This will break, despite the SQLAlchemy docs implying it works(and it does work outside of Flask).
+to do named parameters:
+
+>>> engine.execute('select * from users where id = :id and name = :name', [{'id':1, 'name':'admin'}]).first()
+(1, u'admin', u'admin@localhost')
+
+
 For more information about SQLAlchemy, head over to the
 `website <https://www.sqlalchemy.org/>`_.
