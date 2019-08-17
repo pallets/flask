@@ -17,6 +17,7 @@ Hosted options
 --------------
 
 - `Deploying Flask on Heroku <https://devcenter.heroku.com/articles/getting-started-with-python>`_
+- `Deploying Flask on Render <https://render.com/docs/deploy-flask>`_
 - `Deploying Flask on Google App Engine <https://cloud.google.com/appengine/docs/standard/python/getting-started/python-standard-env>`_
 - `Deploying Flask on AWS Elastic Beanstalk <https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html>`_
 - `Deploying on Azure (IIS) <https://docs.microsoft.com/en-us/azure/app-service/containers/how-to-configure-python>`_
