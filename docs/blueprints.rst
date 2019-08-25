@@ -75,11 +75,12 @@ implement a blueprint that does simple rendering of static templates::
             abort(404)
 
 When you bind a function with the help of the ``@simple_page.route``
-decorator the blueprint will record the intention of registering the
-function `show` on the application when it's later registered.
+decorator, the blueprint will record the intention of registering the
+function ``show`` on the application when it's later registered.
 Additionally it will prefix the endpoint of the function with the
 name of the blueprint which was given to the :class:`Blueprint`
-constructor (in this case also ``simple_page``).
+constructor (in this case also ``simple_page``). The blueprint's name
+does not modify the URL, only the endpoint.
 
 Registering Blueprints
 ----------------------
@@ -95,9 +96,10 @@ So how do you register that blueprint?  Like this::
 If you check the rules registered on the application, you will find
 these::
 
-    [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+    >>> app.url_map
+    Map([<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
      <Rule '/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
-     <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>]
+     <Rule '/' (HEAD, OPTIONS, GET) -> simple_page.show>])
 
 The first one is obviously from the application itself for the static
 files.  The other two are for the `show` function of the ``simple_page``
@@ -110,9 +112,10 @@ Blueprints however can also be mounted at different locations::
 
 And sure enough, these are the generated rules::
 
-    [<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+    >>> app.url_map
+    Map([<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
      <Rule '/pages/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
-     <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>]
+     <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>])
 
 On top of that you can register blueprints multiple times though not every
 blueprint might respond properly to that.  In fact it depends on how the
@@ -243,7 +246,7 @@ was dispatched to any other admin blueprint endpoint.
 Error Handlers
 --------------
 
-Blueprints support the errorhandler decorator just like the :class:`Flask`
+Blueprints support the ``errorhandler`` decorator just like the :class:`Flask`
 application object, so it is easy to make Blueprint-specific custom error
 pages.
 
@@ -258,7 +261,7 @@ concerning handlers for 404 and 405 exceptions.  These errorhandlers are only
 invoked from an appropriate ``raise`` statement or a call to ``abort`` in another
 of the blueprint's view functions; they are not invoked by, e.g., an invalid URL
 access.  This is because the blueprint does not "own" a certain URL space, so
-the application instance has no way of knowing which blueprint errorhandler it
+the application instance has no way of knowing which blueprint error handler it
 should run if given an invalid URL.  If you would like to execute different
 handling strategies for these errors based on URL prefixes, they may be defined
 at the application level using the ``request`` proxy object::

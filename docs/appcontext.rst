@@ -27,7 +27,7 @@ writing reusable :doc:`blueprints </blueprints>` or
 import at all.
 
 Flask solves this issue with the *application context*. Rather than
-referring to an ``app`` directly, you use the the :data:`current_app`
+referring to an ``app`` directly, you use the :data:`current_app`
 proxy, which points to the application handling the current activity.
 
 Flask automatically *pushes* an application context when handling a
@@ -49,7 +49,7 @@ Typically, an application context will have the same lifetime as a
 request.
 
 See :doc:`/reqcontext` for more information about how the contexts work
-and the full lifecycle of a request.
+and the full life cycle of a request.
 
 
 Manually Push a Context

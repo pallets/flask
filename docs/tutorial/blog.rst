@@ -314,7 +314,7 @@ Delete
 
 The delete view doesn't have its own template, the delete button is part
 of ``update.html`` and posts to the ``/<id>/delete`` URL. Since there
-is no template, it will only handle the ``POST`` method then redirect
+is no template, it will only handle the ``POST`` method and then redirect
 to the ``index`` view.
 
 .. code-block:: python

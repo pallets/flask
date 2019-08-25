@@ -11,7 +11,7 @@ Python primitives (numbers, strings, dicts and lists) look like which is
 widely supported and very easy to parse.  It became popular a few years
 ago and quickly replaced XML as transport format in web applications.
 
-.. _jQuery: http://jquery.com/
+.. _jQuery: https://jquery.com/
 
 Loading jQuery
 --------------
@@ -27,7 +27,7 @@ to add a script statement to the bottom of your ``<body>`` to load jQuery:
      url_for('static', filename='jquery.js') }}"></script>
 
 Another method is using Google's `AJAX Libraries API
-<https://developers.google.com/speed/libraries/devguide>`_ to load jQuery:
+<https://developers.google.com/speed/libraries/>`_ to load jQuery:
 
 .. sourcecode:: html
 
@@ -105,7 +105,7 @@ example that shows how you would use jQuery and Flask nonetheless::
         return render_template('index.html')
 
 As you can see I also added an `index` method here that renders a
-template.  This template will load jQuery as above and have a little form
+template.  This template will load jQuery as above and have a little form where
 we can add two numbers and a link to trigger the function on the server
 side.
 

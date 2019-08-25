@@ -60,7 +60,7 @@ Factories & Extensions
 It's preferable to create your extensions and app factories so that the
 extension object does not initially get bound to the application.
 
-Using `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/>`_,
+Using `Flask-SQLAlchemy <https://flask-sqlalchemy.palletsprojects.com/>`_,
 as an example, you should not do something along those lines::
 
     def create_app(config_filename):
@@ -91,15 +91,15 @@ Using Applications
 
 To run such an application, you can use the :command:`flask` command::
 
-    export FLASK_APP=myapp
-    flask run
-    
-Flask will automatically detect the factory (``create_app`` or ``make_app``) 
+    $ export FLASK_APP=myapp
+    $ flask run
+
+Flask will automatically detect the factory (``create_app`` or ``make_app``)
 in ``myapp``. You can also pass arguments to the factory like this::
 
-    export FLASK_APP="myapp:create_app('dev')"
-    flask run
-    
+    $ export FLASK_APP="myapp:create_app('dev')"
+    $ flask run
+
 Then the ``create_app`` factory in ``myapp`` is called with the string
 ``'dev'`` as the argument. See :doc:`/cli` for more detail.
 

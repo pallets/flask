@@ -5,10 +5,9 @@
 
     Tests regressions.
 
-    :copyright: © 2010 by the Pallets team.
-    :license: BSD, see LICENSE for more details.
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
 """
-
 import gc
 import sys
 import threading
@@ -22,7 +21,6 @@ _gc_lock = threading.Lock()
 
 
 class assert_no_leak(object):
-
     def __enter__(self):
         gc.disable()
         _gc_lock.acquire()
@@ -32,7 +30,7 @@ class assert_no_leak(object):
         # This is necessary since Python only starts tracking
         # dicts if they contain mutable objects.  It's a horrible,
         # horrible hack but makes this kinda testable.
-        loc.__storage__['FOOO'] = [1, 2, 3]
+        loc.__storage__["FOOO"] = [1, 2, 3]
 
         gc.collect()
         self.old_objects = len(gc.get_objects())
@@ -41,7 +39,7 @@ class assert_no_leak(object):
         gc.collect()
         new_objects = len(gc.get_objects())
         if new_objects > self.old_objects:
-            pytest.fail('Example code leaked')
+            pytest.fail("Example code leaked")
         _gc_lock.release()
         gc.enable()
 
@@ -49,31 +47,31 @@ class assert_no_leak(object):
 def test_memory_consumption():
     app = flask.Flask(__name__)
 
-    @app.route('/')
+    @app.route("/")
     def index():
-        return flask.render_template('simple_template.html', whiskey=42)
+        return flask.render_template("simple_template.html", whiskey=42)
 
     def fire():
         with app.test_client() as c:
-            rv = c.get('/')
+            rv = c.get("/")
             assert rv.status_code == 200
-            assert rv.data == b'<h1>42</h1>'
+            assert rv.data == b"<h1>42</h1>"
 
     # Trigger caches
     fire()
 
     # This test only works on CPython 2.7.
-    if sys.version_info >= (2, 7) and \
-            not hasattr(sys, 'pypy_translation_info'):
+    if sys.version_info >= (2, 7) and not hasattr(sys, "pypy_translation_info"):
         with assert_no_leak():
-            for x in range(10):
+            for _x in range(10):
                 fire()
 
 
 def test_safe_join_toplevel_pardir():
     from flask.helpers import safe_join
+
     with pytest.raises(NotFound):
-        safe_join('/foo', '..')
+        safe_join("/foo", "..")
 
 
 def test_aborting(app):
@@ -84,16 +82,16 @@ def test_aborting(app):
     def handle_foo(e):
         return str(e.whatever)
 
-    @app.route('/')
+    @app.route("/")
     def index():
-        raise flask.abort(flask.redirect(flask.url_for('test')))
+        raise flask.abort(flask.redirect(flask.url_for("test")))
 
-    @app.route('/test')
+    @app.route("/test")
     def test():
         raise Foo()
 
     with app.test_client() as c:
-        rv = c.get('/')
-        assert rv.headers['Location'] == 'http://localhost/test'
-        rv = c.get('/test')
-        assert rv.data == b'42'
+        rv = c.get("/")
+        assert rv.headers["Location"] == "http://localhost/test"
+        rv = c.get("/test")
+        assert rv.data == b"42"

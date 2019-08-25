@@ -5,8 +5,8 @@ Create a project directory and enter it:
 
 .. code-block:: none
 
-    mkdir flask-tutorial
-    cd flask-tutorial
+    $ mkdir flask-tutorial
+    $ cd flask-tutorial
 
 Then follow the :doc:`installation instructions </installation>` to set
 up a Python virtual environment and install Flask for your project.
@@ -31,7 +31,7 @@ A Flask application can be as simple as a single file.
     def hello():
         return 'Hello, World!'
 
-However, as a project get bigger, it becomes overwhelming to keep all
+However, as a project gets bigger, it becomes overwhelming to keep all
 the code in one file. Python projects use *packages* to organize code
 into multiple modules that can be imported where needed, and the
 tutorial will do this as well.

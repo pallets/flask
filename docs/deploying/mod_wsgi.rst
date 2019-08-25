@@ -27,21 +27,21 @@ follows:
 
 .. sourcecode:: text
 
-    # apt-get install libapache2-mod-wsgi
+    $ apt-get install libapache2-mod-wsgi
 
 If you are using a yum based distribution (Fedora, OpenSUSE, etc..) you
 can install it as follows:
 
 .. sourcecode:: text
 
-    # yum install mod_wsgi
+    $ yum install mod_wsgi
 
 On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by
 using pkg_add:
 
 .. sourcecode:: text
 
-    # pkg install ap22-mod_wsgi2
+    $ pkg install ap22-mod_wsgi2
 
 If you are using pkgsrc you can install `mod_wsgi` by compiling the
 `www/ap2-wsgi` package.
@@ -52,14 +52,19 @@ reload you can safely ignore them.  Just restart the server.
 Creating a `.wsgi` file
 -----------------------
 
-To run your application you need a :file:`yourapplication.wsgi` file.  This file
-contains the code `mod_wsgi` is executing on startup to get the application
-object.  The object called `application` in that file is then used as
-application.
+To run your application you need a :file:`yourapplication.wsgi` file.
+This file contains the code `mod_wsgi` is executing on startup
+to get the application object.  The object called `application`
+in that file is then used as application.
 
 For most applications the following file should be sufficient::
 
     from yourapplication import app as application
+
+If a factory function is used in a :file:`__init__.py` file, then the function should be imported::
+
+    from yourapplication import create_app
+    application = create_app()
 
 If you don't have a factory function for application creation but a singleton
 instance you can directly import that one as `application`.
@@ -103,16 +108,17 @@ refuse to run with the above configuration. On a Windows system, eliminate those
 
 .. sourcecode:: apache
 
-	<VirtualHost *>
-		ServerName example.com
-		WSGIScriptAlias / C:\yourdir\yourapp.wsgi
-		<Directory C:\yourdir>
-			Order deny,allow
-			Allow from all
-		</Directory>
-	</VirtualHost>
+    <VirtualHost *>
+        ServerName example.com
+        WSGIScriptAlias / C:\yourdir\yourapp.wsgi
+        <Directory C:\yourdir>
+            Order deny,allow
+            Allow from all
+        </Directory>
+    </VirtualHost>
 
-Note: There have been some changes in access control configuration for `Apache 2.4`_.
+Note: There have been some changes in access control configuration
+for `Apache 2.4`_.
 
 .. _Apache 2.4: https://httpd.apache.org/docs/trunk/upgrading.html
 

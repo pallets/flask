@@ -18,10 +18,9 @@ You can then use that with your favourite testing solution.
 In this documentation we will use the `pytest`_ package as the base
 framework for our tests. You can install it with ``pip``, like so::
 
-    pip install pytest
+    $ pip install pytest
 
-.. _pytest:
-   https://pytest.org
+.. _pytest: https://docs.pytest.org/
 
 The Application
 ---------------
@@ -40,7 +39,7 @@ pytest.
 
 Next, we create a `pytest fixture`_ called
 :func:`client` that configures
-the application for testing and initializes a new database.::
+the application for testing and initializes a new database::
 
     import os
     import tempfile
@@ -54,12 +53,11 @@ the application for testing and initializes a new database.::
     def client():
         db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
         flaskr.app.config['TESTING'] = True
-        client = flaskr.app.test_client()
 
-        with flaskr.app.app_context():
-            flaskr.init_db()
-
-        yield client
+        with flaskr.app.test_client() as client:
+            with flaskr.app.app_context():
+                flaskr.init_db()
+            yield client
 
         os.close(db_fd)
         os.unlink(flaskr.app.config['DATABASE'])
@@ -73,9 +71,9 @@ this does is disable error catching during request handling, so that
 you get better error reports when performing test requests against the
 application.
 
-Because SQLite3 is filesystem-based, we can easily use the :mod:`tempfile` module
-to create a temporary database and initialize it.  The
-:func:`~tempfile.mkstemp` function does two things for us: it returns a
+Because SQLite3 is filesystem-based, we can easily use the
+:mod:`tempfile` module to create a temporary database and initialize it.
+The :func:`~tempfile.mkstemp` function does two things for us: it returns a
 low-level file handle and a random file name, the latter we use as
 database name.  We just have to keep the `db_fd` around so that we can use
 the :func:`os.close` function to close the file.
@@ -93,9 +91,9 @@ If we now run the test suite, we should see the following output::
 
     =========== no tests ran in 0.07 seconds ============
 
-Even though it did not run any actual tests, we already know that our ``flaskr``
-application is syntactically valid, otherwise the import would have died
-with an exception.
+Even though it did not run any actual tests, we already know that our
+``flaskr`` application is syntactically valid, otherwise the import
+would have died with an exception.
 
 .. _pytest fixture:
    https://docs.pytest.org/en/latest/fixture.html
@@ -117,11 +115,13 @@ test function to :file:`test_flaskr.py`, like this::
 Notice that our test functions begin with the word `test`; this allows
 `pytest`_ to automatically identify the function as a test to run.
 
-By using ``client.get`` we can send an HTTP ``GET`` request to the application with
-the given path.  The return value will be a :class:`~flask.Flask.response_class` object.
-We can now use the :attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect
-the return value (as string) from the application.  In this case, we ensure that
-``'No entries here so far'`` is part of the output.
+By using ``client.get`` we can send an HTTP ``GET`` request to the
+application with the given path.  The return value will be a
+:class:`~flask.Flask.response_class` object. We can now use the
+:attr:`~werkzeug.wrappers.BaseResponse.data` attribute to inspect
+the return value (as string) from the application.
+In this case, we ensure that ``'No entries here so far'``
+is part of the output.
 
 Run it again and you should see one passing test::
 
@@ -333,7 +333,8 @@ happen.  With Flask 0.4 this is possible by using the
 
 If you were to use just the :meth:`~flask.Flask.test_client` without
 the ``with`` block, the ``assert`` would fail with an error because `request`
-is no longer available (because you are trying to use it outside of the actual request).
+is no longer available (because you are trying to use it
+outside of the actual request).
 
 
 Accessing and Modifying Sessions
@@ -354,14 +355,15 @@ This however does not make it possible to also modify the session or to
 access the session before a request was fired.  Starting with Flask 0.8 we
 provide a so called “session transaction” which simulates the appropriate
 calls to open a session in the context of the test client and to modify
-it.  At the end of the transaction the session is stored.  This works
-independently of the session backend used::
+it. At the end of the transaction the session is stored and ready to be
+used by the test client. This works independently of the session backend used::
 
     with app.test_client() as c:
         with c.session_transaction() as sess:
             sess['a_key'] = 'a value'
 
-        # once this is reached the session was stored
+        # once this is reached the session was stored and ready to be used by the client
+        c.get(...)
 
 Note that in this case you have to use the ``sess`` object instead of the
 :data:`flask.session` proxy.  The object however itself will provide the
@@ -388,7 +390,7 @@ very convenient::
 
     with app.test_client() as c:
         rv = c.post('/api/auth', json={
-            'username': 'flask', 'password': 'secret'
+            'email': 'flask@example.com', 'password': 'secret'
         })
         json_data = rv.get_json()
         assert verify_token(email, json_data['token'])
@@ -452,5 +454,5 @@ This is useful for testing complex validation rules and custom types. ::
         context = hello_command.make_context('hello', ['--name', 'flask'])
         assert context.params['name'] == 'FLASK'
 
-.. _click: http://click.pocoo.org/
-.. _utilities for testing: http://click.pocoo.org/testing
+.. _click: https://click.palletsprojects.com/
+.. _utilities for testing: https://click.palletsprojects.com/testing/

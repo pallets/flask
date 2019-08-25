@@ -34,7 +34,7 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    jquery
    errorpages
    lazyloading
-   mongokit
+   mongoengine
    favicon
    streaming
    deferredcallbacks
@@ -42,3 +42,4 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    requestchecksum
    celery
    subclassing
+   singlepageapplications

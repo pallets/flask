@@ -21,7 +21,7 @@ is installed first:
 
 .. code-block:: none
 
-    pip install wheel
+    $ pip install wheel
 
 Running ``setup.py`` with Python gives you a command line tool to issue
 build-related commands. The ``bdist_wheel`` command will build a wheel
@@ -29,7 +29,7 @@ distribution file.
 
 .. code-block:: none
 
-    python setup.py bdist_wheel
+    $ python setup.py bdist_wheel
 
 You can find the file in ``dist/flaskr-1.0.0-py3-none-any.whl``. The
 file name is the name of the project, the version, and some tags about
@@ -41,7 +41,7 @@ file with ``pip``.
 
 .. code-block:: none
 
-    pip install flaskr-1.0.0-py3-none-any.whl
+    $ pip install flaskr-1.0.0-py3-none-any.whl
 
 Pip will install your project along with its dependencies.
 
@@ -50,8 +50,8 @@ create the database in the instance folder.
 
 .. code-block:: none
 
-    export FLASK_APP=flaskr
-    flask init-db
+    $ export FLASK_APP=flaskr
+    $ flask init-db
 
 When Flask detects that it's installed (not in editable mode), it uses
 a different directory for the instance folder. You can find it at
@@ -70,7 +70,7 @@ You can use the following command to output a random secret key:
 
 .. code-block:: none
 
-    python -c 'import os; print(os.urandom(16))'
+    $ python -c 'import os; print(os.urandom(16))'
 
     b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -99,7 +99,7 @@ first install it in the virtual environment:
 
 .. code-block:: none
 
-    pip install waitress
+    $ pip install waitress
 
 You need to tell Waitress about your application, but it doesn't use
 ``FLASK_APP`` like ``flask run`` does. You need to tell it to import and
@@ -107,7 +107,7 @@ call the application factory to get an application object.
 
 .. code-block:: none
 
-    waitress-serve --call 'flaskr:create_app'
+    $ waitress-serve --call 'flaskr:create_app'
 
     Serving on http://0.0.0.0:8080
 
@@ -116,6 +116,6 @@ your application. Waitress is just an example, chosen for the tutorial
 because it supports both Windows and Linux. There are many more WSGI
 servers and deployment options that you may choose for your project.
 
-.. _Waitress: https://docs.pylonsproject.org/projects/waitress/
+.. _Waitress: https://docs.pylonsproject.org/projects/waitress/en/stable/
 
 Continue to :doc:`next`.

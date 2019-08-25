@@ -28,7 +28,7 @@ Install them both:
 
 .. code-block:: none
 
-    pip install pytest coverage
+    $ pip install pytest coverage
 
 .. _pytest: https://pytest.readthedocs.io/
 .. _coverage: https://coverage.readthedocs.io/
@@ -188,7 +188,7 @@ should be closed.
         with pytest.raises(sqlite3.ProgrammingError) as e:
             db.execute('SELECT 1')
 
-        assert 'closed' in str(e)
+        assert 'closed' in str(e.value)
 
 The ``init-db`` command should call the ``init_db`` function and output
 a message.
@@ -510,7 +510,7 @@ the test functions you've written.
 
 .. code-block:: none
 
-    pytest
+    $ pytest
 
     ========================= test session starts ==========================
     platform linux -- Python 3.6.4, pytest-3.5.0, py-1.5.3, pluggy-0.6.0
@@ -532,13 +532,13 @@ to run pytest instead of running it directly.
 
 .. code-block:: none
 
-    coverage run -m pytest
+    $ coverage run -m pytest
 
 You can either view a simple coverage report in the terminal:
 
 .. code-block:: none
 
-    coverage report
+    $ coverage report
 
     Name                 Stmts   Miss Branch BrPart  Cover
     ------------------------------------------------------
@@ -553,7 +553,7 @@ An HTML report allows you to see which lines were covered in each file:
 
 .. code-block:: none
 
-    coverage html
+    $ coverage html
 
 This generates files in the ``htmlcov`` directory. Open
 ``htmlcov/index.html`` in your browser to see the report.

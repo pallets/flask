@@ -4,10 +4,10 @@ FastCGI
 =======
 
 FastCGI is a deployment option on servers like `nginx`_, `lighttpd`_, and
-`cherokee`_; see :ref:`deploying-uwsgi` and :ref:`deploying-wsgi-standalone`
-for other options.  To use your WSGI application with any of them you will need
-a FastCGI server first.  The most popular one is `flup`_ which we will use for
-this guide.  Make sure to have it installed to follow along.
+`cherokee`_; see :doc:`uwsgi` and :doc:`wsgi-standalone` for other options.
+To use your WSGI application with any of them you will need a FastCGI
+server first. The most popular one is `flup`_ which we will use for
+this guide. Make sure to have it installed to follow along.
 
 .. admonition:: Watch Out
 
@@ -49,7 +49,7 @@ can execute it:
 
 .. sourcecode:: text
 
-    # chmod +x /var/www/yourapplication/yourapplication.fcgi
+    $ chmod +x /var/www/yourapplication/yourapplication.fcgi
 
 Configuring Apache
 ------------------

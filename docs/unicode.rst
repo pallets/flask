@@ -6,9 +6,9 @@ text.  Not only these libraries, also the majority of web related Python
 libraries that deal with text.  If you don't know Unicode so far, you
 should probably read `The Absolute Minimum Every Software Developer
 Absolutely, Positively Must Know About Unicode and Character Sets
-<http://www.joelonsoftware.com/articles/Unicode.html>`_.  This part of the
-documentation just tries to cover the very basics so that you have a
-pleasant experience with Unicode related things.
+<https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/>`_.
+This part of the documentation just tries to cover the very basics so
+that you have a pleasant experience with Unicode related things.
 
 Automatic Conversion
 --------------------
@@ -43,8 +43,8 @@ The Golden Rule
 So the rule of thumb: if you are not dealing with binary data, work with
 Unicode.  What does working with Unicode in Python 2.x mean?
 
--   as long as you are using ASCII charpoints only (basically numbers,
-    some special characters of latin letters without umlauts or anything
+-   as long as you are using ASCII code points only (basically numbers,
+    some special characters of Latin letters without umlauts or anything
     fancy) you can use regular string literals (``'Hello World'``).
 -   if you need anything else than ASCII in a string you have to mark
     this string as Unicode string by prefixing it with a lowercase `u`.

@@ -30,7 +30,7 @@ directory should be treated as a package.
 
 .. code-block:: none
 
-    mkdir flaskr
+    $ mkdir flaskr
 
 .. code-block:: python
     :caption: ``flaskr/__init__.py``
@@ -127,7 +127,8 @@ Run The Application
 
 Now you can run your application using the ``flask`` command. From the
 terminal, tell Flask where to find your application, then run it in
-development mode.
+development mode. Remember, you should still be in the top-level
+``flask-tutorial`` directory, not the ``flaskr`` package.
 
 Development mode shows an interactive debugger whenever a page raises an
 exception, and restarts the server whenever you make changes to the
@@ -138,25 +139,25 @@ For Linux and Mac:
 
 .. code-block:: none
 
-    export FLASK_APP=flaskr
-    export FLASK_ENV=development
-    flask run
+    $ export FLASK_APP=flaskr
+    $ export FLASK_ENV=development
+    $ flask run
 
 For Windows cmd, use ``set`` instead of ``export``:
 
 .. code-block:: none
 
-    set FLASK_APP=flaskr
-    set FLASK_ENV=development
-    flask run
+    > set FLASK_APP=flaskr
+    > set FLASK_ENV=development
+    > flask run
 
 For Windows PowerShell, use ``$env:`` instead of ``export``:
 
 .. code-block:: none
 
-    $env:FLASK_APP = "flaskr"
-    $env:FLASK_ENV = "development"
-    flask run
+    > $env:FLASK_APP = "flaskr"
+    > $env:FLASK_ENV = "development"
+    > flask run
 
 You'll see output similar to this:
 
