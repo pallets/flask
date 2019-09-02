@@ -29,6 +29,9 @@ First, we need an application to test; we will use the application from
 the :ref:`tutorial`.  If you don't have that application yet, get the
 source code from :gh:`the examples <examples/tutorial>`.
 
+So that we can import the module ``flaskr`` correctly, we need to run
+``pip install -e .`` in the folder ``tutorial``.
+
 The Testing Skeleton
 --------------------
 
@@ -46,7 +49,7 @@ the application for testing and initializes a new database::
 
     import pytest
 
-    from flaskr import flaskr
+    from flaskr import create_app
 
 
     @pytest.fixture
