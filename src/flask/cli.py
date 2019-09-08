@@ -572,7 +572,7 @@ class FlaskGroup(AppGroup):
         os.environ["FLASK_RUN_FROM_CLI"] = "true"
 
         if get_load_dotenv(self.load_dotenv):
-            load_dotenv()
+            load_dotenv(os.environ("FLASK_ENV_PATH", None))
 
         obj = kwargs.get("obj")
 
