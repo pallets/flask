@@ -24,6 +24,7 @@ from click.testing import CliRunner
 from flask import Blueprint
 from flask import current_app
 from flask import Flask
+from flask import request
 from flask.cli import AppGroup
 from flask.cli import dotenv
 from flask.cli import find_best_app
@@ -36,6 +37,7 @@ from flask.cli import prepare_import
 from flask.cli import run_command
 from flask.cli import ScriptInfo
 from flask.cli import with_appcontext
+from flask.cli import with_testrequestcontext
 
 cwd = os.getcwd()
 test_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "test_apps"))
@@ -339,6 +341,30 @@ def test_with_appcontext(runner):
     result = runner.invoke(testcmd, obj=obj)
     assert result.exit_code == 0
     assert result.output == "testapp\n"
+
+
+def test_with_testrequestcontext(runner):
+    """Test of with_testrequestcontext."""
+
+    @click.command()
+    @with_testrequestcontext()
+    def testcmd():
+        click.echo(request.path)
+
+    @click.command()
+    @with_testrequestcontext("/make_report/2017/")
+    def testcmd2():
+        click.echo(request.path)
+
+    obj = ScriptInfo(create_app=lambda info: Flask("testapp"))
+
+    result = runner.invoke(testcmd, obj=obj)
+    assert result.exit_code == 0
+    assert result.output == "/\n"
+
+    result = runner.invoke(testcmd2, obj=obj)
+    assert result.exit_code == 0
+    assert result.output == "/make_report/2017/\n"
 
 
 def test_appgroup(runner):

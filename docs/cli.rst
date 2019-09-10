@@ -396,6 +396,28 @@ If you're sure a command doesn't need the context, you can disable it::
         ...
 
 
+
+Request Context
+~~~~~~~~~~~~~~~
+Commands requiring a request context can use
+:meth:`~cli.with_testrequestcontext` to to simulate a full request. ::
+
+    import click
+    from flask import request
+    from flask.cli import with_testrequestcontext
+
+    @click.command()
+    @with_testrequestcontext("/make_report/2017")
+    def do_work():
+        print(request.path)
+        // "/make_report/2017"
+        ...
+
+    app.cli.add_command(do_work)
+
+All arguments passed to :meth:`~cli.withtestrequestcontext` are directly passed
+to the underlying :meth:`~Flask.test_request_context`.
+
 Plugins
 -------
 

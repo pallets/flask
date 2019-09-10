@@ -428,6 +428,26 @@ def with_appcontext(f):
     return update_wrapper(decorator, f)
 
 
+def with_testrequestcontext(*args, **kwargs):
+    """Wraps a callback so that it's guaranteed to be executed with the
+    script's request context.  If callbacks are registered directly
+    to the ``app.cli`` object then they are wrapped with this function
+    by default unless it's disabled.
+    """
+
+    def wrapper(f):
+        @click.pass_context
+        def decorator(__ctx, *inner_args, **inner_kwargs):
+            with __ctx.ensure_object(ScriptInfo).load_app().test_request_context(
+                *args, **kwargs
+            ):
+                return __ctx.invoke(f, *inner_args, **inner_kwargs)
+
+        return update_wrapper(decorator, f)
+
+    return wrapper
+
+
 class AppGroup(click.Group):
     """This works similar to a regular click :class:`~click.Group` but it
     changes the behavior of the :meth:`command` decorator so that it
