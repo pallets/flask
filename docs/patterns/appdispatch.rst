@@ -62,12 +62,12 @@ dispatched based on prefix.
 For example you could have your main application run on ``/`` and your
 backend interface on ``/backend``::
 
-    from werkzeug.wsgi import DispatcherMiddleware
+    from werkzeug.middleware.dispatcher import DispatcherMiddleware
     from frontend_app import application as frontend
     from backend_app import application as backend
 
     application = DispatcherMiddleware(frontend, {
-        '/backend':     backend
+        '/backend': backend
     })
 
 
