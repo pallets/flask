@@ -20,6 +20,9 @@ logger can also be used to log your own messages.
             app.logger.info('%s failed to log in', user.username)
             abort(401)
 
+If you don't configure logging, Python's default log level is usually
+'warning'. Nothing below the configured level will be visible.
+
 
 Basic Configuration
 -------------------
