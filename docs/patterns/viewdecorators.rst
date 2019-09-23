@@ -70,7 +70,7 @@ straightforward to read.
 
 The decorated function will then work as follows
 
-1. get the unique cache key for the current request base on the current
+1. get the unique cache key for the current request based on the current
    path.
 2. get the value for that key from the cache. If the cache returned
    something we will return that value.
