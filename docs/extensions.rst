@@ -43,7 +43,7 @@ Building Extensions
 
 While the `PyPI <pypi_>`_ contains many Flask extensions, you may
 not find an extension that fits your need. If this is the case, you can
-create your own. Read :ref:`extension-dev` to develop your own Flask
+create your own. Read :doc:`/extensiondev` to develop your own Flask
 extension.
 
 
