@@ -867,16 +867,22 @@ docs for more information.
 
 Read more on :ref:`application-errors`.
 
-Hooking in WSGI Middlewares
----------------------------
+Hooking in WSGI Middleware
+--------------------------
 
-If you want to add a WSGI middleware to your application you can wrap the
-internal WSGI application.  For example if you want to use one of the
-middlewares from the Werkzeug package to work around bugs in lighttpd, you
-can do it like this::
+To add WSGI middleware to your Flask application, wrap the application's
+``wsgi_app`` attribute. For example, to apply Werkzeug's
+:class:`~werkzeug.middlware.proxy_fix.ProxyFix` middleware for running
+behind Nginx:
 
-    from werkzeug.contrib.fixers import LighttpdCGIRootFix
-    app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
+.. code-block:: python
+
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+
+Wrapping ``app.wsgi_app`` instead of ``app`` means that ``app`` still
+points at your Flask application, not at the middleware, so you can
+continue to use and configure ``app`` directly.
 
 Using Flask Extensions
 ----------------------
