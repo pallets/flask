@@ -323,9 +323,10 @@ ecosystem remain consistent and compatible.
 6.  The documentation must use the ``flask`` theme from the
     `Official Pallets Themes`_. A link to the documentation or project
     website must be in the PyPI metadata or the readme.
-7.  The active versions of Python should be supported. As of 2020 this
-    means Python 3.5 and newer.
-
+7.  For maximum compatibility, the extension should support the same
+    versions of Python that Flask supports. 3.6+ is recommended as of
+    2020. Use ``python_requires=">= 3.6"`` in ``setup.py`` to indicate
+    supported versions.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
