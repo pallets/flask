@@ -58,7 +58,7 @@ loaded upfront.  The trick is to actually load the view function as needed.
 This can be accomplished with a helper class that behaves just like a
 function but internally imports the real function on first use::
 
-    from werkzeug import import_string, cached_property
+    from werkzeug.utils import import_string, cached_property
 
     class LazyView(object):
 
