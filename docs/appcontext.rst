@@ -144,7 +144,7 @@ If you're writing an extension, :data:`g` should be reserved for user
 code. You may store internal data on the context itself, but be sure to
 use a sufficiently unique name. The current context is accessed with
 :data:`_app_ctx_stack.top <_app_ctx_stack>`. For more information see
-:doc:`extensiondev`.
+:doc:`/extensiondev`.
 
 
 Events and Signals
