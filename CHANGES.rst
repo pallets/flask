@@ -1,5 +1,14 @@
 .. currentmodule:: flask
 
+Version 2.0.0
+-------------
+
+Unreleased
+
+-   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
+    setting the session cookie name dynamically. :pr:`3369`
+
+
 Version 1.1.2
 -------------
 

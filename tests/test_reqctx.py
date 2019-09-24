@@ -11,6 +11,7 @@
 import pytest
 
 import flask
+from flask.sessions import SecureCookieSessionInterface
 from flask.sessions import SessionInterface
 
 try:
@@ -227,6 +228,58 @@ def test_session_error_pops_context():
     assert response.status_code == 500
     assert not flask.request
     assert not flask.current_app
+
+
+def test_session_dynamic_cookie_name():
+
+    # This session interface will use a cookie with a different name if the
+    # requested url ends with the string "dynamic_cookie"
+    class PathAwareSessionInterface(SecureCookieSessionInterface):
+        def get_cookie_name(self, app):
+            if flask.request.url.endswith("dynamic_cookie"):
+                return "dynamic_cookie_name"
+            else:
+                return super(PathAwareSessionInterface, self).get_cookie_name(app)
+
+    class CustomFlask(flask.Flask):
+        session_interface = PathAwareSessionInterface()
+
+    app = CustomFlask(__name__)
+    app.secret_key = "secret_key"
+
+    @app.route("/set", methods=["POST"])
+    def set():
+        flask.session["value"] = flask.request.form["value"]
+        return "value set"
+
+    @app.route("/get")
+    def get():
+        v = flask.session.get("value", "None")
+        return v
+
+    @app.route("/set_dynamic_cookie", methods=["POST"])
+    def set_dynamic_cookie():
+        flask.session["value"] = flask.request.form["value"]
+        return "value set"
+
+    @app.route("/get_dynamic_cookie")
+    def get_dynamic_cookie():
+        v = flask.session.get("value", "None")
+        return v
+
+    test_client = app.test_client()
+
+    # first set the cookie in both /set urls but each with a different value
+    assert test_client.post("/set", data={"value": "42"}).data == b"value set"
+    assert (
+        test_client.post("/set_dynamic_cookie", data={"value": "616"}).data
+        == b"value set"
+    )
+
+    # now check that the relevant values come back - meaning that different
+    # cookies are being used for the urls that end with "dynamic cookie"
+    assert test_client.get("/get").data == b"42"
+    assert test_client.get("/get_dynamic_cookie").data == b"616"
 
 
 def test_bad_environ_raises_bad_request():

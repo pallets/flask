@@ -173,6 +173,13 @@ class SessionInterface(object):
         """
         return isinstance(obj, self.null_session_class)
 
+    def get_cookie_name(self, app):
+        """Returns the name of the session cookie.
+
+        Uses ``app.session_cookie_name`` which is set to ``SESSION_COOKIE_NAME``
+        """
+        return app.session_cookie_name
+
     def get_cookie_domain(self, app):
         """Returns the domain that should be set for the session cookie.
 
@@ -340,7 +347,7 @@ class SecureCookieSessionInterface(SessionInterface):
         s = self.get_signing_serializer(app)
         if s is None:
             return None
-        val = request.cookies.get(app.session_cookie_name)
+        val = request.cookies.get(self.get_cookie_name(app))
         if not val:
             return self.session_class()
         max_age = total_seconds(app.permanent_session_lifetime)
@@ -351,6 +358,7 @@ class SecureCookieSessionInterface(SessionInterface):
             return self.session_class()
 
     def save_session(self, app, session, response):
+        name = self.get_cookie_name(app)
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
 
@@ -358,9 +366,7 @@ class SecureCookieSessionInterface(SessionInterface):
         # If the session is empty, return without setting the cookie.
         if not session:
             if session.modified:
-                response.delete_cookie(
-                    app.session_cookie_name, domain=domain, path=path
-                )
+                response.delete_cookie(name, domain=domain, path=path)
 
             return
 
@@ -377,7 +383,7 @@ class SecureCookieSessionInterface(SessionInterface):
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
         response.set_cookie(
-            app.session_cookie_name,
+            name,
             val,
             expires=expires,
             httponly=httponly,
