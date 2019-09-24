@@ -1,4 +1,4 @@
-import packaging
+import packaging.version
 from pallets_sphinx_themes import get_version
 from pallets_sphinx_themes import ProjectLink
 
