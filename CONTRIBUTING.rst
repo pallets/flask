@@ -79,7 +79,8 @@ First time setup
 
         pip install -e ".[dev]"
 
-- Install the pre-commit hooks:
+- Install the `pre-commit framework`_.
+- Install the pre-commit hooks::
 
         pre-commit install --install-hooks
 
@@ -89,6 +90,7 @@ First time setup
 .. _email: https://help.github.com/en/articles/setting-your-commit-email-address-in-git
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
+.. _pre-commit framework: https://pre-commit.com/#install
 
 Start coding
 ~~~~~~~~~~~~
