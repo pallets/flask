@@ -121,7 +121,7 @@ Start coding
 .. _pre-commit: https://pre-commit.com
 .. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
 
-.. _contributing-testsuite: https://github.com/pallets/flask/blob/master/CONTRIBUTING.rst#running-the-tests
+.. _contributing-testsuite: #running-the-tests
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
