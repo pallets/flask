@@ -108,7 +108,7 @@ Start coding
 
 - Using your favorite editor, make your changes, `committing as you go`_.
 - Include tests that cover any code changes you make. Make sure the test fails
-  without your patch. `Run the tests. <contributing-testsuite_>`_.
+  without your patch. `Run the tests <contributing-testsuite_>`_.
 - Push your commits to GitHub and `create a pull request`_ by using::
 
         git push --set-upstream origin your-branch-name
@@ -121,7 +121,7 @@ Start coding
 .. _pre-commit: https://pre-commit.com
 .. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
 
-.. _contributing-testsuite:
+.. _contributing-testsuite: #running-the-tests
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
