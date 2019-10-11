@@ -201,6 +201,36 @@ class Config(dict):
             raise
         return self.from_mapping(obj)
 
+    def from_toml(self, filename, silent=False):
+        """Updates the values in the config from a TOML file. This function
+        behaves as if the TOML object was a dictionary and passed to the
+        :meth:`from_mapping` function.
+
+        Note: You will need to install Flask with the toml extra to use
+        this.
+
+        :param filename: the filename of the TOML file.  This can either be an
+                         absolute filename or a filename relative to the
+                         root path.
+        :param silent: set to ``True`` if you want silent failure for missing
+                       files.
+
+        .. versionadded:: 1.2
+        """
+        import toml
+
+        filename = os.path.join(self.root_path, filename)
+
+        try:
+            with open(filename) as json_file:
+                obj = toml.loads(json_file.read())
+        except IOError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+            e.strerror = "Unable to load configuration file (%s)" % e.strerror
+            raise
+        return self.from_mapping(obj)
+
     def from_mapping(self, *mapping, **kwargs):
         """Updates the config like :meth:`update` ignoring items with non-upper
         keys.

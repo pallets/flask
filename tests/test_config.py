@@ -46,6 +46,13 @@ def test_config_from_json():
     common_object_test(app)
 
 
+def test_config_from_toml():
+    app = flask.Flask(__name__)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    app.config.from_toml(os.path.join(current_dir, "static", "config.toml"))
+    common_object_test(app)
+
+
 def test_config_from_mapping():
     app = flask.Flask(__name__)
     app.config.from_mapping({"SECRET_KEY": "config", "TEST_KEY": "foo"})

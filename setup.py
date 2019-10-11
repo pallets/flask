@@ -72,6 +72,7 @@ setup(
             "sphinxcontrib-log-cabinet",
             "sphinx-issues",
         ],
+        "toml": ["toml"],
     },
     entry_points={"console_scripts": ["flask = flask.cli:main"]},
 )
