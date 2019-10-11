@@ -11,6 +11,7 @@
 import errno
 import os
 import types
+import warnings
 
 from werkzeug.utils import import_string
 
@@ -176,6 +177,34 @@ class Config(dict):
             if key.isupper():
                 self[key] = getattr(obj, key)
 
+    def from_file(self, filename, load, silent=False):
+        """Update the values in the config from a file that is loaded using
+        the *load* argument. This method passes the loaded Mapping
+        to the :meth:`from_mapping` function.
+
+        :param filename: the filename of the JSON file.  This can either be an
+                         absolute filename or a filename relative to the
+                         root path.
+        :param load: a callable that takes a file handle and returns a mapping
+                     from the file.
+        :type load: Callable[[Reader], Mapping]. Where Reader is a Protocol
+                    that implements a read method.
+        :param silent: set to ``True`` if you want silent failure for missing
+                       files.
+
+        .. versionadded:: 1.2
+        """
+        filename = os.path.join(self.root_path, filename)
+        try:
+            with open(filename) as file_:
+                obj = load(file_)
+        except IOError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+            e.strerror = "Unable to load configuration file (%s)" % e.strerror
+            raise
+        return self.from_mapping(obj)
+
     def from_json(self, filename, silent=False):
         """Updates the values in the config from a JSON file. This function
         behaves as if the JSON object was a dictionary and passed to the
@@ -189,17 +218,13 @@ class Config(dict):
 
         .. versionadded:: 0.11
         """
-        filename = os.path.join(self.root_path, filename)
-
-        try:
-            with open(filename) as json_file:
-                obj = json.loads(json_file.read())
-        except IOError as e:
-            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
-                return False
-            e.strerror = "Unable to load configuration file (%s)" % e.strerror
-            raise
-        return self.from_mapping(obj)
+        warnings.warn(
+            DeprecationWarning(
+                '"from_json" is deprecated and will be removed in 2.0. Use'
+                ' "from_file(filename, load=json.load)" instead.'
+            )
+        )
+        return self.from_file(filename, json.load, silent=silent)
 
     def from_mapping(self, *mapping, **kwargs):
         """Updates the config like :meth:`update` ignoring items with non-upper
