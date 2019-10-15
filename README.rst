@@ -16,11 +16,21 @@ community that make adding new functionality easy.
 Installing
 ----------
 
-Install and update using `pip`_:
+when you're install on python2.- , Install and update using `pip`_:
 
 .. code-block:: text
 
     pip install -U Flask
+
+
+when you're install on python3.- , Install and update using `pip3`_:
+
+.. code-block:: text
+
+    pip3 install -U Flask
+
+
+nb: i'm suggest you to install flask in virtualenv
 
 
 A Simple Example
@@ -78,3 +88,4 @@ Links
 .. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/
 .. _Jinja: https://www.palletsprojects.com/p/jinja/
 .. _pip: https://pip.pypa.io/en/stable/quickstart/
+.. _pip3: https://pip.pypa.io/en/stable/quickstart/
