@@ -6,6 +6,7 @@
     :copyright: 2010 Pallets
     :license: BSD-3-Clause
 """
+import json
 import os
 import textwrap
 from datetime import timedelta
@@ -27,7 +28,7 @@ def common_object_test(app):
     assert "TestConfig" not in app.config
 
 
-def test_config_from_file():
+def test_config_from_pyfile():
     app = flask.Flask(__name__)
     app.config.from_pyfile(__file__.rsplit(".", 1)[0] + ".py")
     common_object_test(app)
@@ -39,10 +40,10 @@ def test_config_from_object():
     common_object_test(app)
 
 
-def test_config_from_json():
+def test_config_from_file():
     app = flask.Flask(__name__)
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    app.config.from_json(os.path.join(current_dir, "static", "config.json"))
+    app.config.from_file(os.path.join(current_dir, "static", "config.json"), json.load)
     common_object_test(app)
 
 
@@ -116,16 +117,16 @@ def test_config_missing():
     assert not app.config.from_pyfile("missing.cfg", silent=True)
 
 
-def test_config_missing_json():
+def test_config_missing_file():
     app = flask.Flask(__name__)
     with pytest.raises(IOError) as e:
-        app.config.from_json("missing.json")
+        app.config.from_file("missing.json", load=json.load)
     msg = str(e.value)
     assert msg.startswith(
         "[Errno 2] Unable to load configuration file (No such file or directory):"
     )
     assert msg.endswith("missing.json'")
-    assert not app.config.from_json("missing.json", silent=True)
+    assert not app.config.from_file("missing.json", load=json.load, silent=True)
 
 
 def test_custom_config_class():

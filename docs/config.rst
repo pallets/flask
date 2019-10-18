@@ -393,8 +393,8 @@ The following configuration values are used internally by Flask:
     Added :data:`MAX_COOKIE_SIZE` to control a warning from Werkzeug.
 
 
-Configuring from Files
-----------------------
+Configuring from Python Files
+-----------------------------
 
 Configuration becomes more useful if you can store it in a separate file,
 ideally located outside the actual application package. This makes
@@ -439,6 +439,26 @@ the ability to access the configuration when starting up.  There are other
 methods on the config object as well to load from individual files.  For a
 complete reference, read the :class:`~flask.Config` object's
 documentation.
+
+
+Configuring from Data Files
+---------------------------
+
+It is also possible to load configuration from a file in a format of
+your choice using :meth:`~flask.Config.from_file`. For example to load
+from a TOML file:
+
+.. code-block:: python
+
+    import toml
+    app.config.from_file("config.toml", load=toml.load)
+
+Or from a JSON file:
+
+.. code-block:: python
+
+    import json
+    app.config.from_file("config.json", load=json.load)
 
 
 Configuring from Environment Variables
