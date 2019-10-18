@@ -7,6 +7,9 @@ Unreleased
 
 -   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
     setting the session cookie name dynamically. :pr:`3369`
+-   Add :meth:`Config.from_file` to load config using arbitrary file
+    loaders, such as ``toml.load`` or ``json.load``.
+    :meth:`Config.from_json` is deprecated in favor of this. :pr:`3398`
 
 
 Version 1.1.2
