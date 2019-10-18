@@ -440,19 +440,25 @@ methods on the config object as well to load from individual files.  For a
 complete reference, read the :class:`~flask.Config` object's
 documentation.
 
-Configuring from files
-----------------------
 
-It is also possible to load configure from a flat file in a format of
-your choice, for example to load from a TOML (or JSON) formatted
-file::
+Configuring from Data Files
+---------------------------
 
-   import json
-   import toml
+It is also possible to load configuration from a file in a format of
+your choice using :meth:`~flask.Config.from_file`. For example to load
+from a TOML file:
 
-   app.config.from_file("config.toml", load=toml.load)
-   # Alternatively, if you prefer JSON
-   app.config.from_file("config.json", load=json.load)
+.. code-block:: python
+
+    import toml
+    app.config.from_file("config.toml", load=toml.load)
+
+Or from a JSON file:
+
+.. code-block:: python
+
+    import json
+    app.config.from_file("config.json", load=json.load)
 
 
 Configuring from Environment Variables
