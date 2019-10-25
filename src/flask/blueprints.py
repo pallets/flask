@@ -11,6 +11,8 @@
 """
 from functools import update_wrapper
 
+from .views import MethodViewType
+
 from .helpers import _endpoint_from_view_func
 from .helpers import _PackageBoundObject
 
@@ -276,6 +278,11 @@ class Blueprint(_PackageBoundObject):
 
         def decorator(f):
             endpoint = options.pop("endpoint", f.__name__)
+
+            # Support decorating MethodView classes. See Issue #3404
+            if isinstance(f, MethodViewType):
+                f = f.as_view(endpoint)
+
             self.add_url_rule(rule, endpoint, f, **options)
             return f
 
