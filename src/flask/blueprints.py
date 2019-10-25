@@ -105,6 +105,10 @@ class Blueprint(_PackageBoundObject):
 
     See :ref:`blueprints` for more information.
 
+    ..versionchanged:: 2.0.0
+        Assed support for decorating :class:`~flask.views.MethodView` classes
+        with the :meth:`flask.blueprints.Blueprint.route` method.
+
     .. versionchanged:: 1.1.0
         Blueprints have a ``cli`` group to register nested CLI commands.
         The ``cli_group`` parameter controls the name of the group under
