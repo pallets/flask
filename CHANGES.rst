@@ -10,6 +10,8 @@ Unreleased
 -   Add :meth:`Config.from_file` to load config using arbitrary file
     loaders, such as ``toml.load`` or ``json.load``.
     :meth:`Config.from_json` is deprecated in favor of this. :pr:`3398`
+-   Add support for decorating :class:`~flask.views.MethodView` with
+    blueprints' :meth:`flask.blueprint.Blueprint.route` method. :issue:`3404`
 
 
 Version 1.1.2
