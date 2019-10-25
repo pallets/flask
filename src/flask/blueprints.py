@@ -11,10 +11,9 @@
 """
 from functools import update_wrapper
 
-from .views import MethodViewType
-
 from .helpers import _endpoint_from_view_func
 from .helpers import _PackageBoundObject
+from .views import MethodViewType
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
