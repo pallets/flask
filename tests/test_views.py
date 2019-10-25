@@ -250,3 +250,23 @@ def test_remove_method_from_parent(app, client):
     assert client.get("/").data == b"GET"
     assert client.post("/").status_code == 405
     assert sorted(View.methods) == ["GET"]
+
+
+def test_methodview_with_blueprint(app, client):
+
+    from flask.blueprints import Blueprint
+
+    bp = Blueprint("test", __name__)
+
+    @bp.route("/foo")
+    class Foo(flask.views.MethodView):
+        def get(self):
+            return "GET"
+
+        def post(self):
+            return "POST"
+
+    app.register_blueprint(bp)
+    assert client.get("foo").data == b"GET"
+    assert client.get("/foo").data == b"GET"
+    assert client.post("/foo").data == b"POST"
