@@ -136,6 +136,28 @@ That way you also don't have to provide the
 :attr:`~flask.views.View.methods` attribute.  It's automatically set based
 on the methods defined in the class.
 
+If you're using :ref:`blueprints`, you can decorate a
+:class:`~flask.views.MethodView` with the blueprint's ``@route`` decorator
+instead of manually adding the url rule to the ``app`` object. This lets you
+leverage the benefits of blueprints such as ``url_prefix``::
+
+    from flask import Blueprint
+    from flask.views import MethodView
+
+    bp = Blueprint("api", __name__, url_prefix="/api/v1")
+
+    @bp.route("/users")
+    class UserAPI(MethodView):
+
+        def get(self):
+            users = User.query.all()
+            ...
+
+        def post(self):
+            user = User.from_form_data(request.form)
+            ...
+
+
 Decorating Views
 ----------------
 
