@@ -771,6 +771,43 @@ def send_from_directory(directory, filename, **options):
     return send_file(filename, **options)
 
 
+def send_from_filepath(filepath, filename, **options):
+    """Send a file from absolute fielepath with :func:`send_file`.  This
+    is a secure way to quickly expose any files from any directory.
+
+    Example usage::
+
+        @app.route('/uploads/<path:filename>')
+        def download_file(filename):
+            return send_from_filepath(filepath,
+                                       filename, as_attachment=True)
+
+    .. admonition:: Sending files and Performance
+
+       It is strongly recommended to activate either ``X-Sendfile`` support in
+       your webserver or (if no authentication happens) to tell the webserver
+       to serve files for the given path on its own without calling into the
+       web application for improved performance.
+
+    .. versionadded:: 0.5
+
+    :param filepath: the file absolute filepath.
+    :param filename: the filename just show to  download.
+    :param options: optional keyword arguments that are directly
+                    forwarded to :func:`send_file`.
+    """
+    filename = fspath(filename)
+    filepath = fspath(filepath)
+    if not os.path.isabs(filepath):
+        filename = os.path.join(current_app.root_path, filepath)
+    try:
+        if not os.path.isfile(filepath):
+            raise NotFound()
+    except (TypeError, ValueError):
+        raise BadRequest()
+    options.setdefault("conditional", True)
+    return send_file(filepath, **options)
+
 def get_root_path(import_name):
     """Returns the path to a package or cwd if that cannot be found.  This
     returns the path of a package or the folder that contains a module.

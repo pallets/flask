@@ -40,6 +40,7 @@ from .helpers import make_response
 from .helpers import safe_join
 from .helpers import send_file
 from .helpers import send_from_directory
+from .helpers import send_from_filepath
 from .helpers import stream_with_context
 from .helpers import url_for
 from .json import jsonify
