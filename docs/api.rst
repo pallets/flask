@@ -31,6 +31,7 @@ Incoming Request Data
 .. autoclass:: Request
    :members:
    :inherited-members:
+   :exclude-members: json_module
 
    .. attribute:: environ
 
