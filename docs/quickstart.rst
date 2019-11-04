@@ -200,6 +200,8 @@ You can add variable sections to a URL by marking sections with
 as a keyword argument. Optionally, you can use a converter to specify the type
 of the argument like ``<converter:variable_name>``. ::
 
+    from flask import Flask, escape
+    app = Flask(__name__)    
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
