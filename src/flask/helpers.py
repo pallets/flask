@@ -630,7 +630,13 @@ def send_file(
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
             headers["Content-Length"] = fsize
-        elif isinstance(file, io.BytesIO):
+
+        elif isinstance(file,io.StringIO) or isinstance(file,io.BytesIO):
+            if isinstance(file,io.StringIO):
+                mem = io.BytesIO()
+                mem.write(file.getvalue().encode('utf-8'))
+                mem.seek(0)
+                file = mem
             try:
                 fsize = file.getbuffer().nbytes
             except AttributeError:
