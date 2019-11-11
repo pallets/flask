@@ -26,7 +26,7 @@ For example, to run a Flask application with 4 worker processes (``-w
 The ``gunicorn`` command expects the names of your application module or
 package and the application instance within the module. If you use the
 application factory pattern, you must assign a variable to the application instance, 
-such as "app" and then use the command above.
+such as "app" and then use the command above.::
 
     $ gunicorn "myproject:app"
 
