@@ -25,10 +25,17 @@ For example, to run a Flask application with 4 worker processes (``-w
 
 The ``gunicorn`` command expects the names of your application module or
 package and the application instance within the module. If you use the
-application factory pattern, you must assign a variable to the application instance, 
-such as "app" and then use the command above.::
+application factory pattern, import the application factory into a module  
+and declare a variable for the app::
 
-    $ gunicorn "myproject:app"
+    #wsgi.py
+    from myproject.app import create_app
+    app=create_app()
+
+
+Then, use the ``gunicorn`` command to run
+the app from the module::
+    $ gunicorn "myproject.wsgi:app"
 
 .. _Gunicorn: https://gunicorn.org/
 .. _eventlet: https://eventlet.net/
@@ -41,7 +48,6 @@ uWSGI
 which makes it more complicated to setup than gunicorn.
 
 Running `uWSGI HTTP Router`_::
-
     $ uwsgi --http 127.0.0.1:5000 --module myproject:app
 
 For a more optimized setup, see :doc:`configuring uWSGI and NGINX <uwsgi>`.
