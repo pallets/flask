@@ -35,6 +35,7 @@ and declare a variable for the app::
 
 Then, use the ``gunicorn`` command to run
 the app from the module::
+
     $ gunicorn "myproject.wsgi:app"
 
 .. _Gunicorn: https://gunicorn.org/
