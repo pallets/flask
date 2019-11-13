@@ -194,7 +194,7 @@ class Config(dict):
             implements a ``read`` method.
         :param silent: Ignore the file if it doesn't exist.
 
-        .. versionadded:: 1.2
+        .. versionadded:: 2.0
         """
         filename = os.path.join(self.root_path, filename)
 
