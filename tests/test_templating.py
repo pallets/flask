@@ -426,7 +426,7 @@ def test_template_loader_debugging(test_apps, monkeypatch):
             assert (
                 "looked up from an endpoint that belongs to " 'the blueprint "frontend"'
             ) in text
-            assert "See http://flask.pocoo.org/docs/blueprints/#templates" in text
+            assert "See https://flask.palletsprojects.com/en/1.1.x/tutorial/views/" in text
 
     with app.test_client() as c:
         monkeypatch.setitem(app.config, "EXPLAIN_TEMPLATE_LOADING", True)
