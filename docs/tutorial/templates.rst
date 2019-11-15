@@ -31,7 +31,7 @@ statement like ``if`` and ``for``. Unlike Python, blocks are denoted
 by start and end tags rather than indentation since static text within
 a block could change indentation.
 
-.. _Jinja: http://jinja.pocoo.org/docs/templates/
+.. _Jinja: https://jinja.palletsprojects.com/templates/
 .. _HTML: https://developer.mozilla.org/docs/Web/HTML
 
 

@@ -9,7 +9,7 @@ with io.open("README.rst", "rt", encoding="utf8") as f:
 setup(
     name="flaskr",
     version="1.0.0",
-    url="http://flask.pocoo.org/docs/tutorial/",
+    url="https://flask.palletsprojects.com/tutorial/",
     license="BSD",
     maintainer="Pallets team",
     maintainer_email="contact@palletsprojects.com",

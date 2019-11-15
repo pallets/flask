@@ -359,7 +359,7 @@ Rendering Templates
 Generating HTML from within Python is not fun, and actually pretty
 cumbersome because you have to do the HTML escaping on your own to keep
 the application secure.  Because of that Flask configures the `Jinja2
-<http://jinja.pocoo.org/>`_ template engine for you automatically.
+<https://palletsprojects.com/p/jinja/>`_ template engine for you automatically.
 
 To render a template you can use the :func:`~flask.render_template`
 method.  All you have to do is provide the name of the template and the
@@ -392,7 +392,7 @@ package it's actually inside your package:
 
 For templates you can use the full power of Jinja2 templates.  Head over
 to the official `Jinja2 Template Documentation
-<http://jinja.pocoo.org/docs/templates/>`_ for more information.
+<http://jinja.palletsprojects.com/templates/>`_ for more information.
 
 Here is an example template:
 

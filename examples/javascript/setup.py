@@ -9,7 +9,7 @@ with io.open("README.rst", "rt", encoding="utf8") as f:
 setup(
     name="js_example",
     version="1.0.0",
-    url="http://flask.pocoo.org/docs/patterns/jquery/",
+    url="https://flask.palletsprojects.com/patterns/jquery/",
     license="BSD",
     maintainer="Pallets team",
     maintainer_email="contact@palletsprojects.com",

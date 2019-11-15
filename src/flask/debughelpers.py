@@ -164,7 +164,7 @@ def explain_template_loading_attempts(app, template, attempts):
             'belongs to the blueprint "%s".' % blueprint
         )
         info.append("  Maybe you did not place a template in the right folder?")
-        info.append("  See http://flask.pocoo.org/docs/blueprints/#templates")
+        info.append("  See https://flask.palletsprojects.com/blueprints/#templates")
 
     app.logger.info("\n".join(info))
 
