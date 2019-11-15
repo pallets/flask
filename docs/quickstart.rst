@@ -392,7 +392,7 @@ package it's actually inside your package:
 
 For templates you can use the full power of Jinja2 templates.  Head over
 to the official `Jinja2 Template Documentation
-<http://jinja.palletsprojects.com/templates/>`_ for more information.
+<https://jinja.palletsprojects.com/templates/>`_ for more information.
 
 Here is an example template:
 
