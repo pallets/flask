@@ -19,6 +19,7 @@ errors:
 -   a backend server overloaded
 -   a programming error in a library you are using
 -   network connection of the server to another system failed
+-   you have a syntax error in brand-new code
 
 And that's just a small sample of issues you could be facing.  So how do we
 deal with that sort of problem?  By default if your application runs in
@@ -226,6 +227,21 @@ errors, use ``getattr`` to get access it for compatibility.
 
         # wrapped unhandled error
         return render_template("500_unhandled.html", e=original), 500
+
+
+Startup errors
+--------------
+
+When developing new code, it's common to have syntax errors, import
+errors, and similar problems.  By default, Flask's development server
+catches these errors and reports them a bit later, when it receives
+the first request.  After all, you probably wrote that new code in
+order to send a new request.  This “lazy loading” feature prevents the
+development server from crashing when it reloads code with a startup
+error.
+
+If you would prefer the development server to crash immediately, just
+use ``flask run --eager-loading`` to disable lazy loading.
 
 
 Logging
