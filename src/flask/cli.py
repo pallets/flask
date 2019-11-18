@@ -296,11 +296,15 @@ class DispatchingApp(object):
     of the Werkzeug debugger means that it shows up in the browser.
     """
 
-    def __init__(self, loader, use_eager_loading=False):
+    def __init__(self, loader, use_eager_loading=None):
         self.loader = loader
         self._app = None
         self._lock = Lock()
         self._bg_loading_exc_info = None
+
+        if use_eager_loading is None:
+            use_eager_loading = os.environ.get("WERKZEUG_RUN_MAIN") != "true"
+
         if use_eager_loading:
             self._load_unlocked()
         else:
@@ -840,9 +844,6 @@ def run_command(
 
     if debugger is None:
         debugger = debug
-
-    if eager_loading is None:
-        eager_loading = not reload
 
     show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
