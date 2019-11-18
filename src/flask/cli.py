@@ -806,7 +806,7 @@ class SeparatedPathType(click.Path):
     "is active if debug is enabled.",
 )
 @click.option(
-    "--eager-loading/--lazy-loader",
+    "--eager-loading/--lazy-loading",
     default=None,
     help="Enable or disable eager loading. By default eager "
     "loading is enabled if the reloader is disabled.",

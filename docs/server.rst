@@ -1,62 +1,89 @@
-.. _server:
+.. currentmodule:: flask
 
 Development Server
 ==================
 
-.. currentmodule:: flask
+Flask provides a ``run`` command to run the application with a
+development server. In development mode, this server provides an
+interactive debugger and will reload when code is changed.
 
-Starting with Flask 0.11 there are multiple built-in ways to run a
-development server.  The best one is the :command:`flask` command line utility
-but you can also continue using the :meth:`Flask.run` method.
+.. warning::
+
+    Do not use the development server when deploying to production. It
+    is intended for use only during local development. It is not
+    designed to be particularly efficient, stable, or secure.
+
+    See :doc:`/deploying/index` for deployment options.
 
 Command Line
 ------------
 
-The :command:`flask` command line script (:ref:`cli`) is strongly
-recommended for development because it provides a superior reload
-experience due to how it loads the application.  The basic usage is like
-this::
+The ``flask run`` command line script is the recommended way to run the
+development server. It requires setting the ``FLASK_APP`` environment
+variable to point to your application, and ``FLASK_ENV=development`` to
+fully enable development mode.
 
-    $ export FLASK_APP=my_application
+.. code-block:: text
+
+    $ export FLASK_APP=hello
     $ export FLASK_ENV=development
     $ flask run
 
 This enables the development environment, including the interactive
 debugger and reloader, and then starts the server on
-*http://localhost:5000/*.
-
-The individual features of the server can be controlled by passing more
-arguments to the ``run`` option. For instance the reloader can be
-disabled::
-
-    $ flask run --no-reload
+http://localhost:5000/. Use ``flask run --help`` to see the available
+options, and  :doc:`/cli` for detailed instructions about configuring
+and using the CLI.
 
 .. note::
 
-    Prior to Flask 1.0 the :envvar:`FLASK_ENV` environment variable was
-    not supported and you needed to enable debug mode by exporting
+    Prior to Flask 1.0 the ``FLASK_ENV`` environment variable was not
+    supported and you needed to enable debug mode by exporting
     ``FLASK_DEBUG=1``. This can still be used to control debug mode, but
     you should prefer setting the development environment as shown
     above.
 
+
+Lazy or Eager Loading
+~~~~~~~~~~~~~~~~~~~~~
+
+When using the ``flask run`` command with the reloader, the server will
+continue to run even if you introduce syntax errors or other
+initialization errors into the code. Accessing the site will show the
+interactive debugger for the error, rather than crashing the server.
+This feature is called "lazy loading".
+
+If a syntax error is already present when calling ``flask run``, it will
+fail immediately and show the traceback rather than waiting until the
+site is accessed. This is intended to make errors more visible initially
+while still allowing the server to handle errors on reload.
+
+To override this behavior and always fail immediately, even on reload,
+pass the ``--eager-loading`` option. To always keep the server running,
+even on the initial call, pass ``--lazy-loading``.
+
+
 In Code
 -------
 
-The alternative way to start the application is through the
-:meth:`Flask.run` method.  This will immediately launch a local server
-exactly the same way the :command:`flask` script does.
+As an alternative to the ``flask run`` command, the development server
+can also be started from Python with the :meth:`Flask.run` method. This
+method takes arguments similar to the CLI options to control the server.
+The main difference from the CLI command is that the server will crash
+if there are errors when reloading.
 
-Example::
+``debug=True`` can be passed to enable the debugger and reloader, but
+the ``FLASK_ENV=development`` environment variable is still required to
+fully enable development mode.
 
-    if __name__ == '__main__':
-        app.run()
+Place the call in a main block, otherwise it will interfere when trying
+to import and run the application with a production server later.
 
-This works well for the common case but it does not work well for
-development which is why from Flask 0.11 onwards the :command:`flask`
-method is recommended.  The reason for this is that due to how the reload
-mechanism works there are some bizarre side-effects (like executing
-certain code twice, sometimes crashing without message or dying when a
-syntax or import error happens).
+.. code-block:: python
 
-It is however still a perfectly valid method for invoking a non automatic
-reloading application.
+    if __name__ == "__main__":
+        app.run(debug=True)
+
+.. code-block:: text
+
+    $ python hello.py
