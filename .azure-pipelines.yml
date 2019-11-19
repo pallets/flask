@@ -3,41 +3,40 @@ trigger:
   - '*.x'
 
 jobs:
-  - job: Flask
+  - job: Tests
     variables:
-      vmImage: ubuntu-latest
-      python.version: '3.7'
-      python.architecture: 'x64'
+      vmImage: 'ubuntu-latest'
+      python.version: '3.8'
       TOXENV: 'py,coverage-ci'
-      publish.test.results: 'true'
+      hasTestResults: 'true'
 
     strategy:
       matrix:
-        Python37Linux:
-          python.version: '3.7'
-        Python37Windows:
-          python.version: '3.7'
+        Python 3.8 Linux:
+          vmImage: 'ubuntu-latest'
+        Python 3.8 Windows:
           vmImage: 'windows-latest'
-        Python37Mac:
-          python.version: '3.7'
+        Python 3.8 Mac:
           vmImage: 'macos-latest'
-        Pypy3Linux:
+        PyPy 3 Linux:
           python.version: 'pypy3'
-        Python36Linux:
+        Python 3.7 Linux:
+          python.version: '3.7'
+        Python 3.6 Linux:
           python.version: '3.6'
-        Python35Linux:
+        Python 3.5 Linux:
           python.version: '3.5'
-        Python27Linux:
+        Python 2.7 Linux:
           python.version: '2.7'
-        Python27Windows:
+        Python 2.7 Windows:
           python.version: '2.7'
           vmImage: 'windows-latest'
-        DocsHtml:
-          TOXENV: 'docs-html'
-          publish.test.results: 'false'
+        Docs:
+          TOXENV: 'docs'
+          hasTestResults: 'false'
         Style:
-          TOXENV: stylecheck
-          publish.test.results: 'false'
+          TOXENV: 'style'
+          hasTestResults: 'false'
         VersionRange:
           TOXENV: 'devel,lowest,coverage-ci'
 
@@ -48,27 +47,26 @@ jobs:
       - task: UsePythonVersion@0
         inputs:
           versionSpec: $(python.version)
-          architecture: $(python.architecture)
         displayName: Use Python $(python.version)
 
       - script: pip --disable-pip-version-check install -U tox
         displayName: Install tox
 
-      - script: tox -- --junitxml=test-results.xml tests examples
+      - script: tox -s false -- --junitxml=test-results.xml tests examples
         displayName: Run tox
 
       - task: PublishTestResults@2
         inputs:
           testResultsFiles: test-results.xml
           testRunTitle: $(Agent.JobName)
-        condition: eq(variables['publish.test.results'], 'true')
+        condition: eq(variables['hasTestResults'], 'true')
         displayName: Publish test results
 
       - task: PublishCodeCoverageResults@1
         inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: coverage.xml
-        condition: eq(variables['publish.test.results'], 'true')
+        condition: eq(variables['hasTestResults'], 'true')
         displayName: Publish coverage results
 
   # Test on the nightly version of Python.
