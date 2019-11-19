@@ -13,6 +13,9 @@ Unreleased
 -   The ``flask run`` command will only defer errors on reload. Errors
     present during the initial call will cause the server to exit with
     the traceback immediately. :issue:`3431`
+-   :func:`send_file` raises a :exc:`ValueError` when passed an
+    :mod:`io` object in text mode. Previously, it would respond with
+    200 OK and an empty file. :issue:`3358`
 
 
 Version 1.1.2
