@@ -170,8 +170,8 @@ will not fail.
 
 During testing, it can be useful to defer popping the contexts after the
 request ends, so that their data can be accessed in the test function.
-Using the :meth:`~Flask.test_client` as a ``with`` block to preserve the
-contexts until the with block exits.
+Use the :meth:`~Flask.test_client` as a ``with`` block to preserve the
+contexts until the ``with`` block exits.
 
 .. code-block:: python
 

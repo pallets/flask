@@ -11,6 +11,7 @@
 import datetime
 import io
 import os
+import sys
 import uuid
 
 import pytest
@@ -780,12 +781,17 @@ class TestSendfile(object):
         assert rv.data.strip() == b"Hello Subdomain"
         rv.close()
 
-    def test_send_from_directory_bad_request(self, app, req_ctx):
+    def test_send_from_directory_null_character(self, app, req_ctx):
         app.root_path = os.path.join(
             os.path.dirname(__file__), "test_apps", "subdomaintestmodule"
         )
 
-        with pytest.raises(BadRequest):
+        if sys.version_info >= (3, 8):
+            exception = NotFound
+        else:
+            exception = BadRequest
+
+        with pytest.raises(exception):
             flask.send_from_directory("static", "bad\x00")
 
 
