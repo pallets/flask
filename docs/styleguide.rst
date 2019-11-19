@@ -51,11 +51,11 @@ Blank lines:
   segments in code.  Example::
 
     def hello(name):
-        print 'Hello %s!' % name
+        print f'Hello {name}!'
 
 
     def goodbye(name):
-        print 'See you %s.' % name
+        print f'See you {name}.'
 
 
     class MyClass(object):
