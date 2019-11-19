@@ -24,6 +24,7 @@ from werkzeug.http import parse_options_header
 
 import flask
 from flask import json
+from flask._compat import PY2
 from flask._compat import StringIO
 from flask._compat import text_type
 from flask.helpers import get_debug_flag
@@ -446,6 +447,14 @@ class TestJSON(object):
             assert lines == sorted_by_str
 
 
+class PyStringIO(object):
+    def __init__(self, *args, **kwargs):
+        self._io = io.BytesIO(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self._io, name)
+
+
 class TestSendfile(object):
     def test_send_file_regular(self, app, req_ctx):
         rv = flask.send_file("static/index.html")
@@ -473,7 +482,7 @@ class TestSendfile(object):
         @app.route("/")
         def index():
             return flask.send_file(
-                StringIO("party like it's"),
+                io.BytesIO(b"party like it's"),
                 last_modified=last_modified,
                 mimetype="text/plain",
             )
@@ -483,65 +492,53 @@ class TestSendfile(object):
 
     def test_send_file_object_without_mimetype(self, app, req_ctx):
         with pytest.raises(ValueError) as excinfo:
-            flask.send_file(StringIO("LOL"))
+            flask.send_file(io.BytesIO(b"LOL"))
         assert "Unable to infer MIME-type" in str(excinfo.value)
         assert "no filename is available" in str(excinfo.value)
 
-        flask.send_file(StringIO("LOL"), attachment_filename="filename")
+        flask.send_file(io.BytesIO(b"LOL"), attachment_filename="filename")
 
-    def test_send_file_object(self, app, req_ctx):
-        with open(os.path.join(app.root_path, "static/index.html"), mode="rb") as f:
-            rv = flask.send_file(f, mimetype="text/html")
-            rv.direct_passthrough = False
-            with app.open_resource("static/index.html") as f:
-                assert rv.data == f.read()
-            assert rv.mimetype == "text/html"
-            rv.close()
-
+    @pytest.mark.parametrize(
+        "opener",
+        [
+            lambda app: open(os.path.join(app.static_folder, "index.html"), "rb"),
+            lambda app: io.BytesIO(b"Test"),
+            pytest.param(
+                lambda app: StringIO("Test"),
+                marks=pytest.mark.skipif(not PY2, reason="Python 2 only"),
+            ),
+            lambda app: PyStringIO(b"Test"),
+        ],
+    )
+    @pytest.mark.usefixtures("req_ctx")
+    def test_send_file_object(self, app, opener):
+        file = opener(app)
         app.use_x_sendfile = True
-
-        with open(os.path.join(app.root_path, "static/index.html")) as f:
-            rv = flask.send_file(f, mimetype="text/html")
-            assert rv.mimetype == "text/html"
-            assert "x-sendfile" not in rv.headers
-            rv.close()
-
-        app.use_x_sendfile = False
-        f = StringIO("Test")
-        rv = flask.send_file(f, mimetype="application/octet-stream")
+        rv = flask.send_file(file, mimetype="text/plain")
         rv.direct_passthrough = False
-        assert rv.data == b"Test"
-        assert rv.mimetype == "application/octet-stream"
-        rv.close()
-
-        class PyStringIO(object):
-            def __init__(self, *args, **kwargs):
-                self._io = StringIO(*args, **kwargs)
-
-            def __getattr__(self, name):
-                return getattr(self._io, name)
-
-        f = PyStringIO("Test")
-        f.name = "test.txt"
-        rv = flask.send_file(f, attachment_filename=f.name)
-        rv.direct_passthrough = False
-        assert rv.data == b"Test"
+        assert rv.data
         assert rv.mimetype == "text/plain"
-        rv.close()
-
-        f = StringIO("Test")
-        rv = flask.send_file(f, mimetype="text/plain")
-        rv.direct_passthrough = False
-        assert rv.data == b"Test"
-        assert rv.mimetype == "text/plain"
-        rv.close()
-
-        app.use_x_sendfile = True
-
-        f = StringIO("Test")
-        rv = flask.send_file(f, mimetype="text/html")
         assert "x-sendfile" not in rv.headers
         rv.close()
+
+    @pytest.mark.parametrize(
+        "opener",
+        [
+            lambda app: io.StringIO(u"Test"),
+            pytest.param(
+                lambda app: open(os.path.join(app.static_folder, "index.html")),
+                marks=pytest.mark.skipif(PY2, reason="Python 3 only"),
+            ),
+        ],
+    )
+    @pytest.mark.usefixtures("req_ctx")
+    def test_send_file_text_fails(self, app, opener):
+        file = opener(app)
+
+        with pytest.raises(ValueError):
+            flask.send_file(file, mimetype="text/plain")
+
+        file.close()
 
     def test_send_file_pathlike(self, app, req_ctx):
         rv = flask.send_file(FakePath("static/index.html"))
@@ -630,10 +627,6 @@ class TestSendfile(object):
         assert rv.data == b"somethingsomething"[4:16]
         rv.close()
 
-    @pytest.mark.skipif(
-        not callable(getattr(Range, "to_content_range_header", None)),
-        reason="not implemented within werkzeug",
-    )
     def test_send_file_range_request_xsendfile_invalid(self, app, client):
         # https://github.com/pallets/flask/issues/2526
         app.use_x_sendfile = True
@@ -649,7 +642,7 @@ class TestSendfile(object):
     def test_attachment(self, app, req_ctx):
         app = flask.Flask(__name__)
         with app.test_request_context():
-            with open(os.path.join(app.root_path, "static/index.html")) as f:
+            with open(os.path.join(app.root_path, "static/index.html"), "rb") as f:
                 rv = flask.send_file(
                     f, as_attachment=True, attachment_filename="index.html"
                 )
@@ -657,7 +650,7 @@ class TestSendfile(object):
                 assert value == "attachment"
                 rv.close()
 
-        with open(os.path.join(app.root_path, "static/index.html")) as f:
+        with open(os.path.join(app.root_path, "static/index.html"), "rb") as f:
             rv = flask.send_file(
                 f, as_attachment=True, attachment_filename="index.html"
             )
@@ -674,7 +667,7 @@ class TestSendfile(object):
         rv.close()
 
         rv = flask.send_file(
-            StringIO("Test"),
+            io.BytesIO(b"Test"),
             as_attachment=True,
             attachment_filename="index.txt",
             add_etags=False,
