@@ -86,7 +86,7 @@ Here is an example model (put this into :file:`models.py`, e.g.)::
             self.email = email
 
         def __repr__(self):
-            return '<User %r>' % (self.name)
+            return f'<User {self.name!r}>'
 
 To create the database you can use the `init_db` function:
 
@@ -159,7 +159,7 @@ Here is an example table and model (put this into :file:`models.py`)::
             self.email = email
 
         def __repr__(self):
-            return '<User %r>' % (self.name)
+            return f'<User {self.name!r}>'
 
     users = Table('users', metadata,
         Column('id', Integer, primary_key=True),
