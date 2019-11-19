@@ -3,7 +3,7 @@ trigger:
   - '*.x'
 
 jobs:
-  - job: Flask
+  - job: Tests
     variables:
       vmImage: 'ubuntu-latest'
       python.version: '3.8'
