@@ -125,7 +125,7 @@ special variable available inside `Jinja for loops`_. It's used to
 display a line after each post except the last one, to visually separate
 them.
 
-.. _Jinja for loops: http://jinja.pocoo.org/docs/templates/#for
+.. _Jinja for loops: https://jinja.palletsprojects.com/templates/#for
 
 
 Create

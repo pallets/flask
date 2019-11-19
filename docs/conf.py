@@ -23,7 +23,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "werkzeug": ("https://werkzeug.palletsprojects.com/", None),
     "click": ("https://click.palletsprojects.com/", None),
-    "jinja": ("http://jinja.pocoo.org/docs/", None),
+    "jinja": ("https://jinja.palletsprojects.com/", None),
     "itsdangerous": ("https://itsdangerous.palletsprojects.com/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/", None),
     "wtforms": ("https://wtforms.readthedocs.io/en/stable/", None),
