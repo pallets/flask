@@ -108,8 +108,8 @@ Old Version of Flask
 Versions of Flask older than 0.11 use to have different ways to start the
 application.  In short, the :command:`flask` command did not exist, and
 neither did :command:`python -m flask`.  In that case you have two options:
-either upgrade to newer Flask versions or have a look at the :ref:`server`
-docs to see the alternative method for running a server.
+either upgrade to newer Flask versions or have a look at :doc:`/server`
+to see the alternative method for running a server.
 
 Invalid Import Name
 ```````````````````
@@ -153,7 +153,7 @@ This does the following things:
 You can also control debug mode separately from the environment by
 exporting ``FLASK_DEBUG=1``.
 
-There are more parameters that are explained in the :ref:`server` docs.
+There are more parameters that are explained in :doc:`/server`.
 
 .. admonition:: Attention
 
