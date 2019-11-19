@@ -15,7 +15,7 @@ page. Demonstrates using |XMLHttpRequest|_, |fetch|_, and
 .. |jQuery.ajax| replace:: ``jQuery.ajax``
 .. _jQuery.ajax: https://api.jquery.com/jQuery.ajax/
 
-.. _Flask docs: http://flask.pocoo.org/docs/patterns/jquery/
+.. _Flask docs: https://flask.palletsprojects.com/patterns/jquery/
 
 
 Install
