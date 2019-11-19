@@ -164,6 +164,7 @@ Building the docs
 Build the docs in the ``docs`` directory using Sphinx::
 
     cd docs
+    pip install -r requirements.txt
     make html
 
 Open ``_build/html/index.html`` in your browser to view the docs.
