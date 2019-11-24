@@ -549,12 +549,7 @@ class Flask(_PackageBoundObject):
 
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
-        #: similar things.  For backwards compatibility extensions should register
-        #: themselves like this::
-        #:
-        #:      if not hasattr(app, 'extensions'):
-        #:          app.extensions = {}
-        #:      app.extensions['extensionname'] = SomeObject()
+        #: similar things.
         #:
         #: The key must match the name of the extension module. For example in
         #: case of a "Flask-Foo" extension in `flask_foo`, the key would be
