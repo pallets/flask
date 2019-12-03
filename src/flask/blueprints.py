@@ -42,20 +42,13 @@ class BlueprintSetupState(object):
         #: out if the blueprint was registered in the past already.
         self.first_registration = first_registration
 
-        subdomain = self.options.get("subdomain")
-        if subdomain is None:
-            subdomain = self.blueprint.subdomain
-
         #: The subdomain that the blueprint should be active for, ``None``
         #: otherwise.
-        self.subdomain = subdomain
+        self.subdomain = self.options.get("subdomain") or self.blueprint.subdomain
 
-        url_prefix = self.options.get("url_prefix")
-        if url_prefix is None:
-            url_prefix = self.blueprint.url_prefix
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
-        self.url_prefix = url_prefix
+        self.url_prefix = self.options.get("url_prefix") or self.blueprint.url_prefix
 
         #: A dictionary with URL defaults that is added to each and every
         #: URL that was defined with the blueprint.
