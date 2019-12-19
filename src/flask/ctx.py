@@ -75,7 +75,7 @@ class _AppCtxGlobals(object):
         set and return a default value. Like :meth:`dict.setdefault`.
 
         :param name: Name of attribute to get.
-        :param: default: Value to set and return if the attribute is not
+        :param default: Value to set and return if the attribute is not
             present.
 
         .. versionadded:: 0.11
