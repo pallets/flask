@@ -1013,7 +1013,7 @@ class _PackageBoundObject(object):
             return self._static_url_path
 
         if self.static_folder is not None:
-            basename = os.path.basename(self.static_folder)
+            basename = os.path.basename(self.static_folder.rstrip("/"))
             return ("/" + basename).rstrip("/")
 
     @static_url_path.setter
