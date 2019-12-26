@@ -1425,6 +1425,17 @@ def test_static_url_empty_path_default(app):
     rv.close()
 
 
+def test_static_folder_with_ending_slash():
+    app = flask.Flask(__name__, static_folder="static/")
+
+    @app.route("/<path:path>")
+    def catch_all(path):
+        return path
+
+    rv = app.test_client().get("/catch/all")
+    assert rv.data == b"catch/all"
+
+
 def test_static_route_with_host_matching():
     app = flask.Flask(__name__, host_matching=True, static_host="example.com")
     c = app.test_client()
