@@ -199,7 +199,7 @@ contexts until the ``with`` block exits.
         print(request.path)
 
     # the contexts are popped and teardown functions are called after
-    # the client with block exists
+    # the client with block exits
 
 Signals
 ~~~~~~~
