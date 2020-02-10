@@ -713,10 +713,12 @@ class CertParamType(click.ParamType):
 
             if value == "adhoc":
                 try:
-                    import OpenSSL  # noqa: F401
+                    import cryptography  # noqa: F401
                 except ImportError:
                     raise click.BadParameter(
-                        "Using ad-hoc certificates requires pyOpenSSL.", ctx, param
+                        "Using ad-hoc certificates requires the cryptography library.",
+                        ctx,
+                        param,
                     )
 
                 return value
@@ -743,7 +745,7 @@ def _validate_key(ctx, param, value):
     if sys.version_info < (2, 7, 9):
         is_context = cert and not isinstance(cert, (text_type, bytes))
     else:
-        is_context = isinstance(cert, ssl.SSLContext)
+        is_context = ssl and isinstance(cert, ssl.SSLContext)
 
     if value is not None:
         if is_adhoc:
