@@ -2078,9 +2078,9 @@ class Flask(_PackageBoundObject):
         # the body must not be None
         if rv is None:
             raise TypeError(
-                "The view function did not return a valid response. The"
+                'The view function for "{}" did not return a valid response. The'
                 " function either returned None or ended without a return"
-                " statement."
+                " statement.".format(request.endpoint)
             )
 
         # make sure the body is an instance of the response class
