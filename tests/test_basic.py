@@ -1221,6 +1221,7 @@ def test_response_type_errors():
     with pytest.raises(TypeError) as e:
         c.get("/none")
         assert "returned None" in str(e.value)
+        assert "from_none" in str(e.value)
 
     with pytest.raises(TypeError) as e:
         c.get("/small_tuple")
