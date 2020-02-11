@@ -1689,7 +1689,7 @@ def test_routing_redirect_debugging(app, client):
         with pytest.raises(AssertionError) as e:
             client.post("/foo", data={})
         assert "http://localhost/foo/" in str(e.value)
-        assert ("Make sure to directly send your POST-request to this URL") in str(
+        assert "Make sure to directly send your POST-request to this URL" in str(
             e.value
         )
 
