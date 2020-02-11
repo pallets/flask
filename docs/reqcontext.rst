@@ -256,8 +256,9 @@ exceptions where it is good to know that this object is actually a proxy:
 -   The proxy objects cannot fake their type as the actual object types.
     If you want to perform instance checks, you have to do that on the
     object being proxied.
--   If the specific object reference is important, for example for
-    sending :ref:`signals` or passing data to a background thread.
+-   The reference to the proxied object is needed in some situations,
+    such as sending :ref:`signals` or passing data to a background
+    thread.
 
 If you need to access the underlying object that is proxied, use the
 :meth:`~werkzeug.local.LocalProxy._get_current_object` method::
