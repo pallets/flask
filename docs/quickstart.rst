@@ -205,6 +205,8 @@ You can add variable sections to a URL by marking sections with
 as a keyword argument. Optionally, you can use a converter to specify the type
 of the argument like ``<converter:variable_name>``. ::
 
+    from markupsafe import escape
+
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
@@ -422,7 +424,7 @@ markup to HTML) you can mark it as safe by using the
 :class:`~markupsafe.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
 
-Here is a basic introduction to how the :class:`~jinja2.Markup` class works::
+Here is a basic introduction to how the :class:`~markupsafe.Markup` class works::
 
     >>> from markupsafe import Markup
     >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
