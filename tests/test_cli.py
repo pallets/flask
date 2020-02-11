@@ -566,14 +566,14 @@ def test_run_cert_path():
 
 
 def test_run_cert_adhoc(monkeypatch):
-    monkeypatch.setitem(sys.modules, "OpenSSL", None)
+    monkeypatch.setitem(sys.modules, "cryptography", None)
 
-    # pyOpenSSL not installed
+    # cryptography not installed
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--cert", "adhoc"])
 
-    # pyOpenSSL installed
-    monkeypatch.setitem(sys.modules, "OpenSSL", types.ModuleType("OpenSSL"))
+    # cryptography installed
+    monkeypatch.setitem(sys.modules, "cryptography", types.ModuleType("cryptography"))
     ctx = run_command.make_context("run", ["--cert", "adhoc"])
     assert ctx.params["cert"] == "adhoc"
 
