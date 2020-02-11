@@ -358,11 +358,9 @@ Released 2018-04-26
 Version 0.12.5
 --------------
 
-Released on February 10 2020
+Released 2020-02-10
 
--   Pin Werkzeug to < 1.0.0.  (`#3497`_)
-
-.. _#3497: https://github.com/pallets/flask/issues/3497
+-   Pin Werkzeug to < 1.0.0. :issue:`3497`
 
 
 Version 0.12.4
