@@ -10,7 +10,7 @@ The following example demonstrates how to serve an SPA along with an API::
 
     from flask import Flask, jsonify
 
-    app = Flask(__name__, static_folder='app')
+    app = Flask(__name__, static_folder='app', static_url_path="/app")
 
 
     @app.route("/heartbeat")
