@@ -38,9 +38,7 @@ Growing with Flask
 ------------------
 
 Once you have Flask up and running, you'll find a variety of extensions
-available in the community to integrate your project for production. The Flask
-core team reviews extensions and ensures approved extensions do not break with
-future releases.
+available in the community to integrate your project for production.
 
 As your codebase grows, you are free to make the design decisions appropriate
 for your project.  Flask will continue to provide a very simple glue layer to
