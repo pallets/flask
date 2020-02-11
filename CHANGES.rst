@@ -16,6 +16,8 @@ Unreleased
 -   :func:`send_file` raises a :exc:`ValueError` when passed an
     :mod:`io` object in text mode. Previously, it would respond with
     200 OK and an empty file. :issue:`3358`
+-   When using ad-hoc certificates, check for the cryptography library
+    instead of PyOpenSSL. :pr:`3492`
 
 
 Version 1.1.2
