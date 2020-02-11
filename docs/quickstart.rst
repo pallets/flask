@@ -200,6 +200,8 @@ You can add variable sections to a URL by marking sections with
 as a keyword argument. Optionally, you can use a converter to specify the type
 of the argument like ``<converter:variable_name>``. ::
 
+    from markupsafe import escape
+
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
@@ -281,7 +283,8 @@ Python shell. See :ref:`context-locals`.
 
 .. code-block:: python
 
-    from flask import Flask, escape, url_for
+    from flask import Flask, url_for
+    from markupsafe import escape
 
     app = Flask(__name__)
 
@@ -419,9 +422,9 @@ markup to HTML) you can mark it as safe by using the
 :class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
 
-Here is a basic introduction to how the :class:`~jinja2.Markup` class works::
+Here is a basic introduction to how the :class:`~markupsafe.Markup` class works::
 
-    >>> from flask import Markup
+    >>> from markupsafe import Markup
     >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
     Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
     >>> Markup.escape('<blink>hacker</blink>')
@@ -768,7 +771,8 @@ unless they know the secret key used for signing.
 In order to use sessions you have to set a secret key.  Here is how
 sessions work::
 
-    from flask import Flask, session, redirect, url_for, escape, request
+    from flask import Flask, session, redirect, url_for, request
+    from markupsafe import escape
 
     app = Flask(__name__)
 
