@@ -1000,6 +1000,8 @@ class _PackageBoundObject(object):
 
     @static_folder.setter
     def static_folder(self, value):
+        if value is not None:
+            value = value.rstrip("/\\")
         self._static_folder = value
 
     @property
@@ -1013,7 +1015,7 @@ class _PackageBoundObject(object):
             return self._static_url_path
 
         if self.static_folder is not None:
-            basename = os.path.basename(self.static_folder.rstrip("/"))
+            basename = os.path.basename(self.static_folder)
             return ("/" + basename).rstrip("/")
 
     @static_url_path.setter
