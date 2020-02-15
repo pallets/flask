@@ -27,6 +27,8 @@ Unreleased
 
 -   Work around an issue when running the ``flask`` command with an
     external debugger on Windows. :issue:`3297`
+-   The static route will not catch all URLs if the ``Flask``
+    ``static_folder`` argument ends with a slash. :issue:`3452`
 
 
 Version 1.1.1
