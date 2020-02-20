@@ -14,7 +14,7 @@ import pytest
 import werkzeug.serving
 from jinja2 import TemplateNotFound
 
-import flask
+import flask , render_template ,render_template_string
 
 
 def test_context_processing(app, client):
@@ -33,7 +33,7 @@ def test_context_processing(app, client):
 def test_original_win(app, client):
     @app.route("/")
     def index():
-        return flask.render_template_string("{{ config }}", config=42)
+        return render_template_string("{{ config }}", config=42)
 
     rv = client.get("/")
     assert rv.data == b"42"
@@ -46,7 +46,7 @@ def test_request_less_rendering(app, app_ctx):
     def context_processor():
         return dict(foo=42)
 
-    rv = flask.render_template_string("Hello {{ config.WORLD_NAME }} {{ foo }}")
+    rv = render_template_string("Hello {{ config.WORLD_NAME }} {{ foo }}")
     assert rv == "Hello Special World 42"
 
 
@@ -111,8 +111,8 @@ def test_no_escaping(app, client):
 
 
 def test_escaping_without_template_filename(app, client, req_ctx):
-    assert flask.render_template_string("{{ foo }}", foo="<test>") == "&lt;test&gt;"
-    assert flask.render_template("mail.txt", foo="<test>") == "<test> Mail"
+    assert render_template_string("{{ foo }}", foo="<test>") == "&lt;test&gt;"
+    assert render_template("mail.txt", foo="<test>") == "<test> Mail"
 
 
 def test_macros(app, req_ctx):
@@ -181,7 +181,7 @@ def test_add_template_filter_with_template(app, client):
 
     @app.route("/")
     def index():
-        return flask.render_template("template_filter.html", value="abcd")
+        return render_template("template_filter.html", value="abcd")
 
     rv = client.get("/")
     assert rv.data == b"dcba"
@@ -194,7 +194,7 @@ def test_template_filter_with_name_and_template(app, client):
 
     @app.route("/")
     def index():
-        return flask.render_template("template_filter.html", value="abcd")
+        return render_template("template_filter.html", value="abcd")
 
     rv = client.get("/")
     assert rv.data == b"dcba"
@@ -261,7 +261,7 @@ def test_template_test_with_template(app, client):
 
     @app.route("/")
     def index():
-        return flask.render_template("template_test.html", value=False)
+        return render_template("template_test.html", value=False)
 
     rv = client.get("/")
     assert b"Success!" in rv.data
@@ -275,7 +275,7 @@ def test_add_template_test_with_template(app, client):
 
     @app.route("/")
     def index():
-        return flask.render_template("template_test.html", value=False)
+        return render_template("template_test.html", value=False)
 
     rv = client.get("/")
     assert b"Success!" in rv.data
@@ -288,7 +288,7 @@ def test_template_test_with_name_and_template(app, client):
 
     @app.route("/")
     def index():
-        return flask.render_template("template_test.html", value=False)
+        return render_template("template_test.html", value=False)
 
     rv = client.get("/")
     assert b"Success!" in rv.data
@@ -302,7 +302,7 @@ def test_add_template_test_with_name_and_template(app, client):
 
     @app.route("/")
     def index():
-        return flask.render_template("template_test.html", value=False)
+        return render_template("template_test.html", value=False)
 
     rv = client.get("/")
     assert b"Success!" in rv.data
