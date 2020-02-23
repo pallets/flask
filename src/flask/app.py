@@ -960,17 +960,24 @@ class Flask(_PackageBoundObject):
         if debug is not None:
             self.debug = bool(debug)
 
-        _host = "127.0.0.1"
-        _port = 5000
         server_name = self.config.get("SERVER_NAME")
-        sn_host, sn_port = None, None
+        sn_host = sn_port = None
 
         if server_name:
             sn_host, _, sn_port = server_name.partition(":")
 
-        host = host or sn_host or _host
-        # pick the first value that's not None (0 is allowed)
-        port = int(next((p for p in (port, sn_port) if p is not None), _port))
+        if not host:
+            if sn_host:
+                host = sn_host
+            else:
+                host = "127.0.0.1"
+
+        if port or port == 0:
+            port = int(port)
+        elif sn_port:
+            port = int(sn_port)
+        else:
+            port = 5000
 
         options.setdefault("use_reloader", self.debug)
         options.setdefault("use_debugger", self.debug)
@@ -2146,11 +2153,11 @@ class Flask(_PackageBoundObject):
             # If subdomain matching is disabled (the default), use the
             # default subdomain in all cases. This should be the default
             # in Werkzeug but it currently does not have that feature.
-            subdomain = (
-                (self.url_map.default_subdomain or None)
-                if not self.subdomain_matching
-                else None
-            )
+            if not self.subdomain_matching:
+                subdomain = self.url_map.default_subdomain or None
+            else:
+                subdomain = None
+
             return self.url_map.bind_to_environ(
                 request.environ,
                 server_name=self.config["SERVER_NAME"],
