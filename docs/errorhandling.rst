@@ -210,7 +210,7 @@ behavior.
 If there is an error handler registered for ``InternalServerError``,
 this will be invoked. As of Flask 1.1.0, this error handler will always
 be passed an instance of ``InternalServerError``, not the original
-unhandled error. The original error is available as ``e.original_error``.
+unhandled error. The original error is available as ``e.original_exception``.
 Until Werkzeug 1.0.0, this attribute will only exist during unhandled
 errors, use ``getattr`` to get access it for compatibility.
 
