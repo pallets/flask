@@ -15,13 +15,12 @@ A minimal Flask application looks something like this:
 .. code-block:: python
 
     from flask import Flask
-    from markupsafe import escape
 
     app = Flask(__name__)
 
     @app.route("/")
     def hello_world():
-        return f"<p>Hello, {escape(name)}!</p>"
+        return "<p>Hello, World!</p>"
 
 So what did that code do?
 
@@ -37,14 +36,6 @@ So what did that code do?
 4.  The function returns the message we want to display in the user's
     browser. The default content type is HTML, so HTML in the string
     will be rendered by the browser.
-
-.. note:: HTML escaping
-
-    When returning HTML (the default response type in Flask), any user
-    input rendered in the output must be escaped to protect from
-    injection attacks. HTML templates in Jinja, introduced later, will
-    do this automatically. :func:`~markupsafe.escape`, shown above, can
-    be used manually. It's omitted for brevity in the examples below.
 
 Save it as :file:`hello.py` or something similar. Make sure to not call
 your application :file:`flask.py` because this would conflict with Flask
@@ -210,17 +201,17 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
-        return f'User {username}'
+        return f'User {escape(username)}'
 
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
         # show the post with the given id, the id is an integer
-        return f'Post {post_id}'
+        return f'Post {escape(post_id)}'
 
     @app.route('/path/<path:subpath>')
     def show_subpath(subpath):
         # show the subpath after /path/
-        return f'Subpath {subpath}'
+        return f'Subpath {escape(subpath)}'
 
 Converter types:
 
@@ -231,6 +222,15 @@ Converter types:
 ``path``   like ``string`` but also accepts slashes
 ``uuid``   accepts UUID strings
 ========== ==========================================
+
+.. note:: HTML escaping
+
+    When returning HTML (the default response type in Flask), any user
+    input rendered in the output must be escaped to protect from
+    injection attacks. HTML templates in Jinja, introduced later, will
+    do this automatically. :func:`~markupsafe.escape`, shown above, can
+    be used manually.
+
 
 Unique URLs / Redirection Behavior
 ``````````````````````````````````
