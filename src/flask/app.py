@@ -170,9 +170,9 @@ class Flask(_PackageBoundObject):
     :param static_url_path: can be used to specify a different path for the
                             static files on the web.  Defaults to the name
                             of the `static_folder` folder.
-    :param static_folder: the folder with static files that should be served
-                          at `static_url_path`.  Defaults to the ``'static'``
-                          folder in the root path of the application.
+    :param static_folder: The folder with static files that is served at
+        ``static_url_path``. Relative to the application ``root_path``
+        or an absolute path. Defaults to ``'static'``.
     :param static_host: the host to use when adding the static route.
         Defaults to None. Required when using ``host_matching=True``
         with a ``static_folder`` configured.
