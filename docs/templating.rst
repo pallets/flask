@@ -3,7 +3,7 @@
 Templates
 =========
 
-Flask leverages Jinja2 as template engine.  You are obviously free to use
+Flask leverages Jinja2 as its template engine.  You are obviously free to use
 a different template engine, but you still have to install Jinja2 to run
 Flask itself.  This requirement is necessary to enable rich extensions.
 An extension can depend on Jinja2 being present.
