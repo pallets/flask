@@ -100,7 +100,7 @@ by default:
 Standard Filters
 ----------------
 
-These filters are available in Jinja2 additionally to the filters provided
+Flask provides the following Jinja2 filters in addition to the filters provided
 by Jinja2 itself:
 
 .. function:: tojson
