@@ -62,7 +62,7 @@ directory should be treated as a package.
             pass
 
         # a simple page that says hello
-        @app.route('/hello')
+        @app.route('/hello/')
         def hello():
             return 'Hello, World!'
 
