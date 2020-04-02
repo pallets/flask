@@ -15,13 +15,12 @@ A minimal Flask application looks something like this:
 .. code-block:: python
 
     from flask import Flask
-    from markupsafe import escape
 
     app = Flask(__name__)
 
     @app.route("/")
     def hello_world():
-        return f"<p>Hello, {escape(name)}!</p>"
+        return "<p>Hello, World!</p>"
 
 So what did that code do?
 
@@ -37,14 +36,6 @@ So what did that code do?
 4.  The function returns the message we want to display in the user's
     browser. The default content type is HTML, so HTML in the string
     will be rendered by the browser.
-
-.. note:: HTML escaping
-
-    When returning HTML (the default response type in Flask), any user
-    input rendered in the output must be escaped to protect from
-    injection attacks. HTML templates in Jinja, introduced later, will
-    do this automatically. :func:`~markupsafe.escape`, shown above, can
-    be used manually. It's omitted for brevity in the examples below.
 
 Save it as :file:`hello.py` or something similar. Make sure to not call
 your application :file:`flask.py` because this would conflict with Flask
@@ -177,6 +168,34 @@ documentation`_.
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 
 
+HTML Escaping
+-------------
+
+When returning HTML (the default response type in Flask), any
+user-provided values rendered in the output must be escaped to protect
+from injection attacks. HTML templates rendered with Jinja, introduced
+later, will do this automatically.
+
+:func:`~markupsafe.escape`, shown here, can be used manually. It is
+omitted in most examples for brevity, but you should always be aware of
+how you're using untrusted data.
+
+.. code-block:: python
+
+    from markupsafe import escape
+
+    @app.route("/<name>")
+    def hello(name):
+        return f"Hello, {escape(name)}!"
+
+If a user managed to submit the name ``<script>alert("bad")</script>``,
+escaping causes it to be rendered as text, rather than running the
+script in the user's browser.
+
+``<name>`` in the route captures a value from the URL and passes it to
+the view function. These variable rules are explained below.
+
+
 Routing
 -------
 
@@ -231,6 +250,7 @@ Converter types:
 ``path``   like ``string`` but also accepts slashes
 ``uuid``   accepts UUID strings
 ========== ==========================================
+
 
 Unique URLs / Redirection Behavior
 ``````````````````````````````````
