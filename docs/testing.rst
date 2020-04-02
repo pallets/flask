@@ -423,7 +423,7 @@ command line. ::
 
     @app.cli.command('hello')
     @click.option('--name', default='World')
-    def hello_command(name)
+    def hello_command(name):
         click.echo(f'Hello, {name}!')
 
     def test_hello():
@@ -450,7 +450,7 @@ This is useful for testing complex validation rules and custom types. ::
 
     @app.cli.command('hello')
     @click.option('--name', default='World', callback=upper)
-    def hello_command(name)
+    def hello_command(name):
         click.echo(f'Hello, {name}!')
 
     def test_hello_params():
