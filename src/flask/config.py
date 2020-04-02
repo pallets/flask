@@ -218,7 +218,7 @@ class Config(dict):
             absolute path or relative to the config root path.
         :param silent: Ignore the file if it doesn't exist.
 
-        .. deprecated:: 1.2
+        .. deprecated:: 2.0
             Use :meth:`from_file` with :meth:`json.load` instead.
 
         .. versionadded:: 0.11
