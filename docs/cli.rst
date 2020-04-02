@@ -491,10 +491,10 @@ script is available. Note that you don't need to set ``FLASK_APP``. ::
 PyCharm Integration
 -------------------
 
-Prior to PyCharm 2018.1, the Flask CLI features weren't yet fully
-integrated into PyCharm. We have to do a few tweaks to get them working
-smoothly. These instructions should be similar for any other IDE you
-might want to use.
+PyCharm Professional provides a special Flask run configuration. For
+the Community Edition, we need to configure it to call the ``flask run``
+CLI command with the correct environment variables. These instructions
+should be similar for any other IDE you might want to use.
 
 In PyCharm, with your project open, click on *Run* from the menu bar and
 go to *Edit Configurations*. You'll be greeted by a screen similar to
@@ -503,7 +503,7 @@ this:
 .. image:: _static/pycharm-runconfig.png
     :align: center
     :class: screenshot
-    :alt: screenshot of pycharm's run configuration settings
+    :alt: Screenshot of PyCharms's run configuration settings.
 
 There's quite a few options to change, but once we've done it for one
 command, we can easily copy the entire configuration and make a single
@@ -511,9 +511,9 @@ tweak to give us access to other commands, including any custom ones you
 may implement yourself.
 
 Click the + (*Add New Configuration*) button and select *Python*. Give
-the configuration a good descriptive name such as "Run Flask Server".
-For the ``flask run`` command, check "Single instance only" since you
-can't run the server more than once at the same time.
+the configuration a name such as "flask run". For the ``flask run``
+command, check "Single instance only" since you can't run the server
+more than once at the same time.
 
 Select *Module name* from the dropdown (**A**) then input ``flask``.
 
@@ -524,7 +524,8 @@ the development server.
 You can skip this next step if you're using :ref:`dotenv`. We need to
 add an environment variable (**C**) to identify our application. Click
 on the browse button and add an entry with ``FLASK_APP`` on the left and
-the Python import or file on the right (``hello`` for example).
+the Python import or file on the right (``hello`` for example). Add an
+entry with ``FLASK_ENV`` and set it to ``development``.
 
 Next we need to set the working directory (**D**) to be the folder where
 our application resides.
