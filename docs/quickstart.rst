@@ -168,6 +168,34 @@ documentation`_.
 Have another debugger in mind? See :ref:`working-with-debuggers`.
 
 
+HTML Escaping
+-------------
+
+When returning HTML (the default response type in Flask), any
+user-provided values rendered in the output must be escaped to protect
+from injection attacks. HTML templates rendered with Jinja, introduced
+later, will do this automatically.
+
+:func:`~markupsafe.escape`, shown here, can be used manually. It is
+omitted in most examples for brevity, but you should always be aware of
+how you're using untrusted data.
+
+.. code-block:: python
+
+    from markupsafe import escape
+
+    @app.route("/<name>")
+    def hello(name):
+        return f"Hello, {escape(name)}!"
+
+If a user managed to submit the name ``<script>alert("bad")</script>``,
+escaping causes it to be rendered as text, rather than running the
+script in the user's browser.
+
+``<name>`` in the route captures a value from the URL and passes it to
+the view function. These variable rules are explained below.
+
+
 Routing
 -------
 
@@ -201,17 +229,17 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
-        return f'User {escape(username)}'
+        return f'User {username}'
 
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
         # show the post with the given id, the id is an integer
-        return f'Post {escape(post_id)}'
+        return f'Post {post_id}'
 
     @app.route('/path/<path:subpath>')
     def show_subpath(subpath):
         # show the subpath after /path/
-        return f'Subpath {escape(subpath)}'
+        return f'Subpath {subpath}'
 
 Converter types:
 
@@ -222,14 +250,6 @@ Converter types:
 ``path``   like ``string`` but also accepts slashes
 ``uuid``   accepts UUID strings
 ========== ==========================================
-
-.. note:: HTML escaping
-
-    When returning HTML (the default response type in Flask), any user
-    input rendered in the output must be escaped to protect from
-    injection attacks. HTML templates in Jinja, introduced later, will
-    do this automatically. :func:`~markupsafe.escape`, shown above, can
-    be used manually.
 
 
 Unique URLs / Redirection Behavior
