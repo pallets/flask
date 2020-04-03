@@ -57,4 +57,4 @@ from .signals import template_rendered
 from .templating import render_template
 from .templating import render_template_string
 
-__version__ = "1.2.0.dev0"
+__version__ = "1.2.0.dev"
