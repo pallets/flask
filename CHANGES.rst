@@ -3,7 +3,7 @@
 Version 1.1.2
 -------------
 
-Unreleased
+Released 2020-04-03
 
 -   Work around an issue when running the ``flask`` command with an
     external debugger on Windows. :issue:`3297`
