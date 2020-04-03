@@ -3,11 +3,13 @@
 Installation
 ============
 
+
 Python Version
 --------------
 
-We recommend using the latest version of Python 3. Flask supports Python 3.5
-and newer, Python 2.7, and PyPy.
+We recommend using the latest version of Python. Flask supports Python
+3.6 and newer.
+
 
 Dependencies
 ------------
@@ -31,6 +33,7 @@ These distributions will be installed automatically when installing Flask.
 .. _ItsDangerous: https://palletsprojects.com/p/itsdangerous/
 .. _Click: https://palletsprojects.com/p/click/
 
+
 Optional dependencies
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -51,6 +54,7 @@ use them if you install them.
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 .. _watchdog: https://pythonhosted.org/watchdog/
 
+
 Virtual environments
 --------------------
 
@@ -66,13 +70,9 @@ Virtual environments are independent groups of Python libraries, one for each
 project. Packages installed for one project will not affect other projects or
 the operating system's packages.
 
-Python 3 comes bundled with the :mod:`venv` module to create virtual
-environments. If you're using a modern version of Python, you can continue on
-to the next section.
+Python comes bundled with the :mod:`venv` module to create virtual
+environments.
 
-If you're using Python 2, see :ref:`install-install-virtualenv` first.
-
-.. _install-create-env:
 
 Create an environment
 ~~~~~~~~~~~~~~~~~~~~~
@@ -91,18 +91,6 @@ On Windows:
 
     $ py -3 -m venv venv
 
-If you needed to install virtualenv because you are using Python 2, use
-the following command instead:
-
-.. code-block:: sh
-
-    $ python2 -m virtualenv venv
-
-On Windows:
-
-.. code-block:: bat
-
-    > \Python27\Scripts\virtualenv.exe venv
 
 .. _install-activate-env:
 
@@ -121,12 +109,15 @@ On Windows:
 
     > venv\Scripts\activate
 
-Your shell prompt will change to show the name of the activated environment.
+Your shell prompt will change to show the name of the activated
+environment.
+
 
 Install Flask
 -------------
 
-Within the activated environment, use the following command to install Flask:
+Within the activated environment, use the following command to install
+Flask:
 
 .. code-block:: sh
 
@@ -134,53 +125,3 @@ Within the activated environment, use the following command to install Flask:
 
 Flask is now installed. Check out the :doc:`/quickstart` or go to the
 :doc:`Documentation Overview </index>`.
-
-Living on the edge
-~~~~~~~~~~~~~~~~~~
-
-If you want to work with the latest Flask code before it's released, install or
-update the code from the master branch:
-
-.. code-block:: sh
-
-    $ pip install -U https://github.com/pallets/flask/archive/master.tar.gz
-
-.. _install-install-virtualenv:
-
-Install virtualenv
-------------------
-
-If you are using Python 2, the venv module is not available. Instead,
-install `virtualenv`_.
-
-On Linux, virtualenv is provided by your package manager:
-
-.. code-block:: sh
-
-    # Debian, Ubuntu
-    $ sudo apt-get install python-virtualenv
-
-    # CentOS, Fedora
-    $ sudo yum install python-virtualenv
-
-    # Arch
-    $ sudo pacman -S python-virtualenv
-
-If you are on Mac OS X or Windows, download `get-pip.py`_, then:
-
-.. code-block:: sh
-
-    $ sudo python2 Downloads/get-pip.py
-    $ sudo python2 -m pip install virtualenv
-
-On Windows, as an administrator:
-
-.. code-block:: bat
-
-    > \Python27\python.exe Downloads\get-pip.py
-    > \Python27\python.exe -m pip install virtualenv
-
-Now you can return above and :ref:`install-create-env`.
-
-.. _virtualenv: https://virtualenv.pypa.io/
-.. _get-pip.py: https://bootstrap.pypa.io/get-pip.py

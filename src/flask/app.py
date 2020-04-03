@@ -191,11 +191,9 @@ class Flask(_PackageBoundObject):
                                      for loading the config are assumed to
                                      be relative to the instance path instead
                                      of the application root.
-    :param root_path: Flask by default will automatically calculate the path
-                      to the root of the application.  In certain situations
-                      this cannot be achieved (for instance if the package
-                      is a Python 3 namespace package) and needs to be
-                      manually defined.
+    :param root_path: The path to the root of the application files.
+        This should only be set manually when it can't be detected
+        automatically, such as for namespace packages.
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
@@ -2026,11 +2024,11 @@ class Flask(_PackageBoundObject):
             without returning, is not allowed. The following types are allowed
             for ``view_rv``:
 
-            ``str`` (``unicode`` in Python 2)
+            ``str``
                 A response object is created with the string encoded to UTF-8
                 as the body.
 
-            ``bytes`` (``str`` in Python 2)
+            ``bytes``
                 A response object is created with the bytes as the body.
 
             ``dict``

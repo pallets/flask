@@ -19,10 +19,6 @@ complex constructs that make larger applications easier to distribute:
   other package.
 - **installation manager**: :command:`pip` can install other libraries for you.
 
-If you have Python 2 (>=2.7.9) or Python 3 (>=3.4) installed from python.org,
-you will already have pip and setuptools on your system.  Otherwise, you
-will need to install them yourself.
-
 Flask itself, and all the libraries you can find on PyPI are distributed with
 either setuptools or distutils.
 
