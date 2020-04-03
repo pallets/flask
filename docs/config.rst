@@ -161,8 +161,8 @@ The following configuration values are used internally by Flask:
 
     A secret key that will be used for securely signing the session cookie
     and can be used for any other security related needs by extensions or your
-    application. It should be a long random string of bytes, although unicode
-    is accepted too. For example, copy the output of this to your config::
+    application. It should be a long random ``bytes`` or ``str``. For
+    example, copy the output of this to your config::
 
         $ python -c 'import os; print(os.urandom(16))'
         b'_5#y2L"F4Q8z\n\xec]/'
@@ -302,10 +302,10 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: JSON_AS_ASCII
 
-    Serialize objects to ASCII-encoded JSON. If this is disabled, the JSON
-    will be returned as a Unicode string, or encoded as ``UTF-8`` by
-    ``jsonify``. This has security implications when rendering the JSON into
-    JavaScript in templates, and should typically remain enabled.
+    Serialize objects to ASCII-encoded JSON. If this is disabled, the
+    JSON returned from ``jsonify`` will contain Unicode characters. This
+    has security implications when rendering the JSON into JavaScript in
+    templates, and should typically remain enabled.
 
     Default: ``True``
 
@@ -678,7 +678,7 @@ locations are used:
 
 -   Installed module or package::
 
-        $PREFIX/lib/python2.X/site-packages/myapp
+        $PREFIX/lib/pythonX.Y/site-packages/myapp
         $PREFIX/var/myapp-instance
 
     ``$PREFIX`` is the prefix of your Python installation.  This can be
