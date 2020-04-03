@@ -99,14 +99,14 @@ def make_test_environ_builder(*args, **kwargs):
     """Create a :class:`flask.testing.EnvironBuilder`.
 
     .. deprecated: 1.1
-        Will be removed in 1.2. Construct ``flask.testing.EnvironBuilder``
-        directly instead.
+        Will be removed in 2.0. Construct
+        ``flask.testing.EnvironBuilder`` directly instead.
     """
     warnings.warn(
         DeprecationWarning(
-            '"make_test_environ_builder()" is deprecated and will be removed '
-            'in 1.2. Construct "flask.testing.EnvironBuilder" directly '
-            "instead."
+            '"make_test_environ_builder()" is deprecated and will be'
+            ' removed in 2.0. Construct "flask.testing.EnvironBuilder"'
+            " directly instead."
         )
     )
     return EnvironBuilder(*args, **kwargs)

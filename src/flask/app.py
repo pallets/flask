@@ -169,9 +169,9 @@ class Flask(_PackageBoundObject):
     :param static_url_path: can be used to specify a different path for the
                             static files on the web.  Defaults to the name
                             of the `static_folder` folder.
-    :param static_folder: the folder with static files that should be served
-                          at `static_url_path`.  Defaults to the ``'static'``
-                          folder in the root path of the application.
+    :param static_folder: The folder with static files that is served at
+        ``static_url_path``. Relative to the application ``root_path``
+        or an absolute path. Defaults to ``'static'``.
     :param static_host: the host to use when adding the static route.
         Defaults to None. Required when using ``host_matching=True``
         with a ``static_folder`` configured.
@@ -1075,16 +1075,16 @@ class Flask(_PackageBoundObject):
         we recommend replacing the :class:`session_interface`.
 
         .. deprecated: 1.0
-            Will be removed in 1.1. Use ``session_interface.open_session``
-            instead.
+            Will be removed in 2.0. Use
+            ``session_interface.open_session`` instead.
 
         :param request: an instance of :attr:`request_class`.
         """
 
         warnings.warn(
             DeprecationWarning(
-                '"open_session" is deprecated and will be removed in 1.1. Use'
-                ' "session_interface.open_session" instead.'
+                '"open_session" is deprecated and will be removed in'
+                ' 2.0. Use "session_interface.open_session" instead.'
             )
         )
         return self.session_interface.open_session(self, request)
@@ -1095,8 +1095,8 @@ class Flask(_PackageBoundObject):
         method we recommend replacing the :class:`session_interface`.
 
         .. deprecated: 1.0
-            Will be removed in 1.1. Use ``session_interface.save_session``
-            instead.
+            Will be removed in 2.0. Use
+            ``session_interface.save_session`` instead.
 
         :param session: the session to be saved (a
                         :class:`~werkzeug.contrib.securecookie.SecureCookie`
@@ -1106,8 +1106,8 @@ class Flask(_PackageBoundObject):
 
         warnings.warn(
             DeprecationWarning(
-                '"save_session" is deprecated and will be removed in 1.1. Use'
-                ' "session_interface.save_session" instead.'
+                '"save_session" is deprecated and will be removed in'
+                ' 2.0. Use "session_interface.save_session" instead.'
             )
         )
         return self.session_interface.save_session(self, session, response)
@@ -1117,16 +1117,17 @@ class Flask(_PackageBoundObject):
         this method we recommend replacing the :class:`session_interface`.
 
         .. deprecated: 1.0
-            Will be removed in 1.1. Use ``session_interface.make_null_session``
-            instead.
+            Will be removed in 2.0. Use
+            ``session_interface.make_null_session`` instead.
 
         .. versionadded:: 0.7
         """
 
         warnings.warn(
             DeprecationWarning(
-                '"make_null_session" is deprecated and will be removed in 1.1. Use'
-                ' "session_interface.make_null_session" instead.'
+                '"make_null_session" is deprecated and will be removed'
+                ' in 2.0. Use "session_interface.make_null_session"'
+                " instead."
             )
         )
         return self.session_interface.make_null_session(self)
