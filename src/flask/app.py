@@ -1074,16 +1074,16 @@ class Flask(_PackageBoundObject):
         we recommend replacing the :class:`session_interface`.
 
         .. deprecated: 1.0
-            Will be removed in 1.1. Use ``session_interface.open_session``
-            instead.
+            Will be removed in 2.0. Use
+            ``session_interface.open_session`` instead.
 
         :param request: an instance of :attr:`request_class`.
         """
 
         warnings.warn(
             DeprecationWarning(
-                '"open_session" is deprecated and will be removed in 1.1. Use'
-                ' "session_interface.open_session" instead.'
+                '"open_session" is deprecated and will be removed in'
+                ' 2.0. Use "session_interface.open_session" instead.'
             )
         )
         return self.session_interface.open_session(self, request)
@@ -1094,8 +1094,8 @@ class Flask(_PackageBoundObject):
         method we recommend replacing the :class:`session_interface`.
 
         .. deprecated: 1.0
-            Will be removed in 1.1. Use ``session_interface.save_session``
-            instead.
+            Will be removed in 2.0. Use
+            ``session_interface.save_session`` instead.
 
         :param session: the session to be saved (a
                         :class:`~werkzeug.contrib.securecookie.SecureCookie`
@@ -1105,8 +1105,8 @@ class Flask(_PackageBoundObject):
 
         warnings.warn(
             DeprecationWarning(
-                '"save_session" is deprecated and will be removed in 1.1. Use'
-                ' "session_interface.save_session" instead.'
+                '"save_session" is deprecated and will be removed in'
+                ' 2.0. Use "session_interface.save_session" instead.'
             )
         )
         return self.session_interface.save_session(self, session, response)
@@ -1116,16 +1116,17 @@ class Flask(_PackageBoundObject):
         this method we recommend replacing the :class:`session_interface`.
 
         .. deprecated: 1.0
-            Will be removed in 1.1. Use ``session_interface.make_null_session``
-            instead.
+            Will be removed in 2.0. Use
+            ``session_interface.make_null_session`` instead.
 
         .. versionadded:: 0.7
         """
 
         warnings.warn(
             DeprecationWarning(
-                '"make_null_session" is deprecated and will be removed in 1.1. Use'
-                ' "session_interface.make_null_session" instead.'
+                '"make_null_session" is deprecated and will be removed'
+                ' in 2.0. Use "session_interface.make_null_session"'
+                " instead."
             )
         )
         return self.session_interface.make_null_session(self)
