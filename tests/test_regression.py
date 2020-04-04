@@ -1,12 +1,3 @@
-"""
-    tests.regression
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Tests regressions.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import gc
 import platform
 import threading

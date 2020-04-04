@@ -1,15 +1,3 @@
-"""
-    flask
-    ~~~~~
-
-    A microframework based on Werkzeug.  It's extensively documented
-    and follows best practice patterns.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
-# utilities we import from Werkzeug and Jinja2 that are unused
-# in the module but are exported as public interface.
 from jinja2 import escape
 from jinja2 import Markup
 from werkzeug.exceptions import abort

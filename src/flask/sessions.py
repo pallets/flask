@@ -1,12 +1,3 @@
-"""
-    flask.sessions
-    ~~~~~~~~~~~~~~
-
-    Implements cookie based sessions based on itsdangerous.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import hashlib
 import warnings
 from collections.abc import MutableMapping

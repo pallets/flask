@@ -1,12 +1,3 @@
-"""
-    tests.reqctx
-    ~~~~~~~~~~~~
-
-    Tests the request context.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import pytest
 
 import flask

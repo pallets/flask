@@ -1,10 +1,3 @@
-"""
-tests.test_json_tag
-~~~~~~~~~~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
 from datetime import datetime
 from uuid import uuid4
 

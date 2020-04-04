@@ -1,12 +1,3 @@
-"""
-    tests.testing
-    ~~~~~~~~~~~~~
-
-    Test client and more.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import click
 import pytest
 import werkzeug

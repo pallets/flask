@@ -1,10 +1,3 @@
-"""
-tests.test_user_error_handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
 import pytest
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import HTTPException

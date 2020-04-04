@@ -1,12 +1,3 @@
-"""
-    tests.signals
-    ~~~~~~~~~~~~~~~~~~~~~~~
-
-    Signalling.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import pytest
 
 try:

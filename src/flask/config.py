@@ -1,12 +1,3 @@
-"""
-    flask.config
-    ~~~~~~~~~~~~
-
-    Implements the configuration related objects.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import errno
 import os
 import types

@@ -1,12 +1,3 @@
-"""
-    tests.blueprints
-    ~~~~~~~~~~~~~~~~
-
-    Blueprints (and currently modules)
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import functools
 
 import pytest

@@ -1,12 +1,3 @@
-"""
-    flask.views
-    ~~~~~~~~~~~
-
-    This module provides class-based views inspired by the ones in Django.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 from .globals import request
 
 

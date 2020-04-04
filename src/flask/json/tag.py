@@ -2,10 +2,10 @@
 Tagged JSON
 ~~~~~~~~~~~
 
-A compact representation for lossless serialization of non-standard JSON types.
-:class:`~flask.sessions.SecureCookieSessionInterface` uses this to serialize
-the session data, but it may be useful in other places. It can be extended to
-support other types.
+A compact representation for lossless serialization of non-standard JSON
+types. :class:`~flask.sessions.SecureCookieSessionInterface` uses this
+to serialize the session data, but it may be useful in other places. It
+can be extended to support other types.
 
 .. autoclass:: TaggedJSONSerializer
     :members:
@@ -13,12 +13,15 @@ support other types.
 .. autoclass:: JSONTag
     :members:
 
-Let's seen an example that adds support for :class:`~collections.OrderedDict`.
-Dicts don't have an order in Python or JSON, so to handle this we will dump
-the items as a list of ``[key, value]`` pairs. Subclass :class:`JSONTag` and
-give it the new key ``' od'`` to identify the type. The session serializer
-processes dicts first, so insert the new tag at the front of the order since
-``OrderedDict`` must be processed before ``dict``. ::
+Let's see an example that adds support for
+:class:`~collections.OrderedDict`. Dicts don't have an order in JSON, so
+to handle this we will dump the items as a list of ``[key, value]``
+pairs. Subclass :class:`JSONTag` and give it the new key ``' od'`` to
+identify the type. The session serializer processes dicts first, so
+insert the new tag at the front of the order since ``OrderedDict`` must
+be processed before ``dict``.
+
+.. code-block:: python
 
     from flask.json.tag import JSONTag
 
@@ -36,9 +39,6 @@ processes dicts first, so insert the new tag at the front of the order since
             return OrderedDict(value)
 
     app.session_interface.serializer.register(TagOrderedDict, index=0)
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
 """
 from base64 import b64decode
 from base64 import b64encode

@@ -1,13 +1,3 @@
-"""
-    flask.testing
-    ~~~~~~~~~~~~~
-
-    Implements test support helpers.  This module is lazily imported
-    and usually not used in production environments.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 from contextlib import contextmanager
 
 import werkzeug.test
