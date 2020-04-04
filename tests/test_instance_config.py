@@ -24,7 +24,7 @@ def test_explicit_instance_paths(modules_tmpdir):
     assert app.instance_path == str(modules_tmpdir)
 
 
-@pytest.mark.xfail(reason="TODO: weird interaction with tox")
+@pytest.mark.xfail(reason="weird interaction with tox")
 def test_main_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join("main_app.py")
     app.write('import flask\n\napp = flask.Flask("__main__")')
@@ -36,6 +36,7 @@ def test_main_module_paths(modules_tmpdir, purge_module):
     assert app.instance_path == os.path.join(here, "instance")
 
 
+@pytest.mark.xfail(reason="weird interaction with tox")
 def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join("config_module_app.py").write(
         "import os\n"
@@ -50,6 +51,7 @@ def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     assert app.instance_path == str(modules_tmpdir.join("instance"))
 
 
+@pytest.mark.xfail(reason="weird interaction with tox")
 def test_uninstalled_package_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.mkdir("config_package_app")
     init = app.join("__init__.py")

@@ -1,10 +1,11 @@
 .. currentmodule:: flask
 
-Version 1.2.0
+Version 2.0.0
 -------------
 
 Unreleased
 
+-   Drop support for Python 2 and 3.5.
 -   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
     setting the session cookie name dynamically. :pr:`3369`
 -   Add :meth:`Config.from_file` to load config using arbitrary file
