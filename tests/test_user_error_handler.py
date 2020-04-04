@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 tests.test_user_error_handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,7 +29,7 @@ def test_error_handler_no_match(app, client):
         original = getattr(e, "original_exception", None)
 
         if original is not None:
-            return "wrapped " + type(original).__name__
+            return f"wrapped {type(original).__name__}"
 
         return "direct"
 
@@ -208,7 +207,7 @@ def test_default_error_handler():
     assert c.get("/slash", follow_redirects=True).data == b"slash"
 
 
-class TestGenericHandlers(object):
+class TestGenericHandlers:
     """Test how very generic handlers are dispatched to."""
 
     class Custom(Exception):
@@ -239,9 +238,9 @@ class TestGenericHandlers(object):
         original = getattr(e, "original_exception", None)
 
         if original is not None:
-            return "wrapped " + type(original).__name__
+            return f"wrapped {type(original).__name__}"
 
-        return "direct " + type(e).__name__
+        return f"direct {type(e).__name__}"
 
     @pytest.mark.parametrize("to_handle", (InternalServerError, 500))
     def test_handle_class_or_code(self, app, client, to_handle):

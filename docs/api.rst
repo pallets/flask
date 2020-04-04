@@ -58,12 +58,12 @@ Incoming Request Data
       the following:
 
       ============= ======================================================
-      `path`        ``u'/π/page.html'``
-      `full_path`   ``u'/π/page.html?x=y'``
-      `script_root` ``u'/myapplication'``
-      `base_url`    ``u'http://www.example.com/myapplication/π/page.html'``
-      `url`         ``u'http://www.example.com/myapplication/π/page.html?x=y'``
-      `url_root`    ``u'http://www.example.com/myapplication/'``
+      `path`        ``'/π/page.html'``
+      `full_path`   ``'/π/page.html?x=y'``
+      `script_root` ``'/myapplication'``
+      `base_url`    ``'http://www.example.com/myapplication/π/page.html'``
+      `url`         ``'http://www.example.com/myapplication/π/page.html?x=y'``
+      `url_root`    ``'http://www.example.com/myapplication/'``
       ============= ======================================================
 
 

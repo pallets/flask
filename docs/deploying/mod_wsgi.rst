@@ -211,11 +211,6 @@ you have to modify your ``.wsgi`` file slightly.
 Add the following lines to the top of your ``.wsgi`` file::
 
     activate_this = '/path/to/env/bin/activate_this.py'
-    execfile(activate_this, dict(__file__=activate_this))
-
-For Python 3 add the following lines to the top of your ``.wsgi`` file::
-
-    activate_this = '/path/to/env/bin/activate_this.py'
     with open(activate_this) as file_:
         exec(file_.read(), dict(__file__=activate_this))
 

@@ -21,7 +21,7 @@ data and to then invoke that function and pass it to a response object::
     def generate_large_csv():
         def generate():
             for row in iter_all_rows():
-                yield ','.join(row) + '\n'
+                yield f"{','.join(row)}\n"
         return Response(generate(), mimetype='text/csv')
 
 Each ``yield`` expression is directly sent to the browser.  Note though

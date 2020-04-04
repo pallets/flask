@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.blueprints
     ~~~~~~~~~~~~~~~~
@@ -18,7 +17,7 @@ from .helpers import _PackageBoundObject
 _sentinel = object()
 
 
-class BlueprintSetupState(object):
+class BlueprintSetupState:
     """Temporary holder object for registering a blueprint with the
     application.  An instance of this class is created by the
     :meth:`~flask.Blueprint.make_setup_state` method and later passed
@@ -80,10 +79,10 @@ class BlueprintSetupState(object):
             defaults = dict(defaults, **options.pop("defaults"))
         self.app.add_url_rule(
             rule,
-            "%s.%s" % (self.blueprint.name, endpoint),
+            f"{self.blueprint.name}.{endpoint}",
             view_func,
             defaults=defaults,
-            **options
+            **options,
         )
 
 
@@ -247,7 +246,7 @@ class Blueprint(_PackageBoundObject):
 
         if self.has_static_folder:
             state.add_url_rule(
-                self.static_url_path + "/<path:filename>",
+                f"{self.static_url_path}/<path:filename>",
                 view_func=self.send_static_file,
                 endpoint="static",
             )

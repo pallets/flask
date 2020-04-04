@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.app
     ~~~~~~~~~
@@ -10,7 +9,6 @@
 """
 import os
 import sys
-import warnings
 from datetime import timedelta
 from functools import update_wrapper
 from itertools import chain
@@ -32,10 +30,6 @@ from werkzeug.wrappers import BaseResponse
 
 from . import cli
 from . import json
-from ._compat import integer_types
-from ._compat import reraise
-from ._compat import string_types
-from ._compat import text_type
 from .config import Config
 from .config import ConfigAttribute
 from .ctx import _AppCtxGlobals
@@ -191,11 +185,9 @@ class Flask(_PackageBoundObject):
                                      for loading the config are assumed to
                                      be relative to the instance path instead
                                      of the application root.
-    :param root_path: Flask by default will automatically calculate the path
-                      to the root of the application.  In certain situations
-                      this cannot be achieved (for instance if the package
-                      is a Python 3 namespace package) and needs to be
-                      manually defined.
+    :param root_path: The path to the root of the application files.
+        This should only be set manually when it can't be detected
+        automatically, such as for namespace packages.
     """
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
@@ -593,7 +585,7 @@ class Flask(_PackageBoundObject):
                 bool(static_host) == host_matching
             ), "Invalid static_host/host_matching combination"
             self.add_url_rule(
-                self.static_url_path + "/<path:filename>",
+                f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
                 view_func=self.send_static_file,
@@ -719,7 +711,7 @@ class Flask(_PackageBoundObject):
         prefix, package_path = find_package(self.import_name)
         if prefix is None:
             return os.path.join(package_path, "instance")
-        return os.path.join(prefix, "var", self.name + "-instance")
+        return os.path.join(prefix, "var", f"{self.name}-instance")
 
     def open_instance_resource(self, resource, mode="rb"):
         """Opens a resource from the application's instance folder
@@ -1068,70 +1060,6 @@ class Flask(_PackageBoundObject):
 
         return cls(self, **kwargs)
 
-    def open_session(self, request):
-        """Creates or opens a new session.  Default implementation stores all
-        session data in a signed cookie.  This requires that the
-        :attr:`secret_key` is set.  Instead of overriding this method
-        we recommend replacing the :class:`session_interface`.
-
-        .. deprecated: 1.0
-            Will be removed in 2.0. Use
-            ``session_interface.open_session`` instead.
-
-        :param request: an instance of :attr:`request_class`.
-        """
-
-        warnings.warn(
-            DeprecationWarning(
-                '"open_session" is deprecated and will be removed in'
-                ' 2.0. Use "session_interface.open_session" instead.'
-            )
-        )
-        return self.session_interface.open_session(self, request)
-
-    def save_session(self, session, response):
-        """Saves the session if it needs updates.  For the default
-        implementation, check :meth:`open_session`.  Instead of overriding this
-        method we recommend replacing the :class:`session_interface`.
-
-        .. deprecated: 1.0
-            Will be removed in 2.0. Use
-            ``session_interface.save_session`` instead.
-
-        :param session: the session to be saved (a
-                        :class:`~werkzeug.contrib.securecookie.SecureCookie`
-                        object)
-        :param response: an instance of :attr:`response_class`
-        """
-
-        warnings.warn(
-            DeprecationWarning(
-                '"save_session" is deprecated and will be removed in'
-                ' 2.0. Use "session_interface.save_session" instead.'
-            )
-        )
-        return self.session_interface.save_session(self, session, response)
-
-    def make_null_session(self):
-        """Creates a new instance of a missing session.  Instead of overriding
-        this method we recommend replacing the :class:`session_interface`.
-
-        .. deprecated: 1.0
-            Will be removed in 2.0. Use
-            ``session_interface.make_null_session`` instead.
-
-        .. versionadded:: 0.7
-        """
-
-        warnings.warn(
-            DeprecationWarning(
-                '"make_null_session" is deprecated and will be removed'
-                ' in 2.0. Use "session_interface.make_null_session"'
-                " instead."
-            )
-        )
-        return self.session_interface.make_null_session(self)
-
     @setupmethod
     def register_blueprint(self, blueprint, **options):
         """Register a :class:`~flask.Blueprint` on the application. Keyword
@@ -1156,10 +1084,11 @@ class Flask(_PackageBoundObject):
 
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, (
-                "A name collision occurred between blueprints %r and %r. Both"
-                ' share the same name "%s". Blueprints that are created on the'
-                " fly need unique names."
-                % (blueprint, self.blueprints[blueprint.name], blueprint.name)
+                "A name collision occurred between blueprints"
+                f" {blueprint!r} and {self.blueprints[blueprint.name]!r}."
+                f" Both share the same name {blueprint.name!r}."
+                f" Blueprints that are created on the fly need unique"
+                f" names."
             )
         else:
             self.blueprints[blueprint.name] = blueprint
@@ -1182,7 +1111,7 @@ class Flask(_PackageBoundObject):
         endpoint=None,
         view_func=None,
         provide_automatic_options=None,
-        **options
+        **options,
     ):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
@@ -1246,12 +1175,12 @@ class Flask(_PackageBoundObject):
         # a tuple of only ``GET`` as default.
         if methods is None:
             methods = getattr(view_func, "methods", None) or ("GET",)
-        if isinstance(methods, string_types):
+        if isinstance(methods, str):
             raise TypeError(
-                "Allowed methods have to be iterables of strings, "
-                'for example: @app.route(..., methods=["POST"])'
+                "Allowed methods must be a list of strings, for"
+                ' example: @app.route(..., methods=["POST"])'
             )
-        methods = set(item.upper() for item in methods)
+        methods = {item.upper() for item in methods}
 
         # Methods that should always be added
         required_methods = set(getattr(view_func, "required_methods", ()))
@@ -1281,8 +1210,8 @@ class Flask(_PackageBoundObject):
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
                 raise AssertionError(
-                    "View function mapping is overwriting an "
-                    "existing endpoint function: %s" % endpoint
+                    "View function mapping is overwriting an existing"
+                    f" endpoint function: {endpoint}"
                 )
             self.view_functions[endpoint] = view_func
 
@@ -1345,7 +1274,7 @@ class Flask(_PackageBoundObject):
         :param exc_class_or_code: Any exception class, or an HTTP status
             code as an integer.
         """
-        if isinstance(exc_class_or_code, integer_types):
+        if isinstance(exc_class_or_code, int):
             exc_class = default_exceptions[exc_class_or_code]
         else:
             exc_class = exc_class_or_code
@@ -1413,17 +1342,18 @@ class Flask(_PackageBoundObject):
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
-                "Tried to register a handler for an exception instance {0!r}."
-                " Handlers can only be registered for exception classes or"
-                " HTTP error codes.".format(code_or_exception)
+                "Tried to register a handler for an exception instance"
+                f" {code_or_exception!r}. Handlers can only be"
+                " registered for exception classes or HTTP error codes."
             )
 
         try:
             exc_class, code = self._get_exc_class_and_code(code_or_exception)
         except KeyError:
             raise KeyError(
-                "'{0}' is not a recognized HTTP error code. Use a subclass of"
-                " HTTPException with that code instead.".format(code_or_exception)
+                f"'{code_or_exception}' is not a recognized HTTP error"
+                " code. Use a subclass of HTTPException with that code"
+                " instead."
             )
 
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
@@ -1794,13 +1724,6 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        exc_type, exc_value, tb = sys.exc_info()
-        assert exc_value is e
-        # ensure not to trash sys.exc_info() at that point in case someone
-        # wants the traceback preserved in handle_http_exception.  Of course
-        # we cannot prevent users from trashing it themselves in a custom
-        # trap_http_exception method so that's their fault then.
-
         if isinstance(e, BadRequestKeyError):
             if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
                 e.show_exception = True
@@ -1809,7 +1732,7 @@ class Flask(_PackageBoundObject):
                 # message, add it in manually.
                 # TODO: clean up once Werkzeug >= 0.15.5 is required
                 if e.args[0] not in e.get_description():
-                    e.description = "KeyError: '{}'".format(*e.args)
+                    e.description = f"KeyError: {e.args[0]!r}"
             elif not hasattr(BadRequestKeyError, "show_exception"):
                 e.args = ()
 
@@ -1819,7 +1742,8 @@ class Flask(_PackageBoundObject):
         handler = self._find_error_handler(e)
 
         if handler is None:
-            reraise(exc_type, exc_value, tb)
+            raise
+
         return handler(e)
 
     def handle_exception(self, e):
@@ -1856,20 +1780,18 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.3
         """
-        exc_type, exc_value, tb = sys.exc_info()
+        exc_info = sys.exc_info()
         got_request_exception.send(self, exception=e)
 
         if self.propagate_exceptions:
-            # if we want to repropagate the exception, we can attempt to
-            # raise it with the whole traceback in case we can do that
-            # (the function was actually called from the except part)
-            # otherwise, we just raise the error again
-            if exc_value is e:
-                reraise(exc_type, exc_value, tb)
-            else:
-                raise e
+            # Re-raise if called with an active exception, otherwise
+            # raise the passed in exception.
+            if exc_info[1] is e:
+                raise
 
-        self.log_exception((exc_type, exc_value, tb))
+            raise e
+
+        self.log_exception(exc_info)
         server_error = InternalServerError()
         # TODO: pass as param when Werkzeug>=1.0.0 is required
         # TODO: also remove note about this from docstring and docs
@@ -1890,7 +1812,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.8
         """
         self.logger.error(
-            "Exception on %s [%s]" % (request.path, request.method), exc_info=exc_info
+            f"Exception on {request.path} [{request.method}]", exc_info=exc_info
         )
 
     def raise_routing_exception(self, request):
@@ -2026,11 +1948,11 @@ class Flask(_PackageBoundObject):
             without returning, is not allowed. The following types are allowed
             for ``view_rv``:
 
-            ``str`` (``unicode`` in Python 2)
+            ``str``
                 A response object is created with the string encoded to UTF-8
                 as the body.
 
-            ``bytes`` (``str`` in Python 2)
+            ``bytes``
                 A response object is created with the bytes as the body.
 
             ``dict``
@@ -2086,14 +2008,14 @@ class Flask(_PackageBoundObject):
         # the body must not be None
         if rv is None:
             raise TypeError(
-                'The view function for "{}" did not return a valid response. The'
-                " function either returned None or ended without a return"
-                " statement.".format(request.endpoint)
+                f"The view function for {request.endpoint!r} did not"
+                " return a valid response. The function either returned"
+                " None or ended without a return statement."
             )
 
         # make sure the body is an instance of the response class
         if not isinstance(rv, self.response_class):
-            if isinstance(rv, (text_type, bytes, bytearray)):
+            if isinstance(rv, (str, bytes, bytearray)):
                 # let the response class set the status and headers instead of
                 # waiting to do it manually, so that the class can handle any
                 # special logic
@@ -2107,24 +2029,23 @@ class Flask(_PackageBoundObject):
                 try:
                     rv = self.response_class.force_type(rv, request.environ)
                 except TypeError as e:
-                    new_error = TypeError(
-                        "{e}\nThe view function did not return a valid"
-                        " response. The return type must be a string, dict, tuple,"
-                        " Response instance, or WSGI callable, but it was a"
-                        " {rv.__class__.__name__}.".format(e=e, rv=rv)
-                    )
-                    reraise(TypeError, new_error, sys.exc_info()[2])
+                    raise TypeError(
+                        f"{e}\nThe view function did not return a valid"
+                        " response. The return type must be a string,"
+                        " dict, tuple, Response instance, or WSGI"
+                        f" callable, but it was a {type(rv).__name__}."
+                    ).with_traceback(sys.exc_info()[2])
             else:
                 raise TypeError(
                     "The view function did not return a valid"
-                    " response. The return type must be a string, dict, tuple,"
-                    " Response instance, or WSGI callable, but it was a"
-                    " {rv.__class__.__name__}.".format(rv=rv)
+                    " response. The return type must be a string,"
+                    " dict, tuple, Response instance, or WSGI"
+                    f" callable, but it was a {type(rv).__name__}."
                 )
 
         # prefer the status if it was provided
         if status is not None:
-            if isinstance(status, (text_type, bytes, bytearray)):
+            if isinstance(status, (str, bytes, bytearray)):
                 rv.status = status
             else:
                 rv.status_code = status
@@ -2188,23 +2109,24 @@ class Flask(_PackageBoundObject):
             func(endpoint, values)
 
     def handle_url_build_error(self, error, endpoint, values):
-        """Handle :class:`~werkzeug.routing.BuildError` on :meth:`url_for`.
+        """Handle :class:`~werkzeug.routing.BuildError` on
+        :meth:`url_for`.
         """
-        exc_type, exc_value, tb = sys.exc_info()
         for handler in self.url_build_error_handlers:
             try:
                 rv = handler(error, endpoint, values)
+            except BuildError as e:
+                # make error available outside except block
+                error = e
+            else:
                 if rv is not None:
                     return rv
-            except BuildError as e:
-                # make error available outside except block (py3)
-                error = e
 
-        # At this point we want to reraise the exception.  If the error is
-        # still the same one we can reraise it with the original traceback,
-        # otherwise we raise it from here.
-        if error is exc_value:
-            reraise(exc_type, exc_value, tb)
+        # Re-raise if called with an active exception, otherwise raise
+        # the passed in exception.
+        if error is sys.exc_info()[1]:
+            raise
+
         raise error
 
     def preprocess_request(self):
@@ -2455,4 +2377,4 @@ class Flask(_PackageBoundObject):
         return self.wsgi_app(environ, start_response)
 
     def __repr__(self):
-        return "<%s %r>" % (self.__class__.__name__, self.name)
+        return f"<{type(self).__name__} {self.name!r}>"

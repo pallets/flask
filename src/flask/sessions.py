@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.sessions
     ~~~~~~~~~~~~~~
@@ -10,19 +9,19 @@
 """
 import hashlib
 import warnings
+from collections.abc import MutableMapping
 from datetime import datetime
 
 from itsdangerous import BadSignature
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 
-from ._compat import collections_abc
 from .helpers import is_ip
 from .helpers import total_seconds
 from .json.tag import TaggedJSONSerializer
 
 
-class SessionMixin(collections_abc.MutableMapping):
+class SessionMixin(MutableMapping):
     """Expands a basic dictionary with session attributes."""
 
     @property
@@ -77,19 +76,19 @@ class SecureCookieSession(CallbackDict, SessionMixin):
             self.modified = True
             self.accessed = True
 
-        super(SecureCookieSession, self).__init__(initial, on_update)
+        super().__init__(initial, on_update)
 
     def __getitem__(self, key):
         self.accessed = True
-        return super(SecureCookieSession, self).__getitem__(key)
+        return super().__getitem__(key)
 
     def get(self, key, default=None):
         self.accessed = True
-        return super(SecureCookieSession, self).get(key, default)
+        return super().get(key, default)
 
     def setdefault(self, key, default=None):
         self.accessed = True
-        return super(SecureCookieSession, self).setdefault(key, default)
+        return super().setdefault(key, default)
 
 
 class NullSession(SecureCookieSession):
@@ -109,7 +108,7 @@ class NullSession(SecureCookieSession):
     del _fail
 
 
-class SessionInterface(object):
+class SessionInterface:
     """The basic interface you have to implement in order to replace the
     default session interface which uses werkzeug's securecookie
     implementation.  The only methods you have to implement are
@@ -209,13 +208,13 @@ class SessionInterface(object):
         rv = rv.rsplit(":", 1)[0].lstrip(".")
 
         if "." not in rv:
-            # Chrome doesn't allow names without a '.'
-            # this should only come up with localhost
-            # hack around this by not setting the name, and show a warning
+            # Chrome doesn't allow names without a '.'. This should only
+            # come up with localhost. Hack around this by not setting
+            # the name, and show a warning.
             warnings.warn(
-                '"{rv}" is not a valid cookie domain, it must contain a ".".'
-                " Add an entry to your hosts file, for example"
-                ' "{rv}.localdomain", and use that instead.'.format(rv=rv)
+                f"{rv!r} is not a valid cookie domain, it must contain"
+                " a '.'. Add an entry to your hosts file, for example"
+                f" '{rv}.localdomain', and use that instead."
             )
             app.config["SESSION_COOKIE_DOMAIN"] = False
             return None
@@ -233,7 +232,7 @@ class SessionInterface(object):
         # if this is not an ip and app is mounted at the root, allow subdomain
         # matching by adding a '.' prefix
         if self.get_cookie_path(app) == "/" and not ip:
-            rv = "." + rv
+            rv = f".{rv}"
 
         app.config["SESSION_COOKIE_DOMAIN"] = rv
         return rv

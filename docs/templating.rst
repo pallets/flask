@@ -222,8 +222,8 @@ functions)::
 
     @app.context_processor
     def utility_processor():
-        def format_price(amount, currency=u'€'):
-            return u'{0:.2f}{1}'.format(amount, currency)
+        def format_price(amount, currency="€"):
+            return f"{amount:.2f}{currency}"
         return dict(format_price=format_price)
 
 The context processor above makes the `format_price` function available to all

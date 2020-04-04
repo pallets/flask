@@ -1,10 +1,11 @@
 .. currentmodule:: flask
 
-Version 1.2.0
+Version 2.0.0
 -------------
 
 Unreleased
 
+-   Drop support for Python 2 and 3.5.
 -   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
     setting the session cookie name dynamically. :pr:`3369`
 -   Add :meth:`Config.from_file` to load config using arbitrary file
@@ -452,7 +453,7 @@ Released 2016-05-29, codename Absinthe
 
 -   Added support to serializing top-level arrays to
     :func:`flask.jsonify`. This introduces a security risk in ancient
-    browsers. See :ref:`json-security` for details.
+    browsers.
 -   Added before_render_template signal.
 -   Added ``**kwargs`` to :meth:`flask.Test.test_client` to support
     passing additional keyword arguments to the constructor of
@@ -567,8 +568,7 @@ Version 0.10
 Released 2013-06-13, codename Limoncello
 
 -   Changed default cookie serialization format from pickle to JSON to
-    limit the impact an attacker can do if the secret key leaks. See
-    :ref:`upgrading-to-010` for more information.
+    limit the impact an attacker can do if the secret key leaks.
 -   Added ``template_test`` methods in addition to the already existing
     ``template_filter`` method family.
 -   Added ``template_global`` methods in addition to the already
@@ -597,8 +597,7 @@ Released 2013-06-13, codename Limoncello
 -   Added an option to generate non-ascii encoded JSON which should
     result in less bytes being transmitted over the network. It's
     disabled by default to not cause confusion with existing libraries
-    that might expect ``flask.json.dumps`` to return bytestrings by
-    default.
+    that might expect ``flask.json.dumps`` to return bytes by default.
 -   ``flask.g`` is now stored on the app context instead of the request
     context.
 -   ``flask.g`` now gained a ``get()`` method for not erroring out on
@@ -762,7 +761,7 @@ Released 2011-09-29, codename Rakija
     designated place to drop files that are modified at runtime (uploads
     etc.). Also this is conceptually only instance depending and outside
     version control so it's the perfect place to put configuration files
-    etc. For more information see :ref:`instance-folders`.
+    etc.
 -   Added the ``APPLICATION_ROOT`` configuration variable.
 -   Implemented :meth:`~flask.testing.TestClient.session_transaction` to
     easily modify sessions from the test environment.
@@ -842,8 +841,7 @@ Released 2011-06-28, codename Grappa
 -   Added ``teardown_request`` decorator, for functions that should run
     at the end of a request regardless of whether an exception occurred.
     Also the behavior for ``after_request`` was changed. It's now no
-    longer executed when an exception is raised. See
-    :ref:`upgrading-to-new-teardown-handling`
+    longer executed when an exception is raised.
 -   Implemented :func:`flask.has_request_context`
 -   Deprecated ``init_jinja_globals``. Override the
     :meth:`~flask.Flask.create_jinja_environment` method instead to
@@ -860,7 +858,7 @@ Released 2011-06-28, codename Grappa
     errors that might occur during request processing (for instance
     database connection errors, timeouts from remote resources etc.).
 -   Blueprints can provide blueprint specific error handlers.
--   Implemented generic :ref:`views` (class-based views).
+-   Implemented generic class-based views.
 
 
 Version 0.6.1

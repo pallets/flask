@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.config
     ~~~~~~~~~~~~
@@ -11,15 +10,11 @@
 import errno
 import os
 import types
-import warnings
 
 from werkzeug.utils import import_string
 
-from ._compat import iteritems
-from ._compat import string_types
 
-
-class ConfigAttribute(object):
+class ConfigAttribute:
     """Makes an attribute forward to the config"""
 
     def __init__(self, name, get_converter=None):
@@ -103,10 +98,10 @@ class Config(dict):
             if silent:
                 return False
             raise RuntimeError(
-                "The environment variable %r is not set "
-                "and as such configuration could not be "
-                "loaded.  Set this variable and make it "
-                "point to a configuration file" % variable_name
+                f"The environment variable {variable_name!r} is not set"
+                " and as such configuration could not be loaded. Set"
+                " this variable and make it point to a configuration"
+                " file"
             )
         return self.from_pyfile(rv, silent=silent)
 
@@ -130,10 +125,10 @@ class Config(dict):
         try:
             with open(filename, mode="rb") as config_file:
                 exec(compile(config_file.read(), filename, "exec"), d.__dict__)
-        except IOError as e:
+        except OSError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
                 return False
-            e.strerror = "Unable to load configuration file (%s)" % e.strerror
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
             raise
         self.from_object(d)
         return True
@@ -170,7 +165,7 @@ class Config(dict):
 
         :param obj: an import name or object
         """
-        if isinstance(obj, string_types):
+        if isinstance(obj, str):
             obj = import_string(obj)
         for key in dir(obj):
             if key.isupper():
@@ -201,37 +196,14 @@ class Config(dict):
         try:
             with open(filename) as f:
                 obj = load(f)
-        except IOError as e:
+        except OSError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
 
-            e.strerror = "Unable to load configuration file (%s)" % e.strerror
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
             raise
 
         return self.from_mapping(obj)
-
-    def from_json(self, filename, silent=False):
-        """Update the values in the config from a JSON file. The loaded
-        data is passed to the :meth:`from_mapping` method.
-
-        :param filename: The path to the JSON file. This can be an
-            absolute path or relative to the config root path.
-        :param silent: Ignore the file if it doesn't exist.
-
-        .. deprecated:: 2.0
-            Use :meth:`from_file` with :meth:`json.load` instead.
-
-        .. versionadded:: 0.11
-        """
-        warnings.warn(
-            "'from_json' is deprecated and will be removed in 2.0."
-            " Use 'from_file(filename, load=json.load)' instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        from .json import load
-
-        return self.from_file(filename, load, silent=silent)
 
     def from_mapping(self, *mapping, **kwargs):
         """Updates the config like :meth:`update` ignoring items with non-upper
@@ -247,7 +219,7 @@ class Config(dict):
                 mappings.append(mapping[0])
         elif len(mapping) > 1:
             raise TypeError(
-                "expected at most 1 positional argument, got %d" % len(mapping)
+                f"expected at most 1 positional argument, got {len(mapping)}"
             )
         mappings.append(kwargs.items())
         for mapping in mappings:
@@ -285,7 +257,7 @@ class Config(dict):
         .. versionadded:: 0.11
         """
         rv = {}
-        for k, v in iteritems(self):
+        for k, v in self.items():
             if not k.startswith(namespace):
                 continue
             if trim_namespace:
@@ -298,4 +270,4 @@ class Config(dict):
         return rv
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, dict.__repr__(self))
+        return f"<{type(self).__name__} {dict.__repr__(self)}>"
