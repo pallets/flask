@@ -1,13 +1,12 @@
-import io
 import re
 
 from setuptools import find_packages
 from setuptools import setup
 
-with io.open("README.rst", "rt", encoding="utf8") as f:
+with open("README.rst", encoding="utf8") as f:
     readme = f.read()
 
-with io.open("src/flask/__init__.py", "rt", encoding="utf8") as f:
+with open("src/flask/__init__.py", encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 setup(

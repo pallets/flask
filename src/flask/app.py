@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.app
     ~~~~~~~~~
@@ -1111,7 +1110,7 @@ class Flask(_PackageBoundObject):
         endpoint=None,
         view_func=None,
         provide_automatic_options=None,
-        **options
+        **options,
     ):
         """Connects a URL rule.  Works exactly like the :meth:`route`
         decorator.  If a view_func is provided it will be registered with the
@@ -1180,7 +1179,7 @@ class Flask(_PackageBoundObject):
                 "Allowed methods must be a list of strings, for"
                 ' example: @app.route(..., methods=["POST"])'
             )
-        methods = set(item.upper() for item in methods)
+        methods = {item.upper() for item in methods}
 
         # Methods that should always be added
         required_methods = set(getattr(view_func, "required_methods", ()))
@@ -1342,7 +1341,7 @@ class Flask(_PackageBoundObject):
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
-                "Tried to register a handler for an exception instance {0!r}."
+                "Tried to register a handler for an exception instance {!r}."
                 " Handlers can only be registered for exception classes or"
                 " HTTP error codes.".format(code_or_exception)
             )
@@ -1351,7 +1350,7 @@ class Flask(_PackageBoundObject):
             exc_class, code = self._get_exc_class_and_code(code_or_exception)
         except KeyError:
             raise KeyError(
-                "'{0}' is not a recognized HTTP error code. Use a subclass of"
+                "'{}' is not a recognized HTTP error code. Use a subclass of"
                 " HTTPException with that code instead.".format(code_or_exception)
             )
 
@@ -1811,7 +1810,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.8
         """
         self.logger.error(
-            "Exception on %s [%s]" % (request.path, request.method), exc_info=exc_info
+            f"Exception on {request.path} [{request.method}]", exc_info=exc_info
         )
 
     def raise_routing_exception(self, request):
@@ -2376,4 +2375,4 @@ class Flask(_PackageBoundObject):
         return self.wsgi_app(environ, start_response)
 
     def __repr__(self):
-        return "<%s %r>" % (self.__class__.__name__, self.name)
+        return f"<{self.__class__.__name__} {self.name!r}>"

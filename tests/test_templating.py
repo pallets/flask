@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.templating
     ~~~~~~~~~~~~~~~~
@@ -417,14 +416,14 @@ def test_template_loader_debugging(test_apps, monkeypatch):
             text = str(record.msg)
             assert '1: trying loader of application "blueprintapp"' in text
             assert (
-                '2: trying loader of blueprint "admin" ' "(blueprintapp.apps.admin)"
+                '2: trying loader of blueprint "admin" (blueprintapp.apps.admin)'
             ) in text
             assert (
-                'trying loader of blueprint "frontend" ' "(blueprintapp.apps.frontend)"
+                'trying loader of blueprint "frontend" (blueprintapp.apps.frontend)'
             ) in text
             assert "Error: the template could not be found" in text
             assert (
-                "looked up from an endpoint that belongs to " 'the blueprint "frontend"'
+                'looked up from an endpoint that belongs to the blueprint "frontend"'
             ) in text
             assert "See https://flask.palletsprojects.com/blueprints/#templates" in text
 

@@ -44,7 +44,7 @@ def runner(app):
     return app.test_cli_runner()
 
 
-class AuthActions(object):
+class AuthActions:
     def __init__(self, client):
         self._client = client
 

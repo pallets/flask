@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.test_cli
     ~~~~~~~~~~~~~~
@@ -8,8 +7,6 @@
 """
 # This file was part of Flask-CLI and was modified under the terms of
 # its Revised BSD License. Copyright © 2015 CERN.
-from __future__ import absolute_import
-
 import os
 import ssl
 import sys
@@ -261,7 +258,7 @@ def test_get_version(test_apps, capsys):
     from werkzeug import __version__ as werkzeug_version
     from platform import python_version
 
-    class MockCtx(object):
+    class MockCtx:
         resilient_parsing = False
         color = None
 

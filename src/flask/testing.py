@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.testing
     ~~~~~~~~~~~~~
@@ -51,7 +50,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         subdomain=None,
         url_scheme=None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         assert not (base_url or subdomain or url_scheme) or (
             base_url is not None
@@ -64,7 +63,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
             app_root = app.config["APPLICATION_ROOT"]
 
             if subdomain:
-                http_host = "{0}.{1}".format(subdomain, http_host)
+                http_host = f"{subdomain}.{http_host}"
 
             if url_scheme is None:
                 url_scheme = app.config["PREFERRED_URL_SCHEME"]
@@ -82,7 +81,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
                 path += sep + url.query
 
         self.app = app
-        super(EnvironBuilder, self).__init__(path, base_url, *args, **kwargs)
+        super().__init__(path, base_url, *args, **kwargs)
 
     def json_dumps(self, obj, **kwargs):
         """Serialize ``obj`` to a JSON-formatted string.
@@ -112,7 +111,7 @@ class FlaskClient(Client):
     preserve_context = False
 
     def __init__(self, *args, **kwargs):
-        super(FlaskClient, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.environ_base = {
             "REMOTE_ADDR": "127.0.0.1",
             "HTTP_USER_AGENT": "werkzeug/" + werkzeug.__version__,
@@ -239,7 +238,7 @@ class FlaskCliRunner(CliRunner):
 
     def __init__(self, app, **kwargs):
         self.app = app
-        super(FlaskCliRunner, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def invoke(self, cli=None, args=None, **kwargs):
         """Invokes a CLI command in an isolated environment. See
@@ -262,4 +261,4 @@ class FlaskCliRunner(CliRunner):
         if "obj" not in kwargs:
             kwargs["obj"] = ScriptInfo(create_app=lambda: self.app)
 
-        return super(FlaskCliRunner, self).invoke(cli, args, **kwargs)
+        return super().invoke(cli, args, **kwargs)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.basic
     ~~~~~~~~~~~~~~~~~~~~~
@@ -278,7 +277,7 @@ def test_session_using_server_name_port_and_path(app, client):
 
 
 def test_session_using_application_root(app, client):
-    class PrefixPathMiddleware(object):
+    class PrefixPathMiddleware:
         def __init__(self, app, prefix):
             self.app = app
             self.prefix = prefix
@@ -583,18 +582,18 @@ def test_extended_flashing(app):
 
     @app.route("/")
     def index():
-        flask.flash(u"Hello World")
-        flask.flash(u"Hello World", "error")
-        flask.flash(flask.Markup(u"<em>Testing</em>"), "warning")
+        flask.flash("Hello World")
+        flask.flash("Hello World", "error")
+        flask.flash(flask.Markup("<em>Testing</em>"), "warning")
         return ""
 
     @app.route("/test/")
     def test():
         messages = flask.get_flashed_messages()
         assert list(messages) == [
-            u"Hello World",
-            u"Hello World",
-            flask.Markup(u"<em>Testing</em>"),
+            "Hello World",
+            "Hello World",
+            flask.Markup("<em>Testing</em>"),
         ]
         return ""
 
@@ -603,9 +602,9 @@ def test_extended_flashing(app):
         messages = flask.get_flashed_messages(with_categories=True)
         assert len(messages) == 3
         assert list(messages) == [
-            ("message", u"Hello World"),
-            ("error", u"Hello World"),
-            ("warning", flask.Markup(u"<em>Testing</em>")),
+            ("message", "Hello World"),
+            ("error", "Hello World"),
+            ("warning", flask.Markup("<em>Testing</em>")),
         ]
         return ""
 
@@ -614,7 +613,7 @@ def test_extended_flashing(app):
         messages = flask.get_flashed_messages(
             category_filter=["message"], with_categories=True
         )
-        assert list(messages) == [("message", u"Hello World")]
+        assert list(messages) == [("message", "Hello World")]
         return ""
 
     @app.route("/test_filters/")
@@ -623,8 +622,8 @@ def test_extended_flashing(app):
             category_filter=["message", "warning"], with_categories=True
         )
         assert list(messages) == [
-            ("message", u"Hello World"),
-            ("warning", flask.Markup(u"<em>Testing</em>")),
+            ("message", "Hello World"),
+            ("warning", flask.Markup("<em>Testing</em>")),
         ]
         return ""
 
@@ -632,8 +631,8 @@ def test_extended_flashing(app):
     def test_filters2():
         messages = flask.get_flashed_messages(category_filter=["message", "warning"])
         assert len(messages) == 2
-        assert messages[0] == u"Hello World"
-        assert messages[1] == flask.Markup(u"<em>Testing</em>")
+        assert messages[0] == "Hello World"
+        assert messages[1] == flask.Markup("<em>Testing</em>")
         return ""
 
     # Create new test client on each test to clean flashed messages.
@@ -1102,11 +1101,11 @@ def test_enctype_debug_helper(app, client):
 def test_response_types(app, client):
     @app.route("/text")
     def from_text():
-        return u"Hällo Wörld"
+        return "Hällo Wörld"
 
     @app.route("/bytes")
     def from_bytes():
-        return u"Hällo Wörld".encode("utf-8")
+        return "Hällo Wörld".encode()
 
     @app.route("/full_tuple")
     def from_full_tuple():
@@ -1143,8 +1142,8 @@ def test_response_types(app, client):
     def from_dict():
         return {"foo": "bar"}, 201
 
-    assert client.get("/text").data == u"Hällo Wörld".encode("utf-8")
-    assert client.get("/bytes").data == u"Hällo Wörld".encode("utf-8")
+    assert client.get("/text").data == "Hällo Wörld".encode()
+    assert client.get("/bytes").data == "Hällo Wörld".encode()
 
     rv = client.get("/full_tuple")
     assert rv.data == b"Meh"
@@ -1611,11 +1610,11 @@ def test_inject_blueprint_url_defaults(app):
 
 
 def test_nonascii_pathinfo(app, client):
-    @app.route(u"/киртест")
+    @app.route("/киртест")
     def index():
         return "Hello World!"
 
-    rv = client.get(u"/киртест")
+    rv = client.get("/киртест")
     assert rv.data == b"Hello World!"
 
 
@@ -1875,7 +1874,7 @@ def test_multi_route_rules(app, client):
 
 
 def test_multi_route_class_views(app, client):
-    class View(object):
+    class View:
         def __init__(self, app):
             app.add_url_rule("/", "index", self.index)
             app.add_url_rule("/<test>/", "index", self.index)
@@ -1907,12 +1906,12 @@ def test_run_server_port(monkeypatch, app):
 
     # Mocks werkzeug.serving.run_simple method
     def run_simple_mock(hostname, port, application, *args, **kwargs):
-        rv["result"] = "running on %s:%s ..." % (hostname, port)
+        rv["result"] = f"running on {hostname}:{port} ..."
 
     monkeypatch.setattr(werkzeug.serving, "run_simple", run_simple_mock)
     hostname, port = "localhost", 8000
     app.run(hostname, port, debug=True)
-    assert rv["result"] == "running on %s:%s ..." % (hostname, port)
+    assert rv["result"] == f"running on {hostname}:{port} ..."
 
 
 @pytest.mark.parametrize(

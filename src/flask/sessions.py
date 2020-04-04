@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.sessions
     ~~~~~~~~~~~~~~
@@ -77,19 +76,19 @@ class SecureCookieSession(CallbackDict, SessionMixin):
             self.modified = True
             self.accessed = True
 
-        super(SecureCookieSession, self).__init__(initial, on_update)
+        super().__init__(initial, on_update)
 
     def __getitem__(self, key):
         self.accessed = True
-        return super(SecureCookieSession, self).__getitem__(key)
+        return super().__getitem__(key)
 
     def get(self, key, default=None):
         self.accessed = True
-        return super(SecureCookieSession, self).get(key, default)
+        return super().get(key, default)
 
     def setdefault(self, key, default=None):
         self.accessed = True
-        return super(SecureCookieSession, self).setdefault(key, default)
+        return super().setdefault(key, default)
 
 
 class NullSession(SecureCookieSession):
@@ -109,7 +108,7 @@ class NullSession(SecureCookieSession):
     del _fail
 
 
-class SessionInterface(object):
+class SessionInterface:
     """The basic interface you have to implement in order to replace the
     default session interface which uses werkzeug's securecookie
     implementation.  The only methods you have to implement are

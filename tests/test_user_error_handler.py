@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 tests.test_user_error_handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -208,7 +207,7 @@ def test_default_error_handler():
     assert c.get("/slash", follow_redirects=True).data == b"slash"
 
 
-class TestGenericHandlers(object):
+class TestGenericHandlers:
     """Test how very generic handlers are dispatched to."""
 
     class Custom(Exception):

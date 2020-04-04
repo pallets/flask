@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.test_config
     ~~~~~~~~~~~~~~~~~
@@ -65,7 +64,7 @@ def test_config_from_mapping():
 
 
 def test_config_from_class():
-    class Base(object):
+    class Base:
         TEST_KEY = "foo"
 
     class Test(Base):
@@ -186,8 +185,8 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     f = tmpdir.join("my_config.py")
     f.write_binary(
         textwrap.dedent(
-            u"""
-    # -*- coding: {0} -*-
+            """
+    # -*- coding: {} -*-
     TEST_VALUE = "föö"
     """.format(
                 encoding
@@ -197,4 +196,4 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     app = flask.Flask(__name__)
     app.config.from_pyfile(str(f))
     value = app.config["TEST_VALUE"]
-    assert value == u"föö"
+    assert value == "föö"
