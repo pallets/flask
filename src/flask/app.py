@@ -10,7 +10,6 @@
 """
 import os
 import sys
-import warnings
 from datetime import timedelta
 from functools import update_wrapper
 from itertools import chain
@@ -1065,70 +1064,6 @@ class Flask(_PackageBoundObject):
             from .testing import FlaskCliRunner as cls
 
         return cls(self, **kwargs)
-
-    def open_session(self, request):
-        """Creates or opens a new session.  Default implementation stores all
-        session data in a signed cookie.  This requires that the
-        :attr:`secret_key` is set.  Instead of overriding this method
-        we recommend replacing the :class:`session_interface`.
-
-        .. deprecated: 1.0
-            Will be removed in 2.0. Use
-            ``session_interface.open_session`` instead.
-
-        :param request: an instance of :attr:`request_class`.
-        """
-
-        warnings.warn(
-            DeprecationWarning(
-                '"open_session" is deprecated and will be removed in'
-                ' 2.0. Use "session_interface.open_session" instead.'
-            )
-        )
-        return self.session_interface.open_session(self, request)
-
-    def save_session(self, session, response):
-        """Saves the session if it needs updates.  For the default
-        implementation, check :meth:`open_session`.  Instead of overriding this
-        method we recommend replacing the :class:`session_interface`.
-
-        .. deprecated: 1.0
-            Will be removed in 2.0. Use
-            ``session_interface.save_session`` instead.
-
-        :param session: the session to be saved (a
-                        :class:`~werkzeug.contrib.securecookie.SecureCookie`
-                        object)
-        :param response: an instance of :attr:`response_class`
-        """
-
-        warnings.warn(
-            DeprecationWarning(
-                '"save_session" is deprecated and will be removed in'
-                ' 2.0. Use "session_interface.save_session" instead.'
-            )
-        )
-        return self.session_interface.save_session(self, session, response)
-
-    def make_null_session(self):
-        """Creates a new instance of a missing session.  Instead of overriding
-        this method we recommend replacing the :class:`session_interface`.
-
-        .. deprecated: 1.0
-            Will be removed in 2.0. Use
-            ``session_interface.make_null_session`` instead.
-
-        .. versionadded:: 0.7
-        """
-
-        warnings.warn(
-            DeprecationWarning(
-                '"make_null_session" is deprecated and will be removed'
-                ' in 2.0. Use "session_interface.make_null_session"'
-                " instead."
-            )
-        )
-        return self.session_interface.make_null_session(self)
 
     @setupmethod
     def register_blueprint(self, blueprint, **options):

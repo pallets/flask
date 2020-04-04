@@ -19,7 +19,6 @@ from flask.cli import ScriptInfo
 from flask.json import jsonify
 from flask.testing import EnvironBuilder
 from flask.testing import FlaskCliRunner
-from flask.testing import make_test_environ_builder
 
 try:
     import blinker
@@ -115,15 +114,6 @@ def test_specify_url_scheme(app, client):
 
 def test_path_is_url(app):
     eb = EnvironBuilder(app, "https://example.com/")
-    assert eb.url_scheme == "https"
-    assert eb.host == "example.com"
-    assert eb.script_root == ""
-    assert eb.path == "/"
-
-
-def test_make_test_environ_builder(app):
-    with pytest.deprecated_call():
-        eb = make_test_environ_builder(app, "https://example.com/")
     assert eb.url_scheme == "https"
     assert eb.host == "example.com"
     assert eb.script_root == ""

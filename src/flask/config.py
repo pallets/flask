@@ -11,7 +11,6 @@
 import errno
 import os
 import types
-import warnings
 
 from werkzeug.utils import import_string
 
@@ -209,29 +208,6 @@ class Config(dict):
             raise
 
         return self.from_mapping(obj)
-
-    def from_json(self, filename, silent=False):
-        """Update the values in the config from a JSON file. The loaded
-        data is passed to the :meth:`from_mapping` method.
-
-        :param filename: The path to the JSON file. This can be an
-            absolute path or relative to the config root path.
-        :param silent: Ignore the file if it doesn't exist.
-
-        .. deprecated:: 2.0
-            Use :meth:`from_file` with :meth:`json.load` instead.
-
-        .. versionadded:: 0.11
-        """
-        warnings.warn(
-            "'from_json' is deprecated and will be removed in 2.0."
-            " Use 'from_file(filename, load=json.load)' instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        from .json import load
-
-        return self.from_file(filename, load, silent=silent)
 
     def from_mapping(self, *mapping, **kwargs):
         """Updates the config like :meth:`update` ignoring items with non-upper

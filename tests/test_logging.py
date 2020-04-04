@@ -104,12 +104,3 @@ def test_log_view_exception(app, client):
     err = stream.getvalue()
     assert "Exception on / [GET]" in err
     assert "Exception: test" in err
-
-
-def test_warn_old_config(app, request):
-    old_logger = logging.getLogger("flask.app")
-    old_logger.setLevel(logging.DEBUG)
-    request.addfinalizer(lambda: old_logger.setLevel(logging.NOTSET))
-
-    with pytest.warns(UserWarning):
-        assert app.logger.getEffectiveLevel() == logging.WARNING
