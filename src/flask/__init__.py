@@ -1,5 +1,5 @@
-from jinja2 import escape
-from jinja2 import Markup
+from markupsafe import escape
+from markupsafe import Markup
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
