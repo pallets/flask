@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.testing
     ~~~~~~~~~~~~~
@@ -122,8 +121,8 @@ def test_path_is_url(app):
 def test_environbuilder_json_dumps(app):
     """EnvironBuilder.json_dumps() takes settings from the app."""
     app.config["JSON_AS_ASCII"] = False
-    eb = EnvironBuilder(app, json=u"\u20ac")
-    assert eb.input_stream.read().decode("utf8") == u'"\u20ac"'
+    eb = EnvironBuilder(app, json="\u20ac")
+    assert eb.input_stream.read().decode("utf8") == '"\u20ac"'
 
 
 def test_blueprint_with_subdomain():
@@ -324,7 +323,7 @@ def test_client_json_no_app_context(app, client):
     def hello():
         return "Hello, {}!".format(flask.request.json["name"])
 
-    class Namespace(object):
+    class Namespace:
         count = 0
 
         def add(self, app):
@@ -402,7 +401,7 @@ def test_cli_invoke(app):
 
 
 def test_cli_custom_obj(app):
-    class NS(object):
+    class NS:
         called = False
 
     def create_app():

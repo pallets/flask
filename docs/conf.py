@@ -52,14 +52,12 @@ singlehtml_sidebars = {"index": ["project.html", "localtoc.html"]}
 html_static_path = ["_static"]
 html_favicon = "_static/flask-icon.png"
 html_logo = "_static/flask-icon.png"
-html_title = "Flask Documentation ({})".format(version)
+html_title = f"Flask Documentation ({version})"
 html_show_sourcelink = False
 
 # LaTeX ----------------------------------------------------------------
 
-latex_documents = [
-    (master_doc, "Flask-{}.tex".format(version), html_title, author, "manual")
-]
+latex_documents = [(master_doc, f"Flask-{version}.tex", html_title, author, "manual")]
 
 # Local Extensions -----------------------------------------------------
 
@@ -76,9 +74,9 @@ def github_link(name, rawtext, text, lineno, inliner, options=None, content=None
         words = None
 
     if packaging.version.parse(release).is_devrelease:
-        url = "{0}master/{1}".format(base_url, text)
+        url = f"{base_url}master/{text}"
     else:
-        url = "{0}{1}/{2}".format(base_url, release, text)
+        url = f"{base_url}{release}/{text}"
 
     if words is None:
         words = url

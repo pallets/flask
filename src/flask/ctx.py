@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.ctx
     ~~~~~~~~~
@@ -23,7 +22,7 @@ from .signals import appcontext_pushed
 _sentinel = object()
 
 
-class _AppCtxGlobals(object):
+class _AppCtxGlobals:
     """A plain object. Used as a namespace for storing data during an
     application context.
 
@@ -200,7 +199,7 @@ def has_app_context():
     return _app_ctx_stack.top is not None
 
 
-class AppContext(object):
+class AppContext:
     """The application context binds an application object implicitly
     to the current thread or greenlet, similar to how the
     :class:`RequestContext` binds request information.  The application
@@ -234,7 +233,7 @@ class AppContext(object):
                 self.app.do_teardown_appcontext(exc)
         finally:
             rv = _app_ctx_stack.pop()
-        assert rv is self, "Popped wrong app context.  (%r instead of %r)" % (rv, self)
+        assert rv is self, f"Popped wrong app context.  ({rv!r} instead of {self!r})"
         appcontext_popped.send(self.app)
 
     def __enter__(self):
@@ -245,7 +244,7 @@ class AppContext(object):
         self.pop(exc_value)
 
 
-class RequestContext(object):
+class RequestContext:
     """The request context contains all request relevant information.  It is
     created at the beginning of the request and pushed to the
     `_request_ctx_stack` and removed at the end of it.  It will create the
@@ -420,10 +419,9 @@ class RequestContext(object):
             if app_ctx is not None:
                 app_ctx.pop(exc)
 
-            assert rv is self, "Popped wrong request context. (%r instead of %r)" % (
-                rv,
-                self,
-            )
+            assert (
+                rv is self
+            ), f"Popped wrong request context. ({rv!r} instead of {self!r})"
 
     def auto_pop(self, exc):
         if self.request.environ.get("flask._preserve_context") or (
@@ -447,7 +445,7 @@ class RequestContext(object):
         self.auto_pop(exc_value)
 
     def __repr__(self):
-        return "<%s '%s' [%s] of %s>" % (
+        return "<{} '{}' [{}] of {}>".format(
             self.__class__.__name__,
             self.request.url,
             self.request.method,

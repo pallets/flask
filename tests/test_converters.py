@@ -10,7 +10,7 @@ def test_custom_converters(app, client):
             return value.split(",")
 
         def to_url(self, value):
-            base_to_url = super(ListConverter, self).to_url
+            base_to_url = super().to_url
             return ",".join(base_to_url(x) for x in value)
 
     app.url_map.converters["list"] = ListConverter

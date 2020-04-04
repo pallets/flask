@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.conftest
     ~~~~~~~~~~~~~~
@@ -112,7 +111,7 @@ def limit_loader(request, monkeypatch):
     if not request.param:
         return
 
-    class LimitedLoader(object):
+    class LimitedLoader:
         def __init__(self, loader):
             self.loader = loader
 
@@ -172,7 +171,7 @@ def install_egg(modules_tmpdir, monkeypatch):
             textwrap.dedent(
                 """
         from setuptools import setup
-        setup(name='{0}',
+        setup(name='{}',
               version='1.0',
               packages=['site_egg'],
               zip_safe=True)
@@ -187,7 +186,7 @@ def install_egg(modules_tmpdir, monkeypatch):
         subprocess.check_call(
             [sys.executable, "setup.py", "bdist_egg"], cwd=str(modules_tmpdir)
         )
-        egg_path, = modules_tmpdir.join("dist/").listdir()
+        (egg_path,) = modules_tmpdir.join("dist/").listdir()
         monkeypatch.syspath_prepend(str(egg_path))
         return egg_path
 

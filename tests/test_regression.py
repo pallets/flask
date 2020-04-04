@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.regression
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,7 +19,7 @@ import flask
 _gc_lock = threading.Lock()
 
 
-class assert_no_leak(object):
+class assert_no_leak:
     def __enter__(self):
         gc.disable()
         _gc_lock.acquire()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.helpers
     ~~~~~~~~~~~~~
@@ -155,8 +154,7 @@ def stream_with_context(generator_or_function):
             # don't need that because they are closed on their destruction
             # automatically.
             try:
-                for item in gen:
-                    yield item
+                yield from gen
             finally:
                 if hasattr(gen, "close"):
                     gen.close()
@@ -933,7 +931,7 @@ def find_package(import_name):
     return None, package_path
 
 
-class locked_cached_property(object):
+class locked_cached_property:
     """A decorator that converts a function into a lazy property.  The
     function wrapped is called the first time to retrieve the result
     and then that calculated result is used the next time you access
@@ -959,7 +957,7 @@ class locked_cached_property(object):
             return value
 
 
-class _PackageBoundObject(object):
+class _PackageBoundObject:
     #: The name of the package or module that this app belongs to. Do not
     #: change this once it is set by the constructor.
     import_name = None
@@ -1137,7 +1135,7 @@ def is_ip(value):
     for family in (socket.AF_INET, socket.AF_INET6):
         try:
             socket.inet_pton(family, value)
-        except socket.error:
+        except OSError:
             pass
         else:
             return True

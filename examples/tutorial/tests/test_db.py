@@ -17,7 +17,7 @@ def test_get_close_db(app):
 
 
 def test_init_db_command(runner, monkeypatch):
-    class Recorder(object):
+    class Recorder:
         called = False
 
     def fake_init_db():
