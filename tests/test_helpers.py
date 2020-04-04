@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.helpers
     ~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,9 +23,6 @@ from werkzeug.http import parse_options_header
 
 import flask
 from flask import json
-from flask._compat import PY2
-from flask._compat import StringIO
-from flask._compat import text_type
 from flask.helpers import get_debug_flag
 from flask.helpers import get_env
 
@@ -41,7 +37,7 @@ def has_encoding(name):
         return False
 
 
-class FakePath(object):
+class FakePath:
     """Fake object to represent a ``PathLike object``.
 
     This represents a ``pathlib.Path`` object in python 3.
@@ -76,9 +72,9 @@ class FixedOffset(datetime.tzinfo):
         return datetime.timedelta()
 
 
-class TestJSON(object):
+class TestJSON:
     @pytest.mark.parametrize(
-        "value", (1, "t", True, False, None, [], [1, 2, 3], {}, {"foo": u"🐍"})
+        "value", (1, "t", True, False, None, [], [1, 2, 3], {}, {"foo": "🐍"})
     )
     @pytest.mark.parametrize(
         "encoding",
@@ -95,7 +91,6 @@ class TestJSON(object):
     )
     def test_detect_encoding(self, value, encoding):
         data = json.dumps(value).encode(encoding)
-        assert json.detect_encoding(data) == encoding
         assert json.loads(data) == value
 
     @pytest.mark.parametrize("debug", (True, False))
@@ -116,7 +111,7 @@ class TestJSON(object):
     def test_json_bad_requests(self, app, client):
         @app.route("/json", methods=["POST"])
         def return_json():
-            return flask.jsonify(foo=text_type(flask.request.get_json()))
+            return flask.jsonify(foo=str(flask.request.get_json()))
 
         rv = client.post("/json", data="malformed", content_type="application/json")
         assert rv.status_code == 400
@@ -130,17 +125,17 @@ class TestJSON(object):
         assert rv.data == b"foo"
 
     @pytest.mark.parametrize(
-        "test_value,expected", [(True, '"\\u2603"'), (False, u'"\u2603"')]
+        "test_value,expected", [(True, '"\\u2603"'), (False, '"\u2603"')]
     )
     def test_json_as_unicode(self, test_value, expected, app, app_ctx):
 
         app.config["JSON_AS_ASCII"] = test_value
-        rv = flask.json.dumps(u"\N{SNOWMAN}")
+        rv = flask.json.dumps("\N{SNOWMAN}")
         assert rv == expected
 
     def test_json_dump_to_file(self, app, app_ctx):
         test_data = {"name": "Flask"}
-        out = StringIO()
+        out = io.StringIO()
 
         flask.json.dump(test_data, out)
         out.seek(0)
@@ -221,7 +216,7 @@ class TestJSON(object):
         )
 
         for i, d in enumerate(test_dates):
-            url = "/datetest{0}".format(i)
+            url = f"/datetest{i}"
             app.add_url_rule(url, str(i), lambda val=d: flask.jsonify(x=val))
             rv = client.get(url)
             assert rv.mimetype == "application/json"
@@ -254,7 +249,7 @@ class TestJSON(object):
         @app.route("/add", methods=["POST"])
         def add():
             json = flask.request.get_json()
-            return text_type(json["a"] + json["b"])
+            return str(json["a"] + json["b"])
 
         rv = client.post(
             "/add",
@@ -266,8 +261,8 @@ class TestJSON(object):
     def test_template_escaping(self, app, req_ctx):
         render = flask.render_template_string
         rv = flask.json.htmlsafe_dumps("</script>")
-        assert rv == u'"\\u003c/script\\u003e"'
-        assert type(rv) == text_type
+        assert rv == '"\\u003c/script\\u003e"'
+        assert type(rv) is str
         rv = render('{{ "</script>"|tojson }}')
         assert rv == '"\\u003c/script\\u003e"'
         rv = render('{{ "<\0/script>"|tojson }}')
@@ -284,14 +279,14 @@ class TestJSON(object):
         assert rv == '<a ng-data=\'{"x": ["foo", "bar", "baz\\u0027"]}\'></a>'
 
     def test_json_customization(self, app, client):
-        class X(object):  # noqa: B903, for Python2 compatibility
+        class X:  # noqa: B903, for Python2 compatibility
             def __init__(self, val):
                 self.val = val
 
         class MyEncoder(flask.json.JSONEncoder):
             def default(self, o):
                 if isinstance(o, X):
-                    return "<%d>" % o.val
+                    return f"<{o.val}>"
                 return flask.json.JSONEncoder.default(self, o)
 
         class MyDecoder(flask.json.JSONDecoder):
@@ -319,14 +314,16 @@ class TestJSON(object):
         assert rv.data == b'"<42>"'
 
     def test_blueprint_json_customization(self, app, client):
-        class X(object):  # noqa: B903, for Python2 compatibility
+        class X:
+            __slots__ = ("val",)
+
             def __init__(self, val):
                 self.val = val
 
         class MyEncoder(flask.json.JSONEncoder):
             def default(self, o):
                 if isinstance(o, X):
-                    return "<%d>" % o.val
+                    return f"<{o.val}>"
 
                 return flask.json.JSONEncoder.default(self, o)
 
@@ -372,9 +369,9 @@ class TestJSON(object):
         def index():
             return flask.request.args["foo"]
 
-        rv = client.get(u"/?foo=정상처리".encode("euc-kr"))
+        rv = client.get("/?foo=정상처리".encode("euc-kr"))
         assert rv.status_code == 200
-        assert rv.data == u"정상처리".encode("utf-8")
+        assert rv.data == "정상처리".encode()
 
     def test_json_key_sorting(self, app, client):
         app.debug = True
@@ -447,7 +444,7 @@ class TestJSON(object):
             assert lines == sorted_by_str
 
 
-class PyStringIO(object):
+class PyBytesIO:
     def __init__(self, *args, **kwargs):
         self._io = io.BytesIO(*args, **kwargs)
 
@@ -455,7 +452,7 @@ class PyStringIO(object):
         return getattr(self._io, name)
 
 
-class TestSendfile(object):
+class TestSendfile:
     def test_send_file_regular(self, app, req_ctx):
         rv = flask.send_file("static/index.html")
         assert rv.direct_passthrough
@@ -503,11 +500,7 @@ class TestSendfile(object):
         [
             lambda app: open(os.path.join(app.static_folder, "index.html"), "rb"),
             lambda app: io.BytesIO(b"Test"),
-            pytest.param(
-                lambda app: StringIO("Test"),
-                marks=pytest.mark.skipif(not PY2, reason="Python 2 only"),
-            ),
-            lambda app: PyStringIO(b"Test"),
+            lambda app: PyBytesIO(b"Test"),
         ],
     )
     @pytest.mark.usefixtures("req_ctx")
@@ -524,11 +517,8 @@ class TestSendfile(object):
     @pytest.mark.parametrize(
         "opener",
         [
-            lambda app: io.StringIO(u"Test"),
-            pytest.param(
-                lambda app: open(os.path.join(app.static_folder, "index.html")),
-                marks=pytest.mark.skipif(PY2, reason="Python 3 only"),
-            ),
+            lambda app: io.StringIO("Test"),
+            lambda app: open(os.path.join(app.static_folder, "index.html")),
         ],
     )
     @pytest.mark.usefixtures("req_ctx")
@@ -684,15 +674,13 @@ class TestSendfile(object):
         (
             ("index.html", "index.html", False),
             (
-                u"Ñandú／pingüino.txt",
+                "Ñandú／pingüino.txt",
                 '"Nandu/pinguino.txt"',
                 "%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt",
             ),
-            (u"Vögel.txt", "Vogel.txt", "V%C3%B6gel.txt"),
-            # Native string not marked as Unicode on Python 2
-            ("tést.txt", "test.txt", "t%C3%A9st.txt"),
+            ("Vögel.txt", "Vogel.txt", "V%C3%B6gel.txt"),
             # ":/" are not safe in filename* value
-            (u"те:/ст", '":/"', "%D1%82%D0%B5%3A%2F%D1%81%D1%82"),
+            ("те:/ст", '":/"', "%D1%82%D0%B5%3A%2F%D1%81%D1%82"),
         ),
     )
     def test_attachment_filename_encoding(self, filename, ascii, utf8):
@@ -701,9 +689,9 @@ class TestSendfile(object):
         )
         rv.close()
         content_disposition = rv.headers["Content-Disposition"]
-        assert "filename=%s" % ascii in content_disposition
+        assert f"filename={ascii}" in content_disposition
         if utf8:
-            assert "filename*=UTF-8''" + utf8 in content_disposition
+            assert f"filename*=UTF-8''{utf8}" in content_disposition
         else:
             assert "filename*=UTF-8''" not in content_disposition
 
@@ -788,7 +776,7 @@ class TestSendfile(object):
             flask.send_from_directory("static", "bad\x00")
 
 
-class TestUrlFor(object):
+class TestUrlFor:
     def test_url_for_with_anchor(self, app, req_ctx):
         @app.route("/")
         def index():
@@ -832,7 +820,7 @@ class TestUrlFor(object):
             def get(self, id=None):
                 if id is None:
                     return "List"
-                return "Get %d" % id
+                return f"Get {id:d}"
 
             def post(self):
                 return "Create"
@@ -847,7 +835,7 @@ class TestUrlFor(object):
         assert flask.url_for("myview", _method="POST") == "/myview/create"
 
 
-class TestNoImports(object):
+class TestNoImports:
     """Test Flasks are created without import.
 
     Avoiding ``__import__`` helps create Flask instances where there are errors
@@ -866,7 +854,7 @@ class TestNoImports(object):
             AssertionError("Flask(import_name) is importing import_name.")
 
 
-class TestStreaming(object):
+class TestStreaming:
     def test_streaming_with_context(self, app, client):
         @app.route("/")
         def index():
@@ -897,7 +885,7 @@ class TestStreaming(object):
     def test_streaming_with_context_and_custom_close(self, app, client):
         called = []
 
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, gen):
                 self._gen = gen
 
@@ -940,7 +928,7 @@ class TestStreaming(object):
         assert rv.data == b"flask"
 
 
-class TestSafeJoin(object):
+class TestSafeJoin:
     def test_safe_join(self):
         # Valid combinations of *args and expected joined paths.
         passing = (
@@ -981,7 +969,7 @@ class TestSafeJoin(object):
                 print(flask.safe_join(*args))
 
 
-class TestHelpers(object):
+class TestHelpers:
     @pytest.mark.parametrize(
         "debug, expected_flag, expected_default_flag",
         [

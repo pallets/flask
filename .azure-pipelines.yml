@@ -1,85 +1,44 @@
 trigger:
-  - 'master'
+  - master
   - '*.x'
 
-jobs:
-  - job: Tests
-    variables:
-      vmImage: 'ubuntu-latest'
-      python.version: '3.8'
-      TOXENV: 'py,coverage-ci'
-      hasTestResults: 'true'
+variables:
+  vmImage: ubuntu-latest
+  python.version: '3.8'
+  TOXENV: py
 
-    strategy:
-      matrix:
-        Python 3.8 Linux:
-          vmImage: 'ubuntu-latest'
-        Python 3.8 Windows:
-          vmImage: 'windows-latest'
-        Python 3.8 Mac:
-          vmImage: 'macos-latest'
-        PyPy 3 Linux:
-          python.version: 'pypy3'
-        Python 3.7 Linux:
-          python.version: '3.7'
-        Python 3.6 Linux:
-          python.version: '3.6'
-        Python 3.5 Linux:
-          python.version: '3.5'
-        Python 2.7 Linux:
-          python.version: '2.7'
-        Python 2.7 Windows:
-          python.version: '2.7'
-          vmImage: 'windows-latest'
-        Docs:
-          TOXENV: 'docs'
-          hasTestResults: 'false'
-        Style:
-          TOXENV: 'style'
-          hasTestResults: 'false'
-        VersionRange:
-          TOXENV: 'devel,lowest,coverage-ci'
-
-    pool:
-      vmImage: $[ variables.vmImage ]
-
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: $(python.version)
-        displayName: Use Python $(python.version)
-
-      - script: pip --disable-pip-version-check install -U tox
-        displayName: Install tox
-
-      - script: tox -s false -- --junitxml=test-results.xml tests examples
-        displayName: Run tox
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFiles: test-results.xml
-          testRunTitle: $(Agent.JobName)
-        condition: eq(variables['hasTestResults'], 'true')
-        displayName: Publish test results
-
-      - task: PublishCodeCoverageResults@1
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: coverage.xml
-        condition: eq(variables['hasTestResults'], 'true')
-        displayName: Publish coverage results
-
-  # Test on the nightly version of Python.
-  # Use a container since Azure Pipelines may not have the latest build.
-  - job: FlaskOnNightly
-    pool:
+strategy:
+  matrix:
+    Linux:
       vmImage: ubuntu-latest
-    container: python:rc-stretch
-    steps:
-      - script: |
-          echo "##vso[task.prependPath]$HOME/.local/bin"
-          pip --disable-pip-version-check install --user -U tox
-        displayName: Install tox
+    Windows:
+      vmImage: windows-latest
+    Mac:
+      vmImage: macos-latest
+    Python 3.7:
+      python.version: '3.7'
+    Python 3.6:
+      python.version: '3.6'
+    PyPy 3:
+      python.version: pypy3
+    Version Range:
+      TOXENV: 'devel,lowest'
+    Docs:
+      TOXENV: docs
+    Style:
+      TOXENV: style
 
-      - script: tox -e nightly
-        displayName: Run tox
+pool:
+  vmImage: $[ variables.vmImage ]
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: $(python.version)
+    displayName: Use Python $(python.version)
+
+  - script: pip --disable-pip-version-check install -U tox
+    displayName: Install tox
+
+  - script: tox
+    displayName: Run tox

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.test_cli
     ~~~~~~~~~~~~~~
@@ -8,8 +7,6 @@
 """
 # This file was part of Flask-CLI and was modified under the terms of
 # its Revised BSD License. Copyright © 2015 CERN.
-from __future__ import absolute_import
-
 import os
 import ssl
 import sys
@@ -261,7 +258,7 @@ def test_get_version(test_apps, capsys):
     from werkzeug import __version__ as werkzeug_version
     from platform import python_version
 
-    class MockCtx(object):
+    class MockCtx:
         resilient_parsing = False
         color = None
 
@@ -271,9 +268,9 @@ def test_get_version(test_apps, capsys):
     ctx = MockCtx()
     get_version(ctx, None, "test")
     out, err = capsys.readouterr()
-    assert "Python " + python_version() in out
-    assert "Flask " + flask_version in out
-    assert "Werkzeug " + werkzeug_version in out
+    assert f"Python {python_version()}" in out
+    assert f"Flask {flask_version}" in out
+    assert f"Werkzeug {werkzeug_version}" in out
 
 
 def test_scriptinfo(test_apps, monkeypatch):
@@ -291,7 +288,7 @@ def test_scriptinfo(test_apps, monkeypatch):
     app = obj.load_app()
     assert app.name == "testapp"
     assert obj.load_app() is app
-    obj = ScriptInfo(app_import_path=cli_app_path + ":testapp")
+    obj = ScriptInfo(app_import_path=f"{cli_app_path}:testapp")
     app = obj.load_app()
     assert app.name == "testapp"
     assert obj.load_app() is app
@@ -409,7 +406,7 @@ def test_flaskgroup_debug(runner, set_debug_flag):
 
     result = runner.invoke(cli, ["test"])
     assert result.exit_code == 0
-    assert result.output == "%s\n" % str(not set_debug_flag)
+    assert result.output == f"{not set_debug_flag}\n"
 
 
 def test_print_exceptions(runner):
@@ -589,16 +586,11 @@ def test_run_cert_import(monkeypatch):
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--cert", "not_here"])
 
-    # not an SSLContext
-    if sys.version_info >= (2, 7, 9):
-        with pytest.raises(click.BadParameter):
-            run_command.make_context("run", ["--cert", "flask"])
+    with pytest.raises(click.BadParameter):
+        run_command.make_context("run", ["--cert", "flask"])
 
     # SSLContext
-    if sys.version_info < (2, 7, 9):
-        ssl_context = object()
-    else:
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 
     monkeypatch.setitem(sys.modules, "ssl_context", ssl_context)
     ctx = run_command.make_context("run", ["--cert", "ssl_context"])
@@ -664,4 +656,4 @@ def test_cli_empty(app):
     app.register_blueprint(bp)
 
     result = app.test_cli_runner().invoke(args=["blue", "--help"])
-    assert result.exit_code == 2, "Unexpected success:\n\n" + result.output
+    assert result.exit_code == 2, f"Unexpected success:\n\n{result.output}"

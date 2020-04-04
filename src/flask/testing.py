@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.testing
     ~~~~~~~~~~~~~
@@ -9,7 +8,6 @@
     :copyright: 2010 Pallets
     :license: BSD-3-Clause
 """
-import warnings
 from contextlib import contextmanager
 
 import werkzeug.test
@@ -52,7 +50,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         subdomain=None,
         url_scheme=None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         assert not (base_url or subdomain or url_scheme) or (
             base_url is not None
@@ -65,16 +63,15 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
             app_root = app.config["APPLICATION_ROOT"]
 
             if subdomain:
-                http_host = "{0}.{1}".format(subdomain, http_host)
+                http_host = f"{subdomain}.{http_host}"
 
             if url_scheme is None:
                 url_scheme = app.config["PREFERRED_URL_SCHEME"]
 
             url = url_parse(path)
-            base_url = "{scheme}://{netloc}/{path}".format(
-                scheme=url.scheme or url_scheme,
-                netloc=url.netloc or http_host,
-                path=app_root.lstrip("/"),
+            base_url = (
+                f"{url.scheme or url_scheme}://{url.netloc or http_host}"
+                f"/{app_root.lstrip('/')}"
             )
             path = url.path
 
@@ -83,7 +80,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
                 path += sep + url.query
 
         self.app = app
-        super(EnvironBuilder, self).__init__(path, base_url, *args, **kwargs)
+        super().__init__(path, base_url, *args, **kwargs)
 
     def json_dumps(self, obj, **kwargs):
         """Serialize ``obj`` to a JSON-formatted string.
@@ -93,23 +90,6 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         """
         kwargs.setdefault("app", self.app)
         return json_dumps(obj, **kwargs)
-
-
-def make_test_environ_builder(*args, **kwargs):
-    """Create a :class:`flask.testing.EnvironBuilder`.
-
-    .. deprecated: 1.1
-        Will be removed in 2.0. Construct
-        ``flask.testing.EnvironBuilder`` directly instead.
-    """
-    warnings.warn(
-        DeprecationWarning(
-            '"make_test_environ_builder()" is deprecated and will be'
-            ' removed in 2.0. Construct "flask.testing.EnvironBuilder"'
-            " directly instead."
-        )
-    )
-    return EnvironBuilder(*args, **kwargs)
 
 
 class FlaskClient(Client):
@@ -130,10 +110,10 @@ class FlaskClient(Client):
     preserve_context = False
 
     def __init__(self, *args, **kwargs):
-        super(FlaskClient, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.environ_base = {
             "REMOTE_ADDR": "127.0.0.1",
-            "HTTP_USER_AGENT": "werkzeug/" + werkzeug.__version__,
+            "HTTP_USER_AGENT": f"werkzeug/{werkzeug.__version__}",
         }
 
     @contextmanager
@@ -257,7 +237,7 @@ class FlaskCliRunner(CliRunner):
 
     def __init__(self, app, **kwargs):
         self.app = app
-        super(FlaskCliRunner, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def invoke(self, cli=None, args=None, **kwargs):
         """Invokes a CLI command in an isolated environment. See
@@ -280,4 +260,4 @@ class FlaskCliRunner(CliRunner):
         if "obj" not in kwargs:
             kwargs["obj"] = ScriptInfo(create_app=lambda: self.app)
 
-        return super(FlaskCliRunner, self).invoke(cli, args, **kwargs)
+        return super().invoke(cli, args, **kwargs)

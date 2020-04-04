@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.test_config
     ~~~~~~~~~~~~~~~~~
@@ -14,7 +13,6 @@ from datetime import timedelta
 import pytest
 
 import flask
-from flask._compat import PY2
 
 
 # config keys used for the TestConfig
@@ -30,7 +28,7 @@ def common_object_test(app):
 
 def test_config_from_pyfile():
     app = flask.Flask(__name__)
-    app.config.from_pyfile(__file__.rsplit(".", 1)[0] + ".py")
+    app.config.from_pyfile(f"{__file__.rsplit('.', 1)[0]}.py")
     common_object_test(app)
 
 
@@ -66,7 +64,7 @@ def test_config_from_mapping():
 
 
 def test_config_from_class():
-    class Base(object):
+    class Base:
         TEST_KEY = "foo"
 
     class Test(Base):
@@ -86,7 +84,7 @@ def test_config_from_envvar(monkeypatch):
     assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
 
     monkeypatch.setattr(
-        "os.environ", {"FOO_SETTINGS": __file__.rsplit(".", 1)[0] + ".py"}
+        "os.environ", {"FOO_SETTINGS": f"{__file__.rsplit('.', 1)[0]}.py"}
     )
     assert app.config.from_envvar("FOO_SETTINGS")
     common_object_test(app)
@@ -187,17 +185,13 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     f = tmpdir.join("my_config.py")
     f.write_binary(
         textwrap.dedent(
-            u"""
-    # -*- coding: {0} -*-
-    TEST_VALUE = "föö"
-    """.format(
-                encoding
-            )
+            f"""
+            # -*- coding: {encoding} -*-
+            TEST_VALUE = "föö"
+            """
         ).encode(encoding)
     )
     app = flask.Flask(__name__)
     app.config.from_pyfile(str(f))
     value = app.config["TEST_VALUE"]
-    if PY2:
-        value = value.decode(encoding)
-    assert value == u"föö"
+    assert value == "föö"

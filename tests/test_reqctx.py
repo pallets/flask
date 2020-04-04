@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.reqctx
     ~~~~~~~~~~~~
@@ -111,7 +110,7 @@ def test_proper_test_request_context(app):
 def test_context_binding(app):
     @app.route("/")
     def index():
-        return "Hello %s!" % flask.request.args["name"]
+        return f"Hello {flask.request.args['name']}!"
 
     @app.route("/meh")
     def meh():
@@ -139,7 +138,7 @@ def test_context_test(app):
 def test_manual_context_binding(app):
     @app.route("/")
     def index():
-        return "Hello %s!" % flask.request.args["name"]
+        return f"Hello {flask.request.args['name']}!"
 
     ctx = app.test_request_context("/?name=World")
     ctx.push()
@@ -150,7 +149,7 @@ def test_manual_context_binding(app):
 
 
 @pytest.mark.skipif(greenlet is None, reason="greenlet not installed")
-class TestGreenletContextCopying(object):
+class TestGreenletContextCopying:
     def test_greenlet_context_copying(self, app, client):
         greenlets = []
 
@@ -239,7 +238,7 @@ def test_session_dynamic_cookie_name():
             if flask.request.url.endswith("dynamic_cookie"):
                 return "dynamic_cookie_name"
             else:
-                return super(PathAwareSessionInterface, self).get_cookie_name(app)
+                return super().get_cookie_name(app)
 
     class CustomFlask(flask.Flask):
         session_interface = PathAwareSessionInterface()
@@ -285,17 +284,13 @@ def test_session_dynamic_cookie_name():
 def test_bad_environ_raises_bad_request():
     app = flask.Flask(__name__)
 
-    # We cannot use app.test_client() for the Unicode-rich Host header,
-    # because werkzeug enforces latin1 on Python 2.
-    # However it works when actually passed to the server.
-
     from flask.testing import EnvironBuilder
 
     builder = EnvironBuilder(app)
     environ = builder.get_environ()
 
     # use a non-printable character in the Host - this is key to this test
-    environ["HTTP_HOST"] = u"\x8a"
+    environ["HTTP_HOST"] = "\x8a"
 
     with app.request_context(environ):
         response = app.full_dispatch_request()
@@ -309,17 +304,13 @@ def test_environ_for_valid_idna_completes():
     def index():
         return "Hello World!"
 
-    # We cannot use app.test_client() for the Unicode-rich Host header,
-    # because werkzeug enforces latin1 on Python 2.
-    # However it works when actually passed to the server.
-
     from flask.testing import EnvironBuilder
 
     builder = EnvironBuilder(app)
     environ = builder.get_environ()
 
     # these characters are all IDNA-compatible
-    environ["HTTP_HOST"] = u"ąśźäüжŠßя.com"
+    environ["HTTP_HOST"] = "ąśźäüжŠßя.com"
 
     with app.request_context(environ):
         response = app.full_dispatch_request()

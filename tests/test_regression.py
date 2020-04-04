@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     tests.regression
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9,7 +8,7 @@
     :license: BSD-3-Clause
 """
 import gc
-import sys
+import platform
 import threading
 
 import pytest
@@ -20,7 +19,7 @@ import flask
 _gc_lock = threading.Lock()
 
 
-class assert_no_leak(object):
+class assert_no_leak:
     def __enter__(self):
         gc.disable()
         _gc_lock.acquire()
@@ -44,6 +43,7 @@ class assert_no_leak(object):
         gc.enable()
 
 
+@pytest.mark.skipif(platform.python_implementation() == "PyPy", reason="CPython only")
 def test_memory_consumption():
     app = flask.Flask(__name__)
 
@@ -60,11 +60,9 @@ def test_memory_consumption():
     # Trigger caches
     fire()
 
-    # This test only works on CPython 2.7.
-    if sys.version_info >= (2, 7) and not hasattr(sys, "pypy_translation_info"):
-        with assert_no_leak():
-            for _x in range(10):
-                fire()
+    with assert_no_leak():
+        for _x in range(10):
+            fire()
 
 
 def test_safe_join_toplevel_pardir():

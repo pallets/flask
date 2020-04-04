@@ -293,8 +293,7 @@ Why would you want to build URLs using the URL reversing function
 1. Reversing is often more descriptive than hard-coding the URLs.
 2. You can change your URLs in one go instead of needing to remember to
    manually change hard-coded URLs.
-3. URL building handles escaping of special characters and Unicode data
-   transparently.
+3. URL building handles escaping of special characters transparently.
 4. The generated paths are always absolute, avoiding unexpected behavior
    of relative paths in browsers.
 5. If your application is placed outside the URL root, for example, in
@@ -448,11 +447,11 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
 
     >>> from markupsafe import Markup
     >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
-    Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
+    Markup('<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
     >>> Markup.escape('<blink>hacker</blink>')
-    Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
+    Markup('&lt;blink&gt;hacker&lt;/blink&gt;')
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-    u'Marked up \xbb HTML'
+    'Marked up \xbb HTML'
 
 .. versionchanged:: 0.5
 
@@ -610,8 +609,8 @@ Werkzeug provides for you::
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         if request.method == 'POST':
-            f = request.files['the_file']
-            f.save('/var/www/uploads/' + secure_filename(f.filename))
+            file = request.files['the_file']
+            file.save(f"/var/www/uploads/{secure_filename(f.filename)}")
         ...
 
 For some better examples, checkout the :ref:`uploading-files` pattern.
