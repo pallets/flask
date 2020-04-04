@@ -1,5 +1,3 @@
-.. _patterns:
-
 Patterns for Flask
 ==================
 

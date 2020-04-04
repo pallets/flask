@@ -1,5 +1,3 @@
-.. _deferred-callbacks:
-
 Deferred Request Callbacks
 ==========================
 

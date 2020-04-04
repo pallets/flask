@@ -1,7 +1,5 @@
 .. currentmodule:: flask
 
-.. _request-context:
-
 The Request Context
 ===================
 
@@ -257,7 +255,7 @@ exceptions where it is good to know that this object is actually a proxy:
     If you want to perform instance checks, you have to do that on the
     object being proxied.
 -   The reference to the proxied object is needed in some situations,
-    such as sending :ref:`signals` or passing data to a background
+    such as sending :doc:`signals` or passing data to a background
     thread.
 
 If you need to access the underlying object that is proxied, use the

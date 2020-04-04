@@ -1,5 +1,3 @@
-.. _testing:
-
 Testing Flask Applications
 ==========================
 
@@ -26,8 +24,8 @@ The Application
 ---------------
 
 First, we need an application to test; we will use the application from
-the :ref:`tutorial`.  If you don't have that application yet, get the
-source code from :gh:`the examples <examples/tutorial>`.
+the :doc:`tutorial/index`. If you don't have that application yet, get
+the source code from :gh:`the examples <examples/tutorial>`.
 
 So that we can import the module ``flaskr`` correctly, we need to run
 ``pip install -e .`` in the folder ``tutorial``.
@@ -239,7 +237,7 @@ way.
 
 If you want to test your application with different configurations and
 there does not seem to be a good way to do that, consider switching to
-application factories (see :ref:`app-factories`).
+application factories (see :doc:`patterns/appfactories`).
 
 Note however that if you are using a test request context, the
 :meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`

@@ -444,9 +444,7 @@ class FlaskGroup(AppGroup):
     loading more commands from the configured Flask app.  Normally a
     developer does not have to interface with this class but there are
     some very advanced use cases for which it makes sense to create an
-    instance of this.
-
-    For information as of why this is useful see :ref:`custom-scripts`.
+    instance of this. see :ref:`custom-scripts`.
 
     :param add_default_commands: if this is True then the default run and
         shell commands will be added.

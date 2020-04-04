@@ -1,5 +1,3 @@
-.. _deployment:
-
 Deployment Options
 ==================
 

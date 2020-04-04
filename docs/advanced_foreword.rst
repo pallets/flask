@@ -1,5 +1,3 @@
-.. _advanced_foreword:
-
 Foreword for Experienced Programmers
 ====================================
 

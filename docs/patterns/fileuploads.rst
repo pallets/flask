@@ -1,5 +1,3 @@
-.. _uploading-files:
-
 Uploading Files
 ===============
 
@@ -39,7 +37,7 @@ Why do we limit the extensions that are allowed?  You probably don't want
 your users to be able to upload everything there if the server is directly
 sending out the data to the client.  That way you can make sure that users
 are not able to upload HTML files that would cause XSS problems (see
-:ref:`xss`).  Also make sure to disallow ``.php`` files if the server
+:ref:`security-xss`).  Also make sure to disallow ``.php`` files if the server
 executes them, but who has PHP installed on their server, right?  :)
 
 Next the functions that check if an extension is valid and that uploads

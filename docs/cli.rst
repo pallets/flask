@@ -1,7 +1,5 @@
 .. currentmodule:: flask
 
-.. _cli:
-
 Command Line Interface
 ======================
 
@@ -99,7 +97,7 @@ replaces the :meth:`Flask.run` method in most cases. ::
 .. warning:: Do not use this command to run your application in production.
     Only use the development server during development. The development server
     is provided for convenience, but is not designed to be particularly secure,
-    stable, or efficient. See :ref:`deployment` for how to run in production.
+    stable, or efficient. See :doc:`/deploying/index` for how to run in production.
 
 
 Open a Shell

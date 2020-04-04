@@ -1,7 +1,5 @@
-.. _larger-applications:
-
-Larger Applications
-===================
+Large Applications as Packages
+==============================
 
 Imagine a simple flask application structure that looks like this::
 
@@ -17,7 +15,7 @@ Imagine a simple flask application structure that looks like this::
 
 While this is fine for small applications, for larger applications
 it's a good idea to use a package instead of a module.
-The :ref:`tutorial <tutorial>` is structured to use the package pattern,
+The :doc:`/tutorial/index` is structured to use the package pattern,
 see the :gh:`example code <examples/tutorial>`.
 
 Simple Packages
@@ -129,10 +127,8 @@ You should then end up with something like that::
 
    There are still some problems with that approach but if you want to use
    decorators there is no way around that.  Check out the
-   :ref:`becomingbig` section for some inspiration how to deal with that.
+   :doc:`/becomingbig` section for some inspiration how to deal with that.
 
-
-.. _working-with-modules:
 
 Working with Blueprints
 -----------------------
@@ -140,4 +136,4 @@ Working with Blueprints
 If you have larger applications it's recommended to divide them into
 smaller groups where each group is implemented with the help of a
 blueprint.  For a gentle introduction into this topic refer to the
-:ref:`blueprints` chapter of the documentation.
+:doc:`/blueprints` chapter of the documentation.

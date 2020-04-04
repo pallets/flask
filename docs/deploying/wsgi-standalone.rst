@@ -1,5 +1,3 @@
-.. _deploying-wsgi-standalone:
-
 Standalone WSGI Containers
 ==========================
 

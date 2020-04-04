@@ -331,8 +331,9 @@ def jsonify(*args, **kwargs):
 
 
     .. versionchanged:: 0.11
-       Added support for serializing top-level arrays. This introduces a
-       security risk in ancient browsers. See :ref:`json-security` for details.
+        Added support for serializing top-level arrays. This introduces
+        a security risk in ancient browsers. See :ref:`security-json`
+        for details.
 
     This function's response will be pretty printed if the
     ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to True or the

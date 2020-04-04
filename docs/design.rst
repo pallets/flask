@@ -1,5 +1,3 @@
-.. _design:
-
 Design Decisions in Flask
 =========================
 
@@ -77,7 +75,7 @@ to the application object :meth:`~flask.Flask.wsgi_app`).
 
 Furthermore this design makes it possible to use a factory function to
 create the application which is very helpful for unit testing and similar
-things (:ref:`app-factories`).
+things (:doc:`/patterns/appfactories`).
 
 The Routing System
 ------------------
@@ -169,7 +167,7 @@ large applications harder to maintain.  However Flask is just not designed
 for large applications or asynchronous servers.  Flask wants to make it
 quick and easy to write a traditional web application.
 
-Also see the :ref:`becomingbig` section of the documentation for some
+Also see the :doc:`/becomingbig` section of the documentation for some
 inspiration for larger applications based on Flask.
 
 

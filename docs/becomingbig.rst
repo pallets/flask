@@ -1,5 +1,3 @@
-.. _becomingbig:
-
 Becoming Big
 ============
 
@@ -20,8 +18,8 @@ project.
 Hook. Extend.
 -------------
 
-The :ref:`api` docs are full of available overrides, hook points, and
-:ref:`signals`. You can provide custom classes for things like the
+The :doc:`/api` docs are full of available overrides, hook points, and
+:doc:`/signals`. You can provide custom classes for things like the
 request and response objects. Dig deeper on the APIs you use, and look
 for the customizations which are available out of the box in a Flask
 release. Look for ways in which your project can be refactored into a
@@ -35,13 +33,13 @@ Subclass.
 The :class:`~flask.Flask` class has many methods designed for subclassing. You
 can quickly add or customize behavior by subclassing :class:`~flask.Flask` (see
 the linked method docs) and using that subclass wherever you instantiate an
-application class. This works well with :ref:`app-factories`.
+application class. This works well with :doc:`/patterns/appfactories`.
 See :doc:`/patterns/subclassing` for an example.
 
 Wrap with middleware.
 ---------------------
 
-The :ref:`app-dispatch` chapter shows in detail how to apply middleware. You
+The :doc:`/patterns/appdispatch` pattern shows in detail how to apply middleware. You
 can introduce WSGI middleware to wrap your Flask instances and introduce fixes
 and changes at the layer between your Flask application and your HTTP
 server. Werkzeug includes several `middlewares

@@ -1,5 +1,3 @@
-.. _api:
-
 API
 ===
 
@@ -326,12 +324,12 @@ happens automatically (but it's harmless to include ``|safe`` anyway).
 
 .. admonition:: Auto-Sort JSON Keys
 
-    The configuration variable ``JSON_SORT_KEYS`` (:ref:`config`) can be
-    set to false to stop Flask from auto-sorting keys.  By default sorting
+    The configuration variable :data:`JSON_SORT_KEYS` can be set to
+    ``False`` to stop Flask from auto-sorting keys. By default sorting
     is enabled and outside of the app context sorting is turned on.
 
-    Notice that disabling key sorting can cause issues when using content
-    based HTTP caches and Python's hash randomization feature.
+    Notice that disabling key sorting can cause issues when using
+    content  based HTTP caches and Python's hash randomization feature.
 
 .. autofunction:: jsonify
 
@@ -634,7 +632,6 @@ The following signals exist in Flask:
 
 .. _blinker: https://pypi.org/project/blinker/
 
-.. _class-based-views:
 
 Class-Based Views
 -----------------
@@ -761,7 +758,6 @@ instead of the `view_func` parameter.
                 handling.  They have to be specified as keyword arguments.
 =============== ==========================================================
 
-.. _view-func-options:
 
 View Function Options
 ---------------------

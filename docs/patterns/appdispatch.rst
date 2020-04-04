@@ -1,5 +1,3 @@
-.. _app-dispatch:
-
 Application Dispatching
 =======================
 
@@ -10,25 +8,25 @@ Django and a Flask application in the same interpreter side by side if
 you want.  The usefulness of this depends on how the applications work
 internally.
 
-The fundamental difference from the :ref:`module approach
-<larger-applications>` is that in this case you are running the same or
-different Flask applications that are entirely isolated from each other.
-They run different configurations and are dispatched on the WSGI level.
+The fundamental difference from :doc:`packages` is that in this case you
+are running the same or different Flask applications that are entirely
+isolated from each other. They run different configurations and are
+dispatched on the WSGI level.
 
 
 Working with this Document
 --------------------------
 
-Each of the techniques and examples below results in an ``application`` object
-that can be run with any WSGI server.  For production, see :ref:`deployment`.
-For development, Werkzeug provides a builtin server for development available
-at :func:`werkzeug.serving.run_simple`::
+Each of the techniques and examples below results in an ``application``
+object that can be run with any WSGI server. For production, see
+:doc:`/deploying/index`. For development, Werkzeug provides a server
+through :func:`werkzeug.serving.run_simple`::
 
     from werkzeug.serving import run_simple
     run_simple('localhost', 5000, application, use_reloader=True)
 
 Note that :func:`run_simple <werkzeug.serving.run_simple>` is not intended for
-use in production.  Use a :ref:`full-blown WSGI server <deployment>`.
+use in production.  Use a production WSGI server. See :doc:`/deploying/index`.
 
 In order to use the interactive debugger, debugging must be enabled both on
 the application and the simple server. Here is the "hello world" example with
@@ -79,7 +77,7 @@ with different configurations.  Assuming the application is created inside
 a function and you can call that function to instantiate it, that is
 really easy to implement.  In order to develop your application to support
 creating new instances in functions have a look at the
-:ref:`app-factories` pattern.
+:doc:`appfactories` pattern.
 
 A very common example would be creating applications per subdomain.  For
 instance you configure your webserver to dispatch all requests for all

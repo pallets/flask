@@ -1,5 +1,3 @@
-.. _application-errors:
-
 Application Errors
 ==================
 
@@ -68,7 +66,6 @@ Follow-up reads:
 * `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
 * `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
 
-.. _error-handlers:
 
 Error handlers
 --------------
@@ -239,7 +236,7 @@ Debugging Application Errors
 ============================
 
 For production applications, configure your application with logging and
-notifications as described in :ref:`application-errors`.  This section provides
+notifications as described in :doc:`/logging`. This section provides
 pointers when debugging deployment configuration and digging deeper with a
 full-featured Python debugger.
 

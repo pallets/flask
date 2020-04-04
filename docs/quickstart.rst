@@ -1,5 +1,3 @@
-.. _quickstart:
-
 Quickstart
 ==========
 
@@ -61,9 +59,9 @@ And on PowerShell::
 
     PS C:\path\to\app> $env:FLASK_APP = "hello.py"
 
-This launches a very simple builtin server, which is good enough for testing
-but probably not what you want to use in production. For deployment options see
-:ref:`deployment`.
+This launches a very simple builtin server, which is good enough for
+testing but probably not what you want to use in production. For
+deployment options see :doc:`deploying/index`.
 
 Now head over to http://127.0.0.1:5000/, and you should see your hello
 world greeting.
@@ -118,7 +116,7 @@ The most common reason is a typo or because you did not actually create an
 Debug Mode
 ----------
 
-(Want to just log errors and stack traces? See :ref:`application-errors`)
+(Want to just log errors and stack traces? See :doc:`errorhandling`)
 
 The :command:`flask` script is nice to start a local development server, but
 you would have to restart it manually after each change to your code.
@@ -432,9 +430,9 @@ Inside templates you also have access to the :class:`~flask.request`,
 as well as the :func:`~flask.get_flashed_messages` function.
 
 Templates are especially useful if inheritance is used.  If you want to
-know how that works, head over to the :ref:`template-inheritance` pattern
-documentation.  Basically template inheritance makes it possible to keep
-certain elements on each page (like header, navigation and footer).
+know how that works, see :doc:`patterns/templateinheritance`. Basically
+template inheritance makes it possible to keep certain elements on each
+page (like header, navigation and footer).
 
 Automatic escaping is enabled, so if ``name`` contains HTML it will be escaped
 automatically.  If you can trust a variable and you know that it will be
@@ -461,9 +459,8 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
    autoescaping disabled.
 
 .. [#] Unsure what that :class:`~flask.g` object is? It's something in which
-   you can store information for your own needs, check the documentation of
-   that object (:class:`~flask.g`) and the :ref:`sqlite3` for more
-   information.
+   you can store information for your own needs. See the documentation
+   for :class:`flask.g` and :doc:`patterns/sqlite3`.
 
 
 Accessing Request Data
@@ -613,7 +610,7 @@ Werkzeug provides for you::
             file.save(f"/var/www/uploads/{secure_filename(f.filename)}")
         ...
 
-For some better examples, checkout the :ref:`uploading-files` pattern.
+For some better examples, see :doc:`patterns/fileuploads`.
 
 Cookies
 ```````
@@ -653,7 +650,7 @@ the :meth:`~flask.make_response` function and then modify it.
 
 Sometimes you might want to set a cookie at a point where the response
 object does not exist yet.  This is possible by utilizing the
-:ref:`deferred-callbacks` pattern.
+:doc:`patterns/deferredcallbacks` pattern.
 
 For this also see :ref:`about-responses`.
 
@@ -693,7 +690,7 @@ Note the ``404`` after the :func:`~flask.render_template` call.  This
 tells Flask that the status code of that page should be 404 which means
 not found.  By default 200 is assumed which translates to: all went well.
 
-See :ref:`error-handlers` for more details.
+See :doc:`errorhandling` for more details.
 
 .. _about-responses:
 
@@ -857,8 +854,8 @@ template to expose the message.
 
 To flash a message use the :func:`~flask.flash` method, to get hold of the
 messages you can use :func:`~flask.get_flashed_messages` which is also
-available in the templates.  Check out the :ref:`message-flashing-pattern`
-for a full example.
+available in the templates. See :doc:`patterns/flashing` for a full
+example.
 
 Logging
 -------
@@ -887,7 +884,8 @@ The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official :mod:`logging`
 docs for more information.
 
-Read more on :ref:`application-errors`.
+See :doc:`errorhandling`.
+
 
 Hooking in WSGI Middleware
 --------------------------
@@ -913,9 +911,9 @@ Extensions are packages that help you accomplish common tasks. For
 example, Flask-SQLAlchemy provides SQLAlchemy support that makes it simple
 and easy to use with Flask.
 
-For more on Flask extensions, have a look at :ref:`extensions`.
+For more on Flask extensions, see :doc:`extensions`.
 
 Deploying to a Web Server
 -------------------------
 
-Ready to deploy your new Flask app? Go to :ref:`deployment`.
+Ready to deploy your new Flask app? See :doc:`deploying/index`.
