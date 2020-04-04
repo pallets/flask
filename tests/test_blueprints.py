@@ -144,7 +144,7 @@ def test_blueprint_url_defaults(app, client):
 
     @bp.route("/foo", defaults={"baz": 42})
     def foo(bar, baz):
-        return "%s/%d" % (bar, baz)
+        return f"{bar}/{baz:d}"
 
     @bp.route("/bar")
     def bar(bar):

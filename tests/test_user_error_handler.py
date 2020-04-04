@@ -29,7 +29,7 @@ def test_error_handler_no_match(app, client):
         original = getattr(e, "original_exception", None)
 
         if original is not None:
-            return "wrapped " + type(original).__name__
+            return f"wrapped {type(original).__name__}"
 
         return "direct"
 
@@ -238,9 +238,9 @@ class TestGenericHandlers:
         original = getattr(e, "original_exception", None)
 
         if original is not None:
-            return "wrapped " + type(original).__name__
+            return f"wrapped {type(original).__name__}"
 
-        return "direct " + type(e).__name__
+        return f"direct {type(e).__name__}"
 
     @pytest.mark.parametrize("to_handle", (InternalServerError, 500))
     def test_handle_class_or_code(self, app, client, to_handle):

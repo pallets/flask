@@ -208,13 +208,13 @@ class SessionInterface:
         rv = rv.rsplit(":", 1)[0].lstrip(".")
 
         if "." not in rv:
-            # Chrome doesn't allow names without a '.'
-            # this should only come up with localhost
-            # hack around this by not setting the name, and show a warning
+            # Chrome doesn't allow names without a '.'. This should only
+            # come up with localhost. Hack around this by not setting
+            # the name, and show a warning.
             warnings.warn(
-                '"{rv}" is not a valid cookie domain, it must contain a ".".'
-                " Add an entry to your hosts file, for example"
-                ' "{rv}.localdomain", and use that instead.'.format(rv=rv)
+                f"{rv!r} is not a valid cookie domain, it must contain"
+                " a '.'. Add an entry to your hosts file, for example"
+                f" '{rv}.localdomain', and use that instead."
             )
             app.config["SESSION_COOKIE_DOMAIN"] = False
             return None
@@ -232,7 +232,7 @@ class SessionInterface:
         # if this is not an ip and app is mounted at the root, allow subdomain
         # matching by adding a '.' prefix
         if self.get_cookie_path(app) == "/" and not ip:
-            rv = "." + rv
+            rv = f".{rv}"
 
         app.config["SESSION_COOKIE_DOMAIN"] = rv
         return rv

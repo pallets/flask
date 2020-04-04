@@ -596,8 +596,8 @@ your configuration classes::
         DB_SERVER = '192.168.1.56'
 
         @property
-        def DATABASE_URI(self):         # Note: all caps
-            return 'mysql://user@{}/foo'.format(self.DB_SERVER)
+        def DATABASE_URI(self):  # Note: all caps
+            return f"mysql://user@{self.DB_SERVER}/foo"
 
     class ProductionConfig(Config):
         """Uses production database server."""

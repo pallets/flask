@@ -105,7 +105,7 @@ class TagDict(JSONTag):
 
     def to_json(self, value):
         key = next(iter(value))
-        return {key + "__": self.serializer.tag(value[key])}
+        return {f"{key}__": self.serializer.tag(value[key])}
 
     def to_python(self, value):
         key = next(iter(value))

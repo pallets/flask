@@ -59,7 +59,7 @@ def test_environ_base_default(app, client, app_ctx):
 
     rv = client.get("/")
     assert rv.data == b"127.0.0.1"
-    assert flask.g.user_agent == "werkzeug/" + werkzeug.__version__
+    assert flask.g.user_agent == f"werkzeug/{werkzeug.__version__}"
 
 
 def test_environ_base_modified(app, client, app_ctx):
@@ -321,7 +321,7 @@ def test_json_request_and_response(app, client):
 def test_client_json_no_app_context(app, client):
     @app.route("/hello", methods=["POST"])
     def hello():
-        return "Hello, {}!".format(flask.request.json["name"])
+        return f"Hello, {flask.request.json['name']}!"
 
     class Namespace:
         count = 0

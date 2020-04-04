@@ -104,9 +104,9 @@ You can insert entries into the database like this:
 Querying is simple as well:
 
 >>> User.query.all()
-[<User u'admin'>]
+[<User 'admin'>]
 >>> User.query.filter(User.name == 'admin').first()
-<User u'admin'>
+<User 'admin'>
 
 .. _SQLAlchemy: https://www.sqlalchemy.org/
 .. _declarative:
@@ -200,19 +200,19 @@ SQLAlchemy will automatically commit for us.
 To query your database, you use the engine directly or use a connection:
 
 >>> users.select(users.c.id == 1).execute().first()
-(1, u'admin', u'admin@localhost')
+(1, 'admin', 'admin@localhost')
 
 These results are also dict-like tuples:
 
 >>> r = users.select(users.c.id == 1).execute().first()
 >>> r['name']
-u'admin'
+'admin'
 
 You can also pass strings of SQL statements to the
 :meth:`~sqlalchemy.engine.base.Connection.execute` method:
 
 >>> engine.execute('select * from users where id = :1', [1]).first()
-(1, u'admin', u'admin@localhost')
+(1, 'admin', 'admin@localhost')
 
 For more information about SQLAlchemy, head over to the
 `website <https://www.sqlalchemy.org/>`_.

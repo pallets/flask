@@ -585,7 +585,7 @@ class Flask(_PackageBoundObject):
                 bool(static_host) == host_matching
             ), "Invalid static_host/host_matching combination"
             self.add_url_rule(
-                self.static_url_path + "/<path:filename>",
+                f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
                 view_func=self.send_static_file,
@@ -711,7 +711,7 @@ class Flask(_PackageBoundObject):
         prefix, package_path = find_package(self.import_name)
         if prefix is None:
             return os.path.join(package_path, "instance")
-        return os.path.join(prefix, "var", self.name + "-instance")
+        return os.path.join(prefix, "var", f"{self.name}-instance")
 
     def open_instance_resource(self, resource, mode="rb"):
         """Opens a resource from the application's instance folder
@@ -1084,10 +1084,11 @@ class Flask(_PackageBoundObject):
 
         if blueprint.name in self.blueprints:
             assert self.blueprints[blueprint.name] is blueprint, (
-                "A name collision occurred between blueprints %r and %r. Both"
-                ' share the same name "%s". Blueprints that are created on the'
-                " fly need unique names."
-                % (blueprint, self.blueprints[blueprint.name], blueprint.name)
+                "A name collision occurred between blueprints"
+                f" {blueprint!r} and {self.blueprints[blueprint.name]!r}."
+                f" Both share the same name {blueprint.name!r}."
+                f" Blueprints that are created on the fly need unique"
+                f" names."
             )
         else:
             self.blueprints[blueprint.name] = blueprint
@@ -1209,8 +1210,8 @@ class Flask(_PackageBoundObject):
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
                 raise AssertionError(
-                    "View function mapping is overwriting an "
-                    "existing endpoint function: %s" % endpoint
+                    "View function mapping is overwriting an existing"
+                    f" endpoint function: {endpoint}"
                 )
             self.view_functions[endpoint] = view_func
 
@@ -1341,17 +1342,18 @@ class Flask(_PackageBoundObject):
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
-                "Tried to register a handler for an exception instance {!r}."
-                " Handlers can only be registered for exception classes or"
-                " HTTP error codes.".format(code_or_exception)
+                "Tried to register a handler for an exception instance"
+                f" {code_or_exception!r}. Handlers can only be"
+                " registered for exception classes or HTTP error codes."
             )
 
         try:
             exc_class, code = self._get_exc_class_and_code(code_or_exception)
         except KeyError:
             raise KeyError(
-                "'{}' is not a recognized HTTP error code. Use a subclass of"
-                " HTTPException with that code instead.".format(code_or_exception)
+                f"'{code_or_exception}' is not a recognized HTTP error"
+                " code. Use a subclass of HTTPException with that code"
+                " instead."
             )
 
         handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
@@ -1730,7 +1732,7 @@ class Flask(_PackageBoundObject):
                 # message, add it in manually.
                 # TODO: clean up once Werkzeug >= 0.15.5 is required
                 if e.args[0] not in e.get_description():
-                    e.description = "KeyError: '{}'".format(*e.args)
+                    e.description = f"KeyError: {e.args[0]!r}"
             elif not hasattr(BadRequestKeyError, "show_exception"):
                 e.args = ()
 
@@ -2006,9 +2008,9 @@ class Flask(_PackageBoundObject):
         # the body must not be None
         if rv is None:
             raise TypeError(
-                'The view function for "{}" did not return a valid response. The'
-                " function either returned None or ended without a return"
-                " statement.".format(request.endpoint)
+                f"The view function for {request.endpoint!r} did not"
+                " return a valid response. The function either returned"
+                " None or ended without a return statement."
             )
 
         # make sure the body is an instance of the response class
@@ -2028,17 +2030,17 @@ class Flask(_PackageBoundObject):
                     rv = self.response_class.force_type(rv, request.environ)
                 except TypeError as e:
                     raise TypeError(
-                        "{e}\nThe view function did not return a valid"
-                        " response. The return type must be a string, dict, tuple,"
-                        " Response instance, or WSGI callable, but it was a"
-                        " {rv.__class__.__name__}.".format(e=e, rv=rv)
+                        f"{e}\nThe view function did not return a valid"
+                        " response. The return type must be a string,"
+                        " dict, tuple, Response instance, or WSGI"
+                        f" callable, but it was a {type(rv).__name__}."
                     ).with_traceback(sys.exc_info()[2])
             else:
                 raise TypeError(
                     "The view function did not return a valid"
-                    " response. The return type must be a string, dict, tuple,"
-                    " Response instance, or WSGI callable, but it was a"
-                    " {rv.__class__.__name__}.".format(rv=rv)
+                    " response. The return type must be a string,"
+                    " dict, tuple, Response instance, or WSGI"
+                    f" callable, but it was a {type(rv).__name__}."
                 )
 
         # prefer the status if it was provided
@@ -2375,4 +2377,4 @@ class Flask(_PackageBoundObject):
         return self.wsgi_app(environ, start_response)
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {self.name!r}>"
+        return f"<{type(self).__name__} {self.name!r}>"

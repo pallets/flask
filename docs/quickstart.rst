@@ -447,11 +447,11 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
 
     >>> from markupsafe import Markup
     >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
-    Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
+    Markup('<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
     >>> Markup.escape('<blink>hacker</blink>')
-    Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
+    Markup('&lt;blink&gt;hacker&lt;/blink&gt;')
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-    u'Marked up \xbb HTML'
+    'Marked up \xbb HTML'
 
 .. versionchanged:: 0.5
 
@@ -609,8 +609,8 @@ Werkzeug provides for you::
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         if request.method == 'POST':
-            f = request.files['the_file']
-            f.save('/var/www/uploads/' + secure_filename(f.filename))
+            file = request.files['the_file']
+            file.save(f"/var/www/uploads/{secure_filename(f.filename)}")
         ...
 
 For some better examples, checkout the :ref:`uploading-files` pattern.

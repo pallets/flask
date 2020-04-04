@@ -98,10 +98,10 @@ class Config(dict):
             if silent:
                 return False
             raise RuntimeError(
-                "The environment variable %r is not set "
-                "and as such configuration could not be "
-                "loaded.  Set this variable and make it "
-                "point to a configuration file" % variable_name
+                f"The environment variable {variable_name!r} is not set"
+                " and as such configuration could not be loaded. Set"
+                " this variable and make it point to a configuration"
+                " file"
             )
         return self.from_pyfile(rv, silent=silent)
 
@@ -128,7 +128,7 @@ class Config(dict):
         except OSError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
                 return False
-            e.strerror = "Unable to load configuration file (%s)" % e.strerror
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
             raise
         self.from_object(d)
         return True
@@ -200,7 +200,7 @@ class Config(dict):
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
 
-            e.strerror = "Unable to load configuration file (%s)" % e.strerror
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
             raise
 
         return self.from_mapping(obj)
@@ -219,7 +219,7 @@ class Config(dict):
                 mappings.append(mapping[0])
         elif len(mapping) > 1:
             raise TypeError(
-                "expected at most 1 positional argument, got %d" % len(mapping)
+                f"expected at most 1 positional argument, got {len(mapping)}"
             )
         mappings.append(kwargs.items())
         for mapping in mappings:
@@ -270,4 +270,4 @@ class Config(dict):
         return rv
 
     def __repr__(self):
-        return "<{} {}>".format(self.__class__.__name__, dict.__repr__(self))
+        return f"<{type(self).__name__} {dict.__repr__(self)}>"

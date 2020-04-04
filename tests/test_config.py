@@ -28,7 +28,7 @@ def common_object_test(app):
 
 def test_config_from_pyfile():
     app = flask.Flask(__name__)
-    app.config.from_pyfile(__file__.rsplit(".", 1)[0] + ".py")
+    app.config.from_pyfile(f"{__file__.rsplit('.', 1)[0]}.py")
     common_object_test(app)
 
 
@@ -84,7 +84,7 @@ def test_config_from_envvar(monkeypatch):
     assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
 
     monkeypatch.setattr(
-        "os.environ", {"FOO_SETTINGS": __file__.rsplit(".", 1)[0] + ".py"}
+        "os.environ", {"FOO_SETTINGS": f"{__file__.rsplit('.', 1)[0]}.py"}
     )
     assert app.config.from_envvar("FOO_SETTINGS")
     common_object_test(app)
@@ -185,12 +185,10 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     f = tmpdir.join("my_config.py")
     f.write_binary(
         textwrap.dedent(
+            f"""
+            # -*- coding: {encoding} -*-
+            TEST_VALUE = "föö"
             """
-    # -*- coding: {} -*-
-    TEST_VALUE = "föö"
-    """.format(
-                encoding
-            )
         ).encode(encoding)
     )
     app = flask.Flask(__name__)

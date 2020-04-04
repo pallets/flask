@@ -88,7 +88,7 @@ class _AppCtxGlobals:
     def __repr__(self):
         top = _app_ctx_stack.top
         if top is not None:
-            return "<flask.g of %r>" % top.app.name
+            return f"<flask.g of {top.app.name!r}>"
         return object.__repr__(self)
 
 
@@ -445,9 +445,7 @@ class RequestContext:
         self.auto_pop(exc_value)
 
     def __repr__(self):
-        return "<{} '{}' [{}] of {}>".format(
-            self.__class__.__name__,
-            self.request.url,
-            self.request.method,
-            self.app.name,
+        return (
+            f"<{type(self).__name__} {self.request.url!r}"
+            f" [{self.request.method}] of {self.app.name}>"
         )

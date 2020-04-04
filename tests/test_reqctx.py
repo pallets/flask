@@ -110,7 +110,7 @@ def test_proper_test_request_context(app):
 def test_context_binding(app):
     @app.route("/")
     def index():
-        return "Hello %s!" % flask.request.args["name"]
+        return f"Hello {flask.request.args['name']}!"
 
     @app.route("/meh")
     def meh():
@@ -138,7 +138,7 @@ def test_context_test(app):
 def test_manual_context_binding(app):
     @app.route("/")
     def index():
-        return "Hello %s!" % flask.request.args["name"]
+        return f"Hello {flask.request.args['name']}!"
 
     ctx = app.test_request_context("/?name=World")
     ctx.push()
