@@ -16,14 +16,13 @@ from itsdangerous import json as _json
 from jinja2 import Markup
 from werkzeug.http import http_date
 
-from .._compat import PY2
-from .._compat import text_type
 from ..globals import current_app
 from ..globals import request
 
 try:
     import dataclasses
 except ImportError:
+    # Python < 3.7
     dataclasses = None
 
 # Figure out if simplejson escapes slashes.  This behavior was changed
@@ -96,7 +95,7 @@ class JSONEncoder(_json.JSONEncoder):
         if dataclasses and dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
         if hasattr(o, "__html__"):
-            return text_type(o.__html__())
+            return str(o.__html__())
         return _json.JSONEncoder.default(self, o)
 
 
@@ -209,7 +208,7 @@ def dumps(obj, app=None, **kwargs):
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
     rv = _json.dumps(obj, **kwargs)
-    if encoding is not None and isinstance(rv, text_type):
+    if encoding is not None and isinstance(rv, str):
         rv = rv.encode(encoding)
     return rv
 
@@ -256,8 +255,7 @@ def loads(s, app=None, **kwargs):
 def load(fp, app=None, **kwargs):
     """Like :func:`loads` but reads from a file object."""
     _load_arg_defaults(kwargs, app=app)
-    if not PY2:
-        fp = _wrap_reader_for_text(fp, kwargs.pop("encoding", None) or "utf-8")
+    fp = _wrap_reader_for_text(fp, kwargs.pop("encoding", None) or "utf-8")
     return _json.load(fp, **kwargs)
 
 
@@ -300,7 +298,7 @@ def htmlsafe_dumps(obj, **kwargs):
 
 def htmlsafe_dump(obj, fp, **kwargs):
     """Like :func:`htmlsafe_dumps` but writes into a file object."""
-    fp.write(text_type(htmlsafe_dumps(obj, **kwargs)))
+    fp.write(str(htmlsafe_dumps(obj, **kwargs)))
 
 
 def jsonify(*args, **kwargs):

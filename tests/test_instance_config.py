@@ -12,7 +12,6 @@ import sys
 import pytest
 
 import flask
-from flask._compat import PY2
 
 
 def test_explicit_instance_paths(modules_tmpdir):
@@ -128,19 +127,3 @@ def test_egg_installed_paths(install_egg, modules_tmpdir, modules_tmpdir_prefix)
     finally:
         if "site_egg" in sys.modules:
             del sys.modules["site_egg"]
-
-
-@pytest.mark.skipif(not PY2, reason="This only works under Python 2.")
-def test_meta_path_loader_without_is_package(request, modules_tmpdir):
-    app = modules_tmpdir.join("unimportable.py")
-    app.write("import flask\napp = flask.Flask(__name__)")
-
-    class Loader(object):
-        def find_module(self, name, path=None):
-            return self
-
-    sys.meta_path.append(Loader())
-    request.addfinalizer(sys.meta_path.pop)
-
-    with pytest.raises(AttributeError):
-        import unimportable  # noqa: F401
