@@ -9,7 +9,6 @@
     :copyright: 2010 Pallets
     :license: BSD-3-Clause
 """
-import warnings
 from contextlib import contextmanager
 
 import werkzeug.test
@@ -93,23 +92,6 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         """
         kwargs.setdefault("app", self.app)
         return json_dumps(obj, **kwargs)
-
-
-def make_test_environ_builder(*args, **kwargs):
-    """Create a :class:`flask.testing.EnvironBuilder`.
-
-    .. deprecated: 1.1
-        Will be removed in 2.0. Construct
-        ``flask.testing.EnvironBuilder`` directly instead.
-    """
-    warnings.warn(
-        DeprecationWarning(
-            '"make_test_environ_builder()" is deprecated and will be'
-            ' removed in 2.0. Construct "flask.testing.EnvironBuilder"'
-            " directly instead."
-        )
-    )
-    return EnvironBuilder(*args, **kwargs)
 
 
 class FlaskClient(Client):

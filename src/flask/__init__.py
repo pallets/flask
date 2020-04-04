@@ -17,7 +17,6 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 from . import json
-from ._compat import json_available
 from .app import Flask
 from .app import Request
 from .app import Response

@@ -113,33 +113,3 @@ except ImportError:
     # https://www.python.org/dev/peps/pep-0519/#backwards-compatibility
     def fspath(path):
         return path.__fspath__() if hasattr(path, "__fspath__") else path
-
-
-class _DeprecatedBool(object):
-    def __init__(self, name, version, value):
-        self.message = "'{}' is deprecated and will be removed in version {}.".format(
-            name, version
-        )
-        self.value = value
-
-    def _warn(self):
-        import warnings
-
-        warnings.warn(self.message, DeprecationWarning, stacklevel=2)
-
-    def __eq__(self, other):
-        self._warn()
-        return other == self.value
-
-    def __ne__(self, other):
-        self._warn()
-        return other != self.value
-
-    def __bool__(self):
-        self._warn()
-        return self.value
-
-    __nonzero__ = __bool__
-
-
-json_available = _DeprecatedBool("flask.json_available", "2.0.0", True)
