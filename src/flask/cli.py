@@ -62,13 +62,13 @@ def find_best_app(script_info, module):
         return matches[0]
     elif len(matches) > 1:
         raise NoAppException(
-            'Detected multiple Flask applications in module "{module}". Use '
-            '"FLASK_APP={module}:name" to specify the correct '
-            "one.".format(module=module.__name__)
+            "Detected multiple Flask applications in module"
+            f" {module.__name__!r}. Use 'FLASK_APP={module.__name__}:name'"
+            f" to specify the correct one."
         )
 
     # Search for app factory functions.
-    for attr_name in ("create_app", "make_app"):
+    for attr_name in {"create_app", "make_app"}:
         app_factory = getattr(module, attr_name, None)
 
         if inspect.isfunction(app_factory):
@@ -81,15 +81,16 @@ def find_best_app(script_info, module):
                 if not _called_with_wrong_args(app_factory):
                     raise
                 raise NoAppException(
-                    'Detected factory "{factory}" in module "{module}", but '
-                    "could not call it without arguments. Use "
-                    "\"FLASK_APP='{module}:{factory}(args)'\" to specify "
-                    "arguments.".format(factory=attr_name, module=module.__name__)
+                    f"Detected factory {attr_name!r} in module {module.__name__!r},"
+                    " but could not call it without arguments. Use"
+                    f" \"FLASK_APP='{module.__name__}:{attr_name}(args)'\""
+                    " to specify arguments."
                 )
 
     raise NoAppException(
-        'Failed to find Flask application or factory in module "{module}". '
-        'Use "FLASK_APP={module}:name to specify one.'.format(module=module.__name__)
+        "Failed to find Flask application or factory in module"
+        f" {module.__name__!r}. Use 'FLASK_APP={module.__name__}:name'"
+        " to specify one."
     )
 
 
@@ -150,8 +151,7 @@ def find_app_by_string(script_info, module, app_name):
 
     if not match:
         raise NoAppException(
-            '"{name}" is not a valid variable name or function '
-            "expression.".format(name=app_name)
+            f"{app_name!r} is not a valid variable name or function expression."
         )
 
     name, args = match.groups()
@@ -165,11 +165,8 @@ def find_app_by_string(script_info, module, app_name):
         if args:
             try:
                 args = ast.literal_eval(f"({args},)")
-            except (ValueError, SyntaxError) as e:
-                raise NoAppException(
-                    "Could not parse the arguments in "
-                    '"{app_name}".'.format(e=e, app_name=app_name)
-                )
+            except (ValueError, SyntaxError):
+                raise NoAppException(f"Could not parse the arguments in {app_name!r}.")
         else:
             args = ()
 
@@ -180,10 +177,9 @@ def find_app_by_string(script_info, module, app_name):
                 raise
 
             raise NoAppException(
-                '{e}\nThe factory "{app_name}" in module "{module}" could not '
-                "be called with the specified arguments.".format(
-                    e=e, app_name=app_name, module=module.__name__
-                )
+                f"{e}\nThe factory {app_name!r} in module"
+                f" {module.__name__!r} could not be called with the"
+                " specified arguments."
             )
     else:
         app = attr
@@ -192,8 +188,8 @@ def find_app_by_string(script_info, module, app_name):
         return app
 
     raise NoAppException(
-        "A valid Flask application was not obtained from "
-        '"{module}:{app_name}".'.format(module=module.__name__, app_name=app_name)
+        "A valid Flask application was not obtained from"
+        f" '{module.__name__}:{app_name}'."
     )
 
 
@@ -236,11 +232,11 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[2].tb_next:
             raise NoAppException(
-                'While importing "{name}", an ImportError was raised:'
-                "\n\n{tb}".format(name=module_name, tb=traceback.format_exc())
+                f"While importing {module_name!r}, an ImportError was"
+                f" raised:\n\n{traceback.format_exc()}"
             )
         elif raise_if_not_found:
-            raise NoAppException(f'Could not import "{module_name}".')
+            raise NoAppException(f"Could not import {module_name!r}.")
         else:
             return
 
@@ -259,14 +255,10 @@ def get_version(ctx, param, value):
     import werkzeug
     from . import __version__
 
-    message = "Python %(python)s\nFlask %(flask)s\nWerkzeug %(werkzeug)s"
     click.echo(
-        message
-        % {
-            "python": platform.python_version(),
-            "flask": __version__,
-            "werkzeug": werkzeug.__version__,
-        },
+        f"Python {platform.python_version()}\n"
+        f"Flask {__version__}\n"
+        f"Werkzeug {werkzeug.__version__}",
         color=ctx.color,
     )
     ctx.exit()
@@ -659,7 +651,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
         return
 
     if app_import_path is not None:
-        message = f' * Serving Flask app "{app_import_path}"'
+        message = f" * Serving Flask app {app_import_path!r}"
 
         if not eager_loading:
             message += " (lazy loading)"
@@ -670,14 +662,14 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
 
     if env == "production":
         click.secho(
-            "   WARNING: This is a development server. "
-            "Do not use it in a production deployment.",
+            "   WARNING: This is a development server. Do not use it in"
+            " a production deployment.",
             fg="red",
         )
         click.secho("   Use a production WSGI server instead.", dim=True)
 
     if debug is not None:
-        click.echo(" * Debug mode: {}".format("on" if debug else "off"))
+        click.echo(f" * Debug mode: {'on' if debug else 'off'}")
 
 
 class CertParamType(click.ParamType):
@@ -809,7 +801,7 @@ class SeparatedPathType(click.Path):
     type=SeparatedPathType(),
     help=(
         "Extra files that trigger a reload on change. Multiple paths"
-        " are separated by '{}'.".format(os.path.pathsep)
+        f" are separated by {os.path.pathsep!r}."
     ),
 )
 @pass_script_info
@@ -863,8 +855,10 @@ def shell_command():
     from .globals import _app_ctx_stack
 
     app = _app_ctx_stack.top.app
-    banner = "Python {} on {}\nApp: {} [{}]\nInstance: {}".format(
-        sys.version, sys.platform, app.import_name, app.env, app.instance_path,
+    banner = (
+        f"Python {sys.version} on {sys.platform}\n"
+        f"App: {app.import_name} [{app.env}]\n"
+        f"Instance: {app.instance_path}"
     )
     ctx = {}
 

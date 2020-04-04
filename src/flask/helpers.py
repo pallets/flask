@@ -311,7 +311,7 @@ def url_for(endpoint, **values):
 
         if endpoint[:1] == ".":
             if blueprint_name is not None:
-                endpoint = blueprint_name + endpoint
+                endpoint = f"{blueprint_name}{endpoint}"
             else:
                 endpoint = endpoint[1:]
 
@@ -364,7 +364,7 @@ def url_for(endpoint, **values):
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
-        rv += "#" + url_quote(anchor)
+        rv += f"#{url_quote(anchor)}"
     return rv
 
 
@@ -608,11 +608,12 @@ def send_file(
         try:
             attachment_filename = attachment_filename.encode("ascii")
         except UnicodeEncodeError:
+            quoted = url_quote(attachment_filename, safe="")
             filenames = {
                 "filename": unicodedata.normalize("NFKD", attachment_filename).encode(
                     "ascii", "ignore"
                 ),
-                "filename*": "UTF-8''%s" % url_quote(attachment_filename, safe=""),
+                "filename*": f"UTF-8''{quoted}",
             }
         else:
             filenames = {"filename": attachment_filename}
@@ -661,23 +662,19 @@ def send_file(
         from warnings import warn
 
         try:
-            rv.set_etag(
-                "%s-%s-%s"
-                % (
-                    os.path.getmtime(filename),
-                    os.path.getsize(filename),
-                    adler32(
-                        filename.encode("utf-8")
-                        if isinstance(filename, str)
-                        else filename
-                    )
-                    & 0xFFFFFFFF,
+            check = (
+                adler32(
+                    filename.encode("utf-8") if isinstance(filename, str) else filename
                 )
+                & 0xFFFFFFFF
+            )
+            rv.set_etag(
+                f"{os.path.getmtime(filename)}-{os.path.getsize(filename)}-{check}"
             )
         except OSError:
             warn(
-                "Access %s failed, maybe it does not exist, so ignore etags in "
-                "headers" % filename,
+                f"Access {filename} failed, maybe it does not exist, so"
+                " ignore etags in headers",
                 stacklevel=2,
             )
 
@@ -806,13 +803,12 @@ def get_root_path(import_name):
         # first module that is contained in our package.
         if filepath is None:
             raise RuntimeError(
-                "No root path can be found for the provided "
-                'module "%s".  This can happen because the '
-                "module came from an import hook that does "
-                "not provide file name information or because "
-                "it's a namespace package.  In this case "
-                "the root path needs to be explicitly "
-                "provided." % import_name
+                "No root path can be found for the provided module"
+                f" {import_name!r}. This can happen because the module"
+                " came from an import hook that does not provide file"
+                " name information or because it's a namespace package."
+                " In this case the root path needs to be explicitly"
+                " provided."
             )
 
     # filepath is import_name.py for a module, or __init__.py for a package.
@@ -823,6 +819,7 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     """Given the loader that loaded a module and the module this function
     attempts to figure out if the given module is actually a package.
     """
+    cls = type(loader)
     # If the loader can tell us if something is a package, we can
     # directly ask the loader.
     if hasattr(loader, "is_package"):
@@ -830,20 +827,13 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     # importlib's namespace loaders do not have this functionality but
     # all the modules it loads are packages, so we can take advantage of
     # this information.
-    elif (
-        loader.__class__.__module__ == "_frozen_importlib"
-        and loader.__class__.__name__ == "NamespaceLoader"
-    ):
+    elif cls.__module__ == "_frozen_importlib" and cls.__name__ == "NamespaceLoader":
         return True
     # Otherwise we need to fail with an error that explains what went
     # wrong.
     raise AttributeError(
-        (
-            "%s.is_package() method is missing but is required by Flask of "
-            "PEP 302 import hooks.  If you do not use import hooks and "
-            "you encounter this error please file a bug against Flask."
-        )
-        % loader.__class__.__name__
+        f"{cls.__name__}.is_package() method is missing but is required"
+        " for PEP 302 import hooks."
     )
 
 
@@ -1014,7 +1004,7 @@ class _PackageBoundObject:
 
         if self.static_folder is not None:
             basename = os.path.basename(self.static_folder)
-            return ("/" + basename).rstrip("/")
+            return f"/{basename}".rstrip("/")
 
     @static_url_path.setter
     def static_url_path(self, value):

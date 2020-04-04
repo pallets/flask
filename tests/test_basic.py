@@ -361,7 +361,7 @@ def test_session_localhost_warning(recwarn, app, client):
     rv = client.get("/", "http://localhost:5000/")
     assert "domain" not in rv.headers["set-cookie"].lower()
     w = recwarn.pop(UserWarning)
-    assert '"localhost" is not a valid cookie domain' in str(w.message)
+    assert "'localhost' is not a valid cookie domain" in str(w.message)
 
 
 def test_session_ip_warning(recwarn, app, client):
@@ -1095,7 +1095,7 @@ def test_enctype_debug_helper(app, client):
         with pytest.raises(DebugFilesKeyError) as e:
             client.post("/fail", data={"foo": "index.txt"})
         assert "no file contents were transmitted" in str(e.value)
-        assert 'This was submitted: "index.txt"' in str(e.value)
+        assert "This was submitted: 'index.txt'" in str(e.value)
 
 
 def test_response_types(app, client):
@@ -1821,7 +1821,7 @@ def test_subdomain_matching():
 
     @app.route("/", subdomain="<user>")
     def index(user):
-        return "index for %s" % user
+        return f"index for {user}"
 
     rv = client.get("/", "http://mitsuhiko.localhost.localdomain/")
     assert rv.data == b"index for mitsuhiko"
@@ -1834,7 +1834,7 @@ def test_subdomain_matching_with_ports():
 
     @app.route("/", subdomain="<user>")
     def index(user):
-        return "index for %s" % user
+        return f"index for {user}"
 
     rv = client.get("/", "http://mitsuhiko.localhost.localdomain:3000/")
     assert rv.data == b"index for mitsuhiko"

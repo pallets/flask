@@ -116,9 +116,8 @@ def limit_loader(request, monkeypatch):
             self.loader = loader
 
         def __getattr__(self, name):
-            if name in ("archive", "get_filename"):
-                msg = "Mocking a loader which does not have `%s.`" % name
-                raise AttributeError(msg)
+            if name in {"archive", "get_filename"}:
+                raise AttributeError(f"Mocking a loader which does not have {name!r}.")
             return getattr(self.loader, name)
 
     old_get_loader = pkgutil.get_loader
@@ -148,7 +147,7 @@ def site_packages(modules_tmpdir, monkeypatch):
     """Create a fake site-packages."""
     rv = (
         modules_tmpdir.mkdir("lib")
-        .mkdir("python{x[0]}.{x[1]}".format(x=sys.version_info))
+        .mkdir(f"python{sys.version_info.major}.{sys.version_info.minor}")
         .mkdir("site-packages")
     )
     monkeypatch.syspath_prepend(str(rv))
@@ -161,23 +160,21 @@ def install_egg(modules_tmpdir, monkeypatch):
     sys.path."""
 
     def inner(name, base=modules_tmpdir):
-        if not isinstance(name, str):
-            raise ValueError(name)
         base.join(name).ensure_dir()
         base.join(name).join("__init__.py").ensure()
 
         egg_setup = base.join("setup.py")
         egg_setup.write(
             textwrap.dedent(
-                """
-        from setuptools import setup
-        setup(name='{}',
-              version='1.0',
-              packages=['site_egg'],
-              zip_safe=True)
-        """.format(
-                    name
+                f"""
+                from setuptools import setup
+                setup(
+                    name="{name}",
+                    version="1.0",
+                    packages=["site_egg"],
+                    zip_safe=True,
                 )
+                """
             )
         )
 

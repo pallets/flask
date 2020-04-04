@@ -26,7 +26,7 @@ class View:
             methods = ['GET']
 
             def dispatch_request(self, name):
-                return 'Hello %s!' % name
+                return f"Hello {name}!"
 
         app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
 
@@ -157,5 +157,5 @@ class MethodView(View, metaclass=MethodViewType):
         if meth is None and request.method == "HEAD":
             meth = getattr(self, "get", None)
 
-        assert meth is not None, "Unimplemented method %r" % request.method
+        assert meth is not None, f"Unimplemented method {request.method!r}"
         return meth(*args, **kwargs)

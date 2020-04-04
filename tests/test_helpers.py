@@ -286,7 +286,7 @@ class TestJSON:
         class MyEncoder(flask.json.JSONEncoder):
             def default(self, o):
                 if isinstance(o, X):
-                    return "<%d>" % o.val
+                    return f"<{o.val}>"
                 return flask.json.JSONEncoder.default(self, o)
 
         class MyDecoder(flask.json.JSONDecoder):
@@ -314,14 +314,16 @@ class TestJSON:
         assert rv.data == b'"<42>"'
 
     def test_blueprint_json_customization(self, app, client):
-        class X:  # noqa: B903, for Python2 compatibility
+        class X:
+            __slots__ = ("val",)
+
             def __init__(self, val):
                 self.val = val
 
         class MyEncoder(flask.json.JSONEncoder):
             def default(self, o):
                 if isinstance(o, X):
-                    return "<%d>" % o.val
+                    return f"<{o.val}>"
 
                 return flask.json.JSONEncoder.default(self, o)
 
@@ -687,9 +689,9 @@ class TestSendfile:
         )
         rv.close()
         content_disposition = rv.headers["Content-Disposition"]
-        assert "filename=%s" % ascii in content_disposition
+        assert f"filename={ascii}" in content_disposition
         if utf8:
-            assert "filename*=UTF-8''" + utf8 in content_disposition
+            assert f"filename*=UTF-8''{utf8}" in content_disposition
         else:
             assert "filename*=UTF-8''" not in content_disposition
 
@@ -818,7 +820,7 @@ class TestUrlFor:
             def get(self, id=None):
                 if id is None:
                     return "List"
-                return "Get %d" % id
+                return f"Get {id:d}"
 
             def post(self):
                 return "Create"

@@ -69,10 +69,9 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
                 url_scheme = app.config["PREFERRED_URL_SCHEME"]
 
             url = url_parse(path)
-            base_url = "{scheme}://{netloc}/{path}".format(
-                scheme=url.scheme or url_scheme,
-                netloc=url.netloc or http_host,
-                path=app_root.lstrip("/"),
+            base_url = (
+                f"{url.scheme or url_scheme}://{url.netloc or http_host}"
+                f"/{app_root.lstrip('/')}"
             )
             path = url.path
 
@@ -114,7 +113,7 @@ class FlaskClient(Client):
         super().__init__(*args, **kwargs)
         self.environ_base = {
             "REMOTE_ADDR": "127.0.0.1",
-            "HTTP_USER_AGENT": "werkzeug/" + werkzeug.__version__,
+            "HTTP_USER_AGENT": f"werkzeug/{werkzeug.__version__}",
         }
 
     @contextmanager
