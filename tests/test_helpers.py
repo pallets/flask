@@ -1,12 +1,3 @@
-"""
-    tests.helpers
-    ~~~~~~~~~~~~~~~~~~~~~~~
-
-    Various helpers.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import datetime
 import io
 import os

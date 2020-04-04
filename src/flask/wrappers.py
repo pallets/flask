@@ -1,12 +1,3 @@
-"""
-    flask.wrappers
-    ~~~~~~~~~~~~~~
-
-    Implements the WSGI wrappers (request and response).
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Request as RequestBase
 from werkzeug.wrappers import Response as ResponseBase

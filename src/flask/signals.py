@@ -1,13 +1,3 @@
-"""
-    flask.signals
-    ~~~~~~~~~~~~~
-
-    Implements signals based on blinker if available, otherwise
-    falls silently back to a noop.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 try:
     from blinker import Namespace
 

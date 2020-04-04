@@ -1,13 +1,3 @@
-"""
-    tests.subclassing
-    ~~~~~~~~~~~~~~~~~
-
-    Test that certain behavior of flask can be customized by
-    subclasses.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 from io import StringIO
 
 import flask

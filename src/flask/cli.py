@@ -1,12 +1,3 @@
-"""
-    flask.cli
-    ~~~~~~~~~
-
-    A simple command line application to run flask apps.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import ast
 import inspect
 import os

@@ -1,12 +1,3 @@
-"""
-    tests.views
-    ~~~~~~~~~~~
-
-    Pluggable views.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import pytest
 from werkzeug.http import parse_set_header
 

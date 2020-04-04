@@ -1,12 +1,3 @@
-"""
-    flask.debughelpers
-    ~~~~~~~~~~~~~~~~~~
-
-    Various helpers to make the development experience better.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import os
 from warnings import warn
 

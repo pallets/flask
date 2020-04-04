@@ -1,10 +1,3 @@
-"""
-flask.json
-~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
 import codecs
 import io
 import uuid

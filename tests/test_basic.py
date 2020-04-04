@@ -1,12 +1,3 @@
-"""
-    tests.basic
-    ~~~~~~~~~~~~~~~~~~~~~
-
-    The basic functionality.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import re
 import sys
 import time

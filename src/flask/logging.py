@@ -1,10 +1,3 @@
-"""
-flask.logging
-~~~~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
 import logging
 import sys
 

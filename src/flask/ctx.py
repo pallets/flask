@@ -1,12 +1,3 @@
-"""
-    flask.ctx
-    ~~~~~~~~~
-
-    Implements the objects required to keep the context.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import sys
 from functools import update_wrapper
 
