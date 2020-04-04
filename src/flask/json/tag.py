@@ -50,8 +50,6 @@ from jinja2 import Markup
 from werkzeug.http import http_date
 from werkzeug.http import parse_date
 
-from .._compat import iteritems
-from .._compat import text_type
 from ..json import dumps
 from ..json import loads
 
@@ -124,7 +122,7 @@ class PassDict(JSONTag):
     def to_json(self, value):
         # JSON objects may only have string keys, so don't bother tagging the
         # key here.
-        return dict((k, self.serializer.tag(v)) for k, v in iteritems(value))
+        return dict((k, self.serializer.tag(v)) for k, v in value.items())
 
     tag = to_json
 
@@ -181,7 +179,7 @@ class TagMarkup(JSONTag):
         return callable(getattr(value, "__html__", None))
 
     def to_json(self, value):
-        return text_type(value.__html__())
+        return str(value.__html__())
 
     def to_python(self, value):
         return Markup(value)

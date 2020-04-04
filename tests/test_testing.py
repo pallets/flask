@@ -14,7 +14,6 @@ import werkzeug
 
 import flask
 from flask import appcontext_popped
-from flask._compat import text_type
 from flask.cli import ScriptInfo
 from flask.json import jsonify
 from flask.testing import EnvironBuilder
@@ -184,7 +183,7 @@ def test_redirect_keep_session(app, client, app_ctx):
 def test_session_transactions(app, client):
     @app.route("/")
     def index():
-        return text_type(flask.session["foo"])
+        return str(flask.session["foo"])
 
     with client:
         with client.session_transaction() as sess:

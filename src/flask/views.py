@@ -8,7 +8,6 @@
     :copyright: 2010 Pallets
     :license: BSD-3-Clause
 """
-from ._compat import with_metaclass
 from .globals import request
 
 
@@ -135,7 +134,7 @@ class MethodViewType(type):
                 cls.methods = methods
 
 
-class MethodView(with_metaclass(MethodViewType, View)):
+class MethodView(View, metaclass=MethodViewType):
     """A class-based view that dispatches request methods to the corresponding
     class methods. For example, if you implement a ``get`` method, it will be
     used to handle ``GET`` requests. ::

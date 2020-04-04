@@ -25,10 +25,6 @@ from threading import Thread
 import click
 from werkzeug.utils import import_string
 
-from ._compat import getargspec
-from ._compat import itervalues
-from ._compat import reraise
-from ._compat import text_type
 from .globals import current_app
 from .helpers import get_debug_flag
 from .helpers import get_env
@@ -63,7 +59,7 @@ def find_best_app(script_info, module):
             return app
 
     # Otherwise find the only object that is a Flask instance.
-    matches = [v for v in itervalues(module.__dict__) if isinstance(v, Flask)]
+    matches = [v for v in module.__dict__.values() if isinstance(v, Flask)]
 
     if len(matches) == 1:
         return matches[0]
@@ -105,7 +101,7 @@ def call_factory(script_info, app_factory, arguments=()):
     of arguments. Checks for the existence of a script_info argument and calls
     the app_factory depending on that and the arguments provided.
     """
-    args_spec = getargspec(app_factory)
+    args_spec = inspect.getfullargspec(app_factory)
     arg_names = args_spec.args
     arg_defaults = args_spec.defaults
 
@@ -241,7 +237,7 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
     except ImportError:
         # Reraise the ImportError if it occurred within the imported module.
         # Determine this by checking whether the trace has a depth > 1.
-        if sys.exc_info()[-1].tb_next:
+        if sys.exc_info()[2].tb_next:
             raise NoAppException(
                 'While importing "{name}", an ImportError was raised:'
                 "\n\n{tb}".format(name=module_name, tb=traceback.format_exc())
@@ -327,7 +323,7 @@ class DispatchingApp(object):
         exc_info = self._bg_loading_exc_info
         if exc_info is not None:
             self._bg_loading_exc_info = None
-            reraise(*exc_info)
+            raise exc_info
 
     def _load_unlocked(self):
         __traceback_hide__ = True  # noqa: F841
@@ -741,11 +737,7 @@ def _validate_key(ctx, param, value):
     """
     cert = ctx.params.get("cert")
     is_adhoc = cert == "adhoc"
-
-    if sys.version_info < (2, 7, 9):
-        is_context = cert and not isinstance(cert, (text_type, bytes))
-    else:
-        is_context = ssl and isinstance(cert, ssl.SSLContext)
+    is_context = ssl and isinstance(cert, ssl.SSLContext)
 
     if value is not None:
         if is_adhoc:

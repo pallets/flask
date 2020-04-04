@@ -24,9 +24,6 @@ from werkzeug.http import parse_options_header
 
 import flask
 from flask import json
-from flask._compat import PY2
-from flask._compat import StringIO
-from flask._compat import text_type
 from flask.helpers import get_debug_flag
 from flask.helpers import get_env
 
@@ -116,7 +113,7 @@ class TestJSON(object):
     def test_json_bad_requests(self, app, client):
         @app.route("/json", methods=["POST"])
         def return_json():
-            return flask.jsonify(foo=text_type(flask.request.get_json()))
+            return flask.jsonify(foo=str(flask.request.get_json()))
 
         rv = client.post("/json", data="malformed", content_type="application/json")
         assert rv.status_code == 400
@@ -140,7 +137,7 @@ class TestJSON(object):
 
     def test_json_dump_to_file(self, app, app_ctx):
         test_data = {"name": "Flask"}
-        out = StringIO()
+        out = io.StringIO()
 
         flask.json.dump(test_data, out)
         out.seek(0)
@@ -254,7 +251,7 @@ class TestJSON(object):
         @app.route("/add", methods=["POST"])
         def add():
             json = flask.request.get_json()
-            return text_type(json["a"] + json["b"])
+            return str(json["a"] + json["b"])
 
         rv = client.post(
             "/add",
@@ -267,7 +264,7 @@ class TestJSON(object):
         render = flask.render_template_string
         rv = flask.json.htmlsafe_dumps("</script>")
         assert rv == u'"\\u003c/script\\u003e"'
-        assert type(rv) == text_type
+        assert type(rv) is str
         rv = render('{{ "</script>"|tojson }}')
         assert rv == '"\\u003c/script\\u003e"'
         rv = render('{{ "<\0/script>"|tojson }}')
@@ -447,7 +444,7 @@ class TestJSON(object):
             assert lines == sorted_by_str
 
 
-class PyStringIO(object):
+class PyBytesIO(object):
     def __init__(self, *args, **kwargs):
         self._io = io.BytesIO(*args, **kwargs)
 
@@ -503,11 +500,7 @@ class TestSendfile(object):
         [
             lambda app: open(os.path.join(app.static_folder, "index.html"), "rb"),
             lambda app: io.BytesIO(b"Test"),
-            pytest.param(
-                lambda app: StringIO("Test"),
-                marks=pytest.mark.skipif(not PY2, reason="Python 2 only"),
-            ),
-            lambda app: PyStringIO(b"Test"),
+            lambda app: PyBytesIO(b"Test"),
         ],
     )
     @pytest.mark.usefixtures("req_ctx")
@@ -525,10 +518,7 @@ class TestSendfile(object):
         "opener",
         [
             lambda app: io.StringIO(u"Test"),
-            pytest.param(
-                lambda app: open(os.path.join(app.static_folder, "index.html")),
-                marks=pytest.mark.skipif(PY2, reason="Python 3 only"),
-            ),
+            lambda app: open(os.path.join(app.static_folder, "index.html")),
         ],
     )
     @pytest.mark.usefixtures("req_ctx")

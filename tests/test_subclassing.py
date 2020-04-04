@@ -9,8 +9,9 @@
     :copyright: 2010 Pallets
     :license: BSD-3-Clause
 """
+from io import StringIO
+
 import flask
-from flask._compat import StringIO
 
 
 def test_suppressed_exception_logging():

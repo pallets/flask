@@ -11,8 +11,6 @@
 import os
 from warnings import warn
 
-from ._compat import implements_to_string
-from ._compat import text_type
 from .app import Flask
 from .blueprints import Blueprint
 from .globals import _request_ctx_stack
@@ -24,7 +22,6 @@ class UnexpectedUnicodeError(AssertionError, UnicodeError):
     """
 
 
-@implements_to_string
 class DebugFilesKeyError(KeyError, AssertionError):
     """Raised from request.files during debugging.  The idea is that it can
     provide a better error message than just a generic KeyError/BadRequest.
@@ -110,13 +107,13 @@ def _dump_loader_info(loader):
         if key.startswith("_"):
             continue
         if isinstance(value, (tuple, list)):
-            if not all(isinstance(x, (str, text_type)) for x in value):
+            if not all(isinstance(x, str) for x in value):
                 continue
             yield "%s:" % key
             for item in value:
                 yield "  - %s" % item
             continue
-        elif not isinstance(value, (str, text_type, int, float, bool)):
+        elif not isinstance(value, (str, int, float, bool)):
             continue
         yield "%s: %r" % (key, value)
 

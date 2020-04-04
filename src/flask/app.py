@@ -31,10 +31,6 @@ from werkzeug.wrappers import BaseResponse
 
 from . import cli
 from . import json
-from ._compat import integer_types
-from ._compat import reraise
-from ._compat import string_types
-from ._compat import text_type
 from .config import Config
 from .config import ConfigAttribute
 from .ctx import _AppCtxGlobals
@@ -1179,10 +1175,10 @@ class Flask(_PackageBoundObject):
         # a tuple of only ``GET`` as default.
         if methods is None:
             methods = getattr(view_func, "methods", None) or ("GET",)
-        if isinstance(methods, string_types):
+        if isinstance(methods, str):
             raise TypeError(
-                "Allowed methods have to be iterables of strings, "
-                'for example: @app.route(..., methods=["POST"])'
+                "Allowed methods must be a list of strings, for"
+                ' example: @app.route(..., methods=["POST"])'
             )
         methods = set(item.upper() for item in methods)
 
@@ -1278,7 +1274,7 @@ class Flask(_PackageBoundObject):
         :param exc_class_or_code: Any exception class, or an HTTP status
             code as an integer.
         """
-        if isinstance(exc_class_or_code, integer_types):
+        if isinstance(exc_class_or_code, int):
             exc_class = default_exceptions[exc_class_or_code]
         else:
             exc_class = exc_class_or_code
@@ -1727,13 +1723,6 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.7
         """
-        exc_type, exc_value, tb = sys.exc_info()
-        assert exc_value is e
-        # ensure not to trash sys.exc_info() at that point in case someone
-        # wants the traceback preserved in handle_http_exception.  Of course
-        # we cannot prevent users from trashing it themselves in a custom
-        # trap_http_exception method so that's their fault then.
-
         if isinstance(e, BadRequestKeyError):
             if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
                 e.show_exception = True
@@ -1752,7 +1741,8 @@ class Flask(_PackageBoundObject):
         handler = self._find_error_handler(e)
 
         if handler is None:
-            reraise(exc_type, exc_value, tb)
+            raise
+
         return handler(e)
 
     def handle_exception(self, e):
@@ -1789,20 +1779,18 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.3
         """
-        exc_type, exc_value, tb = sys.exc_info()
+        exc_info = sys.exc_info()
         got_request_exception.send(self, exception=e)
 
         if self.propagate_exceptions:
-            # if we want to repropagate the exception, we can attempt to
-            # raise it with the whole traceback in case we can do that
-            # (the function was actually called from the except part)
-            # otherwise, we just raise the error again
-            if exc_value is e:
-                reraise(exc_type, exc_value, tb)
-            else:
-                raise e
+            # Re-raise if called with an active exception, otherwise
+            # raise the passed in exception.
+            if exc_info[1] is e:
+                raise
 
-        self.log_exception((exc_type, exc_value, tb))
+            raise e
+
+        self.log_exception(exc_info)
         server_error = InternalServerError()
         # TODO: pass as param when Werkzeug>=1.0.0 is required
         # TODO: also remove note about this from docstring and docs
@@ -2026,7 +2014,7 @@ class Flask(_PackageBoundObject):
 
         # make sure the body is an instance of the response class
         if not isinstance(rv, self.response_class):
-            if isinstance(rv, (text_type, bytes, bytearray)):
+            if isinstance(rv, (str, bytes, bytearray)):
                 # let the response class set the status and headers instead of
                 # waiting to do it manually, so that the class can handle any
                 # special logic
@@ -2040,13 +2028,12 @@ class Flask(_PackageBoundObject):
                 try:
                     rv = self.response_class.force_type(rv, request.environ)
                 except TypeError as e:
-                    new_error = TypeError(
+                    raise TypeError(
                         "{e}\nThe view function did not return a valid"
                         " response. The return type must be a string, dict, tuple,"
                         " Response instance, or WSGI callable, but it was a"
                         " {rv.__class__.__name__}.".format(e=e, rv=rv)
-                    )
-                    reraise(TypeError, new_error, sys.exc_info()[2])
+                    ).with_traceback(sys.exc_info()[2])
             else:
                 raise TypeError(
                     "The view function did not return a valid"
@@ -2057,7 +2044,7 @@ class Flask(_PackageBoundObject):
 
         # prefer the status if it was provided
         if status is not None:
-            if isinstance(status, (text_type, bytes, bytearray)):
+            if isinstance(status, (str, bytes, bytearray)):
                 rv.status = status
             else:
                 rv.status_code = status
@@ -2121,23 +2108,24 @@ class Flask(_PackageBoundObject):
             func(endpoint, values)
 
     def handle_url_build_error(self, error, endpoint, values):
-        """Handle :class:`~werkzeug.routing.BuildError` on :meth:`url_for`.
+        """Handle :class:`~werkzeug.routing.BuildError` on
+        :meth:`url_for`.
         """
-        exc_type, exc_value, tb = sys.exc_info()
         for handler in self.url_build_error_handlers:
             try:
                 rv = handler(error, endpoint, values)
+            except BuildError as e:
+                # make error available outside except block
+                error = e
+            else:
                 if rv is not None:
                     return rv
-            except BuildError as e:
-                # make error available outside except block (py3)
-                error = e
 
-        # At this point we want to reraise the exception.  If the error is
-        # still the same one we can reraise it with the original traceback,
-        # otherwise we raise it from here.
-        if error is exc_value:
-            reraise(exc_type, exc_value, tb)
+        # Re-raise if called with an active exception, otherwise raise
+        # the passed in exception.
+        if error is sys.exc_info()[1]:
+            raise
+
         raise error
 
     def preprocess_request(self):

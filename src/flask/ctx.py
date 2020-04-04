@@ -13,8 +13,6 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import HTTPException
 
-from ._compat import BROKEN_PYPY_CTXMGR_EXIT
-from ._compat import reraise
 from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .signals import appcontext_popped
@@ -248,9 +246,6 @@ class AppContext(object):
     def __exit__(self, exc_type, exc_value, tb):
         self.pop(exc_value)
 
-        if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
-            reraise(exc_type, exc_value, tb)
-
 
 class RequestContext(object):
     """The request context contains all request relevant information.  It is
@@ -462,9 +457,6 @@ class RequestContext(object):
         # the context can be force kept alive for the test client.
         # See flask.testing for how this works.
         self.auto_pop(exc_value)
-
-        if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
-            reraise(exc_type, exc_value, tb)
 
     def __repr__(self):
         return "<%s '%s' [%s] of %s>" % (

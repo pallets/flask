@@ -24,7 +24,6 @@ from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
 
 import flask
-from flask._compat import text_type
 
 
 def test_options_work(app, client):
@@ -413,7 +412,7 @@ def test_session_expiration(app, client):
 
     @app.route("/test")
     def test():
-        return text_type(flask.session.permanent)
+        return str(flask.session.permanent)
 
     rv = client.get("/")
     assert "set-cookie" in rv.headers

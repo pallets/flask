@@ -8,10 +8,10 @@ tests.test_logging
 """
 import logging
 import sys
+from io import StringIO
 
 import pytest
 
-from flask._compat import StringIO
 from flask.logging import default_handler
 from flask.logging import has_level_handler
 from flask.logging import wsgi_errors_stream

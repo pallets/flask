@@ -14,7 +14,6 @@ from datetime import timedelta
 import pytest
 
 import flask
-from flask._compat import PY2
 
 
 # config keys used for the TestConfig
@@ -198,6 +197,4 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
     app = flask.Flask(__name__)
     app.config.from_pyfile(str(f))
     value = app.config["TEST_VALUE"]
-    if PY2:
-        value = value.decode(encoding)
     assert value == u"föö"

@@ -30,10 +30,6 @@ from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 from werkzeug.wsgi import wrap_file
 
-from ._compat import fspath
-from ._compat import PY2
-from ._compat import string_types
-from ._compat import text_type
 from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .globals import current_app
@@ -576,9 +572,9 @@ def send_file(
     fsize = None
 
     if hasattr(filename_or_fp, "__fspath__"):
-        filename_or_fp = fspath(filename_or_fp)
+        filename_or_fp = os.fspath(filename_or_fp)
 
-    if isinstance(filename_or_fp, string_types):
+    if isinstance(filename_or_fp, str):
         filename = filename_or_fp
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
@@ -608,7 +604,7 @@ def send_file(
         if attachment_filename is None:
             raise TypeError("filename unavailable, required for sending as attachment")
 
-        if not isinstance(attachment_filename, text_type):
+        if not isinstance(attachment_filename, str):
             attachment_filename = attachment_filename.decode("utf-8")
 
         try:
@@ -618,7 +614,7 @@ def send_file(
                 "filename": unicodedata.normalize("NFKD", attachment_filename).encode(
                     "ascii", "ignore"
                 ),
-                "filename*": "UTF-8''%s" % url_quote(attachment_filename, safe=b""),
+                "filename*": "UTF-8''%s" % url_quote(attachment_filename, safe=""),
             }
         else:
             filenames = {"filename": attachment_filename}
@@ -678,7 +674,7 @@ def send_file(
                     os.path.getsize(filename),
                     adler32(
                         filename.encode("utf-8")
-                        if isinstance(filename, text_type)
+                        if isinstance(filename, str)
                         else filename
                     )
                     & 0xFFFFFFFF,
@@ -769,8 +765,8 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
-    filename = fspath(filename)
-    directory = fspath(directory)
+    filename = os.fspath(filename)
+    directory = os.fspath(directory)
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
@@ -1140,22 +1136,12 @@ def total_seconds(td):
 def is_ip(value):
     """Determine if the given string is an IP address.
 
-    Python 2 on Windows doesn't provide ``inet_pton``, so this only
-    checks IPv4 addresses in that environment.
-
     :param value: value to check
     :type value: str
 
     :return: True if string is an IP address
     :rtype: bool
     """
-    if PY2 and os.name == "nt":
-        try:
-            socket.inet_aton(value)
-            return True
-        except socket.error:
-            return False
-
     for family in (socket.AF_INET, socket.AF_INET6):
         try:
             socket.inet_pton(family, value)

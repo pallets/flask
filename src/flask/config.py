@@ -14,9 +14,6 @@ import types
 
 from werkzeug.utils import import_string
 
-from ._compat import iteritems
-from ._compat import string_types
-
 
 class ConfigAttribute(object):
     """Makes an attribute forward to the config"""
@@ -169,7 +166,7 @@ class Config(dict):
 
         :param obj: an import name or object
         """
-        if isinstance(obj, string_types):
+        if isinstance(obj, str):
             obj = import_string(obj)
         for key in dir(obj):
             if key.isupper():
@@ -261,7 +258,7 @@ class Config(dict):
         .. versionadded:: 0.11
         """
         rv = {}
-        for k, v in iteritems(self):
+        for k, v in self.items():
             if not k.startswith(namespace):
                 continue
             if trim_namespace:

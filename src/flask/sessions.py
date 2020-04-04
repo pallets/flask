@@ -10,19 +10,19 @@
 """
 import hashlib
 import warnings
+from collections.abc import MutableMapping
 from datetime import datetime
 
 from itsdangerous import BadSignature
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 
-from ._compat import collections_abc
 from .helpers import is_ip
 from .helpers import total_seconds
 from .json.tag import TaggedJSONSerializer
 
 
-class SessionMixin(collections_abc.MutableMapping):
+class SessionMixin(MutableMapping):
     """Expands a basic dictionary with session attributes."""
 
     @property
