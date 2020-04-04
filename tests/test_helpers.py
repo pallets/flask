@@ -92,7 +92,6 @@ class TestJSON(object):
     )
     def test_detect_encoding(self, value, encoding):
         data = json.dumps(value).encode(encoding)
-        assert json.detect_encoding(data) == encoding
         assert json.loads(data) == value
 
     @pytest.mark.parametrize("debug", (True, False))
@@ -679,8 +678,6 @@ class TestSendfile(object):
                 "%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt",
             ),
             (u"Vögel.txt", "Vogel.txt", "V%C3%B6gel.txt"),
-            # Native string not marked as Unicode on Python 2
-            ("tést.txt", "test.txt", "t%C3%A9st.txt"),
             # ":/" are not safe in filename* value
             (u"те:/ст", '":/"', "%D1%82%D0%B5%3A%2F%D1%81%D1%82"),
         ),
