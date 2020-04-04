@@ -285,10 +285,6 @@ def test_session_dynamic_cookie_name():
 def test_bad_environ_raises_bad_request():
     app = flask.Flask(__name__)
 
-    # We cannot use app.test_client() for the Unicode-rich Host header,
-    # because werkzeug enforces latin1 on Python 2.
-    # However it works when actually passed to the server.
-
     from flask.testing import EnvironBuilder
 
     builder = EnvironBuilder(app)
@@ -308,10 +304,6 @@ def test_environ_for_valid_idna_completes():
     @app.route("/")
     def index():
         return "Hello World!"
-
-    # We cannot use app.test_client() for the Unicode-rich Host header,
-    # because werkzeug enforces latin1 on Python 2.
-    # However it works when actually passed to the server.
 
     from flask.testing import EnvironBuilder
 

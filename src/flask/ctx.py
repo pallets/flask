@@ -221,8 +221,6 @@ class AppContext(object):
     def push(self):
         """Binds the app context to the current context."""
         self._refcnt += 1
-        if hasattr(sys, "exc_clear"):
-            sys.exc_clear()
         _app_ctx_stack.push(self)
         appcontext_pushed.send(self.app)
 
@@ -371,9 +369,6 @@ class RequestContext(object):
         else:
             self._implicit_app_ctx_stack.append(None)
 
-        if hasattr(sys, "exc_clear"):
-            sys.exc_clear()
-
         _request_ctx_stack.push(self)
 
         # Open the session at the moment that the request context is available.
@@ -399,22 +394,15 @@ class RequestContext(object):
            Added the `exc` argument.
         """
         app_ctx = self._implicit_app_ctx_stack.pop()
+        clear_request = False
 
         try:
-            clear_request = False
             if not self._implicit_app_ctx_stack:
                 self.preserved = False
                 self._preserved_exc = None
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
                 self.app.do_teardown_request(exc)
-
-                # If this interpreter supports clearing the exception information
-                # we do that now.  This will only go into effect on Python 2.x,
-                # on 3.x it disappears automatically at the end of the exception
-                # stack.
-                if hasattr(sys, "exc_clear"):
-                    sys.exc_clear()
 
                 request_close = getattr(self.request, "close", None)
                 if request_close is not None:

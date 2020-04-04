@@ -91,12 +91,7 @@ def test_provide_automatic_options_kwarg(app, client):
     assert rv.status_code == 405
     assert sorted(rv.allow) == ["GET", "HEAD"]
 
-    # Older versions of Werkzeug.test.Client don't have an options method
-    if hasattr(client, "options"):
-        rv = client.options("/")
-    else:
-        rv = client.open("/", method="OPTIONS")
-
+    rv = client.open("/", method="OPTIONS")
     assert rv.status_code == 405
 
     rv = client.head("/")
@@ -109,11 +104,7 @@ def test_provide_automatic_options_kwarg(app, client):
     assert rv.status_code == 405
     assert sorted(rv.allow) == ["GET", "HEAD", "POST"]
 
-    if hasattr(client, "options"):
-        rv = client.options("/more")
-    else:
-        rv = client.open("/more", method="OPTIONS")
-
+    rv = client.open("/more", method="OPTIONS")
     assert rv.status_code == 405
 
 

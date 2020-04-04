@@ -169,12 +169,10 @@ def test_redirect_keep_session(app, client, app_ctx):
         rv = client.get("/")
         assert rv.data == b"index"
         assert flask.session.get("data") == "foo"
+
         rv = client.post("/", data={}, follow_redirects=True)
         assert rv.data == b"foo"
-
-        # This support requires a new Werkzeug version
-        if not hasattr(client, "redirect_client"):
-            assert flask.session.get("data") == "foo"
+        assert flask.session.get("data") == "foo"
 
         rv = client.get("/getsession")
         assert rv.data == b"foo"

@@ -634,11 +634,7 @@ def send_file(
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
         elif isinstance(file, io.BytesIO):
-            try:
-                fsize = file.getbuffer().nbytes
-            except AttributeError:
-                # Python 2 doesn't have getbuffer
-                fsize = len(file.getvalue())
+            fsize = file.getbuffer().nbytes
         elif isinstance(file, io.TextIOBase):
             raise ValueError("Files must be opened in binary mode or use BytesIO.")
 
@@ -799,8 +795,6 @@ def get_root_path(import_name):
     if loader is None or import_name == "__main__":
         return os.getcwd()
 
-    # For .egg, zipimporter does not have get_filename until Python 2.7.
-    # Some other loaders might exhibit the same behavior.
     if hasattr(loader, "get_filename"):
         filepath = loader.get_filename(import_name)
     else:
@@ -857,30 +851,29 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
 
 def _find_package_path(root_mod_name):
     """Find the path where the module's root exists in"""
-    if sys.version_info >= (3, 4):
-        import importlib.util
+    import importlib.util
 
-        try:
-            spec = importlib.util.find_spec(root_mod_name)
-            if spec is None:
-                raise ValueError("not found")
-        # ImportError: the machinery told us it does not exist
-        # ValueError:
-        #    - the module name was invalid
-        #    - the module name is __main__
-        #    - *we* raised `ValueError` due to `spec` being `None`
-        except (ImportError, ValueError):
-            pass  # handled below
+    try:
+        spec = importlib.util.find_spec(root_mod_name)
+        if spec is None:
+            raise ValueError("not found")
+    # ImportError: the machinery told us it does not exist
+    # ValueError:
+    #    - the module name was invalid
+    #    - the module name is __main__
+    #    - *we* raised `ValueError` due to `spec` being `None`
+    except (ImportError, ValueError):
+        pass  # handled below
+    else:
+        # namespace package
+        if spec.origin in {"namespace", None}:
+            return os.path.dirname(next(iter(spec.submodule_search_locations)))
+        # a package (with __init__.py)
+        elif spec.submodule_search_locations:
+            return os.path.dirname(os.path.dirname(spec.origin))
+        # just a normal module
         else:
-            # namespace package
-            if spec.origin in {"namespace", None}:
-                return os.path.dirname(next(iter(spec.submodule_search_locations)))
-            # a package (with __init__.py)
-            elif spec.submodule_search_locations:
-                return os.path.dirname(os.path.dirname(spec.origin))
-            # just a normal module
-            else:
-                return os.path.dirname(spec.origin)
+            return os.path.dirname(spec.origin)
 
     # we were unable to find the `package_path` using PEP 451 loaders
     loader = pkgutil.get_loader(root_mod_name)
@@ -888,7 +881,6 @@ def _find_package_path(root_mod_name):
         # import name is not found, or interactive/main module
         return os.getcwd()
     else:
-        # For .egg, zipimporter does not have get_filename until Python 2.7.
         if hasattr(loader, "get_filename"):
             filename = loader.get_filename(root_mod_name)
         elif hasattr(loader, "archive"):

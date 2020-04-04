@@ -721,12 +721,8 @@ class CertParamType(click.ParamType):
 
             obj = import_string(value, silent=True)
 
-            if sys.version_info < (2, 7, 9):
-                if obj:
-                    return obj
-            else:
-                if isinstance(obj, ssl.SSLContext):
-                    return obj
+            if isinstance(obj, ssl.SSLContext):
+                return obj
 
             raise
 
