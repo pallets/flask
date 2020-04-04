@@ -1,5 +1,3 @@
-.. _views:
-
 Pluggable Views
 ===============
 

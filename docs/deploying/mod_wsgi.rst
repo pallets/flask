@@ -1,5 +1,3 @@
-.. _mod_wsgi-deployment:
-
 mod_wsgi (Apache)
 =================
 

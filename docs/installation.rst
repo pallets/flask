@@ -1,5 +1,3 @@
-.. _installation:
-
 Installation
 ============
 
@@ -40,7 +38,7 @@ Optional dependencies
 These distributions will not be installed automatically. Flask will detect and
 use them if you install them.
 
-* `Blinker`_ provides support for :ref:`signals`.
+* `Blinker`_ provides support for :doc:`signals`.
 * `SimpleJSON`_ is a fast JSON implementation that is compatible with
   Python's ``json`` module. It is preferred for JSON operations if it is
   installed.
@@ -73,6 +71,8 @@ the operating system's packages.
 Python comes bundled with the :mod:`venv` module to create virtual
 environments.
 
+
+.. _install-create-env:
 
 Create an environment
 ~~~~~~~~~~~~~~~~~~~~~

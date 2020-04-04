@@ -1,5 +1,3 @@
-.. _deploying-fastcgi:
-
 FastCGI
 =======
 

@@ -1,5 +1,3 @@
-.. _deploying-uwsgi:
-
 uWSGI
 =====
 

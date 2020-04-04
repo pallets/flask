@@ -1,5 +1,3 @@
-.. _distribute-deployment:
-
 Deploying with Setuptools
 =========================
 
@@ -23,14 +21,13 @@ Flask itself, and all the libraries you can find on PyPI are distributed with
 either setuptools or distutils.
 
 In this case we assume your application is called
-:file:`yourapplication.py` and you are not using a module, but a :ref:`package
-<larger-applications>`. If you have not yet converted your application into
-a package, head over to the :ref:`larger-applications` pattern to see
-how this can be done.
+:file:`yourapplication.py` and you are not using a module, but a
+package. If you have not yet converted your application into a package,
+head over to :doc:`packages` to see how this can be done.
 
 A working deployment with setuptools is the first step into more complex
 and more automated deployment scenarios.  If you want to fully automate
-the process, also read the :ref:`fabric-deployment` chapter.
+the process, also read the :doc:`fabric` chapter.
 
 Basic Setup Script
 ------------------
@@ -38,8 +35,8 @@ Basic Setup Script
 Because you have Flask installed, you have setuptools available on your system.
 Flask already depends upon setuptools.
 
-Standard disclaimer applies: :ref:`you better use a virtualenv
-<virtualenv>`.
+Standard disclaimer applies: :ref:`use a virtualenv
+<install-create-env>`.
 
 Your setup code always goes into a file named :file:`setup.py` next to your
 application.  The name of the file is only convention, but because

@@ -90,7 +90,7 @@ class Blueprint(_PackageBoundObject):
     that is called with :class:`~flask.blueprints.BlueprintSetupState`
     when the blueprint is registered on an application.
 
-    See :ref:`blueprints` for more information.
+    See :doc:`/blueprints` for more information.
 
     .. versionchanged:: 1.1.0
         Blueprints have a ``cli`` group to register nested CLI commands.

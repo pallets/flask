@@ -1,5 +1,3 @@
-.. _caching-pattern:
-
 Caching
 =======
 

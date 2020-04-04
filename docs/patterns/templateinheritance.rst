@@ -1,5 +1,3 @@
-.. _template-inheritance:
-
 Template Inheritance
 ====================
 

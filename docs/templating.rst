@@ -1,5 +1,3 @@
-.. _templates:
-
 Templates
 =========
 
@@ -139,7 +137,7 @@ carry specific meanings in documents on their own you have to replace them
 by so called "entities" if you want to use them for text.  Not doing so
 would not only cause user frustration by the inability to use these
 characters in text, but can also lead to security problems.  (see
-:ref:`xss`)
+:ref:`security-xss`)
 
 Sometimes however you will need to disable autoescaping in templates.
 This can be the case if you want to explicitly inject HTML into pages, for

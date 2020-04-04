@@ -1,12 +1,10 @@
-.. _sqlalchemy-pattern:
-
 SQLAlchemy in Flask
 ===================
 
 Many people prefer `SQLAlchemy`_ for database access.  In this case it's
 encouraged to use a package instead of a module for your flask application
-and drop the models into a separate module (:ref:`larger-applications`).
-While that is not necessary, it makes a lot of sense.
+and drop the models into a separate module (:doc:`packages`). While that
+is not necessary, it makes a lot of sense.
 
 There are four very common ways to use SQLAlchemy.  I will outline each
 of them here:
@@ -109,8 +107,7 @@ Querying is simple as well:
 <User 'admin'>
 
 .. _SQLAlchemy: https://www.sqlalchemy.org/
-.. _declarative:
-   https://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
+.. _declarative: https://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/
 
 Manual Object Relational Mapping
 --------------------------------

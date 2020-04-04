@@ -221,7 +221,7 @@ def url_for(endpoint, **values):
 
         url_for('.index')
 
-    For more information, head over to the :ref:`Quickstart <url-building>`.
+    See :ref:`url-building`.
 
     Configuration values ``APPLICATION_ROOT`` and ``SERVER_NAME`` are only used when
     generating URLs outside of a request context.
@@ -278,9 +278,9 @@ def url_for(endpoint, **values):
     :param _scheme: a string specifying the desired URL scheme. The `_external`
       parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
       behavior uses the same scheme as the current request, or
-      ``PREFERRED_URL_SCHEME`` from the :ref:`app configuration <config>` if no
-      request context is available. As of Werkzeug 0.10, this also can be set
-      to an empty string to build protocol-relative URLs.
+      :data:`PREFERRED_URL_SCHEME` if no request context is available.
+      This also can be set to an empty string to build protocol-relative
+      URLs.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
@@ -428,7 +428,7 @@ def get_flashed_messages(with_categories=False, category_filter=()):
     * `category_filter` filters the messages down to only those matching the
       provided categories.
 
-    See :ref:`message-flashing-pattern` for examples.
+    See :doc:`/patterns/flashing` for examples.
 
     .. versionchanged:: 0.3
        `with_categories` parameter added.

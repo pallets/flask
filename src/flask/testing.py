@@ -94,7 +94,7 @@ class FlaskClient(Client):
        set after instantiation of the `app.test_client()` object in
        `client.environ_base`.
 
-    Basic usage is outlined in the :ref:`testing` chapter.
+    Basic usage is outlined in the :doc:`/testing` chapter.
     """
 
     preserve_context = False

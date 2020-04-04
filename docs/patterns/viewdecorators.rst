@@ -59,7 +59,7 @@ Caching Decorator
 Imagine you have a view function that does an expensive calculation and
 because of that you would like to cache the generated results for a
 certain amount of time.  A decorator would be nice for that.  We're
-assuming you have set up a cache like mentioned in :ref:`caching-pattern`.
+assuming you have set up a cache like mentioned in :doc:`caching`.
 
 Here is an example cache function.  It generates the cache key from a
 specific prefix (actually a format string) and the current path of the
@@ -96,8 +96,8 @@ Here the code::
             return decorated_function
         return decorator
 
-Notice that this assumes an instantiated `cache` object is available, see
-:ref:`caching-pattern` for more information.
+Notice that this assumes an instantiated ``cache`` object is available, see
+:doc:`caching`.
 
 
 Templating Decorator

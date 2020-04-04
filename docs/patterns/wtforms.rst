@@ -9,7 +9,7 @@ forms, you might want to give it a try.
 
 When you are working with WTForms you have to define your forms as classes
 first.  I recommend breaking up the application into multiple modules
-(:ref:`larger-applications`) for that and adding a separate module for the
+(:doc:`packages`) for that and adding a separate module for the
 forms.
 
 .. admonition:: Getting the most out of WTForms with an Extension
@@ -55,7 +55,7 @@ In the view function, the usage of this form looks like this::
         return render_template('register.html', form=form)
 
 Notice we're implying that the view is using SQLAlchemy here
-(:ref:`sqlalchemy-pattern`), but that's not a requirement, of course.  Adapt
+(:doc:`sqlalchemy`), but that's not a requirement, of course.  Adapt
 the code as necessary.
 
 Things to remember:

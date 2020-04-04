@@ -868,7 +868,7 @@ class Flask(_PackageBoundObject):
 
         Do not use ``run()`` in a production setting. It is not intended to
         meet security and performance requirements for a production server.
-        Instead, see :ref:`deployment` for WSGI server recommendations.
+        Instead, see :doc:`/deploying/index` for WSGI server recommendations.
 
         If the :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.
@@ -980,7 +980,7 @@ class Flask(_PackageBoundObject):
 
     def test_client(self, use_cookies=True, **kwargs):
         """Creates a test client for this application.  For information
-        about unit testing head over to :ref:`testing`.
+        about unit testing head over to :doc:`/testing`.
 
         Note that if you are testing for assertions or exceptions in your
         application code, you must set ``app.testing = True`` in order for the

@@ -1,5 +1,3 @@
-.. _message-flashing-pattern:
-
 Message Flashing
 ================
 

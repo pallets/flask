@@ -1,5 +1,3 @@
-.. _config:
-
 Configuration Handling
 ======================
 
@@ -278,7 +276,7 @@ The following configuration values are used internally by Flask:
     Inform the application what path it is mounted under by the application /
     web server.  This is used for generating URLs outside the context of a
     request (inside a request, the dispatcher is responsible for setting
-    ``SCRIPT_NAME`` instead; see :ref:`Application Dispatching <app-dispatch>`
+    ``SCRIPT_NAME`` instead; see :doc:`/patterns/appdispatch`
     for examples of dispatch configuration).
 
     Will be used for the session cookie path if ``SESSION_COOKIE_PATH`` is not
@@ -399,7 +397,7 @@ Configuring from Python Files
 Configuration becomes more useful if you can store it in a separate file,
 ideally located outside the actual application package. This makes
 packaging and distributing your application possible via various package
-handling tools (:ref:`distribute-deployment`) and finally modifying the
+handling tools (:doc:`/patterns/distribute`) and finally modifying the
 configuration file afterwards.
 
 So a common pattern is this::
@@ -628,7 +626,7 @@ your configuration files.  However here a list of good recommendations:
 -   Use a tool like `fabric`_ in production to push code and
     configurations separately to the production server(s).  For some
     details about how to do that, head over to the
-    :ref:`fabric-deployment` pattern.
+    :doc:`/patterns/fabric` pattern.
 
 .. _fabric: https://www.fabfile.org/
 
