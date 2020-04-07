@@ -232,7 +232,6 @@ class TestJSON:
         render = flask.render_template_string
         rv = flask.json.htmlsafe_dumps("</script>")
         assert rv == '"\\u003c/script\\u003e"'
-        assert type(rv) is str
         rv = render('{{ "</script>"|tojson }}')
         assert rv == '"\\u003c/script\\u003e"'
         rv = render('{{ "<\0/script>"|tojson }}')

@@ -1,10 +1,11 @@
 import io
 import json as _json
 import uuid
+import warnings
 from datetime import date
 from datetime import datetime
 
-from jinja2 import Markup
+from markupsafe import Markup
 from werkzeug.http import http_date
 
 from ..globals import current_app
@@ -15,33 +16,6 @@ try:
 except ImportError:
     # Python < 3.7
     dataclasses = None
-
-
-__all__ = [
-    "dump",
-    "dumps",
-    "load",
-    "loads",
-    "htmlsafe_dump",
-    "htmlsafe_dumps",
-    "JSONDecoder",
-    "JSONEncoder",
-    "jsonify",
-]
-
-
-def _wrap_reader_for_text(fp, encoding):
-    if isinstance(fp.read(0), bytes):
-        fp = io.TextIOWrapper(io.BufferedReader(fp), encoding)
-    return fp
-
-
-def _wrap_writer_for_text(fp, encoding):
-    try:
-        fp.write("")
-    except TypeError:
-        fp = io.TextIOWrapper(fp, encoding)
-    return fp
 
 
 class JSONEncoder(_json.JSONEncoder):
@@ -83,7 +57,7 @@ class JSONEncoder(_json.JSONEncoder):
             return dataclasses.asdict(o)
         if hasattr(o, "__html__"):
             return str(o.__html__())
-        return _json.JSONEncoder.default(self, o)
+        return super().default(self, o)
 
 
 class JSONDecoder(_json.JSONDecoder):
@@ -101,13 +75,9 @@ def _dump_arg_defaults(kwargs, app=None):
 
     if app:
         bp = app.blueprints.get(request.blueprint) if request else None
-        kwargs.setdefault(
-            "cls", bp.json_encoder if bp and bp.json_encoder else app.json_encoder
-        )
-
-        if not app.config["JSON_AS_ASCII"]:
-            kwargs.setdefault("ensure_ascii", False)
-
+        cls = bp.json_encoder if bp and bp.json_encoder else app.json_encoder
+        kwargs.setdefault("cls", cls)
+        kwargs.setdefault("ensure_ascii", app.config["JSON_AS_ASCII"])
         kwargs.setdefault("sort_keys", app.config["JSON_SORT_KEYS"])
     else:
         kwargs.setdefault("sort_keys", True)
@@ -121,9 +91,8 @@ def _load_arg_defaults(kwargs, app=None):
 
     if app:
         bp = app.blueprints.get(request.blueprint) if request else None
-        kwargs.setdefault(
-            "cls", bp.json_decoder if bp and bp.json_decoder else app.json_decoder
-        )
+        cls = bp.json_decoder if bp and bp.json_decoder else app.json_decoder
+        kwargs.setdefault("cls", cls)
     else:
         kwargs.setdefault("cls", JSONDecoder)
 
@@ -152,8 +121,15 @@ def dumps(obj, app=None, **kwargs):
     encoding = kwargs.pop("encoding", None)
     rv = _json.dumps(obj, **kwargs)
 
-    if encoding is not None and isinstance(rv, str):
-        rv = rv.encode(encoding)
+    if encoding is not None:
+        warnings.warn(
+            "'encoding' is deprecated and will be removed in 2.1.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        if isinstance(rv, str):
+            return rv.encode(encoding)
 
     return rv
 
@@ -162,9 +138,21 @@ def dump(obj, fp, app=None, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
+    show_warning = encoding is not None
 
-    if encoding is not None:
-        fp = _wrap_writer_for_text(fp, encoding)
+    try:
+        fp.write("")
+    except TypeError:
+        show_warning = True
+        fp = io.TextIOWrapper(fp, encoding or "utf-8")
+
+    if show_warning:
+        warnings.warn(
+            "Writing to a binary file, and the 'encoding' argument, is"
+            " deprecated and will be removed in 2.1.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     _json.dump(obj, fp, **kwargs)
 
@@ -192,8 +180,16 @@ def loads(s, app=None, **kwargs):
     _load_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
 
-    if encoding is not None and isinstance(s, bytes):
-        s = s.decode(encoding)
+    if encoding is not None:
+        warnings.warn(
+            "'encoding' is deprecated and will be removed in 2.1. The"
+            " data must be a string or UTF-8 bytes.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        if isinstance(s, bytes):
+            s = s.decode(encoding)
 
     return _json.loads(s, **kwargs)
 
@@ -202,7 +198,18 @@ def load(fp, app=None, **kwargs):
     """Like :func:`loads` but reads from a file object."""
     _load_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
-    fp = _wrap_reader_for_text(fp, encoding or "utf-8")
+
+    if encoding is not None:
+        warnings.warn(
+            "'encoding' is deprecated and will be removed in 2.1. The"
+            " file must be text mode, or binary mode with UTF-8 bytes.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        if isinstance(fp.read(0), bytes):
+            fp = io.TextIOWrapper(fp, encoding)
+
     return _json.load(fp, **kwargs)
 
 
@@ -241,7 +248,7 @@ def htmlsafe_dumps(obj, **kwargs):
 
 def htmlsafe_dump(obj, fp, **kwargs):
     """Like :func:`htmlsafe_dumps` but writes into a file object."""
-    fp.write(str(htmlsafe_dumps(obj, **kwargs)))
+    fp.write(htmlsafe_dumps(obj, **kwargs))
 
 
 def jsonify(*args, **kwargs):
@@ -293,7 +300,6 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.2
     """
-
     indent = None
     separators = (",", ":")
 
