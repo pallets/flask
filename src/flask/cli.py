@@ -5,6 +5,7 @@ import platform
 import re
 import sys
 import traceback
+import warnings
 from functools import update_wrapper
 from operator import attrgetter
 from threading import Lock
@@ -91,14 +92,22 @@ def call_factory(script_info, app_factory, arguments=()):
     the app_factory depending on that and the arguments provided.
     """
     args_spec = inspect.getfullargspec(app_factory)
-    arg_names = args_spec.args
-    arg_defaults = args_spec.defaults
 
-    if "script_info" in arg_names:
+    if "script_info" in args_spec.args:
+        warnings.warn(
+            "The 'script_info' argument is deprecated and will not be"
+            " passed to the app factory function in 2.1.",
+            DeprecationWarning,
+        )
         return app_factory(*arguments, script_info=script_info)
     elif arguments:
         return app_factory(*arguments)
-    elif not arguments and len(arg_names) == 1 and arg_defaults is None:
+    elif not arguments and len(args_spec.args) == 1 and args_spec.defaults is None:
+        warnings.warn(
+            "Script info is deprecated and will not be passed as the"
+            " first argument to the app factory function in 2.1.",
+            DeprecationWarning,
+        )
         return app_factory(script_info)
 
     return app_factory()
@@ -131,10 +140,8 @@ def _called_with_wrong_args(factory):
 
 
 def find_app_by_string(script_info, module, app_name):
-    """Checks if the given string is a variable name or a function. If it is a
-    function, it checks for specified arguments and whether it takes a
-    ``script_info`` argument and calls the function with the appropriate
-    arguments.
+    """Check if the given string is a variable name or a function. Call
+    a function to get the app instance, or return the variable directly.
     """
     from . import Flask
 
