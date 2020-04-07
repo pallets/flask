@@ -39,16 +39,12 @@ These distributions will not be installed automatically. Flask will detect and
 use them if you install them.
 
 * `Blinker`_ provides support for :doc:`signals`.
-* `SimpleJSON`_ is a fast JSON implementation that is compatible with
-  Python's ``json`` module. It is preferred for JSON operations if it is
-  installed.
 * `python-dotenv`_ enables support for :ref:`dotenv` when running ``flask``
   commands.
 * `Watchdog`_ provides a faster, more efficient reloader for the development
   server.
 
 .. _Blinker: https://pythonhosted.org/blinker/
-.. _SimpleJSON: https://simplejson.readthedocs.io/
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 .. _watchdog: https://pythonhosted.org/watchdog/
 

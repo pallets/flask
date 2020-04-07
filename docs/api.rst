@@ -279,57 +279,33 @@ Message Flashing
 
 .. autofunction:: get_flashed_messages
 
+
 JSON Support
 ------------
 
 .. module:: flask.json
 
-Flask uses ``simplejson`` for the JSON implementation.  Since simplejson
-is provided by both the standard library as well as extension, Flask will
-try simplejson first and then fall back to the stdlib json module.  On top
-of that it will delegate access to the current application's JSON encoders
-and decoders for easier customization.
+Flask uses the built-in :mod:`json` module for handling JSON. It will
+use the current blueprint's or application's JSON encoder and decoder
+for easier customization. By default it handles some extra data types:
 
-So for starters instead of doing::
+-   :class:`datetime.datetime` and :class:`datetime.date` are serialized
+    to :rfc:`822` strings. This is the same as the HTTP date format.
+-   :class:`uuid.UUID` is serialized to a string.
+-   :class:`dataclasses.dataclass` is passed to
+    :func:`dataclasses.asdict`.
+-   :class:`~markupsafe.Markup` (or any object with a ``__html__``
+    method) will call the ``__html__`` method to get a string.
 
-    try:
-        import simplejson as json
-    except ImportError:
-        import json
-
-You can instead just do this::
-
-    from flask import json
-
-For usage examples, read the :mod:`json` documentation in the standard
-library.  The following extensions are by default applied to the stdlib's
-JSON module:
-
-1.  ``datetime`` objects are serialized as :rfc:`822` strings.
-2.  Any object with an ``__html__`` method (like :class:`~flask.Markup`)
-    will have that method called and then the return value is serialized
-    as string.
-
-The :func:`~htmlsafe_dumps` function of this json module is also available
-as a filter called ``|tojson`` in Jinja2.  Note that in versions of Flask prior
-to Flask 0.10, you must disable escaping with ``|safe`` if you intend to use
-``|tojson`` output inside ``script`` tags. In Flask 0.10 and above, this
-happens automatically (but it's harmless to include ``|safe`` anyway).
+:func:`~htmlsafe_dumps` is also available as the ``|tojson`` template
+filter. The filter marks the output with ``|safe`` so it can be used
+inside ``script`` tags.
 
 .. sourcecode:: html+jinja
 
     <script type=text/javascript>
-        doSomethingWith({{ user.username|tojson|safe }});
+        renderChart({{ axis_data|tojson }});
     </script>
-
-.. admonition:: Auto-Sort JSON Keys
-
-    The configuration variable :data:`JSON_SORT_KEYS` can be set to
-    ``False`` to stop Flask from auto-sorting keys. By default sorting
-    is enabled and outside of the app context sorting is turned on.
-
-    Notice that disabling key sorting can cause issues when using
-    content  based HTTP caches and Python's hash randomization feature.
 
 .. autofunction:: jsonify
 
@@ -348,6 +324,7 @@ happens automatically (but it's harmless to include ``|safe`` anyway).
    :members:
 
 .. automodule:: flask.json.tag
+
 
 Template Rendering
 ------------------
