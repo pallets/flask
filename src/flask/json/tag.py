@@ -45,7 +45,7 @@ from base64 import b64encode
 from datetime import datetime
 from uuid import UUID
 
-from jinja2 import Markup
+from markupsafe import Markup
 from werkzeug.http import http_date
 from werkzeug.http import parse_date
 
@@ -167,9 +167,9 @@ class TagBytes(JSONTag):
 
 
 class TagMarkup(JSONTag):
-    """Serialize anything matching the :class:`~flask.Markup` API by
+    """Serialize anything matching the :class:`~markupsafe.Markup` API by
     having a ``__html__`` method to the result of that method. Always
-    deserializes to an instance of :class:`~flask.Markup`."""
+    deserializes to an instance of :class:`~markupsafe.Markup`."""
 
     __slots__ = ()
     key = " m"
@@ -222,7 +222,7 @@ class TaggedJSONSerializer:
     * :class:`dict`
     * :class:`tuple`
     * :class:`bytes`
-    * :class:`~flask.Markup`
+    * :class:`~markupsafe.Markup`
     * :class:`~uuid.UUID`
     * :class:`~datetime.datetime`
     """
