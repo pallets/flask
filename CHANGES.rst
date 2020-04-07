@@ -6,6 +6,9 @@ Version 2.0.0
 Unreleased
 
 -   Drop support for Python 2 and 3.5.
+-   JSON support no longer uses simplejson. To use another JSON module,
+    override ``app.json_encoder`` and ``json_decoder``. :issue:`3555`
+-   The ``encoding`` option to JSON functions is deprecated. :pr:`3562`
 -   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
     setting the session cookie name dynamically. :pr:`3369`
 -   Add :meth:`Config.from_file` to load config using arbitrary file
@@ -19,9 +22,6 @@ Unreleased
     200 OK and an empty file. :issue:`3358`
 -   When using ad-hoc certificates, check for the cryptography library
     instead of PyOpenSSL. :pr:`3492`
--   JSON support no longer uses simplejson if it's installed. To use
-    another JSON module, override ``app.json_encoder`` and
-    ``json_decoder``. :issue:`3555`
 
 
 Version 1.1.2
