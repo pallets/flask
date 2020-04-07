@@ -67,32 +67,40 @@ def test_find_best_app(test_apps):
         def create_app():
             return Flask("appname")
 
-    assert isinstance(find_best_app(script_info, Module), Flask)
-    assert find_best_app(script_info, Module).name == "appname"
+    app = find_best_app(script_info, Module)
+    assert isinstance(app, Flask)
+    assert app.name == "appname"
 
     class Module:
         @staticmethod
         def create_app(foo):
             return Flask("appname")
 
-    assert isinstance(find_best_app(script_info, Module), Flask)
-    assert find_best_app(script_info, Module).name == "appname"
+    with pytest.deprecated_call(match="Script info"):
+        app = find_best_app(script_info, Module)
+
+    assert isinstance(app, Flask)
+    assert app.name == "appname"
 
     class Module:
         @staticmethod
         def create_app(foo=None, script_info=None):
             return Flask("appname")
 
-    assert isinstance(find_best_app(script_info, Module), Flask)
-    assert find_best_app(script_info, Module).name == "appname"
+    with pytest.deprecated_call(match="script_info"):
+        app = find_best_app(script_info, Module)
+
+    assert isinstance(app, Flask)
+    assert app.name == "appname"
 
     class Module:
         @staticmethod
         def make_app():
             return Flask("appname")
 
-    assert isinstance(find_best_app(script_info, Module), Flask)
-    assert find_best_app(script_info, Module).name == "appname"
+    app = find_best_app(script_info, Module)
+    assert isinstance(app, Flask)
+    assert app.name == "appname"
 
     class Module:
         myapp = Flask("appname1")
@@ -199,15 +207,12 @@ def test_prepare_import(request, value, path, result):
         ("cliapp.factory", 'create_app2("foo", "bar")', "app2_foo_bar"),
         # trailing comma space
         ("cliapp.factory", 'create_app2("foo", "bar", )', "app2_foo_bar"),
-        # takes script_info
-        ("cliapp.factory", 'create_app3("foo")', "app3_foo_spam"),
         # strip whitespace
         ("cliapp.factory", " create_app () ", "app"),
     ),
 )
 def test_locate_app(test_apps, iname, aname, result):
     info = ScriptInfo()
-    info.data["test"] = "spam"
     assert locate_app(info, iname, aname).name == result
 
 
@@ -286,7 +291,7 @@ def test_scriptinfo(test_apps, monkeypatch):
     assert app.name == "testapp"
     assert obj.load_app() is app
 
-    def create_app(info):
+    def create_app():
         return Flask("createapp")
 
     obj = ScriptInfo(create_app=create_app)
@@ -324,7 +329,7 @@ def test_with_appcontext(runner):
     def testcmd():
         click.echo(current_app.name)
 
-    obj = ScriptInfo(create_app=lambda info: Flask("testapp"))
+    obj = ScriptInfo(create_app=lambda: Flask("testapp"))
 
     result = runner.invoke(testcmd, obj=obj)
     assert result.exit_code == 0
@@ -350,7 +355,7 @@ def test_appgroup(runner):
     def test2():
         click.echo(current_app.name)
 
-    obj = ScriptInfo(create_app=lambda info: Flask("testappgroup"))
+    obj = ScriptInfo(create_app=lambda: Flask("testappgroup"))
 
     result = runner.invoke(cli, ["test"], obj=obj)
     assert result.exit_code == 0
@@ -364,7 +369,7 @@ def test_appgroup(runner):
 def test_flaskgroup(runner):
     """Test FlaskGroup."""
 
-    def create_app(info):
+    def create_app():
         return Flask("flaskgroup")
 
     @click.group(cls=FlaskGroup, create_app=create_app)
@@ -384,7 +389,7 @@ def test_flaskgroup(runner):
 def test_flaskgroup_debug(runner, set_debug_flag):
     """Test FlaskGroup debug flag behavior."""
 
-    def create_app(info):
+    def create_app():
         app = Flask("flaskgroup")
         app.debug = True
         return app
@@ -405,7 +410,7 @@ def test_flaskgroup_debug(runner, set_debug_flag):
 def test_print_exceptions(runner):
     """Print the stacktrace if the CLI."""
 
-    def create_app(info):
+    def create_app():
         raise Exception("oh no")
         return Flask("flaskgroup")
 
@@ -422,7 +427,7 @@ def test_print_exceptions(runner):
 class TestRoutes:
     @pytest.fixture
     def invoke(self, runner):
-        def create_app(info):
+        def create_app():
             app = Flask(__name__)
             app.testing = True
 
@@ -441,7 +446,7 @@ class TestRoutes:
 
     @pytest.fixture
     def invoke_no_routes(self, runner):
-        def create_app(info):
+        def create_app():
             app = Flask(__name__, static_folder=None)
             app.testing = True
 
