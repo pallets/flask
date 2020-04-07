@@ -9,6 +9,9 @@ Unreleased
 -   JSON support no longer uses simplejson. To use another JSON module,
     override ``app.json_encoder`` and ``json_decoder``. :issue:`3555`
 -   The ``encoding`` option to JSON functions is deprecated. :pr:`3562`
+-   Passing ``script_info`` to app factory functions is deprecated. This
+    was not portable outside the ``flask`` command. Use
+    ``click.get_current_context().obj`` if it's needed. :issue:`3552`
 -   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
     setting the session cookie name dynamically. :pr:`3369`
 -   Add :meth:`Config.from_file` to load config using arbitrary file
