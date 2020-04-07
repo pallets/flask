@@ -13,7 +13,6 @@ from werkzeug.http import parse_cache_control_header
 from werkzeug.http import parse_options_header
 
 import flask
-from flask import json
 from flask.helpers import get_debug_flag
 from flask.helpers import get_env
 
@@ -64,26 +63,6 @@ class FixedOffset(datetime.tzinfo):
 
 
 class TestJSON:
-    @pytest.mark.parametrize(
-        "value", (1, "t", True, False, None, [], [1, 2, 3], {}, {"foo": "🐍"})
-    )
-    @pytest.mark.parametrize(
-        "encoding",
-        (
-            "utf-8",
-            "utf-8-sig",
-            "utf-16-le",
-            "utf-16-be",
-            "utf-16",
-            "utf-32-le",
-            "utf-32-be",
-            "utf-32",
-        ),
-    )
-    def test_detect_encoding(self, value, encoding):
-        data = json.dumps(value).encode(encoding)
-        assert json.loads(data) == value
-
     @pytest.mark.parametrize("debug", (True, False))
     def test_bad_request_debug_message(self, app, client, debug):
         app.config["DEBUG"] = debug

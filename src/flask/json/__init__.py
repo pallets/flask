@@ -1,10 +1,9 @@
-import codecs
 import io
+import json as _json
 import uuid
 from datetime import date
 from datetime import datetime
 
-from itsdangerous import json as _json
 from jinja2 import Markup
 from werkzeug.http import http_date
 
@@ -16,10 +15,6 @@ try:
 except ImportError:
     # Python < 3.7
     dataclasses = None
-
-# Figure out if simplejson escapes slashes.  This behavior was changed
-# from one version to another without reason.
-_slash_escape = "\\/" not in _json.dumps("/")
 
 
 __all__ = [
@@ -93,7 +88,7 @@ class JSONEncoder(_json.JSONEncoder):
 
 class JSONDecoder(_json.JSONDecoder):
     """The default JSON decoder.  This one does not change the behavior from
-    the default simplejson decoder.  Consult the :mod:`json` documentation
+    the default decoder.  Consult the :mod:`json` documentation
     for more information.  This decoder is not only used for the load
     functions of this module but also :attr:`~flask.Request`.
     """
@@ -133,49 +128,6 @@ def _load_arg_defaults(kwargs, app=None):
         kwargs.setdefault("cls", JSONDecoder)
 
 
-def detect_encoding(data):
-    """Detect which UTF codec was used to encode the given bytes.
-
-    The latest JSON standard (:rfc:`8259`) suggests that only UTF-8 is
-    accepted. Older documents allowed 8, 16, or 32. 16 and 32 can be big
-    or little endian. Some editors or libraries may prepend a BOM.
-
-    :param data: Bytes in unknown UTF encoding.
-    :return: UTF encoding name
-    """
-    head = data[:4]
-
-    if head[:3] == codecs.BOM_UTF8:
-        return "utf-8-sig"
-
-    if b"\x00" not in head:
-        return "utf-8"
-
-    if head in (codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE):
-        return "utf-32"
-
-    if head[:2] in (codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE):
-        return "utf-16"
-
-    if len(head) == 4:
-        if head[:3] == b"\x00\x00\x00":
-            return "utf-32-be"
-
-        if head[::2] == b"\x00\x00":
-            return "utf-16-be"
-
-        if head[1:] == b"\x00\x00\x00":
-            return "utf-32-le"
-
-        if head[1::2] == b"\x00\x00":
-            return "utf-16-le"
-
-    if len(head) == 2:
-        return "utf-16-be" if head.startswith(b"\x00") else "utf-16-le"
-
-    return "utf-8"
-
-
 def dumps(obj, app=None, **kwargs):
     """Serialize ``obj`` to a JSON-formatted string. If there is an
     app context pushed, use the current app's configured encoder
@@ -183,8 +135,7 @@ def dumps(obj, app=None, **kwargs):
     :class:`JSONEncoder`.
 
     Takes the same arguments as the built-in :func:`json.dumps`, and
-    does some extra configuration based on the application. If the
-    simplejson package is installed, it is preferred.
+    does some extra configuration based on the application.
 
     :param obj: Object to serialize to JSON.
     :param app: App instance to use to configure the JSON encoder.
@@ -200,8 +151,10 @@ def dumps(obj, app=None, **kwargs):
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
     rv = _json.dumps(obj, **kwargs)
+
     if encoding is not None and isinstance(rv, str):
         rv = rv.encode(encoding)
+
     return rv
 
 
@@ -209,8 +162,10 @@ def dump(obj, fp, app=None, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
+
     if encoding is not None:
         fp = _wrap_writer_for_text(fp, encoding)
+
     _json.dump(obj, fp, **kwargs)
 
 
@@ -221,8 +176,7 @@ def loads(s, app=None, **kwargs):
     default :class:`JSONDecoder`.
 
     Takes the same arguments as the built-in :func:`json.loads`, and
-    does some extra configuration based on the application. If the
-    simplejson package is installed, it is preferred.
+    does some extra configuration based on the application.
 
     :param s: JSON string to deserialize.
     :param app: App instance to use to configure the JSON decoder.
@@ -236,19 +190,25 @@ def loads(s, app=None, **kwargs):
         context for configuration.
     """
     _load_arg_defaults(kwargs, app=app)
-    if isinstance(s, bytes):
-        encoding = kwargs.pop("encoding", None)
-        if encoding is None:
-            encoding = detect_encoding(s)
+    encoding = kwargs.pop("encoding", None)
+
+    if encoding is not None and isinstance(s, bytes):
         s = s.decode(encoding)
+
     return _json.loads(s, **kwargs)
 
 
 def load(fp, app=None, **kwargs):
     """Like :func:`loads` but reads from a file object."""
     _load_arg_defaults(kwargs, app=app)
-    fp = _wrap_reader_for_text(fp, kwargs.pop("encoding", None) or "utf-8")
+    encoding = kwargs.pop("encoding", None)
+    fp = _wrap_reader_for_text(fp, encoding or "utf-8")
     return _json.load(fp, **kwargs)
+
+
+_htmlsafe_map = str.maketrans(
+    {"<": "\\u003c", ">": "\\u003e", "&": "\\u0026", "'": "\\u0027"}
+)
 
 
 def htmlsafe_dumps(obj, **kwargs):
@@ -276,16 +236,7 @@ def htmlsafe_dumps(obj, **kwargs):
        quoted.  Always single quote attributes if you use the ``|tojson``
        filter.  Alternatively use ``|tojson|forceescape``.
     """
-    rv = (
-        dumps(obj, **kwargs)
-        .replace("<", "\\u003c")
-        .replace(">", "\\u003e")
-        .replace("&", "\\u0026")
-        .replace("'", "\\u0027")
-    )
-    if not _slash_escape:
-        rv = rv.replace("\\/", "/")
-    return rv
+    return dumps(obj, **kwargs).translate(_htmlsafe_map)
 
 
 def htmlsafe_dump(obj, fp, **kwargs):
