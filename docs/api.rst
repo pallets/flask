@@ -31,40 +31,6 @@ Incoming Request Data
    :inherited-members:
    :exclude-members: json_module
 
-   .. attribute:: environ
-
-      The underlying WSGI environment.
-
-   .. attribute:: path
-   .. attribute:: full_path
-   .. attribute:: script_root
-   .. attribute:: url
-   .. attribute:: base_url
-   .. attribute:: url_root
-
-      Provides different ways to look at the current :rfc:`3987`.
-      Imagine your application is listening on the following application
-      root::
-
-          http://www.example.com/myapplication
-
-      And a user requests the following URI::
-
-          http://www.example.com/myapplication/%CF%80/page.html?x=y
-
-      In this case the values of the above mentioned attributes would be
-      the following:
-
-      ============= ======================================================
-      `path`        ``'/π/page.html'``
-      `full_path`   ``'/π/page.html?x=y'``
-      `script_root` ``'/myapplication'``
-      `base_url`    ``'http://www.example.com/myapplication/π/page.html'``
-      `url`         ``'http://www.example.com/myapplication/π/page.html?x=y'``
-      `url_root`    ``'http://www.example.com/myapplication/'``
-      ============= ======================================================
-
-
 .. attribute:: request
 
    To access incoming request data, you can use the global `request`
