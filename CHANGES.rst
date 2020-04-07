@@ -19,6 +19,9 @@ Unreleased
     200 OK and an empty file. :issue:`3358`
 -   When using ad-hoc certificates, check for the cryptography library
     instead of PyOpenSSL. :pr:`3492`
+-   JSON support no longer uses simplejson if it's installed. To use
+    another JSON module, override ``app.json_encoder`` and
+    ``json_decoder``. :issue:`3555`
 
 
 Version 1.1.2

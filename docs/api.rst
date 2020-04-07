@@ -284,22 +284,9 @@ JSON Support
 
 .. module:: flask.json
 
-Flask uses ``simplejson`` for the JSON implementation.  Since simplejson
-is provided by both the standard library as well as extension, Flask will
-try simplejson first and then fall back to the stdlib json module.  On top
-of that it will delegate access to the current application's JSON encoders
-and decoders for easier customization.
-
-So for starters instead of doing::
-
-    try:
-        import simplejson as json
-    except ImportError:
-        import json
-
-You can instead just do this::
-
-    from flask import json
+Flask uses the built-in :mod:`json` module for the JSON implementation.
+It will delegate access to the current application's JSON encoders and
+decoders for easier customization.
 
 For usage examples, read the :mod:`json` documentation in the standard
 library.  The following extensions are by default applied to the stdlib's
