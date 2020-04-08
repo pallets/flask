@@ -203,7 +203,6 @@ def test_prepare_import(request, value, path, result):
         ("cliapp.factory", None, "app"),
         ("cliapp.factory", "create_app", "app"),
         ("cliapp.factory", "create_app()", "app"),
-        # no script_info
         ("cliapp.factory", 'create_app2("foo", "bar")', "app2_foo_bar"),
         # trailing comma space
         ("cliapp.factory", 'create_app2("foo", "bar", )', "app2_foo_bar"),
