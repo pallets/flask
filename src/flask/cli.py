@@ -86,55 +86,60 @@ def find_best_app(script_info, module):
     )
 
 
-def call_factory(script_info, app_factory, arguments=()):
+def call_factory(script_info, app_factory, args=None, kwargs=None):
     """Takes an app factory, a ``script_info` object and  optionally a tuple
     of arguments. Checks for the existence of a script_info argument and calls
     the app_factory depending on that and the arguments provided.
     """
-    args_spec = inspect.getfullargspec(app_factory)
+    sig = inspect.signature(app_factory)
+    args = [] if args is None else args
+    kwargs = {} if kwargs is None else kwargs
 
-    if "script_info" in args_spec.args:
+    if "script_info" in sig.parameters:
         warnings.warn(
             "The 'script_info' argument is deprecated and will not be"
             " passed to the app factory function in 2.1.",
             DeprecationWarning,
         )
-        return app_factory(*arguments, script_info=script_info)
-    elif arguments:
-        return app_factory(*arguments)
-    elif not arguments and len(args_spec.args) == 1 and args_spec.defaults is None:
+        kwargs["script_info"] = script_info
+
+    if (
+        not args
+        and len(sig.parameters) == 1
+        and next(iter(sig.parameters.values())).default is inspect.Parameter.empty
+    ):
         warnings.warn(
             "Script info is deprecated and will not be passed as the"
-            " first argument to the app factory function in 2.1.",
+            " single argument to the app factory function in 2.1.",
             DeprecationWarning,
         )
-        return app_factory(script_info)
+        args.append(script_info)
 
-    return app_factory()
+    return app_factory(*args, **kwargs)
 
 
-def _called_with_wrong_args(factory):
+def _called_with_wrong_args(f):
     """Check whether calling a function raised a ``TypeError`` because
     the call failed or because something in the factory raised the
     error.
 
-    :param factory: the factory function that was called
-    :return: true if the call failed
+    :param f: The function that was called.
+    :return: ``True`` if the call failed.
     """
     tb = sys.exc_info()[2]
 
     try:
         while tb is not None:
-            if tb.tb_frame.f_code is factory.__code__:
-                # in the factory, it was called successfully
+            if tb.tb_frame.f_code is f.__code__:
+                # In the function, it was called successfully.
                 return False
 
             tb = tb.tb_next
 
-        # didn't reach the factory
+        # Didn't reach the function.
         return True
     finally:
-        # explicitly delete tb as it is circular referenced
+        # Delete tb to break a circular reference.
         # https://docs.python.org/2/library/sys.html#sys.exc_info
         del tb
 
@@ -145,37 +150,60 @@ def find_app_by_string(script_info, module, app_name):
     """
     from . import Flask
 
-    match = re.match(r"^ *([^ ()]+) *(?:\((.*?) *,? *\))? *$", app_name)
-
-    if not match:
+    # Parse app_name as a single expression to determine if it's a valid
+    # attribute name or function call.
+    try:
+        expr = ast.parse(app_name.strip(), mode="eval").body
+    except SyntaxError:
         raise NoAppException(
-            f"{app_name!r} is not a valid variable name or function expression."
+            f"Failed to parse {app_name!r} as an attribute name or function call."
         )
 
-    name, args = match.groups()
+    if isinstance(expr, ast.Name):
+        name = expr.id
+        args = kwargs = None
+    elif isinstance(expr, ast.Call):
+        # Ensure the function name is an attribute name only.
+        if not isinstance(expr.func, ast.Name):
+            raise NoAppException(
+                f"Function reference must be a simple name: {app_name!r}."
+            )
+
+        name = expr.func.id
+
+        # Parse the positional and keyword arguments as literals.
+        try:
+            args = [ast.literal_eval(arg) for arg in expr.args]
+            kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in expr.keywords}
+        except ValueError:
+            # literal_eval gives cryptic error messages, show a generic
+            # message with the full expression instead.
+            raise NoAppException(
+                f"Failed to parse arguments as literal values: {app_name!r}."
+            )
+    else:
+        raise NoAppException(
+            f"Failed to parse {app_name!r} as an attribute name or function call."
+        )
 
     try:
         attr = getattr(module, name)
-    except AttributeError as e:
-        raise NoAppException(e.args[0])
+    except AttributeError:
+        raise NoAppException(
+            f"Failed to find attribute {name!r} in {module.__name__!r}."
+        )
 
+    # If the attribute is a function, call it with any args and kwargs
+    # to get the real application.
     if inspect.isfunction(attr):
-        if args:
-            try:
-                args = ast.literal_eval(f"({args},)")
-            except (ValueError, SyntaxError):
-                raise NoAppException(f"Could not parse the arguments in {app_name!r}.")
-        else:
-            args = ()
-
         try:
-            app = call_factory(script_info, attr, args)
-        except TypeError as e:
+            app = call_factory(script_info, attr, args, kwargs)
+        except TypeError:
             if not _called_with_wrong_args(attr):
                 raise
 
             raise NoAppException(
-                f"{e}\nThe factory {app_name!r} in module"
+                f"The factory {app_name!r} in module"
                 f" {module.__name__!r} could not be called with the"
                 " specified arguments."
             )
@@ -361,8 +389,6 @@ class ScriptInfo:
 
         if self._loaded_app is not None:
             return self._loaded_app
-
-        app = None
 
         if self.create_app is not None:
             app = call_factory(self, self.create_app)
