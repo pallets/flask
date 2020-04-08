@@ -25,6 +25,8 @@ Unreleased
     200 OK and an empty file. :issue:`3358`
 -   When using ad-hoc certificates, check for the cryptography library
     instead of PyOpenSSL. :pr:`3492`
+-   When specifying a factory function with ``FLASK_APP``, keyword
+    argument can be passed. :issue:`3553`
 
 
 Version 1.1.2
