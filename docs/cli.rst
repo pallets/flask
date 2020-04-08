@@ -76,8 +76,8 @@ found, the command looks for a factory function named ``create_app`` or
 ``make_app`` that returns an instance.
 
 If parentheses follow the factory name, their contents are parsed as
-Python literals and passed as arguments to the function. This means that
-strings must still be in quotes.
+Python literals and passed as arguments and keyword arguments to the
+function. This means that strings must still be in quotes.
 
 
 Run the Development Server
