@@ -11,10 +11,18 @@ def test_error_handler_no_match(app, client):
     class CustomException(Exception):
         pass
 
+    class UnacceptableCustomException(BaseException):
+        pass
+
     @app.errorhandler(CustomException)
     def custom_exception_handler(e):
         assert isinstance(e, CustomException)
         return "custom"
+
+    with pytest.raises(
+        AssertionError, match="Custom exceptions must be subclasses of Exception."
+    ):
+        app.register_error_handler(UnacceptableCustomException, None)
 
     @app.errorhandler(500)
     def handle_500(e):
