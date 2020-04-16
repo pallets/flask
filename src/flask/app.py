@@ -1270,7 +1270,9 @@ class Flask(_PackageBoundObject):
         else:
             exc_class = exc_class_or_code
 
-        assert issubclass(exc_class, Exception)
+        assert issubclass(
+            exc_class, Exception
+        ), "Custom exceptions must be subclasses of Exception."
 
         if issubclass(exc_class, HTTPException):
             return exc_class, exc_class.code
