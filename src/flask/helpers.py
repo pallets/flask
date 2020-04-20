@@ -980,7 +980,7 @@ class _PackageBoundObject:
     @static_folder.setter
     def static_folder(self, value):
         if value is not None:
-            value = value.rstrip("/\\")
+            value = os.fspath(value).rstrip(r"\/")
         self._static_folder = value
 
     @property
