@@ -29,6 +29,15 @@ Unreleased
     argument can be passed. :issue:`3553`
 
 
+Version 1.1.x
+-------------
+
+Not yet released.
+
+-   Officially support passing a :class:`pathlib.Path` for
+    ``static_folder`` which stopped working in 1.1.2. :pr:`3579`
+
+
 Version 1.1.2
 -------------
 
