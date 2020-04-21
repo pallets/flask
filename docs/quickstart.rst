@@ -323,7 +323,9 @@ a route only answers to ``GET`` requests. You can use the ``methods`` argument
 of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
 ::
 
-    from flask import request
+    from flask import Flask, request
+
+    app = Flask(__name__)
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
