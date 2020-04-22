@@ -368,7 +368,9 @@ method.  All you have to do is provide the name of the template and the
 variables you want to pass to the template engine as keyword arguments.
 Here's a simple example of how to render a template::
 
-    from flask import render_template
+    from flask import Flask, render_template
+
+    app = Flask(__name__)
 
     @app.route('/hello/')
     @app.route('/hello/<name>')
