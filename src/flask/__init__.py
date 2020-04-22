@@ -28,6 +28,7 @@ from .helpers import send_file
 from .helpers import send_from_directory
 from .helpers import stream_with_context
 from .helpers import url_for
+from .json import gzonify
 from .json import jsonify
 from .signals import appcontext_popped
 from .signals import appcontext_pushed

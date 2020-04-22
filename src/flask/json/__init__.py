@@ -1,3 +1,4 @@
+import gzip
 import io
 import json as _json
 import uuid
@@ -334,6 +335,57 @@ def jsonify(*args, **kwargs):
     return current_app.response_class(
         f"{dumps(data, indent=indent, separators=separators)}\n",
         mimetype=current_app.config["JSONIFY_MIMETYPE"],
+    )
+
+
+def gzonify(*args, **kwargs):
+    """Works like jsonify but with support of gzip compression.
+    The Content-Encoding: `gzip` is added to :class:`~flask.Response`
+    to enable gzip compression.
+
+    .. code-block:: python
+
+        from flask import jsonify
+
+        @app.route("/users/me")
+        def get_current_user():
+            return gzonify(
+                username=g.user.username,
+                email=g.user.email,
+                id=g.user.id,
+            )
+
+    Will return a JSON response like this but with gzip compression:
+
+    .. code-block:: javascript
+        // Content-Encoding: gzip
+
+        {
+          "username": "admin",
+          "email": "admin@localhost",
+          "id": 42
+        }
+    """
+    indent = None
+    separators = (",", ":")
+
+    if current_app.config["JSONIFY_PRETTYPRINT_REGULAR"] or current_app.debug:
+        indent = 2
+        separators = (", ", ": ")
+
+    if args and kwargs:
+        raise TypeError("jsonify() behavior undefined when passed both args and kwargs")
+    elif len(args) == 1:  # single args are passed directly to dumps()
+        data = args[0]
+    else:
+        data = args or kwargs
+
+    return current_app.response_class(
+        gzip.compress(
+            f"{dumps(data, indent=indent, separators=separators)}\n".encode("utf-8")
+        ),
+        mimetype=current_app.config["JSONIFY_MIMETYPE"],
+        headers={"Content-Encoding": "gzip"},
     )
 
 
