@@ -1,3 +1,4 @@
+import gzip
 import re
 import sys
 import time
@@ -1278,6 +1279,39 @@ def test_jsonify_mimetype(app, req_ctx):
     app.config.update({"JSONIFY_MIMETYPE": "application/vnd.api+json"})
     msg = {"msg": {"submsg": "W00t"}}
     rv = flask.make_response(flask.jsonify(msg), 200)
+    assert rv.mimetype == "application/vnd.api+json"
+
+
+def test_gzonify_no_prettyprint(app, req_ctx):
+    app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": False})
+    compressed_msg = b'{"msg":{"submsg":"W00t"},"msg2":"foobar"}\n'
+    uncompressed_msg = {"msg": {"submsg": "W00t"}, "msg2": "foobar"}
+
+    rv = flask.make_response(flask.gzonify(uncompressed_msg), 200)
+
+    assert rv.headers.get("Content-Encoding") == "gzip"
+    assert gzip.decompress(rv.data) == compressed_msg
+
+
+def test_gzonify_prettyprint(app, req_ctx):
+    app.config.update({"JSONIFY_PRETTYPRINT_REGULAR": True})
+    compressed_msg = {"msg": {"submsg": "W00t"}, "msg2": "foobar"}
+    pretty_response = (
+        b'{\n  "msg": {\n    "submsg": "W00t"\n  }, \n  "msg2": "foobar"\n}\n'
+    )
+
+    rv = flask.make_response(flask.gzonify(compressed_msg), 200)
+
+    assert rv.headers.get("Content-Encoding") == "gzip"
+    assert gzip.decompress(rv.data) == pretty_response
+
+
+def test_gzonify_mimetype(app, req_ctx):
+    app.config.update({"JSONIFY_MIMETYPE": "application/vnd.api+json"})
+    msg = {"msg": {"submsg": "W00t"}}
+    rv = flask.make_response(flask.gzonify(msg), 200)
+
+    assert rv.headers.get("Content-Encoding") == "gzip"
     assert rv.mimetype == "application/vnd.api+json"
 
 

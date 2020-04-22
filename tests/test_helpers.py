@@ -1,4 +1,5 @@
 import datetime
+import gzip
 import io
 import os
 import sys
@@ -211,6 +212,111 @@ class TestJSON:
         rv = client.get(url)
 
         rv_x = flask.json.loads(rv.data)["x"]
+        assert rv_x == str(test_uuid)
+        rv_uuid = uuid.UUID(rv_x)
+        assert rv_uuid == test_uuid
+
+    @pytest.mark.parametrize(
+        "test_value", [0, -1, 1, 23, 3.14, "s", "longer string", True, False, None]
+    )
+    def test_gzonify_basic_types(self, test_value, app, client):
+        """Test jsonify with basic types."""
+
+        url = "/jsonify_basic_types"
+        app.add_url_rule(url, url, lambda x=test_value: flask.gzonify(x))
+        rv = client.get(url)
+
+        assert rv.mimetype == "application/json"
+        assert rv.headers.get("Content-Encoding") == "gzip"
+        assert flask.json.loads(gzip.decompress(rv.data)) == test_value
+
+    def test_gzonify_dicts(self, app, client):
+        """Test jsonify with dicts and kwargs unpacking."""
+        d = {
+            "a": 0,
+            "b": 23,
+            "c": 3.14,
+            "d": "t",
+            "e": "Hi",
+            "f": True,
+            "g": False,
+            "h": ["test list", 10, False],
+            "i": {"test": "dict"},
+        }
+
+        @app.route("/kw")
+        def return_kwargs():
+            return flask.gzonify(**d)
+
+        @app.route("/dict")
+        def return_dict():
+            return flask.gzonify(d)
+
+        for url in "/kw", "/dict":
+            rv = client.get(url)
+
+            assert rv.mimetype == "application/json"
+            assert rv.headers.get("Content-Encoding") == "gzip"
+            assert flask.json.loads(gzip.decompress(rv.data)) == d
+
+    def test_gzonify_arrays(self, app, client):
+        """Test jsonify of lists and args unpacking."""
+        a_list = [
+            0,
+            42,
+            3.14,
+            "t",
+            "hello",
+            True,
+            False,
+            ["test list", 2, False],
+            {"test": "dict"},
+        ]
+
+        @app.route("/args_unpack")
+        def return_args_unpack():
+            return flask.gzonify(*a_list)
+
+        @app.route("/array")
+        def return_array():
+            return flask.gzonify(a_list)
+
+        for url in "/args_unpack", "/array":
+            rv = client.get(url)
+
+            assert rv.mimetype == "application/json"
+            assert rv.headers.get("Content-Encoding") == "gzip"
+            assert flask.json.loads(gzip.decompress(rv.data)) == a_list
+
+    def test_gzonify_date_types(self, app, client):
+        """Test jsonify with datetime.date and datetime.datetime types."""
+        test_dates = (
+            datetime.datetime(1973, 3, 11, 6, 30, 45),
+            datetime.date(1975, 1, 5),
+        )
+
+        for i, d in enumerate(test_dates):
+            url = f"/datetest{i}"
+            app.add_url_rule(url, str(i), lambda val=d: flask.gzonify(x=val))
+            rv = client.get(url)
+
+            assert rv.mimetype == "application/json"
+            assert rv.headers.get("Content-Encoding") == "gzip"
+            assert flask.json.loads(gzip.decompress(rv.data))["x"] == http_date(
+                d.timetuple()
+            )
+
+    def test_gzonify_uuid_types(self, app, client):
+        """Test jsonify with uuid.UUID types"""
+
+        test_uuid = uuid.UUID(bytes=b"\xDE\xAD\xBE\xEF" * 4)
+        url = "/uuid_test"
+        app.add_url_rule(url, url, lambda: flask.gzonify(x=test_uuid))
+
+        rv = client.get(url)
+
+        assert rv.headers.get("Content-Encoding") == "gzip"
+        rv_x = flask.json.loads(gzip.decompress(rv.data))["x"]
         assert rv_x == str(test_uuid)
         rv_uuid = uuid.UUID(rv_x)
         assert rv_uuid == test_uuid
