@@ -339,9 +339,9 @@ def jsonify(*args, **kwargs):
 
 
 def gzonify(*args, **kwargs):
-    """Works like jsonify but with support of gzip compression.
-    The Content-Encoding: `gzip` is added to :class:`~flask.Response`
-    to enable gzip compression.
+    """Works like :func:`~flask.json.jsonify` function but with support
+    of gzip compression. The `Content-Encoding: gzip` is added to the
+    :class:`~flask.Response` to enable gzip compression.
 
     .. code-block:: python
 
@@ -364,6 +364,8 @@ def gzonify(*args, **kwargs):
           "email": "admin@localhost",
           "id": 42
         }
+
+    .. versionadded:: 2.0
     """
     indent = None
     separators = (",", ":")
