@@ -374,7 +374,7 @@ def gzonify(*args, **kwargs):
         separators = (", ", ": ")
 
     if args and kwargs:
-        raise TypeError("jsonify() behavior undefined when passed both args and kwargs")
+        raise TypeError("gzonify() behavior undefined when passed both args and kwargs")
     elif len(args) == 1:  # single args are passed directly to dumps()
         data = args[0]
     else:
