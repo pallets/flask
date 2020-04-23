@@ -358,7 +358,6 @@ def gzonify(*args, **kwargs):
     Will return a JSON response like this but with gzip compression:
 
     .. code-block:: javascript
-        // Content-Encoding: gzip
 
         {
           "username": "admin",
