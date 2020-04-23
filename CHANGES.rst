@@ -27,7 +27,8 @@ Unreleased
     instead of PyOpenSSL. :pr:`3492`
 -   When specifying a factory function with ``FLASK_APP``, keyword
     argument can be passed. :issue:`3553`
-
+-   Add :func:`~flask.json.gzonify` to support gzip compression for better web
+    performance (less size and time). Works like :func:`~flask.json.jsonify`.
 
 Version 1.1.2
 -------------

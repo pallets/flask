@@ -776,6 +776,19 @@ more complex applications.
         users = get_all_users()
         return jsonify([user.to_json() for user in users])
 
+Sometimes you want to optimze the output of your JSON responses. In that case
+use the :func:`~flask.json.gzonify` function, which works like
+:func:`~flask.json.jsonify` function but add support for gzip compression.
+Optimizing the response (size and time) for large responses.
+
+.. code-block:: python
+
+    from flask import gzonify
+
+    @app.route("/users")
+    def users_api():
+        users = get_all_users()
+        return gzonify([user.to_json() for user in users])
 
 .. _sessions:
 
