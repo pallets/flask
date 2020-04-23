@@ -1331,6 +1331,12 @@ def test_jsonify_args_and_kwargs_check(app, req_ctx):
     assert "behavior undefined" in str(e.value)
 
 
+def test_gzonify_args_and_kwargs_check(app, req_ctx):
+    with pytest.raises(TypeError) as e:
+        flask.gzonify("fake args", kwargs="fake")
+    assert "behavior undefined" in str(e.value)
+
+
 def test_url_generation(app, req_ctx):
     @app.route("/hello/<name>", methods=["POST"])
     def hello():
