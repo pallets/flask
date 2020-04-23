@@ -275,6 +275,8 @@ inside ``script`` tags.
 
 .. autofunction:: jsonify
 
+.. autofunction:: gzonify
+
 .. autofunction:: dumps
 
 .. autofunction:: dump
