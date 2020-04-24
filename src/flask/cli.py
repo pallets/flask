@@ -863,9 +863,19 @@ def run_command(
     )
 
 
+shell_choices = ("python", "ipython")
+
+
 @click.command("shell", short_help="Run a shell in the app context.")
+@click.option(
+    "-i",
+    "--interface",
+    type=click.Choice(shell_choices),
+    default="python",
+    help="Which interactive shell to use.",
+)
 @with_appcontext
-def shell_command():
+def shell_command(interface):
     """Run an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
     namespace of this shell according to it's configuration.
@@ -873,27 +883,46 @@ def shell_command():
     This is useful for executing small snippets of management code
     without having to manually configure the application.
     """
-    import code
     from .globals import _app_ctx_stack
 
     app = _app_ctx_stack.top.app
-    banner = (
-        f"Python {sys.version} on {sys.platform}\n"
-        f"App: {app.import_name} [{app.env}]\n"
-        f"Instance: {app.instance_path}"
-    )
     ctx = {}
-
-    # Support the regular Python interpreter startup script if someone
-    # is using it.
-    startup = os.environ.get("PYTHONSTARTUP")
-    if startup and os.path.isfile(startup):
-        with open(startup) as f:
-            eval(compile(f.read(), startup, "exec"), ctx)
-
     ctx.update(app.make_shell_context())
 
-    code.interact(banner=banner, local=ctx)
+    if interface == shell_choices[0]:
+        banner = (
+            f"Python {sys.version} on {sys.platform}\n"
+            f"App: {app.import_name} [{app.env}]\n"
+            f"Instance: {app.instance_path}"
+        )
+        # Support the regular Python interpreter startup script if someone
+        # is using it.
+        startup = os.environ.get("PYTHONSTARTUP")
+        if startup and os.path.isfile(startup):
+            with open(startup) as f:
+                eval(compile(f.read(), startup, "exec"), ctx)
+
+        import code
+
+        code.interact(banner=banner, local=ctx)
+
+    elif interface == shell_choices[1]:
+        try:
+            import IPython
+            from traitlets.config.loader import Config
+        except ModuleNotFoundError:
+            raise RuntimeError("Could not import IPython, is it installed?")
+        banner = (
+            f"Python {sys.version} on {sys.platform}\n"
+            f"IPython {IPython.__version__}\n"
+            f"App: {app.import_name} [{app.env}]\n"
+            f"Instance: {app.instance_path}"
+        )
+        config = Config()
+        # `banner1` is the the first and topmost banner
+        config.TerminalInteractiveShell.banner1 = banner
+        # will also run the users config in his profile
+        IPython.start_ipython(argv=[], user_ns=ctx, config=config)
 
 
 @click.command("routes", short_help="Show the routes for the app.")

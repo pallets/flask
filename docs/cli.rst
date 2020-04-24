@@ -101,7 +101,10 @@ Open a Shell
 
 To explore the data in your application, you can start an interactive Python
 shell with the :func:`shell <cli.shell_command>` command. An application
-context will be active, and the app instance will be imported. ::
+context will be active, and the app instance will be imported.
+You can specify a shell with the ``-i / --interface`` flag, e.g. if you want to
+use IPython instead of the standard python shell.
+Currently, only the default python shell and IPython are supported ::
 
     $ flask shell
     Python 3.6.2 (default, Jul 20 2017, 03:52:27)
@@ -109,6 +112,16 @@ context will be active, and the app instance will be imported. ::
     App: example
     Instance: /home/user/Projects/hello/instance
     >>>
+
+    $ flask shell -i ipython
+    Python 3.8.2 (default, Apr  8 2020, 14:31:25)
+    [GCC 9.3.0] on linux
+    IPython 7.13.0
+    App: example
+    Instance: /home/user/Projects/hello/instance
+
+    In [1]:
+
 
 Use :meth:`~Flask.shell_context_processor` to add other automatic imports.
 
