@@ -27,7 +27,9 @@ Unreleased
     instead of PyOpenSSL. :pr:`3492`
 -   When specifying a factory function with ``FLASK_APP``, keyword
     argument can be passed. :issue:`3553`
-
+-   Add support for a ``-i / --interface`` flag for the ``flask shell`` cli
+    command, dropping the user into the specified shell. Currently supported is
+    the standard shell and IPython.
 
 Version 1.1.2
 -------------
