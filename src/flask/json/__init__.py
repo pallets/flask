@@ -9,6 +9,7 @@ flask.json
 import codecs
 import io
 import uuid
+import warnings
 from datetime import date
 from datetime import datetime
 
@@ -208,6 +209,13 @@ def dumps(obj, app=None, **kwargs):
     """
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
+
+    if isinstance(obj, dict) and None in obj:
+        warnings.warn(
+            "sort_keys falls back to False because `None` is found as key in obj"
+        )
+        kwargs["sort_keys"] = False
+
     rv = _json.dumps(obj, **kwargs)
     if encoding is not None and isinstance(rv, text_type):
         rv = rv.encode(encoding)
@@ -218,6 +226,13 @@ def dump(obj, fp, app=None, **kwargs):
     """Like :func:`dumps` but writes into a file object."""
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
+
+    if isinstance(obj, dict) and None in obj:
+        warnings.warn(
+            "sort_keys falls back to False because `None` is found as key in obj"
+        )
+        kwargs["sort_keys"] = False
+
     if encoding is not None:
         fp = _wrap_writer_for_text(fp, encoding)
     _json.dump(obj, fp, **kwargs)

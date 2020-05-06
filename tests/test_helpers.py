@@ -262,6 +262,26 @@ class TestJSON(object):
         )
         assert rv.data == b"3"
 
+    def test_json_dumps_key_none(self, app, req_ctx):
+        rv = flask.json.dumps({"Y": "abc", "X": 123})
+        assert rv == '{"X": 123, "Y": "abc"}'
+
+        with pytest.warns(UserWarning) as record:
+            rv = flask.json.dumps({None: "abc", "X": 123})
+        assert len(record) == 1
+        assert record[0].message.args[0] == 'sort_keys falls back to False' \
+                                            ' because `None` is found as key in obj'
+        assert rv == '{"null": "abc", "X": 123}' or \
+               rv == '{"X": 123, "null": "abc"}'
+
+    def test_json_dump_key_none(self, app, req_ctx, tmpdir):
+        with pytest.warns(UserWarning) as record:
+            p = tmpdir.mkdir("sub").join("result.json")
+            flask.json.dump({None: "abc", "X": 123}, p)
+        assert len(record) == 1
+        assert record[0].message.args[0] == 'sort_keys falls back to False' \
+                                            ' because `None` is found as key in obj'
+
     def test_template_escaping(self, app, req_ctx):
         render = flask.render_template_string
         rv = flask.json.htmlsafe_dumps("</script>")
