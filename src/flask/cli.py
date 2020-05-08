@@ -565,14 +565,9 @@ class FlaskGroup(AppGroup):
         info = ctx.ensure_object(ScriptInfo)
         try:
             rv.update(info.load_app().cli.list_commands(ctx))
-        except Exception:
-            # Here we intentionally swallow all exceptions as we don't
-            # want the help page to break if the app does not exist.
-            # If someone attempts to use the command we try to create
-            # the app again and this will give us the error.
-            # However, we will not do so silently because that would confuse
-            # users.
-            traceback.print_exc()
+        except NoAppException as e:
+            # We don't want the help page to break if the app does not exist.
+            print("Error:", e, file=sys.stderr)
         return sorted(rv)
 
     def main(self, *args, **kwargs):
