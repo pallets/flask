@@ -185,4 +185,4 @@ applications dealing with uploads, there is also a Flask extension called
 blacklisting of extensions and more.
 
 .. _jQuery: https://jquery.com/
-.. _Flask-Uploads: https://pythonhosted.org/Flask-Uploads/
+.. _Flask-Uploads: https://flask-uploads.readthedocs.io/en/latest/
