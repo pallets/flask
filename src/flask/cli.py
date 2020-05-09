@@ -537,10 +537,6 @@ class FlaskGroup(AppGroup):
         #
         # This also means that the script stays functional in case the
         # application completely fails.
-        rv = AppGroup.get_command(self, ctx, name)
-        if rv is not None:
-            return rv
-
         info = ctx.ensure_object(ScriptInfo)
         try:
             rv = info.load_app().cli.get_command(ctx, name)
@@ -548,6 +544,10 @@ class FlaskGroup(AppGroup):
                 return rv
         except NoAppException:
             pass
+
+        rv = AppGroup.get_command(self, ctx, name)
+        if rv is not None:
+            return rv
 
     def list_commands(self, ctx):
         self._load_plugin_commands()
