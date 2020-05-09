@@ -418,9 +418,9 @@ def test_print_exceptions(runner):
         pass
 
     result = runner.invoke(cli, ["--help"])
-    assert result.exit_code == 0
-    assert "Exception: oh no" in result.output
-    assert "Traceback" in result.output
+    assert result.exit_code != 0
+    assert "Exception" in repr(result.exception)
+    assert "oh no" in repr(result.exception)
 
 
 class TestRoutes:
