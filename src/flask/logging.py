@@ -1,16 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-flask.logging
-~~~~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
-from __future__ import absolute_import
-
 import logging
 import sys
-import warnings
 
 from werkzeug.local import LocalProxy
 
@@ -57,22 +46,8 @@ default_handler.setFormatter(
 )
 
 
-def _has_config(logger):
-    """Decide if a logger has direct configuration applied by checking
-    its properties against the defaults.
-
-    :param logger: The :class:`~logging.Logger` to inspect.
-    """
-    return (
-        logger.level != logging.NOTSET
-        or logger.handlers
-        or logger.filters
-        or not logger.propagate
-    )
-
-
 def create_logger(app):
-    """Get the the Flask apps's logger and configure it if needed.
+    """Get the Flask app's logger and configure it if needed.
 
     The logger name will be the same as
     :attr:`app.import_name <flask.Flask.name>`.
@@ -85,20 +60,6 @@ def create_logger(app):
     :func:`~flask.logging.wsgi_errors_stream` with a basic format.
     """
     logger = logging.getLogger(app.name)
-
-    # 1.1.0 changes name of logger, warn if config is detected for old
-    # name and not new name
-    for old_name in ("flask.app", "flask"):
-        old_logger = logging.getLogger(old_name)
-
-        if _has_config(old_logger) and not _has_config(logger):
-            warnings.warn(
-                "'app.logger' is named '{name}' for this application,"
-                " but configuration was found for '{old_name}', which"
-                " no longer has an effect. The logging configuration"
-                " should be moved to '{name}'.".format(name=app.name, old_name=old_name)
-            )
-            break
 
     if app.debug and not logger.level:
         logger.setLevel(logging.DEBUG)

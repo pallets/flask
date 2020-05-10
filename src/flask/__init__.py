@@ -1,23 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-    flask
-    ~~~~~
-
-    A microframework based on Werkzeug.  It's extensively documented
-    and follows best practice patterns.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
-# utilities we import from Werkzeug and Jinja2 that are unused
-# in the module but are exported as public interface.
-from jinja2 import escape
-from jinja2 import Markup
+from markupsafe import escape
+from markupsafe import Markup
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 from . import json
-from ._compat import json_available
 from .app import Flask
 from .app import Request
 from .app import Response
@@ -57,4 +43,4 @@ from .signals import template_rendered
 from .templating import render_template
 from .templating import render_template_string
 
-__version__ = "1.1.2"
+__version__ = "2.0.0.dev"

@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.signals
-    ~~~~~~~~~~~~~
-
-    Implements signals based on blinker if available, otherwise
-    falls silently back to a noop.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 try:
     from blinker import Namespace
 
@@ -16,11 +5,11 @@ try:
 except ImportError:
     signals_available = False
 
-    class Namespace(object):
+    class Namespace:
         def signal(self, name, doc=None):
             return _FakeSignal(name, doc)
 
-    class _FakeSignal(object):
+    class _FakeSignal:
         """If blinker is unavailable, create a fake class with the same
         interface that allows sending of signals but will fail with an
         error on anything else.  Instead of doing anything on send, it

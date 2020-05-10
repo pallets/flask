@@ -1,50 +1,50 @@
-.. _quickstart:
-
 Quickstart
 ==========
 
-Eager to get started?  This page gives a good introduction to Flask.  It
-assumes you already have Flask installed.  If you do not, head over to the
-:ref:`installation` section.
+Eager to get started? This page gives a good introduction to Flask.
+Follow :doc:`installation` to set up a project and install Flask first.
 
 
 A Minimal Application
 ---------------------
 
-A minimal Flask application looks something like this::
+A minimal Flask application looks something like this:
+
+.. code-block:: python
 
     from flask import Flask
+
     app = Flask(__name__)
 
-    @app.route('/')
+    @app.route("/")
     def hello_world():
-        return 'Hello, World!'
+        return "<p>Hello, World!</p>"
 
 So what did that code do?
 
-1. First we imported the :class:`~flask.Flask` class.  An instance of this
-   class will be our WSGI application.
-2. Next we create an instance of this class. The first argument is the name of
-   the application's module or package.  If you are using a single module (as
-   in this example), you should use ``__name__`` because depending on if it's
-   started as application or imported as module the name will be different
-   (``'__main__'`` versus the actual import name). This is needed so that
-   Flask knows where to look for templates, static files, and so on. For more
-   information have a look at the :class:`~flask.Flask` documentation.
-3. We then use the :meth:`~flask.Flask.route` decorator to tell Flask what URL
-   should trigger our function.
-4. The function is given a name which is also used to generate URLs for that
-   particular function, and returns the message we want to display in the
-   user's browser.
+1.  First we imported the :class:`~flask.Flask` class. An instance of
+    this class will be our WSGI application.
+2.  Next we create an instance of this class. The first argument is the
+    name of the application's module or package. ``__name__`` is a
+    convenient shortcut for this that is appropriate for most cases.
+    This is needed so that Flask knows where to look for resources such
+    as templates and static files.
+3.  We then use the :meth:`~flask.Flask.route` decorator to tell Flask
+    what URL should trigger our function.
+4.  The function returns the message we want to display in the user's
+    browser. The default content type is HTML, so HTML in the string
+    will be rendered by the browser.
 
-Just save it as :file:`hello.py` or something similar. Make sure to not call
+Save it as :file:`hello.py` or something similar. Make sure to not call
 your application :file:`flask.py` because this would conflict with Flask
 itself.
 
-To run the application you can either use the :command:`flask` command or
-python's ``-m`` switch with Flask.  Before you can do that you need
+To run the application, use the :command:`flask` command or
+:command:`python -m flask`. Before you can do that you need
 to tell your terminal the application to work with by exporting the
-``FLASK_APP`` environment variable::
+``FLASK_APP`` environment variable:
+
+.. code-block:: text
 
     $ export FLASK_APP=hello.py
     $ flask run
@@ -59,15 +59,9 @@ And on PowerShell::
 
     PS C:\path\to\app> $env:FLASK_APP = "hello.py"
 
-Alternatively you can use :command:`python -m flask`::
-
-    $ export FLASK_APP=hello.py
-    $ python -m flask run
-     * Running on http://127.0.0.1:5000/
-
-This launches a very simple builtin server, which is good enough for testing
-but probably not what you want to use in production. For deployment options see
-:ref:`deployment`.
+This launches a very simple builtin server, which is good enough for
+testing but probably not what you want to use in production. For
+deployment options see :doc:`deploying/index`.
 
 Now head over to http://127.0.0.1:5000/, and you should see your hello
 world greeting.
@@ -103,8 +97,8 @@ Old Version of Flask
 Versions of Flask older than 0.11 use to have different ways to start the
 application.  In short, the :command:`flask` command did not exist, and
 neither did :command:`python -m flask`.  In that case you have two options:
-either upgrade to newer Flask versions or have a look at the :ref:`server`
-docs to see the alternative method for running a server.
+either upgrade to newer Flask versions or have a look at :doc:`/server`
+to see the alternative method for running a server.
 
 Invalid Import Name
 ```````````````````
@@ -122,7 +116,7 @@ The most common reason is a typo or because you did not actually create an
 Debug Mode
 ----------
 
-(Want to just log errors and stack traces? See :ref:`application-errors`)
+(Want to just log errors and stack traces? See :doc:`errorhandling`)
 
 The :command:`flask` script is nice to start a local development server, but
 you would have to restart it manually after each change to your code.
@@ -148,7 +142,7 @@ This does the following things:
 You can also control debug mode separately from the environment by
 exporting ``FLASK_DEBUG=1``.
 
-There are more parameters that are explained in the :ref:`server` docs.
+There are more parameters that are explained in :doc:`/server`.
 
 .. admonition:: Attention
 
@@ -170,6 +164,34 @@ documentation`_.
 .. _Werkzeug documentation: https://werkzeug.palletsprojects.com/debug/#using-the-debugger
 
 Have another debugger in mind? See :ref:`working-with-debuggers`.
+
+
+HTML Escaping
+-------------
+
+When returning HTML (the default response type in Flask), any
+user-provided values rendered in the output must be escaped to protect
+from injection attacks. HTML templates rendered with Jinja, introduced
+later, will do this automatically.
+
+:func:`~markupsafe.escape`, shown here, can be used manually. It is
+omitted in most examples for brevity, but you should always be aware of
+how you're using untrusted data.
+
+.. code-block:: python
+
+    from markupsafe import escape
+
+    @app.route("/<name>")
+    def hello(name):
+        return f"Hello, {escape(name)}!"
+
+If a user managed to submit the name ``<script>alert("bad")</script>``,
+escaping causes it to be rendered as text, rather than running the
+script in the user's browser.
+
+``<name>`` in the route captures a value from the URL and passes it to
+the view function. These variable rules are explained below.
 
 
 Routing
@@ -205,17 +227,17 @@ of the argument like ``<converter:variable_name>``. ::
     @app.route('/user/<username>')
     def show_user_profile(username):
         # show the user profile for that user
-        return 'User %s' % escape(username)
+        return f'User {username}'
 
     @app.route('/post/<int:post_id>')
     def show_post(post_id):
         # show the post with the given id, the id is an integer
-        return 'Post %d' % post_id
+        return f'Post {post_id}'
 
     @app.route('/path/<path:subpath>')
     def show_subpath(subpath):
         # show the subpath after /path/
-        return 'Subpath %s' % escape(subpath)
+        return f'Subpath {subpath}'
 
 Converter types:
 
@@ -226,6 +248,7 @@ Converter types:
 ``path``   like ``string`` but also accepts slashes
 ``uuid``   accepts UUID strings
 ========== ==========================================
+
 
 Unique URLs / Redirection Behavior
 ``````````````````````````````````
@@ -268,8 +291,7 @@ Why would you want to build URLs using the URL reversing function
 1. Reversing is often more descriptive than hard-coding the URLs.
 2. You can change your URLs in one go instead of needing to remember to
    manually change hard-coded URLs.
-3. URL building handles escaping of special characters and Unicode data
-   transparently.
+3. URL building handles escaping of special characters transparently.
 4. The generated paths are always absolute, avoiding unexpected behavior
    of relative paths in browsers.
 5. If your application is placed outside the URL root, for example, in
@@ -283,10 +305,7 @@ Python shell. See :ref:`context-locals`.
 
 .. code-block:: python
 
-    from flask import Flask, url_for
-    from markupsafe import escape
-
-    app = Flask(__name__)
+    from flask import url_for
 
     @app.route('/')
     def index():
@@ -298,7 +317,7 @@ Python shell. See :ref:`context-locals`.
 
     @app.route('/user/<username>')
     def profile(username):
-        return '{}\'s profile'.format(escape(username))
+        return f'{username}\'s profile'
 
     with app.test_request_context():
         print(url_for('index'))
@@ -359,7 +378,7 @@ Rendering Templates
 Generating HTML from within Python is not fun, and actually pretty
 cumbersome because you have to do the HTML escaping on your own to keep
 the application secure.  Because of that Flask configures the `Jinja2
-<http://jinja.pocoo.org/>`_ template engine for you automatically.
+<https://palletsprojects.com/p/jinja/>`_ template engine for you automatically.
 
 To render a template you can use the :func:`~flask.render_template`
 method.  All you have to do is provide the name of the template and the
@@ -392,7 +411,7 @@ package it's actually inside your package:
 
 For templates you can use the full power of Jinja2 templates.  Head over
 to the official `Jinja2 Template Documentation
-<http://jinja.pocoo.org/docs/templates/>`_ for more information.
+<https://jinja.palletsprojects.com/templates/>`_ for more information.
 
 Here is an example template:
 
@@ -411,26 +430,26 @@ Inside templates you also have access to the :class:`~flask.request`,
 as well as the :func:`~flask.get_flashed_messages` function.
 
 Templates are especially useful if inheritance is used.  If you want to
-know how that works, head over to the :ref:`template-inheritance` pattern
-documentation.  Basically template inheritance makes it possible to keep
-certain elements on each page (like header, navigation and footer).
+know how that works, see :doc:`patterns/templateinheritance`. Basically
+template inheritance makes it possible to keep certain elements on each
+page (like header, navigation and footer).
 
 Automatic escaping is enabled, so if ``name`` contains HTML it will be escaped
 automatically.  If you can trust a variable and you know that it will be
 safe HTML (for example because it came from a module that converts wiki
 markup to HTML) you can mark it as safe by using the
-:class:`~jinja2.Markup` class or by using the ``|safe`` filter in the
+:class:`~markupsafe.Markup` class or by using the ``|safe`` filter in the
 template.  Head over to the Jinja 2 documentation for more examples.
 
 Here is a basic introduction to how the :class:`~markupsafe.Markup` class works::
 
     >>> from markupsafe import Markup
     >>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
-    Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
+    Markup('<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
     >>> Markup.escape('<blink>hacker</blink>')
-    Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
+    Markup('&lt;blink&gt;hacker&lt;/blink&gt;')
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-    u'Marked up \xbb HTML'
+    'Marked up \xbb HTML'
 
 .. versionchanged:: 0.5
 
@@ -440,9 +459,8 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
    autoescaping disabled.
 
 .. [#] Unsure what that :class:`~flask.g` object is? It's something in which
-   you can store information for your own needs, check the documentation of
-   that object (:class:`~flask.g`) and the :ref:`sqlite3` for more
-   information.
+   you can store information for your own needs. See the documentation
+   for :class:`flask.g` and :doc:`patterns/sqlite3`.
 
 
 Accessing Request Data
@@ -497,8 +515,6 @@ test request so that you can interact with it.  Here is an example::
 
 The other possibility is passing a whole WSGI environment to the
 :meth:`~flask.Flask.request_context` method::
-
-    from flask import request
 
     with app.request_context(environ):
         assert request.method == 'POST'
@@ -585,17 +601,16 @@ of the client to store the file on the server, pass it through the
 :func:`~werkzeug.utils.secure_filename` function that
 Werkzeug provides for you::
 
-    from flask import request
     from werkzeug.utils import secure_filename
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         if request.method == 'POST':
-            f = request.files['the_file']
-            f.save('/var/www/uploads/' + secure_filename(f.filename))
+            file = request.files['the_file']
+            file.save(f"/var/www/uploads/{secure_filename(f.filename)}")
         ...
 
-For some better examples, checkout the :ref:`uploading-files` pattern.
+For some better examples, see :doc:`patterns/fileuploads`.
 
 Cookies
 ```````
@@ -635,7 +650,7 @@ the :meth:`~flask.make_response` function and then modify it.
 
 Sometimes you might want to set a cookie at a point where the response
 object does not exist yet.  This is possible by utilizing the
-:ref:`deferred-callbacks` pattern.
+:doc:`patterns/deferredcallbacks` pattern.
 
 For this also see :ref:`about-responses`.
 
@@ -675,7 +690,7 @@ Note the ``404`` after the :func:`~flask.render_template` call.  This
 tells Flask that the status code of that page should be 404 which means
 not found.  By default 200 is assumed which translates to: all went well.
 
-See :ref:`error-handlers` for more details.
+See :doc:`errorhandling` for more details.
 
 .. _about-responses:
 
@@ -709,6 +724,8 @@ you can use the :func:`~flask.make_response` function.
 
 Imagine you have a view like this::
 
+    from flask import render_template
+
     @app.errorhandler(404)
     def not_found(error):
         return render_template('error.html'), 404
@@ -716,6 +733,8 @@ Imagine you have a view like this::
 You just need to wrap the return expression with
 :func:`~flask.make_response` and get the response object to modify it, then
 return it::
+
+    from flask import make_response
 
     @app.errorhandler(404)
     def not_found(error):
@@ -750,6 +769,8 @@ more complex applications.
 
 .. code-block:: python
 
+    from flask import jsonify
+
     @app.route("/users")
     def users_api():
         users = get_all_users()
@@ -771,10 +792,7 @@ unless they know the secret key used for signing.
 In order to use sessions you have to set a secret key.  Here is how
 sessions work::
 
-    from flask import Flask, session, redirect, url_for, request
-    from markupsafe import escape
-
-    app = Flask(__name__)
+    from flask import session
 
     # Set the secret key to some random bytes. Keep this really secret!
     app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -782,7 +800,7 @@ sessions work::
     @app.route('/')
     def index():
         if 'username' in session:
-            return 'Logged in as %s' % escape(session['username'])
+            return f'Logged in as {session["username"]}'
         return 'You are not logged in'
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -802,9 +820,6 @@ sessions work::
         # remove the username from the session if it's there
         session.pop('username', None)
         return redirect(url_for('index'))
-
-The :func:`~flask.escape` mentioned here does escaping for you if you are
-not using the template engine (as in this example).
 
 .. admonition:: How to generate good secret keys
 
@@ -839,8 +854,8 @@ template to expose the message.
 
 To flash a message use the :func:`~flask.flash` method, to get hold of the
 messages you can use :func:`~flask.get_flashed_messages` which is also
-available in the templates.  Check out the :ref:`message-flashing-pattern`
-for a full example.
+available in the templates. See :doc:`patterns/flashing` for a full
+example.
 
 Logging
 -------
@@ -869,7 +884,8 @@ The attached :attr:`~flask.Flask.logger` is a standard logging
 :class:`~logging.Logger`, so head over to the official :mod:`logging`
 docs for more information.
 
-Read more on :ref:`application-errors`.
+See :doc:`errorhandling`.
+
 
 Hooking in WSGI Middleware
 --------------------------
@@ -895,9 +911,9 @@ Extensions are packages that help you accomplish common tasks. For
 example, Flask-SQLAlchemy provides SQLAlchemy support that makes it simple
 and easy to use with Flask.
 
-For more on Flask extensions, have a look at :ref:`extensions`.
+For more on Flask extensions, see :doc:`extensions`.
 
 Deploying to a Web Server
 -------------------------
 
-Ready to deploy your new Flask app? Go to :ref:`deployment`.
+Ready to deploy your new Flask app? See :doc:`deploying/index`.

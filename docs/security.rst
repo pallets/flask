@@ -5,7 +5,7 @@ Web applications usually face all kinds of security problems and it's very
 hard to get everything right.  Flask tries to solve a few of these things
 for you, but there are a couple more you have to take care of yourself.
 
-.. _xss:
+.. _security-xss:
 
 Cross-Site Scripting (XSS)
 --------------------------
@@ -101,7 +101,7 @@ compare the two tokens and ensure they are equal.
 Why does Flask not do that for you?  The ideal place for this to happen is
 the form validation framework, which does not exist in Flask.
 
-.. _json-security:
+.. _security-json:
 
 JSON Security
 -------------

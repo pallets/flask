@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.templating
-    ~~~~~~~~~~~~~~~~
-
-    Template functionality
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import logging
 
 import pytest
@@ -415,18 +405,18 @@ def test_template_loader_debugging(test_apps, monkeypatch):
         def handle(self, record):
             called.append(True)
             text = str(record.msg)
-            assert '1: trying loader of application "blueprintapp"' in text
+            assert "1: trying loader of application 'blueprintapp'" in text
             assert (
-                '2: trying loader of blueprint "admin" ' "(blueprintapp.apps.admin)"
+                "2: trying loader of blueprint 'admin' (blueprintapp.apps.admin)"
             ) in text
             assert (
-                'trying loader of blueprint "frontend" ' "(blueprintapp.apps.frontend)"
+                "trying loader of blueprint 'frontend' (blueprintapp.apps.frontend)"
             ) in text
             assert "Error: the template could not be found" in text
             assert (
-                "looked up from an endpoint that belongs to " 'the blueprint "frontend"'
+                "looked up from an endpoint that belongs to the blueprint 'frontend'"
             ) in text
-            assert "See http://flask.pocoo.org/docs/blueprints/#templates" in text
+            assert "See https://flask.palletsprojects.com/blueprints/#templates" in text
 
     with app.test_client() as c:
         monkeypatch.setitem(app.config, "EXPLAIN_TEMPLATE_LOADING", True)

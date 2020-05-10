@@ -1,4 +1,4 @@
-include LICENSE
+include LICENSE.rst
 graft js_example/templates
 graft tests
 global-exclude *.pyc

@@ -1,5 +1,3 @@
-.. _message-flashing-pattern:
-
 Message Flashing
 ================
 
@@ -103,7 +101,7 @@ error messages could be displayed with a red background.
 To flash a message with a different category, just use the second argument
 to the :func:`~flask.flash` function::
 
-    flash(u'Invalid password provided', 'error')
+    flash('Invalid password provided', 'error')
 
 Inside the template you then have to tell the
 :func:`~flask.get_flashed_messages` function to also return the

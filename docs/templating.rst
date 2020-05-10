@@ -1,5 +1,3 @@
-.. _templates:
-
 Templates
 =========
 
@@ -11,7 +9,7 @@ An extension can depend on Jinja2 being present.
 This section only gives a very quick introduction into how Jinja2
 is integrated into Flask.  If you want information on the template
 engine's syntax itself, head over to the official `Jinja2 Template
-Documentation <http://jinja.pocoo.org/docs/templates/>`_ for
+Documentation <https://jinja.palletsprojects.com/templates/>`_ for
 more information.
 
 Jinja Setup
@@ -139,7 +137,7 @@ carry specific meanings in documents on their own you have to replace them
 by so called "entities" if you want to use them for text.  Not doing so
 would not only cause user frustration by the inability to use these
 characters in text, but can also lead to security problems.  (see
-:ref:`xss`)
+:ref:`security-xss`)
 
 Sometimes however you will need to disable autoescaping in templates.
 This can be the case if you want to explicitly inject HTML into pages, for
@@ -222,8 +220,8 @@ functions)::
 
     @app.context_processor
     def utility_processor():
-        def format_price(amount, currency=u'€'):
-            return u'{0:.2f}{1}'.format(amount, currency)
+        def format_price(amount, currency="€"):
+            return f"{amount:.2f}{currency}"
         return dict(format_price=format_price)
 
 The context processor above makes the `format_price` function available to all

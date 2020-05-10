@@ -1,7 +1,5 @@
 .. currentmodule:: flask
 
-.. _cli:
-
 Command Line Interface
 ======================
 
@@ -77,12 +75,8 @@ Within the given import, the command looks for an application instance named
 found, the command looks for a factory function named ``create_app`` or
 ``make_app`` that returns an instance.
 
-When calling an application factory, if the factory takes an argument named
-``script_info``, then the :class:`~cli.ScriptInfo` instance is passed as a
-keyword argument. If the application factory takes only one argument and no
-parentheses follow the factory name, the :class:`~cli.ScriptInfo` instance
-is passed as a positional argument. If parentheses follow the factory name,
-their contents are parsed as Python literals and passes as arguments to the
+If parentheses follow the factory name, their contents are parsed as
+Python literals and passed as arguments and keyword arguments to the
 function. This means that strings must still be in quotes.
 
 
@@ -99,7 +93,7 @@ replaces the :meth:`Flask.run` method in most cases. ::
 .. warning:: Do not use this command to run your application in production.
     Only use the development server during development. The development server
     is provided for convenience, but is not designed to be particularly secure,
-    stable, or efficient. See :ref:`deployment` for how to run in production.
+    stable, or efficient. See :doc:`/deploying/index` for how to run in production.
 
 
 Open a Shell

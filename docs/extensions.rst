@@ -1,5 +1,3 @@
-.. _extensions:
-
 Extensions
 ==========
 

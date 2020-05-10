@@ -1,16 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.subclassing
-    ~~~~~~~~~~~~~~~~~
+from io import StringIO
 
-    Test that certain behavior of flask can be customized by
-    subclasses.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import flask
-from flask._compat import StringIO
 
 
 def test_suppressed_exception_logging():

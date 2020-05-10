@@ -1,5 +1,3 @@
-.. _config:
-
 Configuration Handling
 ======================
 
@@ -161,8 +159,8 @@ The following configuration values are used internally by Flask:
 
     A secret key that will be used for securely signing the session cookie
     and can be used for any other security related needs by extensions or your
-    application. It should be a long random string of bytes, although unicode
-    is accepted too. For example, copy the output of this to your config::
+    application. It should be a long random ``bytes`` or ``str``. For
+    example, copy the output of this to your config::
 
         $ python -c 'import os; print(os.urandom(16))'
         b'_5#y2L"F4Q8z\n\xec]/'
@@ -278,7 +276,7 @@ The following configuration values are used internally by Flask:
     Inform the application what path it is mounted under by the application /
     web server.  This is used for generating URLs outside the context of a
     request (inside a request, the dispatcher is responsible for setting
-    ``SCRIPT_NAME`` instead; see :ref:`Application Dispatching <app-dispatch>`
+    ``SCRIPT_NAME`` instead; see :doc:`/patterns/appdispatch`
     for examples of dispatch configuration).
 
     Will be used for the session cookie path if ``SESSION_COOKIE_PATH`` is not
@@ -302,10 +300,10 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: JSON_AS_ASCII
 
-    Serialize objects to ASCII-encoded JSON. If this is disabled, the JSON
-    will be returned as a Unicode string, or encoded as ``UTF-8`` by
-    ``jsonify``. This has security implications when rendering the JSON into
-    JavaScript in templates, and should typically remain enabled.
+    Serialize objects to ASCII-encoded JSON. If this is disabled, the
+    JSON returned from ``jsonify`` will contain Unicode characters. This
+    has security implications when rendering the JSON into JavaScript in
+    templates, and should typically remain enabled.
 
     Default: ``True``
 
@@ -393,13 +391,13 @@ The following configuration values are used internally by Flask:
     Added :data:`MAX_COOKIE_SIZE` to control a warning from Werkzeug.
 
 
-Configuring from Files
-----------------------
+Configuring from Python Files
+-----------------------------
 
 Configuration becomes more useful if you can store it in a separate file,
 ideally located outside the actual application package. This makes
 packaging and distributing your application possible via various package
-handling tools (:ref:`distribute-deployment`) and finally modifying the
+handling tools (:doc:`/patterns/distribute`) and finally modifying the
 configuration file afterwards.
 
 So a common pattern is this::
@@ -439,6 +437,26 @@ the ability to access the configuration when starting up.  There are other
 methods on the config object as well to load from individual files.  For a
 complete reference, read the :class:`~flask.Config` object's
 documentation.
+
+
+Configuring from Data Files
+---------------------------
+
+It is also possible to load configuration from a file in a format of
+your choice using :meth:`~flask.Config.from_file`. For example to load
+from a TOML file:
+
+.. code-block:: python
+
+    import toml
+    app.config.from_file("config.toml", load=toml.load)
+
+Or from a JSON file:
+
+.. code-block:: python
+
+    import json
+    app.config.from_file("config.json", load=json.load)
 
 
 Configuring from Environment Variables
@@ -576,8 +594,8 @@ your configuration classes::
         DB_SERVER = '192.168.1.56'
 
         @property
-        def DATABASE_URI(self):         # Note: all caps
-            return 'mysql://user@{}/foo'.format(self.DB_SERVER)
+        def DATABASE_URI(self):  # Note: all caps
+            return f"mysql://user@{self.DB_SERVER}/foo"
 
     class ProductionConfig(Config):
         """Uses production database server."""
@@ -608,7 +626,7 @@ your configuration files.  However here a list of good recommendations:
 -   Use a tool like `fabric`_ in production to push code and
     configurations separately to the production server(s).  For some
     details about how to do that, head over to the
-    :ref:`fabric-deployment` pattern.
+    :doc:`/patterns/fabric` pattern.
 
 .. _fabric: https://www.fabfile.org/
 
@@ -658,7 +676,7 @@ locations are used:
 
 -   Installed module or package::
 
-        $PREFIX/lib/python2.X/site-packages/myapp
+        $PREFIX/lib/pythonX.Y/site-packages/myapp
         $PREFIX/var/myapp-instance
 
     ``$PREFIX`` is the prefix of your Python installation.  This can be

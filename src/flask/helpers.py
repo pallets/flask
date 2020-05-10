@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.helpers
-    ~~~~~~~~~~~~~
-
-    Implements various helpers.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import io
 import mimetypes
 import os
@@ -30,10 +20,6 @@ from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 from werkzeug.wsgi import wrap_file
 
-from ._compat import fspath
-from ._compat import PY2
-from ._compat import string_types
-from ._compat import text_type
 from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .globals import current_app
@@ -159,8 +145,7 @@ def stream_with_context(generator_or_function):
             # don't need that because they are closed on their destruction
             # automatically.
             try:
-                for item in gen:
-                    yield item
+                yield from gen
             finally:
                 if hasattr(gen, "close"):
                     gen.close()
@@ -236,7 +221,7 @@ def url_for(endpoint, **values):
 
         url_for('.index')
 
-    For more information, head over to the :ref:`Quickstart <url-building>`.
+    See :ref:`url-building`.
 
     Configuration values ``APPLICATION_ROOT`` and ``SERVER_NAME`` are only used when
     generating URLs outside of a request context.
@@ -293,9 +278,9 @@ def url_for(endpoint, **values):
     :param _scheme: a string specifying the desired URL scheme. The `_external`
       parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
       behavior uses the same scheme as the current request, or
-      ``PREFERRED_URL_SCHEME`` from the :ref:`app configuration <config>` if no
-      request context is available. As of Werkzeug 0.10, this also can be set
-      to an empty string to build protocol-relative URLs.
+      :data:`PREFERRED_URL_SCHEME` if no request context is available.
+      This also can be set to an empty string to build protocol-relative
+      URLs.
     :param _anchor: if provided this is added as anchor to the URL.
     :param _method: if provided this explicitly specifies an HTTP method.
     """
@@ -317,7 +302,7 @@ def url_for(endpoint, **values):
 
         if endpoint[:1] == ".":
             if blueprint_name is not None:
-                endpoint = blueprint_name + endpoint
+                endpoint = f"{blueprint_name}{endpoint}"
             else:
                 endpoint = endpoint[1:]
 
@@ -370,7 +355,7 @@ def url_for(endpoint, **values):
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
-        rv += "#" + url_quote(anchor)
+        rv += f"#{url_quote(anchor)}"
     return rv
 
 
@@ -443,7 +428,7 @@ def get_flashed_messages(with_categories=False, category_filter=()):
     * `category_filter` filters the messages down to only those matching the
       provided categories.
 
-    See :ref:`message-flashing-pattern` for examples.
+    See :doc:`/patterns/flashing` for examples.
 
     .. versionchanged:: 0.3
        `with_categories` parameter added.
@@ -489,6 +474,11 @@ def send_file(
     guessing requires a `filename` or an `attachment_filename` to be
     provided.
 
+    When passing a file-like object instead of a filename, only binary
+    mode is supported (``open(filename, "rb")``, :class:`~io.BytesIO`,
+    etc.). Text mode files and :class:`~io.StringIO` will raise a
+    :exc:`ValueError`.
+
     ETags will also be attached automatically if a `filename` is provided. You
     can turn this off by setting `add_etags=False`.
 
@@ -499,53 +489,56 @@ def send_file(
     Please never pass filenames to this function from user sources;
     you should use :func:`send_from_directory` instead.
 
-    .. versionadded:: 0.2
+    .. versionchanged:: 2.0
+        Passing a file-like object that inherits from
+        :class:`~io.TextIOBase` will raise a :exc:`ValueError` rather
+        than sending an empty file.
 
-    .. versionadded:: 0.5
-       The `add_etags`, `cache_timeout` and `conditional` parameters were
-       added.  The default behavior is now to attach etags.
+    .. versionchanged:: 1.1
+        ``filename`` may be a :class:`~os.PathLike` object.
 
-    .. versionchanged:: 0.7
-       mimetype guessing and etag support for file objects was
-       deprecated because it was unreliable.  Pass a filename if you are
-       able to, otherwise attach an etag yourself.  This functionality
-       will be removed in Flask 1.0
+    .. versionchanged:: 1.1
+        Passing a :class:`~io.BytesIO` object supports range requests.
 
-    .. versionchanged:: 0.9
-       cache_timeout pulls its default from application config, when None.
-
-    .. versionchanged:: 0.12
-       The filename is no longer automatically inferred from file objects. If
-       you want to use automatic mimetype and etag support, pass a filepath via
-       `filename_or_fp` or `attachment_filename`.
-
-    .. versionchanged:: 0.12
-       The `attachment_filename` is preferred over `filename` for MIME-type
-       detection.
+    .. versionchanged:: 1.0.3
+        Filenames are encoded with ASCII instead of Latin-1 for broader
+        compatibility with WSGI servers.
 
     .. versionchanged:: 1.0
         UTF-8 filenames, as specified in `RFC 2231`_, are supported.
 
     .. _RFC 2231: https://tools.ietf.org/html/rfc2231#section-4
 
-    .. versionchanged:: 1.0.3
-        Filenames are encoded with ASCII instead of Latin-1 for broader
-        compatibility with WSGI servers.
+    .. versionchanged:: 0.12
+       The filename is no longer automatically inferred from file
+       objects. If you want to use automatic MIME and etag support, pass
+       a filename via ``filename_or_fp`` or ``attachment_filename``.
 
-    .. versionchanged:: 1.1
-        Filename may be a :class:`~os.PathLike` object.
+    .. versionchanged:: 0.12
+       ``attachment_filename`` is preferred over ``filename`` for MIME
+       detection.
 
-    .. versionadded:: 1.1
-        Partial content supports :class:`~io.BytesIO`.
+    .. versionchanged:: 0.9
+       ``cache_timeout`` defaults to
+       :meth:`Flask.get_send_file_max_age`.
 
-    :param filename_or_fp: the filename of the file to send.
-                           This is relative to the :attr:`~Flask.root_path`
-                           if a relative path is specified.
-                           Alternatively a file object might be provided in
-                           which case ``X-Sendfile`` might not work and fall
-                           back to the traditional method.  Make sure that the
-                           file pointer is positioned at the start of data to
-                           send before calling :func:`send_file`.
+    .. versionchanged:: 0.7
+       MIME guessing and etag support for file-like objects was
+       deprecated because it was unreliable. Pass a filename if you are
+       able to, otherwise attach an etag yourself. This functionality
+       will be removed in Flask 1.0.
+
+    .. versionadded:: 0.5
+       The ``add_etags``, ``cache_timeout`` and ``conditional``
+       parameters were added. The default behavior is to add etags.
+
+    .. versionadded:: 0.2
+
+    :param filename_or_fp: The filename of the file to send, relative to
+        :attr:`~Flask.root_path` if a relative path is specified.
+        Alternatively, a file-like object opened in binary mode. Make
+        sure the file pointer is seeked to the start of the data.
+        ``X-Sendfile`` will only be used with filenames.
     :param mimetype: the mimetype of the file if provided. If a file path is
                      given, auto detection happens as fallback, otherwise an
                      error will be raised.
@@ -568,9 +561,9 @@ def send_file(
     fsize = None
 
     if hasattr(filename_or_fp, "__fspath__"):
-        filename_or_fp = fspath(filename_or_fp)
+        filename_or_fp = os.fspath(filename_or_fp)
 
-    if isinstance(filename_or_fp, string_types):
+    if isinstance(filename_or_fp, str):
         filename = filename_or_fp
         if not os.path.isabs(filename):
             filename = os.path.join(current_app.root_path, filename)
@@ -600,17 +593,18 @@ def send_file(
         if attachment_filename is None:
             raise TypeError("filename unavailable, required for sending as attachment")
 
-        if not isinstance(attachment_filename, text_type):
+        if not isinstance(attachment_filename, str):
             attachment_filename = attachment_filename.decode("utf-8")
 
         try:
             attachment_filename = attachment_filename.encode("ascii")
         except UnicodeEncodeError:
+            quoted = url_quote(attachment_filename, safe="")
             filenames = {
                 "filename": unicodedata.normalize("NFKD", attachment_filename).encode(
                     "ascii", "ignore"
                 ),
-                "filename*": "UTF-8''%s" % url_quote(attachment_filename, safe=b""),
+                "filename*": f"UTF-8''{quoted}",
             }
         else:
             filenames = {"filename": attachment_filename}
@@ -620,24 +614,24 @@ def send_file(
     if current_app.use_x_sendfile and filename:
         if file is not None:
             file.close()
+
         headers["X-Sendfile"] = filename
         fsize = os.path.getsize(filename)
-        headers["Content-Length"] = fsize
         data = None
     else:
         if file is None:
             file = open(filename, "rb")
             mtime = os.path.getmtime(filename)
             fsize = os.path.getsize(filename)
-            headers["Content-Length"] = fsize
         elif isinstance(file, io.BytesIO):
-            try:
-                fsize = file.getbuffer().nbytes
-            except AttributeError:
-                # Python 2 doesn't have getbuffer
-                fsize = len(file.getvalue())
-            headers["Content-Length"] = fsize
+            fsize = file.getbuffer().nbytes
+        elif isinstance(file, io.TextIOBase):
+            raise ValueError("Files must be opened in binary mode or use BytesIO.")
+
         data = wrap_file(request.environ, file)
+
+    if fsize is not None:
+        headers["Content-Length"] = fsize
 
     rv = current_app.response_class(
         data, mimetype=mimetype, headers=headers, direct_passthrough=True
@@ -659,23 +653,19 @@ def send_file(
         from warnings import warn
 
         try:
-            rv.set_etag(
-                "%s-%s-%s"
-                % (
-                    os.path.getmtime(filename),
-                    os.path.getsize(filename),
-                    adler32(
-                        filename.encode("utf-8")
-                        if isinstance(filename, text_type)
-                        else filename
-                    )
-                    & 0xFFFFFFFF,
+            check = (
+                adler32(
+                    filename.encode("utf-8") if isinstance(filename, str) else filename
                 )
+                & 0xFFFFFFFF
+            )
+            rv.set_etag(
+                f"{os.path.getmtime(filename)}-{os.path.getsize(filename)}-{check}"
             )
         except OSError:
             warn(
-                "Access %s failed, maybe it does not exist, so ignore etags in "
-                "headers" % filename,
+                f"Access {filename} failed, maybe it does not exist, so"
+                " ignore etags in headers",
                 stacklevel=2,
             )
 
@@ -757,8 +747,8 @@ def send_from_directory(directory, filename, **options):
     :param options: optional keyword arguments that are directly
                     forwarded to :func:`send_file`.
     """
-    filename = fspath(filename)
-    directory = fspath(directory)
+    filename = os.fspath(filename)
+    directory = os.fspath(directory)
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
@@ -791,8 +781,6 @@ def get_root_path(import_name):
     if loader is None or import_name == "__main__":
         return os.getcwd()
 
-    # For .egg, zipimporter does not have get_filename until Python 2.7.
-    # Some other loaders might exhibit the same behavior.
     if hasattr(loader, "get_filename"):
         filepath = loader.get_filename(import_name)
     else:
@@ -806,13 +794,12 @@ def get_root_path(import_name):
         # first module that is contained in our package.
         if filepath is None:
             raise RuntimeError(
-                "No root path can be found for the provided "
-                'module "%s".  This can happen because the '
-                "module came from an import hook that does "
-                "not provide file name information or because "
-                "it's a namespace package.  In this case "
-                "the root path needs to be explicitly "
-                "provided." % import_name
+                "No root path can be found for the provided module"
+                f" {import_name!r}. This can happen because the module"
+                " came from an import hook that does not provide file"
+                " name information or because it's a namespace package."
+                " In this case the root path needs to be explicitly"
+                " provided."
             )
 
     # filepath is import_name.py for a module, or __init__.py for a package.
@@ -823,6 +810,7 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     """Given the loader that loaded a module and the module this function
     attempts to figure out if the given module is actually a package.
     """
+    cls = type(loader)
     # If the loader can tell us if something is a package, we can
     # directly ask the loader.
     if hasattr(loader, "is_package"):
@@ -830,49 +818,41 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     # importlib's namespace loaders do not have this functionality but
     # all the modules it loads are packages, so we can take advantage of
     # this information.
-    elif (
-        loader.__class__.__module__ == "_frozen_importlib"
-        and loader.__class__.__name__ == "NamespaceLoader"
-    ):
+    elif cls.__module__ == "_frozen_importlib" and cls.__name__ == "NamespaceLoader":
         return True
     # Otherwise we need to fail with an error that explains what went
     # wrong.
     raise AttributeError(
-        (
-            "%s.is_package() method is missing but is required by Flask of "
-            "PEP 302 import hooks.  If you do not use import hooks and "
-            "you encounter this error please file a bug against Flask."
-        )
-        % loader.__class__.__name__
+        f"{cls.__name__}.is_package() method is missing but is required"
+        " for PEP 302 import hooks."
     )
 
 
 def _find_package_path(root_mod_name):
     """Find the path where the module's root exists in"""
-    if sys.version_info >= (3, 4):
-        import importlib.util
+    import importlib.util
 
-        try:
-            spec = importlib.util.find_spec(root_mod_name)
-            if spec is None:
-                raise ValueError("not found")
-        # ImportError: the machinery told us it does not exist
-        # ValueError:
-        #    - the module name was invalid
-        #    - the module name is __main__
-        #    - *we* raised `ValueError` due to `spec` being `None`
-        except (ImportError, ValueError):
-            pass  # handled below
+    try:
+        spec = importlib.util.find_spec(root_mod_name)
+        if spec is None:
+            raise ValueError("not found")
+    # ImportError: the machinery told us it does not exist
+    # ValueError:
+    #    - the module name was invalid
+    #    - the module name is __main__
+    #    - *we* raised `ValueError` due to `spec` being `None`
+    except (ImportError, ValueError):
+        pass  # handled below
+    else:
+        # namespace package
+        if spec.origin in {"namespace", None}:
+            return os.path.dirname(next(iter(spec.submodule_search_locations)))
+        # a package (with __init__.py)
+        elif spec.submodule_search_locations:
+            return os.path.dirname(os.path.dirname(spec.origin))
+        # just a normal module
         else:
-            # namespace package
-            if spec.origin in {"namespace", None}:
-                return os.path.dirname(next(iter(spec.submodule_search_locations)))
-            # a package (with __init__.py)
-            elif spec.submodule_search_locations:
-                return os.path.dirname(os.path.dirname(spec.origin))
-            # just a normal module
-            else:
-                return os.path.dirname(spec.origin)
+            return os.path.dirname(spec.origin)
 
     # we were unable to find the `package_path` using PEP 451 loaders
     loader = pkgutil.get_loader(root_mod_name)
@@ -880,7 +860,6 @@ def _find_package_path(root_mod_name):
         # import name is not found, or interactive/main module
         return os.getcwd()
     else:
-        # For .egg, zipimporter does not have get_filename until Python 2.7.
         if hasattr(loader, "get_filename"):
             filename = loader.get_filename(root_mod_name)
         elif hasattr(loader, "archive"):
@@ -897,8 +876,8 @@ def _find_package_path(root_mod_name):
         package_path = os.path.abspath(os.path.dirname(filename))
 
         # In case the root module is a package we need to chop of the
-        # rightmost part.  This needs to go through a helper function
-        # because of python 3.3 namespace packages.
+        # rightmost part. This needs to go through a helper function
+        # because of namespace packages.
         if _matching_loader_thinks_module_is_package(loader, root_mod_name):
             package_path = os.path.dirname(package_path)
 
@@ -933,7 +912,7 @@ def find_package(import_name):
     return None, package_path
 
 
-class locked_cached_property(object):
+class locked_cached_property:
     """A decorator that converts a function into a lazy property.  The
     function wrapped is called the first time to retrieve the result
     and then that calculated result is used the next time you access
@@ -959,7 +938,7 @@ class locked_cached_property(object):
             return value
 
 
-class _PackageBoundObject(object):
+class _PackageBoundObject:
     #: The name of the package or module that this app belongs to. Do not
     #: change this once it is set by the constructor.
     import_name = None
@@ -1016,7 +995,7 @@ class _PackageBoundObject(object):
 
         if self.static_folder is not None:
             basename = os.path.basename(self.static_folder)
-            return ("/" + basename).rstrip("/")
+            return f"/{basename}".rstrip("/")
 
     @static_url_path.setter
     def static_url_path(self, value):
@@ -1128,26 +1107,16 @@ def total_seconds(td):
 def is_ip(value):
     """Determine if the given string is an IP address.
 
-    Python 2 on Windows doesn't provide ``inet_pton``, so this only
-    checks IPv4 addresses in that environment.
-
     :param value: value to check
     :type value: str
 
     :return: True if string is an IP address
     :rtype: bool
     """
-    if PY2 and os.name == "nt":
-        try:
-            socket.inet_aton(value)
-            return True
-        except socket.error:
-            return False
-
     for family in (socket.AF_INET, socket.AF_INET6):
         try:
             socket.inet_pton(family, value)
-        except socket.error:
+        except OSError:
             pass
         else:
             return True

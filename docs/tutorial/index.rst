@@ -1,5 +1,3 @@
-.. _tutorial:
-
 Tutorial
 ========
 
@@ -35,11 +33,11 @@ tutorial`_ in the Python docs is a great way to learn or review first.
 .. _official tutorial: https://docs.python.org/3/tutorial/
 
 While it's designed to give a good starting point, the tutorial doesn't
-cover all of Flask's features. Check out the :ref:`quickstart` for an
+cover all of Flask's features. Check out the :doc:`/quickstart` for an
 overview of what Flask can do, then dive into the docs to find out more.
 The tutorial only uses what's provided by Flask and Python. In another
-project, you might decide to use :ref:`extensions` or other libraries to
-make some tasks simpler.
+project, you might decide to use :doc:`/extensions` or other libraries
+to make some tasks simpler.
 
 .. image:: flaskr_login.png
     :align: center

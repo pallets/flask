@@ -94,7 +94,7 @@ write templates to generate the HTML form.
             elif db.execute(
                 'SELECT id FROM user WHERE username = ?', (username,)
             ).fetchone() is not None:
-                error = 'User {} is already registered.'.format(username)
+                error = f"User {username} is already registered."
 
             if error is None:
                 db.execute(

@@ -1,16 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.reqctx
-    ~~~~~~~~~~~~
-
-    Tests the request context.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import pytest
 
 import flask
+from flask.sessions import SecureCookieSessionInterface
 from flask.sessions import SessionInterface
 
 try:
@@ -110,7 +101,7 @@ def test_proper_test_request_context(app):
 def test_context_binding(app):
     @app.route("/")
     def index():
-        return "Hello %s!" % flask.request.args["name"]
+        return f"Hello {flask.request.args['name']}!"
 
     @app.route("/meh")
     def meh():
@@ -138,7 +129,7 @@ def test_context_test(app):
 def test_manual_context_binding(app):
     @app.route("/")
     def index():
-        return "Hello %s!" % flask.request.args["name"]
+        return f"Hello {flask.request.args['name']}!"
 
     ctx = app.test_request_context("/?name=World")
     ctx.push()
@@ -149,7 +140,7 @@ def test_manual_context_binding(app):
 
 
 @pytest.mark.skipif(greenlet is None, reason="greenlet not installed")
-class TestGreenletContextCopying(object):
+class TestGreenletContextCopying:
     def test_greenlet_context_copying(self, app, client):
         greenlets = []
 
@@ -229,12 +220,60 @@ def test_session_error_pops_context():
     assert not flask.current_app
 
 
+def test_session_dynamic_cookie_name():
+
+    # This session interface will use a cookie with a different name if the
+    # requested url ends with the string "dynamic_cookie"
+    class PathAwareSessionInterface(SecureCookieSessionInterface):
+        def get_cookie_name(self, app):
+            if flask.request.url.endswith("dynamic_cookie"):
+                return "dynamic_cookie_name"
+            else:
+                return super().get_cookie_name(app)
+
+    class CustomFlask(flask.Flask):
+        session_interface = PathAwareSessionInterface()
+
+    app = CustomFlask(__name__)
+    app.secret_key = "secret_key"
+
+    @app.route("/set", methods=["POST"])
+    def set():
+        flask.session["value"] = flask.request.form["value"]
+        return "value set"
+
+    @app.route("/get")
+    def get():
+        v = flask.session.get("value", "None")
+        return v
+
+    @app.route("/set_dynamic_cookie", methods=["POST"])
+    def set_dynamic_cookie():
+        flask.session["value"] = flask.request.form["value"]
+        return "value set"
+
+    @app.route("/get_dynamic_cookie")
+    def get_dynamic_cookie():
+        v = flask.session.get("value", "None")
+        return v
+
+    test_client = app.test_client()
+
+    # first set the cookie in both /set urls but each with a different value
+    assert test_client.post("/set", data={"value": "42"}).data == b"value set"
+    assert (
+        test_client.post("/set_dynamic_cookie", data={"value": "616"}).data
+        == b"value set"
+    )
+
+    # now check that the relevant values come back - meaning that different
+    # cookies are being used for the urls that end with "dynamic cookie"
+    assert test_client.get("/get").data == b"42"
+    assert test_client.get("/get_dynamic_cookie").data == b"616"
+
+
 def test_bad_environ_raises_bad_request():
     app = flask.Flask(__name__)
-
-    # We cannot use app.test_client() for the Unicode-rich Host header,
-    # because werkzeug enforces latin1 on Python 2.
-    # However it works when actually passed to the server.
 
     from flask.testing import EnvironBuilder
 
@@ -242,7 +281,7 @@ def test_bad_environ_raises_bad_request():
     environ = builder.get_environ()
 
     # use a non-printable character in the Host - this is key to this test
-    environ["HTTP_HOST"] = u"\x8a"
+    environ["HTTP_HOST"] = "\x8a"
 
     with app.request_context(environ):
         response = app.full_dispatch_request()
@@ -256,17 +295,13 @@ def test_environ_for_valid_idna_completes():
     def index():
         return "Hello World!"
 
-    # We cannot use app.test_client() for the Unicode-rich Host header,
-    # because werkzeug enforces latin1 on Python 2.
-    # However it works when actually passed to the server.
-
     from flask.testing import EnvironBuilder
 
     builder = EnvironBuilder(app)
     environ = builder.get_environ()
 
     # these characters are all IDNA-compatible
-    environ["HTTP_HOST"] = u"ąśźäüжŠßя.com"
+    environ["HTTP_HOST"] = "ąśźäüжŠßя.com"
 
     with app.request_context(environ):
         response = app.full_dispatch_request()

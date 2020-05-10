@@ -1,5 +1,3 @@
-.. _design:
-
 Design Decisions in Flask
 =========================
 
@@ -77,7 +75,7 @@ to the application object :meth:`~flask.Flask.wsgi_app`).
 
 Furthermore this design makes it possible to use a factory function to
 create the application which is very helpful for unit testing and similar
-things (:ref:`app-factories`).
+things (:doc:`/patterns/appfactories`).
 
 The Routing System
 ------------------
@@ -109,14 +107,14 @@ has a certain understanding about how things work.  On the surface they
 all work the same: you tell the engine to evaluate a template with a set
 of variables and take the return value as string.
 
-But that's about where similarities end.  Jinja2 for example has an
-extensive filter system, a certain way to do template inheritance, support
-for reusable blocks (macros) that can be used from inside templates and
-also from Python code, uses Unicode for all operations, supports
-iterative template rendering, configurable syntax and more.  On the other
-hand an engine like Genshi is based on XML stream evaluation, template
-inheritance by taking the availability of XPath into account and more.
-Mako on the other hand treats templates similar to Python modules.
+But that's about where similarities end. Jinja2 for example has an
+extensive filter system, a certain way to do template inheritance,
+support for reusable blocks (macros) that can be used from inside
+templates and also from Python code, supports iterative template
+rendering, configurable syntax and more. On the other hand an engine
+like Genshi is based on XML stream evaluation, template inheritance by
+taking the availability of XPath into account and more. Mako on the
+other hand treats templates similar to Python modules.
 
 When it comes to connecting a template engine with an application or
 framework there is more than just rendering templates.  For instance,
@@ -169,7 +167,7 @@ large applications harder to maintain.  However Flask is just not designed
 for large applications or asynchronous servers.  Flask wants to make it
 quick and easy to write a traditional web application.
 
-Also see the :ref:`becomingbig` section of the documentation for some
+Also see the :doc:`/becomingbig` section of the documentation for some
 inspiration for larger applications based on Flask.
 
 

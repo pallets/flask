@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.wrappers
-    ~~~~~~~~~~~~~~
-
-    Implements the WSGI wrappers (request and response).
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Request as RequestBase
 from werkzeug.wrappers import Response as ResponseBase
@@ -22,7 +12,7 @@ class JSONMixin(_JSONMixin):
 
     def on_json_loading_failed(self, e):
         if current_app and current_app.debug:
-            raise BadRequest("Failed to decode JSON object: {0}".format(e))
+            raise BadRequest(f"Failed to decode JSON object: {e}")
 
         raise BadRequest()
 
@@ -134,4 +124,4 @@ class Response(ResponseBase, JSONMixin):
             return current_app.config["MAX_COOKIE_SIZE"]
 
         # return Werkzeug's default when not in an app context
-        return super(Response, self).max_cookie_size
+        return super().max_cookie_size

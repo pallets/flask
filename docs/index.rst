@@ -1,7 +1,5 @@
 .. rst-class:: hide-header
 
-.. rst-class:: hide-header
-
 Welcome to Flask
 ================
 
@@ -10,17 +8,18 @@ Welcome to Flask
     :align: center
     :target: https://palletsprojects.com/p/flask/
 
-Welcome to Flask's documentation. Get started with :ref:`installation`
-and then get an overview with the :ref:`quickstart`. There is also a
-more detailed :ref:`tutorial` that shows how to create a small but
+Welcome to Flask's documentation. Get started with :doc:`installation`
+and then get an overview with the :doc:`quickstart`. There is also a
+more detailed :doc:`tutorial/index` that shows how to create a small but
 complete application with Flask. Common patterns are described in the
-:ref:`patterns` section. The rest of the docs describe each component of
-Flask in detail, with a full reference in the :ref:`api` section.
+:doc:`patterns/index` section. The rest of the docs describe each
+component of Flask in detail, with a full reference in the :doc:`api`
+section.
 
 Flask depends on the `Jinja`_ template engine and the `Werkzeug`_ WSGI
 toolkit. The documentation for these libraries can be found at:
 
-- `Jinja documentation <http://jinja.pocoo.org/docs>`_
+- `Jinja documentation <https://jinja.palletsprojects.com/>`_
 - `Werkzeug documentation <https://werkzeug.palletsprojects.com/>`_
 
 .. _Jinja: https://www.palletsprojects.com/p/jinja/
@@ -84,10 +83,7 @@ Design notes, legal information and changelog are here for the interested.
    design
    htmlfaq
    security
-   unicode
    extensiondev
-   styleguide
-   upgrading
    changelog
    license
    contributing

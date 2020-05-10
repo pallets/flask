@@ -1,18 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.test_instance
-    ~~~~~~~~~~~~~~~~~~~
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import os
 import sys
 
 import pytest
 
 import flask
-from flask._compat import PY2
 
 
 def test_explicit_instance_paths(modules_tmpdir):
@@ -24,7 +15,7 @@ def test_explicit_instance_paths(modules_tmpdir):
     assert app.instance_path == str(modules_tmpdir)
 
 
-@pytest.mark.xfail(reason="TODO: weird interaction with tox")
+@pytest.mark.xfail(reason="weird interaction with tox")
 def test_main_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join("main_app.py")
     app.write('import flask\n\napp = flask.Flask("__main__")')
@@ -36,6 +27,7 @@ def test_main_module_paths(modules_tmpdir, purge_module):
     assert app.instance_path == os.path.join(here, "instance")
 
 
+@pytest.mark.xfail(reason="weird interaction with tox")
 def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join("config_module_app.py").write(
         "import os\n"
@@ -50,6 +42,7 @@ def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     assert app.instance_path == str(modules_tmpdir.join("instance"))
 
 
+@pytest.mark.xfail(reason="weird interaction with tox")
 def test_uninstalled_package_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.mkdir("config_package_app")
     init = app.join("__init__.py")
@@ -126,19 +119,3 @@ def test_egg_installed_paths(install_egg, modules_tmpdir, modules_tmpdir_prefix)
     finally:
         if "site_egg" in sys.modules:
             del sys.modules["site_egg"]
-
-
-@pytest.mark.skipif(not PY2, reason="This only works under Python 2.")
-def test_meta_path_loader_without_is_package(request, modules_tmpdir):
-    app = modules_tmpdir.join("unimportable.py")
-    app.write("import flask\napp = flask.Flask(__name__)")
-
-    class Loader(object):
-        def find_module(self, name, path=None):
-            return self
-
-    sys.meta_path.append(Loader())
-    request.addfinalizer(sys.meta_path.pop)
-
-    with pytest.raises(AttributeError):
-        import unimportable  # noqa: F401

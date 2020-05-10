@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.templating
-    ~~~~~~~~~~~~~~~~
-
-    Implements the bridge to Jinja2.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 from jinja2 import BaseLoader
 from jinja2 import Environment as BaseEnvironment
 from jinja2 import TemplateNotFound

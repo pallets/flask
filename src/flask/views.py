@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.views
-    ~~~~~~~~~~~
-
-    This module provides class-based views inspired by the ones in Django.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
-from ._compat import with_metaclass
 from .globals import request
 
 
@@ -17,7 +6,7 @@ http_method_funcs = frozenset(
 )
 
 
-class View(object):
+class View:
     """Alternative way to use view functions.  A subclass has to implement
     :meth:`dispatch_request` which is called with the view arguments from
     the URL routing system.  If :attr:`methods` is provided the methods
@@ -28,7 +17,7 @@ class View(object):
             methods = ['GET']
 
             def dispatch_request(self, name):
-                return 'Hello %s!' % name
+                return f"Hello {name}!"
 
         app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
 
@@ -114,7 +103,7 @@ class MethodViewType(type):
     """
 
     def __init__(cls, name, bases, d):
-        super(MethodViewType, cls).__init__(name, bases, d)
+        super().__init__(name, bases, d)
 
         if "methods" not in d:
             methods = set()
@@ -135,7 +124,7 @@ class MethodViewType(type):
                 cls.methods = methods
 
 
-class MethodView(with_metaclass(MethodViewType, View)):
+class MethodView(View, metaclass=MethodViewType):
     """A class-based view that dispatches request methods to the corresponding
     class methods. For example, if you implement a ``get`` method, it will be
     used to handle ``GET`` requests. ::
@@ -159,5 +148,5 @@ class MethodView(with_metaclass(MethodViewType, View)):
         if meth is None and request.method == "HEAD":
             meth = getattr(self, "get", None)
 
-        assert meth is not None, "Unimplemented method %r" % request.method
+        assert meth is not None, f"Unimplemented method {request.method!r}"
         return meth(*args, **kwargs)

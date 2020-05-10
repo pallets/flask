@@ -1,5 +1,3 @@
-.. _signals:
-
 Signals
 =======
 
@@ -162,7 +160,7 @@ function, you can pass ``current_app._get_current_object()`` as sender.
 Signals and Flask's Request Context
 -----------------------------------
 
-Signals fully support :ref:`request-context` when receiving signals.
+Signals fully support :doc:`reqcontext` when receiving signals.
 Context-local variables are consistently available between
 :data:`~flask.request_started` and :data:`~flask.request_finished`, so you can
 rely on :class:`flask.g` and others as needed.  Note the limitations described
@@ -179,7 +177,7 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
 
     @template_rendered.connect_via(app)
     def when_template_rendered(sender, template, context, **extra):
-        print 'Template %s is rendered with %s' % (template.name, context)
+        print f'Template {template.name} is rendered with {context}'
 
 Core Signals
 ------------

@@ -142,7 +142,7 @@ read from the file.
 
 :func:`click.command` defines a command line command called ``init-db``
 that calls the ``init_db`` function and shows a success message to the
-user. You can read :ref:`cli` to learn more about writing commands.
+user. You can read :doc:`/cli` to learn more about writing commands.
 
 
 Register with the Application
@@ -196,9 +196,9 @@ previous page.
     If you're still running the server from the previous page, you can
     either stop the server, or run this command in a new terminal. If
     you use a new terminal, remember to change to your project directory
-    and activate the env as described in :ref:`install-activate-env`.
-    You'll also need to set ``FLASK_APP`` and ``FLASK_ENV`` as shown on
-    the previous page.
+    and activate the env as described in :doc:`/installation`. You'll
+    also need to set ``FLASK_APP`` and ``FLASK_ENV`` as shown on the
+    previous page.
 
 Run the ``init-db`` command:
 

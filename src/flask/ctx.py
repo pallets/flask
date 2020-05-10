@@ -1,20 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.ctx
-    ~~~~~~~~~
-
-    Implements the objects required to keep the context.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import sys
 from functools import update_wrapper
 
 from werkzeug.exceptions import HTTPException
 
-from ._compat import BROKEN_PYPY_CTXMGR_EXIT
-from ._compat import reraise
 from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .signals import appcontext_popped
@@ -25,7 +13,7 @@ from .signals import appcontext_pushed
 _sentinel = object()
 
 
-class _AppCtxGlobals(object):
+class _AppCtxGlobals:
     """A plain object. Used as a namespace for storing data during an
     application context.
 
@@ -61,7 +49,7 @@ class _AppCtxGlobals(object):
 
         :param name: Name of attribute to pop.
         :param default: Value to return if the attribute is not present,
-            instead of raise a ``KeyError``.
+            instead of raising a ``KeyError``.
 
         .. versionadded:: 0.11
         """
@@ -75,7 +63,7 @@ class _AppCtxGlobals(object):
         set and return a default value. Like :meth:`dict.setdefault`.
 
         :param name: Name of attribute to get.
-        :param: default: Value to set and return if the attribute is not
+        :param default: Value to set and return if the attribute is not
             present.
 
         .. versionadded:: 0.11
@@ -91,7 +79,7 @@ class _AppCtxGlobals(object):
     def __repr__(self):
         top = _app_ctx_stack.top
         if top is not None:
-            return "<flask.g of %r>" % top.app.name
+            return f"<flask.g of {top.app.name!r}>"
         return object.__repr__(self)
 
 
@@ -202,7 +190,7 @@ def has_app_context():
     return _app_ctx_stack.top is not None
 
 
-class AppContext(object):
+class AppContext:
     """The application context binds an application object implicitly
     to the current thread or greenlet, similar to how the
     :class:`RequestContext` binds request information.  The application
@@ -223,8 +211,6 @@ class AppContext(object):
     def push(self):
         """Binds the app context to the current context."""
         self._refcnt += 1
-        if hasattr(sys, "exc_clear"):
-            sys.exc_clear()
         _app_ctx_stack.push(self)
         appcontext_pushed.send(self.app)
 
@@ -238,7 +224,7 @@ class AppContext(object):
                 self.app.do_teardown_appcontext(exc)
         finally:
             rv = _app_ctx_stack.pop()
-        assert rv is self, "Popped wrong app context.  (%r instead of %r)" % (rv, self)
+        assert rv is self, f"Popped wrong app context.  ({rv!r} instead of {self!r})"
         appcontext_popped.send(self.app)
 
     def __enter__(self):
@@ -248,11 +234,8 @@ class AppContext(object):
     def __exit__(self, exc_type, exc_value, tb):
         self.pop(exc_value)
 
-        if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
-            reraise(exc_type, exc_value, tb)
 
-
-class RequestContext(object):
+class RequestContext:
     """The request context contains all request relevant information.  It is
     created at the beginning of the request and pushed to the
     `_request_ctx_stack` and removed at the end of it.  It will create the
@@ -376,9 +359,6 @@ class RequestContext(object):
         else:
             self._implicit_app_ctx_stack.append(None)
 
-        if hasattr(sys, "exc_clear"):
-            sys.exc_clear()
-
         _request_ctx_stack.push(self)
 
         # Open the session at the moment that the request context is available.
@@ -404,22 +384,15 @@ class RequestContext(object):
            Added the `exc` argument.
         """
         app_ctx = self._implicit_app_ctx_stack.pop()
+        clear_request = False
 
         try:
-            clear_request = False
             if not self._implicit_app_ctx_stack:
                 self.preserved = False
                 self._preserved_exc = None
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
                 self.app.do_teardown_request(exc)
-
-                # If this interpreter supports clearing the exception information
-                # we do that now.  This will only go into effect on Python 2.x,
-                # on 3.x it disappears automatically at the end of the exception
-                # stack.
-                if hasattr(sys, "exc_clear"):
-                    sys.exc_clear()
 
                 request_close = getattr(self.request, "close", None)
                 if request_close is not None:
@@ -437,10 +410,9 @@ class RequestContext(object):
             if app_ctx is not None:
                 app_ctx.pop(exc)
 
-            assert rv is self, "Popped wrong request context. (%r instead of %r)" % (
-                rv,
-                self,
-            )
+            assert (
+                rv is self
+            ), f"Popped wrong request context. ({rv!r} instead of {self!r})"
 
     def auto_pop(self, exc):
         if self.request.environ.get("flask._preserve_context") or (
@@ -463,13 +435,8 @@ class RequestContext(object):
         # See flask.testing for how this works.
         self.auto_pop(exc_value)
 
-        if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
-            reraise(exc_type, exc_value, tb)
-
     def __repr__(self):
-        return "<%s '%s' [%s] of %s>" % (
-            self.__class__.__name__,
-            self.request.url,
-            self.request.method,
-            self.app.name,
+        return (
+            f"<{type(self).__name__} {self.request.url!r}"
+            f" [{self.request.method}] of {self.app.name}>"
         )

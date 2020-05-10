@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.appctx
-    ~~~~~~~~~~~~
-
-    Tests the application context.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import pytest
 
 import flask
@@ -163,7 +153,7 @@ def test_app_ctx_globals_methods(app, app_ctx):
 
 
 def test_custom_app_ctx_globals_class(app):
-    class CustomRequestGlobals(object):
+    class CustomRequestGlobals:
         def __init__(self):
             self.spam = "eggs"
 
@@ -190,7 +180,7 @@ def test_context_refcounts(app, client):
                 pass
         env = flask._request_ctx_stack.top.request.environ
         assert env["werkzeug.request"] is not None
-        return u""
+        return ""
 
     res = client.get("/")
     assert res.status_code == 200

@@ -1,5 +1,3 @@
-.. _testing:
-
 Testing Flask Applications
 ==========================
 
@@ -29,8 +27,11 @@ The Application
 ---------------
 
 First, we need an application to test; we will use the application from
-the :ref:`tutorial`.  If you don't have that application yet, get the
-source code from :gh:`the examples <examples/tutorial>`.
+the :doc:`tutorial/index`. If you don't have that application yet, get
+the source code from :gh:`the examples <examples/tutorial>`.
+
+So that we can import the module ``flaskr`` correctly, we need to run
+``pip install -e .`` in the folder ``tutorial``.
 
 The Testing Setup and Fixtures
 ------------------------------
@@ -72,9 +73,9 @@ local development configuration.
     from flaskr import create_app
     from flaskr.db import get_db, init_db
 
+
     with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
         _data_sql = f.read().decode('utf8')
-
 
     @pytest.fixture
     def app():
@@ -136,7 +137,7 @@ returned value to the test function.
 
 
 Factory
---------------
+-------
 
 There's not much to test about the factory itself. Most of the code will
 be executed for each test already, so if something fails the other tests
@@ -167,7 +168,7 @@ checks that the response data matches.
 
 
 Database
---------------
+--------
 
 Within an application context, ``get_db`` should return the same
 connection each time it's called. After the context, the connection
@@ -217,7 +218,7 @@ command by name.
 
 
 Authentication
-------------------
+--------------
 
 For most of the views, a user needs to be logged in. The easiest way to
 do this in tests is to make a ``POST`` request to the ``login`` view
@@ -247,9 +248,17 @@ for each test.
     def auth(client):
         return AuthActions(client)
 
+        username = flaskr.app.config["USERNAME"]
+        password = flaskr.app.config["PASSWORD"]
+
+        rv = login(client, username, password)
+        assert b'You were logged in' in rv.data
+
+
 With the ``auth`` fixture, you can call ``auth.login()`` in a test to
 log in as the ``test`` user, which was inserted as part of the test
 data in the ``app`` fixture.
+
 
 The ``register`` view should render successfully on ``GET``. On ``POST``
 with valid form data, it should redirect to the login URL and the user's
@@ -258,6 +267,12 @@ messages.
 
 .. code-block:: python
     :caption: ``tests/test_auth.py``
+
+        rv = login(client, f"{username}x", password)
+        assert b'Invalid username' in rv.data
+
+        rv = login(client, username, f'{password}x')
+        assert b'Invalid password' in rv.data
 
     import pytest
     from flask import g, session
@@ -585,7 +600,7 @@ way.
 
 If you want to test your application with different configurations and
 there does not seem to be a good way to do that, consider switching to
-application factories (see :ref:`app-factories`).
+application factories (see :doc:`patterns/appfactories`).
 
 Note however that if you are using a test request context, the
 :meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`

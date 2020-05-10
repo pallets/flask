@@ -1,28 +1,18 @@
-# -*- coding: utf-8 -*-
-"""
-    flask.sessions
-    ~~~~~~~~~~~~~~
-
-    Implements cookie based sessions based on itsdangerous.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import hashlib
 import warnings
+from collections.abc import MutableMapping
 from datetime import datetime
 
 from itsdangerous import BadSignature
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 
-from ._compat import collections_abc
 from .helpers import is_ip
 from .helpers import total_seconds
 from .json.tag import TaggedJSONSerializer
 
 
-class SessionMixin(collections_abc.MutableMapping):
+class SessionMixin(MutableMapping):
     """Expands a basic dictionary with session attributes."""
 
     @property
@@ -77,19 +67,19 @@ class SecureCookieSession(CallbackDict, SessionMixin):
             self.modified = True
             self.accessed = True
 
-        super(SecureCookieSession, self).__init__(initial, on_update)
+        super().__init__(initial, on_update)
 
     def __getitem__(self, key):
         self.accessed = True
-        return super(SecureCookieSession, self).__getitem__(key)
+        return super().__getitem__(key)
 
     def get(self, key, default=None):
         self.accessed = True
-        return super(SecureCookieSession, self).get(key, default)
+        return super().get(key, default)
 
     def setdefault(self, key, default=None):
         self.accessed = True
-        return super(SecureCookieSession, self).setdefault(key, default)
+        return super().setdefault(key, default)
 
 
 class NullSession(SecureCookieSession):
@@ -109,7 +99,7 @@ class NullSession(SecureCookieSession):
     del _fail
 
 
-class SessionInterface(object):
+class SessionInterface:
     """The basic interface you have to implement in order to replace the
     default session interface which uses werkzeug's securecookie
     implementation.  The only methods you have to implement are
@@ -173,6 +163,13 @@ class SessionInterface(object):
         """
         return isinstance(obj, self.null_session_class)
 
+    def get_cookie_name(self, app):
+        """Returns the name of the session cookie.
+
+        Uses ``app.session_cookie_name`` which is set to ``SESSION_COOKIE_NAME``
+        """
+        return app.session_cookie_name
+
     def get_cookie_domain(self, app):
         """Returns the domain that should be set for the session cookie.
 
@@ -202,13 +199,13 @@ class SessionInterface(object):
         rv = rv.rsplit(":", 1)[0].lstrip(".")
 
         if "." not in rv:
-            # Chrome doesn't allow names without a '.'
-            # this should only come up with localhost
-            # hack around this by not setting the name, and show a warning
+            # Chrome doesn't allow names without a '.'. This should only
+            # come up with localhost. Hack around this by not setting
+            # the name, and show a warning.
             warnings.warn(
-                '"{rv}" is not a valid cookie domain, it must contain a ".".'
-                " Add an entry to your hosts file, for example"
-                ' "{rv}.localdomain", and use that instead.'.format(rv=rv)
+                f"{rv!r} is not a valid cookie domain, it must contain"
+                " a '.'. Add an entry to your hosts file, for example"
+                f" '{rv}.localdomain', and use that instead."
             )
             app.config["SESSION_COOKIE_DOMAIN"] = False
             return None
@@ -226,7 +223,7 @@ class SessionInterface(object):
         # if this is not an ip and app is mounted at the root, allow subdomain
         # matching by adding a '.' prefix
         if self.get_cookie_path(app) == "/" and not ip:
-            rv = "." + rv
+            rv = f".{rv}"
 
         app.config["SESSION_COOKIE_DOMAIN"] = rv
         return rv
@@ -340,7 +337,7 @@ class SecureCookieSessionInterface(SessionInterface):
         s = self.get_signing_serializer(app)
         if s is None:
             return None
-        val = request.cookies.get(app.session_cookie_name)
+        val = request.cookies.get(self.get_cookie_name(app))
         if not val:
             return self.session_class()
         max_age = total_seconds(app.permanent_session_lifetime)
@@ -351,6 +348,7 @@ class SecureCookieSessionInterface(SessionInterface):
             return self.session_class()
 
     def save_session(self, app, session, response):
+        name = self.get_cookie_name(app)
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
 
@@ -358,9 +356,7 @@ class SecureCookieSessionInterface(SessionInterface):
         # If the session is empty, return without setting the cookie.
         if not session:
             if session.modified:
-                response.delete_cookie(
-                    app.session_cookie_name, domain=domain, path=path
-                )
+                response.delete_cookie(name, domain=domain, path=path)
 
             return
 
@@ -377,7 +373,7 @@ class SecureCookieSessionInterface(SessionInterface):
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
         response.set_cookie(
-            app.session_cookie_name,
+            name,
             val,
             expires=expires,
             httponly=httponly,

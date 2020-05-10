@@ -1,5 +1,3 @@
-.. _deferred-callbacks:
-
 Deferred Request Callbacks
 ==========================
 
@@ -16,7 +14,7 @@ response object.
 
 One way is to avoid the situation. Very often that is possible. For instance
 you can try to move that logic into a :meth:`~flask.Flask.after_request`
-callback instead. However, sometimes moving code there makes it more
+callback instead. However, sometimes moving code there makes it
 more complicated or awkward to reason about.
 
 As an alternative, you can use :func:`~flask.after_this_request` to register

@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-tests.test_user_error_handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
 import pytest
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import HTTPException
@@ -19,10 +11,18 @@ def test_error_handler_no_match(app, client):
     class CustomException(Exception):
         pass
 
+    class UnacceptableCustomException(BaseException):
+        pass
+
     @app.errorhandler(CustomException)
     def custom_exception_handler(e):
         assert isinstance(e, CustomException)
         return "custom"
+
+    with pytest.raises(
+        AssertionError, match="Custom exceptions must be subclasses of Exception."
+    ):
+        app.register_error_handler(UnacceptableCustomException, None)
 
     @app.errorhandler(500)
     def handle_500(e):
@@ -30,7 +30,7 @@ def test_error_handler_no_match(app, client):
         original = getattr(e, "original_exception", None)
 
         if original is not None:
-            return "wrapped " + type(original).__name__
+            return f"wrapped {type(original).__name__}"
 
         return "direct"
 
@@ -208,7 +208,7 @@ def test_default_error_handler():
     assert c.get("/slash", follow_redirects=True).data == b"slash"
 
 
-class TestGenericHandlers(object):
+class TestGenericHandlers:
     """Test how very generic handlers are dispatched to."""
 
     class Custom(Exception):
@@ -239,9 +239,9 @@ class TestGenericHandlers(object):
         original = getattr(e, "original_exception", None)
 
         if original is not None:
-            return "wrapped " + type(original).__name__
+            return f"wrapped {type(original).__name__}"
 
-        return "direct " + type(e).__name__
+        return f"direct {type(e).__name__}"
 
     @pytest.mark.parametrize("to_handle", (InternalServerError, 500))
     def test_handle_class_or_code(self, app, client, to_handle):

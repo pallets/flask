@@ -1,5 +1,3 @@
-.. _sqlite3:
-
 Using SQLite 3 with Flask
 =========================
 
@@ -62,7 +60,6 @@ the application context by hand::
     with app.app_context():
         # now you can use get_db()
 
-.. _easy-querying:
 
 Easy Querying
 -------------

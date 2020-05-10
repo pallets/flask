@@ -108,7 +108,7 @@ Start coding
 
 - Using your favorite editor, make your changes, `committing as you go`_.
 - Include tests that cover any code changes you make. Make sure the test fails
-  without your patch. `Run the tests. <contributing-testsuite_>`_.
+  without your patch. `Run the tests <contributing-testsuite_>`_.
 - Push your commits to GitHub and `create a pull request`_ by using::
 
         git push --set-upstream origin your-branch-name
@@ -121,7 +121,7 @@ Start coding
 .. _pre-commit: https://pre-commit.com
 .. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
 
-.. _contributing-testsuite:
+.. _contributing-testsuite: #running-the-tests
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
@@ -135,8 +135,9 @@ depends on which part of Flask you're working on. Travis-CI will run the full
 suite when you submit your pull request.
 
 The full test suite takes a long time to run because it tests multiple
-combinations of Python and dependencies. You need to have Python 2.7, 3.4,
-3.5 3.6, and PyPy 2.7 installed to run all of the environments. Then run::
+combinations of Python and dependencies. If you don't have a Python
+version installed, it will be skipped with a warning message at the end.
+Run::
 
     tox
 

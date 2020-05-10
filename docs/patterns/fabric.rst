@@ -1,12 +1,10 @@
-.. _fabric-deployment:
-
 Deploying with Fabric
 =====================
 
 `Fabric`_ is a tool for Python similar to Makefiles but with the ability
 to execute commands on a remote server.  In combination with a properly
-set up Python package (:ref:`larger-applications`) and a good concept for
-configurations (:ref:`config`) it is very easy to deploy Flask
+set up Python package (:doc:`packages`) and a good concept for
+configurations (:doc:`/config`) it is very easy to deploy Flask
 applications to external servers.
 
 Before we get started, here a quick checklist of things we have to ensure
@@ -15,7 +13,7 @@ upfront:
 -   Fabric 1.0 has to be installed locally.  This tutorial assumes the
     latest version of Fabric.
 -   The application already has to be a package and requires a working
-    :file:`setup.py` file (:ref:`distribute-deployment`).
+    :file:`setup.py` file (:doc:`distribute`).
 -   In the following example we are using `mod_wsgi` for the remote
     servers.  You can of course use your own favourite server there, but
     for this example we chose Apache + `mod_wsgi` because it's very easy
@@ -49,16 +47,16 @@ virtual environment::
     def deploy():
         # figure out the package name and version
         dist = local('python setup.py --fullname', capture=True).strip()
-        filename = '%s.tar.gz' % dist
+        filename = f'{dist}.tar.gz'
 
         # upload the package to the temporary folder on the server
-        put('dist/%s' % filename, '/tmp/%s' % filename)
+        put(f'dist/{filename}', f'/tmp/{filename}')
 
         # install the package in the application's virtualenv with pip
-        run('/var/www/yourapplication/env/bin/pip install /tmp/%s' % filename)
+        run(f'/var/www/yourapplication/env/bin/pip install /tmp/{filename}')
 
         # remove the uploaded package
-        run('rm -r /tmp/%s' % filename)
+        run(f'rm -r /tmp/{filename}')
 
         # touch the .wsgi file to trigger a reload in mod_wsgi
         run('touch /var/www/yourapplication.wsgi')
@@ -101,7 +99,7 @@ To setup a new server you would roughly do these steps:
 3.  Create a new Apache config for ``yourapplication`` and activate it.
     Make sure to activate watching for changes of the ``.wsgi`` file so
     that we can automatically reload the application by touching it.
-    (See :ref:`mod_wsgi-deployment` for more information)
+    See :doc:`/deploying/mod_wsgi`.
 
 So now the question is, where do the :file:`application.wsgi` and
 :file:`application.cfg` files come from?
@@ -124,7 +122,7 @@ the config at that environment variable::
     app.config.from_object('yourapplication.default_config')
     app.config.from_envvar('YOURAPPLICATION_CONFIG')
 
-This approach is explained in detail in the :ref:`config` section of the
+This approach is explained in detail in the :doc:`/config` section of the
 documentation.
 
 The Configuration File

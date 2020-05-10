@@ -1,25 +1,13 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.testing
-    ~~~~~~~~~~~~~
-
-    Test client and more.
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import click
 import pytest
 import werkzeug
 
 import flask
 from flask import appcontext_popped
-from flask._compat import text_type
 from flask.cli import ScriptInfo
 from flask.json import jsonify
 from flask.testing import EnvironBuilder
 from flask.testing import FlaskCliRunner
-from flask.testing import make_test_environ_builder
 
 try:
     import blinker
@@ -62,7 +50,7 @@ def test_environ_base_default(app, client, app_ctx):
 
     rv = client.get("/")
     assert rv.data == b"127.0.0.1"
-    assert flask.g.user_agent == "werkzeug/" + werkzeug.__version__
+    assert flask.g.user_agent == f"werkzeug/{werkzeug.__version__}"
 
 
 def test_environ_base_modified(app, client, app_ctx):
@@ -121,20 +109,11 @@ def test_path_is_url(app):
     assert eb.path == "/"
 
 
-def test_make_test_environ_builder(app):
-    with pytest.deprecated_call():
-        eb = make_test_environ_builder(app, "https://example.com/")
-    assert eb.url_scheme == "https"
-    assert eb.host == "example.com"
-    assert eb.script_root == ""
-    assert eb.path == "/"
-
-
 def test_environbuilder_json_dumps(app):
     """EnvironBuilder.json_dumps() takes settings from the app."""
     app.config["JSON_AS_ASCII"] = False
-    eb = EnvironBuilder(app, json=u"\u20ac")
-    assert eb.input_stream.read().decode("utf8") == u'"\u20ac"'
+    eb = EnvironBuilder(app, json="\u20ac")
+    assert eb.input_stream.read().decode("utf8") == '"\u20ac"'
 
 
 def test_blueprint_with_subdomain():
@@ -180,12 +159,10 @@ def test_redirect_keep_session(app, client, app_ctx):
         rv = client.get("/")
         assert rv.data == b"index"
         assert flask.session.get("data") == "foo"
+
         rv = client.post("/", data={}, follow_redirects=True)
         assert rv.data == b"foo"
-
-        # This support requires a new Werkzeug version
-        if not hasattr(client, "redirect_client"):
-            assert flask.session.get("data") == "foo"
+        assert flask.session.get("data") == "foo"
 
         rv = client.get("/getsession")
         assert rv.data == b"foo"
@@ -194,7 +171,7 @@ def test_redirect_keep_session(app, client, app_ctx):
 def test_session_transactions(app, client):
     @app.route("/")
     def index():
-        return text_type(flask.session["foo"])
+        return str(flask.session["foo"])
 
     with client:
         with client.session_transaction() as sess:
@@ -335,9 +312,9 @@ def test_json_request_and_response(app, client):
 def test_client_json_no_app_context(app, client):
     @app.route("/hello", methods=["POST"])
     def hello():
-        return "Hello, {}!".format(flask.request.json["name"])
+        return f"Hello, {flask.request.json['name']}!"
 
-    class Namespace(object):
+    class Namespace:
         count = 0
 
         def add(self, app):
@@ -415,7 +392,7 @@ def test_cli_invoke(app):
 
 
 def test_cli_custom_obj(app):
-    class NS(object):
+    class NS:
         called = False
 
     def create_app():

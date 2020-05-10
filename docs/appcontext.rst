@@ -1,7 +1,5 @@
 .. currentmodule:: flask
 
-.. _app-context:
-
 The Application Context
 =======================
 

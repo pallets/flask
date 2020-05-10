@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-    tests.blueprints
-    ~~~~~~~~~~~~~~~~
-
-    Blueprints (and currently modules)
-
-    :copyright: 2010 Pallets
-    :license: BSD-3-Clause
-"""
 import functools
 
 import pytest
@@ -15,7 +5,6 @@ from jinja2 import TemplateNotFound
 from werkzeug.http import parse_cache_control_header
 
 import flask
-from flask._compat import text_type
 
 
 def test_blueprint_specific_error_handling(app, client):
@@ -146,11 +135,11 @@ def test_blueprint_url_defaults(app, client):
 
     @bp.route("/foo", defaults={"baz": 42})
     def foo(bar, baz):
-        return "%s/%d" % (bar, baz)
+        return f"{bar}/{baz:d}"
 
     @bp.route("/bar")
     def bar(bar):
-        return text_type(bar)
+        return str(bar)
 
     app.register_blueprint(bp, url_prefix="/1", url_defaults={"bar": 23})
     app.register_blueprint(bp, url_prefix="/2", url_defaults={"bar": 19})

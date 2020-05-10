@@ -1,17 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-tests.test_logging
-~~~~~~~~~~~~~~~~~~~
-
-:copyright: 2010 Pallets
-:license: BSD-3-Clause
-"""
 import logging
 import sys
+from io import StringIO
 
 import pytest
 
-from flask._compat import StringIO
 from flask.logging import default_handler
 from flask.logging import has_level_handler
 from flask.logging import wsgi_errors_stream
@@ -104,12 +96,3 @@ def test_log_view_exception(app, client):
     err = stream.getvalue()
     assert "Exception on / [GET]" in err
     assert "Exception: test" in err
-
-
-def test_warn_old_config(app, request):
-    old_logger = logging.getLogger("flask.app")
-    old_logger.setLevel(logging.DEBUG)
-    request.addfinalizer(lambda: old_logger.setLevel(logging.NOTSET))
-
-    with pytest.warns(UserWarning):
-        assert app.logger.getEffectiveLevel() == logging.WARNING

@@ -1,5 +1,3 @@
-.. _errorpages:
-
 Custom Error Pages
 ==================
 
@@ -41,7 +39,7 @@ even if the application behaves correctly:
     Usually happens on programming errors or if the server is overloaded.
     A terribly good idea is to have a nice page there, because your
     application *will* fail sooner or later (see also:
-    :ref:`application-errors`).
+    :doc:`/errorhandling`).
 
 
 Error Handlers
@@ -74,7 +72,7 @@ Here is an example implementation for a "404 Page Not Found" exception::
         # note that we set the 404 status explicitly
         return render_template('404.html'), 404
 
-When using the :ref:`application factory pattern <app-factories>`::
+When using the :doc:`appfactories`::
 
     from flask import Flask, render_template
 
