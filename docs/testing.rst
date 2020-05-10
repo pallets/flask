@@ -33,7 +33,7 @@ the :ref:`tutorial`.  If you don't have that application yet, get the
 source code from :gh:`the examples <examples/tutorial>`.
 
 The Testing Setup and Fixtures
--------------------------------
+------------------------------
 
 The test code is located in the ``tests`` directory, which is located under
 the application root. The testing file anf functions are formatted like
