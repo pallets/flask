@@ -166,6 +166,7 @@ class Blueprint(_PackageBoundObject):
         url_defaults=None,
         root_path=None,
         cli_group=_sentinel,
+        cli_group_help=None,
     ):
         _PackageBoundObject.__init__(
             self, import_name, template_folder, root_path=root_path
@@ -180,6 +181,7 @@ class Blueprint(_PackageBoundObject):
             url_defaults = {}
         self.url_values_defaults = url_defaults
         self.cli_group = cli_group
+        self.cli_group_help = cli_group_help
 
     def record(self, func):
         """Registers a function that is called when the blueprint is
@@ -245,17 +247,22 @@ class Blueprint(_PackageBoundObject):
             deferred(state)
 
         cli_resolved_group = options.get("cli_group", self.cli_group)
+        cli_group_help = options.get("cli_group_help", self.cli_group_help)
 
         if not self.cli.commands:
             return
 
+        if cli_group_help is None:
+            cli_group_help = f"A command group for {self.name} blueprint."
         if cli_resolved_group is None:
             app.cli.commands.update(self.cli.commands)
         elif cli_resolved_group is _sentinel:
             self.cli.name = self.name
+            self.cli.help = cli_group_help
             app.cli.add_command(self.cli)
         else:
             self.cli.name = cli_resolved_group
+            self.cli.help = cli_group_help
             app.cli.add_command(self.cli)
 
     def route(self, rule, **options):
