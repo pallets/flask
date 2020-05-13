@@ -654,3 +654,36 @@ def test_cli_empty(app):
 
     result = app.test_cli_runner().invoke(args=["blue", "--help"])
     assert result.exit_code == 2, f"Unexpected success:\n\n{result.output}"
+
+
+def test_cli_blueprint_command_group_help(app):
+    "Test blueprint command group help text."
+    default = Blueprint("default", __name__)
+    custom = Blueprint("custom", __name__, cli_group_help="My custom help text.")
+    late = Blueprint("late", __name__)
+
+    app_runner = app.test_cli_runner()
+
+    @default.cli.command("default")
+    def default_command():
+        pass
+
+    app.register_blueprint(default)
+    result = app_runner.invoke(args=["--help"])
+    assert f"A command group for {default.name} blueprint" in result.output
+
+    @custom.cli.command("custom")
+    def custom_command():
+        pass
+
+    app.register_blueprint(custom)
+    result = app_runner.invoke(args=["--help"])
+    assert "My custom help text." in result.output
+
+    @late.cli.command("late")
+    def late_command():
+        pass
+
+    app.register_blueprint(late, cli_group_help="late help")
+    result = app_runner.invoke(args=["--help"])
+    assert "late help" in result.output
