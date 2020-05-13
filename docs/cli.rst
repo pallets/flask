@@ -362,6 +362,20 @@ commands directly to the application's level:
 
     $ flask create alice
 
+You can set the group help text with the ``cli_group_help`` parameter
+when creating the :class:`Blueprint` object, or later with
+:meth:`app.register_blueprint(bp, cli_group_help='...') <Flask.register_blueprint>`.
+The following are equivalent:
+
+.. code-block:: python
+
+    bp = Blueprint('students', __name__, cli_group_help='custom group help text')
+    # or
+    app.register_blueprint(bp, cli_group_help='custom group help text')
+
+If not set, the default help text for the command group will be
+"A command group for <blueprint's name> blueprint.".
+
 
 Application Context
 ~~~~~~~~~~~~~~~~~~~

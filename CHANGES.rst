@@ -27,6 +27,8 @@ Unreleased
     instead of PyOpenSSL. :pr:`3492`
 -   When specifying a factory function with ``FLASK_APP``, keyword
     argument can be passed. :issue:`3553`
+-   Add ``cli_group_help`` parameter for blueprint when register
+    blueprint level commands.
 
 
 Version 1.1.2

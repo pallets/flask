@@ -97,6 +97,10 @@ class Blueprint(_PackageBoundObject):
         The ``cli_group`` parameter controls the name of the group under
         the ``flask`` command.
 
+    .. versionchanged:: 2.0.0
+        Add ``cli_group_help`` parameter to set the help text of blueprint
+        command group.
+
     .. versionadded:: 0.7
 
     :param name: The name of the blueprint. Will be prepended to each
