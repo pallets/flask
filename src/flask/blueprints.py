@@ -258,15 +258,16 @@ class Blueprint(_PackageBoundObject):
 
         if cli_group_help is None:
             cli_group_help = f"A command group for {self.name} blueprint."
+        self.cli.help = cli_group_help
+        self.cli.short_help = cli_group_help
+
         if cli_resolved_group is None:
             app.cli.commands.update(self.cli.commands)
         elif cli_resolved_group is _sentinel:
             self.cli.name = self.name
-            self.cli.help = cli_group_help
             app.cli.add_command(self.cli)
         else:
             self.cli.name = cli_resolved_group
-            self.cli.help = cli_group_help
             app.cli.add_command(self.cli)
 
     def route(self, rule, **options):
