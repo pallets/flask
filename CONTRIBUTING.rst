@@ -3,86 +3,108 @@ How to contribute to Flask
 
 Thank you for considering contributing to Flask!
 
+
 Support questions
 -----------------
 
 Please, don't use the issue tracker for this. Use one of the following
 resources for questions about your own code:
 
-* The ``#get-help`` channel on our Discord chat: https://discordapp.com/invite/t6rrQZH
+-   The ``#get-help`` channel on our Discord chat:
+    https://discord.gg/t6rrQZH
 
-  * The IRC channel ``#pocoo`` on FreeNode is linked to Discord, but
-    Discord is preferred.
+    -   The IRC channel ``#pocoo`` on FreeNode is linked to Discord, but
+        Discord is preferred.
 
-* The mailing list flask@python.org for long term discussion or larger issues.
-* Ask on `Stack Overflow`_. Search with Google first using:
-  ``site:stackoverflow.com flask {search term, exception message, etc.}``
+-   The mailing list flask@python.org for long term discussion or larger
+    issues.
+-   Ask on `Stack Overflow`_. Search with Google first using:
+    ``site:stackoverflow.com flask {search term, exception message, etc.}``
 
 .. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?sort=linked
+
 
 Reporting issues
 ----------------
 
-- Describe what you expected to happen.
-- If possible, include a `minimal reproducible example`_ to help us
-  identify the issue. This also helps check that the issue is not with
-  your own code.
-- Describe what actually happened. Include the full traceback if there was an
-  exception.
-- List your Python, Flask, and Werkzeug versions. If possible, check if this
-  issue is already fixed in the repository.
+-   Describe what you expected to happen.
+-   If possible, include a `minimal reproducible example`_ to help us
+    identify the issue. This also helps check that the issue is not with
+    your own code.
+-   Describe what actually happened. Include the full traceback if there
+    was an exception.
+-   List your Python, Flask, and Werkzeug versions. If possible, check
+    if this issue is already fixed in the repository.
 
 .. _minimal reproducible example: https://stackoverflow.com/help/minimal-reproducible-example
+
 
 Submitting patches
 ------------------
 
-- Use `Black`_ to autoformat your code. This should be done for you as a
-  git `pre-commit`_ hook, which gets installed when you run ``pip install -e .[dev]``.
-  You may also wish to use Black's `Editor integration`_.
-- Include tests if your patch is supposed to solve a bug, and explain
-  clearly under which circumstances the bug happens. Make sure the test fails
-  without your patch.
-- Include a string like "Fixes #123" in your commit message
-  (where 123 is the issue you fixed).
-  See `Closing issues using keywords
-  <https://help.github.com/articles/creating-a-pull-request/>`__.
+-   Use `Black`_ to autoformat your code. This should be done for you as
+    a Git `pre-commit`_ hook, set up below. You may also wish to use
+    Black's `Editor integration`_.
+-   Include tests if your patch is supposed to solve a bug, and explain
+    clearly under which circumstances the bug happens. Make sure the
+    test fails without your patch.
+-   Include a string like "Fixes #123" in your commit message (where 123
+    is the issue you fixed). See `Closing issues using keywords
+    <https://help.github.com/articles/creating-a-pull-request/>`__.
+
 
 First time setup
 ~~~~~~~~~~~~~~~~
 
-- Download and install the `latest version of git`_.
-- Configure git with your `username`_ and `email`_::
+-   Download and install the `latest version of git`_.
+-   Configure git with your `username`_ and `email`_.
 
-        git config --global user.name 'your name'
-        git config --global user.email 'your email'
+    .. code-block:: text
 
-- Make sure you have a `GitHub account`_.
-- Fork Flask to your GitHub account by clicking the `Fork`_ button.
-- `Clone`_ your GitHub fork locally::
+        $ git config --global user.name 'your name'
+        $ git config --global user.email 'your email'
 
-        git clone https://github.com/{username}/flask
-        cd flask
+-   Make sure you have a `GitHub account`_.
+-   Fork Flask to your GitHub account by clicking the `Fork`_ button.
+-   `Clone`_ your GitHub fork locally.
 
-- Add the main repository as a remote to update later::
+    .. code-block:: text
+
+        $ git clone https://github.com/{username}/flask
+        $ cd flask
+
+-   Add the main repository as a remote to update later::
+
+    .. code-block:: text
 
         git remote add pallets https://github.com/pallets/flask
         git fetch pallets
 
-- Create a virtualenv::
+-   Create a virtualenv.
 
-        python3 -m venv env
-        . env/bin/activate
-        # or "env\Scripts\activate" on Windows
+    .. code-block:: text
 
-- Install Flask in editable mode with development dependencies::
+        $ python3 -m venv env
+        $ . env/bin/activate
 
-        pip install -e ".[dev]"
+    On Windows, activating is different.
 
-- Install the `pre-commit framework`_.
-- Install the pre-commit hooks::
+    .. code-block:: text
 
-        pre-commit install --install-hooks
+        > env\Scripts\activate
+
+-   Install Flask in editable mode with development dependencies.
+
+    .. code-block:: text
+
+        $ pip install -e ".[dev]"
+
+-   Install the `pre-commit framework`_.
+-   Install the pre-commit hooks.
+
+    .. code-block:: text
+
+        $ pre-commit install
 
 .. _GitHub account: https://github.com/join
 .. _latest version of git: https://git-scm.com/downloads
@@ -92,28 +114,35 @@ First time setup
 .. _Clone: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 .. _pre-commit framework: https://pre-commit.com/#install
 
+
 Start coding
 ~~~~~~~~~~~~
 
 -   Create a branch to identify the issue you would like to work on. If
     you're submitting a bug or documentation fix, branch off of the
-    latest ".x" branch::
+    latest ".x" branch.
 
-        git checkout -b your-branch-name origin/1.0.x
+    .. code-block:: text
+
+        $ git checkout -b your-branch-name origin/1.0.x
 
     If you're submitting a feature addition or change, branch off of the
-    "master" branch::
+    "master" branch.
 
-        git checkout -b your-branch-name origin/master
+    .. code-block:: text
 
-- Using your favorite editor, make your changes, `committing as you go`_.
-- Include tests that cover any code changes you make. Make sure the test fails
-  without your patch. `Run the tests <contributing-testsuite_>`_.
-- Push your commits to GitHub and `create a pull request`_ by using::
+        $ git checkout -b your-branch-name origin/master
 
-        git push --set-upstream origin your-branch-name
+-   Using your favorite editor, make your changes,
+    `committing as you go`_.
+-   Include tests that cover any code changes you make. Make sure the
+    test fails without your patch.
+    `Run the tests <contributing-testsuite_>`_.
+-   Push your commits to GitHub and `create a pull request`_.
 
-- Celebrate 🎉
+    .. code-block:: text
+
+        $ git push --set-upstream origin your-branch-name
 
 .. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
 .. _Black: https://black.readthedocs.io
@@ -121,37 +150,43 @@ Start coding
 .. _pre-commit: https://pre-commit.com
 .. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
 
+
 .. _contributing-testsuite: #running-the-tests
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
 
-Run the basic test suite with::
+Run the basic test suite with pytest.
 
-    pytest
+.. code-block:: text
 
-This only runs the tests for the current environment. Whether this is relevant
-depends on which part of Flask you're working on. Travis-CI will run the full
-suite when you submit your pull request.
+    $ pytest
+
+This only runs the tests for the current environment. Whether this is
+relevant depends on which part of Flask you're working on. CI will run
+the full suite when you submit your pull request.
 
 The full test suite takes a long time to run because it tests multiple
 combinations of Python and dependencies. If you don't have a Python
 version installed, it will be skipped with a warning message at the end.
-Run::
 
-    tox
+.. code-block:: text
+
+    $ tox
+
 
 Running test coverage
 ~~~~~~~~~~~~~~~~~~~~~
 
 Generating a report of lines that do not have test coverage can indicate
-where to start contributing. Run ``pytest`` using ``coverage`` and generate a
-report on the terminal and as an interactive HTML document::
+where to start contributing. Run ``pytest`` using ``coverage`` and
+generate a report on the terminal and as an interactive HTML document.
 
-    coverage run -m pytest
-    coverage report
-    coverage html
-    # then open htmlcov/index.html
+.. code-block:: text
+
+    $ coverage run -m pytest
+    $ coverage report
+    $ coverage html  # then open htmlcov/index.html
 
 Read more about `coverage <https://coverage.readthedocs.io>`_.
 
@@ -162,11 +197,12 @@ from all runs.
 Building the docs
 ~~~~~~~~~~~~~~~~~
 
-Build the docs in the ``docs`` directory using Sphinx::
+Build the docs in the ``docs`` directory using Sphinx.
 
-    cd docs
-    pip install -r requirements.txt
-    make html
+.. code-block:: text
+
+    $ cd docs
+    $ make html
 
 Open ``_build/html/index.html`` in your browser to view the docs.
 
@@ -176,22 +212,23 @@ Read more about `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
 Caution: zero-padded file modes
 -------------------------------
 
-This repository contains several zero-padded file modes that may cause issues
-when pushing this repository to git hosts other than GitHub. Fixing this is
-destructive to the commit history, so we suggest ignoring these warnings. If it
-fails to push and you're using a self-hosted git service like GitLab, you can
-turn off repository checks in the admin panel.
+This repository contains several zero-padded file modes that may cause
+issues when pushing this repository to Git hosts other than GitHub.
+Fixing this is destructive to the commit history, so we suggest ignoring
+these warnings. If it fails to push and you're using a self-hosted Git
+service like GitLab, you can turn off repository checks in the admin
+panel.
 
-These files can also cause issues while cloning. If you have ::
+These files can also cause issues while cloning if you have
+``fsckObjects`` enabled with either of the following in your git config.
+
+.. code-block::
 
     [fetch]
-    fsckobjects = true
-
-or ::
+    fsckObjects = true
 
     [receive]
     fsckObjects = true
 
-set in your git configuration file, cloning this repository will fail. The only
-solution is to set both of the above settings to false while cloning, and then
-setting them back to true after the cloning is finished.
+The only solution is to set both of the above to ``false``, clone, and
+then set them back to ``true`` after.
