@@ -1,0 +1,53 @@
+name: Tests
+on:
+  push:
+    branches:
+      - master
+      - '*.x'
+  pull_request:
+    branches:
+      - master
+      - '*.x'
+jobs:
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: Linux, python: '3.8', os: ubuntu-latest, tox: py38}
+          - {name: Windows, python: '3.8', os: windows-latest, tox: py38}
+          - {name: Mac, python: '3.8', os: macos-latest, tox: py38}
+          - {name: '3.7', python: '3.7', os: ubuntu-latest, tox: py37}
+          - {name: '3.6', python: '3.6', os: ubuntu-latest, tox: py36}
+          - {name: 'PyPy', python: pypy3, os: ubuntu-latest, tox: pypy3}
+          - {name: Version Range, python: '3.8', os: ubuntu-latest, tox: 'devel,lowest'}
+          - {name: Style, python: '3.8', os: ubuntu-latest, tox: style}
+          - {name: Docs, python: '3.8', os: ubuntu-latest, tox: docs}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: update pip
+        run: |
+          pip install -U wheel
+          pip install -U setuptools
+          python -m pip install -U pip
+      - name: get pip cache dir
+        id: pip-cache
+        run: echo "::set-output name=dir::$(pip cache dir)"
+      - name: cache pip
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: pip|${{ runner.os }}|${{ matrix.python }}|${{ hashFiles('setup.py') }}|${{ hashFiles('requirements/*.txt') }}
+      - name: cache pre-commit
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit|${{ matrix.python }}|${{ hashFiles('.pre-commit-config.yaml') }}
+        if: matrix.tox == 'style'
+      - run: pip install tox
+      - run: tox -e ${{ matrix.tox }}
