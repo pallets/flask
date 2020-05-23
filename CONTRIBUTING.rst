@@ -97,9 +97,8 @@ First time setup
 
     .. code-block:: text
 
-        $ pip install -e ".[dev]"
+        $ pip install -e . -r requirements/dev.txt
 
--   Install the `pre-commit framework`_.
 -   Install the pre-commit hooks.
 
     .. code-block:: text

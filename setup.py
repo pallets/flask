@@ -15,16 +15,5 @@ setup(
         "itsdangerous>=0.24",
         "click>=5.1",
     ],
-    extras_require={
-        "dotenv": ["python-dotenv"],
-        "dev": [
-            "pytest",
-            "coverage",
-            "tox",
-            "sphinx",
-            "pallets-sphinx-themes",
-            "sphinxcontrib-log-cabinet",
-            "sphinx-issues",
-        ],
-    },
+    extras_require={"dotenv": ["python-dotenv"]},
 )
