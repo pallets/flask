@@ -1,3 +1,4 @@
+import re
 import sqlite3
 
 import click
@@ -5,6 +6,9 @@ from flask import current_app
 from flask import g
 from flask.cli import with_appcontext
 
+def regexp(expr, item):
+    reg = re.compile(expr)
+    return reg.search(item) is not None
 
 def get_db():
     """Connect to the application's configured database. The connection
@@ -15,6 +19,7 @@ def get_db():
         g.db = sqlite3.connect(
             current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
         )
+        g.db.create_function("REGEXP", 2, regexp)
         g.db.row_factory = sqlite3.Row
 
     return g.db
