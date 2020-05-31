@@ -258,3 +258,22 @@ certificate key to prevent MITM attacks.
    or upgrade your key incorrectly.
 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning
+
+Copy/Paste Security Issues
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If your website allows users to upload their own code, hidden characters
+such as the backspace character (``\b``, ``^H``) can cause the code to
+have a different meaning when copy and pasted into terminals.
+
+For example, ``import y\bose\bm\bi\bt\be\b`` renders as
+``import yosemite`` but becomes ``import os`` when pasted in a terminal.
+
+Consider applying extra filtering, such as replacing all ``\b``
+characters.
+
+.. code-block:: python
+
+    body = body.replace("\b", "")
+
+- https://security.stackexchange.com/q/39118
