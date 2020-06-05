@@ -57,6 +57,7 @@ configuration similar to Flask's default, except for all logs:
 
     app = Flask(__name__)
 
+
 Default Configuration
 `````````````````````
 
