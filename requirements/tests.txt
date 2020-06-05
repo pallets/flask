@@ -6,7 +6,7 @@
 #
 attrs==19.3.0             # via pytest
 blinker==1.4              # via -r requirements/tests.in
-greenlet==0.4.15          # via -r requirements/tests.in
+greenlet==0.4.16          # via -r requirements/tests.in
 more-itertools==8.3.0     # via pytest
 packaging==20.4           # via pytest
 pluggy==0.13.1            # via pytest
