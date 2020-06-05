@@ -33,7 +33,9 @@ is accessed before logging is configured, it will add a default handler. If
 possible, configure logging before creating the application object.
 
 This example uses :func:`~logging.config.dictConfig` to create a logging
-configuration similar to Flask's default, except for all logs::
+configuration similar to Flask's default, except for all logs:
+
+.. code-block:: python
 
     from logging.config import dictConfig
 
@@ -55,7 +57,6 @@ configuration similar to Flask's default, except for all logs::
 
     app = Flask(__name__)
 
-
 Default Configuration
 `````````````````````
 
@@ -71,7 +72,9 @@ Removing the Default Handler
 
 If you configured logging after accessing
 :meth:`app.logger <flask.Flask.logger>`, and need to remove the default
-handler, you can import and remove it::
+handler, you can import and remove it:
+
+.. code-block:: python
 
     from flask.logging import default_handler
 
@@ -88,7 +91,9 @@ you something went wrong.
 
 To be proactive about discovering and fixing bugs, you can configure a
 :class:`logging.handlers.SMTPHandler` to send an email when errors and higher
-are logged. ::
+are logged.
+
+.. code-block:: python
 
     import logging
     from logging.handlers import SMTPHandler
@@ -118,7 +123,9 @@ Seeing more information about the request, such as the IP address, may help
 debugging some errors. You can subclass :class:`logging.Formatter` to inject
 your own fields that can be used in messages. You can change the formatter for
 Flask's default handler, the mail handler defined above, or any other
-handler. ::
+handler. 
+
+.. code-block:: python
 
     from flask import has_request_context, request
     from flask.logging import default_handler
@@ -147,7 +154,9 @@ Other Libraries
 
 Other libraries may use logging extensively, and you want to see relevant
 messages from those logs too. The simplest way to do this is to add handlers
-to the root logger instead of only the app logger. ::
+to the root logger instead of only the app logger. 
+
+.. code-block:: python
 
     from flask.logging import default_handler
 
@@ -156,7 +165,9 @@ to the root logger instead of only the app logger. ::
     root.addHandler(mail_handler)
 
 Depending on your project, it may be more useful to configure each logger you
-care about separately, instead of configuring only the root logger. ::
+care about separately, instead of configuring only the root logger. 
+
+.. code-block:: python
 
     for logger in (
         app.logger,
