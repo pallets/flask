@@ -73,12 +73,12 @@ First time setup
         $ git clone https://github.com/{username}/flask
         $ cd flask
 
--   Add the main repository as a remote to update later::
+-   Add the main repository as a remote to update later.
 
     .. code-block:: text
 
-        git remote add pallets https://github.com/pallets/flask
-        git fetch pallets
+        $ git remote add pallets https://github.com/pallets/flask
+        $ git fetch pallets
 
 -   Create a virtualenv.
 
