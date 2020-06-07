@@ -258,3 +258,29 @@ certificate key to prevent MITM attacks.
    or upgrade your key incorrectly.
 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning
+
+
+Copy/Paste to Terminal
+----------------------
+
+Hidden characters such as the backspace character (``\b``, ``^H``) can
+cause text to render differently in HTML than how it is interpreted if
+`pasted into a terminal <https://security.stackexchange.com/q/39118>`__.
+
+For example, ``import y\bose\bm\bi\bt\be\b`` renders as
+``import yosemite`` in HTML, but the backspaces are applied when pasted
+into a terminal, and it becomes ``import os``.
+
+If you expect users to copy and paste untrusted code from your site,
+such as from comments posted by users on a technical blog, consider
+applying extra filtering, such as replacing all ``\b`` characters.
+
+.. code-block:: python
+
+    body = body.replace("\b", "")
+
+Most modern terminals will warn about and remove hidden characters when
+pasting, so this isn't strictly necessary. It's also possible to craft
+dangerous commands in other ways that aren't possible to filter.
+Depending on your site's use case, it may be good to show a warning
+about copying code in general.
