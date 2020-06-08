@@ -70,8 +70,7 @@ Test
     $ pip install -e .[test]
     $ pytest
 
-Run with coverage report::
+It will also run coverage automatically, and create:
 
-    $ coverage run -m pytest
-    $ coverage report
-    $ coverage html  # open htmlcov/index.html in a browser
+* an html report in htmlcov/index.html, which you can open in the browser
+* an xml report, that you could use for example with PyCharm's "Show Code Coverage Data"
