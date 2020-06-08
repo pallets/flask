@@ -8,7 +8,7 @@ from flaskr.db import get_db
 from flaskr.db import init_db
 
 # read in SQL for populating test data
-with open(Path(__file__).parent / "data.sql", "r", encoding="utf8") as f:
+with open(Path(__file__).parent / "data.sql", encoding="utf8") as f:
     _data_sql = f.read()
 
 
