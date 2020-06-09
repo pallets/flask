@@ -1,5 +1,5 @@
-import os
-import tempfile
+from pathlib import Path
+from tempfile import TemporaryFile
 
 import pytest
 
@@ -8,15 +8,16 @@ from flaskr.db import get_db
 from flaskr.db import init_db
 
 # read in SQL for populating test data
-with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
-    _data_sql = f.read().decode("utf8")
+with open(Path(__file__).parent / "data.sql", encoding="utf8") as f:
+    _data_sql = f.read()
 
 
 @pytest.fixture
 def app():
     """Create and configure a new app instance for each test."""
     # create a temporary file to isolate the database for each test
-    db_fd, db_path = tempfile.mkstemp()
+    db_path = TemporaryFile().name
+
     # create the app with common test config
     app = create_app({"TESTING": True, "DATABASE": db_path})
 
@@ -26,10 +27,6 @@ def app():
         get_db().executescript(_data_sql)
 
     yield app
-
-    # close and remove the temporary database
-    os.close(db_fd)
-    os.unlink(db_path)
 
 
 @pytest.fixture
