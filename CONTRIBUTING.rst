@@ -7,25 +7,25 @@ Thank you for considering contributing to Flask!
 Support questions
 -----------------
 
-Please, don't use the issue tracker for this. Use one of the following
-resources for questions about your own code:
+Please, don't use the issue tracker for this. The issue tracker is a
+tool to address bugs and feature requests in Flask itself. Use one of
+the following resources for questions about using Flask or issues with
+your own code:
 
 -   The ``#get-help`` channel on our Discord chat:
     https://discord.gg/t6rrQZH
-
-    -   The IRC channel ``#pocoo`` on FreeNode is linked to Discord, but
-        Discord is preferred.
-
 -   The mailing list flask@python.org for long term discussion or larger
     issues.
 -   Ask on `Stack Overflow`_. Search with Google first using:
-    ``site:stackoverflow.com flask {search term, exception message, etc.}``
+    ``site:stackoverflow.com python flask {search term, exception message, etc.}``
 
 .. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?sort=linked
 
 
 Reporting issues
 ----------------
+
+Include the following information in your post:
 
 -   Describe what you expected to happen.
 -   If possible, include a `minimal reproducible example`_ to help us
@@ -34,7 +34,8 @@ Reporting issues
 -   Describe what actually happened. Include the full traceback if there
     was an exception.
 -   List your Python, Flask, and Werkzeug versions. If possible, check
-    if this issue is already fixed in the repository.
+    if this issue is already fixed in the latest releases or the latest
+    code in the repository.
 
 .. _minimal reproducible example: https://stackoverflow.com/help/minimal-reproducible-example
 
@@ -42,15 +43,27 @@ Reporting issues
 Submitting patches
 ------------------
 
--   Use `Black`_ to autoformat your code. This should be done for you as
-    a Git `pre-commit`_ hook, set up below. You may also wish to use
-    Black's `Editor integration`_.
--   Include tests if your patch is supposed to solve a bug, and explain
-    clearly under which circumstances the bug happens. Make sure the
-    test fails without your patch.
--   Include a string like "Fixes #123" in your commit message (where 123
-    is the issue you fixed). See `Closing issues using keywords
-    <https://help.github.com/articles/creating-a-pull-request/>`__.
+If there is not an open issue for what you want to submit, prefer
+opening one for discussion before working on a PR. You can work on any
+issue that doesn't have an open PR linked to it or a maintainer assigned
+to it. These show up in the sidebar. No need to ask if you can work on
+an issue that interests you.
+
+Include the following in your patch:
+
+-   Use `Black`_ to format your code. This and other tools will run
+    automatically if you install `pre-commit`_ using the instructions
+    below.
+-   Include tests if your patch adds or changes code. Make sure the test
+    fails without your patch.
+-   Update any relevant docs pages and docstrings. Docs pages and
+    docstrings should be wrapped at 72 characters.
+-   Add an entry in ``CHANGES.rst``. Use the same style as other
+    entries. Also include ``.. versionchanged::`` inline changelogs in
+    relevant docstrings.
+
+.. _Black: https://black.readthedocs.io
+.. _pre-commit: https://pre-commit.com
 
 
 First time setup
@@ -66,19 +79,20 @@ First time setup
 
 -   Make sure you have a `GitHub account`_.
 -   Fork Flask to your GitHub account by clicking the `Fork`_ button.
--   `Clone`_ your GitHub fork locally.
+-   `Clone`_ the main repository locally.
 
     .. code-block:: text
 
-        $ git clone https://github.com/{username}/flask
+        $ git clone https://github.com/pallets/flask
         $ cd flask
 
--   Add the main repository as a remote to update later.
+-   Add your fork as a remote to push your work to. Replace
+    ``{username}`` with your username. This names the remote "fork", the
+    default Pallets remote is "origin".
 
     .. code-block:: text
 
-        $ git remote add pallets https://github.com/pallets/flask
-        $ git fetch pallets
+        git remote add fork https://github.com/{username}/flask
 
 -   Create a virtualenv.
 
@@ -105,13 +119,12 @@ First time setup
 
         $ pre-commit install
 
-.. _GitHub account: https://github.com/join
 .. _latest version of git: https://git-scm.com/downloads
 .. _username: https://help.github.com/en/articles/setting-your-username-in-git
 .. _email: https://help.github.com/en/articles/setting-your-commit-email-address-in-git
+.. _GitHub account: https://github.com/join
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
-.. _pre-commit framework: https://pre-commit.com/#install
 
 
 Start coding
@@ -123,34 +136,32 @@ Start coding
 
     .. code-block:: text
 
-        $ git checkout -b your-branch-name origin/1.0.x
+        $ git fetch origin
+        $ git checkout -b your-branch-name origin/1.1.x
 
     If you're submitting a feature addition or change, branch off of the
     "master" branch.
 
     .. code-block:: text
 
+        $ git fetch origin
         $ git checkout -b your-branch-name origin/master
 
 -   Using your favorite editor, make your changes,
     `committing as you go`_.
 -   Include tests that cover any code changes you make. Make sure the
-    test fails without your patch.
-    `Run the tests <contributing-testsuite_>`_.
--   Push your commits to GitHub and `create a pull request`_.
+    test fails without your patch. Run the tests as described below.
+-   Push your commits to your fork on GitHub and
+    `create a pull request`_. Link to the issue being addressed with
+    ``fixes #123`` in the pull request.
 
     .. code-block:: text
 
-        $ git push --set-upstream origin your-branch-name
+        $ git push --set-upstream fork your-branch-name
 
 .. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
-.. _Black: https://black.readthedocs.io
-.. _Editor integration: https://black.readthedocs.io/en/stable/editor_integration.html
-.. _pre-commit: https://pre-commit.com
 .. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
 
-
-.. _contributing-testsuite: #running-the-tests
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
@@ -161,13 +172,10 @@ Run the basic test suite with pytest.
 
     $ pytest
 
-This only runs the tests for the current environment. Whether this is
-relevant depends on which part of Flask you're working on. CI will run
-the full suite when you submit your pull request.
-
-The full test suite takes a long time to run because it tests multiple
-combinations of Python and dependencies. If you don't have a Python
-version installed, it will be skipped with a warning message at the end.
+This runs the tests for the current environment, which is usually
+sufficient. CI will run the full suite when you submit your pull
+request. You can run the full test suite with tox if you don't want to
+wait.
 
 .. code-block:: text
 
@@ -179,18 +187,17 @@ Running test coverage
 
 Generating a report of lines that do not have test coverage can indicate
 where to start contributing. Run ``pytest`` using ``coverage`` and
-generate a report on the terminal and as an interactive HTML document.
+generate a report.
 
 .. code-block:: text
 
+    $ pip install coverage
     $ coverage run -m pytest
-    $ coverage report
-    $ coverage html  # then open htmlcov/index.html
+    $ coverage html
 
-Read more about `coverage <https://coverage.readthedocs.io>`_.
+Open ``htmlcov/index.html`` in your browser to explore the report.
 
-Running the full test suite with ``tox`` will combine the coverage reports
-from all runs.
+Read more about `coverage <https://coverage.readthedocs.io>`__.
 
 
 Building the docs
@@ -205,29 +212,4 @@ Build the docs in the ``docs`` directory using Sphinx.
 
 Open ``_build/html/index.html`` in your browser to view the docs.
 
-Read more about `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
-
-
-Caution: zero-padded file modes
--------------------------------
-
-This repository contains several zero-padded file modes that may cause
-issues when pushing this repository to Git hosts other than GitHub.
-Fixing this is destructive to the commit history, so we suggest ignoring
-these warnings. If it fails to push and you're using a self-hosted Git
-service like GitLab, you can turn off repository checks in the admin
-panel.
-
-These files can also cause issues while cloning if you have
-``fsckObjects`` enabled with either of the following in your git config.
-
-.. code-block::
-
-    [fetch]
-    fsckObjects = true
-
-    [receive]
-    fsckObjects = true
-
-The only solution is to set both of the above to ``false``, clone, and
-then set them back to ``true`` after.
+Read more about `Sphinx <https://www.sphinx-doc.org/en/stable/>`__.
