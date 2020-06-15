@@ -22,7 +22,7 @@ requests==2.23.0          # via sphinx
 six==1.15.0               # via packaging
 snowballstemmer==2.0.0    # via sphinx
 sphinx-issues==1.2.0      # via -r requirements/docs.in
-sphinx==3.1.0             # via -r requirements/docs.in, pallets-sphinx-themes, sphinx-issues, sphinxcontrib-log-cabinet
+sphinx==3.1.1             # via -r requirements/docs.in, pallets-sphinx-themes, sphinx-issues, sphinxcontrib-log-cabinet
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
 sphinxcontrib-htmlhelp==1.0.3  # via sphinx
