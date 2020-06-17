@@ -13,7 +13,7 @@ Flask provides a way to test your application by exposing the Werkzeug
 test :class:`~werkzeug.test.Client` and handling the context locals for you.
 You can then use that with your favourite testing solution.
 
-In this documentation we will use the `pytest`_ and `coverage`_ package as the base
+In this documentation we will use the `pytest`_ and `coverage`_ packages as the base
 framework for our tests. You can install it with ``pip``, like so::
 
 .. code-block:: none
@@ -37,8 +37,8 @@ The Testing Setup and Fixtures
 ------------------------------
 
 The test code is located in the ``tests`` directory, which is located under
-the application root. The testing file anf functions are formatted like
-``test_*.py`` and ``def test_*():``. They will be auto-discoverable by pytest.
+the application root. The testing file and functions are formatted like
+``test_*.py`` and ``def test_*():``. They will be auto-discoverable by Pytest.
 
 The ``tests/conftest.py`` file contains setup functions called fixtures that
 each test will use.
@@ -106,7 +106,7 @@ local development configuration.
         return app.test_cli_runner()
 
 :func:`tempfile.mkstemp` creates and opens a temporary file, returning
-the file object and the path to it. The ``DATABASE`` path is
+the file object and its path. The ``DATABASE`` path is
 overridden so it points to this temporary path instead of the instance
 folder. After setting the path, the database tables are created and the
 test data is inserted. After the test is over, the temporary file is
@@ -222,8 +222,8 @@ Authentication
 
 For most of the views, a user needs to be logged in. The easiest way to
 do this in tests is to make a ``POST`` request to the ``login`` view
-with the client. Rather than writing that out every time, you can write
-a class with methods to do that, and use a fixture to pass it the client
+using the client. Instead of writing the same code for this many times, you can write
+a class with methods which handle this, and use a fixture to pass it the client
 for each test.
 
 
@@ -541,7 +541,7 @@ the test functions you've written.
 
     ====================== 24 passed in 0.64 seconds =======================
 
-If any tests fail, pytest will show the error that was raised. You can
+If any tests fail, Pytest will show the error that was raised. You can
 run ``pytest -v`` to get a list of each test function rather than dots.
 
 To measure the code coverage of your tests, use the ``coverage`` command
