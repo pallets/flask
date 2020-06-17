@@ -401,7 +401,7 @@ class Flask(_PackageBoundObject):
         self.static_url_path = static_url_path
         self.static_folder = static_folder
 
-        if instance_path is None:
+        if not instance_path:
             instance_path = self.auto_find_instance_path()
         elif not os.path.isabs(instance_path):
             raise ValueError(
@@ -598,7 +598,7 @@ class Flask(_PackageBoundObject):
         """
         if self.import_name == "__main__":
             fn = getattr(sys.modules["__main__"], "__file__", None)
-            if fn is None:
+            if not fn:
                 return "__main__"
             return os.path.splitext(os.path.basename(fn))[0]
         return self.import_name
@@ -611,7 +611,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         rv = self.config["PROPAGATE_EXCEPTIONS"]
-        if rv is not None:
+        if rv:
             return rv
         return self.testing or self.debug
 
@@ -624,7 +624,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.7
         """
         rv = self.config["PRESERVE_CONTEXT_ON_EXCEPTION"]
-        if rv is not None:
+        if rv:
             return rv
         return self.debug
 
@@ -700,7 +700,7 @@ class Flask(_PackageBoundObject):
         .. versionadded:: 0.8
         """
         prefix, package_path = find_package(self.import_name)
-        if prefix is None:
+        if not prefix:
             return os.path.join(package_path, "instance")
         return os.path.join(prefix, "var", f"{self.name}-instance")
 
@@ -729,7 +729,7 @@ class Flask(_PackageBoundObject):
             already existed.
         """
         rv = self.config["TEMPLATES_AUTO_RELOAD"]
-        return rv if rv is not None else self.debug
+        return rv if rv else self.debug
 
     @templates_auto_reload.setter
     def templates_auto_reload(self, value):
@@ -789,7 +789,7 @@ class Flask(_PackageBoundObject):
 
         .. versionadded:: 0.5
         """
-        if filename is None:
+        if not filename:
             return True
         return filename.endswith((".html", ".htm", ".xml", ".xhtml"))
 
@@ -806,9 +806,9 @@ class Flask(_PackageBoundObject):
         """
         funcs = self.template_context_processors[None]
         reqctx = _request_ctx_stack.top
-        if reqctx is not None:
+        if reqctx:
             bp = reqctx.request.blueprint
-            if bp is not None and bp in self.template_context_processors:
+            if bp and bp in self.template_context_processors:
                 funcs = chain(funcs, self.template_context_processors[bp])
         orig_ctx = context.copy()
         for func in funcs:
@@ -940,7 +940,7 @@ class Flask(_PackageBoundObject):
                 self.debug = get_debug_flag()
 
         # debug passed to method overrides all other sources
-        if debug is not None:
+        if debug:
             self.debug = bool(debug)
 
         server_name = self.config.get("SERVER_NAME")
@@ -1030,7 +1030,7 @@ class Flask(_PackageBoundObject):
            the constructor of :attr:`test_client_class`.
         """
         cls = self.test_client_class
-        if cls is None:
+        if not cls:
             from .testing import FlaskClient as cls
         return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
 
@@ -1046,7 +1046,7 @@ class Flask(_PackageBoundObject):
         """
         cls = self.test_cli_runner_class
 
-        if cls is None:
+        if not cls:
             from .testing import FlaskCliRunner as cls
 
         return cls(self, **kwargs)
@@ -1156,7 +1156,7 @@ class Flask(_PackageBoundObject):
                         Starting with Flask 0.6, ``OPTIONS`` is implicitly
                         added and handled by the standard request handling.
         """
-        if endpoint is None:
+        if not endpoint:
             endpoint = _endpoint_from_view_func(view_func)
         options["endpoint"] = endpoint
         methods = options.pop("methods", None)
@@ -1164,7 +1164,7 @@ class Flask(_PackageBoundObject):
         # if the methods are not given and the view_func object knows its
         # methods we can use that instead.  If neither exists, we go with
         # a tuple of only ``GET`` as default.
-        if methods is None:
+        if not methods:
             methods = getattr(view_func, "methods", None) or ("GET",)
         if isinstance(methods, str):
             raise TypeError(
@@ -1178,12 +1178,12 @@ class Flask(_PackageBoundObject):
 
         # starting with Flask 0.8 the view_func object can disable and
         # force-enable the automatic options handling.
-        if provide_automatic_options is None:
+        if not provide_automatic_options:
             provide_automatic_options = getattr(
                 view_func, "provide_automatic_options", None
             )
 
-        if provide_automatic_options is None:
+        if not provide_automatic_options:
             if "OPTIONS" not in methods:
                 provide_automatic_options = True
                 required_methods.add("OPTIONS")
@@ -1197,9 +1197,9 @@ class Flask(_PackageBoundObject):
         rule.provide_automatic_options = provide_automatic_options
 
         self.url_map.add(rule)
-        if view_func is not None:
+        if view_func:
             old_func = self.view_functions.get(endpoint)
-            if old_func is not None and old_func != view_func:
+            if old_func and old_func != view_func:
                 raise AssertionError(
                     "View function mapping is overwriting an existing"
                     f" endpoint function: {endpoint}"
@@ -1631,7 +1631,7 @@ class Flask(_PackageBoundObject):
             for cls in exc_class.__mro__:
                 handler = handler_map.get(cls)
 
-                if handler is not None:
+                if handler:
                     return handler
 
     def handle_http_exception(self, e):
@@ -1653,7 +1653,7 @@ class Flask(_PackageBoundObject):
         """
         # Proxy exceptions don't have error codes.  We want to always return
         # those unchanged as errors
-        if e.code is None:
+        if not e.code:
             return e
 
         # RoutingExceptions are used internally to trigger routing
@@ -1663,7 +1663,7 @@ class Flask(_PackageBoundObject):
             return e
 
         handler = self._find_error_handler(e)
-        if handler is None:
+        if not handler:
             return e
         return handler(e)
 
@@ -1691,7 +1691,7 @@ class Flask(_PackageBoundObject):
 
         # if unset, trap key errors in debug mode
         if (
-            trap_bad_request is None
+            not trap_bad_request
             and self.debug
             and isinstance(e, BadRequestKeyError)
         ):
@@ -1734,7 +1734,7 @@ class Flask(_PackageBoundObject):
 
         handler = self._find_error_handler(e)
 
-        if handler is None:
+        if not handler:
             raise
 
         return handler(e)
@@ -1791,7 +1791,7 @@ class Flask(_PackageBoundObject):
         server_error.original_exception = e
         handler = self._find_error_handler(server_error)
 
-        if handler is not None:
+        if handler:
             server_error = handler(server_error)
 
         return self.finalize_request(server_error, from_error_handler=True)
@@ -1838,7 +1838,7 @@ class Flask(_PackageBoundObject):
            moved to the new :meth:`full_dispatch_request`.
         """
         req = _request_ctx_stack.top.request
-        if req.routing_exception is not None:
+        if req.routing_exception:
             self.raise_routing_exception(req)
         rule = req.url_rule
         # if we provide automatic options for this URL and the
@@ -1862,7 +1862,7 @@ class Flask(_PackageBoundObject):
         try:
             request_started.send(self)
             rv = self.preprocess_request()
-            if rv is None:
+            if not rv:
                 rv = self.dispatch_request()
         except Exception as e:
             rv = self.handle_user_exception(e)
@@ -1999,7 +1999,7 @@ class Flask(_PackageBoundObject):
                 )
 
         # the body must not be None
-        if rv is None:
+        if not rv:
             raise TypeError(
                 f"The view function for {request.endpoint!r} did not"
                 " return a valid response. The function either returned"
@@ -2037,7 +2037,7 @@ class Flask(_PackageBoundObject):
                 )
 
         # prefer the status if it was provided
-        if status is not None:
+        if status:
             if isinstance(status, (str, bytes, bytearray)):
                 rv.status = status
             else:
@@ -2064,7 +2064,7 @@ class Flask(_PackageBoundObject):
             :data:`SERVER_NAME` no longer implicitly enables subdomain
             matching. Use :attr:`subdomain_matching` instead.
         """
-        if request is not None:
+        if request:
             # If subdomain matching is disabled (the default), use the
             # default subdomain in all cases. This should be the default
             # in Werkzeug but it currently does not have that feature.
@@ -2080,7 +2080,7 @@ class Flask(_PackageBoundObject):
             )
         # We need at the very least the server name to be set for this
         # to work.
-        if self.config["SERVER_NAME"] is not None:
+        if self.config["SERVER_NAME"]:
             return self.url_map.bind(
                 self.config["SERVER_NAME"],
                 script_name=self.config["APPLICATION_ROOT"],
@@ -2112,7 +2112,7 @@ class Flask(_PackageBoundObject):
                 # make error available outside except block
                 error = e
             else:
-                if rv is not None:
+                if rv:
                     return rv
 
         # Re-raise if called with an active exception, otherwise raise
@@ -2136,17 +2136,17 @@ class Flask(_PackageBoundObject):
         bp = _request_ctx_stack.top.request.blueprint
 
         funcs = self.url_value_preprocessors.get(None, ())
-        if bp is not None and bp in self.url_value_preprocessors:
+        if bp and bp in self.url_value_preprocessors:
             funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
         funcs = self.before_request_funcs.get(None, ())
-        if bp is not None and bp in self.before_request_funcs:
+        if bp and bp in self.before_request_funcs:
             funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
             rv = func()
-            if rv is not None:
+            if rv:
                 return rv
 
     def process_response(self, response):
@@ -2165,7 +2165,7 @@ class Flask(_PackageBoundObject):
         ctx = _request_ctx_stack.top
         bp = ctx.request.blueprint
         funcs = ctx._after_request_functions
-        if bp is not None and bp in self.after_request_funcs:
+        if bp and bp in self.after_request_funcs:
             funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
         if None in self.after_request_funcs:
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
@@ -2200,7 +2200,7 @@ class Flask(_PackageBoundObject):
             exc = sys.exc_info()[1]
         funcs = reversed(self.teardown_request_funcs.get(None, ()))
         bp = _request_ctx_stack.top.request.blueprint
-        if bp is not None and bp in self.teardown_request_funcs:
+        if bp and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         for func in funcs:
             func(exc)
