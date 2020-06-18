@@ -23,21 +23,21 @@ documentation for more information.\
 
 def _lookup_req_object(name):
     top = _request_ctx_stack.top
-    if top is None:
+    if not top:
         raise RuntimeError(_request_ctx_err_msg)
     return getattr(top, name)
 
 
 def _lookup_app_object(name):
     top = _app_ctx_stack.top
-    if top is None:
+    if not top:
         raise RuntimeError(_app_ctx_err_msg)
     return getattr(top, name)
 
 
 def _find_app():
     top = _app_ctx_stack.top
-    if top is None:
+    if not top:
         raise RuntimeError(_app_ctx_err_msg)
     return top.app
 
