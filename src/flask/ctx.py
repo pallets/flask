@@ -78,7 +78,7 @@ class _AppCtxGlobals:
 
     def __repr__(self):
         top = _app_ctx_stack.top
-        if top is not None:
+        if top:
             return f"<flask.g of {top.app.name!r}>"
         return object.__repr__(self)
 
@@ -133,7 +133,7 @@ def copy_current_request_context(f):
     .. versionadded:: 0.10
     """
     top = _request_ctx_stack.top
-    if top is None:
+    if not top:
         raise RuntimeError(
             "This decorator can only be used at local scopes "
             "when a request context is on the stack.  For instance within "
@@ -160,7 +160,7 @@ def has_request_context():
 
             def __init__(self, username, remote_addr=None):
                 self.username = username
-                if remote_addr is None and has_request_context():
+                if not remote_addr and has_request_context():
                     remote_addr = request.remote_addr
                 self.remote_addr = remote_addr
 
@@ -171,7 +171,7 @@ def has_request_context():
 
             def __init__(self, username, remote_addr=None):
                 self.username = username
-                if remote_addr is None and request:
+                if not remote_addr and request:
                     remote_addr = request.remote_addr
                 self.remote_addr = remote_addr
 
@@ -267,7 +267,7 @@ class RequestContext:
 
     def __init__(self, app, environ, request=None, session=None):
         self.app = app
-        if request is None:
+        if not request:
             request = app.request_class(environ)
         self.request = request
         self.url_adapter = None
@@ -346,13 +346,13 @@ class RequestContext:
         # memory.  This is usually only a problem in test suite since this
         # functionality is not active in production environments.
         top = _request_ctx_stack.top
-        if top is not None and top.preserved:
+        if top and top.preserved:
             top.pop(top._preserved_exc)
 
         # Before we push the request context we have to ensure that there
         # is an application context.
         app_ctx = _app_ctx_stack.top
-        if app_ctx is None or app_ctx.app != self.app:
+        if not app_ctx or app_ctx.app != self.app:
             app_ctx = self.app.app_context()
             app_ctx.push()
             self._implicit_app_ctx_stack.append(app_ctx)
@@ -365,14 +365,14 @@ class RequestContext:
         # This allows a custom open_session method to use the request context.
         # Only open a new session if this is the first time the request was
         # pushed, otherwise stream_with_context loses the session.
-        if self.session is None:
+        if not self.session:
             session_interface = self.app.session_interface
             self.session = session_interface.open_session(self.app, self.request)
 
-            if self.session is None:
+            if not self.session:
                 self.session = session_interface.make_null_session(self.app)
 
-        if self.url_adapter is not None:
+        if self.url_adapter:
             self.match_request()
 
     def pop(self, exc=_sentinel):
@@ -395,7 +395,7 @@ class RequestContext:
                 self.app.do_teardown_request(exc)
 
                 request_close = getattr(self.request, "close", None)
-                if request_close is not None:
+                if request_close:
                     request_close()
                 clear_request = True
         finally:
@@ -407,7 +407,7 @@ class RequestContext:
                 rv.request.environ["werkzeug.request"] = None
 
             # Get rid of the app as well if necessary.
-            if app_ctx is not None:
+            if app_ctx:
                 app_ctx.pop(exc)
 
             assert (
@@ -416,7 +416,7 @@ class RequestContext:
 
     def auto_pop(self, exc):
         if self.request.environ.get("flask._preserve_context") or (
-            exc is not None and self.app.preserve_context_on_exception
+            exc and self.app.preserve_context_on_exception
         ):
             self.preserved = True
             self._preserved_exc = exc
