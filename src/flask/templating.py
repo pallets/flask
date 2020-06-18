@@ -15,9 +15,9 @@ def _default_template_ctx_processor():
     reqctx = _request_ctx_stack.top
     appctx = _app_ctx_stack.top
     rv = {}
-    if appctx is not None:
+    if appctx:
         rv["g"] = appctx.g
-    if reqctx is not None:
+    if reqctx:
         rv["request"] = reqctx.request
         rv["session"] = reqctx.session
     return rv
@@ -56,7 +56,7 @@ class DispatchingJinjaLoader(BaseLoader):
         for srcobj, loader in self._iter_loaders(template):
             try:
                 rv = loader.get_source(environment, template)
-                if trv is None:
+                if not trv:
                     trv = rv
             except TemplateNotFound:
                 rv = None
@@ -66,7 +66,7 @@ class DispatchingJinjaLoader(BaseLoader):
 
         explain_template_loading_attempts(self.app, template, attempts)
 
-        if trv is not None:
+        if trv:
             return trv
         raise TemplateNotFound(template)
 
@@ -80,23 +80,23 @@ class DispatchingJinjaLoader(BaseLoader):
 
     def _iter_loaders(self, template):
         loader = self.app.jinja_loader
-        if loader is not None:
+        if loader:
             yield self.app, loader
 
         for blueprint in self.app.iter_blueprints():
             loader = blueprint.jinja_loader
-            if loader is not None:
+            if loader:
                 yield blueprint, loader
 
     def list_templates(self):
         result = set()
         loader = self.app.jinja_loader
-        if loader is not None:
+        if loader:
             result.update(loader.list_templates())
 
         for blueprint in self.app.iter_blueprints():
             loader = blueprint.jinja_loader
-            if loader is not None:
+            if loader:
                 for template in loader.list_templates():
                     result.add(template)
 
