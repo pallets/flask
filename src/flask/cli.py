@@ -92,8 +92,8 @@ def call_factory(script_info, app_factory, args=None, kwargs=None):
     the app_factory depending on that and the arguments provided.
     """
     sig = inspect.signature(app_factory)
-    args = [] if args is None else args
-    kwargs = {} if kwargs is None else kwargs
+    args = [] if not args else args
+    kwargs = {} if not kwargs else kwargs
 
     if "script_info" in sig.parameters:
         warnings.warn(
@@ -129,7 +129,7 @@ def _called_with_wrong_args(f):
     tb = sys.exc_info()[2]
 
     try:
-        while tb is not None:
+        while tb:
             if tb.tb_frame.f_code is f.__code__:
                 # In the function, it was called successfully.
                 return False
@@ -268,7 +268,7 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
 
     module = sys.modules[module_name]
 
-    if app_name is None:
+    if not app_name:
         return find_best_app(script_info, module)
     else:
         return find_app_by_string(script_info, module, app_name)
@@ -313,7 +313,7 @@ class DispatchingApp:
         self._lock = Lock()
         self._bg_loading_exc_info = None
 
-        if use_eager_loading is None:
+        if not use_eager_loading:
             use_eager_loading = os.environ.get("WERKZEUG_RUN_MAIN") != "true"
 
         if use_eager_loading:
@@ -336,7 +336,7 @@ class DispatchingApp:
     def _flush_bg_loading_exception(self):
         __traceback_hide__ = True  # noqa: F841
         exc_info = self._bg_loading_exc_info
-        if exc_info is not None:
+        if exc_info:
             self._bg_loading_exc_info = None
             raise exc_info
 
@@ -348,11 +348,11 @@ class DispatchingApp:
 
     def __call__(self, environ, start_response):
         __traceback_hide__ = True  # noqa: F841
-        if self._app is not None:
+        if self._app:
             return self._app(environ, start_response)
         self._flush_bg_loading_exception()
         with self._lock:
-            if self._app is not None:
+            if self._app:
                 rv = self._app
             else:
                 rv = self._load_unlocked()
@@ -387,10 +387,10 @@ class ScriptInfo:
         """
         __traceback_hide__ = True  # noqa: F841
 
-        if self._loaded_app is not None:
+        if self._loaded_app:
             return self._loaded_app
 
-        if self.create_app is not None:
+        if self.create_app:
             app = call_factory(self, self.create_app)
         else:
             if self.app_import_path:
@@ -545,13 +545,13 @@ class FlaskGroup(AppGroup):
         # This also means that the script stays functional in case the
         # application completely fails.
         rv = AppGroup.get_command(self, ctx, name)
-        if rv is not None:
+        if rv:
             return rv
 
         info = ctx.ensure_object(ScriptInfo)
         try:
             rv = info.load_app().cli.get_command(ctx, name)
-            if rv is not None:
+            if rv:
                 return rv
         except NoAppException:
             pass
@@ -587,7 +587,7 @@ class FlaskGroup(AppGroup):
 
         obj = kwargs.get("obj")
 
-        if obj is None:
+        if not obj:
             obj = ScriptInfo(
                 create_app=self.create_app, set_debug_flag=self.set_debug_flag
             )
@@ -627,7 +627,7 @@ def load_dotenv(path=None):
 
     .. versionadded:: 1.0
     """
-    if dotenv is None:
+    if not dotenv:
         if path or os.path.isfile(".env") or os.path.isfile(".flaskenv"):
             click.secho(
                 " * Tip: There are .env or .flaskenv files present."
@@ -640,7 +640,7 @@ def load_dotenv(path=None):
 
     # if the given path specifies the actual file then return True,
     # else False
-    if path is not None:
+    if path:
         if os.path.isfile(path):
             return dotenv.load_dotenv(path)
 
@@ -654,7 +654,7 @@ def load_dotenv(path=None):
         if not path:
             continue
 
-        if new_dir is None:
+        if not new_dir:
             new_dir = os.path.dirname(path)
 
         dotenv.load_dotenv(path)
@@ -662,7 +662,7 @@ def load_dotenv(path=None):
     if new_dir and os.getcwd() != new_dir:
         os.chdir(new_dir)
 
-    return new_dir is not None  # at least one file was located and loaded
+    return new_dir  # at least one file was located and loaded
 
 
 def show_server_banner(env, debug, app_import_path, eager_loading):
@@ -672,7 +672,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         return
 
-    if app_import_path is not None:
+    if app_import_path:
         message = f" * Serving Flask app {app_import_path!r}"
 
         if not eager_loading:
@@ -690,7 +690,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
         )
         click.secho("   Use a production WSGI server instead.", dim=True)
 
-    if debug is not None:
+    if debug:
         click.echo(f" * Debug mode: {'on' if debug else 'off'}")
 
 
@@ -706,7 +706,7 @@ class CertParamType(click.ParamType):
         self.path_type = click.Path(exists=True, dir_okay=False, resolve_path=True)
 
     def convert(self, value, param, ctx):
-        if ssl is None:
+        if not ssl:
             raise click.BadParameter(
                 'Using "--cert" requires Python to be compiled with SSL support.',
                 ctx,
@@ -746,7 +746,7 @@ def _validate_key(ctx, param, value):
     is_adhoc = cert == "adhoc"
     is_context = ssl and isinstance(cert, ssl.SSLContext)
 
-    if value is not None:
+    if value:
         if is_adhoc:
             raise click.BadParameter(
                 'When "--cert" is "adhoc", "--key" is not used.', ctx, param
@@ -840,10 +840,10 @@ def run_command(
     """
     debug = get_debug_flag()
 
-    if reload is None:
+    if not reload:
         reload = debug
 
-    if debugger is None:
+    if not debugger:
         debugger = debug
 
     show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
