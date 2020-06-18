@@ -115,7 +115,7 @@ def explain_template_loading_attempts(app, template, attempts):
     total_found = 0
     blueprint = None
     reqctx = _request_ctx_stack.top
-    if reqctx is not None and reqctx.request.blueprint is not None:
+    if reqctx and reqctx.request.blueprint:
         blueprint = reqctx.request.blueprint
 
     for idx, (loader, srcobj, triple) in enumerate(attempts):
@@ -131,7 +131,7 @@ def explain_template_loading_attempts(app, template, attempts):
         for line in _dump_loader_info(loader):
             info.append(f"       {line}")
 
-        if triple is None:
+        if not triple:
             detail = "no match"
         else:
             detail = f"found ({triple[1] or '<string>'!r})"
@@ -146,7 +146,7 @@ def explain_template_loading_attempts(app, template, attempts):
         info.append("Warning: multiple loaders returned a match for the template.")
         seems_fishy = True
 
-    if blueprint is not None and seems_fishy:
+    if blueprint and seems_fishy:
         info.append(
             "  The template was looked up from an endpoint that belongs"
             f" to the blueprint {blueprint!r}."
