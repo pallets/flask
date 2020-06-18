@@ -130,7 +130,7 @@ def stream_with_context(generator_or_function):
 
     def generator():
         ctx = _request_ctx_stack.top
-        if ctx is None:
+        if not ctx:
             raise RuntimeError(
                 "Attempted to stream with context but "
                 "there was no context in the first place to keep around."
@@ -287,7 +287,7 @@ def url_for(endpoint, **values):
     appctx = _app_ctx_stack.top
     reqctx = _request_ctx_stack.top
 
-    if appctx is None:
+    if not appctx:
         raise RuntimeError(
             "Attempted to generate a URL without the application context being"
             " pushed. This has to be executed when application context is"
@@ -296,12 +296,12 @@ def url_for(endpoint, **values):
 
     # If request specific information is available we have some extra
     # features that support "relative" URLs.
-    if reqctx is not None:
+    if reqctx:
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
 
         if endpoint[:1] == ".":
-            if blueprint_name is not None:
+            if blueprint_name:
                 endpoint = f"{blueprint_name}{endpoint}"
             else:
                 endpoint = endpoint[1:]
