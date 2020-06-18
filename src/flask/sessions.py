@@ -184,7 +184,7 @@ class SessionInterface:
 
         # set explicitly, or cached from SERVER_NAME detection
         # if False, return None
-        if rv is not None:
+        if rv:
             return rv if rv else None
 
         rv = app.config["SERVER_NAME"]
@@ -335,7 +335,7 @@ class SecureCookieSessionInterface(SessionInterface):
 
     def open_session(self, app, request):
         s = self.get_signing_serializer(app)
-        if s is None:
+        if not s:
             return None
         val = request.cookies.get(self.get_cookie_name(app))
         if not val:
