@@ -32,7 +32,7 @@ class BlueprintSetupState:
         self.first_registration = first_registration
 
         subdomain = self.options.get("subdomain")
-        if subdomain is None:
+        if not subdomain:
             subdomain = self.blueprint.subdomain
 
         #: The subdomain that the blueprint should be active for, ``None``
@@ -40,7 +40,7 @@ class BlueprintSetupState:
         self.subdomain = subdomain
 
         url_prefix = self.options.get("url_prefix")
-        if url_prefix is None:
+        if not url_prefix:
             url_prefix = self.blueprint.url_prefix
         #: The prefix that should be used for all URLs defined on the
         #: blueprint.
@@ -56,13 +56,13 @@ class BlueprintSetupState:
         to the application.  The endpoint is automatically prefixed with the
         blueprint's name.
         """
-        if self.url_prefix is not None:
+        if self.url_prefix:
             if rule:
                 rule = "/".join((self.url_prefix.rstrip("/"), rule.lstrip("/")))
             else:
                 rule = self.url_prefix
         options.setdefault("subdomain", self.subdomain)
-        if endpoint is None:
+        if not endpoint:
             endpoint = _endpoint_from_view_func(view_func)
         defaults = self.url_defaults
         if "defaults" in options:
@@ -176,7 +176,7 @@ class Blueprint(_PackageBoundObject):
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.deferred_functions = []
-        if url_defaults is None:
+        if not url_defaults:
             url_defaults = {}
         self.url_values_defaults = url_defaults
         self.cli_group = cli_group
@@ -249,7 +249,7 @@ class Blueprint(_PackageBoundObject):
         if not self.cli.commands:
             return
 
-        if cli_resolved_group is None:
+        if not cli_resolved_group:
             app.cli.commands.update(self.cli.commands)
         elif cli_resolved_group is _sentinel:
             self.cli.name = self.name
