@@ -662,7 +662,7 @@ def load_dotenv(path=None):
     if new_dir and os.getcwd() != new_dir:
         os.chdir(new_dir)
 
-    return new_dir  # at least one file was located and loaded
+    return new_dir is not None  # at least one file was located and loaded
 
 
 def show_server_banner(env, debug, app_import_path, eager_loading):
