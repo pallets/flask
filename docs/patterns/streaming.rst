@@ -15,14 +15,12 @@ This is a basic view function that generates a lot of CSV data on the fly.
 The trick is to have an inner function that uses a generator to generate
 data and to then invoke that function and pass it to a response object::
 
-    from flask import Response
-
     @app.route('/large.csv')
     def generate_large_csv():
         def generate():
             for row in iter_all_rows():
                 yield f"{','.join(row)}\n"
-        return Response(generate(), mimetype='text/csv')
+        return app.response_class(generate(), mimetype='text/csv')
 
 Each ``yield`` expression is directly sent to the browser.  Note though
 that some WSGI middlewares might break streaming, so be careful there in
@@ -35,8 +33,6 @@ The Jinja2 template engine also supports rendering templates piece by
 piece.  This functionality is not directly exposed by Flask because it is
 quite uncommon, but you can easily do it yourself::
 
-    from flask import Response
-
     def stream_template(template_name, **context):
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
@@ -47,7 +43,7 @@ quite uncommon, but you can easily do it yourself::
     @app.route('/my-large-page.html')
     def render_large_template():
         rows = iter_all_rows()
-        return Response(stream_template('the_template.html', rows=rows))
+        return app.response_class(stream_template('the_template.html', rows=rows))
 
 The trick here is to get the template object from the Jinja2 environment
 on the application and to call :meth:`~jinja2.Template.stream` instead of
@@ -70,7 +66,7 @@ moment the function executes.  Flask 0.9 provides you with a helper that
 can keep the request context around during the execution of the
 generator::
 
-    from flask import stream_with_context, request, Response
+    from flask import stream_with_context, request
 
     @app.route('/stream')
     def streamed_response():
@@ -78,7 +74,7 @@ generator::
             yield 'Hello '
             yield request.args['name']
             yield '!'
-        return Response(stream_with_context(generate()))
+        return app.response_class(stream_with_context(generate()))
 
 Without the :func:`~flask.stream_with_context` function you would get a
 :class:`RuntimeError` at that point.
