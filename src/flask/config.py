@@ -13,10 +13,10 @@ class ConfigAttribute:
         self.get_converter = get_converter
 
     def __get__(self, obj, type=None):
-        if obj is None:
+        if not obj:
             return self
         rv = obj.config[self.__name__]
-        if self.get_converter is not None:
+        if self.get_converter:
             rv = self.get_converter(rv)
         return rv
 
