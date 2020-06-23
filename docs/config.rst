@@ -552,10 +552,6 @@ and import different hard-coded files based on that.
 An interesting pattern is also to use classes and inheritance for
 configuration::
 
-    import os
-
-    basedir = os.path.abspath(os.path.dirname(__file__))
-
     class Config(object):
         TESTING = False
 
@@ -563,7 +559,7 @@ configuration::
         DATABASE_URI = 'mysql://user@localhost/foo'
 
     class DevelopmentConfig(Config):
-        DATABASE_URI = "sqlite:///" + os.path.join(basedir, "foo.db")
+        DATABASE_URI = "sqlite:////tmp/foo.db"
 
     class TestingConfig(Config):
         DATABASE_URI = 'sqlite:///:memory:'
