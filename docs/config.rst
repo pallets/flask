@@ -429,7 +429,6 @@ sure to use uppercase letters for your config keys.
 Here is an example of a configuration file::
 
     # Example configuration
-    DEBUG = False
     SECRET_KEY = b'_5#y2L"F4Q8z\n\xec]/'
 
 Make sure to load the configuration very early on, so that extensions have
@@ -554,17 +553,16 @@ An interesting pattern is also to use classes and inheritance for
 configuration::
 
     class Config(object):
-        DEBUG = False
         TESTING = False
-        DATABASE_URI = 'sqlite:///:memory:'
 
     class ProductionConfig(Config):
         DATABASE_URI = 'mysql://user@localhost/foo'
 
     class DevelopmentConfig(Config):
-        DEBUG = True
+        DATABASE_URI = "sqlite:////tmp/foo.db"
 
     class TestingConfig(Config):
+        DATABASE_URI = 'sqlite:///:memory:'
         TESTING = True
 
 To enable such a config you just have to call into
@@ -589,7 +587,6 @@ your configuration classes::
 
     class Config(object):
         """Base config, uses staging database server."""
-        DEBUG = False
         TESTING = False
         DB_SERVER = '192.168.1.56'
 
@@ -603,11 +600,9 @@ your configuration classes::
 
     class DevelopmentConfig(Config):
         DB_SERVER = 'localhost'
-        DEBUG = True
 
     class TestingConfig(Config):
         DB_SERVER = 'localhost'
-        DEBUG = True
         DATABASE_URI = 'sqlite:///:memory:'
 
 There are many different ways and it's up to you how you want to manage
