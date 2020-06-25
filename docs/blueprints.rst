@@ -243,6 +243,8 @@ you can use relative redirects by prefixing the endpoint with a dot only::
 This will link to ``admin.index`` for instance in case the current request
 was dispatched to any other admin blueprint endpoint.
 
+.. _my-blueprint-error-label:
+
 Error Handlers
 --------------
 

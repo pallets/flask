@@ -98,6 +98,27 @@ An example template might be this:
       <p><a href="{{ url_for('index') }}">go somewhere nice</a>
     {% endblock %}
 
+Registering an Error Handler
+----------------------------
+
+At that point views can raise that error, but it would immediately result
+in an internal server error.  The reason for this is that there is no
+handler registered for this error class.  That however is easy to add::
+
+    @app.errorhandler(InvalidUsage)
+    def handle_invalid_usage(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+Usage in Views
+--------------
+
+Here is how a view can use that functionality::
+
+    @app.route('/foo')
+    def get_foo():
+        raise InvalidUsage('This view is gone', status_code=410)
 
 Returning API errors as JSON
 ----------------------------
