@@ -41,9 +41,7 @@ Incoming Request Data
 
    This is a proxy.  See :ref:`notes-on-proxies` for more information.
 
-   The request object is an instance of a :class:`~werkzeug.wrappers.Request`
-   subclass and provides all of the attributes Werkzeug defines.  This
-   just shows a quick overview of the most important ones.
+   The request object is an instance of a :class:`~flask.Request`.
 
 
 Response Objects
