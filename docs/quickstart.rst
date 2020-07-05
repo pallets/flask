@@ -264,15 +264,15 @@ The following two rules differ in their use of a trailing slash. ::
         return 'The about page'
 
 The canonical URL for the ``projects`` endpoint has a trailing slash.
-It's similar to a folder in a file system. If you access ``/projects`` - the URL without
-a trailing slash, Flask redirects you to the canonical URL with the
-trailing slash - ``/projects/``.
+It's similar to a folder in a file system. If you access the URL without
+a trailing slash (``/projects``), Flask redirects you to the canonical URL
+with the trailing slash (``/projects/``).
 
 The canonical URL for the ``about`` endpoint does not have a trailing
-slash. It's similar to the pathname of a file. Accessing ``/about/`` - the URL with a
-trailing slash produces a 404 "Not Found" error. This helps keep URLs
-unique for these resources, which helps search engines avoid indexing
-the same page twice.
+slash. It's similar to the pathname of a file. Accessing the URL with a
+trailing slash (``/about/``) produces a 404 "Not Found" error. This helps
+keep URLs unique for these resources, which helps search engines avoid
+indexing the same page twice.
 
 
 .. _url-building:
