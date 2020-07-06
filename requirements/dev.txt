@@ -33,7 +33,7 @@ py==1.8.1                 # via pytest, tox
 pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via packaging
 pytest==5.4.3             # via -r requirements/tests.in
-python-dotenv==0.13.0     # via -r requirements/tests.in
+python-dotenv==0.14.0     # via -r requirements/tests.in
 pytz==2020.1              # via babel
 pyyaml==5.3.1             # via pre-commit
 requests==2.23.0          # via sphinx
