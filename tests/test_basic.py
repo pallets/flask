@@ -1406,6 +1406,16 @@ def test_static_url_empty_path_default(app):
     rv.close()
 
 
+@pytest.mark.skipif(sys.version_info < (3, 6), reason="requires Python >= 3.6")
+def test_static_folder_with_pathlib_path(app):
+    from pathlib import Path
+
+    app = flask.Flask(__name__, static_folder=Path("static"))
+    rv = app.test_client().open("/static/index.html", method="GET")
+    assert rv.status_code == 200
+    rv.close()
+
+
 def test_static_folder_with_ending_slash():
     app = flask.Flask(__name__, static_folder="static/")
 
