@@ -2,6 +2,7 @@ import os
 import socket
 import warnings
 from functools import update_wrapper
+from functools import wraps
 from threading import RLock
 
 import werkzeug.utils
@@ -729,3 +730,43 @@ def is_ip(value):
             return True
 
     return False
+
+
+def run_async(func):
+    """Return a sync function that will run the coroutine function *func*."""
+    try:
+        from asgiref.sync import async_to_sync
+    except ImportError:
+        raise RuntimeError(
+            "Install Flask with the 'async' extra in order to use async views."
+        )
+
+    @wraps(func)
+    def outer(*args, **kwargs):
+        """This function grabs the current context for the inner function.
+
+        This is similar to the copy_current_xxx_context functions in the
+        ctx module, except it has an async inner.
+        """
+        ctx = None
+        if _request_ctx_stack.top is not None:
+            ctx = _request_ctx_stack.top.copy()
+
+        @wraps(func)
+        async def inner(*a, **k):
+            """This restores the context before awaiting the func.
+
+            This is required as the func must be awaited within the
+            context. Simply calling func (as per the
+            copy_current_xxx_context functions) doesn't work as the
+            with block will close before the coroutine is awaited.
+            """
+            if ctx is not None:
+                with ctx:
+                    return await func(*a, **k)
+            else:
+                return await func(*a, **k)
+
+        return async_to_sync(inner)(*args, **kwargs)
+
+    return outer
