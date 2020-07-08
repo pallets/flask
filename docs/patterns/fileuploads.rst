@@ -181,8 +181,8 @@ construction of progress bar.
 
 Because the common pattern for file uploads exists almost unchanged in all
 applications dealing with uploads, there is also a Flask extension called
-`Flask-Uploads`_ that implements a full fledged upload mechanism with white and
-blacklisting of extensions and more.
+`Flask-Uploads`_ that implements a full fledged upload mechanism that
+allows controlling with file extensions are allowed to be uploaded.
 
 .. _jQuery: https://jquery.com/
 .. _Flask-Uploads: https://flask-uploads.readthedocs.io/en/latest/
