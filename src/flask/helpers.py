@@ -437,7 +437,8 @@ def get_flashed_messages(with_categories=False, category_filter=()):
         `category_filter` parameter added.
 
     :param with_categories: set to ``True`` to also receive categories.
-    :param category_filter: whitelist of categories to limit return values
+    :param category_filter: filter of categories to limit return values.  Only
+                            categories in the list will be returned.
     """
     flashes = _request_ctx_stack.top.flashes
     if flashes is None:
