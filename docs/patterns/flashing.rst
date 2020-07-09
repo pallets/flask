@@ -79,14 +79,13 @@ And here is the :file:`login.html` template which also inherits from
        <p class="error"><strong>Error:</strong> {{ error }}
      {% endif %}
      <form method="post">
-       <dl>
-         <dt>Username:
-         <dd><input type="text" name="username" value="{{
-             request.form.username }}">
-         <dt>Password:
-         <dd><input type="password" name="password">
-       </dl>
-       <p><input type="submit" value="Login">
+       <label for="username">Username:</label>
+       <input type="text" name="username" id="username"
+              value="{{ request.form.username }}">
+       <label for="password">Password:</label>
+       <input type="password" name="password" id="password">
+
+        <input type="submit" value="Login">
      </form>
    {% endblock %}
 
