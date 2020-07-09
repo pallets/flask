@@ -110,7 +110,7 @@ categories.  The loop looks slightly different in that situation then:
 
 .. sourcecode:: html+jinja
 
-   {% with messages = get_flashed_messages(with_categories=true) %}
+   {% with messages = get_flashed_messages(with_categories=True) %}
      {% if messages %}
        <ul class="flashes">
        {% for category, message in messages %}
