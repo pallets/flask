@@ -2045,7 +2045,7 @@ class Flask(_PackageBoundObject):
 
         # extend existing headers with provided headers
         if headers:
-            rv.headers.update(headers)
+            rv.headers.extend(headers)
 
         return rv
 
