@@ -49,7 +49,7 @@ sphinxcontrib-log-cabinet==1.0.1  # via -r requirements/docs.in
 sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 toml==0.10.1              # via pre-commit, tox
-tox==3.16.1               # via -r requirements/dev.in
+tox==3.17.0               # via -r requirements/dev.in
 urllib3==1.25.9           # via requests
 virtualenv==20.0.21       # via pre-commit, tox
 wcwidth==0.1.9            # via pytest
