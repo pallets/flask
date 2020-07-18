@@ -504,7 +504,7 @@ def test_load_dotenv(monkeypatch):
         monkeypatch._setitem.append((os.environ, item, notset))
 
     monkeypatch.setenv("EGGS", "3")
-    monkeypatch.chdir(os.path.join(test_path, "cliapp", "inner1"))
+    monkeypatch.chdir(test_path)
     assert load_dotenv()
     assert os.getcwd() == test_path
     # .flaskenv doesn't overwrite .env
