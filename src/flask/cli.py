@@ -610,10 +610,6 @@ def load_dotenv(path=None):
     If an env var is already set it is not overwritten, so earlier files in the
     list are preferred over later files.
 
-    Changes the current working directory to the location of the first file
-    found, with the assumption that it is in the top level project directory
-    and will be where the Python path should import local packages from.
-
     This is a no-op if `python-dotenv`_ is not installed.
 
     .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
@@ -658,9 +654,6 @@ def load_dotenv(path=None):
             new_dir = os.path.dirname(path)
 
         dotenv.load_dotenv(path)
-
-    if new_dir and os.getcwd() != new_dir:
-        os.chdir(new_dir)
 
     return new_dir is not None  # at least one file was located and loaded
 
