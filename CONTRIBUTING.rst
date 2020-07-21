@@ -13,7 +13,7 @@ the following resources for questions about using Flask or issues with
 your own code:
 
 -   The ``#get-help`` channel on our Discord chat:
-    https://discord.gg/t6rrQZH
+    https://discord.gg/pallets
 -   The mailing list flask@python.org for long term discussion or larger
     issues.
 -   Ask on `Stack Overflow`_. Search with Google first using:
