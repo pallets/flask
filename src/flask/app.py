@@ -2046,7 +2046,10 @@ class Flask(_PackageBoundObject):
         # extend existing headers with provided headers
         if headers:
             rv.headers.extend(headers)
-
+            # prevent duplicate Content-Type header
+            content_type = Headers(headers).get("Content-Type")
+            if content_type:
+                rv.headers.set("Content-Type", content_type)
         return rv
 
     def create_url_adapter(self, request):
