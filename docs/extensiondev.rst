@@ -332,5 +332,5 @@ ecosystem remain consistent and compatible.
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: https://mail.python.org/mailman/listinfo/flask
-.. _Discord server: https://discord.gg/t6rrQZH
+.. _Discord server: https://discord.gg/pallets
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/
