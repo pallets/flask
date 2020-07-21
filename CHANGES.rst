@@ -30,6 +30,8 @@ Unreleased
 -   When loading a ``.env`` or ``.flaskenv`` file on top level directory,
     Flask will not change current work directory to the location of dotenv
     files, in order to prevent potential confusion. :pr:`3560`
+-   Fix duplicate ``Content-Type`` header when setting header for
+    :meth:`jsonify` or ``dict`` response. :pr:`3690`
 
 
 Version 1.1.x

@@ -1967,3 +1967,32 @@ def test_max_cookie_size(app, client, recwarn):
 
     client.get("/")
     assert len(recwarn) == 0
+
+
+def test_unique_content_type_header(app, client):
+    @app.route("/jsonify")
+    def from_jsonify():
+        return flask.jsonify(hello="world"), {"Content-Type": "foo/bar"}
+
+    @app.route("/dict")
+    def from_dict():
+        return {"hello": "world"}, {"Content-Type": "foo/bar"}
+
+    @app.route("/tuple-header")
+    def from_tuple_header():
+        return {"hello": "world"}, [("Content-Type", "foo/bar")]
+
+    rv = client.get("/jsonify")
+    assert rv.headers["Content-Type"] == "foo/bar"
+    assert rv.status_code == 200
+    assert rv.mimetype == "foo/bar"
+
+    rv = client.get("/dict")
+    assert rv.headers["Content-Type"] == "foo/bar"
+    assert rv.status_code == 200
+    assert rv.mimetype == "foo/bar"
+
+    rv = client.get("/tuple-header")
+    assert rv.headers["Content-Type"] == "foo/bar"
+    assert rv.status_code == 200
+    assert rv.mimetype == "foo/bar"
