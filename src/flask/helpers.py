@@ -76,14 +76,6 @@ def get_load_dotenv(default=True):
     return val.lower() in ("0", "false", "no")
 
 
-def _endpoint_from_view_func(view_func):
-    """Internal helper that returns the default endpoint for a given
-    function.  This always is the function name.
-    """
-    assert view_func is not None, "expected view func if endpoint is not provided."
-    return view_func.__name__
-
-
 def stream_with_context(generator_or_function):
     """Request contexts disappear when the response is started on the server.
     This is done for efficiency reasons and to make it less likely to encounter
