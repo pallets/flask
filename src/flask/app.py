@@ -85,7 +85,35 @@ def setupmethod(f):
 
 
 class Skeleton(_PackageBoundObject):
-    pass
+
+    #: Skeleton local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    json_encoder = None
+    #: Skeleton local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    json_decoder = None
+
+    #: The name of the package or module that this app belongs to. Do not
+    #: change this once it is set by the constructor.
+    import_name = None
+
+    #: Location of the template files to be added to the template lookup.
+    #: ``None`` if templates should not be added.
+    template_folder = None
+
+    #: Absolute path to the package on the filesystem. Used to look up
+    #: resources contained in the package.
+    root_path = None
+
+    def __init__(
+        self,
+        import_name,
+        template_folder=None,
+        root_path=None,
+    ):
+        _PackageBoundObject.__init__(
+            self, import_name, template_folder=template_folder, root_path=root_path
+        )
 
 
 class Flask(_PackageBoundObject):
