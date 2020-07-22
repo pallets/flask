@@ -108,7 +108,7 @@ class Skeleton(_PackageBoundObject):
     def __init__(
         self,
         import_name,
-        template_folder=None,
+        template_folder,
         root_path=None,
     ):
         _PackageBoundObject.__init__(
@@ -116,7 +116,7 @@ class Skeleton(_PackageBoundObject):
         )
 
 
-class Flask(_PackageBoundObject):
+class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
     application.  Once it is created it will act as a central registry for
