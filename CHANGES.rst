@@ -37,6 +37,11 @@ Unreleased
     For example, this allows setting the ``Content-Type`` for
     ``jsonify()``. Use ``response.headers.extend()`` if extending is
     desired. :issue:`3628`
+-   The ``Scaffold`` class provides a common API for the ``Flask`` and
+    ``Blueprint`` classes. ``Blueprint`` information is stored in
+    attributes just like ``Flask``, rather than opaque lambda functions.
+    This is intended to improve consistency and maintainability.
+    :issue:`3215`
 
 
 Version 1.1.x
