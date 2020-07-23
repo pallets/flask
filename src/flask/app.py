@@ -119,6 +119,29 @@ class Skeleton(_PackageBoundObject):
 
         self.static_url_path = static_url_path
         self.static_folder = static_folder
+    
+    def route(self, rule, **options, endpoint_name):
+        def decorator(f):
+            endpoint = options.pop("endpoint", endpoint_name)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+        
+        return decorator
+
+    def add_url_rule(self, rule, endpoint=None, view_func=None, provide_automatic_options=None, **options):  # only Flask uses PAO
+        raise NotImplementedError()
+
+    def endpoint(self, endpoint):
+        raise NotImplementedError()
+
+    def before_request(self, f):
+        raise NotImplementedError()
+
+    def after_request(self, f):
+        raise NotImplementedError()
+
+    def teardown_request(self, f):
+        raise NotImplementedError()
 
     def context_processor(self, f):
         raise NotImplementedError()
