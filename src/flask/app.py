@@ -110,10 +110,30 @@ class Skeleton(_PackageBoundObject):
         import_name,
         template_folder,
         root_path=None,
+        static_url_path=None,
+        static_folder="static"
     ):
         _PackageBoundObject.__init__(
             self, import_name, template_folder=template_folder, root_path=root_path
         )
+
+        self.static_url_path = static_url_path
+        self.static_folder = static_folder
+
+    def context_processor(self, f):
+        raise NotImplementedError()
+
+    def url_value_preprocessor(self, f):
+        raise NotImplementedError()
+
+    def url_defaults(self, f):
+        raise NotImplementedError()
+
+    def errorhandler(self, code_or_exception):
+        raise NotImplementedError()
+
+    def register_error_handler(self, code_or_exception, f):
+        raise NotImplementedError()
 
 
 class Flask(Skeleton):
@@ -426,12 +446,9 @@ class Flask(Skeleton):
         instance_relative_config=False,
         root_path=None,
     ):
-        _PackageBoundObject.__init__(
-            self, import_name, template_folder=template_folder, root_path=root_path
+        Skeleton.__init__(
+            self, import_name, template_folder, root_path=root_path, static_url_path=static_url_path, static_folder=static_folder
         )
-
-        self.static_url_path = static_url_path
-        self.static_folder = static_folder
 
         if instance_path is None:
             instance_path = self.auto_find_instance_path()

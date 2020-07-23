@@ -168,14 +168,13 @@ class Blueprint(Skeleton):
         root_path=None,
         cli_group=_sentinel,
     ):
-        _PackageBoundObject.__init__(
-            self, import_name, template_folder, root_path=root_path
+        Skeleton.__init__(
+            self, import_name, template_folder, root_path=root_path, static_url_path=static_url_path, static_folder=static_folder
         )
         self.name = name
         self.url_prefix = url_prefix
         self.subdomain = subdomain
-        self.static_folder = static_folder
-        self.static_url_path = static_url_path
+       
         self.deferred_functions = []
         if url_defaults is None:
             url_defaults = {}
