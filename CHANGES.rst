@@ -27,9 +27,14 @@ Unreleased
     instead of PyOpenSSL. :pr:`3492`
 -   When specifying a factory function with ``FLASK_APP``, keyword
     argument can be passed. :issue:`3553`
--   When loading a ``.env`` or ``.flaskenv`` file on top level directory,
-    Flask will not change current work directory to the location of dotenv
-    files, in order to prevent potential confusion. :pr:`3560`
+-   When loading a ``.env`` or ``.flaskenv`` file, the current working
+    directory is no longer changed to the location of the file.
+    :pr:`3560`
+-   When returning a ``(response, headers)`` tuple from a view, the
+    headers replace rather than extend existing headers on the response.
+    For example, this allows setting the ``Content-Type`` for
+    ``jsonify()``. Use ``response.headers.extend()`` if extending is
+    desired. :issue:`3628`
 
 
 Version 1.1.x

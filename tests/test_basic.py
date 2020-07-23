@@ -1117,8 +1117,10 @@ def test_response_types(app, client):
     @app.route("/response_headers")
     def from_response_headers():
         return (
-            flask.Response("Hello world", 404, {"X-Foo": "Baz"}),
-            {"X-Foo": "Bar", "X-Bar": "Foo"},
+            flask.Response(
+                "Hello world", 404, {"Content-Type": "text/html", "X-Foo": "Baz"}
+            ),
+            {"Content-Type": "text/plain", "X-Foo": "Bar", "X-Bar": "Foo"},
         )
 
     @app.route("/response_status")
@@ -1155,7 +1157,8 @@ def test_response_types(app, client):
 
     rv = client.get("/response_headers")
     assert rv.data == b"Hello world"
-    assert rv.headers.getlist("X-Foo") == ["Baz", "Bar"]
+    assert rv.content_type == "text/plain"
+    assert rv.headers.getlist("X-Foo") == ["Bar"]
     assert rv.headers["X-Bar"] == "Foo"
     assert rv.status_code == 404
 
