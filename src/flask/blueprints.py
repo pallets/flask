@@ -258,17 +258,20 @@ class Blueprint(Skeleton):
             self.cli.name = cli_resolved_group
             app.cli.add_command(self.cli)
 
-    def route(self, rule, **options):
-        """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
-        :func:`url_for` function is prefixed with the name of the blueprint.
-        """
+    def route():
+        return super().route()
 
-        def decorator(f):
-            endpoint = options.pop("endpoint", f.__name__)
-            self.add_url_rule(rule, endpoint, f, **options)
-            return f
+    # def route(self, rule, **options):
+    #     """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
+    #     :func:`url_for` function is prefixed with the name of the blueprint.
+    #     """
 
-        return decorator
+    #     def decorator(f):
+    #         endpoint = options.pop("endpoint", f.__name__)
+    #         self.add_url_rule(rule, endpoint, f, **options)
+    #         return f
+
+    #     return decorator
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
