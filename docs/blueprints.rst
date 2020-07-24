@@ -273,4 +273,4 @@ at the application level using the ``request`` proxy object::
         else:
             return ex
 
-More information on error handling see :doc:`/patterns/errorpages`.
+See :doc:`/errorhandling`.
