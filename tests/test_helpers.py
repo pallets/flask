@@ -116,8 +116,6 @@ class TestJSON:
         "test_value", [0, -1, 1, 23, 3.14, "s", "longer string", True, False, None]
     )
     def test_jsonify_basic_types(self, test_value, app, client):
-        """Test jsonify with basic types."""
-
         url = "/jsonify_basic_types"
         app.add_url_rule(url, url, lambda x=test_value: flask.jsonify(x))
         rv = client.get(url)
@@ -125,7 +123,6 @@ class TestJSON:
         assert flask.json.loads(rv.data) == test_value
 
     def test_jsonify_dicts(self, app, client):
-        """Test jsonify with dicts and kwargs unpacking."""
         d = {
             "a": 0,
             "b": 23,
