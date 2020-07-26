@@ -20,9 +20,10 @@ Why Blueprints?
 
 Blueprints in Flask are intended for these cases:
 
-* Factor an application into a set of blueprints.  This is ideal for
-  larger applications; a project could instantiate an application object,
-  initialize several extensions, and register a collection of blueprints.
+* Factor an application into a modular set of related logical components,
+  ideal for larger applications. A project could instantiate an application
+  object , register a collection of blueprints on the app. This makes
+  code easy to maintain/extend.
 * Register a blueprint on an application at a URL prefix and/or subdomain.
   Parameters in the URL prefix/subdomain become common view arguments
   (with defaults) across all view functions in the blueprint.
@@ -120,6 +121,50 @@ And sure enough, these are the generated rules::
 On top of that you can register blueprints multiple times though not every
 blueprint might respond properly to that.  In fact it depends on how the
 blueprint is implemented if it can be mounted more than once.
+
+
+Using Blueprint to provide templates
+------------------------------------
+Register a blueprint multiple times on an application with different URL rules::
+
+  from flask import Flask , Blueprint, url_for , Request, jsonify
+
+  library = Blueprint("library", __name__)
+
+  @library.route("/books")
+  def book():
+    category = url_for('library.book').split('/')[1]
+    return jsonify(category)
+
+  @library.route("/authors")
+  def author():
+    return {}
+
+
+  app = Flask(__name__)
+
+  app.register_blueprint(library, url_prefix="/space")
+  app.register_blueprint(library, url_prefix="/biology")
+  app.register_blueprint(library, url_prefix="/geography")
+
+
+Using Blueprint for subdomains
+---------------------------------
+Blueprints can be used to create subdomains::
+
+  from flask import Blueprint
+  from flask import Flask
+
+  api = Blueprint("api", __name__)
+
+  @api.route("/")
+  def book():
+    return {}
+
+  app = Flask(__name__)
+
+  app.config['SERVER_NAME'] = 'myapp.dev:5000'
+  app.register_blueprint(api, subdomain='api')
 
 Blueprint Resources
 -------------------
