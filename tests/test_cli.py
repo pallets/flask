@@ -44,7 +44,6 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    """Test if `find_best_app` behaves as expected with different combinations of input."""  # noqa: B950
     script_info = ScriptInfo()
 
     class Module:
@@ -271,7 +270,6 @@ def test_get_version(test_apps, capsys):
 
 
 def test_scriptinfo(test_apps, monkeypatch):
-    """Test of ScriptInfo."""
     obj = ScriptInfo(app_import_path="cliapp.app:testapp")
     app = obj.load_app()
     assert app.name == "testapp"
@@ -321,8 +319,6 @@ def test_scriptinfo(test_apps, monkeypatch):
 
 
 def test_with_appcontext(runner):
-    """Test of with_appcontext."""
-
     @click.command()
     @with_appcontext
     def testcmd():
@@ -336,8 +332,6 @@ def test_with_appcontext(runner):
 
 
 def test_appgroup(runner):
-    """Test of with_appcontext."""
-
     @click.group(cls=AppGroup)
     def cli():
         pass
@@ -366,8 +360,6 @@ def test_appgroup(runner):
 
 
 def test_flaskgroup(runner):
-    """Test FlaskGroup."""
-
     def create_app():
         return Flask("flaskgroup")
 
@@ -386,8 +378,6 @@ def test_flaskgroup(runner):
 
 @pytest.mark.parametrize("set_debug_flag", (True, False))
 def test_flaskgroup_debug(runner, set_debug_flag):
-    """Test FlaskGroup debug flag behavior."""
-
     def create_app():
         app = Flask("flaskgroup")
         app.debug = True
