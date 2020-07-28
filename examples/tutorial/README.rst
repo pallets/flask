@@ -68,7 +68,7 @@ Test
 ::
 
     $ pip install '.[test]'
-    $ pytest
+    $ python -m pytest
 
 Run with coverage report::
 
