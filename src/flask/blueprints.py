@@ -240,6 +240,14 @@ class Blueprint(Skeleton):
                 view_func=self.send_static_file,
                 endpoint="static",
             )
+        
+        app = state.app
+        app.view_functions.update(self.view_functions)
+
+        # def before_request
+        for key, values in self.before_request_funcs.items():
+            key = self.name if key is None else f"{self.name}"
+            app.before_request_funcs.setdefault(key, []).extend(values)
 
         for deferred in self.deferred_functions:
             deferred(state)
@@ -258,8 +266,8 @@ class Blueprint(Skeleton):
             self.cli.name = cli_resolved_group
             app.cli.add_command(self.cli)
 
-    def route():
-        return super().route()
+    # def route(self, rule, **options):
+    #   return super().route()
 
     # def route(self, rule, **options):
     #     """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
@@ -286,21 +294,25 @@ class Blueprint(Skeleton):
         self.record(lambda s: s.add_url_rule(rule, endpoint, view_func, **options))
 
     def endpoint(self, endpoint):
-        """Like :meth:`Flask.endpoint` but for a blueprint.  This does not
-        prefix the endpoint with the blueprint name, this has to be done
-        explicitly by the user of this method.  If the endpoint is prefixed
-        with a `.` it will be registered to the current blueprint, otherwise
-        it's an application independent endpoint.
-        """
+        register()
+        return super().endpoint(self, endpoint)
 
-        def decorator(f):
-            def register_endpoint(state):
-                state.app.view_functions[endpoint] = f
+    # def endpoint(self, endpoint):
+    #     """Like :meth:`Flask.endpoint` but for a blueprint.  This does not
+    #     prefix the endpoint with the blueprint name, this has to be done
+    #     explicitly by the user of this method.  If the endpoint is prefixed
+    #     with a `.` it will be registered to the current blueprint, otherwise
+    #     it's an application independent endpoint.
+    #     """
 
-            self.record_once(register_endpoint)
-            return f
+    #     def decorator(f):
+    #         def register_endpoint(state):
+    #             state.app.view_functions[endpoint] = f
 
-        return decorator
+    #         self.record_once(register_endpoint)
+    #         return f
+
+    #     return decorator
 
     def app_template_filter(self, name=None):
         """Register a custom template filter, available application wide.  Like
@@ -399,9 +411,10 @@ class Blueprint(Skeleton):
         is only executed before each request that is handled by a function of
         that blueprint.
         """
-        self.record_once(
-            lambda s: s.app.before_request_funcs.setdefault(self.name, []).append(f)
-        )
+        self.before_request_funcs.setdefault(None, []).append(f)
+        # self.record_once(
+        #     lambda s: s.app.before_request_funcs.setdefault(self.name, []).append(f)
+        # )
         return f
 
     def before_app_request(self, f):

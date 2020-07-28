@@ -89,6 +89,7 @@ class Skeleton(_PackageBoundObject):
     #: Skeleton local JSON decoder class to use.
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
     json_encoder = None
+
     #: Skeleton local JSON decoder class to use.
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
     json_decoder = None
@@ -105,6 +106,7 @@ class Skeleton(_PackageBoundObject):
     #: resources contained in the package.
     root_path = None
 
+
     def __init__(
         self,
         import_name,
@@ -119,27 +121,29 @@ class Skeleton(_PackageBoundObject):
 
         self.static_url_path = static_url_path
         self.static_folder = static_folder
+        self.view_functions = {}
     
-    def route(self, rule, **options, use_none=False):
+    def route(self, rule, **options):
         def decorator(f):
-            if use_none:
-                endpoint = options.pop("endpoint", None)
-            else:
-                endpoint = options.pop("endpoint", f.__name__)
-                
+            endpoint = options.pop("endpoint", None)
             self.add_url_rule(rule, endpoint, f, **options)
             return f
         
         return decorator
 
-    def add_url_rule(self, rule, endpoint=None, view_func=None, provide_automatic_options=None, **options):  # only Flask uses PAO
+    def add_url_rule(self, rule, endpoint=None, view_func=None, provide_automatic_options=None, **options):
         raise NotImplementedError()
 
     def endpoint(self, endpoint):
-        raise NotImplementedError()
+        def decorator(f):
+            self.view_functions[endpoint] = f
+            return f
+
+        return decorator
 
     def before_request(self, f):
-        raise NotImplementedError()
+        self.before_request_funcs.setdefault(None, []).append(f)
+        return f
 
     def after_request(self, f):
         raise NotImplementedError()
@@ -1282,8 +1286,8 @@ class Flask(Skeleton):
                 )
             self.view_functions[endpoint] = view_func
 
-    def route(self, rule, **options):
-        return super().route(self, rule, **options, use_none=True)
+    # def route(self, rule, **options):
+    #     return super().route()
 
     # def route(self, rule, **options):
     #     """A decorator that is used to register a view function for a
@@ -1317,23 +1321,23 @@ class Flask(Skeleton):
 
     #     return decorator
 
-    @setupmethod
-    def endpoint(self, endpoint):
-        """A decorator to register a function as an endpoint.
-        Example::
+    # @setupmethod
+    # def endpoint(self, endpoint):
+    #     """A decorator to register a function as an endpoint.
+    #     Example::
 
-            @app.endpoint('example.endpoint')
-            def example():
-                return "example"
+    #         @app.endpoint('example.endpoint')
+    #         def example():
+    #             return "example"
 
-        :param endpoint: the name of the endpoint
-        """
+    #     :param endpoint: the name of the endpoint
+    #     """
 
-        def decorator(f):
-            self.view_functions[endpoint] = f
-            return f
+    #     def decorator(f):
+    #         self.view_functions[endpoint] = f
+    #         return f
 
-        return decorator
+    #     return decorator
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
@@ -1534,19 +1538,19 @@ class Flask(Skeleton):
         """
         self.jinja_env.globals[name or f.__name__] = f
 
-    @setupmethod
-    def before_request(self, f):
-        """Registers a function to run before each request.
+    # @setupmethod
+    # def before_request(self, f):
+    #     """Registers a function to run before each request.
 
-        For example, this can be used to open a database connection, or to load
-        the logged in user from the session.
+    #     For example, this can be used to open a database connection, or to load
+    #     the logged in user from the session.
 
-        The function will be called without any arguments. If it returns a
-        non-None value, the value is handled as if it was the return value from
-        the view, and further request handling is stopped.
-        """
-        self.before_request_funcs.setdefault(None, []).append(f)
-        return f
+    #     The function will be called without any arguments. If it returns a
+    #     non-None value, the value is handled as if it was the return value from
+    #     the view, and further request handling is stopped.
+    #     """
+    #     self.before_request_funcs.setdefault(None, []).append(f)
+    #     return f
 
     @setupmethod
     def before_first_request(self, f):
