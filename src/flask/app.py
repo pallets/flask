@@ -121,7 +121,7 @@ class Skeleton(_PackageBoundObject):
         self.static_url_path = static_url_path
         self.static_folder = static_folder
         self.view_functions = {}
-    
+
     def route(self, rule, **options):
         def decorator(f):
             endpoint = options.pop("endpoint", None)
@@ -287,23 +287,124 @@ class Skeleton(_PackageBoundObject):
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
 
-    def teardown_request():
-        pass
+    @setupmethod
+    def teardown_request(self, f):
+        """Register a function to be run at the end of each request,
+        regardless of whether there was an exception or not.  These functions
+        are executed when the request context is popped, even if not an
+        actual request was performed.
 
-    def context_processor():
-        pass
+        Example::
 
-    def url_value_preprocessor():
-        pass
+            ctx = app.test_request_context()
+            ctx.push()
+            ...
+            ctx.pop()
 
-    def url_defaults():
-        pass
+        When ``ctx.pop()`` is executed in the above example, the teardown
+        functions are called just before the request context moves from the
+        stack of active contexts.  This becomes relevant if you are using
+        such constructs in tests.
 
-    def errorhandler():
-        pass
+        Generally teardown functions must take every necessary step to avoid
+        that they will fail.  If they do execute code that might fail they
+        will have to surround the execution of these code by try/except
+        statements and log occurring errors.
 
-    def register_error_handler():
-        pass
+        When a teardown function was called because of an exception it will
+        be passed an error object.
+
+        The return values of teardown functions are ignored.
+
+        .. admonition:: Debug Note
+
+           In debug mode Flask will not tear down a request on an exception
+           immediately.  Instead it will keep it alive so that the interactive
+           debugger can still access it.  This behavior can be controlled
+           by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
+        """
+        self.teardown_request_funcs.setdefault(None, []).append(f)
+        return f
+
+    @setupmethod
+    def context_processor(self, f):
+        """Registers a template context processor function."""
+        self.template_context_processors[None].append(f)
+        return f
+
+    @setupmethod
+    def url_value_preprocessor(self, f):
+        """Register a URL value preprocessor function for all view
+        functions in the application. These functions will be called before the
+        :meth:`before_request` functions.
+
+        The function can modify the values captured from the matched url before
+        they are passed to the view. For example, this can be used to pop a
+        common language code value and place it in ``g`` rather than pass it to
+        every view.
+
+        The function is passed the endpoint name and values dict. The return
+        value is ignored.
+        """
+        self.url_value_preprocessors.setdefault(None, []).append(f)
+        return f
+
+    @setupmethod
+    def url_defaults(self, f):
+        """Callback function for URL defaults for all view functions of the
+        application.  It's called with the endpoint and values and should
+        update the values passed in place.
+        """
+        self.url_default_functions.setdefault(None, []).append(f)
+        return f
+
+    @setupmethod
+    def errorhandler(self, code_or_exception):
+        """Register a function to handle errors by code or exception class.
+
+        A decorator that is used to register a function given an
+        error code.  Example::
+
+            @app.errorhandler(404)
+            def page_not_found(error):
+                return 'This page does not exist', 404
+
+        You can also register handlers for arbitrary exceptions::
+
+            @app.errorhandler(DatabaseError)
+            def special_exception_handler(error):
+                return 'Database connection failed', 500
+
+        .. versionadded:: 0.7
+            Use :meth:`register_error_handler` instead of modifying
+            :attr:`error_handler_spec` directly, for application wide error
+            handlers.
+
+        .. versionadded:: 0.7
+           One can now additionally also register custom exception types
+           that do not necessarily have to be a subclass of the
+           :class:`~werkzeug.exceptions.HTTPException` class.
+
+        :param code_or_exception: the code as integer for the handler, or
+                                  an arbitrary exception
+        """
+
+        def decorator(f):
+            self._register_error_handler(None, code_or_exception, f)
+            return f
+
+        return decorator
+
+    @setupmethod
+    def register_error_handler(self, code_or_exception, f):
+        """Alternative error attach function to the :meth:`errorhandler`
+        decorator that is more straightforward to use for non decorator
+        usage.
+
+        .. versionadded:: 0.7
+        """
+        self._register_error_handler(None, code_or_exception, f)
+
 
 class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
@@ -1342,53 +1443,6 @@ class Flask(Skeleton):
             return exc_class, None
 
     @setupmethod
-    def errorhandler(self, code_or_exception):
-        """Register a function to handle errors by code or exception class.
-
-        A decorator that is used to register a function given an
-        error code.  Example::
-
-            @app.errorhandler(404)
-            def page_not_found(error):
-                return 'This page does not exist', 404
-
-        You can also register handlers for arbitrary exceptions::
-
-            @app.errorhandler(DatabaseError)
-            def special_exception_handler(error):
-                return 'Database connection failed', 500
-
-        .. versionadded:: 0.7
-            Use :meth:`register_error_handler` instead of modifying
-            :attr:`error_handler_spec` directly, for application wide error
-            handlers.
-
-        .. versionadded:: 0.7
-           One can now additionally also register custom exception types
-           that do not necessarily have to be a subclass of the
-           :class:`~werkzeug.exceptions.HTTPException` class.
-
-        :param code_or_exception: the code as integer for the handler, or
-                                  an arbitrary exception
-        """
-
-        def decorator(f):
-            self._register_error_handler(None, code_or_exception, f)
-            return f
-
-        return decorator
-
-    @setupmethod
-    def register_error_handler(self, code_or_exception, f):
-        """Alternative error attach function to the :meth:`errorhandler`
-        decorator that is more straightforward to use for non decorator
-        usage.
-
-        .. versionadded:: 0.7
-        """
-        self._register_error_handler(None, code_or_exception, f)
-
-    @setupmethod
     def _register_error_handler(self, key, code_or_exception, f):
         """
         :type key: None|str
@@ -1531,45 +1585,6 @@ class Flask(Skeleton):
         return f
 
     @setupmethod
-    def teardown_request(self, f):
-        """Register a function to be run at the end of each request,
-        regardless of whether there was an exception or not.  These functions
-        are executed when the request context is popped, even if not an
-        actual request was performed.
-
-        Example::
-
-            ctx = app.test_request_context()
-            ctx.push()
-            ...
-            ctx.pop()
-
-        When ``ctx.pop()`` is executed in the above example, the teardown
-        functions are called just before the request context moves from the
-        stack of active contexts.  This becomes relevant if you are using
-        such constructs in tests.
-
-        Generally teardown functions must take every necessary step to avoid
-        that they will fail.  If they do execute code that might fail they
-        will have to surround the execution of these code by try/except
-        statements and log occurring errors.
-
-        When a teardown function was called because of an exception it will
-        be passed an error object.
-
-        The return values of teardown functions are ignored.
-
-        .. admonition:: Debug Note
-
-           In debug mode Flask will not tear down a request on an exception
-           immediately.  Instead it will keep it alive so that the interactive
-           debugger can still access it.  This behavior can be controlled
-           by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
-        """
-        self.teardown_request_funcs.setdefault(None, []).append(f)
-        return f
-
-    @setupmethod
     def teardown_appcontext(self, f):
         """Registers a function to be called when the application context
         ends.  These functions are typically also called when the request
@@ -1603,44 +1618,12 @@ class Flask(Skeleton):
         return f
 
     @setupmethod
-    def context_processor(self, f):
-        """Registers a template context processor function."""
-        self.template_context_processors[None].append(f)
-        return f
-
-    @setupmethod
     def shell_context_processor(self, f):
         """Registers a shell context processor function.
 
         .. versionadded:: 0.11
         """
         self.shell_context_processors.append(f)
-        return f
-
-    @setupmethod
-    def url_value_preprocessor(self, f):
-        """Register a URL value preprocessor function for all view
-        functions in the application. These functions will be called before the
-        :meth:`before_request` functions.
-
-        The function can modify the values captured from the matched url before
-        they are passed to the view. For example, this can be used to pop a
-        common language code value and place it in ``g`` rather than pass it to
-        every view.
-
-        The function is passed the endpoint name and values dict. The return
-        value is ignored.
-        """
-        self.url_value_preprocessors.setdefault(None, []).append(f)
-        return f
-
-    @setupmethod
-    def url_defaults(self, f):
-        """Callback function for URL defaults for all view functions of the
-        application.  It's called with the endpoint and values and should
-        update the values passed in place.
-        """
-        self.url_default_functions.setdefault(None, []).append(f)
         return f
 
     def _find_error_handler(self, e):
