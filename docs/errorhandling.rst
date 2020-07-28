@@ -101,6 +101,7 @@ Follow-up reads:
 * `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
 * `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
 
+
 .. _error-handlers:
 
 Error Handlers
@@ -118,13 +119,16 @@ The status code of the response will not be set to the handler's code. Make
 sure to provide the appropriate HTTP status code when returning a response from
 a handler.
 
+
 Registering
 ```````````
 
 Register handlers by decorating a function with
 :meth:`~flask.Flask.errorhandler`. Or use
 :meth:`~flask.Flask.register_error_handler` to register the function later.
-Remember to set the error code when returning the response. ::
+Remember to set the error code when returning the response.
+
+.. code-block:: python
 
     @app.errorhandler(werkzeug.exceptions.BadRequest)
     def handle_bad_request(e):
@@ -140,7 +144,9 @@ when registering handlers. (``BadRequest.code == 400``)
 Non-standard HTTP codes cannot be registered by code because they are not known
 by Werkzeug. Instead, define a subclass of
 :class:`~werkzeug.exceptions.HTTPException` with the appropriate code and
-register and raise that exception class. ::
+register and raise that exception class.
+
+.. code-block:: python
 
     class InsufficientStorage(werkzeug.exceptions.HTTPException):
         code = 507
@@ -154,6 +160,7 @@ Handlers can be registered for any exception class, not just
 :exc:`~werkzeug.exceptions.HTTPException` subclasses or HTTP status
 codes. Handlers can be registered for a specific class, or for all subclasses
 of a parent class.
+
 
 Handling
 ````````
@@ -191,6 +198,7 @@ raises the exception. However, the blueprint cannot handle 404 routing errors
 because the 404 occurs at the routing level before the blueprint can be
 determined.
 
+
 Generic Exception Handlers
 ``````````````````````````
 
@@ -223,7 +231,6 @@ so you don't lose information about the HTTP error.
         response.content_type = "application/json"
         return response
 
-
 An error handler for ``Exception`` might seem useful for changing how
 all errors, even unhandled ones, are presented to the user. However,
 this is similar to doing ``except Exception:`` in Python, it will
@@ -251,6 +258,7 @@ Error handlers still respect the exception class hierarchy. If you
 register handlers for both ``HTTPException`` and ``Exception``, the
 ``Exception`` handler will not handle ``HTTPException`` subclasses
 because it the ``HTTPException`` handler is more specific.
+
 
 Unhandled Exceptions
 ````````````````````
@@ -285,6 +293,7 @@ errors, use ``getattr`` to get access it for compatibility.
 An error handler for "500 Internal Server Error" will be passed uncaught exceptions in
 addition to explicit 500 errors. In debug mode, a handler for "500 Internal Server Error" will not be used.
 Instead, the interactive debugger will be shown.
+
 
 Custom Error Pages
 ------------------
@@ -323,7 +332,9 @@ username and we can't find it, we raise a "404 Not Found".
 
         return render_template("profile.html", user=user)
 
-Here is another example implementation for a "404 Page Not Found" exception::
+Here is another example implementation for a "404 Page Not Found" exception:
+
+.. code-block:: python
 
     from flask import render_template
 
@@ -332,7 +343,9 @@ Here is another example implementation for a "404 Page Not Found" exception::
         # note that we set the 404 status explicitly
         return render_template('404.html'), 404
 
-When using :doc:`/patterns/appfactories`::
+When using :doc:`/patterns/appfactories`:
+
+.. code-block:: python
 
     from flask import Flask, render_template
 
@@ -346,7 +359,7 @@ When using :doc:`/patterns/appfactories`::
 
 An example template might be this:
 
-.. sourcecode:: html+jinja
+.. code-block:: html+jinja
 
     {% extends "layout.html" %}
     {% block title %}Page Not Found{% endblock %}
@@ -356,13 +369,14 @@ An example template might be this:
       <p><a href="{{ url_for('index') }}">go somewhere nice</a>
     {% endblock %}
 
+
 Further Examples
 ````````````````
 
 The above examples wouldn't actually be an improvement on the default
 exception pages. We can create a custom 500.html template like this:
 
-.. sourcecode:: html+jinja
+.. code-block:: html+jinja
 
     {% extends "layout.html" %}
     {% block title %}Internal Server Error{% endblock %}
@@ -383,11 +397,9 @@ It can be implemented by rendering the template on "500 Internal Server Error":
         # note that we set the 500 status explicitly
         return render_template('500.html'), 500
 
-
 When using :doc:`/patterns/appfactories`:
 
 .. code-block:: python
-
 
     from flask import Flask, render_template
 
@@ -398,7 +410,6 @@ When using :doc:`/patterns/appfactories`:
         app = Flask(__name__)
         app.register_error_handler(500, internal_server_error)
         return app
-
 
 When using :doc:`/blueprints`:
 
@@ -416,20 +427,22 @@ When using :doc:`/blueprints`:
     # or with register_error_handler
     blog.register_error_handler(500, internal_server_error)
 
-Blueprint Error Handling
-````````````````````````
 
-In blueprints, error handlers will work as expected. However, there is a caveat
-concerning handlers for 404 and 405 exceptions. These error handlers are only
-invoked from an appropriate ``raise`` statement or a call to ``abort`` in another
-of the blueprint's view functions; they are not invoked by, e.g., an invalid URL
-access.
+Blueprint Error Handlers
+------------------------
+
+In :doc:`/blueprints`, most error handlers will work as expected.
+However, there is a caveat concerning handlers for 404 and 405
+exceptions. These error handlers are only invoked from an appropriate
+``raise`` statement or a call to ``abort`` in another of the blueprint's
+view functions; they are not invoked by, e.g., an invalid URL access.
 
 This is because the blueprint does not "own" a certain URL space, so
-the application instance has no way of knowing which blueprint error handler it
-should run if given an invalid URL. If you would like to execute different
-handling strategies for these errors based on URL prefixes, they may be defined
-at the application level using the ``request`` proxy object:
+the application instance has no way of knowing which blueprint error
+handler it should run if given an invalid URL. If you would like to
+execute different handling strategies for these errors based on URL
+prefixes, they may be defined at the application level using the
+``request`` proxy object.
 
 .. code-block:: python
 
@@ -447,7 +460,6 @@ at the application level using the ``request`` proxy object:
             # otherwise we return our generic site-wide 404 page
             return render_template("404.html"), 404
 
-
     @app.errorhandler(405)
     def method_not_allowed(e):
         # if a request has the wrong method to our API
@@ -459,11 +471,8 @@ at the application level using the ``request`` proxy object:
             return render_template("405.html"), 405
 
 
-
-For more information on Blueprint Error Handling see :ref:`my-blueprint-error-label`.
-
-Returning API errors as JSON
-````````````````````````````
+Returning API Errors as JSON
+----------------------------
 
 When building APIs in Flask, some developers realise that the built-in
 exceptions are not expressive enough for APIs and that the content type of
@@ -535,10 +544,10 @@ This is a simple example:
 
         return jsonify(user.to_dict())
 
-
 A view can now raise that exception with an error message. Additionally
 some extra payload can be provided as a dictionary through the `payload`
 parameter.
+
 
 Logging
 -------
