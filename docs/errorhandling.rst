@@ -1,8 +1,6 @@
 Handling Application Errors
 ===========================
 
-.. versionadded:: 0.3
-
 Applications fail, servers fail. Sooner or later you will see an exception
 in production. Even if your code is 100% correct, you will still see
 exceptions from time to time. Why? Because everything else involved will
@@ -574,36 +572,34 @@ production with `debug=True`.
 Working with Debuggers
 ----------------------
 
-To dig deeper, possibly to trace code execution, Flask provides a debugger out
-of the box (see :ref:`debug-mode`). If you would like to use another Python
-debugger, note that debuggers interfere with each other. You have to set some
-options in order to use your favorite debugger:
+The built-in development server provides a :ref:`debug-mode` that shows
+an interactive traceback in the browser when an unhandled error occurs
+during a request.
 
-* ``debug``        - whether to enable debug mode and catch exceptions
-* ``use_debugger`` - whether to use the internal Flask debugger
-* ``use_reloader`` - whether to reload and fork the process if modules
-  were changed
+External debuggers, such as those provided by IDEs, can offer a much
+more powerful and visual debugging experience. They can also be used to
+step through code during a request before an error is raised, or if no
+error is raised.
 
-``debug`` must be True (i.e., exceptions must be caught) in order for the other
-two options to have any value.
+When using an external debugger, the app should still be in debug mode,
+but it can be useful to disable the built-in debugger and reloader,
+which can interfere.
 
-If you're using Aptana/Eclipse for debugging you'll need to set both
-``use_debugger`` and ``use_reloader`` to False.
+When running from the command line:
 
-A possible useful pattern for configuration is to set the following in your
-config.yaml (change the block as appropriate for your application, of course)::
+.. code-block:: text
 
-   FLASK:
-       DEBUG: True
-       DEBUG_WITH_APTANA: True
+    $ export FLASK_ENV=development
+    $ flask run --no-debugger --no-reload
 
-Then in your application's entry-point (main.py),
-you could have something like::
+When running from Python:
 
-   if __name__ == "__main__":
-       # To allow aptana to receive errors, set use_debugger=False
-       app = create_app(config="config.yaml")
+.. code-block:: python
 
-       use_debugger = app.debug and not(app.config.get('DEBUG_WITH_APTANA'))
-       app.run(use_debugger=use_debugger, debug=app.debug,
-               use_reloader=use_debugger, host='0.0.0.0')
+    app.run(debug=True, use_debugger=False, use_reloader=False)
+
+Disabling these isn't required, an external debugger will continue to
+work with the following caveats. If the built-in debugger is not
+disabled, it will catch unhandled exceptions before the external
+debugger can. If the reloader is not disabled, it could cause an
+unexpected reload if code changes during debugging.
