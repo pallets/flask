@@ -83,6 +83,8 @@ def setupmethod(f):
 
     return update_wrapper(wrapper_func, f)
 
+class Skeleton():
+    pass
 
 class Flask(_PackageBoundObject):
     """The flask object implements a WSGI application and acts as the central
