@@ -121,7 +121,39 @@ class Skeleton(_PackageBoundObject):
         self.static_url_path = static_url_path
         self.static_folder = static_folder
         self.view_functions = {}
+    
+    def route():
+        pass
 
+    def add_url_rule():
+        pass
+
+    def endpoint():
+        pass
+
+    def before_request():
+        pass
+
+    def after_request():
+        pass
+
+    def teardown_request():
+        pass
+
+    def context_processor():
+        pass
+
+    def url_value_preprocessor():
+        pass
+
+    def url_defaults():
+        pass
+
+    def errorhandler():
+        pass
+
+    def register_error_handler():
+        pass
 
 class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
