@@ -24,42 +24,8 @@ page for you and log the exception to the :attr:`~flask.Flask.logger`.
 But there is more you can do, and we will cover some better setups to deal
 with errors including custom exceptions and 3rd party tools.
 
-Common Error Codes
-------------------
 
-The following error codes are some that are often displayed to the user,
-even if the application behaves correctly:
-
-*400 Bad Request*
-    When the server will not process the request due to something that
-    the server perceives to be a client error. Such as malformed request
-    syntax, missing query parameters, etc.
-
-*403 Forbidden*
-    If you have some kind of access control on your website, you will have
-    to send a 403 code for disallowed resources. So make sure the user
-    is not lost when they try to access a forbidden resource.
-
-*404 Not Found*
-    The good old "chap, you made a mistake typing that URL" message. So
-    common that even novices to the internet know that 404 means: damn,
-    the thing I was looking for is not there. It's a very good idea to
-    make sure there is actually something useful on a 404 page, at least a
-    link back to the index.
-
-*410 Gone*
-    Did you know that there the "404 Not Found" has a brother named "410
-    Gone"? Few people actually implement that, but the idea is that
-    resources that previously existed and got deleted answer with 410
-    instead of 404. If you are not deleting documents permanently from
-    the database but just mark them as deleted, do the user a favour and
-    use the 410 code instead and display a message that what they were
-    looking for was deleted for all eternity.
-
-*500 Internal Server Error*
-    Usually happens on programming errors or if the server is overloaded.
-    A terribly good idea is to have a nice page there, because your
-    application *will* fail sooner or later.
+.. _error-logging-tools:
 
 Error Logging Tools
 -------------------
@@ -75,37 +41,48 @@ aggregates duplicate errors, captures the full stack trace and local
 variables for debugging, and sends you mails based on new errors or
 frequency thresholds.
 
-To use Sentry you need to install the `sentry-sdk` client with extra `flask` dependencies::
+To use Sentry you need to install the ``sentry-sdk`` client with extra
+``flask`` dependencies.
+
+.. code-block:: text
 
     $ pip install sentry-sdk[flask]
 
-And then add this to your Flask app::
+And then add this to your Flask app:
+
+.. code-block:: python
 
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
 
     sentry_sdk.init('YOUR_DSN_HERE',integrations=[FlaskIntegration()])
 
-The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
-from your Sentry installation.
+The ``YOUR_DSN_HERE`` value needs to be replaced with the DSN value you
+get from your Sentry installation.
 
 After installation, failures leading to an Internal Server Error
 are automatically reported to Sentry and from there you can
 receive error notifications.
 
-Follow-up reads:
+See also:
 
-* Sentry also supports catching errors from your worker queue (RQ, Celery) in a
-  similar fashion. See the `Python SDK docs
-  <https://docs.sentry.io/platforms/python/>`_ for more information.
-* `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
-* `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
+-   Sentry also supports catching errors from a worker queue
+    (RQ, Celery, etc.) in a similar fashion. See the `Python SDK docs
+    <https://docs.sentry.io/platforms/python/>`__ for more information.
+-   `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`__
+-   `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`__
 
 
 .. _error-handlers:
 
 Error Handlers
 --------------
+
+When an error occurs in Flask, an appropriate `HTTP status code
+<https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>`__ will be
+returned. 400-499 indicate errors with the client's request data, or
+about the data requested. 500-599 indicate errors with the server or
+application itself.
 
 You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
