@@ -44,6 +44,7 @@ instructions for web development with Flask.
    templating
    testing
    errorhandling
+   debugging
    logging
    config
    signals
