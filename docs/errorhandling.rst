@@ -3,10 +3,10 @@ Handling Application Errors
 
 .. versionadded:: 0.3
 
-Applications fail, servers fail.  Sooner or later you will see an exception
-in production.  Even if your code is 100% correct, you will still see
-exceptions from time to time.  Why?  Because everything else involved will
-fail.  Here are some situations where perfectly fine code can lead to server
+Applications fail, servers fail. Sooner or later you will see an exception
+in production. Even if your code is 100% correct, you will still see
+exceptions from time to time. Why? Because everything else involved will
+fail. Here are some situations where perfectly fine code can lead to server
 errors:
 
 -   the client terminated the request early and the application was still
@@ -18,8 +18,8 @@ errors:
 -   a programming error in a library you are using
 -   network connection of the server to another system failed
 
-And that's just a small sample of issues you could be facing.  So how do we
-deal with that sort of problem?  By default if your application runs in
+And that's just a small sample of issues you could be facing. So how do we
+deal with that sort of problem? By default if your application runs in
 production mode, and an exception is raised Flask will display a very simple
 page for you and log the exception to the :attr:`~flask.Flask.logger`.
 
@@ -39,21 +39,21 @@ even if the application behaves correctly:
 
 *403 Forbidden*
     If you have some kind of access control on your website, you will have
-    to send a 403 code for disallowed resources.  So make sure the user
+    to send a 403 code for disallowed resources. So make sure the user
     is not lost when they try to access a forbidden resource.
 
 *404 Not Found*
-    The good old "chap, you made a mistake typing that URL" message.  So
+    The good old "chap, you made a mistake typing that URL" message. So
     common that even novices to the internet know that 404 means: damn,
-    the thing I was looking for is not there.  It's a very good idea to
+    the thing I was looking for is not there. It's a very good idea to
     make sure there is actually something useful on a 404 page, at least a
     link back to the index.
 
 *410 Gone*
     Did you know that there the "404 Not Found" has a brother named "410
-    Gone"?  Few people actually implement that, but the idea is that
+    Gone"? Few people actually implement that, but the idea is that
     resources that previously existed and got deleted answer with 410
-    instead of 404.  If you are not deleting documents permanently from
+    instead of 404. If you are not deleting documents permanently from
     the database but just mark them as deleted, do the user a favour and
     use the 410 code instead and display a message that what they were
     looking for was deleted for all eternity.
@@ -69,7 +69,7 @@ Error Logging Tools
 Sending error mails, even if just for critical ones, can become
 overwhelming if enough users are hitting the error and log files are
 typically never looked at. This is why we recommend using `Sentry
-<https://sentry.io/>`_ for dealing with application errors.  It's
+<https://sentry.io/>`_ for dealing with application errors. It's
 available as an Open Source project `on GitHub
 <https://github.com/getsentry/sentry>`_ and is also available as a `hosted version
 <https://sentry.io/signup/>`_ which you can try for free. Sentry
@@ -98,7 +98,7 @@ receive error notifications.
 Follow-up reads:
 
 * Sentry also supports catching errors from your worker queue (RQ, Celery) in a
-  similar fashion.  See the `Python SDK docs
+  similar fashion. See the `Python SDK docs
   <https://docs.sentry.io/platforms/python/>`_ for more information.
 * `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
 * `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
@@ -422,7 +422,7 @@ Blueprint Error Handling
 ````````````````````````
 
 In blueprints, error handlers will work as expected. However, there is a caveat
-concerning handlers for 404 and 405 exceptions.  These error handlers are only
+concerning handlers for 404 and 405 exceptions. These error handlers are only
 invoked from an appropriate ``raise`` statement or a call to ``abort`` in another
 of the blueprint's view functions; they are not invoked by, e.g., an invalid URL
 access.
@@ -559,11 +559,11 @@ full-featured Python debugger.
 When in Doubt, Run Manually
 ---------------------------
 
-Having problems getting your application configured for production?  If you
+Having problems getting your application configured for production? If you
 have shell access to your host, verify that you can run your application
-manually from the shell in the deployment environment.  Be sure to run under
+manually from the shell in the deployment environment. Be sure to run under
 the same user account as the configured deployment to troubleshoot permission
-issues.  You can use Flask's builtin development server with `debug=True` on
+issues. You can use Flask's builtin development server with `debug=True` on
 your production host, which is helpful in catching configuration issues, but
 **be sure to do this temporarily in a controlled environment.** Do not run in
 production with `debug=True`.
@@ -575,8 +575,8 @@ Working with Debuggers
 ----------------------
 
 To dig deeper, possibly to trace code execution, Flask provides a debugger out
-of the box (see :ref:`debug-mode`).  If you would like to use another Python
-debugger, note that debuggers interfere with each other.  You have to set some
+of the box (see :ref:`debug-mode`). If you would like to use another Python
+debugger, note that debuggers interfere with each other. You have to set some
 options in order to use your favorite debugger:
 
 * ``debug``        - whether to enable debug mode and catch exceptions
