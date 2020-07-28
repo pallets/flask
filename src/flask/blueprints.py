@@ -1,5 +1,6 @@
 from functools import update_wrapper
 
+from .app import Skeleton
 from .helpers import _endpoint_from_view_func
 from .helpers import _PackageBoundObject
 
@@ -76,7 +77,7 @@ class BlueprintSetupState:
         )
 
 
-class Blueprint(_PackageBoundObject):
+class Blueprint(Skeleton):
     """Represents a blueprint, a collection of routes and other
     app-related functions that can be registered on a real application
     later.

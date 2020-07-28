@@ -83,10 +83,47 @@ def setupmethod(f):
 
     return update_wrapper(wrapper_func, f)
 
-class Skeleton():
-    pass
 
-class Flask(_PackageBoundObject):
+class Skeleton(_PackageBoundObject):
+
+    #: Skeleton local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    json_encoder = None
+
+    #: Skeleton local JSON decoder class to use.
+    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    json_decoder = None
+
+    #: The name of the package or module that this app belongs to. Do not
+    #: change this once it is set by the constructor.
+    import_name = None
+
+    #: Location of the template files to be added to the template lookup.
+    #: ``None`` if templates should not be added.
+    template_folder = None
+
+    #: Absolute path to the package on the filesystem. Used to look up
+    #: resources contained in the package.
+    root_path = None
+
+    def __init__(
+        self,
+        import_name,
+        template_folder,
+        root_path=None,
+        static_url_path=None,
+        static_folder="static",
+    ):
+        _PackageBoundObject.__init__(
+            self, import_name, template_folder=template_folder, root_path=root_path
+        )
+
+        self.static_url_path = static_url_path
+        self.static_folder = static_folder
+        self.view_functions = {}
+
+
+class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
     application.  Once it is created it will act as a central registry for
