@@ -316,7 +316,7 @@ And then to use it::
         with app.test_client() as c:
             resp = c.get('/users/me')
             data = json.loads(resp.data)
-            self.assert_equal(data['username'], my_user.username)
+            assert data['username'] == my_user.username
 
 
 Keeping the Context Around
