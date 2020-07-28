@@ -122,20 +122,170 @@ class Skeleton(_PackageBoundObject):
         self.static_folder = static_folder
         self.view_functions = {}
     
-    def route():
-        pass
+    def route(self, rule, **options):
+        def decorator(f):
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
 
-    def add_url_rule():
-        pass
+        return decorator
 
-    def endpoint():
-        pass
+    @setupmethod
+    def add_url_rule(
+        self,
+        rule,
+        endpoint=None,
+        view_func=None,
+        provide_automatic_options=None,
+        **options,
+    ):
+        """Connects a URL rule.  Works exactly like the :meth:`route`
+        decorator.  If a view_func is provided it will be registered with the
+        endpoint.
 
-    def before_request():
-        pass
+        Basically this example::
 
-    def after_request():
-        pass
+            @app.route('/')
+            def index():
+                pass
+
+        Is equivalent to the following::
+
+            def index():
+                pass
+            app.add_url_rule('/', 'index', index)
+
+        If the view_func is not provided you will need to connect the endpoint
+        to a view function like so::
+
+            app.view_functions['index'] = index
+
+        Internally :meth:`route` invokes :meth:`add_url_rule` so if you want
+        to customize the behavior via subclassing you only need to change
+        this method.
+
+        For more information refer to :ref:`url-route-registrations`.
+
+        .. versionchanged:: 0.2
+           `view_func` parameter added.
+
+        .. versionchanged:: 0.6
+           ``OPTIONS`` is added automatically as method.
+
+        :param rule: the URL rule as string
+        :param endpoint: the endpoint for the registered URL rule.  Flask
+                         itself assumes the name of the view function as
+                         endpoint
+        :param view_func: the function to call when serving a request to the
+                          provided endpoint
+        :param provide_automatic_options: controls whether the ``OPTIONS``
+            method should be added automatically. This can also be controlled
+            by setting the ``view_func.provide_automatic_options = False``
+            before adding the rule.
+        :param options: the options to be forwarded to the underlying
+                        :class:`~werkzeug.routing.Rule` object.  A change
+                        to Werkzeug is handling of method options.  methods
+                        is a list of methods this rule should be limited
+                        to (``GET``, ``POST`` etc.).  By default a rule
+                        just listens for ``GET`` (and implicitly ``HEAD``).
+                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
+                        added and handled by the standard request handling.
+        """
+        if endpoint is None:
+            endpoint = _endpoint_from_view_func(view_func)
+        options["endpoint"] = endpoint
+        methods = options.pop("methods", None)
+
+        # if the methods are not given and the view_func object knows its
+        # methods we can use that instead.  If neither exists, we go with
+        # a tuple of only ``GET`` as default.
+        if methods is None:
+            methods = getattr(view_func, "methods", None) or ("GET",)
+        if isinstance(methods, str):
+            raise TypeError(
+                "Allowed methods must be a list of strings, for"
+                ' example: @app.route(..., methods=["POST"])'
+            )
+        methods = {item.upper() for item in methods}
+
+        # Methods that should always be added
+        required_methods = set(getattr(view_func, "required_methods", ()))
+
+        # starting with Flask 0.8 the view_func object can disable and
+        # force-enable the automatic options handling.
+        if provide_automatic_options is None:
+            provide_automatic_options = getattr(
+                view_func, "provide_automatic_options", None
+            )
+
+        if provide_automatic_options is None:
+            if "OPTIONS" not in methods:
+                provide_automatic_options = True
+                required_methods.add("OPTIONS")
+            else:
+                provide_automatic_options = False
+
+        # Add the required methods now.
+        methods |= required_methods
+
+        rule = self.url_rule_class(rule, methods=methods, **options)
+        rule.provide_automatic_options = provide_automatic_options
+
+        self.url_map.add(rule)
+        if view_func is not None:
+            old_func = self.view_functions.get(endpoint)
+            if old_func is not None and old_func != view_func:
+                raise AssertionError(
+                    "View function mapping is overwriting an existing"
+                    f" endpoint function: {endpoint}"
+                )
+            self.view_functions[endpoint] = view_func
+
+    @setupmethod
+    def endpoint(self, endpoint):
+        """A decorator to register a function as an endpoint.
+        Example::
+
+            @app.endpoint('example.endpoint')
+            def example():
+                return "example"
+
+        :param endpoint: the name of the endpoint
+        """
+
+        def decorator(f):
+            self.view_functions[endpoint] = f
+            return f
+
+        return decorator
+
+    @setupmethod
+    def before_request(self, f):
+        """Registers a function to run before each request.
+
+        For example, this can be used to open a database connection, or to load
+        the logged in user from the session.
+
+        The function will be called without any arguments. If it returns a
+        non-None value, the value is handled as if it was the return value from
+        the view, and further request handling is stopped.
+        """
+        self.before_request_funcs.setdefault(None, []).append(f)
+        return f
+
+    @setupmethod
+    def after_request(self, f):
+        """Register a function to be run after each request.
+
+        Your function must take one parameter, an instance of
+        :attr:`response_class` and return a new response object or the
+        same (see :meth:`process_response`).
+
+        As of Flask 0.7 this function might not be executed at the end of the
+        request in case an unhandled exception occurred.
+        """
+        self.after_request_funcs.setdefault(None, []).append(f)
+        return f
 
     def teardown_request():
         pass
@@ -1168,167 +1318,6 @@ class Flask(Skeleton):
         """
         return iter(self._blueprint_order)
 
-    @setupmethod
-    def add_url_rule(
-        self,
-        rule,
-        endpoint=None,
-        view_func=None,
-        provide_automatic_options=None,
-        **options,
-    ):
-        """Connects a URL rule.  Works exactly like the :meth:`route`
-        decorator.  If a view_func is provided it will be registered with the
-        endpoint.
-
-        Basically this example::
-
-            @app.route('/')
-            def index():
-                pass
-
-        Is equivalent to the following::
-
-            def index():
-                pass
-            app.add_url_rule('/', 'index', index)
-
-        If the view_func is not provided you will need to connect the endpoint
-        to a view function like so::
-
-            app.view_functions['index'] = index
-
-        Internally :meth:`route` invokes :meth:`add_url_rule` so if you want
-        to customize the behavior via subclassing you only need to change
-        this method.
-
-        For more information refer to :ref:`url-route-registrations`.
-
-        .. versionchanged:: 0.2
-           `view_func` parameter added.
-
-        .. versionchanged:: 0.6
-           ``OPTIONS`` is added automatically as method.
-
-        :param rule: the URL rule as string
-        :param endpoint: the endpoint for the registered URL rule.  Flask
-                         itself assumes the name of the view function as
-                         endpoint
-        :param view_func: the function to call when serving a request to the
-                          provided endpoint
-        :param provide_automatic_options: controls whether the ``OPTIONS``
-            method should be added automatically. This can also be controlled
-            by setting the ``view_func.provide_automatic_options = False``
-            before adding the rule.
-        :param options: the options to be forwarded to the underlying
-                        :class:`~werkzeug.routing.Rule` object.  A change
-                        to Werkzeug is handling of method options.  methods
-                        is a list of methods this rule should be limited
-                        to (``GET``, ``POST`` etc.).  By default a rule
-                        just listens for ``GET`` (and implicitly ``HEAD``).
-                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
-                        added and handled by the standard request handling.
-        """
-        if endpoint is None:
-            endpoint = _endpoint_from_view_func(view_func)
-        options["endpoint"] = endpoint
-        methods = options.pop("methods", None)
-
-        # if the methods are not given and the view_func object knows its
-        # methods we can use that instead.  If neither exists, we go with
-        # a tuple of only ``GET`` as default.
-        if methods is None:
-            methods = getattr(view_func, "methods", None) or ("GET",)
-        if isinstance(methods, str):
-            raise TypeError(
-                "Allowed methods must be a list of strings, for"
-                ' example: @app.route(..., methods=["POST"])'
-            )
-        methods = {item.upper() for item in methods}
-
-        # Methods that should always be added
-        required_methods = set(getattr(view_func, "required_methods", ()))
-
-        # starting with Flask 0.8 the view_func object can disable and
-        # force-enable the automatic options handling.
-        if provide_automatic_options is None:
-            provide_automatic_options = getattr(
-                view_func, "provide_automatic_options", None
-            )
-
-        if provide_automatic_options is None:
-            if "OPTIONS" not in methods:
-                provide_automatic_options = True
-                required_methods.add("OPTIONS")
-            else:
-                provide_automatic_options = False
-
-        # Add the required methods now.
-        methods |= required_methods
-
-        rule = self.url_rule_class(rule, methods=methods, **options)
-        rule.provide_automatic_options = provide_automatic_options
-
-        self.url_map.add(rule)
-        if view_func is not None:
-            old_func = self.view_functions.get(endpoint)
-            if old_func is not None and old_func != view_func:
-                raise AssertionError(
-                    "View function mapping is overwriting an existing"
-                    f" endpoint function: {endpoint}"
-                )
-            self.view_functions[endpoint] = view_func
-
-    def route(self, rule, **options):
-        """A decorator that is used to register a view function for a
-        given URL rule.  This does the same thing as :meth:`add_url_rule`
-        but is intended for decorator usage::
-
-            @app.route('/')
-            def index():
-                return 'Hello World'
-
-        For more information refer to :ref:`url-route-registrations`.
-
-        :param rule: the URL rule as string
-        :param endpoint: the endpoint for the registered URL rule.  Flask
-                         itself assumes the name of the view function as
-                         endpoint
-        :param options: the options to be forwarded to the underlying
-                        :class:`~werkzeug.routing.Rule` object.  A change
-                        to Werkzeug is handling of method options.  methods
-                        is a list of methods this rule should be limited
-                        to (``GET``, ``POST`` etc.).  By default a rule
-                        just listens for ``GET`` (and implicitly ``HEAD``).
-                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
-                        added and handled by the standard request handling.
-        """
-
-        def decorator(f):
-            endpoint = options.pop("endpoint", None)
-            self.add_url_rule(rule, endpoint, f, **options)
-            return f
-
-        return decorator
-
-    @setupmethod
-    def endpoint(self, endpoint):
-        """A decorator to register a function as an endpoint.
-        Example::
-
-            @app.endpoint('example.endpoint')
-            def example():
-                return "example"
-
-        :param endpoint: the name of the endpoint
-        """
-
-        def decorator(f):
-            self.view_functions[endpoint] = f
-            return f
-
-        return decorator
-
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
         """Get the exception class being handled. For HTTP status codes
@@ -1529,20 +1518,6 @@ class Flask(Skeleton):
         self.jinja_env.globals[name or f.__name__] = f
 
     @setupmethod
-    def before_request(self, f):
-        """Registers a function to run before each request.
-
-        For example, this can be used to open a database connection, or to load
-        the logged in user from the session.
-
-        The function will be called without any arguments. If it returns a
-        non-None value, the value is handled as if it was the return value from
-        the view, and further request handling is stopped.
-        """
-        self.before_request_funcs.setdefault(None, []).append(f)
-        return f
-
-    @setupmethod
     def before_first_request(self, f):
         """Registers a function to be run before the first request to this
         instance of the application.
@@ -1553,20 +1528,6 @@ class Flask(Skeleton):
         .. versionadded:: 0.8
         """
         self.before_first_request_funcs.append(f)
-        return f
-
-    @setupmethod
-    def after_request(self, f):
-        """Register a function to be run after each request.
-
-        Your function must take one parameter, an instance of
-        :attr:`response_class` and return a new response object or the
-        same (see :meth:`process_response`).
-
-        As of Flask 0.7 this function might not be executed at the end of the
-        request in case an unhandled exception occurred.
-        """
-        self.after_request_funcs.setdefault(None, []).append(f)
         return f
 
     @setupmethod
