@@ -242,8 +242,9 @@ you can use relative redirects by prefixing the endpoint with a dot only::
 This will link to ``admin.index`` for instance in case the current request
 was dispatched to any other admin blueprint endpoint.
 
-Error Handlers
---------------
+
+Blueprint Error Handlers
+------------------------
 
 Blueprints support the ``errorhandler`` decorator just like the :class:`Flask`
 application object, so it is easy to make Blueprint-specific custom error

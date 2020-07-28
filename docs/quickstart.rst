@@ -111,59 +111,43 @@ application). It will tell you what it tried to import and why it failed.
 The most common reason is a typo or because you did not actually create an
 ``app`` object.
 
-.. _debug-mode:
 
 Debug Mode
 ----------
 
-(Want to just log errors and stack traces? See :doc:`errorhandling`)
+The ``flask run`` command can do more than just start the development
+server. By enabling debug mode, the server will automatically reload if
+code changes, and will show an interactive debugger in the browser if an
+error occurs during a request.
 
-The :command:`flask` script is nice to start a local development server, but
-you would have to restart it manually after each change to your code.
-That is not very nice and Flask can do better.  If you enable debug
-support the server will reload itself on code changes, and it will also
-provide you with a helpful debugger if things go wrong.
+.. image:: _static/debugger.png
+    :align: center
+    :class: screenshot
+    :alt: The interactive debugger in action.
 
-To enable all development features (including debug mode) you can export
-the ``FLASK_ENV`` environment variable and set it to ``development``
-before running the server::
+.. warning::
+
+    The debugger allows executing arbitrary Python code from the
+    browser. It is protected by a pin, but still represents a major
+    security risk. Do not run the development server or debugger in a
+    production environment.
+
+To enable all development features, set the ``FLASK_ENV`` environment
+variable to ``development`` before calling ``flask run``.
+
+.. code-block:: text
 
     $ export FLASK_ENV=development
     $ flask run
 
-(On Windows you need to use ``set`` instead of ``export``.)
+See also:
 
-This does the following things:
-
-1.  it activates the debugger
-2.  it activates the automatic reloader
-3.  it enables the debug mode on the Flask application.
-
-You can also control debug mode separately from the environment by
-exporting ``FLASK_DEBUG=1``.
-
-There are more parameters that are explained in :doc:`/server`.
-
-.. admonition:: Attention
-
-   Even though the interactive debugger does not work in forking environments
-   (which makes it nearly impossible to use on production servers), it still
-   allows the execution of arbitrary code. This makes it a major security risk
-   and therefore it **must never be used on production machines**.
-
-Screenshot of the debugger in action:
-
-.. image:: _static/debugger.png
-   :align: center
-   :class: screenshot
-   :alt: screenshot of debugger in action
-
-More information on using the debugger can be found in the `Werkzeug
-documentation`_.
-
-.. _Werkzeug documentation: https://werkzeug.palletsprojects.com/debug/#using-the-debugger
-
-Have another debugger in mind? See :ref:`working-with-debuggers`.
+-   :doc:`/server` and :doc:`/cli` for information about running in
+    development mode.
+-   :doc:`/debugging` for information about using the built-in debugger
+    and other debuggers.
+-   :doc:`/logging` and :doc:`/errorhandling` to log errors and display
+    nice error pages.
 
 
 HTML Escaping
