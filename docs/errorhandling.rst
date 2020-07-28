@@ -73,8 +73,6 @@ See also:
 -   `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`__
 
 
-.. _error-handlers:
-
 Error Handlers
 --------------
 
@@ -529,63 +527,12 @@ parameter.
 Logging
 -------
 
-See :doc:`/logging` for information on how to log exceptions, such as by
-emailing them to admins.
-
-Debugging Application Errors
-============================
-
-For production applications, configure your application with logging and
-notifications as described in :doc:`/logging`. This section provides
-pointers when debugging deployment configuration and digging deeper with a
-full-featured Python debugger.
-
-When in Doubt, Run Manually
----------------------------
-
-Having problems getting your application configured for production? If you
-have shell access to your host, verify that you can run your application
-manually from the shell in the deployment environment. Be sure to run under
-the same user account as the configured deployment to troubleshoot permission
-issues. You can use Flask's builtin development server with `debug=True` on
-your production host, which is helpful in catching configuration issues, but
-**be sure to do this temporarily in a controlled environment.** Do not run in
-production with `debug=True`.
+See :doc:`/logging` for information about how to log exceptions, such as
+by emailing them to admins.
 
 
-.. _working-with-debuggers:
+Debugging
+---------
 
-Working with Debuggers
-----------------------
-
-The built-in development server provides a :ref:`debug-mode` that shows
-an interactive traceback in the browser when an unhandled error occurs
-during a request.
-
-External debuggers, such as those provided by IDEs, can offer a much
-more powerful and visual debugging experience. They can also be used to
-step through code during a request before an error is raised, or if no
-error is raised.
-
-When using an external debugger, the app should still be in debug mode,
-but it can be useful to disable the built-in debugger and reloader,
-which can interfere.
-
-When running from the command line:
-
-.. code-block:: text
-
-    $ export FLASK_ENV=development
-    $ flask run --no-debugger --no-reload
-
-When running from Python:
-
-.. code-block:: python
-
-    app.run(debug=True, use_debugger=False, use_reloader=False)
-
-Disabling these isn't required, an external debugger will continue to
-work with the following caveats. If the built-in debugger is not
-disabled, it will catch unhandled exceptions before the external
-debugger can. If the reloader is not disabled, it could cause an
-unexpected reload if code changes during debugging.
+See :doc:`/debugging` for information about how to debug errors in
+development and production.
