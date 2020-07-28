@@ -433,12 +433,14 @@ class Flask(Skeleton):
         instance_relative_config=False,
         root_path=None,
     ):
-        _PackageBoundObject.__init__(
-            self, import_name, template_folder=template_folder, root_path=root_path
+        Skeleton.__init__(
+            self,
+            import_name,
+            template_folder,
+            root_path=root_path,
+            static_url_path=static_url_path,
+            static_folder=static_folder,
         )
-
-        self.static_url_path = static_url_path
-        self.static_folder = static_folder
 
         if instance_path is None:
             instance_path = self.auto_find_instance_path()
