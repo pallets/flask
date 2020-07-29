@@ -244,11 +244,9 @@ class Blueprint(Skeleton):
                 endpoint="static",
             )
 
-        # app = state.app
         app.view_functions.update(self.view_functions)
 
-        # def before_request():
-        # app.before_request_funcs.items(), self.before_request_funcs.items()?
+        # before_request:
         for key, values in self.before_request_funcs.items():
             key = self.name if key is None else f"{self.name}"
             app.before_request_funcs.setdefault(key, []).extend(values)
@@ -396,18 +394,6 @@ class Blueprint(Skeleton):
             state.app.jinja_env.globals[name or f.__name__] = f
 
         self.record_once(register_template)
-
-    # def before_request(self, f):
-    #     """Like :meth:`Flask.before_request` but for a blueprint.  This function
-    #     is only executed before each request that is handled by a function of
-    #     that blueprint.
-    #     """
-    #     self.record_once(
-    #         lambda s: s.app.before_request_funcs.setdefault(self.name, []).append(f)
-    #     )
-    #     return f
-    #     # self.before_request_funcs.setdefault(None, []).append(f)
-    #     # return f
 
     def before_app_request(self, f):
         """Like :meth:`Flask.before_request`.  Such a function is executed
