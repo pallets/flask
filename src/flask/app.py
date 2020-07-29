@@ -185,6 +185,13 @@ class Skeleton(_PackageBoundObject):
         #: decorator.
         self.before_request_funcs = {}
 
+        #: A dictionary with lists of functions that should be called after
+        #: each request.  The key of the dictionary is the name of the blueprint
+        #: this function is active for, ``None`` for all requests.  This can for
+        #: example be used to close database connections. To register a function
+        #: here, use the :meth:`after_request` decorator.
+        self.after_request_funcs = {}
+
     def route(self, rule, **options):
         def decorator(f):
             endpoint = options.pop("endpoint", None)
@@ -829,13 +836,6 @@ class Flask(Skeleton):
         #:
         #: .. versionadded:: 0.8
         self.before_first_request_funcs = []
-
-        #: A dictionary with lists of functions that should be called after
-        #: each request.  The key of the dictionary is the name of the blueprint
-        #: this function is active for, ``None`` for all requests.  This can for
-        #: example be used to close database connections. To register a function
-        #: here, use the :meth:`after_request` decorator.
-        self.after_request_funcs = {}
 
         #: A dictionary with lists of functions that are called after
         #: each request, even if an exception has occurred. The key of the

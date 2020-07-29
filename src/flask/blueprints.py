@@ -244,18 +244,18 @@ class Blueprint(Skeleton):
                 endpoint="static",
             )
 
+        # Merge app and self dictionaries.
+        def merge_dicts(self_dict, app_dict):
+            """Merges self_dict into app_dict.
+            Replaces None keys with self.name.
+            """
+            for key, values in self_dict.items():
+                key = self.name if key is None else f"{self.name}"
+                app_dict.setdefault(key, []).extend(values)
+
         app.view_functions.update(self.view_functions)
-
-        # before_request:
-        for key, values in self.before_request_funcs.items():
-            key = self.name if key is None else f"{self.name}"
-            app.before_request_funcs.setdefault(key, []).extend(values)
-
-        # # def after_request():
-        # # app.after.items(), self.after.items()?
-        # for key, values in app.after_request_funcs.items():
-        #     key = self.name if key is None else f"{self.name}"
-        #     app.after_request_funcs.setdefault(key, []).extend(values)
+        merge_dicts(self.before_request_funcs, app.before_request_funcs)
+        merge_dicts(self.after_request_funcs, app.after_request_funcs)
 
         for deferred in self.deferred_functions:
             deferred(state)
@@ -410,18 +410,6 @@ class Blueprint(Skeleton):
         """
         self.record_once(lambda s: s.app.before_first_request_funcs.append(f))
         return f
-
-    def after_request(self, f):
-        """Like :meth:`Flask.after_request` but for a blueprint.  This function
-        is only executed after each request that is handled by a function of
-        that blueprint.
-        """
-        self.record_once(
-            lambda s: s.app.after_request_funcs.setdefault(self.name, []).append(f)
-        )
-        return f
-        # s.app.after_request_funcs.setdefault(None, []).append(f)
-        # return f
 
     def after_app_request(self, f):
         """Like :meth:`Flask.after_request` but for a blueprint.  Such a function
