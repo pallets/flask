@@ -520,15 +520,3 @@ class Blueprint(Skeleton):
             lambda s: s.app.url_default_functions.setdefault(None, []).append(f)
         )
         return f
-
-    # def register_error_handler(self, code_or_exception, f):
-    #     """Non-decorator version of the :meth:`errorhandler` error attach
-    #     function, akin to the :meth:`~flask.Flask.register_error_handler`
-    #     application-wide function of the :class:`~flask.Flask` object but
-    #     for error handlers limited to this blueprint.
-
-    #     .. versionadded:: 0.11
-    #     """
-    #     self.record_once(
-    #         lambda s: s.app._register_error_handler(self.name, code_or_exception, f)
-    #     )
