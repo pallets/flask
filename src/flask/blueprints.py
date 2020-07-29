@@ -266,6 +266,7 @@ class Blueprint(Skeleton):
         merge_dict_lists(self.before_request_funcs, app.before_request_funcs)
         merge_dict_lists(self.after_request_funcs, app.after_request_funcs)
         merge_dict_lists(self.url_default_functions, app.url_default_functions)
+        merge_dict_lists(self.url_value_preprocessors, app.url_value_preprocessors)
 
         merge_dict_nested(self.error_handler_spec, app.error_handler_spec)
 
@@ -484,16 +485,6 @@ class Blueprint(Skeleton):
             return f
 
         return decorator
-
-    def url_value_preprocessor(self, f):
-        """Registers a function as URL value preprocessor for this
-        blueprint.  It's called before the view functions are called and
-        can modify the url values provided.
-        """
-        self.record_once(
-            lambda s: s.app.url_value_preprocessors.setdefault(self.name, []).append(f)
-        )
-        return f
 
     def url_defaults(self, f):
         """Callback function for URL defaults for this blueprint.  It's called

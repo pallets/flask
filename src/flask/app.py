@@ -246,6 +246,15 @@ class Skeleton(_PackageBoundObject):
         #: decorator.
         self.error_handler_spec = {}
 
+        #: A dictionary with lists of functions that are called before the
+        #: :attr:`before_request_funcs` functions. The key of the dictionary is
+        #: the name of the blueprint this function is active for, or ``None``
+        #: for all requests. To register a function, use
+        #: :meth:`url_value_preprocessor`.
+        #:
+        #: .. versionadded:: 0.7
+        self.url_value_preprocessors = {}
+
     def route(self, rule, **options):
         def decorator(f):
             endpoint = options.pop("endpoint", None)
@@ -1109,15 +1118,6 @@ class Flask(Skeleton):
         #:
         #: .. versionadded:: 0.9
         self.teardown_appcontext_funcs = []
-
-        #: A dictionary with lists of functions that are called before the
-        #: :attr:`before_request_funcs` functions. The key of the dictionary is
-        #: the name of the blueprint this function is active for, or ``None``
-        #: for all requests. To register a function, use
-        #: :meth:`url_value_preprocessor`.
-        #:
-        #: .. versionadded:: 0.7
-        self.url_value_preprocessors = {}
 
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the
