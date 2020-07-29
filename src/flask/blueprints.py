@@ -243,6 +243,21 @@ class Blueprint(Skeleton):
                 view_func=self.send_static_file,
                 endpoint="static",
             )
+        
+        # app = state.app
+        # app.view_functions.update(self.view_functions)
+
+        # # def before_request():
+        # # app.before_request_funcs.items(), self.before_request_funcs.items()?
+        # for key, values in app.before_request_funcs.items():
+        #     key = self.name if key is None else f"{self.name}"
+        #     app.before_request_funcs.setdefault(key, []).extend(values)
+
+        # # def after_request():
+        # # app.after.items(), self.after.items()?
+        # for key, values in app.after_request_funcs.items():
+        #     key = self.name if key is None else f"{self.name}"
+        #     app.after_request_funcs.setdefault(key, []).extend(values)
 
         for deferred in self.deferred_functions:
             deferred(state)
@@ -260,18 +275,6 @@ class Blueprint(Skeleton):
         else:
             self.cli.name = cli_resolved_group
             app.cli.add_command(self.cli)
-
-    def route(self, rule, **options):
-        """Like :meth:`Flask.route` but for a blueprint.  The endpoint for the
-        :func:`url_for` function is prefixed with the name of the blueprint.
-        """
-
-        def decorator(f):
-            endpoint = options.pop("endpoint", f.__name__)
-            self.add_url_rule(rule, endpoint, f, **options)
-            return f
-
-        return decorator
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
@@ -403,6 +406,8 @@ class Blueprint(Skeleton):
             lambda s: s.app.before_request_funcs.setdefault(self.name, []).append(f)
         )
         return f
+        # self.before_request_funcs.setdefault(None, []).append(f)
+        # return f
 
     def before_app_request(self, f):
         """Like :meth:`Flask.before_request`.  Such a function is executed
@@ -429,6 +434,8 @@ class Blueprint(Skeleton):
             lambda s: s.app.after_request_funcs.setdefault(self.name, []).append(f)
         )
         return f
+        # s.app.after_request_funcs.setdefault(None, []).append(f)
+        # return f
 
     def after_app_request(self, f):
         """Like :meth:`Flask.after_request` but for a blueprint.  Such a function
