@@ -7,12 +7,13 @@
 attrs==19.3.0             # via pytest
 blinker==1.4              # via -r requirements/tests.in
 greenlet==0.4.16          # via -r requirements/tests.in
+iniconfig==1.0.0          # via pytest
 more-itertools==8.3.0     # via pytest
 packaging==20.4           # via pytest
 pluggy==0.13.1            # via pytest
-py==1.8.1                 # via pytest
+py==1.9.0                 # via pytest
 pyparsing==2.4.7          # via packaging
-pytest==5.4.3             # via -r requirements/tests.in
+pytest==6.0.0             # via -r requirements/tests.in
 python-dotenv==0.14.0     # via -r requirements/tests.in
 six==1.15.0               # via packaging
-wcwidth==0.1.9            # via pytest
+toml==0.10.1              # via pytest
