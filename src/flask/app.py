@@ -192,6 +192,18 @@ class Skeleton(_PackageBoundObject):
         #: here, use the :meth:`after_request` decorator.
         self.after_request_funcs = {}
 
+        #: A dictionary with lists of functions that can be used as URL value
+        #: preprocessors.  The key ``None`` here is used for application wide
+        #: callbacks, otherwise the key is the name of the blueprint.
+        #: Each of these functions has the chance to modify the dictionary
+        #: of URL values before they are used as the keyword arguments of the
+        #: view function.  For each function registered this one should also
+        #: provide a :meth:`url_defaults` function that adds the parameters
+        #: automatically again that were removed that way.
+        #:
+        #: .. versionadded:: 0.7
+        self.url_default_functions = {}
+
     def route(self, rule, **options):
         def decorator(f):
             endpoint = options.pop("endpoint", None)
@@ -865,18 +877,6 @@ class Flask(Skeleton):
         #:
         #: .. versionadded:: 0.7
         self.url_value_preprocessors = {}
-
-        #: A dictionary with lists of functions that can be used as URL value
-        #: preprocessors.  The key ``None`` here is used for application wide
-        #: callbacks, otherwise the key is the name of the blueprint.
-        #: Each of these functions has the chance to modify the dictionary
-        #: of URL values before they are used as the keyword arguments of the
-        #: view function.  For each function registered this one should also
-        #: provide a :meth:`url_defaults` function that adds the parameters
-        #: automatically again that were removed that way.
-        #:
-        #: .. versionadded:: 0.7
-        self.url_default_functions = {}
 
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the

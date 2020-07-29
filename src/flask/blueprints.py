@@ -256,6 +256,7 @@ class Blueprint(Skeleton):
         app.view_functions.update(self.view_functions)
         merge_dicts(self.before_request_funcs, app.before_request_funcs)
         merge_dicts(self.after_request_funcs, app.after_request_funcs)
+        merge_dicts(self.url_default_functions, app.url_default_functions)
 
         for deferred in self.deferred_functions:
             deferred(state)
