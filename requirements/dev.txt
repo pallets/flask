@@ -20,6 +20,7 @@ greenlet==0.4.16          # via -r requirements/tests.in
 identify==1.4.16          # via pre-commit
 idna==2.9                 # via requests
 imagesize==1.2.0          # via sphinx
+iniconfig==1.0.0          # via pytest
 jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
 more-itertools==8.3.0     # via pytest
@@ -29,10 +30,10 @@ pallets-sphinx-themes==1.2.3  # via -r requirements/docs.in
 pip-tools==5.3.0          # via -r requirements/dev.in
 pluggy==0.13.1            # via pytest, tox
 pre-commit==2.6.0         # via -r requirements/dev.in
-py==1.8.1                 # via pytest, tox
+py==1.9.0                 # via pytest, tox
 pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via packaging
-pytest==5.4.3             # via -r requirements/tests.in
+pytest==6.0.0             # via -r requirements/tests.in
 python-dotenv==0.14.0     # via -r requirements/tests.in
 pytz==2020.1              # via babel
 pyyaml==5.3.1             # via pre-commit
@@ -48,11 +49,10 @@ sphinxcontrib-jsmath==1.0.1  # via sphinx
 sphinxcontrib-log-cabinet==1.0.1  # via -r requirements/docs.in
 sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
-toml==0.10.1              # via pre-commit, tox
+toml==0.10.1              # via pre-commit, pytest, tox
 tox==3.18.0               # via -r requirements/dev.in
 urllib3==1.25.9           # via requests
 virtualenv==20.0.21       # via pre-commit, tox
-wcwidth==0.1.9            # via pytest
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
