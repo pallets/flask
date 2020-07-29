@@ -167,8 +167,7 @@ class Blueprint(Skeleton):
         root_path=None,
         cli_group=_sentinel,
     ):
-        Skeleton.__init__(
-            self,
+        super().__init__(
             import_name,
             template_folder,
             root_path=root_path,
@@ -250,7 +249,7 @@ class Blueprint(Skeleton):
             Values of dict must be lists.
             """
             for key, values in self_dict.items():
-                key = self.name if key is None else key
+                key = self.name if key is None else f"{self.name}.{key}"
                 app_dict.setdefault(key, []).extend(values)
 
         def merge_dict_nested(self_dict, app_dict):
@@ -258,7 +257,7 @@ class Blueprint(Skeleton):
             Values of dict must be dict.
             """
             for key, value in self_dict.items():
-                key = self.name if key is None else key
+                key = self.name if key is None else f"{self.name}.{key}"
                 app_dict[key] = value
 
         app.view_functions.update(self.view_functions)

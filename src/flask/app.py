@@ -1074,8 +1074,7 @@ class Flask(Skeleton):
         instance_relative_config=False,
         root_path=None,
     ):
-        Skeleton.__init__(
-            self,
+        super().__init__(
             import_name,
             template_folder,
             root_path=root_path,
