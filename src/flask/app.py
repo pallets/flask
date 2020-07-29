@@ -106,6 +106,54 @@ class Skeleton(_PackageBoundObject):
     #: resources contained in the package.
     root_path = None
 
+    # MARK: additional vars added from Flask.
+
+    #: The class that is used for the ``config`` attribute of this app.
+    #: Defaults to :class:`~flask.Config`.
+    #:
+    #: Example use cases for a custom class:
+    #:
+    #: 1. Default values for certain config options.
+    #: 2. Access to config values through attributes in addition to keys.
+    #:
+    #: .. versionadded:: 0.11
+    config_class = Config
+
+    #: Default configuration parameters.
+    default_config = ImmutableDict(
+        {
+            "ENV": None,
+            "DEBUG": None,
+            "TESTING": False,
+            "PROPAGATE_EXCEPTIONS": None,
+            "PRESERVE_CONTEXT_ON_EXCEPTION": None,
+            "SECRET_KEY": None,
+            "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
+            "USE_X_SENDFILE": False,
+            "SERVER_NAME": None,
+            "APPLICATION_ROOT": "/",
+            "SESSION_COOKIE_NAME": "session",
+            "SESSION_COOKIE_DOMAIN": None,
+            "SESSION_COOKIE_PATH": None,
+            "SESSION_COOKIE_HTTPONLY": True,
+            "SESSION_COOKIE_SECURE": False,
+            "SESSION_COOKIE_SAMESITE": None,
+            "SESSION_REFRESH_EACH_REQUEST": True,
+            "MAX_CONTENT_LENGTH": None,
+            "SEND_FILE_MAX_AGE_DEFAULT": timedelta(hours=12),
+            "TRAP_BAD_REQUEST_ERRORS": None,
+            "TRAP_HTTP_EXCEPTIONS": False,
+            "EXPLAIN_TEMPLATE_LOADING": False,
+            "PREFERRED_URL_SCHEME": "http",
+            "JSON_AS_ASCII": True,
+            "JSON_SORT_KEYS": True,
+            "JSONIFY_PRETTYPRINT_REGULAR": False,
+            "JSONIFY_MIMETYPE": "application/json",
+            "TEMPLATES_AUTO_RELOAD": None,
+            "MAX_COOKIE_SIZE": 4093,
+        }
+    )
+
     def __init__(
         self,
         import_name,
@@ -113,6 +161,7 @@ class Skeleton(_PackageBoundObject):
         root_path=None,
         static_url_path=None,
         static_folder="static",
+        instance_relative_config=False,
     ):
         _PackageBoundObject.__init__(
             self, import_name, template_folder=template_folder, root_path=root_path
@@ -121,6 +170,20 @@ class Skeleton(_PackageBoundObject):
         self.static_url_path = static_url_path
         self.static_folder = static_folder
         self.view_functions = {}
+
+        # MARK: Additional vars added from Flask.
+
+        #: The configuration dictionary as :class:`Config`.  This behaves
+        #: exactly like a regular dictionary but supports additional methods
+        #: to load a config from files.
+        self.config = self.make_config(instance_relative_config)
+
+        #: A dictionary with lists of functions that will be called at the
+        #: beginning of each request. The key of the dictionary is the name of
+        #: the blueprint this function is active for, or ``None`` for all
+        #: requests. To register a function, use the :meth:`before_request`
+        #: decorator.
+        self.before_request_funcs = {}
 
     def route(self, rule, **options):
         def decorator(f):
@@ -405,6 +468,46 @@ class Skeleton(_PackageBoundObject):
         """
         self._register_error_handler(None, code_or_exception, f)
 
+    # MARK: Additional functions added from Flask.
+    @property
+    def debug(self):
+        """Whether debug mode is enabled. When using ``flask run`` to start
+        the development server, an interactive debugger will be shown for
+        unhandled exceptions, and the server will be reloaded when code
+        changes. This maps to the :data:`DEBUG` config key. This is
+        enabled when :attr:`env` is ``'development'`` and is overridden
+        by the ``FLASK_DEBUG`` environment variable. It may not behave as
+        expected if set in code.
+
+        **Do not enable debug mode when deploying in production.**
+
+        Default: ``True`` if :attr:`env` is ``'development'``, or
+        ``False`` otherwise.
+        """
+        return self.config["DEBUG"]
+
+    @debug.setter
+    def debug(self, value):
+        self.config["DEBUG"] = value
+        self.jinja_env.auto_reload = self.templates_auto_reload
+
+    def make_config(self, instance_relative=False):
+        """Used to create the config attribute by the Flask constructor.
+        The `instance_relative` parameter is passed in from the constructor
+        of Flask (there named `instance_relative_config`) and indicates if
+        the config should be relative to the instance path or the root path
+        of the application.
+
+        .. versionadded:: 0.8
+        """
+        root_path = self.root_path
+        if instance_relative:
+            root_path = self.instance_path
+        defaults = dict(self.default_config)
+        defaults["ENV"] = get_env()
+        defaults["DEBUG"] = get_debug_flag()
+        return self.config_class(root_path, defaults)
+
 
 class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
@@ -532,17 +635,6 @@ class Flask(Skeleton):
     #: .. versionadded:: 0.10
     app_ctx_globals_class = _AppCtxGlobals
 
-    #: The class that is used for the ``config`` attribute of this app.
-    #: Defaults to :class:`~flask.Config`.
-    #:
-    #: Example use cases for a custom class:
-    #:
-    #: 1. Default values for certain config options.
-    #: 2. Access to config values through attributes in addition to keys.
-    #:
-    #: .. versionadded:: 0.11
-    config_class = Config
-
     #: The testing flag.  Set this to ``True`` to enable the test mode of
     #: Flask extensions (and in the future probably also Flask itself).
     #: For example this might activate test helpers that have an
@@ -622,41 +714,6 @@ class Flask(Skeleton):
     #:
     jinja_options = {"extensions": ["jinja2.ext.autoescape", "jinja2.ext.with_"]}
 
-    #: Default configuration parameters.
-    default_config = ImmutableDict(
-        {
-            "ENV": None,
-            "DEBUG": None,
-            "TESTING": False,
-            "PROPAGATE_EXCEPTIONS": None,
-            "PRESERVE_CONTEXT_ON_EXCEPTION": None,
-            "SECRET_KEY": None,
-            "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
-            "USE_X_SENDFILE": False,
-            "SERVER_NAME": None,
-            "APPLICATION_ROOT": "/",
-            "SESSION_COOKIE_NAME": "session",
-            "SESSION_COOKIE_DOMAIN": None,
-            "SESSION_COOKIE_PATH": None,
-            "SESSION_COOKIE_HTTPONLY": True,
-            "SESSION_COOKIE_SECURE": False,
-            "SESSION_COOKIE_SAMESITE": None,
-            "SESSION_REFRESH_EACH_REQUEST": True,
-            "MAX_CONTENT_LENGTH": None,
-            "SEND_FILE_MAX_AGE_DEFAULT": timedelta(hours=12),
-            "TRAP_BAD_REQUEST_ERRORS": None,
-            "TRAP_HTTP_EXCEPTIONS": False,
-            "EXPLAIN_TEMPLATE_LOADING": False,
-            "PREFERRED_URL_SCHEME": "http",
-            "JSON_AS_ASCII": True,
-            "JSON_SORT_KEYS": True,
-            "JSONIFY_PRETTYPRINT_REGULAR": False,
-            "JSONIFY_MIMETYPE": "application/json",
-            "TEMPLATES_AUTO_RELOAD": None,
-            "MAX_COOKIE_SIZE": 4093,
-        }
-    )
-
     #: The rule object to use for URL rules created.  This is used by
     #: :meth:`add_url_rule`.  Defaults to :class:`werkzeug.routing.Rule`.
     #:
@@ -723,6 +780,7 @@ class Flask(Skeleton):
             root_path=root_path,
             static_url_path=static_url_path,
             static_folder=static_folder,
+            instance_relative_config=instance_relative_config,
         )
 
         if instance_path is None:
@@ -737,11 +795,6 @@ class Flask(Skeleton):
         #:
         #: .. versionadded:: 0.8
         self.instance_path = instance_path
-
-        #: The configuration dictionary as :class:`Config`.  This behaves
-        #: exactly like a regular dictionary but supports additional methods
-        #: to load a config from files.
-        self.config = self.make_config(instance_relative_config)
 
         #: A dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
@@ -769,13 +822,6 @@ class Flask(Skeleton):
         #:
         #: .. versionadded:: 0.9
         self.url_build_error_handlers = []
-
-        #: A dictionary with lists of functions that will be called at the
-        #: beginning of each request. The key of the dictionary is the name of
-        #: the blueprint this function is active for, or ``None`` for all
-        #: requests. To register a function, use the :meth:`before_request`
-        #: decorator.
-        self.before_request_funcs = {}
 
         #: A list of functions that will be called at the beginning of the
         #: first request to this instance. To register a function, use the
@@ -998,23 +1044,6 @@ class Flask(Skeleton):
         """
         return self._got_first_request
 
-    def make_config(self, instance_relative=False):
-        """Used to create the config attribute by the Flask constructor.
-        The `instance_relative` parameter is passed in from the constructor
-        of Flask (there named `instance_relative_config`) and indicates if
-        the config should be relative to the instance path or the root path
-        of the application.
-
-        .. versionadded:: 0.8
-        """
-        root_path = self.root_path
-        if instance_relative:
-            root_path = self.instance_path
-        defaults = dict(self.default_config)
-        defaults["ENV"] = get_env()
-        defaults["DEBUG"] = get_debug_flag()
-        return self.config_class(root_path, defaults)
-
     def auto_find_instance_path(self):
         """Tries to locate the instance path if it was not provided to the
         constructor of the application class.  It will basically calculate
@@ -1164,28 +1193,6 @@ class Flask(Skeleton):
     #:
     #: Default: ``'production'``
     env = ConfigAttribute("ENV")
-
-    @property
-    def debug(self):
-        """Whether debug mode is enabled. When using ``flask run`` to start
-        the development server, an interactive debugger will be shown for
-        unhandled exceptions, and the server will be reloaded when code
-        changes. This maps to the :data:`DEBUG` config key. This is
-        enabled when :attr:`env` is ``'development'`` and is overridden
-        by the ``FLASK_DEBUG`` environment variable. It may not behave as
-        expected if set in code.
-
-        **Do not enable debug mode when deploying in production.**
-
-        Default: ``True`` if :attr:`env` is ``'development'``, or
-        ``False`` otherwise.
-        """
-        return self.config["DEBUG"]
-
-    @debug.setter
-    def debug(self, value):
-        self.config["DEBUG"] = value
-        self.jinja_env.auto_reload = self.templates_auto_reload
 
     def run(self, host=None, port=None, debug=None, load_dotenv=True, **options):
         """Runs the application on a local development server.

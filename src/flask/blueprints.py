@@ -243,15 +243,15 @@ class Blueprint(Skeleton):
                 view_func=self.send_static_file,
                 endpoint="static",
             )
-        
-        # app = state.app
-        # app.view_functions.update(self.view_functions)
 
-        # # def before_request():
-        # # app.before_request_funcs.items(), self.before_request_funcs.items()?
-        # for key, values in app.before_request_funcs.items():
-        #     key = self.name if key is None else f"{self.name}"
-        #     app.before_request_funcs.setdefault(key, []).extend(values)
+        # app = state.app
+        app.view_functions.update(self.view_functions)
+
+        # def before_request():
+        # app.before_request_funcs.items(), self.before_request_funcs.items()?
+        for key, values in self.before_request_funcs.items():
+            key = self.name if key is None else f"{self.name}"
+            app.before_request_funcs.setdefault(key, []).extend(values)
 
         # # def after_request():
         # # app.after.items(), self.after.items()?
@@ -397,17 +397,17 @@ class Blueprint(Skeleton):
 
         self.record_once(register_template)
 
-    def before_request(self, f):
-        """Like :meth:`Flask.before_request` but for a blueprint.  This function
-        is only executed before each request that is handled by a function of
-        that blueprint.
-        """
-        self.record_once(
-            lambda s: s.app.before_request_funcs.setdefault(self.name, []).append(f)
-        )
-        return f
-        # self.before_request_funcs.setdefault(None, []).append(f)
-        # return f
+    # def before_request(self, f):
+    #     """Like :meth:`Flask.before_request` but for a blueprint.  This function
+    #     is only executed before each request that is handled by a function of
+    #     that blueprint.
+    #     """
+    #     self.record_once(
+    #         lambda s: s.app.before_request_funcs.setdefault(self.name, []).append(f)
+    #     )
+    #     return f
+    #     # self.before_request_funcs.setdefault(None, []).append(f)
+    #     # return f
 
     def before_app_request(self, f):
         """Like :meth:`Flask.before_request`.  Such a function is executed
