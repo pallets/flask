@@ -250,7 +250,7 @@ class Blueprint(Skeleton):
             Values of dict must be lists.
             """
             for key, values in self_dict.items():
-                key = self.name if key is None else f"{self.name}"
+                key = self.name if key is None else key
                 app_dict.setdefault(key, []).extend(values)
 
         def merge_dict_nested(self_dict, app_dict):
@@ -258,7 +258,7 @@ class Blueprint(Skeleton):
             Values of dict must be dict.
             """
             for key, value in self_dict.items():
-                key = self.name if key is None else f"{self.name}"
+                key = self.name if key is None else key
                 app_dict[key] = value
 
         app.view_functions.update(self.view_functions)
