@@ -267,6 +267,9 @@ class Blueprint(Skeleton):
         merge_dict_lists(self.after_request_funcs, app.after_request_funcs)
         merge_dict_lists(self.url_default_functions, app.url_default_functions)
         merge_dict_lists(self.url_value_preprocessors, app.url_value_preprocessors)
+        merge_dict_lists(
+            self.template_context_processors, app.template_context_processors
+        )
 
         merge_dict_nested(self.error_handler_spec, app.error_handler_spec)
 
@@ -452,17 +455,6 @@ class Blueprint(Skeleton):
         """
         self.record_once(
             lambda s: s.app.teardown_request_funcs.setdefault(None, []).append(f)
-        )
-        return f
-
-    def context_processor(self, f):
-        """Like :meth:`Flask.context_processor` but for a blueprint.  This
-        function is only executed for requests handled by a blueprint.
-        """
-        self.record_once(
-            lambda s: s.app.template_context_processors.setdefault(
-                self.name, []
-            ).append(f)
         )
         return f
 

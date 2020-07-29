@@ -255,6 +255,14 @@ class Skeleton(_PackageBoundObject):
         #: .. versionadded:: 0.7
         self.url_value_preprocessors = {}
 
+        #: A dictionary with list of functions that are called without argument
+        #: to populate the template context.  The key of the dictionary is the
+        #: name of the blueprint this function is active for, ``None`` for all
+        #: requests.  Each returns a dictionary that the template context is
+        #: updated with.  To register a function here, use the
+        #: :meth:`context_processor` decorator.
+        self.template_context_processors = {None: [_default_template_ctx_processor]}
+
     def route(self, rule, **options):
         def decorator(f):
             endpoint = options.pop("endpoint", None)
@@ -1118,14 +1126,6 @@ class Flask(Skeleton):
         #:
         #: .. versionadded:: 0.9
         self.teardown_appcontext_funcs = []
-
-        #: A dictionary with list of functions that are called without argument
-        #: to populate the template context.  The key of the dictionary is the
-        #: name of the blueprint this function is active for, ``None`` for all
-        #: requests.  Each returns a dictionary that the template context is
-        #: updated with.  To register a function here, use the
-        #: :meth:`context_processor` decorator.
-        self.template_context_processors = {None: [_default_template_ctx_processor]}
 
         #: A list of shell context processor functions that should be run
         #: when a shell context is created.
