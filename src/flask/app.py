@@ -108,6 +108,22 @@ class Skeleton(_PackageBoundObject):
 
     # MARK: additional vars added from Flask.
 
+    #: Options that are passed to the Jinja environment in
+    #: :meth:`create_jinja_environment`. Changing these options after
+    #: the environment is created (accessing :attr:`jinja_env`) will
+    #: have no effect.
+    #:
+    #: .. versionchanged:: 1.1.0
+    #:     This is a ``dict`` instead of an ``ImmutableDict`` to allow
+    #:     easier configuration.
+    #:
+    jinja_options = {"extensions": ["jinja2.ext.autoescape", "jinja2.ext.with_"]}
+
+    #: The class that is used for the Jinja environment.
+    #:
+    #: .. versionadded:: 0.11
+    jinja_environment = Environment
+
     #: The class that is used for the ``config`` attribute of this app.
     #: Defaults to :class:`~flask.Config`.
     #:
@@ -162,6 +178,7 @@ class Skeleton(_PackageBoundObject):
         static_url_path=None,
         static_folder="static",
         instance_relative_config=False,
+        instance_path=None,
     ):
         _PackageBoundObject.__init__(
             self, import_name, template_folder=template_folder, root_path=root_path
@@ -172,6 +189,19 @@ class Skeleton(_PackageBoundObject):
         self.view_functions = {}
 
         # MARK: Additional vars added from Flask.
+
+        if instance_path is None:
+            instance_path = self.auto_find_instance_path()
+        elif not os.path.isabs(instance_path):
+            raise ValueError(
+                "If an instance path is provided it must be absolute."
+                " A relative path was given instead."
+            )
+
+        #: Holds the path to the instance folder.
+        #:
+        #: .. versionadded:: 0.8
+        self.instance_path = instance_path
 
         #: The configuration dictionary as :class:`Config`.  This behaves
         #: exactly like a regular dictionary but supports additional methods
@@ -588,6 +618,196 @@ class Skeleton(_PackageBoundObject):
         else:
             return exc_class, None
 
+    @property
+    def templates_auto_reload(self):
+        """Reload templates when they are changed. Used by
+        :meth:`create_jinja_environment`.
+
+        This attribute can be configured with :data:`TEMPLATES_AUTO_RELOAD`. If
+        not set, it will be enabled in debug mode.
+
+        .. versionadded:: 1.0
+            This property was added but the underlying config and behavior
+            already existed.
+        """
+        rv = self.config["TEMPLATES_AUTO_RELOAD"]
+        return rv if rv is not None else self.debug
+
+    @templates_auto_reload.setter
+    def templates_auto_reload(self, value):
+        self.config["TEMPLATES_AUTO_RELOAD"] = value
+
+    def auto_find_instance_path(self):
+        """Tries to locate the instance path if it was not provided to the
+        constructor of the application class.  It will basically calculate
+        the path to a folder named ``instance`` next to your main file or
+        the package.
+
+        .. versionadded:: 0.8
+        """
+        prefix, package_path = find_package(self.import_name)
+        if prefix is None:
+            return os.path.join(package_path, "instance")
+        return os.path.join(prefix, "var", f"{self.name}-instance")
+
+    @locked_cached_property
+    def jinja_env(self):
+        """The Jinja environment used to load templates.
+
+        The environment is created the first time this property is
+        accessed. Changing :attr:`jinja_options` after that will have no
+        effect.
+        """
+        return self.create_jinja_environment()
+
+    def create_jinja_environment(self):
+        """Create the Jinja environment based on :attr:`jinja_options`
+        and the various Jinja-related methods of the app. Changing
+        :attr:`jinja_options` after this will have no effect. Also adds
+        Flask-related globals and filters to the environment.
+
+        .. versionchanged:: 0.11
+           ``Environment.auto_reload`` set in accordance with
+           ``TEMPLATES_AUTO_RELOAD`` configuration option.
+
+        .. versionadded:: 0.5
+        """
+        options = dict(self.jinja_options)
+
+        if "autoescape" not in options:
+            options["autoescape"] = self.select_jinja_autoescape
+
+        if "auto_reload" not in options:
+            options["auto_reload"] = self.templates_auto_reload
+
+        rv = self.jinja_environment(self, **options)
+        rv.globals.update(
+            url_for=url_for,
+            get_flashed_messages=get_flashed_messages,
+            config=self.config,
+            # request, session and g are normally added with the
+            # context processor for efficiency reasons but for imported
+            # templates we also want the proxies in there.
+            request=request,
+            session=session,
+            g=g,
+        )
+        rv.filters["tojson"] = json.tojson_filter
+        return rv
+
+    def select_jinja_autoescape(self, filename):
+        """Returns ``True`` if autoescaping should be active for the given
+        template name. If no template name is given, returns `True`.
+
+        .. versionadded:: 0.5
+        """
+        if filename is None:
+            return True
+        return filename.endswith((".html", ".htm", ".xml", ".xhtml"))
+
+    @setupmethod
+    def template_filter(self, name=None):
+        """A decorator that is used to register custom template filter.
+        You can specify a name for the filter, otherwise the function
+        name will be used. Example::
+
+          @app.template_filter()
+          def reverse(s):
+              return s[::-1]
+
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
+        """
+
+        def decorator(f):
+            self.add_template_filter(f, name=name)
+            return f
+
+        return decorator
+
+    @setupmethod
+    def add_template_filter(self, f, name=None):
+        """Register a custom template filter.  Works exactly like the
+        :meth:`template_filter` decorator.
+
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
+        """
+        self.jinja_env.filters[name or f.__name__] = f
+
+    @setupmethod
+    def template_test(self, name=None):
+        """A decorator that is used to register custom template test.
+        You can specify a name for the test, otherwise the function
+        name will be used. Example::
+
+          @app.template_test()
+          def is_prime(n):
+              if n == 2:
+                  return True
+              for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
+                  if n % i == 0:
+                      return False
+              return True
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the test, otherwise the
+                     function name will be used.
+        """
+
+        def decorator(f):
+            self.add_template_test(f, name=name)
+            return f
+
+        return decorator
+
+    @setupmethod
+    def add_template_test(self, f, name=None):
+        """Register a custom template test.  Works exactly like the
+        :meth:`template_test` decorator.
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the test, otherwise the
+                     function name will be used.
+        """
+        self.jinja_env.tests[name or f.__name__] = f
+
+    @setupmethod
+    def template_global(self, name=None):
+        """A decorator that is used to register a custom template global function.
+        You can specify a name for the global function, otherwise the function
+        name will be used. Example::
+
+            @app.template_global()
+            def double(n):
+                return 2 * n
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the global function, otherwise the
+                     function name will be used.
+        """
+
+        def decorator(f):
+            self.add_template_global(f, name=name)
+            return f
+
+        return decorator
+
+    @setupmethod
+    def add_template_global(self, f, name=None):
+        """Register a custom template global function. Works exactly like the
+        :meth:`template_global` decorator.
+
+        .. versionadded:: 0.10
+
+        :param name: the optional name of the global function, otherwise the
+                     function name will be used.
+        """
+        self.jinja_env.globals[name or f.__name__] = f
+
 
 class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
@@ -694,11 +914,6 @@ class Flask(Skeleton):
     #: :class:`~flask.Response` for more information.
     response_class = Response
 
-    #: The class that is used for the Jinja environment.
-    #:
-    #: .. versionadded:: 0.11
-    jinja_environment = Environment
-
     #: The class that is used for the :data:`~flask.g` instance.
     #:
     #: Example use cases for a custom class:
@@ -783,17 +998,6 @@ class Flask(Skeleton):
     #: .. versionadded:: 0.10
     json_decoder = json.JSONDecoder
 
-    #: Options that are passed to the Jinja environment in
-    #: :meth:`create_jinja_environment`. Changing these options after
-    #: the environment is created (accessing :attr:`jinja_env`) will
-    #: have no effect.
-    #:
-    #: .. versionchanged:: 1.1.0
-    #:     This is a ``dict`` instead of an ``ImmutableDict`` to allow
-    #:     easier configuration.
-    #:
-    jinja_options = {"extensions": ["jinja2.ext.autoescape", "jinja2.ext.with_"]}
-
     #: The rule object to use for URL rules created.  This is used by
     #: :meth:`add_url_rule`.  Defaults to :class:`werkzeug.routing.Rule`.
     #:
@@ -861,20 +1065,8 @@ class Flask(Skeleton):
             static_url_path=static_url_path,
             static_folder=static_folder,
             instance_relative_config=instance_relative_config,
+            instance_path=instance_path,
         )
-
-        if instance_path is None:
-            instance_path = self.auto_find_instance_path()
-        elif not os.path.isabs(instance_path):
-            raise ValueError(
-                "If an instance path is provided it must be absolute."
-                " A relative path was given instead."
-            )
-
-        #: Holds the path to the instance folder.
-        #:
-        #: .. versionadded:: 0.8
-        self.instance_path = instance_path
 
         #: A dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
@@ -1074,16 +1266,6 @@ class Flask(Skeleton):
         """
         return create_logger(self)
 
-    @locked_cached_property
-    def jinja_env(self):
-        """The Jinja environment used to load templates.
-
-        The environment is created the first time this property is
-        accessed. Changing :attr:`jinja_options` after that will have no
-        effect.
-        """
-        return self.create_jinja_environment()
-
     @property
     def got_first_request(self):
         """This attribute is set to ``True`` if the application started
@@ -1092,19 +1274,6 @@ class Flask(Skeleton):
         .. versionadded:: 0.8
         """
         return self._got_first_request
-
-    def auto_find_instance_path(self):
-        """Tries to locate the instance path if it was not provided to the
-        constructor of the application class.  It will basically calculate
-        the path to a folder named ``instance`` next to your main file or
-        the package.
-
-        .. versionadded:: 0.8
-        """
-        prefix, package_path = find_package(self.import_name)
-        if prefix is None:
-            return os.path.join(package_path, "instance")
-        return os.path.join(prefix, "var", f"{self.name}-instance")
 
     def open_instance_resource(self, resource, mode="rb"):
         """Opens a resource from the application's instance folder
@@ -1118,60 +1287,6 @@ class Flask(Skeleton):
         """
         return open(os.path.join(self.instance_path, resource), mode)
 
-    @property
-    def templates_auto_reload(self):
-        """Reload templates when they are changed. Used by
-        :meth:`create_jinja_environment`.
-
-        This attribute can be configured with :data:`TEMPLATES_AUTO_RELOAD`. If
-        not set, it will be enabled in debug mode.
-
-        .. versionadded:: 1.0
-            This property was added but the underlying config and behavior
-            already existed.
-        """
-        rv = self.config["TEMPLATES_AUTO_RELOAD"]
-        return rv if rv is not None else self.debug
-
-    @templates_auto_reload.setter
-    def templates_auto_reload(self, value):
-        self.config["TEMPLATES_AUTO_RELOAD"] = value
-
-    def create_jinja_environment(self):
-        """Create the Jinja environment based on :attr:`jinja_options`
-        and the various Jinja-related methods of the app. Changing
-        :attr:`jinja_options` after this will have no effect. Also adds
-        Flask-related globals and filters to the environment.
-
-        .. versionchanged:: 0.11
-           ``Environment.auto_reload`` set in accordance with
-           ``TEMPLATES_AUTO_RELOAD`` configuration option.
-
-        .. versionadded:: 0.5
-        """
-        options = dict(self.jinja_options)
-
-        if "autoescape" not in options:
-            options["autoescape"] = self.select_jinja_autoescape
-
-        if "auto_reload" not in options:
-            options["auto_reload"] = self.templates_auto_reload
-
-        rv = self.jinja_environment(self, **options)
-        rv.globals.update(
-            url_for=url_for,
-            get_flashed_messages=get_flashed_messages,
-            config=self.config,
-            # request, session and g are normally added with the
-            # context processor for efficiency reasons but for imported
-            # templates we also want the proxies in there.
-            request=request,
-            session=session,
-            g=g,
-        )
-        rv.filters["tojson"] = json.tojson_filter
-        return rv
-
     def create_global_jinja_loader(self):
         """Creates the loader for the Jinja2 environment.  Can be used to
         override just the loader and keeping the rest unchanged.  It's
@@ -1184,16 +1299,6 @@ class Flask(Skeleton):
         .. versionadded:: 0.7
         """
         return DispatchingJinjaLoader(self)
-
-    def select_jinja_autoescape(self, filename):
-        """Returns ``True`` if autoescaping should be active for the given
-        template name. If no template name is given, returns `True`.
-
-        .. versionadded:: 0.5
-        """
-        if filename is None:
-            return True
-        return filename.endswith((".html", ".htm", ".xml", ".xhtml"))
 
     def update_template_context(self, context):
         """Update the template context with some commonly used variables.
@@ -1474,109 +1579,6 @@ class Flask(Skeleton):
         .. versionadded:: 0.11
         """
         return iter(self._blueprint_order)
-
-    @setupmethod
-    def template_filter(self, name=None):
-        """A decorator that is used to register custom template filter.
-        You can specify a name for the filter, otherwise the function
-        name will be used. Example::
-
-          @app.template_filter()
-          def reverse(s):
-              return s[::-1]
-
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
-        """
-
-        def decorator(f):
-            self.add_template_filter(f, name=name)
-            return f
-
-        return decorator
-
-    @setupmethod
-    def add_template_filter(self, f, name=None):
-        """Register a custom template filter.  Works exactly like the
-        :meth:`template_filter` decorator.
-
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
-        """
-        self.jinja_env.filters[name or f.__name__] = f
-
-    @setupmethod
-    def template_test(self, name=None):
-        """A decorator that is used to register custom template test.
-        You can specify a name for the test, otherwise the function
-        name will be used. Example::
-
-          @app.template_test()
-          def is_prime(n):
-              if n == 2:
-                  return True
-              for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
-                  if n % i == 0:
-                      return False
-              return True
-
-        .. versionadded:: 0.10
-
-        :param name: the optional name of the test, otherwise the
-                     function name will be used.
-        """
-
-        def decorator(f):
-            self.add_template_test(f, name=name)
-            return f
-
-        return decorator
-
-    @setupmethod
-    def add_template_test(self, f, name=None):
-        """Register a custom template test.  Works exactly like the
-        :meth:`template_test` decorator.
-
-        .. versionadded:: 0.10
-
-        :param name: the optional name of the test, otherwise the
-                     function name will be used.
-        """
-        self.jinja_env.tests[name or f.__name__] = f
-
-    @setupmethod
-    def template_global(self, name=None):
-        """A decorator that is used to register a custom template global function.
-        You can specify a name for the global function, otherwise the function
-        name will be used. Example::
-
-            @app.template_global()
-            def double(n):
-                return 2 * n
-
-        .. versionadded:: 0.10
-
-        :param name: the optional name of the global function, otherwise the
-                     function name will be used.
-        """
-
-        def decorator(f):
-            self.add_template_global(f, name=name)
-            return f
-
-        return decorator
-
-    @setupmethod
-    def add_template_global(self, f, name=None):
-        """Register a custom template global function. Works exactly like the
-        :meth:`template_global` decorator.
-
-        .. versionadded:: 0.10
-
-        :param name: the optional name of the global function, otherwise the
-                     function name will be used.
-        """
-        self.jinja_env.globals[name or f.__name__] = f
 
     @setupmethod
     def before_first_request(self, f):
