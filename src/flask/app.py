@@ -204,6 +204,18 @@ class Skeleton(_PackageBoundObject):
         #: .. versionadded:: 0.7
         self.url_default_functions = {}
 
+        #: A dictionary of all registered error handlers.  The key is ``None``
+        #: for error handlers active on the application, otherwise the key is
+        #: the name of the blueprint.  Each key points to another dictionary
+        #: where the key is the status code of the http exception.  The
+        #: special key ``None`` points to a list of tuples where the first item
+        #: is the class for the instance check and the second the error handler
+        #: function.
+        #:
+        #: To register an error handler, use the :meth:`errorhandler`
+        #: decorator.
+        self.error_handler_spec = {}
+
     def route(self, rule, **options):
         def decorator(f):
             endpoint = options.pop("endpoint", None)
@@ -527,6 +539,55 @@ class Skeleton(_PackageBoundObject):
         defaults["DEBUG"] = get_debug_flag()
         return self.config_class(root_path, defaults)
 
+    @setupmethod
+    def _register_error_handler(self, key, code_or_exception, f):
+        """
+        :type key: None|str
+        :type code_or_exception: int|T<=Exception
+        :type f: callable
+        """
+        if isinstance(code_or_exception, HTTPException):  # old broken behavior
+            raise ValueError(
+                "Tried to register a handler for an exception instance"
+                f" {code_or_exception!r}. Handlers can only be"
+                " registered for exception classes or HTTP error codes."
+            )
+
+        try:
+            exc_class, code = self._get_exc_class_and_code(code_or_exception)
+        except KeyError:
+            raise KeyError(
+                f"'{code_or_exception}' is not a recognized HTTP error"
+                " code. Use a subclass of HTTPException with that code"
+                " instead."
+            )
+
+        handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
+        handlers[exc_class] = f
+
+    @staticmethod
+    def _get_exc_class_and_code(exc_class_or_code):
+        """Get the exception class being handled. For HTTP status codes
+        or ``HTTPException`` subclasses, return both the exception and
+        status code.
+
+        :param exc_class_or_code: Any exception class, or an HTTP status
+            code as an integer.
+        """
+        if isinstance(exc_class_or_code, int):
+            exc_class = default_exceptions[exc_class_or_code]
+        else:
+            exc_class = exc_class_or_code
+
+        assert issubclass(
+            exc_class, Exception
+        ), "Custom exceptions must be subclasses of Exception."
+
+        if issubclass(exc_class, HTTPException):
+            return exc_class, exc_class.code
+        else:
+            return exc_class, None
+
 
 class Flask(Skeleton):
     """The flask object implements a WSGI application and acts as the central
@@ -820,18 +881,6 @@ class Flask(Skeleton):
         #: the values are the function objects themselves.
         #: To register a view function, use the :meth:`route` decorator.
         self.view_functions = {}
-
-        #: A dictionary of all registered error handlers.  The key is ``None``
-        #: for error handlers active on the application, otherwise the key is
-        #: the name of the blueprint.  Each key points to another dictionary
-        #: where the key is the status code of the http exception.  The
-        #: special key ``None`` points to a list of tuples where the first item
-        #: is the class for the instance check and the second the error handler
-        #: function.
-        #:
-        #: To register an error handler, use the :meth:`errorhandler`
-        #: decorator.
-        self.error_handler_spec = {}
 
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
@@ -1425,55 +1474,6 @@ class Flask(Skeleton):
         .. versionadded:: 0.11
         """
         return iter(self._blueprint_order)
-
-    @staticmethod
-    def _get_exc_class_and_code(exc_class_or_code):
-        """Get the exception class being handled. For HTTP status codes
-        or ``HTTPException`` subclasses, return both the exception and
-        status code.
-
-        :param exc_class_or_code: Any exception class, or an HTTP status
-            code as an integer.
-        """
-        if isinstance(exc_class_or_code, int):
-            exc_class = default_exceptions[exc_class_or_code]
-        else:
-            exc_class = exc_class_or_code
-
-        assert issubclass(
-            exc_class, Exception
-        ), "Custom exceptions must be subclasses of Exception."
-
-        if issubclass(exc_class, HTTPException):
-            return exc_class, exc_class.code
-        else:
-            return exc_class, None
-
-    @setupmethod
-    def _register_error_handler(self, key, code_or_exception, f):
-        """
-        :type key: None|str
-        :type code_or_exception: int|T<=Exception
-        :type f: callable
-        """
-        if isinstance(code_or_exception, HTTPException):  # old broken behavior
-            raise ValueError(
-                "Tried to register a handler for an exception instance"
-                f" {code_or_exception!r}. Handlers can only be"
-                " registered for exception classes or HTTP error codes."
-            )
-
-        try:
-            exc_class, code = self._get_exc_class_and_code(code_or_exception)
-        except KeyError:
-            raise KeyError(
-                f"'{code_or_exception}' is not a recognized HTTP error"
-                " code. Use a subclass of HTTPException with that code"
-                " instead."
-            )
-
-        handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
-        handlers[exc_class] = f
 
     @setupmethod
     def template_filter(self, name=None):

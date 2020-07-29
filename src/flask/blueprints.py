@@ -245,18 +245,29 @@ class Blueprint(Skeleton):
             )
 
         # Merge app and self dictionaries.
-        def merge_dicts(self_dict, app_dict):
-            """Merges self_dict into app_dict.
-            Replaces None keys with self.name.
+        def merge_dict_lists(self_dict, app_dict):
+            """Merges self_dict into app_dict. Replaces None keys with self.name.
+            Values of dict must be lists.
             """
             for key, values in self_dict.items():
                 key = self.name if key is None else f"{self.name}"
                 app_dict.setdefault(key, []).extend(values)
 
+        def merge_dict_nested(self_dict, app_dict):
+            """Merges self_dict into app_dict. Replaces None keys with self.name.
+            Values of dict must be dict.
+            """
+            for key, value in self_dict.items():
+                key = self.name if key is None else f"{self.name}"
+                app_dict[key] = value
+
         app.view_functions.update(self.view_functions)
-        merge_dicts(self.before_request_funcs, app.before_request_funcs)
-        merge_dicts(self.after_request_funcs, app.after_request_funcs)
-        merge_dicts(self.url_default_functions, app.url_default_functions)
+
+        merge_dict_lists(self.before_request_funcs, app.before_request_funcs)
+        merge_dict_lists(self.after_request_funcs, app.after_request_funcs)
+        merge_dict_lists(self.url_default_functions, app.url_default_functions)
+
+        merge_dict_nested(self.error_handler_spec, app.error_handler_spec)
 
         for deferred in self.deferred_functions:
             deferred(state)
@@ -509,26 +520,6 @@ class Blueprint(Skeleton):
             lambda s: s.app.url_default_functions.setdefault(None, []).append(f)
         )
         return f
-
-    def errorhandler(self, code_or_exception):
-        """Registers an error handler that becomes active for this blueprint
-        only.  Please be aware that routing does not happen local to a
-        blueprint so an error handler for 404 usually is not handled by
-        a blueprint unless it is caused inside a view function.  Another
-        special case is the 500 internal server error which is always looked
-        up from the application.
-
-        Otherwise works as the :meth:`~flask.Flask.errorhandler` decorator
-        of the :class:`~flask.Flask` object.
-        """
-
-        def decorator(f):
-            self.record_once(
-                lambda s: s.app._register_error_handler(self.name, code_or_exception, f)
-            )
-            return f
-
-        return decorator
 
     def register_error_handler(self, code_or_exception, f):
         """Non-decorator version of the :meth:`errorhandler` error attach
