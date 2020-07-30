@@ -1,7 +1,7 @@
 from functools import update_wrapper
 
-from .app import Skeleton
 from .helpers import _endpoint_from_view_func
+from .skeleton import Skeleton
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
