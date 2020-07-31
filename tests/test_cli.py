@@ -239,7 +239,7 @@ def test_locate_app_raises(test_apps, iname, aname):
         locate_app(info, iname, aname)
 
 
-def test_locate_app_suppress_raise():
+def test_locate_app_suppress_raise(test_apps):
     info = ScriptInfo()
     app = locate_app(info, "notanapp.py", None, raise_if_not_found=False)
     assert app is None
@@ -396,21 +396,36 @@ def test_flaskgroup_debug(runner, set_debug_flag):
     assert result.output == f"{not set_debug_flag}\n"
 
 
-def test_print_exceptions(runner):
-    """Print the stacktrace if the CLI."""
+def test_no_command_echo_loading_error():
+    from flask.cli import cli
 
-    def create_app():
-        raise Exception("oh no")
-        return Flask("flaskgroup")
+    runner = CliRunner(mix_stderr=False)
+    result = runner.invoke(cli, ["missing"])
+    assert result.exit_code == 2
+    assert "FLASK_APP" in result.stderr
+    assert "Usage:" in result.stderr
 
-    @click.group(cls=FlaskGroup, create_app=create_app)
-    def cli(**params):
-        pass
 
+def test_help_echo_loading_error():
+    from flask.cli import cli
+
+    runner = CliRunner(mix_stderr=False)
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
-    assert "Exception: oh no" in result.output
-    assert "Traceback" in result.output
+    assert "FLASK_APP" in result.stderr
+    assert "Usage:" in result.stdout
+
+
+def test_help_echo_exception():
+    def create_app():
+        raise Exception("oh no")
+
+    cli = FlaskGroup(create_app=create_app)
+    runner = CliRunner(mix_stderr=False)
+    result = runner.invoke(cli, ["--help"])
+    assert result.exit_code == 0
+    assert "Exception: oh no" in result.stderr
+    assert "Usage:" in result.stdout
 
 
 class TestRoutes:

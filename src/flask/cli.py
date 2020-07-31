@@ -536,43 +536,41 @@ class FlaskGroup(AppGroup):
 
     def get_command(self, ctx, name):
         self._load_plugin_commands()
+        # Look up built-in and plugin commands, which should be
+        # available even if the app fails to load.
+        rv = super().get_command(ctx, name)
 
-        # We load built-in commands first as these should always be the
-        # same no matter what the app does.  If the app does want to
-        # override this it needs to make a custom instance of this group
-        # and not attach the default commands.
-        #
-        # This also means that the script stays functional in case the
-        # application completely fails.
-        rv = AppGroup.get_command(self, ctx, name)
         if rv is not None:
             return rv
 
         info = ctx.ensure_object(ScriptInfo)
+
+        # Look up commands provided by the app, showing an error and
+        # continuing if the app couldn't be loaded.
         try:
-            rv = info.load_app().cli.get_command(ctx, name)
-            if rv is not None:
-                return rv
-        except NoAppException:
-            pass
+            return info.load_app().cli.get_command(ctx, name)
+        except NoAppException as e:
+            click.secho(f"Error: {e.format_message()}\n", err=True, fg="red")
 
     def list_commands(self, ctx):
         self._load_plugin_commands()
-
-        # The commands available is the list of both the application (if
-        # available) plus the builtin commands.
-        rv = set(click.Group.list_commands(self, ctx))
+        # Start with the built-in and plugin commands.
+        rv = set(super().list_commands(ctx))
         info = ctx.ensure_object(ScriptInfo)
+
+        # Add commands provided by the app, showing an error and
+        # continuing if the app couldn't be loaded.
         try:
             rv.update(info.load_app().cli.list_commands(ctx))
+        except NoAppException as e:
+            # When an app couldn't be loaded, show the error message
+            # without the traceback.
+            click.secho(f"Error: {e.format_message()}\n", err=True, fg="red")
         except Exception:
-            # Here we intentionally swallow all exceptions as we don't
-            # want the help page to break if the app does not exist.
-            # If someone attempts to use the command we try to create
-            # the app again and this will give us the error.
-            # However, we will not do so silently because that would confuse
-            # users.
-            traceback.print_exc()
+            # When any other errors occurred during loading, show the
+            # full traceback.
+            click.secho(f"{traceback.format_exc()}\n", err=True, fg="red")
+
         return sorted(rv)
 
     def main(self, *args, **kwargs):
