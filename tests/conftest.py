@@ -73,9 +73,15 @@ def client(app):
 
 @pytest.fixture
 def test_apps(monkeypatch):
-    monkeypatch.syspath_prepend(
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "test_apps"))
-    )
+    monkeypatch.syspath_prepend(os.path.join(os.path.dirname(__file__), "test_apps"))
+    original_modules = set(sys.modules.keys())
+
+    yield
+
+    # Remove any imports cached during the test. Otherwise "import app"
+    # will work in the next test even though it's no longer on the path.
+    for key in sys.modules.keys() - original_modules:
+        sys.modules.pop(key)
 
 
 @pytest.fixture(autouse=True)
