@@ -12,6 +12,8 @@ Unreleased
 -   Passing ``script_info`` to app factory functions is deprecated. This
     was not portable outside the ``flask`` command. Use
     ``click.get_current_context().obj`` if it's needed. :issue:`3552`
+-   The CLI shows better error messages when the app failed to load
+    when looking up commands. :issue:`2741`
 -   Add :meth:`sessions.SessionInterface.get_cookie_name` to allow
     setting the session cookie name dynamically. :pr:`3369`
 -   Add :meth:`Config.from_file` to load config using arbitrary file
