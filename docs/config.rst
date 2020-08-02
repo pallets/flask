@@ -427,7 +427,7 @@ So a common pattern is this::
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
 with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
-environment variable points to.  This environment variable can be set 
+environment variable points to.  This environment variable can be set
 in the shell before starting the server:
 
 .. tabs::

@@ -363,7 +363,7 @@ script. Activating the virtualenv will set the variables.
    .. group-tab:: CMD
 
       Windows CMD, :file:`venv\\Scripts\\activate.bat`::
-          
+
           > set FLASK_APP=hello
 
    .. group-tab:: Powershell

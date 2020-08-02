@@ -75,17 +75,23 @@ Create an environment
 
 Create a project folder and a :file:`venv` folder within:
 
-.. code-block:: sh
+.. tabs::
 
-    $ mkdir myproject
-    $ cd myproject
-    $ python3 -m venv venv
+   .. group-tab:: macOS/Linux
 
-On Windows:
+      .. code-block:: text
 
-.. code-block:: bat
+         $ mkdir myproject
+         $ cd myproject
+         $ python3 -m venv venv
 
-    $ py -3 -m venv venv
+   .. group-tab:: Windows
+
+      .. code-block:: text
+
+         > mkdir myproject
+         > cd myproject
+         > py -3 -m venv venv
 
 
 .. _install-activate-env:
@@ -95,15 +101,19 @@ Activate the environment
 
 Before you work on your project, activate the corresponding environment:
 
-.. code-block:: sh
+.. tabs::
 
-    $ . venv/bin/activate
+   .. group-tab:: macOS/Linux
 
-On Windows:
+      .. code-block:: text
 
-.. code-block:: bat
+         $ . venv/bin/activate
 
-    > venv\Scripts\activate
+   .. group-tab:: Windows
+
+      .. code-block:: text
+
+         > venv\Scripts\activate
 
 Your shell prompt will change to show the name of the activated
 environment.
