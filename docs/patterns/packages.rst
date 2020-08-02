@@ -57,15 +57,51 @@ a big problem, just add a new file called :file:`setup.py` next to the inner
     )
 
 In order to run the application you need to export an environment variable
-that tells Flask where to find the application instance::
+that tells Flask where to find the application instance:
 
-    $ export FLASK_APP=yourapplication
+.. tabs::
+
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_APP=yourapplication
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_APP=yourapplication
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_APP = "yourapplication"
 
 If you are outside of the project directory make sure to provide the exact
 path to your application directory. Similarly you can turn on the
-development features like this::
+development features like this:
 
-    $ export FLASK_ENV=development
+.. tabs::
+
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_ENV=development
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_ENV=development
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_ENV = "development"
 
 In order to install and run the application you need to issue the following
 commands::

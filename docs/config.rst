@@ -65,12 +65,30 @@ in debug mode. To control this separately from the environment, use the
     from debug mode. The development environment enables debug mode.
 
 To switch Flask to the development environment and enable debug mode,
-set :envvar:`FLASK_ENV`::
+set :envvar:`FLASK_ENV`:
 
-    $ export FLASK_ENV=development
-    $ flask run
+.. tabs::
 
-(On Windows, use ``set`` instead of ``export``.)
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_ENV=development
+         $ flask run
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_ENV=development
+         > flask run
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_ENV = "development"
+         > flask run
 
 Using the environment variables as described above is recommended. While
 it is possible to set :data:`ENV` and :data:`DEBUG` in your config or
@@ -409,18 +427,34 @@ So a common pattern is this::
 This first loads the configuration from the
 `yourapplication.default_settings` module and then overrides the values
 with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
-environment variable points to.  This environment variable can be set on
-Linux or OS X with the export command in the shell before starting the
-server::
+environment variable points to.  This environment variable can be set 
+in the shell before starting the server:
 
-    $ export YOURAPPLICATION_SETTINGS=/path/to/settings.cfg
-    $ python run-app.py
-     * Running on http://127.0.0.1:5000/
-     * Restarting with reloader...
+.. tabs::
 
-On Windows systems use the `set` builtin instead::
+   .. group-tab:: Bash
 
-    > set YOURAPPLICATION_SETTINGS=\path\to\settings.cfg
+      .. code-block:: text
+
+         $ export YOURAPPLICATION_SETTINGS=/path/to/settings.cfg
+         $ flask run
+          * Running on http://127.0.0.1:5000/
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set YOURAPPLICATION_SETTINGS=\path\to\settings.cfg
+         > flask run
+          * Running on http://127.0.0.1:5000/
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:YOURAPPLICATION_SETTINGS = "\path\to\settings.cfg"
+         > flask run
+          * Running on http://127.0.0.1:5000/
 
 The configuration files themselves are actual Python files.  Only values
 in uppercase are actually stored in the config object later on.  So make
@@ -465,17 +499,36 @@ In addition to pointing to configuration files using environment variables, you
 may find it useful (or necessary) to control your configuration values directly
 from the environment.
 
-Environment variables can be set on Linux or OS X with the export command in
-the shell before starting the server::
+Environment variables can be set in the shell before starting the server:
 
-    $ export SECRET_KEY='5f352379324c22463451387a0aec5d2f'
-    $ export MAIL_ENABLED=false
-    $ python run-app.py
-     * Running on http://127.0.0.1:5000/
+.. tabs::
 
-On Windows systems use the ``set`` builtin instead::
+   .. group-tab:: Bash
 
-    > set SECRET_KEY='5f352379324c22463451387a0aec5d2f'
+      .. code-block:: text
+
+         $ export SECRET_KEY="5f352379324c22463451387a0aec5d2f"
+         $ export MAIL_ENABLED=false
+         $ flask run
+          * Running on http://127.0.0.1:5000/
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set SECRET_KEY="5f352379324c22463451387a0aec5d2f"
+         > set MAIL_ENABLED=false
+         > flask run
+          * Running on http://127.0.0.1:5000/
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:SECRET_KEY = "5f352379324c22463451387a0aec5d2f"
+         > $env:MAIL_ENABLED = "false"
+         > flask run
+          * Running on http://127.0.0.1:5000/
 
 While this approach is straightforward to use, it is important to remember that
 environment variables are strings -- they are not automatically deserialized
