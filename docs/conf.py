@@ -26,7 +26,7 @@ intersphinx_mapping = {
     "jinja": ("https://jinja.palletsprojects.com/", None),
     "itsdangerous": ("https://itsdangerous.palletsprojects.com/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/", None),
-    "wtforms": ("https://wtforms.readthedocs.io/en/stable/", None),
+    "wtforms": ("https://wtforms.readthedocs.io/", None),
     "blinker": ("https://pythonhosted.org/blinker/", None),
 }
 issues_github_path = "pallets/flask"
