@@ -351,12 +351,16 @@ class SecureCookieSessionInterface(SessionInterface):
         name = self.get_cookie_name(app)
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
+        secure = self.get_cookie_secure(app)
+        samesite = self.get_cookie_samesite(app)
 
         # If the session is modified to be empty, remove the cookie.
         # If the session is empty, return without setting the cookie.
         if not session:
             if session.modified:
-                response.delete_cookie(name, domain=domain, path=path)
+                response.delete_cookie(
+                    name, domain=domain, path=path, secure=secure, samesite=samesite
+                )
 
             return
 
@@ -368,8 +372,6 @@ class SecureCookieSessionInterface(SessionInterface):
             return
 
         httponly = self.get_cookie_httponly(app)
-        secure = self.get_cookie_secure(app)
-        samesite = self.get_cookie_samesite(app)
         expires = self.get_expiration_time(app, session)
         val = self.get_signing_serializer(app).dumps(dict(session))
         response.set_cookie(

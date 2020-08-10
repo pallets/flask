@@ -42,6 +42,8 @@ Unreleased
     attributes just like ``Flask``, rather than opaque lambda functions.
     This is intended to improve consistency and maintainability.
     :issue:`3215`
+-   Include ``samesite`` and ``secure`` options when removing the
+    session cookie. :pr:`3726`
 
 
 Version 1.1.x

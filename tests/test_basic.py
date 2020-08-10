@@ -322,6 +322,19 @@ def test_session_using_session_settings(app, client):
     assert "httponly" not in cookie
     assert "samesite" in cookie
 
+    @app.route("/clear")
+    def clear():
+        flask.session.pop("testing", None)
+        return "Goodbye World"
+
+    rv = client.get("/clear", "http://www.example.com:8080/test/")
+    cookie = rv.headers["set-cookie"].lower()
+    assert "session=;" in cookie
+    assert "domain=.example.com" in cookie
+    assert "path=/" in cookie
+    assert "secure" in cookie
+    assert "samesite" in cookie
+
 
 def test_session_using_samesite_attribute(app, client):
     @app.route("/")
