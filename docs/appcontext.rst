@@ -112,6 +112,8 @@ For example, you can manage a database connection using this pattern::
 
     from flask import g
 
+    exception = Exception('Something went wrong!')
+
     def get_db():
         if 'db' not in g:
             g.db = connect_to_database()
@@ -119,7 +121,7 @@ For example, you can manage a database connection using this pattern::
         return g.db
 
     @app.teardown_appcontext
-    def teardown_db():
+    def teardown_db(exception):
         db = g.pop('db', None)
 
         if db is not None:
