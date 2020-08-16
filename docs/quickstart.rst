@@ -54,10 +54,12 @@ If you are on Windows, the environment variable syntax depends on command line
 interpreter. On Command Prompt::
 
     C:\path\to\app>set FLASK_APP=hello.py
+    C:\path\to\app>flask run
 
 And on PowerShell::
 
     PS C:\path\to\app> $env:FLASK_APP = "hello.py"
+    PS C:\path\to\app> flask run
 
 Alternatively you can use :command:`python -m flask`::
 
