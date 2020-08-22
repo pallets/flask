@@ -916,21 +916,36 @@ def routes_command(sort, all_methods):
         rules = sorted(rules, key=lambda rule: sorted(rule.methods))
 
     rule_methods = [", ".join(sorted(rule.methods - ignored_methods)) for rule in rules]
+    routes = zip(rules, rule_methods)
 
     headers = ("Endpoint", "Methods", "Rule")
-    widths = (
-        max(len(rule.endpoint) for rule in rules),
-        max(len(methods) for methods in rule_methods),
-        max(len(rule.rule) for rule in rules),
-    )
-    widths = [max(len(h), w) for h, w in zip(headers, widths)]
-    row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}".format(*widths)
+    rich_available = True
+    try:
+        from rich.console import Console
+        from rich.table import Table
+    except ImportError:
+        rich_available = False
 
-    click.echo(row.format(*headers).strip())
-    click.echo(row.format(*("-" * width for width in widths)))
+    if rich_available:
+        table = Table(*headers)
+        for rule, methods in routes:
+            table.add_row(rule.endpoint, methods, rule.rule)
+        console = Console()
+        console.print(table)
+    else:
+        widths = (
+            max(len(rule.endpoint) for rule in rules),
+            max(len(methods) for methods in rule_methods),
+            max(len(rule.rule) for rule in rules),
+        )
+        widths = [max(len(h), w) for h, w in zip(headers, widths)]
+        row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}".format(*widths)
 
-    for rule, methods in zip(rules, rule_methods):
-        click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
+        click.echo(row.format(*headers).strip())
+        click.echo(row.format(*("-" * width for width in widths)))
+
+        for rule, methods in routes:
+            click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
 
 
 cli = FlaskGroup(
