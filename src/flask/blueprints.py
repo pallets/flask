@@ -121,7 +121,7 @@ class Blueprint(Scaffold):
         default.
     :param url_defaults: A dict of default values that blueprint routes
         will receive by default.
-    :param root_path: By default, the blueprint will automatically this
+    :param root_path: By default, the blueprint will automatically set this
         based on ``import_name``. In certain situations this automatic
         detection can fail, so the path can be specified manually
         instead.
