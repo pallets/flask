@@ -43,11 +43,14 @@ jobs:
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: pip|${{ runner.os }}|${{ matrix.python }}|${{ hashFiles('setup.py') }}|${{ hashFiles('requirements/*.txt') }}
+      - name: set full Python version in PY env var
+        # See https://pre-commit.com/#github-actions-example
+        run: echo "::set-env name=PY::$(python -VV | sha256sum | cut -d' ' -f1)"
       - name: cache pre-commit
         uses: actions/cache@v1
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit|${{ matrix.python }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
         if: matrix.tox == 'style'
       - run: pip install tox
       - run: tox -e ${{ matrix.tox }}
