@@ -42,6 +42,7 @@ jobs:
           key: pre-commit|${{ matrix.python }}|${{ hashFiles('.pre-commit-config.yaml') }}
         if: matrix.tox == 'style'
       - run: pip install tox
-      - run: ls -al ~/.cache/pre-commit
+      - run: sqlite3 ~/.cache/pre-commit/db.db 'select * from repos;'
       - run: tox -e ${{ matrix.tox }}
-      - run: ls -al ~/.cache/pre-commit
+      - run: sqlite3 ~/.cache/pre-commit/db.db 'select * from repos;'
+      - run: .tox/style/bin/pre-commit install-hooks
