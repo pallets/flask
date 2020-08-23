@@ -42,7 +42,10 @@ jobs:
           key: pre-commit|${{ matrix.python }}|${{ hashFiles('.pre-commit-config.yaml') }}
         if: matrix.tox == 'style'
       - run: pip install tox
-      - run: sqlite3 ~/.cache/pre-commit/db.db 'select * from repos;'
+      - run: |
+            ls -al /home/runner/.cache/pre-commit/repoycory6fx
+            tail -n999 /home/runner/.cache/pre-commit/repoycory6fx/*/pyvenv.cfg
       - run: tox -e ${{ matrix.tox }}
-      - run: sqlite3 ~/.cache/pre-commit/db.db 'select * from repos;'
-      - run: .tox/style/bin/pre-commit install-hooks
+      - run: |
+            ls -al /home/runner/.cache/pre-commit/repoycory6fx
+            tail -n999 /home/runner/.cache/pre-commit/repoycory6fx/*/pyvenv.cfg
