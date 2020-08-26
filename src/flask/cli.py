@@ -859,7 +859,7 @@ def run_command(
 def shell_command():
     """Run an interactive Python shell in the context of a given
     Flask application.  The application will populate the default
-    namespace of this shell according to it's configuration.
+    namespace of this shell according to its configuration.
 
     This is useful for executing small snippets of management code
     without having to manually configure the application.
