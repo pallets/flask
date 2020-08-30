@@ -1,14 +1,11 @@
-import re
+from re import search
 
 from setuptools import setup
 
-with open("src/flask/__init__.py", encoding="utf8") as f:
-    version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
-
-# Metadata goes in setup.cfg. These are here for GitHub's dependency graph.
-setup(
+with open("src/flask/__init__.py", encoding="UTF-8") as f:
+    setup(
     name="Flask",
-    version=version,
+    version=search(r'__version__ = "(.*?)"', f.read()).group(1),
     install_requires=[
         "Werkzeug>=0.15",
         "Jinja2>=2.10.1",
@@ -16,4 +13,5 @@ setup(
         "click>=5.1",
     ],
     extras_require={"dotenv": ["python-dotenv"]},
-)
+    )
+
