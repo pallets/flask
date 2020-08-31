@@ -39,7 +39,7 @@ jobs:
         id: pip-cache
         run: echo "::set-output name=dir::$(pip cache dir)"
       - name: cache pip
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: pip|${{ runner.os }}|${{ matrix.python }}|${{ hashFiles('setup.py') }}|${{ hashFiles('requirements/*.txt') }}
@@ -47,7 +47,7 @@ jobs:
         # See https://pre-commit.com/#github-actions-example
         run: echo "::set-env name=PY::$(python -VV | sha256sum | cut -d' ' -f1)"
       - name: cache pre-commit
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
