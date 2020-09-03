@@ -27,7 +27,7 @@ follows:
 
 .. sourcecode:: text
 
-    $ apt-get install libapache2-mod-wsgi
+    $ apt-get install libapache2-mod-wsgi-py3
 
 If you are using a yum based distribution (Fedora, OpenSUSE, etc..) you
 can install it as follows:
@@ -41,7 +41,7 @@ using pkg_add:
 
 .. sourcecode:: text
 
-    $ pkg install ap22-mod_wsgi2
+    $ pkg install ap24-py37-mod_wsgi
 
 If you are using pkgsrc you can install `mod_wsgi` by compiling the
 `www/ap2-wsgi` package.
