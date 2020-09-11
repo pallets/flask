@@ -567,12 +567,17 @@ def send_file(
         file = filename_or_fp
         filename = None
 
+    headers = Headers()
     if mimetype is None:
         if attachment_filename is not None:
-            mimetype = (
-                mimetypes.guess_type(attachment_filename)[0]
-                or "application/octet-stream"
-            )
+            mimetype, encoding = mimetypes.guess_type(attachment_filename)
+            if encoding is not None:
+                headers.update(
+                    {"Content-Encoding": encoding, "Vary": "Accept-Encoding"}
+                )
+
+            if mimetype is None and encoding is None:
+                mimetype = "application/octet-stream"
 
         if mimetype is None:
             raise ValueError(
@@ -581,7 +586,6 @@ def send_file(
                 "`filename_or_fp` or set your own MIME-type via `mimetype`."
             )
 
-    headers = Headers()
     if as_attachment:
         if attachment_filename is None:
             raise TypeError("filename unavailable, required for sending as attachment")
