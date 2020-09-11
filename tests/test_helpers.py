@@ -428,6 +428,17 @@ class TestSendfile:
             assert rv.data == f.read()
         rv.close()
 
+    def test_send_file_content_encoding(self, app, req_ctx):
+        rv = flask.send_file("static/logo-lineart.svgz")
+        assert rv.direct_passthrough
+        assert rv.mimetype == "image/svg+xml"
+        assert "content-encoding" in rv.headers
+        assert "gzip" in rv.headers["content-encoding"]
+        with app.open_resource("static/logo-lineart.svgz") as f:
+            rv.direct_passthrough = False
+            assert rv.data == f.read()
+        rv.close()
+
     def test_send_file_xsendfile(self, app, req_ctx):
         app.use_x_sendfile = True
         rv = flask.send_file("static/index.html")
