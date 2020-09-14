@@ -33,7 +33,7 @@ pre-commit==2.7.1         # via -r requirements/dev.in
 py==1.9.0                 # via pytest, tox
 pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via packaging
-pytest==6.0.1             # via -r requirements/tests.in
+pytest==6.0.2             # via -r requirements/tests.in
 python-dotenv==0.14.0     # via -r requirements/tests.in
 pytz==2020.1              # via babel
 pyyaml==5.3.1             # via pre-commit
