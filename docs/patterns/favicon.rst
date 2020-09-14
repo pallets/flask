@@ -28,15 +28,13 @@ however your application is the root you can simply route a redirect::
                      redirect_to=url_for('static', filename='favicon.ico'))
 
 If you want to save the extra redirect request you can also write a view
-using :func:`~flask.send_from_directory`::
+using :func:`~flask.send_static_file`::
 
-    import os
-    from flask import send_from_directory
+    from flask import current_app
 
     @app.route('/favicon.ico')
     def favicon():
-        return send_from_directory(os.path.join(app.root_path, 'static'),
-                                   'favicon.ico', mimetype='image/vnd.microsoft.icon')
+        return current_app.send_static_file("images/favicon.ico")
 
 We can leave out the explicit mimetype and it will be guessed, but we may
 as well specify it to avoid the extra guessing, as it will always be the
