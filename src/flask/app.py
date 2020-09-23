@@ -1,5 +1,6 @@
 import os
 import sys
+import weakref
 from datetime import timedelta
 from itertools import chain
 from threading import Lock
@@ -474,6 +475,7 @@ class Flask(Scaffold):
         # Note we do this without checking if static_folder exists.
         # For one, it might be created while the server is running (e.g. during
         # development). Also, Google App Engine stores static files somewhere
+        self_ref = weakref.ref(self)
         if self.has_static_folder:
             assert (
                 bool(static_host) == host_matching
@@ -482,7 +484,9 @@ class Flask(Scaffold):
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=self.send_static_file,
+                view_func=lambda *args, **kwds: self_ref().send_static_file(
+                    *args, **kwds
+                ),
             )
 
         # Set the name of the Click group in case someone wants to add
