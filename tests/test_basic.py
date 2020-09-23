@@ -1,8 +1,11 @@
+import gc
 import re
 import sys
 import time
 import uuid
+import weakref
 from datetime import datetime
+from platform import python_implementation
 from threading import Thread
 
 import pytest
@@ -14,6 +17,11 @@ from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
 
 import flask
+
+
+require_cpython_gc = pytest.mark.skipif(
+    python_implementation() != "CPython", reason="Requires CPython GC behavior",
+)
 
 
 def test_options_work(app, client):
@@ -1970,3 +1978,20 @@ def test_max_cookie_size(app, client, recwarn):
 
     client.get("/")
     assert len(recwarn) == 0
+
+
+@require_cpython_gc
+def test_app_freed_on_zero_refcount():
+    # Tests that a newly created app does not contain
+    # a circular refrence to itself,
+    # preventing its automatic deletion in CPython
+    # when all external references to it are released.
+    gc.disable()
+    try:
+        app = flask.Flask(__name__)
+        weak = weakref.ref(app)
+        assert weak() is not None
+        del app
+        assert weak() is None
+    finally:
+        gc.enable()
