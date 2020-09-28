@@ -55,7 +55,7 @@ And then add this to your Flask app:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
 
-    sentry_sdk.init('YOUR_DSN_HERE',integrations=[FlaskIntegration()])
+    sentry_sdk.init('YOUR_DSN_HERE', integrations=[FlaskIntegration()])
 
 The ``YOUR_DSN_HERE`` value needs to be replaced with the DSN value you
 get from your Sentry installation.
