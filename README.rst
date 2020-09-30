@@ -2,15 +2,28 @@ Flask
 =====
 
 Flask is a lightweight `WSGI`_ web application framework. It is designed
-to make getting started quick and easy, with the ability to scale up to
-complex applications. It began as a simple wrapper around `Werkzeug`_
+to make getting started quick and easy, also known as one drop at a time,
+with the ability to scale up to complex applications.
+It began as a simple wrapper around `Werkzeug`_
 and `Jinja`_ and has become one of the most popular Python web
 application frameworks.
+
+Using templates you are able to set a basic layout for your pages and
+mention which element will change. This way you can define your header
+once and keep it consistent over all the pages of your website, and if you 
+need to change your header, you will only have to update it in one place.
+
+Flask uses a specific syntax to create links from a page to another.
+This is fact generates the link dynamically according to the decorator
+set to the function linked to. In addition it takes care of where the application is deployed.
+
 
 Flask offers suggestions, but doesn't enforce any dependencies or
 project layout. It is up to the developer to choose the tools and
 libraries they want to use. There are many extensions provided by the
 community that make adding new functionality easy.
+
+
 
 
 Installing
