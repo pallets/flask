@@ -16,7 +16,7 @@ click==7.1.2              # via pip-tools
 distlib==0.3.0            # via virtualenv
 docutils==0.16            # via sphinx
 filelock==3.0.12          # via tox, virtualenv
-greenlet==0.4.16          # via -r requirements/tests.in
+greenlet==0.4.17          # via -r requirements/tests.in
 identify==1.4.16          # via pre-commit
 idna==2.9                 # via requests
 imagesize==1.2.0          # via sphinx
