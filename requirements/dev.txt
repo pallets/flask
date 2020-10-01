@@ -23,7 +23,6 @@ imagesize==1.2.0          # via sphinx
 iniconfig==1.0.0          # via pytest
 jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
-more-itertools==8.3.0     # via pytest
 nodeenv==1.3.5            # via pre-commit
 packaging==20.4           # via -r requirements/docs.in, pallets-sphinx-themes, pytest, sphinx, tox
 pallets-sphinx-themes==1.2.3  # via -r requirements/docs.in
@@ -33,7 +32,7 @@ pre-commit==2.7.1         # via -r requirements/dev.in
 py==1.9.0                 # via pytest, tox
 pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via packaging
-pytest==6.0.2             # via -r requirements/tests.in
+pytest==6.1.0             # via -r requirements/tests.in
 python-dotenv==0.14.0     # via -r requirements/tests.in
 pytz==2020.1              # via babel
 pyyaml==5.3.1             # via pre-commit
