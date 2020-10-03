@@ -1982,13 +1982,12 @@ def test_max_cookie_size(app, client, recwarn):
 
 @require_cpython_gc
 def test_app_freed_on_zero_refcount():
-    # Tests that a newly created app does not contain
-    # a circular refrence to itself,
-    # preventing its automatic deletion in CPython
-    # when all external references to it are released.
+    # A Flask instance should not create a reference cycle that prevents CPython
+    # from freeing it when all external references to it are released (see #3761).
     gc.disable()
     try:
         app = flask.Flask(__name__)
+        assert app.view_functions["static"]
         weak = weakref.ref(app)
         assert weak() is not None
         del app

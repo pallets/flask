@@ -475,18 +475,18 @@ class Flask(Scaffold):
         # Note we do this without checking if static_folder exists.
         # For one, it might be created while the server is running (e.g. during
         # development). Also, Google App Engine stores static files somewhere
-        self_ref = weakref.ref(self)
         if self.has_static_folder:
             assert (
                 bool(static_host) == host_matching
             ), "Invalid static_host/host_matching combination"
+            # Use a weakref to avoid creating a reference cycle between the app
+            # and the view function (see #3761).
+            self_ref = weakref.ref(self)
             self.add_url_rule(
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=lambda *args, **kwds: self_ref().send_static_file(
-                    *args, **kwds
-                ),
+                view_func=lambda **kw: self_ref().send_static_file(**kw),
             )
 
         # Set the name of the Click group in case someone wants to add
