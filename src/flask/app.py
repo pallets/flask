@@ -1,5 +1,6 @@
 import os
 import sys
+import weakref
 from datetime import timedelta
 from itertools import chain
 from threading import Lock
@@ -478,11 +479,14 @@ class Flask(Scaffold):
             assert (
                 bool(static_host) == host_matching
             ), "Invalid static_host/host_matching combination"
+            # Use a weakref to avoid creating a reference cycle between the app
+            # and the view function (see #3761).
+            self_ref = weakref.ref(self)
             self.add_url_rule(
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=self.send_static_file,
+                view_func=lambda **kw: self_ref().send_static_file(**kw),
             )
 
         # Set the name of the Click group in case someone wants to add
