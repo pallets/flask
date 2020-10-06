@@ -396,6 +396,10 @@ class Flask(Scaffold):
         #: to load a config from files.
         self.config = self.make_config(instance_relative_config)
 
+        # Check static file routing in advance and return more detailed traceback information
+        if not static_url_path.startswith("/"):
+            raise ValueError("Static file url must start with a leading slash")
+
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
         #: is called with `error`, `endpoint` and `values`.  If a function
