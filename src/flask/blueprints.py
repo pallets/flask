@@ -130,7 +130,7 @@ class Blueprint(Scaffold):
     warn_on_modifications = False
     _got_registered_once = False
 
-    #: Blueprint local JSON decoder class to use.
+    #: Blueprint local JSON encoder class to use.
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
     json_encoder = None
     #: Blueprint local JSON decoder class to use.
