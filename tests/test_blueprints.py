@@ -340,6 +340,34 @@ def test_route_decorator_custom_endpoint(app, client):
     assert client.get("/py/bar/foo").data == b"bp.bar_foo"
 
 
+def test_endpoint_with_space_in_the_end():
+    bp = flask.Blueprint("bp", __name__)
+    try:
+
+        @bp.route("/bar ")
+        def foo_bar():
+            return flask.request.endpoint
+
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError not raised")
+
+
+def test_endpoint_with_space_in_the_beginning():
+    bp = flask.Blueprint("bp", __name__)
+    try:
+
+        @bp.route(" /bar")
+        def foo_bar():
+            return flask.request.endpoint
+
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("expected AssertionError not raised")
+
+
 def test_route_decorator_custom_endpoint_with_dots(app, client):
     bp = flask.Blueprint("bp", __name__)
 

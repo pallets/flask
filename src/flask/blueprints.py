@@ -295,6 +295,12 @@ class Blueprint(Scaffold):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the blueprint.
         """
+
+        assert rule.endswith(" ") is False, "Blueprint rule should not end with space"
+        assert (
+            rule.startswith(" ") is False
+        ), "Blueprint rule should not start with space"
+
         if endpoint:
             assert "." not in endpoint, "Blueprint endpoints should not contain dots"
         if view_func and hasattr(view_func, "__name__"):
