@@ -59,20 +59,36 @@ def find_best_app(script_info, module):
     for attr_name in ("app", "application"):
         app = getattr(module, attr_name, None)
 
+
+
+
         if isinstance(app, Flask):
             return app
+
+
 
     # Otherwise find the only object that is a Flask instance.
     matches = [v for v in itervalues(module.__dict__) if isinstance(v, Flask)]
 
+
+
+
     if len(matches) == 1:
         return matches[0]
+
+
+
+
+
     elif len(matches) > 1:
         raise NoAppException(
             'Detected multiple Flask applications in module "{module}". Use '
             '"FLASK_APP={module}:name" to specify the correct '
             "one.".format(module=module.__name__)
         )
+
+    ##asdfasdf#  ##
+####asdfasdf
 
     # Search for app factory functions.
     for attr_name in ("create_app", "make_app"):
@@ -98,6 +114,10 @@ def find_best_app(script_info, module):
         'Failed to find Flask application or factory in module "{module}". '
         'Use "FLASK_APP={module}:name to specify one.'.format(module=module.__name__)
     )
+
+
+
+
 
 
 def call_factory(script_info, app_factory, arguments=()):
