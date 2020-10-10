@@ -225,13 +225,15 @@ of the argument like ``<converter:variable_name>``. ::
 
 Converter types:
 
-========== ==========================================
-``string`` (default) accepts any text without a slash
-``int``    accepts positive integers
-``float``  accepts positive floating point values
-``path``   like ``string`` but also accepts slashes
-``uuid``   accepts UUID strings
-========== ==========================================
+======================   ====================================================
+``string``               (default) accepts any text without a slash
+``int``                  accepts positive integers
+``int(signed=True)``     accepts positive and negative integers
+``float``                accepts positive floating point values
+``float(signed=True)``   accepts positive and negative floating point values
+``path``                 like ``string`` but also accepts slashes
+``uuid``                 accepts UUID strings
+======================   ====================================================
 
 
 Unique URLs / Redirection Behavior
