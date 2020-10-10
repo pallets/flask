@@ -895,9 +895,9 @@ class TestStreaming:
 
 
 class TestSafeJoin:
-    def test_safe_join(self):
-        # Valid combinations of *args and expected joined paths.
-        passing = (
+    @pytest.mark.parametrize(
+        "passing",
+        (
             (("a/b/c",), "a/b/c"),
             (("/", "a/", "b/", "c/"), "/a/b/c"),
             (("a", "b", "c"), "a/b/c"),
@@ -912,14 +912,16 @@ class TestSafeJoin:
             # Base directory is always considered safe
             (("../", "a/b/c"), "../a/b/c"),
             (("/..",), "/.."),
-        )
+        ),
+    )
+    def test_safe_join(self, passing):
+        args = passing[0]
+        expected = passing[1]
+        assert flask.safe_join(*args) == expected
 
-        for args, expected in passing:
-            assert flask.safe_join(*args) == expected
-
-    def test_safe_join_exceptions(self):
-        # Should raise werkzeug.exceptions.NotFound on unsafe joins.
-        failing = (
+    @pytest.mark.parametrize(
+        "args",
+        (
             # path.isabs and ``..'' checks
             ("/a", "b", "/c"),
             ("/a", "../b/c"),
@@ -928,11 +930,11 @@ class TestSafeJoin:
             ("/a", "b/../b/../../c"),
             ("/a", "b", "c/../.."),
             ("/a", "b/../../c"),
-        )
-
-        for args in failing:
-            with pytest.raises(NotFound):
-                print(flask.safe_join(*args))
+        ),
+    )
+    def test_safe_join_exceptions(self, args):
+        with pytest.raises(NotFound):
+            print(flask.safe_join(*args))
 
 
 class TestHelpers:
