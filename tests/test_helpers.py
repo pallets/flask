@@ -896,7 +896,7 @@ class TestStreaming:
 
 class TestSafeJoin:
     @pytest.mark.parametrize(
-        "passing",
+        "args, expected",
         (
             (("a/b/c",), "a/b/c"),
             (("/", "a/", "b/", "c/"), "/a/b/c"),
@@ -914,9 +914,7 @@ class TestSafeJoin:
             (("/..",), "/.."),
         ),
     )
-    def test_safe_join(self, passing):
-        args = passing[0]
-        expected = passing[1]
+    def test_safe_join(self, args, expected):
         assert flask.safe_join(*args) == expected
 
     @pytest.mark.parametrize(
