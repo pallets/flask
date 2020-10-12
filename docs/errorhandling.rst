@@ -66,7 +66,7 @@ Follow-up reads:
   similar fashion.  See the `Python SDK docs
   <https://docs.sentry.io/platforms/python/>`_ for more information.
 * `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
-* `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
+* `Flask-specific documentation <https://docs.sentry.io/platforms/python/guides/flask/>`_.
 
 .. _error-handlers:
 
