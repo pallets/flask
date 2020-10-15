@@ -23,11 +23,31 @@ development server. It requires setting the ``FLASK_APP`` environment
 variable to point to your application, and ``FLASK_ENV=development`` to
 fully enable development mode.
 
-.. code-block:: text
+.. tabs::
 
-    $ export FLASK_APP=hello
-    $ export FLASK_ENV=development
-    $ flask run
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_APP=hello
+         $ export FLASK_ENV=development
+         $ flask run
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_APP=hello
+         > set FLASK_ENV=development
+         > flask run
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_APP = "hello"
+         > $env:FLASK_ENV = "development"
+         > flask run
 
 This enables the development environment, including the interactive
 debugger and reloader, and then starts the server on

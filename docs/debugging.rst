@@ -44,10 +44,28 @@ To enable the debugger, run the development server with the
 Flask in debug mode, which changes how it handles some errors, and
 enables the debugger and reloader.
 
-.. code-block:: text
+.. tabs::
 
-    $ export FLASK_ENV=development
-    $ flask run
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_ENV=development
+         $ flask run
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_ENV=development
+         > flask run
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_ENV = "development"
+         > flask run
 
 ``FLASK_ENV`` can only be set as an environment variable. When running
 from Python code, passing ``debug=True`` enables debug mode, which is
@@ -79,10 +97,28 @@ which can interfere.
 
 When running from the command line:
 
-.. code-block:: text
+.. tabs::
 
-    $ export FLASK_ENV=development
-    $ flask run --no-debugger --no-reload
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_ENV=development
+         $ flask run --no-debugger --no-reload
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_ENV=development
+         > flask run --no-debugger --no-reload
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_ENV = "development"
+         > flask run --no-debugger --no-reload
 
 When running from Python:
 

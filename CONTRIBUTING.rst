@@ -96,16 +96,21 @@ First time setup
 
 -   Create a virtualenv.
 
-    .. code-block:: text
+    .. tabs::
 
-        $ python3 -m venv env
-        $ . env/bin/activate
+       .. group-tab:: macOS/Linux
 
-    On Windows, activating is different.
+          .. code-block:: text
 
-    .. code-block:: text
+             $ python3 -m venv env
+             $ . env/bin/activate
 
-        > env\Scripts\activate
+       .. group-tab:: Windows
+
+          .. code-block:: text
+
+             > py -3 -m venv env
+             > env\Scripts\activate
 
 -   Install Flask in editable mode with development dependencies.
 
