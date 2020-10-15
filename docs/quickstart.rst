@@ -44,20 +44,31 @@ To run the application, use the :command:`flask` command or
 to tell your terminal the application to work with by exporting the
 ``FLASK_APP`` environment variable:
 
-.. code-block:: text
+.. tabs::
 
-    $ export FLASK_APP=hello.py
-    $ flask run
-     * Running on http://127.0.0.1:5000/
+   .. group-tab:: Bash
 
-If you are on Windows, the environment variable syntax depends on command line
-interpreter. On Command Prompt::
+      .. code-block:: text
 
-    C:\path\to\app>set FLASK_APP=hello.py
+         $ export FLASK_APP=hello.py
+         $ flask run
+          * Running on http://127.0.0.1:5000/
 
-And on PowerShell::
+   .. group-tab:: CMD
 
-    PS C:\path\to\app> $env:FLASK_APP = "hello.py"
+      .. code-block:: text
+
+         > set FLASK_APP=hello.py
+         > flask run
+          * Running on http://127.0.0.1:5000/
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_APP = "hello.py"
+         > flask run
+          * Running on http://127.0.0.1:5000/
 
 This launches a very simple builtin server, which is good enough for
 testing but probably not what you want to use in production. For
@@ -135,10 +146,28 @@ error occurs during a request.
 To enable all development features, set the ``FLASK_ENV`` environment
 variable to ``development`` before calling ``flask run``.
 
-.. code-block:: text
+.. tabs::
 
-    $ export FLASK_ENV=development
-    $ flask run
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_ENV=development
+         $ flask run
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_ENV=development
+         > flask run
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_ENV = "development"
+         > flask run
 
 See also:
 

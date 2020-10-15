@@ -18,20 +18,28 @@ The ``flask`` command is installed by Flask, not your application; it must be
 told where to find your application in order to use it. The ``FLASK_APP``
 environment variable is used to specify how to load the application.
 
-Unix Bash (Linux, Mac, etc.)::
+.. tabs::
 
-    $ export FLASK_APP=hello
-    $ flask run
+   .. group-tab:: Bash
 
-Windows CMD::
+      .. code-block:: text
 
-    > set FLASK_APP=hello
-    > flask run
+         $ export FLASK_APP=hello
+         $ flask run
 
-Windows PowerShell::
+   .. group-tab:: CMD
 
-    > $env:FLASK_APP = "hello"
-    > flask run
+      .. code-block:: text
+
+         > set FLASK_APP=hello
+         > flask run
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_APP = "hello"
+         > flask run
 
 While ``FLASK_APP`` supports a variety of options for specifying your
 application, most use cases should be simple. Here are the typical values:
@@ -128,16 +136,49 @@ If the env is set to ``development``, the ``flask`` command will enable
 debug mode and ``flask run`` will enable the interactive debugger and
 reloader.
 
-::
+.. tabs::
 
-    $ FLASK_ENV=development flask run
-     * Serving Flask app "hello"
-     * Environment: development
-     * Debug mode: on
-     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-     * Restarting with inotify reloader
-     * Debugger is active!
-     * Debugger PIN: 223-456-919
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_ENV=development
+         $ flask run
+          * Serving Flask app "hello"
+          * Environment: development
+          * Debug mode: on
+          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+          * Restarting with inotify reloader
+          * Debugger is active!
+          * Debugger PIN: 223-456-919
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_ENV=development
+         > flask run
+          * Serving Flask app "hello"
+          * Environment: development
+          * Debug mode: on
+          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+          * Restarting with inotify reloader
+          * Debugger is active!
+          * Debugger PIN: 223-456-919
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_ENV = "development"
+         > flask run
+          * Serving Flask app "hello"
+          * Environment: development
+          * Debug mode: on
+          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+          * Restarting with inotify reloader
+          * Debugger is active!
+          * Debugger PIN: 223-456-919
 
 
 Watch Extra Files with the Reloader
@@ -149,14 +190,40 @@ additional files with the ``--extra-files`` option, or the
 ``FLASK_RUN_EXTRA_FILES`` environment variable. Multiple paths are
 separated with ``:``, or ``;`` on Windows.
 
-.. code-block:: none
+.. tabs::
 
-    $ flask run --extra-files file1:dirA/file2:dirB/
-    # or
-    $ export FLASK_RUN_EXTRA_FILES=file1:dirA/file2:dirB/
-    $ flask run
-     * Running on http://127.0.0.1:8000/
-     * Detected change in '/path/to/file1', reloading
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+          $ flask run --extra-files file1:dirA/file2:dirB/
+          # or
+          $ export FLASK_RUN_EXTRA_FILES=file1:dirA/file2:dirB/
+          $ flask run
+           * Running on http://127.0.0.1:8000/
+           * Detected change in '/path/to/file1', reloading
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+          > flask run --extra-files file1:dirA/file2:dirB/
+          # or
+          > set FLASK_RUN_EXTRA_FILES=file1:dirA/file2:dirB/
+          > flask run
+           * Running on http://127.0.0.1:8000/
+           * Detected change in '/path/to/file1', reloading
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+          > flask run --extra-files file1:dirA/file2:dirB/
+          # or
+          > $env:FLASK_RUN_EXTRA_FILES = "file1:dirA/file2:dirB/"
+          > flask run
+           * Running on http://127.0.0.1:8000/
+           * Detected change in '/path/to/file1', reloading
 
 
 Debug Mode
@@ -206,11 +273,31 @@ environment variables. The variables use the pattern
 ``FLASK_COMMAND_OPTION``. For example, to set the port for the run
 command, instead of ``flask run --port 8000``:
 
-.. code-block:: bash
+.. tabs::
 
-    $ export FLASK_RUN_PORT=8000
-    $ flask run
-     * Running on http://127.0.0.1:8000/
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_RUN_PORT=8000
+         $ flask run
+          * Running on http://127.0.0.1:8000/
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_RUN_PORT=8000
+         > flask run
+          * Running on http://127.0.0.1:8000/
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_RUN_PORT = 8000
+         > flask run
+          * Running on http://127.0.0.1:8000/
 
 These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
 control default command options.
@@ -234,10 +321,28 @@ a project runner that loads them already. Keep in mind that the
 environment variables must be set before the app loads or it won't
 configure as expected.
 
-.. code-block:: bash
+.. tabs::
 
-    $ export FLASK_SKIP_DOTENV=1
-    $ flask run
+   .. group-tab:: Bash
+
+      .. code-block:: text
+
+         $ export FLASK_SKIP_DOTENV=1
+         $ flask run
+
+   .. group-tab:: CMD
+
+      .. code-block:: text
+
+         > set FLASK_SKIP_DOTENV=1
+         > flask run
+
+   .. group-tab:: Powershell
+
+      .. code-block:: text
+
+         > $env:FLASK_SKIP_DOTENV = 1
+         > flask run
 
 
 Environment Variables From virtualenv
@@ -247,13 +352,25 @@ If you do not want to install dotenv support, you can still set environment
 variables by adding them to the end of the virtualenv's :file:`activate`
 script. Activating the virtualenv will set the variables.
 
-Unix Bash, :file:`venv/bin/activate`::
+.. tabs::
 
-    $ export FLASK_APP=hello
+   .. group-tab:: Bash
 
-Windows CMD, :file:`venv\\Scripts\\activate.bat`::
+      Unix Bash, :file:`venv/bin/activate`::
 
-    > set FLASK_APP=hello
+          $ export FLASK_APP=hello
+
+   .. group-tab:: CMD
+
+      Windows CMD, :file:`venv\\Scripts\\activate.bat`::
+
+          > set FLASK_APP=hello
+
+   .. group-tab:: Powershell
+
+      Windows Powershell, :file:`venv\\Scripts\\activate.ps1`::
+
+          > $env:FLASK_APP = "hello"
 
 It is preferred to use dotenv support over this, since :file:`.flaskenv` can be
 committed to the repository so that it works automatically wherever the project
