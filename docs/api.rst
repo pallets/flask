@@ -608,14 +608,15 @@ Variable parts are passed to the view function as keyword arguments.
 
 The following converters are available:
 
-=========== ===============================================
-`string`    accepts any text without a slash (the default)
-`int`       accepts integers
-`float`     like `int` but for floating point values
-`path`      like the default but also accepts slashes
-`any`       matches one of the items provided
-`uuid`      accepts UUID strings
-=========== ===============================================
+======================   ====================================================
+``string``               (default) accepts any text without a slash
+``int``                  accepts positive integers
+``int(signed=True)``     accepts positive and negative integers
+``float``                accepts positive floating point values
+``float(signed=True)``   accepts positive and negative floating point values
+``path``                 like ``string`` but also accepts slashes
+``uuid``                 accepts UUID strings
+======================   ====================================================
 
 Custom converters can be defined using :attr:`flask.Flask.url_map`.
 
