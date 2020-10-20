@@ -284,11 +284,11 @@ class Blueprint(Scaffold):
 
         if cli_resolved_group is None:
             app.cli.commands.update(self.cli.commands)
-        elif cli_resolved_group is _sentinel:
-            self.cli.name = self.name
-            app.cli.add_command(self.cli)
         else:
-            self.cli.name = cli_resolved_group
+            if cli_resolved_group is _sentinel:
+                self.cli.name = self.name
+            else:
+                self.cli.name = cli_resolved_group
             app.cli.add_command(self.cli)
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):

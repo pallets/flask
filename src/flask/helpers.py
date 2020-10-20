@@ -292,7 +292,7 @@ def url_for(endpoint, **values):
         url_adapter = reqctx.url_adapter
         blueprint_name = request.blueprint
 
-        if endpoint[:1] == ".":
+        if endpoint[0] == ".":
             if blueprint_name is not None:
                 endpoint = f"{blueprint_name}{endpoint}"
             else:
@@ -340,10 +340,14 @@ def url_for(endpoint, **values):
     except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
-        values["_external"] = external
-        values["_anchor"] = anchor
-        values["_method"] = method
-        values["_scheme"] = scheme
+        values.update(
+            {
+                "_external": external,
+                "_anchor": anchor,
+                "_method": method,
+                "_scheme": scheme,
+            }
+        )
         return appctx.app.handle_url_build_error(error, endpoint, values)
 
     if anchor is not None:
@@ -811,7 +815,7 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     # importlib's namespace loaders do not have this functionality but
     # all the modules it loads are packages, so we can take advantage of
     # this information.
-    elif cls.__module__ == "_frozen_importlib" and cls.__name__ == "NamespaceLoader":
+    if cls.__module__ == "_frozen_importlib" and cls.__name__ == "NamespaceLoader":
         return True
     # Otherwise we need to fail with an error that explains what went
     # wrong.
@@ -841,38 +845,37 @@ def _find_package_path(root_mod_name):
         if spec.origin in {"namespace", None}:
             return os.path.dirname(next(iter(spec.submodule_search_locations)))
         # a package (with __init__.py)
-        elif spec.submodule_search_locations:
+        if spec.submodule_search_locations:
             return os.path.dirname(os.path.dirname(spec.origin))
         # just a normal module
-        else:
-            return os.path.dirname(spec.origin)
+        return os.path.dirname(spec.origin)
 
     # we were unable to find the `package_path` using PEP 451 loaders
     loader = pkgutil.get_loader(root_mod_name)
     if loader is None or root_mod_name == "__main__":
         # import name is not found, or interactive/main module
         return os.getcwd()
-    else:
-        if hasattr(loader, "get_filename"):
-            filename = loader.get_filename(root_mod_name)
-        elif hasattr(loader, "archive"):
-            # zipimporter's loader.archive points to the .egg or .zip
-            # archive filename is dropped in call to dirname below.
-            filename = loader.archive
-        else:
-            # At least one loader is missing both get_filename and archive:
-            # Google App Engine's HardenedModulesHook
-            #
-            # Fall back to imports.
-            __import__(root_mod_name)
-            filename = sys.modules[root_mod_name].__file__
-        package_path = os.path.abspath(os.path.dirname(filename))
 
-        # In case the root module is a package we need to chop of the
-        # rightmost part. This needs to go through a helper function
-        # because of namespace packages.
-        if _matching_loader_thinks_module_is_package(loader, root_mod_name):
-            package_path = os.path.dirname(package_path)
+    if hasattr(loader, "get_filename"):
+        filename = loader.get_filename(root_mod_name)
+    elif hasattr(loader, "archive"):
+        # zipimporter's loader.archive points to the .egg or .zip
+        # archive filename is dropped in call to dirname below.
+        filename = loader.archive
+    else:
+        # At least one loader is missing both get_filename and archive:
+        # Google App Engine's HardenedModulesHook
+        #
+        # Fall back to imports.
+        __import__(root_mod_name)
+        filename = sys.modules[root_mod_name].__file__
+    package_path = os.path.abspath(os.path.dirname(filename))
+
+    # In case the root module is a package we need to chop of the
+    # rightmost part. This needs to go through a helper function
+    # because of namespace packages.
+    if _matching_loader_thinks_module_is_package(loader, root_mod_name):
+        package_path = os.path.dirname(package_path)
 
     return package_path
 
@@ -891,7 +894,8 @@ def find_package(import_name):
     py_prefix = os.path.abspath(sys.prefix)
     if package_path.startswith(py_prefix):
         return py_prefix, package_path
-    elif site_folder.lower() == "site-packages":
+
+    if site_folder.lower() == "site-packages":
         parent, folder = os.path.split(site_parent)
         # Windows like installations
         if folder.lower() == "lib":

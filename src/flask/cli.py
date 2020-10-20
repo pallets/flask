@@ -640,7 +640,7 @@ def load_dotenv(path=None):
 
         return False
 
-    new_dir = None
+    env_loaded = False
 
     for name in (".env", ".flaskenv"):
         path = dotenv.find_dotenv(name, usecwd=True)
@@ -648,12 +648,9 @@ def load_dotenv(path=None):
         if not path:
             continue
 
-        if new_dir is None:
-            new_dir = os.path.dirname(path)
+        env_loaded = dotenv.load_dotenv(path) or env_loaded
 
-        dotenv.load_dotenv(path)
-
-    return new_dir is not None  # at least one file was located and loaded
+    return env_loaded
 
 
 def show_server_banner(env, debug, app_import_path, eager_loading):
@@ -709,7 +706,7 @@ class CertParamType(click.ParamType):
         except click.BadParameter:
             value = click.STRING(value, param, ctx).lower()
 
-            if value == "adhoc":
+            if _isAdHoc(value):
                 try:
                     import cryptography  # noqa: F401
                 except ImportError:
@@ -734,7 +731,7 @@ def _validate_key(ctx, param, value):
     Modifies the ``cert`` param to be a ``(cert, key)`` pair if needed.
     """
     cert = ctx.params.get("cert")
-    is_adhoc = cert == "adhoc"
+    is_adhoc = _isAdHoc(cert)
     is_context = ssl and isinstance(cert, ssl.SSLContext)
 
     if value is not None:
@@ -758,6 +755,11 @@ def _validate_key(ctx, param, value):
             raise click.BadParameter('Required when using "--cert".', ctx, param)
 
     return value
+
+
+def _isAdHoc(cert):
+    """Check is it adhoc"""
+    return cert == "adhoc"
 
 
 class SeparatedPathType(click.Path):
