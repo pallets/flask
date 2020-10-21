@@ -195,8 +195,7 @@ Currently, the answer is HTML5.  There are very few reasons to use XHTML
 considering the latest developments in Web browsers.  To summarize the
 reasons given above:
 
--   Internet Explorer (which, sadly, currently leads in market share)
-    has poor support for XHTML.
+-   Internet Explorer has poor support for XHTML.
 -   Many JavaScript libraries also do not support XHTML, due to the more
     complicated namespacing API it requires.
 -   HTML5 adds several new features, including semantic tags and the
