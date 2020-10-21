@@ -183,7 +183,7 @@ and to use.
     geolocation, and offline applications.
 
 Many other features have been added, as well. A good guide to new features
-in HTML5 is Mark Pilgrim's soon-to-be-published book, `Dive Into HTML5`_.
+in HTML5 is Mark Pilgrim's book, `Dive Into HTML5`_.
 Not all of them are supported in browsers yet, however, so use caution.
 
 .. _Dive Into HTML5: https://diveintohtml5.info/
@@ -195,8 +195,7 @@ Currently, the answer is HTML5.  There are very few reasons to use XHTML
 considering the latest developments in Web browsers.  To summarize the
 reasons given above:
 
--   Internet Explorer (which, sadly, currently leads in market share)
-    has poor support for XHTML.
+-   Internet Explorer has poor support for XHTML.
 -   Many JavaScript libraries also do not support XHTML, due to the more
     complicated namespacing API it requires.
 -   HTML5 adds several new features, including semantic tags and the
