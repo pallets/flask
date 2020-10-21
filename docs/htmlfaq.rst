@@ -183,9 +183,8 @@ and to use.
     geolocation, and offline applications.
 
 Many other features have been added, as well. A good guide to new features
-in HTML5 is Mark Pilgrim's book, `Dive Into HTML5`_ ( `HTML5 Up & Running`_
-as published by O'Reilly).  Not all of them are supported in browsers yet,
-however, so use caution.
+in HTML5 is Mark Pilgrim's book, `Dive Into HTML5`_.  Not all of them are 
+supported in browsers yet, however, so use caution.
 
 .. _Dive Into HTML5: https://diveintohtml5.info/
 .. _HTML5 Up & Running: https://www.oreilly.com/library/view/html5-up-and/9781449392154/
