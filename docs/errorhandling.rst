@@ -340,8 +340,8 @@ An example template might be this:
     {% block title %}Page Not Found{% endblock %}
     {% block body %}
       <h1>Page Not Found</h1>
-      <p>What you were looking for is just not there.
-      <p><a href="{{ url_for('index') }}">go somewhere nice</a>
+      <p>What you were looking for is just not there.</p>
+      <p><a href="{{ url_for('index') }}">go somewhere nice</a></p>
     {% endblock %}
 
 
@@ -358,7 +358,7 @@ exception pages. We can create a custom 500.html template like this:
     {% block body %}
       <h1>Internal Server Error</h1>
       <p>Oops... we seem to have made a mistake, sorry!</p>
-      <p><a href="{{ url_for('index') }}">Go somewhere nice instead</a>
+      <p><a href="{{ url_for('index') }}">Go somewhere nice instead</a></p>
     {% endblock %}
 
 It can be implemented by rendering the template on "500 Internal Server Error":
