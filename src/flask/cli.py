@@ -621,10 +621,21 @@ def load_dotenv(path=None):
 
     .. versionadded:: 1.0
     """
+
+    ENV_FILE = ".env"
+    FLASK_ENV_FILE = ".flaskenv"
+
     if dotenv is None:
-        if path or os.path.isfile(".env") or os.path.isfile(".flaskenv"):
+        if path:
             click.secho(
-                " * Tip: There are .env or .flaskenv files present."
+                f" Env file {path} will not loaded, module python-dotenv not found"
+                ' Do "pip install python-dotenv" to use it.',
+                fg="yellow",
+                err=True,
+            )
+        if os.path.isfile(ENV_FILE) or os.path.isfile(FLASK_ENV_FILE):
+            click.secho(
+                f" * Tip: There are {ENV_FILE} or {FLASK_ENV_FILE} files present."
                 ' Do "pip install python-dotenv" to use them.',
                 fg="yellow",
                 err=True,
@@ -636,24 +647,23 @@ def load_dotenv(path=None):
     # else False
     if path is not None:
         if os.path.isfile(path):
-            return dotenv.load_dotenv(path)
+            return dotenv.load_dotenv(path)  # dotenv.load_dotenv always returns True
 
         return False
 
-    new_dir = None
+    env_loaded = False
 
-    for name in (".env", ".flaskenv"):
+    for name in (ENV_FILE, FLASK_ENV_FILE):
         path = dotenv.find_dotenv(name, usecwd=True)
 
         if not path:
             continue
 
-        if new_dir is None:
-            new_dir = os.path.dirname(path)
+        # dotenv.load_dotenv always returns True
+        # but it can be changed in future, so we use here "or env_loaded"
+        env_loaded = dotenv.load_dotenv(path) or env_loaded
 
-        dotenv.load_dotenv(path)
-
-    return new_dir is not None  # at least one file was located and loaded
+    return env_loaded  # at least one file was located and loaded
 
 
 def show_server_banner(env, debug, app_import_path, eager_loading):
