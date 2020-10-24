@@ -626,21 +626,21 @@ def load_dotenv(path=None):
     FLASK_ENV_FILE = ".flaskenv"
 
     if dotenv is None:
+        msg = ""
         if path:
-            click.secho(
-                f" Env file {path} will not loaded, module python-dotenv not found"
-                ' Do "pip install python-dotenv" to use it.',
-                fg="yellow",
-                err=True,
+            msg = (
+                f" Env file {path} will not be loaded, "
+                "module python-dotenv is not installed."
             )
         if os.path.isfile(ENV_FILE) or os.path.isfile(FLASK_ENV_FILE):
+            msg = f" * Tip: There are {ENV_FILE} or {FLASK_ENV_FILE} files present."
+
+        if msg:
             click.secho(
-                f" * Tip: There are {ENV_FILE} or {FLASK_ENV_FILE} files present."
-                ' Do "pip install python-dotenv" to use them.',
+                msg + ' Do "pip install python-dotenv" to use it.',
                 fg="yellow",
                 err=True,
             )
-
         return False
 
     # if the given path specifies the actual file then return True,
