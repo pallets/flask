@@ -142,7 +142,7 @@ will be redirected to the login page.
 .. code-block:: python
     :caption: ``flaskr/blog.py``
 
-    @bp.route('/create', methods=('GET', 'POST'))
+    @bp.route('/create', methods=['GET', 'POST'])
     @login_required
     def create():
         if request.method == 'POST':
@@ -228,7 +228,7 @@ doesn't matter because they're not modifying the post.
 .. code-block:: python
     :caption: ``flaskr/blog.py``
 
-    @bp.route('/<int:id>/update', methods=('GET', 'POST'))
+    @bp.route('/<int:id>/update', methods=['GET', 'POST'])
     @login_required
     def update(id):
         post = get_post(id)
@@ -320,7 +320,7 @@ to the ``index`` view.
 .. code-block:: python
     :caption: ``flaskr/blog.py``
 
-    @bp.route('/<int:id>/delete', methods=('POST',))
+    @bp.route('/<int:id>/delete', methods=['POST',])
     @login_required
     def delete(id):
         get_post(id)

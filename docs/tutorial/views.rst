@@ -79,7 +79,7 @@ write templates to generate the HTML form.
 .. code-block:: python
     :caption: ``flaskr/auth.py``
 
-    @bp.route('/register', methods=('GET', 'POST'))
+    @bp.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
             username = request.form['username']
@@ -171,7 +171,7 @@ This view follows the same pattern as the ``register`` view above.
 .. code-block:: python
     :caption: ``flaskr/auth.py``
 
-    @bp.route('/login', methods=('GET', 'POST'))
+    @bp.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
             username = request.form['username']

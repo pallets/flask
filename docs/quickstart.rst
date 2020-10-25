@@ -548,7 +548,7 @@ transmitted in a ``POST`` or ``PUT`` request) you can use the
 :attr:`~flask.Request.form` attribute.  Here is a full example of the two
 attributes mentioned above::
 
-    @app.route('/login', methods=['POST', 'GET'])
+    @app.route('/login', methods=['GET', 'POST'])
     def login():
         error = None
         if request.method == 'POST':
