@@ -131,14 +131,13 @@ A useful pattern used here is to place ``{% block title %}`` inside
 the value of it into the header block, so that both the window and page
 share the same title without writing it twice.
 
-The ``input`` tags are using the ``required`` attribute here. This tells
-the browser not to submit the form until those fields are filled in. If
-the user is using an older browser that doesn't support that attribute,
-or if they are using something besides a browser to make requests, you
-still want to validate the data in the Flask view. It's important to
-always fully validate the data on the server, even if the client does
-some validation as well.
-
+The ``input`` HTML tags are using the ``required`` attribute here. This
+tells the browser not to submit the form until those fields are filled
+in. If the user is using an older browser that doesn't support that
+attribute, or if they are using something besides a browser to make
+requests, you still want to validate the data in the Flask view. It's
+important to always fully validate the data on the server, even if the
+client does some validation as well.
 
 Log In
 ------
