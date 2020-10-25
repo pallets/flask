@@ -131,7 +131,7 @@ Here's what the ``register`` view function is doing:
     with ``?`` placeholders for any user input, and a tuple of values
     to replace the placeholders with. The database library will take
     care of escaping the values so you are not vulnerable to a
-    *SQL injection attack*.
+    `SQL injection attack <https://docs.python.org/library/sqlite3.html>`_.
 
     :meth:`~sqlite3.Cursor.fetchone` returns one row from the query.
     If the query returned no results, it returns ``None``. Later,
