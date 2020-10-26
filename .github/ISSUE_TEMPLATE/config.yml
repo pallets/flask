@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+
+contact_links:
+- name: Questions
+  url: https://stackoverflow.com/questions/tagged/flask?tab=Frequent
+  about: Search for and ask questions about your code on Stack Overflow
+- name: Questions and discussions
+  url: https://discord.gg/t6rrQZH
+  about: Discuss questions about your code on our Discord chat
