@@ -25,6 +25,7 @@ Install and update using `pip`_:
 
 A Simple Example
 ----------------
+Create hello.py file
 
 .. code-block:: python
 
