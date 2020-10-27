@@ -21,6 +21,7 @@ Hosted options
 - `Deploying Flask on AWS Elastic Beanstalk <https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html>`_
 - `Deploying on Azure (IIS) <https://docs.microsoft.com/en-us/azure/app-service/containers/how-to-configure-python>`_
 - `Deploying on PythonAnywhere <https://help.pythonanywhere.com/pages/Flask/>`_
+- `Deploying on Divio <https://docs.divio.com/en/latest/how-to/flask-create-deploy/>`_
 
 Self-hosted options
 -------------------
