@@ -239,7 +239,7 @@ def url_for(endpoint, **values):
                 # Re-raise the BuildError, in context of original traceback.
                 exc_type, exc_value, tb = sys.exc_info()
                 if exc_value is error:
-                    raise exc_type, exc_value, tb
+                    raise exc_type(exc_value).with_traceback(tb)
                 else:
                     raise error
             # url_for will use this result, instead of raising BuildError.
