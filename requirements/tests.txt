@@ -13,6 +13,6 @@ pluggy==0.13.1            # via pytest
 py==1.9.0                 # via pytest
 pyparsing==2.4.7          # via packaging
 pytest==6.1.1             # via -r requirements/tests.in
-python-dotenv==0.14.0     # via -r requirements/tests.in
+python-dotenv==0.15.0     # via -r requirements/tests.in
 six==1.15.0               # via packaging
 toml==0.10.1              # via pytest
