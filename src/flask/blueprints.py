@@ -451,16 +451,14 @@ class Blueprint(Scaffold):
         return decorator
 
     def app_url_value_preprocessor(self, f):
-        """Same as :meth:`url_value_preprocessor` but application wide.
-        """
+        """Same as :meth:`url_value_preprocessor` but application wide."""
         self.record_once(
             lambda s: s.app.url_value_preprocessors.setdefault(None, []).append(f)
         )
         return f
 
     def app_url_defaults(self, f):
-        """Same as :meth:`url_defaults` but application wide.
-        """
+        """Same as :meth:`url_defaults` but application wide."""
         self.record_once(
             lambda s: s.app.url_default_functions.setdefault(None, []).append(f)
         )

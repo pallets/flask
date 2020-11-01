@@ -20,7 +20,8 @@ import flask
 
 
 require_cpython_gc = pytest.mark.skipif(
-    python_implementation() != "CPython", reason="Requires CPython GC behavior",
+    python_implementation() != "CPython",
+    reason="Requires CPython GC behavior",
 )
 
 

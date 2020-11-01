@@ -32,8 +32,7 @@ def setupmethod(f):
 
 
 class Scaffold(_PackageBoundObject):
-    """A common base for class Flask and class Blueprint.
-    """
+    """A common base for class Flask and class Blueprint."""
 
     #: Skeleton local JSON decoder class to use.
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
