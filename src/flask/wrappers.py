@@ -90,7 +90,7 @@ class Request(RequestBase, JSONMixin):
             attach_enctype_error_multidict(self)
 
 
-class Response(ResponseBase, JSONMixin):
+class Response(JSONMixin, ResponseBase):
     """The response object that is used by default in Flask.  Works like the
     response object from Werkzeug but is set to have an HTML mimetype by
     default.  Quite often you don't have to create this object yourself because
