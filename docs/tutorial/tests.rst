@@ -107,7 +107,7 @@ local development configuration.
         return app.test_cli_runner()
 
 :func:`tempfile.mkstemp` creates and opens a temporary file, returning
-the file object and the path to it. The ``DATABASE`` path is
+the file descriptor and the path to it. The ``DATABASE`` path is
 overridden so it points to this temporary path instead of the instance
 folder. After setting the path, the database tables are created and the
 test data is inserted. After the test is over, the temporary file is
