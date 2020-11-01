@@ -6,6 +6,7 @@ import pytest
 from werkzeug.http import http_date
 
 import flask
+from flask import json
 
 
 @pytest.mark.parametrize("debug", (True, False))
@@ -400,3 +401,12 @@ def test_json_key_sorting(app, client):
         assert lines == sorted_by_int
     except AssertionError:
         assert lines == sorted_by_str
+
+
+def test_html_method():
+    class ObjectWithHTML:
+        def __html__(self):
+            return "<p>test</p>"
+
+    result = json.dumps(ObjectWithHTML())
+    assert result == '"<p>test</p>"'
