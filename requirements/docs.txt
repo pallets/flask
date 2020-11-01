@@ -8,23 +8,21 @@ alabaster==0.7.12         # via sphinx
 babel==2.8.0              # via sphinx
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
-colorama==0.4.3           # via sphinx
 docutils==0.16            # via sphinx
 idna==2.9                 # via requests
 imagesize==1.2.0          # via sphinx
-importlib-metadata==1.7.0  # via pallets-sphinx-themes
 jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
 packaging==20.4           # via -r requirements/docs.in, pallets-sphinx-themes, sphinx
 pallets-sphinx-themes==1.2.3  # via -r requirements/docs.in
-pygments==2.6.1           # via sphinx
+pygments==2.6.1           # via sphinx, sphinx-tabs
 pyparsing==2.4.7          # via packaging
 pytz==2020.1              # via babel
 requests==2.23.0          # via sphinx
 six==1.15.0               # via packaging
 snowballstemmer==2.0.0    # via sphinx
 sphinx-issues==1.2.0      # via -r requirements/docs.in
-sphinx-tabs==1.1.13       # via -r requirements/docs.in
+sphinx-tabs==1.3.0        # via -r requirements/docs.in
 sphinx==3.2.1             # via -r requirements/docs.in, pallets-sphinx-themes, sphinx-issues, sphinx-tabs, sphinxcontrib-log-cabinet
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
@@ -34,7 +32,6 @@ sphinxcontrib-log-cabinet==1.0.1  # via -r requirements/docs.in
 sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 urllib3==1.25.9           # via requests
-zipp==3.1.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
