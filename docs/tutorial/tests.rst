@@ -469,6 +469,7 @@ should show an error message on invalid data.
         auth.login()
         response = client.post(path, data={'title': '', 'body': ''})
         assert b'Title is required.' in response.data
+	assert post['body'] == ''
 
 The ``delete`` view should redirect to the index URL and the post should
 no longer exist in the database.
