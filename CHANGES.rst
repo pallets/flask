@@ -44,15 +44,7 @@ Unreleased
     :issue:`3215`
 -   Include ``samesite`` and ``secure`` options when removing the
     session cookie. :pr:`3726`
-
-
-Version 1.1.x
--------------
-
-Not yet released.
-
--   Officially support passing a :class:`pathlib.Path` for
-    ``static_folder`` which stopped working in 1.1.2. :pr:`3579`
+-   Support passing a ``pathlib.Path`` to ``static_folder``. :pr:`3579`
 
 
 Version 1.1.2
