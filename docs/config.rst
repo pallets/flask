@@ -265,11 +265,16 @@ The following configuration values are used internally by Flask:
 .. py:data:: SEND_FILE_MAX_AGE_DEFAULT
 
     When serving files, set the cache control max age to this number of
-    seconds.  Can either be a :class:`datetime.timedelta` or an ``int``.
+    seconds. Can be a :class:`datetime.timedelta` or an ``int``.
     Override this value on a per-file basis using
-    :meth:`~flask.Flask.get_send_file_max_age` on the application or blueprint.
+    :meth:`~flask.Flask.get_send_file_max_age` on the application or
+    blueprint.
 
-    Default: ``timedelta(hours=12)`` (``43200`` seconds)
+    If ``None``, ``send_file`` tells the browser to use conditional
+    requests will be used instead of a timed cache, which is usually
+    preferable.
+
+    Default: ``None``
 
 .. py:data:: SERVER_NAME
 

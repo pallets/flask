@@ -222,7 +222,7 @@ def test_templates_and_static(test_apps):
         assert flask.render_template("nested/nested.txt") == "I'm nested"
 
 
-def test_default_static_cache_timeout(app):
+def test_default_static_max_age(app):
     class MyBlueprint(flask.Blueprint):
         def get_send_file_max_age(self, filename):
             return 100
