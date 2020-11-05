@@ -327,9 +327,9 @@ def test_modified_url_encoding(app, client):
     def index():
         return flask.request.args["foo"]
 
-    rv = client.get("/?foo=정상처리".encode("euc-kr"))
+    rv = client.get("/", query_string={"foo": "정상처리"}, charset="euc-kr")
     assert rv.status_code == 200
-    assert rv.data == "정상처리".encode()
+    assert rv.get_data(as_text=True) == "정상처리"
 
 
 def test_json_key_sorting(app, client):

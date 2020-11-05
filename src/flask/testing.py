@@ -1,9 +1,11 @@
 from contextlib import contextmanager
+from copy import copy
 
 import werkzeug.test
 from click.testing import CliRunner
 from werkzeug.test import Client
 from werkzeug.urls import url_parse
+from werkzeug.wrappers import BaseRequest
 
 from . import _request_ctx_stack
 from .cli import ScriptInfo
@@ -159,39 +161,45 @@ class FlaskClient(Client):
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
-    def open(self, *args, **kwargs):
-        as_tuple = kwargs.pop("as_tuple", False)
-        buffered = kwargs.pop("buffered", False)
-        follow_redirects = kwargs.pop("follow_redirects", False)
+    def open(
+        self, *args, as_tuple=False, buffered=False, follow_redirects=False, **kwargs
+    ):
+        # Same logic as super.open, but apply environ_base and preserve_context.
+        request = None
 
-        if (
-            not kwargs
-            and len(args) == 1
-            and isinstance(args[0], (werkzeug.test.EnvironBuilder, dict))
-        ):
-            environ = self.environ_base.copy()
+        def copy_environ(other):
+            return {
+                **self.environ_base,
+                **other,
+                "flask._preserve_context": self.preserve_context,
+            }
 
-            if isinstance(args[0], werkzeug.test.EnvironBuilder):
-                environ.update(args[0].get_environ())
-            else:
-                environ.update(args[0])
+        if not kwargs and len(args) == 1:
+            arg = args[0]
 
-            environ["flask._preserve_context"] = self.preserve_context
-        else:
-            kwargs.setdefault("environ_overrides", {})[
-                "flask._preserve_context"
-            ] = self.preserve_context
-            kwargs.setdefault("environ_base", self.environ_base)
+            if isinstance(arg, werkzeug.test.EnvironBuilder):
+                builder = copy(arg)
+                builder.environ_base = copy_environ(builder.environ_base or {})
+                request = builder.get_request()
+            elif isinstance(arg, dict):
+                request = EnvironBuilder.from_environ(
+                    arg, app=self.application, environ_base=copy_environ({})
+                ).get_request()
+            elif isinstance(arg, BaseRequest):
+                request = copy(arg)
+                request.environ = copy_environ(request.environ)
+
+        if request is None:
+            kwargs["environ_base"] = copy_environ(kwargs.get("environ_base", {}))
             builder = EnvironBuilder(self.application, *args, **kwargs)
 
             try:
-                environ = builder.get_environ()
+                request = builder.get_request()
             finally:
                 builder.close()
 
-        return Client.open(
-            self,
-            environ,
+        return super().open(
+            request,
             as_tuple=as_tuple,
             buffered=buffered,
             follow_redirects=follow_redirects,
