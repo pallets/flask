@@ -45,6 +45,20 @@ Unreleased
 -   Include ``samesite`` and ``secure`` options when removing the
     session cookie. :pr:`3726`
 -   Support passing a ``pathlib.Path`` to ``static_folder``. :pr:`3579`
+-   ``send_file`` and ``send_from_directory`` are wrappers around the
+    implementations in ``werkzeug.utils``. :pr:`3828`
+-   Some ``send_file`` parameters have been renamed, the old names are
+    deprecated. ``attachment_filename`` is renamed to ``download_name``.
+    ``cache_timeout`` is renamed to ``max_age``. :pr:`3828`
+-   ``send_file`` passes ``download_name`` even if
+    ``as_attachment=False`` by using ``Content-Disposition: inline``.
+    :pr:`3828`
+-   ``send_file`` sets ``conditional=True`` and ``max_age=None`` by
+    default. ``Cache-Control`` is set to ``no-cache`` if ``max_age`` is
+    not set, otherwise ``public``. This tells browsers to validate
+    conditional requests instead of using a timed cache. :pr:`3828`
+-   ``helpers.safe_join`` is deprecated. Use
+    ``werkzeug.utils.safe_join`` instead. :pr:`3828`
 
 
 Version 1.1.2

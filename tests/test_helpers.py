@@ -1,15 +1,7 @@
-import datetime
 import io
 import os
-import sys
 
 import pytest
-from werkzeug.datastructures import Range
-from werkzeug.exceptions import BadRequest
-from werkzeug.exceptions import NotFound
-from werkzeug.http import http_date
-from werkzeug.http import parse_cache_control_header
-from werkzeug.http import parse_options_header
 
 import flask
 from flask.helpers import get_debug_flag
@@ -39,278 +31,45 @@ class PyBytesIO:
 
 
 class TestSendfile:
-    def test_send_file_regular(self, app, req_ctx):
+    def test_send_file(self, app, req_ctx):
         rv = flask.send_file("static/index.html")
         assert rv.direct_passthrough
         assert rv.mimetype == "text/html"
+
         with app.open_resource("static/index.html") as f:
             rv.direct_passthrough = False
             assert rv.data == f.read()
+
         rv.close()
-
-    def test_send_file_xsendfile(self, app, req_ctx):
-        app.use_x_sendfile = True
-        rv = flask.send_file("static/index.html")
-        assert rv.direct_passthrough
-        assert "x-sendfile" in rv.headers
-        assert rv.headers["x-sendfile"] == os.path.join(
-            app.root_path, "static/index.html"
-        )
-        assert rv.mimetype == "text/html"
-        rv.close()
-
-    def test_send_file_last_modified(self, app, client):
-        last_modified = datetime.datetime(1999, 1, 1)
-
-        @app.route("/")
-        def index():
-            return flask.send_file(
-                io.BytesIO(b"party like it's"),
-                last_modified=last_modified,
-                mimetype="text/plain",
-            )
-
-        rv = client.get("/")
-        assert rv.last_modified == last_modified
-
-    def test_send_file_object_without_mimetype(self, app, req_ctx):
-        with pytest.raises(ValueError) as excinfo:
-            flask.send_file(io.BytesIO(b"LOL"))
-        assert "Unable to infer MIME-type" in str(excinfo.value)
-        assert "no filename is available" in str(excinfo.value)
-
-        flask.send_file(io.BytesIO(b"LOL"), attachment_filename="filename")
-
-    @pytest.mark.parametrize(
-        "opener",
-        [
-            lambda app: open(os.path.join(app.static_folder, "index.html"), "rb"),
-            lambda app: io.BytesIO(b"Test"),
-            lambda app: PyBytesIO(b"Test"),
-        ],
-    )
-    @pytest.mark.usefixtures("req_ctx")
-    def test_send_file_object(self, app, opener):
-        file = opener(app)
-        app.use_x_sendfile = True
-        rv = flask.send_file(file, mimetype="text/plain")
-        rv.direct_passthrough = False
-        assert rv.data
-        assert rv.mimetype == "text/plain"
-        assert "x-sendfile" not in rv.headers
-        rv.close()
-
-    @pytest.mark.parametrize(
-        "opener",
-        [
-            lambda app: io.StringIO("Test"),
-            lambda app: open(os.path.join(app.static_folder, "index.html")),
-        ],
-    )
-    @pytest.mark.usefixtures("req_ctx")
-    def test_send_file_text_fails(self, app, opener):
-        file = opener(app)
-
-        with pytest.raises(ValueError):
-            flask.send_file(file, mimetype="text/plain")
-
-        file.close()
-
-    def test_send_file_pathlike(self, app, req_ctx):
-        rv = flask.send_file(FakePath("static/index.html"))
-        assert rv.direct_passthrough
-        assert rv.mimetype == "text/html"
-        with app.open_resource("static/index.html") as f:
-            rv.direct_passthrough = False
-            assert rv.data == f.read()
-        rv.close()
-
-    @pytest.mark.skipif(
-        not callable(getattr(Range, "to_content_range_header", None)),
-        reason="not implemented within werkzeug",
-    )
-    def test_send_file_range_request(self, app, client):
-        @app.route("/")
-        def index():
-            return flask.send_file("static/index.html", conditional=True)
-
-        rv = client.get("/", headers={"Range": "bytes=4-15"})
-        assert rv.status_code == 206
-        with app.open_resource("static/index.html") as f:
-            assert rv.data == f.read()[4:16]
-        rv.close()
-
-        rv = client.get("/", headers={"Range": "bytes=4-"})
-        assert rv.status_code == 206
-        with app.open_resource("static/index.html") as f:
-            assert rv.data == f.read()[4:]
-        rv.close()
-
-        rv = client.get("/", headers={"Range": "bytes=4-1000"})
-        assert rv.status_code == 206
-        with app.open_resource("static/index.html") as f:
-            assert rv.data == f.read()[4:]
-        rv.close()
-
-        rv = client.get("/", headers={"Range": "bytes=-10"})
-        assert rv.status_code == 206
-        with app.open_resource("static/index.html") as f:
-            assert rv.data == f.read()[-10:]
-        rv.close()
-
-        rv = client.get("/", headers={"Range": "bytes=1000-"})
-        assert rv.status_code == 416
-        rv.close()
-
-        rv = client.get("/", headers={"Range": "bytes=-"})
-        assert rv.status_code == 416
-        rv.close()
-
-        rv = client.get("/", headers={"Range": "somethingsomething"})
-        assert rv.status_code == 416
-        rv.close()
-
-        last_modified = datetime.datetime.utcfromtimestamp(
-            os.path.getmtime(os.path.join(app.root_path, "static/index.html"))
-        ).replace(microsecond=0)
-
-        rv = client.get(
-            "/", headers={"Range": "bytes=4-15", "If-Range": http_date(last_modified)}
-        )
-        assert rv.status_code == 206
-        rv.close()
-
-        rv = client.get(
-            "/",
-            headers={
-                "Range": "bytes=4-15",
-                "If-Range": http_date(datetime.datetime(1999, 1, 1)),
-            },
-        )
-        assert rv.status_code == 200
-        rv.close()
-
-    def test_send_file_range_request_bytesio(self, app, client):
-        @app.route("/")
-        def index():
-            file = io.BytesIO(b"somethingsomething")
-            return flask.send_file(
-                file, attachment_filename="filename", conditional=True
-            )
-
-        rv = client.get("/", headers={"Range": "bytes=4-15"})
-        assert rv.status_code == 206
-        assert rv.data == b"somethingsomething"[4:16]
-        rv.close()
-
-    def test_send_file_range_request_xsendfile_invalid(self, app, client):
-        # https://github.com/pallets/flask/issues/2526
-        app.use_x_sendfile = True
-
-        @app.route("/")
-        def index():
-            return flask.send_file("static/index.html", conditional=True)
-
-        rv = client.get("/", headers={"Range": "bytes=1000-"})
-        assert rv.status_code == 416
-        rv.close()
-
-    def test_attachment(self, app, req_ctx):
-        app = flask.Flask(__name__)
-        with app.test_request_context():
-            with open(os.path.join(app.root_path, "static/index.html"), "rb") as f:
-                rv = flask.send_file(
-                    f, as_attachment=True, attachment_filename="index.html"
-                )
-                value, options = parse_options_header(rv.headers["Content-Disposition"])
-                assert value == "attachment"
-                rv.close()
-
-        with open(os.path.join(app.root_path, "static/index.html"), "rb") as f:
-            rv = flask.send_file(
-                f, as_attachment=True, attachment_filename="index.html"
-            )
-            value, options = parse_options_header(rv.headers["Content-Disposition"])
-            assert value == "attachment"
-            assert options["filename"] == "index.html"
-            assert "filename*" not in rv.headers["Content-Disposition"]
-            rv.close()
-
-        rv = flask.send_file("static/index.html", as_attachment=True)
-        value, options = parse_options_header(rv.headers["Content-Disposition"])
-        assert value == "attachment"
-        assert options["filename"] == "index.html"
-        rv.close()
-
-        rv = flask.send_file(
-            io.BytesIO(b"Test"),
-            as_attachment=True,
-            attachment_filename="index.txt",
-            add_etags=False,
-        )
-        assert rv.mimetype == "text/plain"
-        value, options = parse_options_header(rv.headers["Content-Disposition"])
-        assert value == "attachment"
-        assert options["filename"] == "index.txt"
-        rv.close()
-
-    @pytest.mark.usefixtures("req_ctx")
-    @pytest.mark.parametrize(
-        ("filename", "ascii", "utf8"),
-        (
-            ("index.html", "index.html", False),
-            (
-                "Ñandú／pingüino.txt",
-                '"Nandu/pinguino.txt"',
-                "%C3%91and%C3%BA%EF%BC%8Fping%C3%BCino.txt",
-            ),
-            ("Vögel.txt", "Vogel.txt", "V%C3%B6gel.txt"),
-            # ":/" are not safe in filename* value
-            ("те:/ст", '":/"', "%D1%82%D0%B5%3A%2F%D1%81%D1%82"),
-        ),
-    )
-    def test_attachment_filename_encoding(self, filename, ascii, utf8):
-        rv = flask.send_file(
-            "static/index.html", as_attachment=True, attachment_filename=filename
-        )
-        rv.close()
-        content_disposition = rv.headers["Content-Disposition"]
-        assert f"filename={ascii}" in content_disposition
-        if utf8:
-            assert f"filename*=UTF-8''{utf8}" in content_disposition
-        else:
-            assert "filename*=UTF-8''" not in content_disposition
 
     def test_static_file(self, app, req_ctx):
-        # default cache timeout is 12 hours
+        # Default max_age is None.
 
         # Test with static file handler.
         rv = app.send_static_file("index.html")
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
-        assert cc.max_age == 12 * 60 * 60
+        assert rv.cache_control.max_age is None
         rv.close()
-        # Test again with direct use of send_file utility.
+
+        # Test with direct use of send_file.
         rv = flask.send_file("static/index.html")
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
-        assert cc.max_age == 12 * 60 * 60
+        assert rv.cache_control.max_age is None
         rv.close()
+
         app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 3600
 
         # Test with static file handler.
         rv = app.send_static_file("index.html")
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
-        assert cc.max_age == 3600
-        rv.close()
-        # Test again with direct use of send_file utility.
-        rv = flask.send_file("static/index.html")
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
-        assert cc.max_age == 3600
+        assert rv.cache_control.max_age == 3600
         rv.close()
 
-        # Test with static file handler.
+        # Test with direct use of send_file.
+        rv = flask.send_file("static/index.html")
+        assert rv.cache_control.max_age == 3600
+        rv.close()
+
+        # Test with pathlib.Path.
         rv = app.send_static_file(FakePath("index.html"))
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
-        assert cc.max_age == 3600
+        assert rv.cache_control.max_age == 3600
         rv.close()
 
         class StaticFileApp(flask.Flask):
@@ -318,16 +77,16 @@ class TestSendfile:
                 return 10
 
         app = StaticFileApp(__name__)
+
         with app.test_request_context():
             # Test with static file handler.
             rv = app.send_static_file("index.html")
-            cc = parse_cache_control_header(rv.headers["Cache-Control"])
-            assert cc.max_age == 10
+            assert rv.cache_control.max_age == 10
             rv.close()
-            # Test again with direct use of send_file utility.
+
+            # Test with direct use of send_file.
             rv = flask.send_file("static/index.html")
-            cc = parse_cache_control_header(rv.headers["Cache-Control"])
-            assert cc.max_age == 10
+            assert rv.cache_control.max_age == 10
             rv.close()
 
     def test_send_from_directory(self, app, req_ctx):
@@ -338,28 +97,6 @@ class TestSendfile:
         rv.direct_passthrough = False
         assert rv.data.strip() == b"Hello Subdomain"
         rv.close()
-
-    def test_send_from_directory_pathlike(self, app, req_ctx):
-        app.root_path = os.path.join(
-            os.path.dirname(__file__), "test_apps", "subdomaintestmodule"
-        )
-        rv = flask.send_from_directory(FakePath("static"), FakePath("hello.txt"))
-        rv.direct_passthrough = False
-        assert rv.data.strip() == b"Hello Subdomain"
-        rv.close()
-
-    def test_send_from_directory_null_character(self, app, req_ctx):
-        app.root_path = os.path.join(
-            os.path.dirname(__file__), "test_apps", "subdomaintestmodule"
-        )
-
-        if sys.version_info >= (3, 8):
-            exception = NotFound
-        else:
-            exception = BadRequest
-
-        with pytest.raises(exception):
-            flask.send_from_directory("static", "bad\x00")
 
 
 class TestUrlFor:
@@ -512,47 +249,6 @@ class TestStreaming:
 
         rv = client.get("/")
         assert rv.data == b"flask"
-
-
-class TestSafeJoin:
-    @pytest.mark.parametrize(
-        "args, expected",
-        (
-            (("a/b/c",), "a/b/c"),
-            (("/", "a/", "b/", "c/"), "/a/b/c"),
-            (("a", "b", "c"), "a/b/c"),
-            (("/a", "b/c"), "/a/b/c"),
-            (("a/b", "X/../c"), "a/b/c"),
-            (("/a/b", "c/X/.."), "/a/b/c"),
-            # If last path is '' add a slash
-            (("/a/b/c", ""), "/a/b/c/"),
-            # Preserve dot slash
-            (("/a/b/c", "./"), "/a/b/c/."),
-            (("a/b/c", "X/.."), "a/b/c/."),
-            # Base directory is always considered safe
-            (("../", "a/b/c"), "../a/b/c"),
-            (("/..",), "/.."),
-        ),
-    )
-    def test_safe_join(self, args, expected):
-        assert flask.safe_join(*args) == expected
-
-    @pytest.mark.parametrize(
-        "args",
-        (
-            # path.isabs and ``..'' checks
-            ("/a", "b", "/c"),
-            ("/a", "../b/c"),
-            ("/a", "..", "b/c"),
-            # Boundaries violations after path normalization
-            ("/a", "b/../b/../../c"),
-            ("/a", "b", "c/../.."),
-            ("/a", "b/../../c"),
-        ),
-    )
-    def test_safe_join_exceptions(self, args):
-        with pytest.raises(NotFound):
-            print(flask.safe_join(*args))
 
 
 class TestHelpers:
