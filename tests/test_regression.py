@@ -3,7 +3,6 @@ import platform
 import threading
 
 import pytest
-from werkzeug.exceptions import NotFound
 
 import flask
 
@@ -54,13 +53,6 @@ def test_memory_consumption():
     with assert_no_leak():
         for _x in range(10):
             fire()
-
-
-def test_safe_join_toplevel_pardir():
-    from flask.helpers import safe_join
-
-    with pytest.raises(NotFound):
-        safe_join("/foo", "..")
 
 
 def test_aborting(app):

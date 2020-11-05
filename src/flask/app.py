@@ -55,9 +55,10 @@ from .wrappers import Response
 
 
 def _make_timedelta(value):
-    if not isinstance(value, timedelta):
-        return timedelta(seconds=value)
-    return value
+    if value is None or isinstance(value, timedelta):
+        return value
+
+    return timedelta(seconds=value)
 
 
 class Flask(Scaffold):
@@ -234,13 +235,16 @@ class Flask(Scaffold):
         "PERMANENT_SESSION_LIFETIME", get_converter=_make_timedelta
     )
 
-    #: A :class:`~datetime.timedelta` which is used as default cache_timeout
-    #: for the :func:`send_file` functions. The default is 12 hours.
+    #: A :class:`~datetime.timedelta` or number of seconds which is used
+    #: as the default ``max_age`` for :func:`send_file`. The default is
+    #: ``None``, which tells the browser to use conditional requests
+    #: instead of a timed cache.
     #:
-    #: This attribute can also be configured from the config with the
-    #: ``SEND_FILE_MAX_AGE_DEFAULT`` configuration key. This configuration
-    #: variable can also be set with an integer value used as seconds.
-    #: Defaults to ``timedelta(hours=12)``
+    #: Configured with the :data:`SEND_FILE_MAX_AGE_DEFAULT`
+    #: configuration key.
+    #:
+    #: .. versionchanged:: 2.0
+    #:     Defaults to ``None`` instead of 12 hours.
     send_file_max_age_default = ConfigAttribute(
         "SEND_FILE_MAX_AGE_DEFAULT", get_converter=_make_timedelta
     )
@@ -297,7 +301,7 @@ class Flask(Scaffold):
             "SESSION_COOKIE_SAMESITE": None,
             "SESSION_REFRESH_EACH_REQUEST": True,
             "MAX_CONTENT_LENGTH": None,
-            "SEND_FILE_MAX_AGE_DEFAULT": timedelta(hours=12),
+            "SEND_FILE_MAX_AGE_DEFAULT": None,
             "TRAP_BAD_REQUEST_ERRORS": None,
             "TRAP_HTTP_EXCEPTIONS": False,
             "EXPLAIN_TEMPLATE_LOADING": False,
