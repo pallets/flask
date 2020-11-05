@@ -63,8 +63,7 @@ the file and redirects the user to the URL for the uploaded file::
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                return redirect(url_for('uploaded_file',
-                                        filename=filename))
+                return redirect(url_for('download_file', name=filename))
         return '''
         <!doctype html>
         <title>Upload new File</title>
@@ -102,31 +101,28 @@ before storing it directly on the filesystem.
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files. In the
-:func:`upload_file()` we redirect the user to
-``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``.
-So we write the :func:`uploaded_file` function to return the file of that name. As
-of Flask 0.5 we can use a function that does that for us::
+We want to be able to serve the uploaded files so they can be downloaded
+by users. We'll define a ``download_file`` view to serve files in the
+upload folder by name. ``url_for("download_file", name=name)`` generates
+download URLs.
+
+.. code-block:: python
 
     from flask import send_from_directory
 
-    @app.route('/uploads/<filename>')
-    def uploaded_file(filename):
-        return send_from_directory(app.config['UPLOAD_FOLDER'],
-                                   filename)
+    @app.route('/uploads/<name>')
+    def download_file(name):
+        return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
-Alternatively you can register `uploaded_file` as `build_only` rule and
-use the :class:`~werkzeug.wsgi.SharedDataMiddleware`.  This also works with
-older versions of Flask::
+If you're using middleware or the HTTP server to serve files, you can
+register the ``download_file`` endpoint as ``build_only`` so ``url_for``
+will work without a view function.
 
-    from werkzeug.middleware.shared_data import SharedDataMiddleware
-    app.add_url_rule('/uploads/<filename>', 'uploaded_file',
-                     build_only=True)
-    app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-        '/uploads':  app.config['UPLOAD_FOLDER']
-    })
+.. code-block:: python
 
-If you now run the application everything should work as expected.
+    app.add_url_rule(
+        "/uploads/<name>", endpoint="download_file", build_only=True
+    )
 
 
 Improving Uploads
