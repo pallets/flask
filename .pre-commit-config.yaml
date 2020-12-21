@@ -23,7 +23,7 @@ repos:
           - flake8-bugbear
           - flake8-implicit-str-concat
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.3.0
+    rev: v3.4.0
     hooks:
       - id: check-byte-order-marker
       - id: trailing-whitespace
