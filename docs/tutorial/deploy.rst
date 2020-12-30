@@ -32,8 +32,8 @@ distribution file.
     $ python setup.py bdist_wheel
 
 You can find the file in ``dist/flaskr-1.0.0-py3-none-any.whl``. The
-file name is the name of the project, the version, and some tags about
-the file can install.
+file name is in the format of {project name}-{version}-{python tag}
+-{abi tag}-{platform tag}.
 
 Copy this file to another machine,
 :ref:`set up a new virtualenv <install-create-env>`, then install the
