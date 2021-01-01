@@ -24,7 +24,7 @@ iniconfig==1.1.1          # via pytest
 jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
 nodeenv==1.5.0            # via pre-commit
-packaging==20.4           # via -r requirements/docs.in, pallets-sphinx-themes, pytest, sphinx, tox
+packaging==20.8           # via -r requirements/docs.in, pallets-sphinx-themes, pytest, sphinx, tox
 pallets-sphinx-themes==1.2.3  # via -r requirements/docs.in
 pip-tools==5.5.0          # via -r requirements/dev.in
 pluggy==0.13.1            # via pytest, tox
@@ -37,7 +37,7 @@ python-dotenv==0.15.0     # via -r requirements/tests.in
 pytz==2020.1              # via babel
 pyyaml==5.3.1             # via pre-commit
 requests==2.24.0          # via sphinx
-six==1.15.0               # via packaging, tox, virtualenv
+six==1.15.0               # via tox, virtualenv
 snowballstemmer==2.0.0    # via sphinx
 sphinx-issues==1.2.0      # via -r requirements/docs.in
 sphinx-tabs==1.3.0        # via -r requirements/docs.in
