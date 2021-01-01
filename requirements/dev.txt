@@ -28,7 +28,7 @@ packaging==20.4           # via -r requirements/docs.in, pallets-sphinx-themes, 
 pallets-sphinx-themes==1.2.3  # via -r requirements/docs.in
 pip-tools==5.3.1          # via -r requirements/dev.in
 pluggy==0.13.1            # via pytest, tox
-pre-commit==2.8.2         # via -r requirements/dev.in
+pre-commit==2.9.3         # via -r requirements/dev.in
 py==1.9.0                 # via pytest, tox
 pygments==2.7.2           # via sphinx, sphinx-tabs
 pyparsing==2.4.7          # via packaging
