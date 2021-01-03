@@ -1520,6 +1520,8 @@ def test_server_name_subdomain():
     assert rv.data == b"subdomain"
 
 
+@pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
+@pytest.mark.filterwarnings("ignore::pytest.PytestUnhandledThreadExceptionWarning")
 def test_exception_propagation(app, client):
     def apprunner(config_key):
         @app.route("/")
