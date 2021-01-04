@@ -237,7 +237,7 @@ def loads(s, app=None, **kwargs):
     :param app: App instance to use to configure the JSON decoder.
         Uses ``current_app`` if not given, and falls back to the default
         encoder when not in an app context.
-    :param kwargs: Extra arguments passed to :func:`json.dumps`.
+    :param kwargs: Extra arguments passed to :func:`json.loads`.
 
     .. versionchanged:: 1.0.3
 
