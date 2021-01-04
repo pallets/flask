@@ -103,7 +103,7 @@ def dumps(obj, app=None, **kwargs):
     :param obj: Object to serialize to JSON.
     :param app: Use this app's config instead of the active app context
         or defaults.
-    :param kwargs: Extra arguments passed to func:`json.dumps`.
+    :param kwargs: Extra arguments passed to :func:`json.dumps`.
 
     .. versionchanged:: 2.0
         ``encoding`` is deprecated and will be removed in 2.1.
@@ -139,7 +139,7 @@ def dump(obj, fp, app=None, **kwargs):
     :param fp: File object to write JSON to.
     :param app: Use this app's config instead of the active app context
         or defaults.
-    :param kwargs: Extra arguments passed to func:`json.dump`.
+    :param kwargs: Extra arguments passed to :func:`json.dump`.
 
     .. versionchanged:: 2.0
         Writing to a binary file, and the ``encoding`` argument, is
@@ -211,7 +211,7 @@ def load(fp, app=None, **kwargs):
     :param fp: File object to read JSON from.
     :param app: Use this app's config instead of the active app context
         or defaults.
-    :param kwargs: Extra arguments passed to func:`json.load`.
+    :param kwargs: Extra arguments passed to :func:`json.load`.
 
     .. versionchanged:: 2.0
         ``encoding`` is deprecated and will be removed in 2.1. The file
