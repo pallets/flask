@@ -175,7 +175,7 @@ def loads(s, app=None, **kwargs):
     :param s: JSON string to deserialize.
     :param app: Use this app's config instead of the active app context
         or defaults.
-    :param kwargs: Extra arguments passed to func:`json.dump`.
+    :param kwargs: Extra arguments passed to :func:`json.loads`.
 
     .. versionchanged:: 2.0
         ``encoding`` is deprecated and will be removed in 2.1. The data
