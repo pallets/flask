@@ -593,7 +593,7 @@ class Flask(_PackageBoundObject):
         # and static_folder if there is a configured static_folder.
         # Note we do this without checking if static_folder exists.
         # For one, it might be created while the server is running (e.g. during
-        # development). Also, Google App Engine stores static files somewhere
+        # development). Also, Google App Engine stores static files somewhere.
         if self.has_static_folder:
             assert (
                 bool(static_host) == host_matching
@@ -1216,12 +1216,12 @@ class Flask(_PackageBoundObject):
         .. versionchanged:: 0.6
            ``OPTIONS`` is added automatically as method.
 
-        :param rule: the URL rule as string
+        :param rule: the URL rule as string.
         :param endpoint: the endpoint for the registered URL rule.  Flask
                          itself assumes the name of the view function as
-                         endpoint
+                         endpoint.
         :param view_func: the function to call when serving a request to the
-                          provided endpoint
+                          provided endpoint.
         :param provide_automatic_options: controls whether the ``OPTIONS``
             method should be added automatically. This can also be controlled
             by setting the ``view_func.provide_automatic_options = False``
@@ -1252,7 +1252,7 @@ class Flask(_PackageBoundObject):
             )
         methods = set(item.upper() for item in methods)
 
-        # Methods that should always be added
+        # Methods that should always be added.
         required_methods = set(getattr(view_func, "required_methods", ()))
 
         # starting with Flask 0.8 the view_func object can disable and
@@ -1862,7 +1862,7 @@ class Flask(_PackageBoundObject):
             # if we want to repropagate the exception, we can attempt to
             # raise it with the whole traceback in case we can do that
             # (the function was actually called from the except part)
-            # otherwise, we just raise the error again
+            # otherwise, we just raise the error again.
             if exc_value is e:
                 reraise(exc_type, exc_value, tb)
             else:
