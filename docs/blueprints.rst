@@ -270,7 +270,7 @@ at the application level using the ``request`` proxy object::
     @app.errorhandler(405)
     def _handle_api_error(ex):
         if request.path.startswith('/api/'):
-            return jsonify_error(ex)
+            return jsonify(error=str(ex)), ex.code
         else:
             return ex
 
