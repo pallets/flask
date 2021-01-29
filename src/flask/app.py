@@ -1386,17 +1386,10 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        if isinstance(e, BadRequestKeyError):
-            if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
-                e.show_exception = True
-
-                # Werkzeug < 0.15 doesn't add the KeyError to the 400
-                # message, add it in manually.
-                # TODO: clean up once Werkzeug >= 0.15.5 is required
-                if e.args[0] not in e.get_description():
-                    e.description = f"KeyError: {e.args[0]!r}"
-            elif not hasattr(BadRequestKeyError, "show_exception"):
-                e.args = ()
+        if isinstance(e, BadRequestKeyError) and (
+            self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]
+        ):
+            e.show_exception = True
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
