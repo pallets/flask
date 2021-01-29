@@ -249,25 +249,11 @@ be passed an instance of ``InternalServerError``, not the original
 unhandled error.
 
 The original error is available as ``e.original_exception``.
-Until Werkzeug 1.0.0, this attribute will only exist during unhandled
-errors, use ``getattr`` to get access it for compatibility.
 
-.. code-block:: python
-
-    @app.errorhandler(InternalServerError)
-    def handle_500(e):
-        original = getattr(e, "original_exception", None)
-
-        if original is None:
-            # direct 500 error, such as abort(500)
-            return render_template("500.html"), 500
-
-        # wrapped unhandled error
-        return render_template("500_unhandled.html", e=original), 500
-
-An error handler for "500 Internal Server Error" will be passed uncaught exceptions in
-addition to explicit 500 errors. In debug mode, a handler for "500 Internal Server Error" will not be used.
-Instead, the interactive debugger will be shown.
+An error handler for "500 Internal Server Error" will be passed uncaught
+exceptions in addition to explicit 500 errors. In debug mode, a handler
+for "500 Internal Server Error" will not be used. Instead, the
+interactive debugger will be shown.
 
 
 Custom Error Pages
