@@ -113,7 +113,7 @@ class Response(ResponseBase):
     def max_cookie_size(self):
         """Read-only view of the :data:`MAX_COOKIE_SIZE` config key.
 
-        See :attr:`~werkzeug.wrappers.BaseResponse.max_cookie_size` in
+        See :attr:`~werkzeug.wrappers.Response.max_cookie_size` in
         Werkzeug's docs.
         """
         if current_app:

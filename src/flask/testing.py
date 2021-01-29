@@ -5,7 +5,7 @@ import werkzeug.test
 from click.testing import CliRunner
 from werkzeug.test import Client
 from werkzeug.urls import url_parse
-from werkzeug.wrappers import BaseRequest
+from werkzeug.wrappers import Request as BaseRequest
 
 from . import _request_ctx_stack
 from .cli import ScriptInfo

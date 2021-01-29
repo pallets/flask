@@ -16,7 +16,7 @@ from werkzeug.routing import Map
 from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
-from werkzeug.wrappers import BaseResponse
+from werkzeug.wrappers import Response as BaseResponse
 
 from . import cli
 from . import json
