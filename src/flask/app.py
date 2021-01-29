@@ -1447,10 +1447,7 @@ class Flask(Scaffold):
             raise e
 
         self.log_exception(exc_info)
-        server_error = InternalServerError()
-        # TODO: pass as param when Werkzeug>=1.0.0 is required
-        # TODO: also remove note about this from docstring and docs
-        server_error.original_exception = e
+        server_error = InternalServerError(original_exception=e)
         handler = self._find_error_handler(server_error)
 
         if handler is not None:
