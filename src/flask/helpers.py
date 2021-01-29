@@ -439,6 +439,8 @@ def get_flashed_messages(with_categories=False, category_filter=()):
 def _prepare_send_file_kwargs(
     download_name=None,
     attachment_filename=None,
+    etag=None,
+    add_etags=None,
     max_age=None,
     cache_timeout=None,
     **kwargs,
@@ -461,12 +463,22 @@ def _prepare_send_file_kwargs(
         )
         max_age = cache_timeout
 
+    if add_etags is not None:
+        warnings.warn(
+            "The 'add_etags' parameter has been renamed to 'etag'. The old name will be"
+            " removed in Flask 2.1.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        etag = add_etags
+
     if max_age is None:
         max_age = current_app.get_send_file_max_age
 
     kwargs.update(
         environ=request.environ,
         download_name=download_name,
+        etag=etag,
         max_age=max_age,
         use_x_sendfile=current_app.use_x_sendfile,
         response_class=current_app.response_class,
@@ -482,7 +494,8 @@ def send_file(
     download_name=None,
     attachment_filename=None,
     conditional=True,
-    add_etags=True,
+    etag=True,
+    add_etags=None,
     last_modified=None,
     max_age=None,
     cache_timeout=None,
@@ -518,8 +531,8 @@ def send_file(
         the file. Defaults to the passed file name.
     :param conditional: Enable conditional and range responses based on
         request headers. Requires passing a file path and ``environ``.
-    :param add_etags: Calculate an ETag for the file. Requires passing a
-        file path.
+    :param etag: Calculate an ETag for the file, which requires passing
+        a file path. Can also be a string to use instead.
     :param last_modified: The last modified time to send for the file,
         in seconds. If not provided, it will try to detect it from the
         file path.
@@ -536,6 +549,10 @@ def send_file(
         ``max_age`` replaces the ``cache_timeout`` parameter.
         ``conditional`` is enabled and ``max_age`` is not set by
         default.
+
+    .. versionchanged:: 2.0.0
+        ``etag`` replaces the ``add_etags`` parameter. It can be a
+        string to use instead of generating one.
 
     .. versionchanged:: 2.0
         Passing a file-like object that inherits from
@@ -593,6 +610,7 @@ def send_file(
             download_name=download_name,
             attachment_filename=attachment_filename,
             conditional=conditional,
+            etag=etag,
             add_etags=add_etags,
             last_modified=last_modified,
             max_age=max_age,
