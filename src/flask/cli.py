@@ -953,10 +953,10 @@ debug mode.
 )
 
 
-def main(as_module=False):
+def main():
     # TODO omit sys.argv once https://github.com/pallets/click/issues/536 is fixed
-    cli.main(args=sys.argv[1:], prog_name="python -m flask" if as_module else None)
+    cli.main(args=sys.argv[1:])
 
 
 if __name__ == "__main__":
-    main(as_module=True)
+    main()
