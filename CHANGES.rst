@@ -49,7 +49,8 @@ Unreleased
     implementations in ``werkzeug.utils``. :pr:`3828`
 -   Some ``send_file`` parameters have been renamed, the old names are
     deprecated. ``attachment_filename`` is renamed to ``download_name``.
-    ``cache_timeout`` is renamed to ``max_age``. :pr:`3828`
+    ``cache_timeout`` is renamed to ``max_age``. ``add_etags`` is
+    renamed to ``etag``. :pr:`3828, 3883`
 -   ``send_file`` passes ``download_name`` even if
     ``as_attachment=False`` by using ``Content-Disposition: inline``.
     :pr:`3828`
