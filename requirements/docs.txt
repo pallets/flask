@@ -45,7 +45,7 @@ sphinx-issues==1.2.0
     # via -r requirements/docs.in
 sphinx-tabs==2.0.0
     # via -r requirements/docs.in
-sphinx==3.4.1
+sphinx==3.4.3
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
