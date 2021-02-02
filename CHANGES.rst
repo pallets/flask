@@ -63,6 +63,7 @@ Unreleased
 -   The request context does route matching before opening the session.
     This could allow a session interface to change behavior based on
     ``request.endpoint``. :issue:`3776`
+-   Use Jinja's implementation of the ``|tojson`` filter. :issue:`3881`
 
 
 Version 1.1.2
