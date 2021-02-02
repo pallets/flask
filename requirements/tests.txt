@@ -20,7 +20,7 @@ py==1.9.0
     # via pytest
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.1
+pytest==6.2.2
     # via -r requirements/tests.in
 python-dotenv==0.15.0
     # via -r requirements/tests.in
