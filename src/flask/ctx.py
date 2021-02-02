@@ -361,6 +361,9 @@ class RequestContext:
 
         _request_ctx_stack.push(self)
 
+        if self.url_adapter is not None:
+            self.match_request()
+
         # Open the session at the moment that the request context is available.
         # This allows a custom open_session method to use the request context.
         # Only open a new session if this is the first time the request was
@@ -371,9 +374,6 @@ class RequestContext:
 
             if self.session is None:
                 self.session = session_interface.make_null_session(self.app)
-
-        if self.url_adapter is not None:
-            self.match_request()
 
     def pop(self, exc=_sentinel):
         """Pops the request context and unbinds it by doing that.  This will
