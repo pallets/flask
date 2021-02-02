@@ -22,7 +22,7 @@ jinja2==2.11.2
     # via sphinx
 markupsafe==1.1.1
     # via jinja2
-packaging==20.8
+packaging==20.9
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
