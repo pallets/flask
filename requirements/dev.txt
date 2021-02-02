@@ -91,7 +91,7 @@ snowballstemmer==2.0.0
     # via sphinx
 sphinx-issues==1.2.0
     # via -r requirements/docs.in
-sphinx-tabs==1.3.0
+sphinx-tabs==2.0.0
     # via -r requirements/docs.in
 sphinx==3.4.1
     # via
