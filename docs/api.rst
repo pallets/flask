@@ -440,18 +440,32 @@ The following signals exist in Flask:
 
 .. data:: got_request_exception
 
-   This signal is sent when an exception happens during request processing.
-   It is sent *before* the standard exception handling kicks in and even
-   in debug mode, where no exception handling happens.  The exception
-   itself is passed to the subscriber as `exception`.
+    This signal is sent when an unhandled exception happens during
+    request processing, including when debugging. The exception is
+    passed to the subscriber as ``exception``.
 
-   Example subscriber::
+    This signal is not sent for
+    :exc:`~werkzeug.exceptions.HTTPException`, or other exceptions that
+    have error handlers registered, unless the exception was raised from
+    an error handler.
 
-        def log_exception(sender, exception, **extra):
-            sender.logger.debug('Got exception during processing: %s', exception)
+    This example shows how to do some extra logging if a theoretical
+    ``SecurityException`` was raised:
+
+    .. code-block:: python
 
         from flask import got_request_exception
-        got_request_exception.connect(log_exception, app)
+
+        def log_security_exception(sender, exception, **extra):
+            if not isinstance(exception, SecurityException):
+                return
+
+            security_logger.exception(
+                f"SecurityException at {request.url!r}",
+                exc_info=exception,
+            )
+
+        got_request_exception.connect(log_security_exception, app)
 
 .. data:: request_tearing_down
 
