@@ -278,7 +278,7 @@ class Flask(Scaffold):
     #:     This is a ``dict`` instead of an ``ImmutableDict`` to allow
     #:     easier configuration.
     #:
-    jinja_options = {"extensions": ["jinja2.ext.autoescape", "jinja2.ext.with_"]}
+    jinja_options = {}
 
     #: Default configuration parameters.
     default_config = ImmutableDict(
