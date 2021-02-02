@@ -60,6 +60,9 @@ Unreleased
     conditional requests instead of using a timed cache. :pr:`3828`
 -   ``helpers.safe_join`` is deprecated. Use
     ``werkzeug.utils.safe_join`` instead. :pr:`3828`
+-   The request context does route matching before opening the session.
+    This could allow a session interface to change behavior based on
+    ``request.endpoint``. :issue:`3776`
 
 
 Version 1.1.2
