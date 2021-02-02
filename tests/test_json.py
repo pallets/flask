@@ -204,24 +204,17 @@ def test_json_attr(app, client):
     assert rv.data == b"3"
 
 
-def test_template_escaping(app, req_ctx):
-    render = flask.render_template_string
-    rv = flask.json.htmlsafe_dumps("</script>")
-    assert rv == '"\\u003c/script\\u003e"'
-    rv = render('{{ "</script>"|tojson }}')
-    assert rv == '"\\u003c/script\\u003e"'
-    rv = render('{{ "<\0/script>"|tojson }}')
-    assert rv == '"\\u003c\\u0000/script\\u003e"'
-    rv = render('{{ "<!--<script>"|tojson }}')
-    assert rv == '"\\u003c!--\\u003cscript\\u003e"'
-    rv = render('{{ "&"|tojson }}')
-    assert rv == '"\\u0026"'
-    rv = render('{{ "\'"|tojson }}')
-    assert rv == '"\\u0027"'
-    rv = render(
-        "<a ng-data='{{ data|tojson }}'></a>", data={"x": ["foo", "bar", "baz'"]}
+def test_tojson_filter(app, req_ctx):
+    # The tojson filter is tested in Jinja, this confirms that it's
+    # using Flask's dumps.
+    rv = flask.render_template_string(
+        "const data = {{ data|tojson }};",
+        data={"name": "</script>", "time": datetime.datetime(2021, 2, 1, 7, 15)},
     )
-    assert rv == '<a ng-data=\'{"x": ["foo", "bar", "baz\\u0027"]}\'></a>'
+    assert rv == (
+        'const data = {"name": "\\u003c/script\\u003e",'
+        ' "time": "Mon, 01 Feb 2021 07:15:00 GMT"};'
+    )
 
 
 def test_json_customization(app, client):

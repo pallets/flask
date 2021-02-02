@@ -250,14 +250,15 @@ for easier customization. By default it handles some extra data types:
 -   :class:`~markupsafe.Markup` (or any object with a ``__html__``
     method) will call the ``__html__`` method to get a string.
 
-:func:`~htmlsafe_dumps` is also available as the ``|tojson`` template
-filter. The filter marks the output with ``|safe`` so it can be used
-inside ``script`` tags.
+Jinja's ``|tojson`` filter is configured to use Flask's :func:`dumps`
+function. The filter marks the output with ``|safe`` automatically. Use
+the filter to render data inside ``<script>`` tags.
 
 .. sourcecode:: html+jinja
 
     <script type=text/javascript>
-        renderChart({{ axis_data|tojson }});
+        const names = {{ names|tosjon }};
+        renderChart(names, {{ axis_data|tojson }});
     </script>
 
 .. autofunction:: jsonify
