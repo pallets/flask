@@ -12,7 +12,7 @@ greenlet==1.0.0
     # via -r requirements/tests.in
 iniconfig==1.1.1
     # via pytest
-packaging==20.8
+packaging==20.9
     # via pytest
 pluggy==0.13.1
     # via pytest
