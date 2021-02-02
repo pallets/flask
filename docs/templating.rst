@@ -95,37 +95,6 @@ by default:
 
       {% from '_helpers.html' import my_macro with context %}
 
-Standard Filters
-----------------
-
-Flask provides the following Jinja2 filters in addition to the filters provided
-by Jinja2 itself:
-
-.. function:: tojson
-   :noindex:
-
-   This function converts the given object into JSON representation.  This
-   is for example very helpful if you try to generate JavaScript on the
-   fly.
-
-   .. sourcecode:: html+jinja
-
-       <script type=text/javascript>
-           doSomethingWith({{ user.username|tojson }});
-       </script>
-
-   It is also safe to use the output of `|tojson` in a *single-quoted* HTML
-   attribute:
-
-   .. sourcecode:: html+jinja
-
-       <button onclick='doSomethingWith({{ user.username|tojson }})'>
-           Click me
-       </button>
-
-   Note that in versions of Flask prior to 0.10, if using the output of
-   ``|tojson`` inside ``script``, make sure to disable escaping with ``|safe``.
-   In Flask 0.10 and above, this happens automatically.
 
 Controlling Autoescaping
 ------------------------
