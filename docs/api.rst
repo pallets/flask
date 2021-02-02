@@ -27,9 +27,9 @@ Incoming Request Data
 ---------------------
 
 .. autoclass:: Request
-   :members:
-   :inherited-members:
-   :exclude-members: json_module
+    :members:
+    :inherited-members:
+    :exclude-members: json_module
 
 .. attribute:: request
 
@@ -48,20 +48,9 @@ Response Objects
 ----------------
 
 .. autoclass:: flask.Response
-   :members: set_cookie, max_cookie_size, data, mimetype, is_json, get_json
-
-   .. attribute:: headers
-
-      A :class:`~werkzeug.datastructures.Headers` object representing the response headers.
-
-   .. attribute:: status
-
-      A string with a response status.
-
-   .. attribute:: status_code
-
-      The response status as integer.
-
+    :members:
+    :inherited-members:
+    :exclude-members: json_module
 
 Sessions
 --------

@@ -16,7 +16,7 @@ from werkzeug.routing import Map
 from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
-from werkzeug.wrappers import BaseResponse
+from werkzeug.wrappers import Response as BaseResponse
 
 from . import cli
 from . import json
@@ -278,7 +278,7 @@ class Flask(Scaffold):
     #:     This is a ``dict`` instead of an ``ImmutableDict`` to allow
     #:     easier configuration.
     #:
-    jinja_options = {"extensions": ["jinja2.ext.autoescape", "jinja2.ext.with_"]}
+    jinja_options = {}
 
     #: Default configuration parameters.
     default_config = ImmutableDict(
@@ -1386,17 +1386,10 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        if isinstance(e, BadRequestKeyError):
-            if self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]:
-                e.show_exception = True
-
-                # Werkzeug < 0.15 doesn't add the KeyError to the 400
-                # message, add it in manually.
-                # TODO: clean up once Werkzeug >= 0.15.5 is required
-                if e.args[0] not in e.get_description():
-                    e.description = f"KeyError: {e.args[0]!r}"
-            elif not hasattr(BadRequestKeyError, "show_exception"):
-                e.args = ()
+        if isinstance(e, BadRequestKeyError) and (
+            self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]
+        ):
+            e.show_exception = True
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
             return self.handle_http_exception(e)
@@ -1454,10 +1447,7 @@ class Flask(Scaffold):
             raise e
 
         self.log_exception(exc_info)
-        server_error = InternalServerError()
-        # TODO: pass as param when Werkzeug>=1.0.0 is required
-        # TODO: also remove note about this from docstring and docs
-        server_error.original_exception = e
+        server_error = InternalServerError(original_exception=e)
         handler = self._find_error_handler(server_error)
 
         if handler is not None:
