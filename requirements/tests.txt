@@ -4,14 +4,25 @@
 #
 #    pip-compile requirements/tests.in
 #
-attrs==20.2.0             # via pytest
-blinker==1.4              # via -r requirements/tests.in
-greenlet==0.4.17          # via -r requirements/tests.in
-iniconfig==1.1.1          # via pytest
-packaging==20.8           # via pytest
-pluggy==0.13.1            # via pytest
-py==1.9.0                 # via pytest
-pyparsing==2.4.7          # via packaging
-pytest==6.2.1             # via -r requirements/tests.in
-python-dotenv==0.15.0     # via -r requirements/tests.in
-toml==0.10.2              # via pytest
+attrs==20.2.0
+    # via pytest
+blinker==1.4
+    # via -r requirements/tests.in
+greenlet==1.0.0
+    # via -r requirements/tests.in
+iniconfig==1.1.1
+    # via pytest
+packaging==20.8
+    # via pytest
+pluggy==0.13.1
+    # via pytest
+py==1.9.0
+    # via pytest
+pyparsing==2.4.7
+    # via packaging
+pytest==6.2.1
+    # via -r requirements/tests.in
+python-dotenv==0.15.0
+    # via -r requirements/tests.in
+toml==0.10.2
+    # via pytest
