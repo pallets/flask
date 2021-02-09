@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements/tests.in
 #
-attrs==20.2.0
+attrs==20.3.0
     # via pytest
 blinker==1.4
     # via -r requirements/tests.in
@@ -16,7 +16,7 @@ packaging==20.9
     # via pytest
 pluggy==0.13.1
     # via pytest
-py==1.9.0
+py==1.10.0
     # via pytest
 pyparsing==2.4.7
     # via packaging
