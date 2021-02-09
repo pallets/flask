@@ -8,17 +8,17 @@ alabaster==0.7.12
     # via sphinx
 appdirs==1.4.4
     # via virtualenv
-attrs==20.2.0
+attrs==20.3.0
     # via pytest
-babel==2.8.0
+babel==2.9.0
     # via sphinx
 blinker==1.4
     # via -r requirements/tests.in
-certifi==2020.6.20
+certifi==2020.12.5
     # via requests
 cfgv==3.2.0
     # via pre-commit
-chardet==3.0.4
+chardet==4.0.0
     # via requests
 click==7.1.2
     # via pip-tools
@@ -32,7 +32,7 @@ filelock==3.0.12
     #   virtualenv
 greenlet==1.0.0
     # via -r requirements/tests.in
-identify==1.5.6
+identify==1.5.13
     # via pre-commit
 idna==2.10
     # via requests
@@ -61,13 +61,13 @@ pluggy==0.13.1
     # via
     #   pytest
     #   tox
-pre-commit==2.10.0
+pre-commit==2.10.1
     # via -r requirements/dev.in
-py==1.9.0
+py==1.10.0
     # via
     #   pytest
     #   tox
-pygments==2.7.2
+pygments==2.7.4
     # via
     #   sphinx
     #   sphinx-tabs
@@ -77,21 +77,21 @@ pytest==6.2.2
     # via -r requirements/tests.in
 python-dotenv==0.15.0
     # via -r requirements/tests.in
-pytz==2020.1
+pytz==2021.1
     # via babel
-pyyaml==5.3.1
+pyyaml==5.4.1
     # via pre-commit
-requests==2.24.0
+requests==2.25.1
     # via sphinx
 six==1.15.0
     # via
     #   tox
     #   virtualenv
-snowballstemmer==2.0.0
+snowballstemmer==2.1.0
     # via sphinx
 sphinx-issues==1.2.0
     # via -r requirements/docs.in
-sphinx-tabs==2.0.0
+sphinx-tabs==2.0.1
     # via -r requirements/docs.in
 sphinx==3.4.3
     # via
@@ -119,11 +119,11 @@ toml==0.10.2
     #   pre-commit
     #   pytest
     #   tox
-tox==3.21.3
+tox==3.21.4
     # via -r requirements/dev.in
-urllib3==1.25.11
+urllib3==1.26.3
     # via requests
-virtualenv==20.1.0
+virtualenv==20.4.2
     # via
     #   pre-commit
     #   tox
