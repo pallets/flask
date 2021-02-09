@@ -7,19 +7,19 @@ Thank you for considering contributing to Flask!
 Support questions
 -----------------
 
-Please, don't use the issue tracker for this. The issue tracker is a
-tool to address bugs and feature requests in Flask itself. Use one of
-the following resources for questions about using Flask or issues with
-your own code:
+Please don't use the issue tracker for this. The issue tracker is a tool
+to address bugs and feature requests in Flask itself. Use one of the
+following resources for questions about using Flask or issues with your
+own code:
 
 -   The ``#get-help`` channel on our Discord chat:
     https://discord.gg/pallets
 -   The mailing list flask@python.org for long term discussion or larger
     issues.
 -   Ask on `Stack Overflow`_. Search with Google first using:
-    ``site:stackoverflow.com python flask {search term, exception message, etc.}``
+    ``site:stackoverflow.com flask {search term, exception message, etc.}``
 
-.. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?sort=linked
+.. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?tab=Frequent
 
 
 Reporting issues
@@ -33,9 +33,9 @@ Include the following information in your post:
     your own code.
 -   Describe what actually happened. Include the full traceback if there
     was an exception.
--   List your Python, Flask, and Werkzeug versions. If possible, check
-    if this issue is already fixed in the latest releases or the latest
-    code in the repository.
+-   List your Python and Flask versions. If possible, check if this
+    issue is already fixed in the latest releases or the latest code in
+    the repository.
 
 .. _minimal reproducible example: https://stackoverflow.com/help/minimal-reproducible-example
 
@@ -98,7 +98,7 @@ First time setup
 
     .. tabs::
 
-       .. group-tab:: macOS/Linux
+       .. group-tab:: Linux/macOS
 
           .. code-block:: text
 
@@ -112,11 +112,12 @@ First time setup
              > py -3 -m venv env
              > env\Scripts\activate
 
--   Install Flask in editable mode with development dependencies.
+-   Install the development dependencies, then install Flask in editable
+    mode.
 
     .. code-block:: text
 
-        $ pip install -e . -r requirements/dev.txt
+        $ pip install -r requirements/dev.txt && pip install -e .
 
 -   Install the pre-commit hooks.
 
@@ -125,11 +126,11 @@ First time setup
         $ pre-commit install
 
 .. _latest version of git: https://git-scm.com/downloads
-.. _username: https://help.github.com/en/articles/setting-your-username-in-git
-.. _email: https://help.github.com/en/articles/setting-your-commit-email-address-in-git
+.. _username: https://docs.github.com/en/github/using-git/setting-your-username-in-git
+.. _email: https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address
 .. _GitHub account: https://github.com/join
-.. _Fork: https://github.com/pallets/flask/fork
-.. _Clone: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
+.. _Fork: https://github.com/pallets/jinja/fork
+.. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
 
 Start coding
@@ -165,7 +166,7 @@ Start coding
         $ git push --set-upstream fork your-branch-name
 
 .. _committing as you go: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
-.. _create a pull request: https://help.github.com/en/articles/creating-a-pull-request
+.. _create a pull request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
 
 Running the tests
