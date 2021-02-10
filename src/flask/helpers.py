@@ -7,6 +7,7 @@ from threading import RLock
 
 import werkzeug.utils
 from werkzeug.exceptions import NotFound
+from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
@@ -739,6 +740,11 @@ def run_async(func):
     except ImportError:
         raise RuntimeError(
             "Install Flask with the 'async' extra in order to use async views."
+        )
+
+    if ContextVar.__module__ == "werkzeug.local":
+        raise RuntimeError(
+            "async cannot be used with this combination of Python & Greenlet versions"
         )
 
     @wraps(func)
