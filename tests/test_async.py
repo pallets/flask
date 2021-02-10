@@ -1,10 +1,12 @@
 import asyncio
+import sys
 
 import pytest
 
 from flask import abort
 from flask import Flask
 from flask import request
+from flask.helpers import run_async
 
 
 @pytest.fixture(name="async_app")
@@ -23,6 +25,7 @@ def _async_app():
     return app
 
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
 def test_async_request_context(async_app):
     test_client = async_app.test_client()
     response = test_client.get("/")
@@ -31,3 +34,9 @@ def test_async_request_context(async_app):
     assert b"POST" in response.get_data()
     response = test_client.get("/error")
     assert response.status_code == 412
+
+
+@pytest.mark.skipif(sys.version_info >= (3, 7), reason="should only raise Python < 3.7")
+def test_async_runtime_error():
+    with pytest.raises(RuntimeError):
+        run_async(None)
