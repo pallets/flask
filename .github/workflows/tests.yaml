@@ -4,10 +4,18 @@ on:
     branches:
       - master
       - '*.x'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
   pull_request:
     branches:
       - master
       - '*.x'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
 jobs:
   tests:
     name: ${{ matrix.name }}
@@ -23,7 +31,6 @@ jobs:
           - {name: '3.7', python: '3.7', os: ubuntu-latest, tox: py37}
           - {name: '3.6', python: '3.6', os: ubuntu-latest, tox: py36}
           - {name: 'PyPy', python: pypy3, os: ubuntu-latest, tox: pypy3}
-          - {name: Docs, python: '3.9', os: ubuntu-latest, tox: docs}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
