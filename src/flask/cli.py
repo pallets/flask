@@ -48,7 +48,13 @@ def find_best_app(script_info, module):
             return app
 
     # Otherwise find the only object that is a Flask instance.
-    matches = [v for v in module.__dict__.values() if isinstance(v, Flask)]
+    matches = []
+    for v in module.__dict__.values():
+        try:
+            if isinstance(v, Flask):
+                matches.append(v)
+        except Exception:
+            pass
 
     if len(matches) == 1:
         return matches[0]

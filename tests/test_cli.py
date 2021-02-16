@@ -44,6 +44,8 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
+    from werkzeug.local import LocalProxy
+
     script_info = ScriptInfo()
 
     class Module:
@@ -62,6 +64,17 @@ def test_find_best_app(test_apps):
     assert find_best_app(script_info, Module) == Module.myapp
 
     class Module:
+        @staticmethod
+        def create_app():
+            return Flask("appname")
+
+    app = find_best_app(script_info, Module)
+    assert isinstance(app, Flask)
+    assert app.name == "appname"
+
+    class Module:
+        log = LocalProxy(lambda: current_app.logger)
+
         @staticmethod
         def create_app():
             return Flask("appname")
