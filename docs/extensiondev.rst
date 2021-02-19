@@ -138,7 +138,8 @@ classes:
     used to further change the behavior.  For an example look at how the
     `OAuth extension`_ works: there is an `OAuth` object that provides
     some helper functions like `OAuth.remote_app` to create a reference to
-    a remote application that uses OAuth.
+    a remote application that uses OAuth. You may also take a look at `Flask Dance`_
+    and `Authlib`_.
 
 What to use depends on what you have in mind.  For the SQLite 3 extension
 we will use the class-based approach because it will provide users with an
@@ -331,6 +332,8 @@ ecosystem remain consistent and compatible.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
+.. _Authlib: https://docs.authlib.org/en/latest/
+.. _Flask Dance: https://flask-dance.readthedocs.io/en/latest/
 .. _mailinglist: https://mail.python.org/mailman/listinfo/flask
 .. _Discord server: https://discord.gg/pallets
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/
