@@ -135,10 +135,7 @@ initialization functions:
 classes:
 
     Classes work mostly like initialization functions but can later be
-    used to further change the behavior.  For an example look at how the
-    `OAuth extension`_ works: there is an `OAuth` object that provides
-    some helper functions like `OAuth.remote_app` to create a reference to
-    a remote application that uses OAuth.
+    used to further change the behavior.
 
 What to use depends on what you have in mind.  For the SQLite 3 extension
 we will use the class-based approach because it will provide users with an
@@ -330,7 +327,6 @@ ecosystem remain consistent and compatible.
     supported versions.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
-.. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
 .. _mailinglist: https://mail.python.org/mailman/listinfo/flask
 .. _Discord server: https://discord.gg/pallets
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/
