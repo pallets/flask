@@ -251,7 +251,7 @@ class Blueprint(Scaffold):
             """
             for key, values in self_dict.items():
                 key = self.name if key is None else f"{self.name}.{key}"
-                app_dict.setdefault(key, []).extend(values)
+                app_dict[key].extend(values)
 
         def merge_dict_nested(self_dict, app_dict):
             """Merges self_dict into app_dict. Replaces None keys with self.name.

@@ -1292,7 +1292,7 @@ class Flask(Scaffold):
             (request.blueprint, None),
             (None, None),
         ):
-            handler_map = self.error_handler_spec.setdefault(name, {}).get(c)
+            handler_map = self.error_handler_spec[name][c]
 
             if not handler_map:
                 continue
@@ -1753,10 +1753,10 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        funcs = self.url_default_functions.get(None, ())
+        funcs = self.url_default_functions[None]
         if "." in endpoint:
             bp = endpoint.rsplit(".", 1)[0]
-            funcs = chain(funcs, self.url_default_functions.get(bp, ()))
+            funcs = chain(funcs, self.url_default_functions[bp])
         for func in funcs:
             func(endpoint, values)
 
@@ -1794,13 +1794,13 @@ class Flask(Scaffold):
 
         bp = _request_ctx_stack.top.request.blueprint
 
-        funcs = self.url_value_preprocessors.get(None, ())
+        funcs = self.url_value_preprocessors[None]
         if bp is not None and bp in self.url_value_preprocessors:
             funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
-        funcs = self.before_request_funcs.get(None, ())
+        funcs = self.before_request_funcs[None]
         if bp is not None and bp in self.before_request_funcs:
             funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
@@ -1857,7 +1857,7 @@ class Flask(Scaffold):
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
-        funcs = reversed(self.teardown_request_funcs.get(None, ()))
+        funcs = reversed(self.teardown_request_funcs[None])
         bp = _request_ctx_stack.top.request.blueprint
         if bp is not None and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))

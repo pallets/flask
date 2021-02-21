@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import update_wrapper
 
 from werkzeug.exceptions import default_exceptions
@@ -86,21 +87,21 @@ class Scaffold(_PackageBoundObject):
         #:
         #: To register an error handler, use the :meth:`errorhandler`
         #: decorator.
-        self.error_handler_spec = {}
+        self.error_handler_spec = defaultdict(lambda: defaultdict(dict))
 
         #: A dictionary with lists of functions that will be called at the
         #: beginning of each request. The key of the dictionary is the name of
         #: the blueprint this function is active for, or ``None`` for all
         #: requests. To register a function, use the :meth:`before_request`
         #: decorator.
-        self.before_request_funcs = {}
+        self.before_request_funcs = defaultdict(list)
 
         #: A dictionary with lists of functions that should be called after
         #: each request.  The key of the dictionary is the name of the blueprint
         #: this function is active for, ``None`` for all requests.  This can for
         #: example be used to close database connections. To register a function
         #: here, use the :meth:`after_request` decorator.
-        self.after_request_funcs = {}
+        self.after_request_funcs = defaultdict(list)
 
         #: A dictionary with lists of functions that are called after
         #: each request, even if an exception has occurred. The key of the
@@ -112,7 +113,7 @@ class Scaffold(_PackageBoundObject):
         #: :meth:`teardown_request` decorator.
         #:
         #: .. versionadded:: 0.7
-        self.teardown_request_funcs = {}
+        self.teardown_request_funcs = defaultdict(list)
 
         #: A dictionary with list of functions that are called without argument
         #: to populate the template context.  The key of the dictionary is the
@@ -120,7 +121,9 @@ class Scaffold(_PackageBoundObject):
         #: requests.  Each returns a dictionary that the template context is
         #: updated with.  To register a function here, use the
         #: :meth:`context_processor` decorator.
-        self.template_context_processors = {None: [_default_template_ctx_processor]}
+        self.template_context_processors = defaultdict(
+            list, {None: [_default_template_ctx_processor]}
+        )
 
         #: A dictionary with lists of functions that are called before the
         #: :attr:`before_request_funcs` functions. The key of the dictionary is
@@ -129,7 +132,7 @@ class Scaffold(_PackageBoundObject):
         #: :meth:`url_value_preprocessor`.
         #:
         #: .. versionadded:: 0.7
-        self.url_value_preprocessors = {}
+        self.url_value_preprocessors = defaultdict(list)
 
         #: A dictionary with lists of functions that can be used as URL value
         #: preprocessors.  The key ``None`` here is used for application wide
@@ -141,7 +144,7 @@ class Scaffold(_PackageBoundObject):
         #: automatically again that were removed that way.
         #:
         #: .. versionadded:: 0.7
-        self.url_default_functions = {}
+        self.url_default_functions = defaultdict(list)
 
     def _is_setup_finished(self):
         raise NotImplementedError
@@ -258,7 +261,7 @@ class Scaffold(_PackageBoundObject):
         non-None value, the value is handled as if it was the return value from
         the view, and further request handling is stopped.
         """
-        self.before_request_funcs.setdefault(None, []).append(f)
+        self.before_request_funcs[None].append(f)
         return f
 
     @setupmethod
@@ -272,7 +275,7 @@ class Scaffold(_PackageBoundObject):
         As of Flask 0.7 this function might not be executed at the end of the
         request in case an unhandled exception occurred.
         """
-        self.after_request_funcs.setdefault(None, []).append(f)
+        self.after_request_funcs[None].append(f)
         return f
 
     @setupmethod
@@ -311,7 +314,7 @@ class Scaffold(_PackageBoundObject):
            debugger can still access it.  This behavior can be controlled
            by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
         """
-        self.teardown_request_funcs.setdefault(None, []).append(f)
+        self.teardown_request_funcs[None].append(f)
         return f
 
     @setupmethod
@@ -334,7 +337,7 @@ class Scaffold(_PackageBoundObject):
         The function is passed the endpoint name and values dict. The return
         value is ignored.
         """
-        self.url_value_preprocessors.setdefault(None, []).append(f)
+        self.url_value_preprocessors[None].append(f)
         return f
 
     @setupmethod
@@ -343,7 +346,7 @@ class Scaffold(_PackageBoundObject):
         application.  It's called with the endpoint and values and should
         update the values passed in place.
         """
-        self.url_default_functions.setdefault(None, []).append(f)
+        self.url_default_functions[None].append(f)
         return f
 
     @setupmethod
@@ -416,8 +419,7 @@ class Scaffold(_PackageBoundObject):
                 " instead."
             )
 
-        handlers = self.error_handler_spec.setdefault(key, {}).setdefault(code, {})
-        handlers[exc_class] = f
+        self.error_handler_spec[key][code][exc_class] = f
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
