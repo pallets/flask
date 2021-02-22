@@ -193,7 +193,7 @@ Let's assume for the moment the view would look like this::
 
     class UserAPI(MethodView):
 
-        def get(self, user_id):
+        def get(self, user_id=None):
             if user_id is None:
                 # return a list of users
                 pass
