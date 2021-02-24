@@ -723,9 +723,9 @@ class Flask(Scaffold):
         funcs = self.template_context_processors[None]
         reqctx = _request_ctx_stack.top
         if reqctx is not None:
-            bp = reqctx.request.blueprint
-            if bp is not None and bp in self.template_context_processors:
-                funcs = chain(funcs, self.template_context_processors[bp])
+            for bp in self._request_blueprints():
+                if bp in self.template_context_processors:
+                    funcs = chain(funcs, self.template_context_processors[bp])
         orig_ctx = context.copy()
         for func in funcs:
             context.update(func())
@@ -987,21 +987,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        first_registration = False
-
-        if blueprint.name in self.blueprints:
-            assert self.blueprints[blueprint.name] is blueprint, (
-                "A name collision occurred between blueprints"
-                f" {blueprint!r} and {self.blueprints[blueprint.name]!r}."
-                f" Both share the same name {blueprint.name!r}."
-                f" Blueprints that are created on the fly need unique"
-                f" names."
-            )
-        else:
-            self.blueprints[blueprint.name] = blueprint
-            first_registration = True
-
-        blueprint.register(self, options, first_registration)
+        blueprint.register(self, options)
 
     def iter_blueprints(self):
         """Iterates over all blueprints by the order they were registered.
@@ -1235,22 +1221,18 @@ class Flask(Scaffold):
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
 
-        for name, c in (
-            (request.blueprint, code),
-            (None, code),
-            (request.blueprint, None),
-            (None, None),
-        ):
-            handler_map = self.error_handler_spec[name][c]
+        for c in [code, None]:
+            for name in chain(self._request_blueprints(), [None]):
+                handler_map = self.error_handler_spec[name][c]
 
-            if not handler_map:
-                continue
+                if not handler_map:
+                    continue
 
-            for cls in exc_class.__mro__:
-                handler = handler_map.get(cls)
+                for cls in exc_class.__mro__:
+                    handler = handler_map.get(cls)
 
-                if handler is not None:
-                    return handler
+                    if handler is not None:
+                        return handler
 
     def handle_http_exception(self, e):
         """Handles an HTTP exception.  By default this will invoke the
@@ -1749,17 +1731,17 @@ class Flask(Scaffold):
         further request handling is stopped.
         """
 
-        bp = _request_ctx_stack.top.request.blueprint
-
         funcs = self.url_value_preprocessors[None]
-        if bp is not None and bp in self.url_value_preprocessors:
-            funcs = chain(funcs, self.url_value_preprocessors[bp])
+        for bp in self._request_blueprints():
+            if bp in self.url_value_preprocessors:
+                funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
         funcs = self.before_request_funcs[None]
-        if bp is not None and bp in self.before_request_funcs:
-            funcs = chain(funcs, self.before_request_funcs[bp])
+        for bp in self._request_blueprints():
+            if bp in self.before_request_funcs:
+                funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
             rv = func()
             if rv is not None:
@@ -1779,10 +1761,10 @@ class Flask(Scaffold):
                  instance of :attr:`response_class`.
         """
         ctx = _request_ctx_stack.top
-        bp = ctx.request.blueprint
         funcs = ctx._after_request_functions
-        if bp is not None and bp in self.after_request_funcs:
-            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
+        for bp in self._request_blueprints():
+            if bp in self.after_request_funcs:
+                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
         if None in self.after_request_funcs:
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
@@ -1815,9 +1797,9 @@ class Flask(Scaffold):
         if exc is _sentinel:
             exc = sys.exc_info()[1]
         funcs = reversed(self.teardown_request_funcs[None])
-        bp = _request_ctx_stack.top.request.blueprint
-        if bp is not None and bp in self.teardown_request_funcs:
-            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
+        for bp in self._request_blueprints():
+            if bp in self.teardown_request_funcs:
+                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         for func in funcs:
             func(exc)
         request_tearing_down.send(self, exc=exc)
@@ -1985,3 +1967,9 @@ class Flask(Scaffold):
         wrapped to apply middleware.
         """
         return self.wsgi_app(environ, start_response)
+
+    def _request_blueprints(self):
+        if _request_ctx_stack.top.request.blueprint is None:
+            return []
+        else:
+            return reversed(_request_ctx_stack.top.request.blueprint.split("."))
