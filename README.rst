@@ -12,6 +12,10 @@ project layout. It is up to the developer to choose the tools and
 libraries they want to use. There are many extensions provided by the
 community that make adding new functionality easy.
 
+.. _WSGI: https://wsgi.readthedocs.io/
+.. _Werkzeug: https://werkzeug.palletsprojects.com/
+.. _Jinja: https://jinja.palletsprojects.com/
+
 
 Installing
 ----------
@@ -21,6 +25,8 @@ Install and update using `pip`_:
 .. code-block:: text
 
     $ pip install -U Flask
+
+.. _pip: https://pip.pypa.io/en/stable/quickstart/
 
 
 A Simple Example
@@ -60,21 +66,17 @@ it uses. In order to grow the community of contributors and users, and
 allow the maintainers to devote more time to the projects, `please
 donate today`_.
 
-.. _please donate today: https://psfmember.org/civicrm/contribute/transact?reset=1&id=20
+.. _please donate today: https://palletsprojects.com/donate
 
 
 Links
 -----
 
-* Website: https://palletsprojects.com/p/flask/
-* Documentation: https://flask.palletsprojects.com/
-* Releases: https://pypi.org/project/Flask/
-* Code: https://github.com/pallets/flask
-* Issue tracker: https://github.com/pallets/flask/issues
-* Test status: https://dev.azure.com/pallets/flask/_build
-* Official chat: https://discord.gg/pallets
-
-.. _WSGI: https://wsgi.readthedocs.io
-.. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/
-.. _Jinja: https://www.palletsprojects.com/p/jinja/
-.. _pip: https://pip.pypa.io/en/stable/quickstart/
+-   Documentation: https://flask.palletsprojects.com/
+-   Changes: https://flask.palletsprojects.com/changes/
+-   PyPI Releases: https://pypi.org/project/Flask/
+-   Source Code: https://github.com/pallets/flask/
+-   Issue Tracker: https://github.com/pallets/flask/issues/
+-   Website: https://palletsprojects.com/p/flask/
+-   Twitter: https://twitter.com/PalletsTeam
+-   Chat: https://discord.gg/pallets

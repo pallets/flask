@@ -1,6 +1,5 @@
 include CHANGES.rst
 include CONTRIBUTING.rst
-include LICENSE.rst
 include tox.ini
 include requirements/*.txt
 graft artwork
