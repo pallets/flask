@@ -85,6 +85,6 @@ Design notes, legal information and changelog are here for the interested.
    htmlfaq
    security
    extensiondev
-   changelog
-   license
    contributing
+   license
+   changes

@@ -1,8 +1,8 @@
 License
 =======
 
-Source License
---------------
+BSD-3-Clause Source License
+---------------------------
 
 The BSD-3-Clause license applies to all files in the Flask repository
 and source distribution. This includes Flask's source code, the
