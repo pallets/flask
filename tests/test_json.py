@@ -129,19 +129,16 @@ def test_jsonify_arrays(app, client):
         assert flask.json.loads(rv.data) == a_list
 
 
-def test_jsonifytypes(app, client):
-    """Test jsonify with datetime.date and datetime.datetime types."""
-    test_dates = (
-        datetime.datetime(1973, 3, 11, 6, 30, 45),
-        datetime.date(1975, 1, 5),
-    )
+@pytest.mark.parametrize(
+    "value", [datetime.datetime(1973, 3, 11, 6, 30, 45), datetime.date(1975, 1, 5)]
+)
+def test_jsonify_datetime(app, client, value):
+    @app.route("/")
+    def index():
+        return flask.jsonify(value=value)
 
-    for i, d in enumerate(test_dates):
-        url = f"/datetest{i}"
-        app.add_url_rule(url, str(i), lambda val=d: flask.jsonify(x=val))
-        rv = client.get(url)
-        assert rv.mimetype == "application/json"
-        assert flask.json.loads(rv.data)["x"] == http_date(d.timetuple())
+    r = client.get()
+    assert r.json["value"] == http_date(value)
 
 
 class FixedOffset(datetime.tzinfo):
