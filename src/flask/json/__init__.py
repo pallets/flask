@@ -3,7 +3,6 @@ import json as _json
 import uuid
 import warnings
 from datetime import date
-from datetime import datetime
 
 from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps
 from werkzeug.http import http_date
@@ -41,10 +40,8 @@ class JSONEncoder(_json.JSONEncoder):
         overriding how basic types like ``str`` or ``list`` are
         serialized, they are handled before this method.
         """
-        if isinstance(o, datetime):
-            return http_date(o.utctimetuple())
         if isinstance(o, date):
-            return http_date(o.timetuple())
+            return http_date(o)
         if isinstance(o, uuid.UUID):
             return str(o)
         if dataclasses and dataclasses.is_dataclass(o):
