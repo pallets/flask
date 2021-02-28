@@ -5,7 +5,7 @@ Ah yes, the good old problem of file uploads.  The basic idea of file
 uploads is actually quite simple.  It basically works like this:
 
 1. A ``<form>`` tag is marked with ``enctype=multipart/form-data``
-   and an ``<input type=file>`` is placed in that form.
+   and an ``<input type=file name=file>`` is placed in that form.
 2. The application accesses the file from the :attr:`~flask.request.files`
    dictionary on the request object.
 3. use the :meth:`~werkzeug.datastructures.FileStorage.save` method of the file to save
