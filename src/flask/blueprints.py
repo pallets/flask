@@ -130,27 +130,12 @@ class Blueprint(Scaffold):
     warn_on_modifications = False
     _got_registered_once = False
 
-    #: Blueprint local JSON encoder class to use.
-    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    #: Blueprint local JSON encoder class to use. Set to ``None`` to use
+    #: the app's :class:`~flask.Flask.json_encoder`.
     json_encoder = None
-    #: Blueprint local JSON decoder class to use.
-    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    #: Blueprint local JSON decoder class to use. Set to ``None`` to use
+    #: the app's :class:`~flask.Flask.json_decoder`.
     json_decoder = None
-
-    # TODO remove the next three attrs when Sphinx :inherited-members: works
-    # https://github.com/sphinx-doc/sphinx/issues/741
-
-    #: The name of the package or module that this app belongs to. Do not
-    #: change this once it is set by the constructor.
-    import_name = None
-
-    #: Location of the template files to be added to the template lookup.
-    #: ``None`` if templates should not be added.
-    template_folder = None
-
-    #: Absolute path to the package on the filesystem. Used to look up
-    #: resources contained in the package.
-    root_path = None
 
     def __init__(
         self,

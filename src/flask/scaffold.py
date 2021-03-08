@@ -1,3 +1,4 @@
+import importlib.util
 import os
 import pkgutil
 import sys
@@ -41,26 +42,39 @@ def setupmethod(f):
 
 
 class Scaffold:
-    """A common base for :class:`~flask.app.Flask` and
+    """Common behavior shared between :class:`~flask.Flask` and
     :class:`~flask.blueprints.Blueprint`.
+
+    :param import_name: The import name of the module where this object
+        is defined. Usually :attr:`__name__` should be used.
+    :param static_folder: Path to a folder of static files to serve.
+        If this is set, a static route will be added.
+    :param static_url_path: URL prefix for the static route.
+    :param template_folder: Path to a folder containing template files.
+        for rendering. If this is set, a Jinja loader will be added.
+    :param root_path: The path that static, template, and resource files
+        are relative to. Typically not set, it is discovered based on
+        the ``import_name``.
+
+    .. versionadded:: 2.0.0
     """
 
     name: str
     _static_folder = None
     _static_url_path = None
 
-    #: Skeleton local JSON decoder class to use.
-    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
+    #: JSON encoder class used by :func:`flask.json.dumps`. If a
+    #: blueprint sets this, it will be used instead of the app's value.
     json_encoder = None
 
-    #: Skeleton local JSON decoder class to use.
-    #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
+    #: JSON decoder class used by :func:`flask.json.loads`. If a
+    #: blueprint sets this, it will be used instead of the app's value.
     json_decoder = None
 
     def __init__(
         self,
         import_name,
-        static_folder="static",
+        static_folder=None,
         static_url_path=None,
         template_folder=None,
         root_path=None,
@@ -90,79 +104,105 @@ class Scaffold:
         #: been registered.
         self.cli = AppGroup()
 
-        #: A dictionary of all view functions registered.  The keys will
-        #: be function names which are also used to generate URLs and
-        #: the values are the function objects themselves.
+        #: A dictionary mapping endpoint names to view functions.
+        #:
         #: To register a view function, use the :meth:`route` decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.view_functions = {}
 
-        #: A dictionary of all registered error handlers.  The key is ``None``
-        #: for error handlers active on the application, otherwise the key is
-        #: the name of the blueprint.  Each key points to another dictionary
-        #: where the key is the status code of the http exception.  The
-        #: special key ``None`` points to a list of tuples where the first item
-        #: is the class for the instance check and the second the error handler
-        #: function.
+        #: A data structure of registered error handlers, in the format
+        #: ``{scope: {code: {class: handler}}}```. The ``scope`` key is
+        #: the name of a blueprint the handlers are active for, or
+        #: ``None`` for all requests. The ``code`` key is the HTTP
+        #: status code for ``HTTPException``, or ``None`` for
+        #: other exceptions. The innermost dictionary maps exception
+        #: classes to handler functions.
         #:
         #: To register an error handler, use the :meth:`errorhandler`
         #: decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.error_handler_spec = defaultdict(lambda: defaultdict(dict))
 
-        #: A dictionary with lists of functions that will be called at the
-        #: beginning of each request. The key of the dictionary is the name of
-        #: the blueprint this function is active for, or ``None`` for all
-        #: requests. To register a function, use the :meth:`before_request`
+        #: A data structure of functions to call at the beginning of
+        #: each request, in the format ``{scope: [functions]}``. The
+        #: ``scope`` key is the name of a blueprint the functions are
+        #: active for, or ``None`` for all requests.
+        #:
+        #: To register a function, use the :meth:`before_request`
         #: decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.before_request_funcs = defaultdict(list)
 
-        #: A dictionary with lists of functions that should be called after
-        #: each request.  The key of the dictionary is the name of the blueprint
-        #: this function is active for, ``None`` for all requests.  This can for
-        #: example be used to close database connections. To register a function
-        #: here, use the :meth:`after_request` decorator.
+        #: A data structure of functions to call at the end of each
+        #: request, in the format ``{scope: [functions]}``. The
+        #: ``scope`` key is the name of a blueprint the functions are
+        #: active for, or ``None`` for all requests.
+        #:
+        #: To register a function, use the :meth:`after_request`
+        #: decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.after_request_funcs = defaultdict(list)
 
-        #: A dictionary with lists of functions that are called after
-        #: each request, even if an exception has occurred. The key of the
-        #: dictionary is the name of the blueprint this function is active for,
-        #: ``None`` for all requests. These functions are not allowed to modify
-        #: the request, and their return values are ignored. If an exception
-        #: occurred while processing the request, it gets passed to each
-        #: teardown_request function. To register a function here, use the
-        #: :meth:`teardown_request` decorator.
+        #: A data structure of functions to call at the end of each
+        #: request even if an exception is raised, in the format
+        #: ``{scope: [functions]}``. The ``scope`` key is the name of a
+        #: blueprint the functions are active for, or ``None`` for all
+        #: requests.
         #:
-        #: .. versionadded:: 0.7
+        #: To register a function, use the :meth:`teardown_request`
+        #: decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.teardown_request_funcs = defaultdict(list)
 
-        #: A dictionary with list of functions that are called without argument
-        #: to populate the template context.  The key of the dictionary is the
-        #: name of the blueprint this function is active for, ``None`` for all
-        #: requests.  Each returns a dictionary that the template context is
-        #: updated with.  To register a function here, use the
-        #: :meth:`context_processor` decorator.
+        #: A data structure of functions to call to pass extra context
+        #: values when rendering templates, in the format
+        #: ``{scope: [functions]}``. The ``scope`` key is the name of a
+        #: blueprint the functions are active for, or ``None`` for all
+        #: requests.
+        #:
+        #: To register a function, use the :meth:`context_processor`
+        #: decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.template_context_processors = defaultdict(
             list, {None: [_default_template_ctx_processor]}
         )
 
-        #: A dictionary with lists of functions that are called before the
-        #: :attr:`before_request_funcs` functions. The key of the dictionary is
-        #: the name of the blueprint this function is active for, or ``None``
-        #: for all requests. To register a function, use
-        #: :meth:`url_value_preprocessor`.
+        #: A data structure of functions to call to modify the keyword
+        #: arguments passed to the view function, in the format
+        #: ``{scope: [functions]}``. The ``scope`` key is the name of a
+        #: blueprint the functions are active for, or ``None`` for all
+        #: requests.
         #:
-        #: .. versionadded:: 0.7
+        #: To register a function, use the
+        #: :meth:`url_value_preprocessor` decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.url_value_preprocessors = defaultdict(list)
 
-        #: A dictionary with lists of functions that can be used as URL value
-        #: preprocessors.  The key ``None`` here is used for application wide
-        #: callbacks, otherwise the key is the name of the blueprint.
-        #: Each of these functions has the chance to modify the dictionary
-        #: of URL values before they are used as the keyword arguments of the
-        #: view function.  For each function registered this one should also
-        #: provide a :meth:`url_defaults` function that adds the parameters
-        #: automatically again that were removed that way.
+        #: A data structure of functions to call to modify the keyword
+        #: arguments when generating URLs, in the format
+        #: ``{scope: [functions]}``. The ``scope`` key is the name of a
+        #: blueprint the functions are active for, or ``None`` for all
+        #: requests.
         #:
-        #: .. versionadded:: 0.7
+        #: To register a function, use the :meth:`url_defaults`
+        #: decorator.
+        #:
+        #: This data structure is internal. It should not be modified
+        #: directly and its format may change at any time.
         self.url_default_functions = defaultdict(list)
 
     def __repr__(self):
@@ -328,19 +368,26 @@ class Scaffold:
         return self._method_route("PATCH", rule, options)
 
     def route(self, rule, **options):
-        """A decorator that is used to register a view function for a
-        given URL rule. This does the same thing as :meth:`add_url_rule`
-        but is used as a decorator. See :meth:`add_url_rule` and
-        :ref:`url-route-registrations` for more information.
+        """Decorate a view function to register it with the given URL
+        rule and options. Calls :meth:`add_url_rule`, which has more
+        details about the implementation.
 
         .. code-block:: python
 
             @app.route("/")
             def index():
-                return "Hello World"
+                return "Hello, World!"
 
-        :param rule: The URL rule as a string.
-        :param options: The options to be forwarded to the underlying
+        See :ref:`url-route-registrations`.
+
+        The endpoint name for the route defaults to the name of the view
+        function if the ``endpoint`` parameter isn't passed.
+
+        The ``methods`` parameter defaults to ``["GET"]``. ``HEAD`` and
+        ``OPTIONS`` are added automatically.
+
+        :param rule: The URL rule string.
+        :param options: Extra options passed to the
             :class:`~werkzeug.routing.Rule` object.
         """
 
@@ -360,17 +407,80 @@ class Scaffold:
         provide_automatic_options=None,
         **options,
     ):
+        """Register a rule for routing incoming requests and building
+        URLs. The :meth:`route` decorator is a shortcut to call this
+        with the ``view_func`` argument. These are equivalent:
+
+        .. code-block:: python
+
+            @app.route("/")
+            def index():
+                ...
+
+        .. code-block:: python
+
+            def index():
+                ...
+
+            app.add_url_rule("/", view_func=index)
+
+        See :ref:`url-route-registrations`.
+
+        The endpoint name for the route defaults to the name of the view
+        function if the ``endpoint`` parameter isn't passed. An error
+        will be raised if a function has already been registered for the
+        endpoint.
+
+        The ``methods`` parameter defaults to ``["GET"]``. ``HEAD`` is
+        always added automatically, and ``OPTIONS`` is added
+        automatically by default.
+
+        ``view_func`` does not necessarily need to be passed, but if the
+        rule should participate in routing an endpoint name must be
+        associated with a view function at some point with the
+        :meth:`endpoint` decorator.
+
+        .. code-block:: python
+
+            app.add_url_rule("/", endpoint="index")
+
+            @app.endpoint("index")
+            def index():
+                ...
+
+        If ``view_func`` has a ``required_methods`` attribute, those
+        methods are added to the passed and automatic methods. If it
+        has a ``provide_automatic_methods`` attribute, it is used as the
+        default if the parameter is not passed.
+
+        :param rule: The URL rule string.
+        :param endpoint: The endpoint name to associate with the rule
+            and view function. Used when routing and building URLs.
+            Defaults to ``view_func.__name__``.
+        :param view_func: The view function to associate with the
+            endpoint name.
+        :param provide_automatic_options: Add the ``OPTIONS`` method and
+            respond to ``OPTIONS`` requests automatically.
+        :param options: Extra options passed to the
+            :class:`~werkzeug.routing.Rule` object.
+        """
         raise NotImplementedError
 
     def endpoint(self, endpoint):
-        """A decorator to register a function as an endpoint.
-        Example::
+        """Decorate a view function to register it for the given
+        endpoint. Used if a rule is added without a ``view_func`` with
+        :meth:`add_url_rule`.
 
-            @app.endpoint('example.endpoint')
+        .. code-block:: python
+
+            app.add_url_rule("/ex", endpoint="example")
+
+            @app.endpoint("example")
             def example():
-                return "example"
+                ...
 
-        :param endpoint: the name of the endpoint
+        :param endpoint: The endpoint name to associate with the view
+            function.
         """
 
         def decorator(f):
@@ -381,28 +491,38 @@ class Scaffold:
 
     @setupmethod
     def before_request(self, f):
-        """Registers a function to run before each request.
+        """Register a function to run before each request.
 
-        For example, this can be used to open a database connection, or to load
-        the logged in user from the session.
+        For example, this can be used to open a database connection, or
+        to load the logged in user from the session.
 
-        The function will be called without any arguments. If it returns a
-        non-None value, the value is handled as if it was the return value from
-        the view, and further request handling is stopped.
+        .. code-block:: python
+
+            @app.before_request
+            def load_user():
+                if "user_id" in session:
+                    g.user = db.session.get(session["user_id"])
+
+        The function will be called without any arguments. If it returns
+        a non-``None`` value, the value is handled as if it was the
+        return value from the view, and further request handling is
+        stopped.
         """
         self.before_request_funcs[None].append(f)
         return f
 
     @setupmethod
     def after_request(self, f):
-        """Register a function to be run after each request.
+        """Register a function to run after each request to this object.
 
-        Your function must take one parameter, an instance of
-        :attr:`response_class` and return a new response object or the
-        same (see :meth:`process_response`).
+        The function is called with the response object, and must return
+        a response object. This allows the functions to modify or
+        replace the response before it is sent.
 
-        As of Flask 0.7 this function might not be executed at the end of the
-        request in case an unhandled exception occurred.
+        If a function raises an exception, any remaining
+        ``after_request`` functions will not be called. Therefore, this
+        should not be used for actions that must execute, such as to
+        close resources. Use :meth:`teardown_request` for that.
         """
         self.after_request_funcs[None].append(f)
         return f
@@ -426,8 +546,8 @@ class Scaffold:
         stack of active contexts.  This becomes relevant if you are using
         such constructs in tests.
 
-        Generally teardown functions must take every necessary step to avoid
-        that they will fail.  If they do execute code that might fail they
+        Teardown functions must avoid raising exceptions, since they . If they
+        execute code that might fail they
         will have to surround the execution of these code by try/except
         statements and log occurring errors.
 
