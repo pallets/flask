@@ -1,10 +1,17 @@
+import os
+import pkgutil
+import sys
 from collections import defaultdict
 from functools import update_wrapper
 
+from jinja2 import FileSystemLoader
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
-from .helpers import _PackageBoundObject
+from .cli import AppGroup
+from .globals import current_app
+from .helpers import locked_cached_property
+from .helpers import send_from_directory
 from .templating import _default_template_ctx_processor
 
 # a singleton sentinel value for parameter defaults
@@ -19,21 +26,28 @@ def setupmethod(f):
     def wrapper_func(self, *args, **kwargs):
         if self._is_setup_finished():
             raise AssertionError(
-                "A setup function was called after the "
-                "first request was handled.  This usually indicates a bug "
-                "in the application where a module was not imported "
-                "and decorators or other functionality was called too late.\n"
-                "To fix this make sure to import all your view modules, "
-                "database models and everything related at a central place "
-                "before the application starts serving requests."
+                "A setup function was called after the first request "
+                "was handled. This usually indicates a bug in the"
+                " application where a module was not imported and"
+                " decorators or other functionality was called too"
+                " late.\nTo fix this make sure to import all your view"
+                " modules, database models, and everything related at a"
+                " central place before the application starts serving"
+                " requests."
             )
         return f(self, *args, **kwargs)
 
     return update_wrapper(wrapper_func, f)
 
 
-class Scaffold(_PackageBoundObject):
-    """A common base for class Flask and class Blueprint."""
+class Scaffold:
+    """A common base for :class:`~flask.app.Flask` and
+    :class:`~flask.blueprints.Blueprint`.
+    """
+
+    name: str
+    _static_folder = None
+    _static_url_path = None
 
     #: Skeleton local JSON decoder class to use.
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_encoder`.
@@ -43,18 +57,6 @@ class Scaffold(_PackageBoundObject):
     #: Set to ``None`` to use the app's :class:`~flask.app.Flask.json_decoder`.
     json_decoder = None
 
-    #: The name of the package or module that this app belongs to. Do not
-    #: change this once it is set by the constructor.
-    import_name = None
-
-    #: Location of the template files to be added to the template lookup.
-    #: ``None`` if templates should not be added.
-    template_folder = None
-
-    #: Absolute path to the package on the filesystem. Used to look up
-    #: resources contained in the package.
-    root_path = None
-
     def __init__(
         self,
         import_name,
@@ -63,13 +65,30 @@ class Scaffold(_PackageBoundObject):
         template_folder=None,
         root_path=None,
     ):
-        super().__init__(
-            import_name=import_name,
-            template_folder=template_folder,
-            root_path=root_path,
-        )
+        #: The name of the package or module that this object belongs
+        #: to. Do not change this once it is set by the constructor.
+        self.import_name = import_name
+
         self.static_folder = static_folder
         self.static_url_path = static_url_path
+
+        #: The path to the templates folder, relative to
+        #: :attr:`root_path`, to add to the template loader. ``None`` if
+        #: templates should not be added.
+        self.template_folder = template_folder
+
+        if root_path is None:
+            root_path = get_root_path(self.import_name)
+
+        #: Absolute path to the package on the filesystem. Used to look
+        #: up resources contained in the package.
+        self.root_path = root_path
+
+        #: The Click command group for registering CLI commands for this
+        #: object. The commands are available from the ``flask`` command
+        #: once the application has been discovered and blueprints have
+        #: been registered.
+        self.cli = AppGroup()
 
         #: A dictionary of all view functions registered.  The keys will
         #: be function names which are also used to generate URLs and
@@ -146,8 +165,126 @@ class Scaffold(_PackageBoundObject):
         #: .. versionadded:: 0.7
         self.url_default_functions = defaultdict(list)
 
+    def __repr__(self):
+        return f"<{type(self).__name__} {self.name!r}>"
+
     def _is_setup_finished(self):
         raise NotImplementedError
+
+    @property
+    def static_folder(self):
+        """The absolute path to the configured static folder. ``None``
+        if no static folder is set.
+        """
+        if self._static_folder is not None:
+            return os.path.join(self.root_path, self._static_folder)
+
+    @static_folder.setter
+    def static_folder(self, value):
+        if value is not None:
+            value = os.fspath(value).rstrip(r"\/")
+
+        self._static_folder = value
+
+    @property
+    def has_static_folder(self):
+        """``True`` if :attr:`static_folder` is set.
+
+        .. versionadded:: 0.5
+        """
+        return self.static_folder is not None
+
+    @property
+    def static_url_path(self):
+        """The URL prefix that the static route will be accessible from.
+
+        If it was not configured during init, it is derived from
+        :attr:`static_folder`.
+        """
+        if self._static_url_path is not None:
+            return self._static_url_path
+
+        if self.static_folder is not None:
+            basename = os.path.basename(self.static_folder)
+            return f"/{basename}".rstrip("/")
+
+    @static_url_path.setter
+    def static_url_path(self, value):
+        if value is not None:
+            value = value.rstrip("/")
+
+        self._static_url_path = value
+
+    def get_send_file_max_age(self, filename):
+        """Used by :func:`send_file` to determine the ``max_age`` cache
+        value for a given file path if it wasn't passed.
+
+        By default, this returns :data:`SEND_FILE_MAX_AGE_DEFAULT` from
+        the configuration of :data:`~flask.current_app`. This defaults
+        to ``None``, which tells the browser to use conditional requests
+        instead of a timed cache, which is usually preferable.
+
+        .. versionchanged:: 2.0
+            The default configuration is ``None`` instead of 12 hours.
+
+        .. versionadded:: 0.9
+        """
+        value = current_app.send_file_max_age_default
+
+        if value is None:
+            return None
+
+        return int(value.total_seconds())
+
+    def send_static_file(self, filename):
+        """The view function used to serve files from
+        :attr:`static_folder`. A route is automatically registered for
+        this view at :attr:`static_url_path` if :attr:`static_folder` is
+        set.
+
+        .. versionadded:: 0.5
+        """
+        if not self.has_static_folder:
+            raise RuntimeError("'static_folder' must be set to serve static_files.")
+
+        # send_file only knows to call get_send_file_max_age on the app,
+        # call it here so it works for blueprints too.
+        max_age = self.get_send_file_max_age(filename)
+        return send_from_directory(self.static_folder, filename, max_age=max_age)
+
+    @locked_cached_property
+    def jinja_loader(self):
+        """The Jinja loader for this object's templates. By default this
+        is a class :class:`jinja2.loaders.FileSystemLoader` to
+        :attr:`template_folder` if it is set.
+
+        .. versionadded:: 0.5
+        """
+        if self.template_folder is not None:
+            return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
+
+    def open_resource(self, resource, mode="rb"):
+        """Open a resource file relative to :attr:`root_path` for
+        reading.
+
+        For example, if the file ``schema.sql`` is next to the file
+        ``app.py`` where the ``Flask`` app is defined, it can be opened
+        with:
+
+        .. code-block:: python
+
+            with app.open_resource("schema.sql") as f:
+                conn.executescript(f.read())
+
+        :param resource: Path to the resource relative to
+            :attr:`root_path`.
+        :param mode: Open the file in this mode. Only reading is
+            supported, valid values are "r" (or "rt") and "rb".
+        """
+        if mode not in {"r", "rt", "rb"}:
+            raise ValueError("Resources can only be opened for reading.")
+
+        return open(os.path.join(self.root_path, resource), mode)
 
     def _method_route(self, method, rule, options):
         if "methods" in options:
@@ -192,27 +329,19 @@ class Scaffold(_PackageBoundObject):
 
     def route(self, rule, **options):
         """A decorator that is used to register a view function for a
-        given URL rule.  This does the same thing as :meth:`add_url_rule`
-        but is intended for decorator usage::
+        given URL rule. This does the same thing as :meth:`add_url_rule`
+        but is used as a decorator. See :meth:`add_url_rule` and
+        :ref:`url-route-registrations` for more information.
 
-            @app.route('/')
+        .. code-block:: python
+
+            @app.route("/")
             def index():
-                return 'Hello World'
+                return "Hello World"
 
-        For more information refer to :ref:`url-route-registrations`.
-
-        :param rule: the URL rule as string
-        :param endpoint: the endpoint for the registered URL rule.  Flask
-                         itself assumes the name of the view function as
-                         endpoint
-        :param options: the options to be forwarded to the underlying
-                        :class:`~werkzeug.routing.Rule` object.  A change
-                        to Werkzeug is handling of method options.  methods
-                        is a list of methods this rule should be limited
-                        to (``GET``, ``POST`` etc.).  By default a rule
-                        just listens for ``GET`` (and implicitly ``HEAD``).
-                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
-                        added and handled by the standard request handling.
+        :param rule: The URL rule as a string.
+        :param options: The options to be forwarded to the underlying
+            :class:`~werkzeug.routing.Rule` object.
         """
 
         def decorator(f):
@@ -451,3 +580,171 @@ def _endpoint_from_view_func(view_func):
     """
     assert view_func is not None, "expected view func if endpoint is not provided."
     return view_func.__name__
+
+
+def get_root_path(import_name):
+    """Find the root path of a package, or the path that contains a
+    module. If it cannot be found, returns the current working
+    directory.
+
+    Not to be confused with the value returned by :func:`find_package`.
+
+    :meta private:
+    """
+    # Module already imported and has a file attribute. Use that first.
+    mod = sys.modules.get(import_name)
+
+    if mod is not None and hasattr(mod, "__file__"):
+        return os.path.dirname(os.path.abspath(mod.__file__))
+
+    # Next attempt: check the loader.
+    loader = pkgutil.get_loader(import_name)
+
+    # Loader does not exist or we're referring to an unloaded main
+    # module or a main module without path (interactive sessions), go
+    # with the current working directory.
+    if loader is None or import_name == "__main__":
+        return os.getcwd()
+
+    if hasattr(loader, "get_filename"):
+        filepath = loader.get_filename(import_name)
+    else:
+        # Fall back to imports.
+        __import__(import_name)
+        mod = sys.modules[import_name]
+        filepath = getattr(mod, "__file__", None)
+
+        # If we don't have a file path it might be because it is a
+        # namespace package. In this case pick the root path from the
+        # first module that is contained in the package.
+        if filepath is None:
+            raise RuntimeError(
+                "No root path can be found for the provided module"
+                f" {import_name!r}. This can happen because the module"
+                " came from an import hook that does not provide file"
+                " name information or because it's a namespace package."
+                " In this case the root path needs to be explicitly"
+                " provided."
+            )
+
+    # filepath is import_name.py for a module, or __init__.py for a package.
+    return os.path.dirname(os.path.abspath(filepath))
+
+
+def _matching_loader_thinks_module_is_package(loader, mod_name):
+    """Attempt to figure out if the given name is a package or a module.
+
+    :param: loader: The loader that handled the name.
+    :param mod_name: The name of the package or module.
+    """
+    # Use loader.is_package if it's available.
+    if hasattr(loader, "is_package"):
+        return loader.is_package(mod_name)
+
+    cls = type(loader)
+
+    # NamespaceLoader doesn't implement is_package, but all names it
+    # loads must be packages.
+    if cls.__module__ == "_frozen_importlib" and cls.__name__ == "NamespaceLoader":
+        return True
+
+    # Otherwise we need to fail with an error that explains what went
+    # wrong.
+    raise AttributeError(
+        f"'{cls.__name__}.is_package()' must be implemented for PEP 302"
+        f" import hooks."
+    )
+
+
+def _find_package_path(root_mod_name):
+    """Find the path that contains the package or module."""
+    try:
+        spec = importlib.util.find_spec(root_mod_name)
+
+        if spec is None:
+            raise ValueError("not found")
+    # ImportError: the machinery told us it does not exist
+    # ValueError:
+    #    - the module name was invalid
+    #    - the module name is __main__
+    #    - *we* raised `ValueError` due to `spec` being `None`
+    except (ImportError, ValueError):
+        pass  # handled below
+    else:
+        # namespace package
+        if spec.origin in {"namespace", None}:
+            return os.path.dirname(next(iter(spec.submodule_search_locations)))
+        # a package (with __init__.py)
+        elif spec.submodule_search_locations:
+            return os.path.dirname(os.path.dirname(spec.origin))
+        # just a normal module
+        else:
+            return os.path.dirname(spec.origin)
+
+    # we were unable to find the `package_path` using PEP 451 loaders
+    loader = pkgutil.get_loader(root_mod_name)
+
+    if loader is None or root_mod_name == "__main__":
+        # import name is not found, or interactive/main module
+        return os.getcwd()
+
+    if hasattr(loader, "get_filename"):
+        filename = loader.get_filename(root_mod_name)
+    elif hasattr(loader, "archive"):
+        # zipimporter's loader.archive points to the .egg or .zip file.
+        filename = loader.archive
+    else:
+        # At least one loader is missing both get_filename and archive:
+        # Google App Engine's HardenedModulesHook, use __file__.
+        filename = importlib.import_module(root_mod_name).__file__
+
+    package_path = os.path.abspath(os.path.dirname(filename))
+
+    # If the imported name is a package, filename is currently pointing
+    # to the root of the package, need to get the current directory.
+    if _matching_loader_thinks_module_is_package(loader, root_mod_name):
+        package_path = os.path.dirname(package_path)
+
+    return package_path
+
+
+def find_package(import_name):
+    """Find the prefix that a package is installed under, and the path
+    that it would be imported from.
+
+    The prefix is the directory containing the standard directory
+    hierarchy (lib, bin, etc.). If the package is not installed to the
+    system (:attr:`sys.prefix`) or a virtualenv (``site-packages``),
+    ``None`` is returned.
+
+    The path is the entry in :attr:`sys.path` that contains the package
+    for import. If the package is not installed, it's assumed that the
+    package was imported from the current working directory.
+    """
+    root_mod_name, _, _ = import_name.partition(".")
+    package_path = _find_package_path(root_mod_name)
+    py_prefix = os.path.abspath(sys.prefix)
+
+    # installed to the system
+    if package_path.startswith(py_prefix):
+        return py_prefix, package_path
+
+    site_parent, site_folder = os.path.split(package_path)
+
+    # installed to a virtualenv
+    if site_folder.lower() == "site-packages":
+        parent, folder = os.path.split(site_parent)
+
+        # Windows (prefix/lib/site-packages)
+        if folder.lower() == "lib":
+            return parent, package_path
+
+        # Unix (prefix/lib/pythonX.Y/site-packages)
+        if os.path.basename(parent).lower() == "lib":
+            return os.path.dirname(parent), package_path
+
+        # something else (prefix/site-packages)
+        return site_parent, package_path
+
+    # not installed
+    return None, package_path
