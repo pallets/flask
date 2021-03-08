@@ -146,6 +146,47 @@ class Scaffold(_PackageBoundObject):
     def _is_setup_finished(self):
         raise NotImplementedError
 
+    def _method_route(self, method, rule, options):
+        if "methods" in options:
+            raise TypeError("Use the 'route' decorator to use the 'methods' argument.")
+
+        return self.route(rule, methods=[method], **options)
+
+    def get(self, rule, **options):
+        """Shortcut for :meth:`route` with ``methods=["GET"]``.
+
+        .. versionadded:: 2.0
+        """
+        return self._method_route("GET", rule, options)
+
+    def post(self, rule, **options):
+        """Shortcut for :meth:`route` with ``methods=["POST"]``.
+
+        .. versionadded:: 2.0
+        """
+        return self._method_route("POST", rule, options)
+
+    def put(self, rule, **options):
+        """Shortcut for :meth:`route` with ``methods=["PUT"]``.
+
+        .. versionadded:: 2.0
+        """
+        return self._method_route("PUT", rule, options)
+
+    def delete(self, rule, **options):
+        """Shortcut for :meth:`route` with ``methods=["DELETE"]``.
+
+        .. versionadded:: 2.0
+        """
+        return self._method_route("DELETE", rule, options)
+
+    def patch(self, rule, **options):
+        """Shortcut for :meth:`route` with ``methods=["PATCH"]``.
+
+        .. versionadded:: 2.0
+        """
+        return self._method_route("PATCH", rule, options)
+
     def route(self, rule, **options):
         """A decorator that is used to register a view function for a
         given URL rule.  This does the same thing as :meth:`add_url_rule`
