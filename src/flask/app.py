@@ -29,7 +29,6 @@ from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
 from .globals import session
-from .helpers import find_package
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_flashed_messages
@@ -40,6 +39,7 @@ from .json import jsonify
 from .logging import create_logger
 from .scaffold import _endpoint_from_view_func
 from .scaffold import _sentinel
+from .scaffold import find_package
 from .scaffold import Scaffold
 from .scaffold import setupmethod
 from .sessions import SecureCookieSessionInterface
@@ -2026,6 +2026,3 @@ class Flask(Scaffold):
         WSGI application. This calls :meth:`wsgi_app` which can be
         wrapped to applying middleware."""
         return self.wsgi_app(environ, start_response)
-
-    def __repr__(self):
-        return f"<{type(self).__name__} {self.name!r}>"
