@@ -64,6 +64,9 @@ Unreleased
     This could allow a session interface to change behavior based on
     ``request.endpoint``. :issue:`3776`
 -   Use Jinja's implementation of the ``|tojson`` filter. :issue:`3881`
+-   Add route decorators for common HTTP methods. For example,
+    ``@app.post("/login")`` is a shortcut for
+    ``@app.route("/login", methods=["POST"])``. :pr:`3907`
 
 
 Version 1.1.2
