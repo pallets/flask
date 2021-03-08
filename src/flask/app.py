@@ -430,13 +430,13 @@ class Flask(Scaffold):
         #: .. versionadded:: 0.11
         self.shell_context_processors = []
 
-        #: all the attached blueprints in a dictionary by name.  Blueprints
-        #: can be attached multiple times so this dictionary does not tell
-        #: you how often they got attached.
+        #: Maps registered blueprint names to blueprint objects. The
+        #: dict retains the order the blueprints were registered in.
+        #: Blueprints can be registered multiple times, this dict does
+        #: not track how often they were attached.
         #:
         #: .. versionadded:: 0.7
         self.blueprints = {}
-        self._blueprint_order = []
 
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
@@ -997,7 +997,6 @@ class Flask(Scaffold):
             )
         else:
             self.blueprints[blueprint.name] = blueprint
-            self._blueprint_order.append(blueprint)
             first_registration = True
 
         blueprint.register(self, options, first_registration)
@@ -1007,7 +1006,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.11
         """
-        return iter(self._blueprint_order)
+        return self.blueprints.values()
 
     @setupmethod
     def add_url_rule(
@@ -1292,7 +1291,7 @@ class Flask(Scaffold):
             (request.blueprint, None),
             (None, None),
         ):
-            handler_map = self.error_handler_spec.setdefault(name, {}).get(c)
+            handler_map = self.error_handler_spec[name][c]
 
             if not handler_map:
                 continue
@@ -1753,10 +1752,10 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        funcs = self.url_default_functions.get(None, ())
+        funcs = self.url_default_functions[None]
         if "." in endpoint:
             bp = endpoint.rsplit(".", 1)[0]
-            funcs = chain(funcs, self.url_default_functions.get(bp, ()))
+            funcs = chain(funcs, self.url_default_functions[bp])
         for func in funcs:
             func(endpoint, values)
 
@@ -1794,13 +1793,13 @@ class Flask(Scaffold):
 
         bp = _request_ctx_stack.top.request.blueprint
 
-        funcs = self.url_value_preprocessors.get(None, ())
+        funcs = self.url_value_preprocessors[None]
         if bp is not None and bp in self.url_value_preprocessors:
             funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
-        funcs = self.before_request_funcs.get(None, ())
+        funcs = self.before_request_funcs[None]
         if bp is not None and bp in self.before_request_funcs:
             funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
@@ -1857,7 +1856,7 @@ class Flask(Scaffold):
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
-        funcs = reversed(self.teardown_request_funcs.get(None, ()))
+        funcs = reversed(self.teardown_request_funcs[None])
         bp = _request_ctx_stack.top.request.blueprint
         if bp is not None and bp in self.teardown_request_funcs:
             funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
