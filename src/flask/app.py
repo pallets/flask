@@ -1350,12 +1350,6 @@ class Flask(Scaffold):
         always receive the ``InternalServerError``. The original
         unhandled exception is available as ``e.original_exception``.
 
-        .. note::
-            Prior to Werkzeug 1.0.0, ``InternalServerError`` will not
-            always have an ``original_exception`` attribute. Use
-            ``getattr(e, "original_exception", None)`` to simulate the
-            behavior for compatibility.
-
         .. versionchanged:: 1.1.0
             Always passes the ``InternalServerError`` instance to the
             handler, setting ``original_exception`` to the unhandled
