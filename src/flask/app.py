@@ -29,7 +29,6 @@ from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
 from .globals import session
-from .helpers import find_package
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_flashed_messages
@@ -40,6 +39,7 @@ from .json import jsonify
 from .logging import create_logger
 from .scaffold import _endpoint_from_view_func
 from .scaffold import _sentinel
+from .scaffold import find_package
 from .scaffold import Scaffold
 from .scaffold import setupmethod
 from .sessions import SecureCookieSessionInterface
@@ -345,21 +345,6 @@ class Flask(Scaffold):
     #:
     #: .. versionadded:: 0.8
     session_interface = SecureCookieSessionInterface()
-
-    # TODO remove the next three attrs when Sphinx :inherited-members: works
-    # https://github.com/sphinx-doc/sphinx/issues/741
-
-    #: The name of the package or module that this app belongs to. Do not
-    #: change this once it is set by the constructor.
-    import_name = None
-
-    #: Location of the template files to be added to the template lookup.
-    #: ``None`` if templates should not be added.
-    template_folder = None
-
-    #: Absolute path to the package on the filesystem. Used to look up
-    #: resources contained in the package.
-    root_path = None
 
     def __init__(
         self,
@@ -1017,58 +1002,6 @@ class Flask(Scaffold):
         provide_automatic_options=None,
         **options,
     ):
-        """Connects a URL rule.  Works exactly like the :meth:`route`
-        decorator.  If a view_func is provided it will be registered with the
-        endpoint.
-
-        Basically this example::
-
-            @app.route('/')
-            def index():
-                pass
-
-        Is equivalent to the following::
-
-            def index():
-                pass
-            app.add_url_rule('/', 'index', index)
-
-        If the view_func is not provided you will need to connect the endpoint
-        to a view function like so::
-
-            app.view_functions['index'] = index
-
-        Internally :meth:`route` invokes :meth:`add_url_rule` so if you want
-        to customize the behavior via subclassing you only need to change
-        this method.
-
-        For more information refer to :ref:`url-route-registrations`.
-
-        .. versionchanged:: 0.2
-           `view_func` parameter added.
-
-        .. versionchanged:: 0.6
-           ``OPTIONS`` is added automatically as method.
-
-        :param rule: the URL rule as string
-        :param endpoint: the endpoint for the registered URL rule.  Flask
-                         itself assumes the name of the view function as
-                         endpoint
-        :param view_func: the function to call when serving a request to the
-                          provided endpoint
-        :param provide_automatic_options: controls whether the ``OPTIONS``
-            method should be added automatically. This can also be controlled
-            by setting the ``view_func.provide_automatic_options = False``
-            before adding the rule.
-        :param options: the options to be forwarded to the underlying
-                        :class:`~werkzeug.routing.Rule` object.  A change
-                        to Werkzeug is handling of method options.  methods
-                        is a list of methods this rule should be limited
-                        to (``GET``, ``POST`` etc.).  By default a rule
-                        just listens for ``GET`` (and implicitly ``HEAD``).
-                        Starting with Flask 0.6, ``OPTIONS`` is implicitly
-                        added and handled by the standard request handling.
-        """
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)
         options["endpoint"] = endpoint
@@ -1416,12 +1349,6 @@ class Flask(Scaffold):
         ``500``, it will be used. For consistency, the handler will
         always receive the ``InternalServerError``. The original
         unhandled exception is available as ``e.original_exception``.
-
-        .. note::
-            Prior to Werkzeug 1.0.0, ``InternalServerError`` will not
-            always have an ``original_exception`` attribute. Use
-            ``getattr(e, "original_exception", None)`` to simulate the
-            behavior for compatibility.
 
         .. versionchanged:: 1.1.0
             Always passes the ``InternalServerError`` instance to the
@@ -2023,9 +1950,7 @@ class Flask(Scaffold):
 
     def __call__(self, environ, start_response):
         """The WSGI server calls the Flask application object as the
-        WSGI application. This calls :meth:`wsgi_app` which can be
-        wrapped to applying middleware."""
+        WSGI application. This calls :meth:`wsgi_app`, which can be
+        wrapped to apply middleware.
+        """
         return self.wsgi_app(environ, start_response)
-
-    def __repr__(self):
-        return f"<{type(self).__name__} {self.name!r}>"
