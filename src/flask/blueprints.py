@@ -90,13 +90,6 @@ class Blueprint(Scaffold):
 
     See :doc:`/blueprints` for more information.
 
-    .. versionchanged:: 1.1.0
-        Blueprints have a ``cli`` group to register nested CLI commands.
-        The ``cli_group`` parameter controls the name of the group under
-        the ``flask`` command.
-
-    .. versionadded:: 0.7
-
     :param name: The name of the blueprint. Will be prepended to each
         endpoint name.
     :param import_name: The name of the blueprint package, usually
@@ -121,10 +114,17 @@ class Blueprint(Scaffold):
         default.
     :param url_defaults: A dict of default values that blueprint routes
         will receive by default.
-    :param root_path: By default, the blueprint will automatically set this
-        based on ``import_name``. In certain situations this automatic
-        detection can fail, so the path can be specified manually
-        instead.
+    :param root_path: By default, the blueprint will automatically set
+        this based on ``import_name``. In certain situations this
+        automatic detection can fail, so the path can be specified
+        manually instead.
+
+    .. versionchanged:: 1.1.0
+        Blueprints have a ``cli`` group to register nested CLI commands.
+        The ``cli_group`` parameter controls the name of the group under
+        the ``flask`` command.
+
+    .. versionadded:: 0.7
     """
 
     warn_on_modifications = False
@@ -161,8 +161,10 @@ class Blueprint(Scaffold):
         self.url_prefix = url_prefix
         self.subdomain = subdomain
         self.deferred_functions = []
+
         if url_defaults is None:
             url_defaults = {}
+
         self.url_values_defaults = url_defaults
         self.cli_group = cli_group
 
@@ -180,9 +182,9 @@ class Blueprint(Scaffold):
 
             warn(
                 Warning(
-                    "The blueprint was already registered once "
-                    "but is getting modified now.  These changes "
-                    "will not show up."
+                    "The blueprint was already registered once but is"
+                    " getting modified now. These changes will not show"
+                    " up."
                 )
             )
         self.deferred_functions.append(func)
@@ -208,12 +210,13 @@ class Blueprint(Scaffold):
         return BlueprintSetupState(self, app, options, first_registration)
 
     def register(self, app, options, first_registration=False):
-        """Called by :meth:`Flask.register_blueprint` to register all views
-        and callbacks registered on the blueprint with the application. Creates
-        a :class:`.BlueprintSetupState` and calls each :meth:`record` callback
-        with it.
+        """Called by :meth:`Flask.register_blueprint` to register all
+        views and callbacks registered on the blueprint with the
+        application. Creates a :class:`.BlueprintSetupState` and calls
+        each :meth:`record` callbackwith it.
 
-        :param app: The application this blueprint is being registered with.
+        :param app: The application this blueprint is being registered
+            with.
         :param options: Keyword arguments forwarded from
             :meth:`~Flask.register_blueprint`.
         :param first_registration: Whether this is the first time this
@@ -229,43 +232,35 @@ class Blueprint(Scaffold):
                 endpoint="static",
             )
 
-        # Merge app and self dictionaries.
-        def merge_dict_lists(self_dict, app_dict):
-            """Merges self_dict into app_dict. Replaces None keys with self.name.
-            Values of dict must be lists.
-            """
-            for key, values in self_dict.items():
-                key = self.name if key is None else f"{self.name}.{key}"
-                app_dict[key].extend(values)
+        # Merge blueprint data into parent.
+        if first_registration:
 
-        def merge_dict_nested(self_dict, app_dict):
-            """Merges self_dict into app_dict. Replaces None keys with self.name.
-            Values of dict must be dict.
-            """
-            for key, value in self_dict.items():
-                key = self.name if key is None else f"{self.name}.{key}"
-                app_dict[key] = value
+            def extend(bp_dict, parent_dict):
+                for key, values in bp_dict.items():
+                    key = self.name if key is None else f"{self.name}.{key}"
+                    parent_dict[key].extend(values)
 
-        app.view_functions.update(self.view_functions)
+            def update(bp_dict, parent_dict):
+                for key, value in bp_dict.items():
+                    key = self.name if key is None else f"{self.name}.{key}"
+                    parent_dict[key] = value
 
-        merge_dict_lists(self.before_request_funcs, app.before_request_funcs)
-        merge_dict_lists(self.after_request_funcs, app.after_request_funcs)
-        merge_dict_lists(self.teardown_request_funcs, app.teardown_request_funcs)
-        merge_dict_lists(self.url_default_functions, app.url_default_functions)
-        merge_dict_lists(self.url_value_preprocessors, app.url_value_preprocessors)
-        merge_dict_lists(
-            self.template_context_processors, app.template_context_processors
-        )
-
-        merge_dict_nested(self.error_handler_spec, app.error_handler_spec)
+            app.view_functions.update(self.view_functions)
+            extend(self.before_request_funcs, app.before_request_funcs)
+            extend(self.after_request_funcs, app.after_request_funcs)
+            extend(self.teardown_request_funcs, app.teardown_request_funcs)
+            extend(self.url_default_functions, app.url_default_functions)
+            extend(self.url_value_preprocessors, app.url_value_preprocessors)
+            extend(self.template_context_processors, app.template_context_processors)
+            update(self.error_handler_spec, app.error_handler_spec)
 
         for deferred in self.deferred_functions:
             deferred(state)
 
-        cli_resolved_group = options.get("cli_group", self.cli_group)
-
         if not self.cli.commands:
             return
+
+        cli_resolved_group = options.get("cli_group", self.cli_group)
 
         if cli_resolved_group is None:
             app.cli.commands.update(self.cli.commands)
