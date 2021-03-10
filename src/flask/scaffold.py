@@ -630,7 +630,7 @@ class Scaffold:
         """
 
         def decorator(f):
-            self._register_error_handler(None, code_or_exception, f)
+            self.register_error_handler(code_or_exception, f)
             return f
 
         return decorator
@@ -642,15 +642,6 @@ class Scaffold:
         usage.
 
         .. versionadded:: 0.7
-        """
-        self._register_error_handler(None, code_or_exception, f)
-
-    @setupmethod
-    def _register_error_handler(self, key, code_or_exception, f):
-        """
-        :type key: None|str
-        :type code_or_exception: int|T<=Exception
-        :type f: callable
         """
         if isinstance(code_or_exception, HTTPException):  # old broken behavior
             raise ValueError(
@@ -668,7 +659,7 @@ class Scaffold:
                 " instead."
             )
 
-        self.error_handler_spec[key][code][exc_class] = f
+        self.error_handler_spec[None][code][exc_class] = f
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
