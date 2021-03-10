@@ -619,6 +619,9 @@ def load_dotenv(path=None):
         Returns ``False`` when python-dotenv is not installed, or when
         the given path isn't a file.
 
+    .. versionchanged:: 2.0
+        When loading the env files, set the default encoding to UTF-8.
+
     .. versionadded:: 1.0
     """
     if dotenv is None:
@@ -636,7 +639,7 @@ def load_dotenv(path=None):
     # else False
     if path is not None:
         if os.path.isfile(path):
-            return dotenv.load_dotenv(path)
+            return dotenv.load_dotenv(path, encoding="utf-8")
 
         return False
 
@@ -651,7 +654,7 @@ def load_dotenv(path=None):
         if new_dir is None:
             new_dir = os.path.dirname(path)
 
-        dotenv.load_dotenv(path)
+        dotenv.load_dotenv(path, encoding="utf-8")
 
     return new_dir is not None  # at least one file was located and loaded
 

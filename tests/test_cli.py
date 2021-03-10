@@ -505,7 +505,7 @@ need_dotenv = pytest.mark.skipif(dotenv is None, reason="dotenv is not installed
 @need_dotenv
 def test_load_dotenv(monkeypatch):
     # can't use monkeypatch.delitem since the keys don't exist yet
-    for item in ("FOO", "BAR", "SPAM"):
+    for item in ("FOO", "BAR", "SPAM", "HAM"):
         monkeypatch._setitem.append((os.environ, item, notset))
 
     monkeypatch.setenv("EGGS", "3")
@@ -520,7 +520,8 @@ def test_load_dotenv(monkeypatch):
     assert os.environ["SPAM"] == "1"
     # set manually, files don't overwrite
     assert os.environ["EGGS"] == "3"
-
+    # test env file encoding
+    assert os.environ["HAM"] == "火腿"
     # Non existent file should not load
     assert not load_dotenv("non-existent-file")
 
