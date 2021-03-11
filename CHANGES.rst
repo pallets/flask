@@ -5,6 +5,7 @@ Version 2.0.0
 
 Unreleased
 
+-   Export package names with __all__. :pr:`3935`
 -   Drop support for Python 2 and 3.5.
 -   JSON support no longer uses simplejson. To use another JSON module,
     override ``app.json_encoder`` and ``json_decoder``. :issue:`3555`
