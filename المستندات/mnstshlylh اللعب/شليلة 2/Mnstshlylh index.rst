@@ -1,3 +1,4 @@
+.. rst-class::mnstshlylh-play
 .. rst-class:: hide-header
 
 .. rst-class:: hide-header
