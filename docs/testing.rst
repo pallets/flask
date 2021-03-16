@@ -96,7 +96,7 @@ Even though it did not run any actual tests, we already know that our
 would have died with an exception.
 
 .. _pytest fixture:
-   https://docs.pytest.org/en/latest/fixture.html
+   https://docs.pytest.org/en/latest/reference/reference.html#pytest.fixture
 
 The First Test
 --------------
