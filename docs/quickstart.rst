@@ -876,7 +876,7 @@ Hooking in WSGI Middleware
 
 To add WSGI middleware to your Flask application, wrap the application's
 ``wsgi_app`` attribute. For example, to apply Werkzeug's
-:class:`~werkzeug.middlware.proxy_fix.ProxyFix` middleware for running
+:class:`~werkzeug.middleware.proxy_fix.ProxyFix` middleware for running
 behind Nginx:
 
 .. code-block:: python
