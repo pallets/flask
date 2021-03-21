@@ -868,6 +868,8 @@ def shell_command():
     without having to manually configure the application.
     """
     import code
+    import readline
+    import rlcompleter
     from .globals import _app_ctx_stack
 
     app = _app_ctx_stack.top.app
@@ -877,6 +879,9 @@ def shell_command():
         f"Instance: {app.instance_path}"
     )
     ctx = {}
+    # Support the autocompletion in shell command
+    readline.set_completer(rlcompleter.Completer(ctx).complete)
+    readline.parse_and_bind("tab: complete")
 
     # Support the regular Python interpreter startup script if someone
     # is using it.
@@ -887,7 +892,8 @@ def shell_command():
 
     ctx.update(app.make_shell_context())
 
-    code.interact(banner=banner, local=ctx)
+    # code.interact(banner=banner, local=ctx)
+    code.InteractiveConsole(ctx).interact(banner=banner)
 
 
 @click.command("routes", short_help="Show the routes for the app.")
