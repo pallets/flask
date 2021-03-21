@@ -67,6 +67,7 @@ Unreleased
 -   Add route decorators for common HTTP methods. For example,
     ``@app.post("/login")`` is a shortcut for
     ``@app.route("/login", methods=["POST"])``. :pr:`3907`
+-   Add autocompletion to shell command.
 
 
 Version 1.1.2
