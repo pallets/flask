@@ -755,6 +755,7 @@ def run_async(func):
         ctx module, except it has an async inner.
         """
         ctx = None
+
         if _request_ctx_stack.top is not None:
             ctx = _request_ctx_stack.top.copy()
 

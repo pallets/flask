@@ -4,7 +4,6 @@ import pkgutil
 import sys
 from collections import defaultdict
 from functools import update_wrapper
-from inspect import iscoroutinefunction
 
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import default_exceptions
@@ -13,7 +12,6 @@ from werkzeug.exceptions import HTTPException
 from .cli import AppGroup
 from .globals import current_app
 from .helpers import locked_cached_property
-from .helpers import run_async
 from .helpers import send_from_directory
 from .templating import _default_template_ctx_processor
 
@@ -687,17 +685,7 @@ class Scaffold:
             return exc_class, None
 
     def ensure_sync(self, func):
-        """Ensure that the returned function is sync and calls the async func.
-
-        .. versionadded:: 2.0
-
-        Override if you wish to change how asynchronous functions are
-        run.
-        """
-        if iscoroutinefunction(func):
-            return run_async(func)
-        else:
-            return func
+        raise NotImplementedError()
 
 
 def _endpoint_from_view_func(view_func):

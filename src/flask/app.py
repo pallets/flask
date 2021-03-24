@@ -2,6 +2,7 @@ import os
 import sys
 import weakref
 from datetime import timedelta
+from inspect import iscoroutinefunction
 from itertools import chain
 from threading import Lock
 
@@ -34,6 +35,7 @@ from .helpers import get_env
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import locked_cached_property
+from .helpers import run_async
 from .helpers import url_for
 from .json import jsonify
 from .logging import create_logger
@@ -1516,6 +1518,19 @@ class Flask(Scaffold):
         .. versionadded:: 0.10
         """
         return False
+
+    def ensure_sync(self, func):
+        """Ensure that the returned function is sync and calls the async func.
+
+        .. versionadded:: 2.0
+
+        Override if you wish to change how asynchronous functions are
+        run.
+        """
+        if iscoroutinefunction(func):
+            return run_async(func)
+
+        return func
 
     def make_response(self, rv):
         """Convert the return value from a view function to an instance of
