@@ -253,6 +253,27 @@ def test_session(app, client):
     assert client.get("/get").data == b"42"
 
 
+def test_session_callable_secret():
+    def dynamic_secret_key():
+        from flask import request
+
+        return request.host
+
+    app = flask.Flask(__name__)
+    app.config.from_mapping({"SECRET_KEY": dynamic_secret_key})
+    client = app.test_client()
+
+    @app.route("/")
+    def index():
+        flask.session["testing"] = 42
+        return "Hello World"
+
+    with app.test_request_context():
+        assert app.secret_key == "localhost"
+
+    assert client.get("/").data == b"Hello World"
+
+
 def test_session_using_server_name(app, client):
     app.config.update(SERVER_NAME="example.com")
 

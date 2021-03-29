@@ -61,6 +61,10 @@ def _make_timedelta(value):
     return timedelta(seconds=value)
 
 
+def _call_if_callable(value):
+    return value if not callable(value) else value()
+
+
 class Flask(Scaffold):
     """The flask object implements a WSGI application and acts as the central
     object.  It is passed the name of the module or package of the
@@ -216,7 +220,7 @@ class Flask(Scaffold):
     #:
     #: This attribute can also be configured from the config with the
     #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
-    secret_key = ConfigAttribute("SECRET_KEY")
+    secret_key = ConfigAttribute("SECRET_KEY", get_converter=_call_if_callable)
 
     #: The secure cookie uses this for the name of the session cookie.
     #:
