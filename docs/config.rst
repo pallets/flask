@@ -177,8 +177,9 @@ The following configuration values are used internally by Flask:
 
     A secret key that will be used for securely signing the session cookie
     and can be used for any other security related needs by extensions or your
-    application. It should be a long random ``bytes`` or ``str``. For
-    example, copy the output of this to your config::
+    application. It should be a long random ``bytes`` or ``str`` or a callable
+    that returns the previous types. For example,
+    copy the output of this to your config::
 
         $ python -c 'import os; print(os.urandom(16))'
         b'_5#y2L"F4Q8z\n\xec]/'
