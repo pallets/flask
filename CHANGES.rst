@@ -5,7 +5,7 @@ Version 2.0.0
 
 Unreleased
 
--   Superset `SECRET_KEY` has a callable
+-   Support `SECRET_KEY` has a callable
 -   Drop support for Python 2 and 3.5.
 -   JSON support no longer uses simplejson. To use another JSON module,
     override ``app.json_encoder`` and ``json_decoder``. :issue:`3555`
