@@ -73,7 +73,7 @@ Links
 -----
 
 -   Documentation: https://flask.palletsprojects.com/
--   Changes: https://flask.palletsprojects.com/changes/
+-   Changes: https://flask.palletsprojects.com/changelog/
 -   PyPI Releases: https://pypi.org/project/Flask/
 -   Source Code: https://github.com/pallets/flask/
 -   Issue Tracker: https://github.com/pallets/flask/issues/
