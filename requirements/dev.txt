@@ -121,7 +121,7 @@ toml==0.10.2
     #   tox
 tox==3.22.0
     # via -r requirements/dev.in
-urllib3==1.26.3
+urllib3==1.26.4
     # via requests
 virtualenv==20.4.2
     # via
