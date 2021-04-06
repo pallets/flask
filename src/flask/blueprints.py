@@ -475,8 +475,8 @@ class Blueprint(Scaffold):
         """Ensure the function is synchronous.
 
         Override if you would like custom async to sync behaviour in
-        this blueprint. Otherwise :meth:`~flask.Flask..ensure_sync` is
-        used.
+        this blueprint. Otherwise the app's
+        :meth:`~flask.Flask.ensure_sync` is used.
 
         .. versionadded:: 2.0
         """

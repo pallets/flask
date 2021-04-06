@@ -742,9 +742,10 @@ def run_async(func):
             "Install Flask with the 'async' extra in order to use async views."
         )
 
+    # Check that Werkzeug isn't using its fallback ContextVar class.
     if ContextVar.__module__ == "werkzeug.local":
         raise RuntimeError(
-            "async cannot be used with this combination of Python & Greenlet versions"
+            "Async cannot be used with this combination of Python & Greenlet versions."
         )
 
     @wraps(func)
@@ -763,9 +764,9 @@ def run_async(func):
         async def inner(*a, **k):
             """This restores the context before awaiting the func.
 
-            This is required as the func must be awaited within the
-            context. Simply calling func (as per the
-            copy_current_xxx_context functions) doesn't work as the
+            This is required as the function must be awaited within the
+            context. Only calling ``func`` (as per the
+            ``copy_current_xxx_context`` functions) doesn't work as the
             with block will close before the coroutine is awaited.
             """
             if ctx is not None:
