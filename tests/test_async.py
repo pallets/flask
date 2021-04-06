@@ -8,6 +8,8 @@ from flask import Flask
 from flask import request
 from flask.helpers import run_async
 
+pytest.importorskip("asgiref")
+
 
 class AppError(Exception):
     pass
