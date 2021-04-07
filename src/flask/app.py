@@ -2,6 +2,7 @@ import os
 import sys
 import weakref
 from datetime import timedelta
+from inspect import iscoroutinefunction
 from itertools import chain
 from threading import Lock
 
@@ -34,6 +35,7 @@ from .helpers import get_env
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import locked_cached_property
+from .helpers import run_async
 from .helpers import url_for
 from .json import jsonify
 from .logging import create_logger
@@ -1050,7 +1052,7 @@ class Flask(Scaffold):
                     "View function mapping is overwriting an existing"
                     f" endpoint function: {endpoint}"
                 )
-            self.view_functions[endpoint] = view_func
+            self.view_functions[endpoint] = self.ensure_sync(view_func)
 
     @setupmethod
     def template_filter(self, name=None):
@@ -1165,7 +1167,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.8
         """
-        self.before_first_request_funcs.append(f)
+        self.before_first_request_funcs.append(self.ensure_sync(f))
         return f
 
     @setupmethod
@@ -1198,7 +1200,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.9
         """
-        self.teardown_appcontext_funcs.append(f)
+        self.teardown_appcontext_funcs.append(self.ensure_sync(f))
         return f
 
     @setupmethod
@@ -1516,6 +1518,20 @@ class Flask(Scaffold):
         .. versionadded:: 0.10
         """
         return False
+
+    def ensure_sync(self, func):
+        """Ensure that the function is synchronous for WSGI workers.
+        Plain ``def`` functions are returned as-is. ``async def``
+        functions are wrapped to run and wait for the response.
+
+        Override this method to change how the app runs async views.
+
+        .. versionadded:: 2.0
+        """
+        if iscoroutinefunction(func):
+            return run_async(func)
+
+        return func
 
     def make_response(self, rv):
         """Convert the return value from a view function to an instance of

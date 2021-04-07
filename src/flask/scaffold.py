@@ -484,7 +484,7 @@ class Scaffold:
         """
 
         def decorator(f):
-            self.view_functions[endpoint] = f
+            self.view_functions[endpoint] = self.ensure_sync(f)
             return f
 
         return decorator
@@ -508,7 +508,7 @@ class Scaffold:
         return value from the view, and further request handling is
         stopped.
         """
-        self.before_request_funcs[None].append(f)
+        self.before_request_funcs.setdefault(None, []).append(self.ensure_sync(f))
         return f
 
     @setupmethod
@@ -524,7 +524,7 @@ class Scaffold:
         should not be used for actions that must execute, such as to
         close resources. Use :meth:`teardown_request` for that.
         """
-        self.after_request_funcs[None].append(f)
+        self.after_request_funcs.setdefault(None, []).append(self.ensure_sync(f))
         return f
 
     @setupmethod
@@ -563,7 +563,7 @@ class Scaffold:
            debugger can still access it.  This behavior can be controlled
            by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
         """
-        self.teardown_request_funcs[None].append(f)
+        self.teardown_request_funcs.setdefault(None, []).append(self.ensure_sync(f))
         return f
 
     @setupmethod
@@ -659,7 +659,7 @@ class Scaffold:
                 " instead."
             )
 
-        self.error_handler_spec[None][code][exc_class] = f
+        self.error_handler_spec[None][code][exc_class] = self.ensure_sync(f)
 
     @staticmethod
     def _get_exc_class_and_code(exc_class_or_code):
@@ -683,6 +683,9 @@ class Scaffold:
             return exc_class, exc_class.code
         else:
             return exc_class, None
+
+    def ensure_sync(self, func):
+        raise NotImplementedError()
 
 
 def _endpoint_from_view_func(view_func):

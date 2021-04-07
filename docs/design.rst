@@ -171,6 +171,25 @@ Also see the :doc:`/becomingbig` section of the documentation for some
 inspiration for larger applications based on Flask.
 
 
+Async/await and ASGI support
+----------------------------
+
+Flask supports ``async`` coroutines for view functions by executing the
+coroutine on a separate thread instead of using an event loop on the
+main thread as an async-first (ASGI) framework would. This is necessary
+for Flask to remain backwards compatible with extensions and code built
+before ``async`` was introduced into Python. This compromise introduces
+a performance cost compared with the ASGI frameworks, due to the
+overhead of the threads.
+
+Due to how tied to WSGI Flask's code is, it's not clear if it's possible
+to make the ``Flask`` class support ASGI and WSGI at the same time. Work
+is currently being done in Werkzeug to work with ASGI, which may
+eventually enable support in Flask as well.
+
+See :doc:`/async-await` for more discussion.
+
+
 What Flask is, What Flask is Not
 --------------------------------
 
