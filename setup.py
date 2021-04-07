@@ -9,5 +9,8 @@ setup(
         "itsdangerous>=0.24",
         "click>=5.1",
     ],
-    extras_require={"dotenv": ["python-dotenv"]},
+    extras_require={
+        "async": ["asgiref>=3.2"],
+        "dotenv": ["python-dotenv"],
+    },
 )
