@@ -1,8 +1,9 @@
+import functools
+import inspect
 import os
 import sys
 import weakref
 from datetime import timedelta
-from inspect import iscoroutinefunction
 from itertools import chain
 from threading import Lock
 
@@ -54,6 +55,20 @@ from .templating import DispatchingJinjaLoader
 from .templating import Environment
 from .wrappers import Request
 from .wrappers import Response
+
+
+if sys.version_info >= (3, 8):
+    iscoroutinefunction = inspect.iscoroutinefunction
+else:
+
+    def iscoroutinefunction(func):
+        while inspect.ismethod(func):
+            func = func.__func__
+
+        while isinstance(func, functools.partial):
+            func = func.func
+
+        return inspect.iscoroutinefunction(func)
 
 
 def _make_timedelta(value):
