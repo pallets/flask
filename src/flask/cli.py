@@ -887,6 +887,24 @@ def shell_command():
 
     ctx.update(app.make_shell_context())
 
+    # Site, customize, or startup script can set a hook to call when
+    # entering interactive mode. The default one sets up readline with
+    # tab and history completion.
+    interactive_hook = getattr(sys, "__interactivehook__", None)
+
+    if interactive_hook is not None:
+        try:
+            import readline
+            from rlcompleter import Completer
+        except ImportError:
+            pass
+        else:
+            # rlcompleter uses __main__.__dict__ by default, which is
+            # flask.__main__. Use the shell context instead.
+            readline.set_completer(Completer(ctx).complete)
+
+        interactive_hook()
+
     code.interact(banner=banner, local=ctx)
 
 
