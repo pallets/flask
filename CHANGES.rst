@@ -69,6 +69,7 @@ Unreleased
     ``@app.route("/login", methods=["POST"])``. :pr:`3907`
 -   Support async views, error handlers, before and after request, and
     teardown functions. :pr:`3412`
+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`
 
 
 Version 1.1.2

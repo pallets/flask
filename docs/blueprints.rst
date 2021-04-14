@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every
 blueprint might respond properly to that.  In fact it depends on how the
 blueprint is implemented if it can be mounted more than once.
 
+Nesting Blueprints
+------------------
+
+It is possible to register a blueprint on another blueprint.
+
+.. code-block:: python
+
+    parent = Blueprint("parent", __name__, url_prefix="/parent")
+    child = Blueprint("child", __name__, url_prefix="/child)
+    parent.register_blueprint(child)
+    app.register_blueprint(parent)
+
+The child blueprint will gain the parent's name as a prefix to its
+name, and child URLs will be prefixed with the parent's URL prefix.
+
+.. code-block:: python
+
+    url_for('parent.child.create')
+    /parent/child/create
+
+Blueprint-specific before request functions, etc. registered with the
+parent will trigger for the child. If a child does not have an error
+handler that can handle a given exception, the parent's will be tried.
+
+
 Blueprint Resources
 -------------------
 

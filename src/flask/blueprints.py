@@ -45,6 +45,8 @@ class BlueprintSetupState:
         #: blueprint.
         self.url_prefix = url_prefix
 
+        self.name_prefix = self.options.get("name_prefix", "")
+
         #: A dictionary with URL defaults that is added to each and every
         #: URL that was defined with the blueprint.
         self.url_defaults = dict(self.blueprint.url_values_defaults)
@@ -68,7 +70,7 @@ class BlueprintSetupState:
             defaults = dict(defaults, **options.pop("defaults"))
         self.app.add_url_rule(
             rule,
-            f"{self.blueprint.name}.{endpoint}",
+            f"{self.name_prefix}{self.blueprint.name}.{endpoint}",
             view_func,
             defaults=defaults,
             **options,
@@ -168,6 +170,7 @@ class Blueprint(Scaffold):
 
         self.url_values_defaults = url_defaults
         self.cli_group = cli_group
+        self._blueprints = []
 
     def _is_setup_finished(self):
         return self.warn_on_modifications and self._got_registered_once
@@ -210,7 +213,16 @@ class Blueprint(Scaffold):
         """
         return BlueprintSetupState(self, app, options, first_registration)
 
-    def register(self, app, options, first_registration=False):
+    def register_blueprint(self, blueprint, **options):
+        """Register a :class:`~flask.Blueprint` on this blueprint. Keyword
+        arguments passed to this method will override the defaults set
+        on the blueprint.
+
+        .. versionadded:: 2.0
+        """
+        self._blueprints.append((blueprint, options))
+
+    def register(self, app, options):
         """Called by :meth:`Flask.register_blueprint` to register all
         views and callbacks registered on the blueprint with the
         application. Creates a :class:`.BlueprintSetupState` and calls
@@ -223,6 +235,20 @@ class Blueprint(Scaffold):
         :param first_registration: Whether this is the first time this
             blueprint has been registered on the application.
         """
+        first_registration = False
+
+        if self.name in app.blueprints:
+            assert app.blueprints[self.name] is self, (
+                "A name collision occurred between blueprints"
+                f" {self!r} and {app.blueprints[self.name]!r}."
+                f" Both share the same name {self.name!r}."
+                f" Blueprints that are created on the fly need unique"
+                f" names."
+            )
+        else:
+            app.blueprints[self.name] = self
+            first_registration = True
+
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
 
@@ -278,19 +304,28 @@ class Blueprint(Scaffold):
         for deferred in self.deferred_functions:
             deferred(state)
 
-        if not self.cli.commands:
-            return
-
         cli_resolved_group = options.get("cli_group", self.cli_group)
 
-        if cli_resolved_group is None:
-            app.cli.commands.update(self.cli.commands)
-        elif cli_resolved_group is _sentinel:
-            self.cli.name = self.name
-            app.cli.add_command(self.cli)
-        else:
-            self.cli.name = cli_resolved_group
-            app.cli.add_command(self.cli)
+        if self.cli.commands:
+            if cli_resolved_group is None:
+                app.cli.commands.update(self.cli.commands)
+            elif cli_resolved_group is _sentinel:
+                self.cli.name = self.name
+                app.cli.add_command(self.cli)
+            else:
+                self.cli.name = cli_resolved_group
+                app.cli.add_command(self.cli)
+
+        for blueprint, bp_options in self._blueprints:
+            url_prefix = options.get("url_prefix", "")
+            if "url_prefix" in bp_options:
+                url_prefix = (
+                    url_prefix.rstrip("/") + "/" + bp_options["url_prefix"].lstrip("/")
+                )
+
+            bp_options["url_prefix"] = url_prefix
+            bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
+            blueprint.register(app, bp_options)
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
