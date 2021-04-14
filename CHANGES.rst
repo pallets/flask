@@ -70,6 +70,8 @@ Unreleased
 -   Support async views, error handlers, before and after request, and
     teardown functions. :pr:`3412`
 -   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`
+-   ``flask shell`` sets up tab and history completion like the default
+    ``python`` shell if ``readline`` is installed. :issue:`3941`
 
 
 Version 1.1.2
