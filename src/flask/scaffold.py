@@ -56,7 +56,7 @@ class Scaffold:
         are relative to. Typically not set, it is discovered based on
         the ``import_name``.
 
-    .. versionadded:: 2.0.0
+    .. versionadded:: 2.0
     """
 
     name: str

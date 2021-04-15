@@ -446,8 +446,9 @@ def _prepare_send_file_kwargs(
 ):
     if attachment_filename is not None:
         warnings.warn(
-            "The 'attachment_filename' parameter has been renamed to 'download_name'."
-            " The old name will be removed in Flask 2.1.",
+            "The 'attachment_filename' parameter has been renamed to"
+            " 'download_name'. The old name will be removed in Flask"
+            " 2.1.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -455,8 +456,8 @@ def _prepare_send_file_kwargs(
 
     if cache_timeout is not None:
         warnings.warn(
-            "The 'cache_timeout' parameter has been renamed to 'max_age'. The old name"
-            " will be removed in Flask 2.1.",
+            "The 'cache_timeout' parameter has been renamed to"
+            " 'max_age'. The old name will be removed in Flask 2.1.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -464,8 +465,8 @@ def _prepare_send_file_kwargs(
 
     if add_etags is not None:
         warnings.warn(
-            "The 'add_etags' parameter has been renamed to 'etag'. The old name will be"
-            " removed in Flask 2.1.",
+            "The 'add_etags' parameter has been renamed to 'etag'. The"
+            " old name will be removed in Flask 2.1.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -549,7 +550,7 @@ def send_file(
         ``conditional`` is enabled and ``max_age`` is not set by
         default.
 
-    .. versionchanged:: 2.0.0
+    .. versionchanged:: 2.0
         ``etag`` replaces the ``add_etags`` parameter. It can be a
         string to use instead of generating one.
 
@@ -629,7 +630,7 @@ def safe_join(directory, *pathnames):
     """
     warnings.warn(
         "'flask.helpers.safe_join' is deprecated and will be removed in"
-        " 2.1. Use 'werkzeug.utils.safe_join' instead.",
+        " Flask 2.1. Use 'werkzeug.utils.safe_join' instead.",
         DeprecationWarning,
         stacklevel=2,
     )
