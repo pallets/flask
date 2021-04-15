@@ -98,7 +98,7 @@ def call_factory(script_info, app_factory, args=None, kwargs=None):
     if "script_info" in sig.parameters:
         warnings.warn(
             "The 'script_info' argument is deprecated and will not be"
-            " passed to the app factory function in 2.1.",
+            " passed to the app factory function in Flask 2.1.",
             DeprecationWarning,
         )
         kwargs["script_info"] = script_info
@@ -110,7 +110,8 @@ def call_factory(script_info, app_factory, args=None, kwargs=None):
     ):
         warnings.warn(
             "Script info is deprecated and will not be passed as the"
-            " single argument to the app factory function in 2.1.",
+            " single argument to the app factory function in Flask"
+            " 2.1.",
             DeprecationWarning,
         )
         args.append(script_info)

@@ -103,7 +103,7 @@ def dumps(obj, app=None, **kwargs):
     :param kwargs: Extra arguments passed to :func:`json.dumps`.
 
     .. versionchanged:: 2.0
-        ``encoding`` is deprecated and will be removed in 2.1.
+        ``encoding`` is deprecated and will be removed in Flask 2.1.
 
     .. versionchanged:: 1.0.3
         ``app`` can be passed directly, rather than requiring an app
@@ -115,7 +115,7 @@ def dumps(obj, app=None, **kwargs):
 
     if encoding is not None:
         warnings.warn(
-            "'encoding' is deprecated and will be removed in 2.1.",
+            "'encoding' is deprecated and will be removed in Flask 2.1.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -140,7 +140,7 @@ def dump(obj, fp, app=None, **kwargs):
 
     .. versionchanged:: 2.0
         Writing to a binary file, and the ``encoding`` argument, is
-        deprecated and will be removed in 2.1.
+        deprecated and will be removed in Flask 2.1.
     """
     _dump_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
@@ -155,7 +155,7 @@ def dump(obj, fp, app=None, **kwargs):
     if show_warning:
         warnings.warn(
             "Writing to a binary file, and the 'encoding' argument, is"
-            " deprecated and will be removed in 2.1.",
+            " deprecated and will be removed in Flask 2.1.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -175,8 +175,8 @@ def loads(s, app=None, **kwargs):
     :param kwargs: Extra arguments passed to :func:`json.loads`.
 
     .. versionchanged:: 2.0
-        ``encoding`` is deprecated and will be removed in 2.1. The data
-        must be a string or UTF-8 bytes.
+        ``encoding`` is deprecated and will be removed in Flask 2.1. The
+        data must be a string or UTF-8 bytes.
 
     .. versionchanged:: 1.0.3
         ``app`` can be passed directly, rather than requiring an app
@@ -187,8 +187,8 @@ def loads(s, app=None, **kwargs):
 
     if encoding is not None:
         warnings.warn(
-            "'encoding' is deprecated and will be removed in 2.1. The"
-            " data must be a string or UTF-8 bytes.",
+            "'encoding' is deprecated and will be removed in Flask 2.1."
+            " The data must be a string or UTF-8 bytes.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -211,16 +211,17 @@ def load(fp, app=None, **kwargs):
     :param kwargs: Extra arguments passed to :func:`json.load`.
 
     .. versionchanged:: 2.0
-        ``encoding`` is deprecated and will be removed in 2.1. The file
-        must be text mode, or binary mode with UTF-8 bytes.
+        ``encoding`` is deprecated and will be removed in Flask 2.1. The
+        file must be text mode, or binary mode with UTF-8 bytes.
     """
     _load_arg_defaults(kwargs, app=app)
     encoding = kwargs.pop("encoding", None)
 
     if encoding is not None:
         warnings.warn(
-            "'encoding' is deprecated and will be removed in 2.1. The"
-            " file must be text mode, or binary mode with UTF-8 bytes.",
+            "'encoding' is deprecated and will be removed in Flask 2.1."
+            " The file must be text mode, or binary mode with UTF-8"
+            " bytes.",
             DeprecationWarning,
             stacklevel=2,
         )
