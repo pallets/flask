@@ -1048,6 +1048,8 @@ class Flask(Scaffold):
         self.url_map.add(rule)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
+            if getattr(old_func, "_flask_sync_wrapper", False):
+                old_func = old_func.__wrapped__
             if old_func is not None and old_func != view_func:
                 raise AssertionError(
                     "View function mapping is overwriting an existing"
