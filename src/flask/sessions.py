@@ -8,7 +8,6 @@ from itsdangerous import URLSafeTimedSerializer
 from werkzeug.datastructures import CallbackDict
 
 from .helpers import is_ip
-from .helpers import total_seconds
 from .json.tag import TaggedJSONSerializer
 
 
@@ -340,7 +339,7 @@ class SecureCookieSessionInterface(SessionInterface):
         val = request.cookies.get(self.get_cookie_name(app))
         if not val:
             return self.session_class()
-        max_age = total_seconds(app.permanent_session_lifetime)
+        max_age = int(app.permanent_session_lifetime.total_seconds())
         try:
             data = s.loads(val, max_age=max_age)
             return self.session_class(data)
