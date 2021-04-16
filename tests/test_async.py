@@ -24,6 +24,7 @@ def _async_app():
     app = Flask(__name__)
 
     @app.route("/", methods=["GET", "POST"])
+    @app.route("/home", methods=["GET", "POST"])
     async def index():
         await asyncio.sleep(0)
         return request.method
@@ -57,7 +58,7 @@ def _async_app():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
-@pytest.mark.parametrize("path", ["/", "/bp/"])
+@pytest.mark.parametrize("path", ["/", "/home", "/bp/"])
 def test_async_route(path, async_app):
     test_client = async_app.test_client()
     response = test_client.get(path)
