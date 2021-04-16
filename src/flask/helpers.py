@@ -18,13 +18,6 @@ from .globals import request
 from .globals import session
 from .signals import message_flashed
 
-# what separators does this operating system provide that are not a slash?
-# this is used by the send_from_directory function to ensure that nobody is
-# able to access files from outside the filesystem.
-_os_alt_seps = list(
-    sep for sep in [os.path.sep, os.path.altsep] if sep not in (None, "/")
-)
-
 
 def get_env():
     """Get the environment the app is running in, indicated by the
@@ -709,7 +702,17 @@ def total_seconds(td):
 
     :returns: number of seconds
     :rtype: int
+
+    .. deprecated:: 2.0
+        Will be removed in Flask 2.1. Use
+        :meth:`timedelta.total_seconds` instead.
     """
+    warnings.warn(
+        "'total_seconds' is deprecated and will be removed in Flask"
+        " 2.1. Use 'timedelta.total_seconds' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return td.days * 60 * 60 * 24 + td.seconds
 
 
