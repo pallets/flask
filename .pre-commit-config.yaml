@@ -25,6 +25,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
     hooks:
-      - id: check-byte-order-marker
+      - id: fix-byte-order-marker
       - id: trailing-whitespace
       - id: end-of-file-fixer
