@@ -780,4 +780,5 @@ def run_async(func):
 
         return async_to_sync(inner)(*args, **kwargs)
 
+    outer._flask_sync_wrapper = True
     return outer
