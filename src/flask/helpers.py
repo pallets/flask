@@ -18,10 +18,6 @@ from .globals import request
 from .globals import session
 from .signals import message_flashed
 
-# sentinel
-_missing = object()
-
-
 # what separators does this operating system provide that are not a slash?
 # this is used by the send_from_directory function to ensure that nobody is
 # able to access files from outside the filesystem.
@@ -677,30 +673,33 @@ def send_from_directory(directory, path, **kwargs):
     )
 
 
-class locked_cached_property:
-    """A decorator that converts a function into a lazy property.  The
-    function wrapped is called the first time to retrieve the result
-    and then that calculated result is used the next time you access
-    the value.  Works like the one in Werkzeug but has a lock for
-    thread safety.
+class locked_cached_property(werkzeug.utils.cached_property):
+    """A :func:`property` that is only evaluated once. Like
+    :class:`werkzeug.utils.cached_property` except access uses a lock
+    for thread safety.
+
+    .. versionchanged:: 2.0
+        Inherits from Werkzeug's ``cached_property`` (and ``property``).
     """
 
-    def __init__(self, func, name=None, doc=None):
-        self.__name__ = name or func.__name__
-        self.__module__ = func.__module__
-        self.__doc__ = doc or func.__doc__
-        self.func = func
+    def __init__(self, fget, name=None, doc=None):
+        super().__init__(fget, name=name, doc=doc)
         self.lock = RLock()
 
     def __get__(self, obj, type=None):
         if obj is None:
             return self
+
         with self.lock:
-            value = obj.__dict__.get(self.__name__, _missing)
-            if value is _missing:
-                value = self.func(obj)
-                obj.__dict__[self.__name__] = value
-            return value
+            return super().__get__(obj, type=type)
+
+    def __set__(self, obj, value):
+        with self.lock:
+            super().__set__(obj, value)
+
+    def __delete__(self, obj):
+        with self.lock:
+            super().__delete__(obj)
 
 
 def total_seconds(td):
