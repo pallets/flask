@@ -1,5 +1,4 @@
-Pallets-Sphinx-Themes
-packaging
+Pallets-Sphinx-Themes >= 2.0.0rc1
 Sphinx
 sphinx-issues
 sphinxcontrib-log-cabinet

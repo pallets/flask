@@ -8,6 +8,8 @@ alabaster==0.7.12
     # via sphinx
 appdirs==1.4.4
     # via virtualenv
+asgiref==3.3.4
+    # via -r requirements/tests.in
 attrs==20.3.0
     # via pytest
 babel==2.9.0
@@ -48,12 +50,11 @@ nodeenv==1.5.0
     # via pre-commit
 packaging==20.9
     # via
-    #   -r requirements/docs.in
     #   pallets-sphinx-themes
     #   pytest
     #   sphinx
     #   tox
-pallets-sphinx-themes==1.2.3
+pallets-sphinx-themes==2.0.0rc1
     # via -r requirements/docs.in
 pip-tools==5.5.0
     # via -r requirements/dev.in
