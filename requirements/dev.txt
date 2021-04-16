@@ -8,6 +8,8 @@ alabaster==0.7.12
     # via sphinx
 appdirs==1.4.4
     # via virtualenv
+asgiref==3.3.4
+    # via -r requirements/tests.in
 attrs==20.3.0
     # via pytest
 babel==2.9.0
@@ -32,7 +34,7 @@ filelock==3.0.12
     #   virtualenv
 greenlet==1.0.0
     # via -r requirements/tests.in
-identify==1.5.13
+identify==2.2.3
     # via pre-commit
 idna==2.10
     # via requests
@@ -44,38 +46,39 @@ jinja2==2.11.3
     # via sphinx
 markupsafe==1.1.1
     # via jinja2
-nodeenv==1.5.0
+nodeenv==1.6.0
     # via pre-commit
 packaging==20.9
     # via
-    #   -r requirements/docs.in
     #   pallets-sphinx-themes
     #   pytest
     #   sphinx
     #   tox
-pallets-sphinx-themes==1.2.3
+pallets-sphinx-themes==2.0.0rc1
     # via -r requirements/docs.in
-pip-tools==5.5.0
+pep517==0.10.0
+    # via pip-tools
+pip-tools==6.1.0
     # via -r requirements/dev.in
 pluggy==0.13.1
     # via
     #   pytest
     #   tox
-pre-commit==2.10.1
+pre-commit==2.12.0
     # via -r requirements/dev.in
 py==1.10.0
     # via
     #   pytest
     #   tox
-pygments==2.7.4
+pygments==2.8.1
     # via
     #   sphinx
     #   sphinx-tabs
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.2
+pytest==6.2.3
     # via -r requirements/tests.in
-python-dotenv==0.15.0
+python-dotenv==0.17.0
     # via -r requirements/tests.in
 pytz==2021.1
     # via babel
@@ -91,9 +94,9 @@ snowballstemmer==2.1.0
     # via sphinx
 sphinx-issues==1.2.0
     # via -r requirements/docs.in
-sphinx-tabs==2.0.1
+sphinx-tabs==2.1.0
     # via -r requirements/docs.in
-sphinx==3.5.1
+sphinx==3.5.4
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
@@ -116,14 +119,15 @@ sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
 toml==0.10.2
     # via
+    #   pep517
     #   pre-commit
     #   pytest
     #   tox
-tox==3.22.0
+tox==3.23.0
     # via -r requirements/dev.in
 urllib3==1.26.4
     # via requests
-virtualenv==20.4.2
+virtualenv==20.4.3
     # via
     #   pre-commit
     #   tox
