@@ -709,7 +709,17 @@ def total_seconds(td):
 
     :returns: number of seconds
     :rtype: int
+
+    .. deprecated:: 2.0
+        Will be removed in Flask 2.1. Use
+        :meth:`timedelta.total_seconds` instead.
     """
+    warnings.warn(
+        "'total_seconds' is deprecated and will be removed in Flask"
+        " 2.1. Use 'timedelta.total_seconds' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return td.days * 60 * 60 * 24 + td.seconds
 
 

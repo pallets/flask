@@ -72,6 +72,8 @@ Unreleased
 -   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`
 -   ``flask shell`` sets up tab and history completion like the default
     ``python`` shell if ``readline`` is installed. :issue:`3941`
+-   ``helpers.total_seconds()`` is deprecated. Use
+    ``timedelta.total_seconds()`` instead. :pr:`3962`
 
 
 Version 1.1.2
