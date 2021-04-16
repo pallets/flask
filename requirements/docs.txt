@@ -28,7 +28,7 @@ packaging==20.9
     #   sphinx
 pallets-sphinx-themes==2.0.0rc1
     # via -r requirements/docs.in
-pygments==2.7.4
+pygments==2.8.1
     # via
     #   sphinx
     #   sphinx-tabs
@@ -42,9 +42,9 @@ snowballstemmer==2.1.0
     # via sphinx
 sphinx-issues==1.2.0
     # via -r requirements/docs.in
-sphinx-tabs==2.0.1
+sphinx-tabs==2.1.0
     # via -r requirements/docs.in
-sphinx==3.5.1
+sphinx==3.5.4
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
