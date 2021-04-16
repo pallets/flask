@@ -4,10 +4,10 @@ from setuptools import setup
 setup(
     name="Flask",
     install_requires=[
-        "Werkzeug>=0.15",
-        "Jinja2>=2.10.1",
-        "itsdangerous>=0.24",
-        "click>=5.1",
+        "Werkzeug>=2.0.0rc4",
+        "Jinja2>=3.0.0rc1",
+        "itsdangerous>=2.0.0rc2",
+        "click>=8.0.0rc1",
     ],
     extras_require={
         "async": ["asgiref>=3.2"],
