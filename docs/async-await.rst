@@ -39,6 +39,23 @@ most use cases, but Flask's async support enables writing and using
 code that wasn't possible natively before.
 
 
+Background tasks
+----------------
+
+Async functions will run in an event loop until they complete, at
+which stage the event loop will stop. This means any additional
+spawned tasks that haven't completed when the async function completes
+will be cancelled. Therefore you cannot spawn background tasks, for
+example via ``asyncio.create_task``.
+
+If you wish to use background tasks it is best to use a task queue to
+trigger background work, rather than spawn tasks in a view
+function. With that in mind you can spawn asyncio tasks by serving
+Flask with a ASGI server and utilising the asgiref WsgiToAsgi adapter
+as described in :ref:`asgi`. This works as the adapter creates an
+event loop that runs continually.
+
+
 When to use Quart instead
 -------------------------
 
