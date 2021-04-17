@@ -31,3 +31,4 @@ Self-hosted options
    mod_wsgi
    fastcgi
    cgi
+   asgi
