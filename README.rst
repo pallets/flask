@@ -78,5 +78,5 @@ Links
 -   Source Code: https://github.com/pallets/flask/
 -   Issue Tracker: https://github.com/pallets/flask/issues/
 -   Website: https://palletsprojects.com/p/flask/
--   Twitter: https://twitter.com/PalletsTeam
--   Chat: https://discord.gg/pallets
+-   Twitter: https://twitter.com/PalletsTeam/
+-   Chat: https://discord.gg/pallets/
