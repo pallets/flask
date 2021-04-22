@@ -5,7 +5,7 @@ about: Suggest a new feature for Flask
 
 <!--
 Replace this comment with a description of what the feature should do.
-Include details such as links relevant specs or previous discussions.
+Include details such as links to relevant specs or previous discussions.
 -->
 
 <!--
