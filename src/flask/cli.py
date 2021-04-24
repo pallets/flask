@@ -979,6 +979,13 @@ debug mode.
 
 
 def main() -> None:
+    if int(click.__version__[0]) < 8:
+        warnings.warn(
+            "Using the `flask` cli with Click 7 is deprecated and"
+            " will not be supported starting with Flask 2.1."
+            " Please upgrade to Click 8 as soon as possible.",
+            DeprecationWarning,
+        )
     # TODO omit sys.argv once https://github.com/pallets/click/issues/536 is fixed
     cli.main(args=sys.argv[1:])
 

@@ -8,7 +8,10 @@ Unreleased
 -   Drop support for Python 2 and 3.5.
 -   Bump minimum versions of other Pallets projects: Werkzeug >= 2,
     Jinja2 >= 3, MarkupSafe >= 2, ItsDangerous >= 2, Click >= 8. Be sure
-    to check the change logs for each project.
+    to check the change logs for each project. For better compatibility
+    with other applications (e.g. Celery) that still require Click 7,
+    there is no hard dependency on Click 8 yet, but using Click 7 will
+    trigger a DeprecationWarning and Flask 2.1 will depend on Click 8.
 -   JSON support no longer uses simplejson. To use another JSON module,
     override ``app.json_encoder`` and ``json_decoder``. :issue:`3555`
 -   The ``encoding`` option to JSON functions is deprecated. :pr:`3562`
