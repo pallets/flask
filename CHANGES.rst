@@ -6,6 +6,9 @@ Version 2.0.0
 Unreleased
 
 -   Drop support for Python 2 and 3.5.
+-   Bump minimum versions of other Pallets projects: Werkzeug >= 2,
+    Jinja2 >= 3, MarkupSafe >= 2, ItsDangerous >= 2, Click >= 8. Be sure
+    to check the change logs for each project.
 -   JSON support no longer uses simplejson. To use another JSON module,
     override ``app.json_encoder`` and ``json_decoder``. :issue:`3555`
 -   The ``encoding`` option to JSON functions is deprecated. :pr:`3562`
