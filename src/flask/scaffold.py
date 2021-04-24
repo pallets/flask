@@ -14,6 +14,7 @@ from werkzeug.exceptions import HTTPException
 
 from .cli import AppGroup
 from .globals import current_app
+from .helpers import get_root_path
 from .helpers import locked_cached_property
 from .helpers import send_from_directory
 from .templating import _default_template_ctx_processor
@@ -743,55 +744,6 @@ def _endpoint_from_view_func(view_func: t.Callable) -> str:
     """
     assert view_func is not None, "expected view func if endpoint is not provided."
     return view_func.__name__
-
-
-def get_root_path(import_name: str) -> str:
-    """Find the root path of a package, or the path that contains a
-    module. If it cannot be found, returns the current working
-    directory.
-
-    Not to be confused with the value returned by :func:`find_package`.
-
-    :meta private:
-    """
-    # Module already imported and has a file attribute. Use that first.
-    mod = sys.modules.get(import_name)
-
-    if mod is not None and hasattr(mod, "__file__"):
-        return os.path.dirname(os.path.abspath(mod.__file__))
-
-    # Next attempt: check the loader.
-    loader = pkgutil.get_loader(import_name)
-
-    # Loader does not exist or we're referring to an unloaded main
-    # module or a main module without path (interactive sessions), go
-    # with the current working directory.
-    if loader is None or import_name == "__main__":
-        return os.getcwd()
-
-    if hasattr(loader, "get_filename"):
-        filepath = loader.get_filename(import_name)  # type: ignore
-    else:
-        # Fall back to imports.
-        __import__(import_name)
-        mod = sys.modules[import_name]
-        filepath = getattr(mod, "__file__", None)
-
-        # If we don't have a file path it might be because it is a
-        # namespace package. In this case pick the root path from the
-        # first module that is contained in the package.
-        if filepath is None:
-            raise RuntimeError(
-                "No root path can be found for the provided module"
-                f" {import_name!r}. This can happen because the module"
-                " came from an import hook that does not provide file"
-                " name information or because it's a namespace package."
-                " In this case the root path needs to be explicitly"
-                " provided."
-            )
-
-    # filepath is import_name.py for a module, or __init__.py for a package.
-    return os.path.dirname(os.path.abspath(filepath))
 
 
 def _matching_loader_thinks_module_is_package(loader, mod_name):
