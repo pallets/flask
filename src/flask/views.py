@@ -1,4 +1,7 @@
+import typing as t
+
 from .globals import request
+from .typing import ResponseReturnValue
 
 
 http_method_funcs = frozenset(
@@ -39,10 +42,10 @@ class View:
     """
 
     #: A list of methods this view can handle.
-    methods = None
+    methods: t.Optional[t.List[str]] = None
 
     #: Setting this disables or force-enables the automatic options handling.
-    provide_automatic_options = None
+    provide_automatic_options: t.Optional[bool] = None
 
     #: The canonical way to decorate class-based views is to decorate the
     #: return value of as_view().  However since this moves parts of the
@@ -53,9 +56,9 @@ class View:
     #: view function is created the result is automatically decorated.
     #:
     #: .. versionadded:: 0.8
-    decorators = ()
+    decorators: t.List[t.Callable] = []
 
-    def dispatch_request(self):
+    def dispatch_request(self) -> ResponseReturnValue:
         """Subclasses have to override this method to implement the
         actual view function code.  This method is called with all
         the arguments from the URL rule.
@@ -63,7 +66,9 @@ class View:
         raise NotImplementedError()
 
     @classmethod
-    def as_view(cls, name, *class_args, **class_kwargs):
+    def as_view(
+        cls, name: str, *class_args: t.Any, **class_kwargs: t.Any
+    ) -> t.Callable:
         """Converts the class into an actual view function that can be used
         with the routing system.  Internally this generates a function on the
         fly which will instantiate the :class:`View` on each request and call
@@ -73,8 +78,8 @@ class View:
         constructor of the class.
         """
 
-        def view(*args, **kwargs):
-            self = view.view_class(*class_args, **class_kwargs)
+        def view(*args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
+            self = view.view_class(*class_args, **class_kwargs)  # type: ignore
             return self.dispatch_request(*args, **kwargs)
 
         if cls.decorators:
@@ -88,12 +93,12 @@ class View:
         # view this thing came from, secondly it's also used for instantiating
         # the view class so you can actually replace it with something else
         # for testing purposes and debugging.
-        view.view_class = cls
+        view.view_class = cls  # type: ignore
         view.__name__ = name
         view.__doc__ = cls.__doc__
         view.__module__ = cls.__module__
-        view.methods = cls.methods
-        view.provide_automatic_options = cls.provide_automatic_options
+        view.methods = cls.methods  # type: ignore
+        view.provide_automatic_options = cls.provide_automatic_options  # type: ignore
         return view
 
 
@@ -140,7 +145,7 @@ class MethodView(View, metaclass=MethodViewType):
         app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
     """
 
-    def dispatch_request(self, *args, **kwargs):
+    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it

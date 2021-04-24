@@ -1,4 +1,5 @@
 import os
+import typing as t
 from warnings import warn
 
 from .app import Flask
@@ -92,7 +93,7 @@ def attach_enctype_error_multidict(request):
     request.files.__class__ = newcls
 
 
-def _dump_loader_info(loader):
+def _dump_loader_info(loader) -> t.Generator:
     yield f"class: {type(loader).__module__}.{type(loader).__name__}"
     for key, value in sorted(loader.__dict__.items()):
         if key.startswith("_"):
@@ -109,7 +110,7 @@ def _dump_loader_info(loader):
         yield f"{key}: {value!r}"
 
 
-def explain_template_loading_attempts(app, template, attempts):
+def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
     """This should help developers understand what failed"""
     info = [f"Locating template {template!r}:"]
     total_found = 0
@@ -157,7 +158,7 @@ def explain_template_loading_attempts(app, template, attempts):
     app.logger.info("\n".join(info))
 
 
-def explain_ignored_app_run():
+def explain_ignored_app_run() -> None:
     if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
         warn(
             Warning(

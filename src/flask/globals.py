@@ -1,8 +1,14 @@
+import typing as t
 from functools import partial
 
 from werkzeug.local import LocalProxy
 from werkzeug.local import LocalStack
 
+if t.TYPE_CHECKING:
+    from .app import Flask
+    from .ctx import AppContext
+    from .sessions import SessionMixin
+    from .wrappers import Request
 
 _request_ctx_err_msg = """\
 Working outside of request context.
@@ -45,7 +51,7 @@ def _find_app():
 # context locals
 _request_ctx_stack = LocalStack()
 _app_ctx_stack = LocalStack()
-current_app = LocalProxy(_find_app)
-request = LocalProxy(partial(_lookup_req_object, "request"))
-session = LocalProxy(partial(_lookup_req_object, "session"))
-g = LocalProxy(partial(_lookup_app_object, "g"))
+current_app: "Flask" = LocalProxy(_find_app)  # type: ignore
+request: "Request" = LocalProxy(partial(_lookup_req_object, "request"))  # type: ignore
+session: "SessionMixin" = LocalProxy(partial(_lookup_req_object, "session"))  # type: ignore # noqa: B950
+g: "AppContext" = LocalProxy(partial(_lookup_app_object, "g"))  # type: ignore
