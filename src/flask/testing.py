@@ -1,5 +1,7 @@
+import typing as t
 from contextlib import contextmanager
 from copy import copy
+from types import TracebackType
 
 import werkzeug.test
 from click.testing import CliRunner
@@ -10,6 +12,11 @@ from werkzeug.wrappers import Request as BaseRequest
 from . import _request_ctx_stack
 from .cli import ScriptInfo
 from .json import dumps as json_dumps
+from .sessions import SessionMixin
+
+if t.TYPE_CHECKING:
+    from .app import Flask
+    from .wrappers import Response
 
 
 class EnvironBuilder(werkzeug.test.EnvironBuilder):
@@ -36,14 +43,14 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
 
     def __init__(
         self,
-        app,
-        path="/",
-        base_url=None,
-        subdomain=None,
-        url_scheme=None,
-        *args,
-        **kwargs,
-    ):
+        app: "Flask",
+        path: str = "/",
+        base_url: t.Optional[str] = None,
+        subdomain: t.Optional[str] = None,
+        url_scheme: t.Optional[str] = None,
+        *args: t.Any,
+        **kwargs: t.Any,
+    ) -> None:
         assert not (base_url or subdomain or url_scheme) or (
             base_url is not None
         ) != bool(
@@ -74,7 +81,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         self.app = app
         super().__init__(path, base_url, *args, **kwargs)
 
-    def json_dumps(self, obj, **kwargs):
+    def json_dumps(self, obj: t.Any, **kwargs: t.Any) -> str:  # type: ignore
         """Serialize ``obj`` to a JSON-formatted string.
 
         The serialization will be configured according to the config associated
@@ -99,9 +106,10 @@ class FlaskClient(Client):
     Basic usage is outlined in the :doc:`/testing` chapter.
     """
 
+    application: "Flask"
     preserve_context = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         self.environ_base = {
             "REMOTE_ADDR": "127.0.0.1",
@@ -109,7 +117,9 @@ class FlaskClient(Client):
         }
 
     @contextmanager
-    def session_transaction(self, *args, **kwargs):
+    def session_transaction(
+        self, *args: t.Any, **kwargs: t.Any
+    ) -> t.Generator[SessionMixin, None, None]:
         """When used in combination with a ``with`` statement this opens a
         session transaction.  This can be used to modify the session that
         the test client uses.  Once the ``with`` block is left the session is
@@ -161,9 +171,14 @@ class FlaskClient(Client):
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
-    def open(
-        self, *args, as_tuple=False, buffered=False, follow_redirects=False, **kwargs
-    ):
+    def open(  # type: ignore
+        self,
+        *args: t.Any,
+        as_tuple: bool = False,
+        buffered: bool = False,
+        follow_redirects: bool = False,
+        **kwargs: t.Any,
+    ) -> "Response":
         # Same logic as super.open, but apply environ_base and preserve_context.
         request = None
 
@@ -198,20 +213,22 @@ class FlaskClient(Client):
             finally:
                 builder.close()
 
-        return super().open(
+        return super().open(  # type: ignore
             request,
             as_tuple=as_tuple,
             buffered=buffered,
             follow_redirects=follow_redirects,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> "FlaskClient":
         if self.preserve_context:
             raise RuntimeError("Cannot nest client invocations")
         self.preserve_context = True
         return self
 
-    def __exit__(self, exc_type, exc_value, tb):
+    def __exit__(
+        self, exc_type: type, exc_value: BaseException, tb: TracebackType
+    ) -> None:
         self.preserve_context = False
 
         # Normally the request context is preserved until the next
@@ -233,11 +250,13 @@ class FlaskCliRunner(CliRunner):
     :meth:`~flask.Flask.test_cli_runner`. See :ref:`testing-cli`.
     """
 
-    def __init__(self, app, **kwargs):
+    def __init__(self, app: "Flask", **kwargs: t.Any) -> None:
         self.app = app
         super().__init__(**kwargs)
 
-    def invoke(self, cli=None, args=None, **kwargs):
+    def invoke(  # type: ignore
+        self, cli: t.Any = None, args: t.Any = None, **kwargs: t.Any
+    ) -> t.Any:
         """Invokes a CLI command in an isolated environment. See
         :meth:`CliRunner.invoke <click.testing.CliRunner.invoke>` for
         full method documentation. See :ref:`testing-cli` for examples.

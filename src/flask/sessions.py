@@ -1,4 +1,5 @@
 import hashlib
+import typing as t
 import warnings
 from collections.abc import MutableMapping
 from datetime import datetime
@@ -10,17 +11,21 @@ from werkzeug.datastructures import CallbackDict
 from .helpers import is_ip
 from .json.tag import TaggedJSONSerializer
 
+if t.TYPE_CHECKING:
+    from .app import Flask
+    from .wrappers import Request, Response
+
 
 class SessionMixin(MutableMapping):
     """Expands a basic dictionary with session attributes."""
 
     @property
-    def permanent(self):
+    def permanent(self) -> bool:
         """This reflects the ``'_permanent'`` key in the dict."""
         return self.get("_permanent", False)
 
     @permanent.setter
-    def permanent(self, value):
+    def permanent(self, value: bool) -> None:
         self["_permanent"] = bool(value)
 
     #: Some implementations can detect whether a session is newly
@@ -61,22 +66,22 @@ class SecureCookieSession(CallbackDict, SessionMixin):
     #: different users.
     accessed = False
 
-    def __init__(self, initial=None):
-        def on_update(self):
+    def __init__(self, initial: t.Any = None) -> None:
+        def on_update(self) -> None:
             self.modified = True
             self.accessed = True
 
         super().__init__(initial, on_update)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> t.Any:
         self.accessed = True
         return super().__getitem__(key)
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: t.Any = None) -> t.Any:
         self.accessed = True
         return super().get(key, default)
 
-    def setdefault(self, key, default=None):
+    def setdefault(self, key: str, default: t.Any = None) -> t.Any:
         self.accessed = True
         return super().setdefault(key, default)
 
@@ -87,14 +92,14 @@ class NullSession(SecureCookieSession):
     but fail on setting.
     """
 
-    def _fail(self, *args, **kwargs):
+    def _fail(self, *args: t.Any, **kwargs: t.Any) -> t.NoReturn:
         raise RuntimeError(
             "The session is unavailable because no secret "
             "key was set.  Set the secret_key on the "
             "application to something unique and secret."
         )
 
-    __setitem__ = __delitem__ = clear = pop = popitem = update = setdefault = _fail
+    __setitem__ = __delitem__ = clear = pop = popitem = update = setdefault = _fail  # type: ignore # noqa: B950
     del _fail
 
 
@@ -141,7 +146,7 @@ class SessionInterface:
     #: .. versionadded:: 0.10
     pickle_based = False
 
-    def make_null_session(self, app):
+    def make_null_session(self, app: "Flask") -> NullSession:
         """Creates a null session which acts as a replacement object if the
         real session support could not be loaded due to a configuration
         error.  This mainly aids the user experience because the job of the
@@ -153,7 +158,7 @@ class SessionInterface:
         """
         return self.null_session_class()
 
-    def is_null_session(self, obj):
+    def is_null_session(self, obj: object) -> bool:
         """Checks if a given object is a null session.  Null sessions are
         not asked to be saved.
 
@@ -162,14 +167,14 @@ class SessionInterface:
         """
         return isinstance(obj, self.null_session_class)
 
-    def get_cookie_name(self, app):
+    def get_cookie_name(self, app: "Flask") -> str:
         """Returns the name of the session cookie.
 
         Uses ``app.session_cookie_name`` which is set to ``SESSION_COOKIE_NAME``
         """
         return app.session_cookie_name
 
-    def get_cookie_domain(self, app):
+    def get_cookie_domain(self, app: "Flask") -> t.Optional[str]:
         """Returns the domain that should be set for the session cookie.
 
         Uses ``SESSION_COOKIE_DOMAIN`` if it is configured, otherwise
@@ -227,7 +232,7 @@ class SessionInterface:
         app.config["SESSION_COOKIE_DOMAIN"] = rv
         return rv
 
-    def get_cookie_path(self, app):
+    def get_cookie_path(self, app: "Flask") -> str:
         """Returns the path for which the cookie should be valid.  The
         default implementation uses the value from the ``SESSION_COOKIE_PATH``
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
@@ -235,27 +240,29 @@ class SessionInterface:
         """
         return app.config["SESSION_COOKIE_PATH"] or app.config["APPLICATION_ROOT"]
 
-    def get_cookie_httponly(self, app):
+    def get_cookie_httponly(self, app: "Flask") -> bool:
         """Returns True if the session cookie should be httponly.  This
         currently just returns the value of the ``SESSION_COOKIE_HTTPONLY``
         config var.
         """
         return app.config["SESSION_COOKIE_HTTPONLY"]
 
-    def get_cookie_secure(self, app):
+    def get_cookie_secure(self, app: "Flask") -> bool:
         """Returns True if the cookie should be secure.  This currently
         just returns the value of the ``SESSION_COOKIE_SECURE`` setting.
         """
         return app.config["SESSION_COOKIE_SECURE"]
 
-    def get_cookie_samesite(self, app):
+    def get_cookie_samesite(self, app: "Flask") -> str:
         """Return ``'Strict'`` or ``'Lax'`` if the cookie should use the
         ``SameSite`` attribute. This currently just returns the value of
         the :data:`SESSION_COOKIE_SAMESITE` setting.
         """
         return app.config["SESSION_COOKIE_SAMESITE"]
 
-    def get_expiration_time(self, app, session):
+    def get_expiration_time(
+        self, app: "Flask", session: SessionMixin
+    ) -> t.Optional[datetime]:
         """A helper method that returns an expiration date for the session
         or ``None`` if the session is linked to the browser session.  The
         default implementation returns now + the permanent session
@@ -263,8 +270,9 @@ class SessionInterface:
         """
         if session.permanent:
             return datetime.utcnow() + app.permanent_session_lifetime
+        return None
 
-    def should_set_cookie(self, app, session):
+    def should_set_cookie(self, app: "Flask", session: SessionMixin) -> bool:
         """Used by session backends to determine if a ``Set-Cookie`` header
         should be set for this session cookie for this response. If the session
         has been modified, the cookie is set. If the session is permanent and
@@ -280,7 +288,9 @@ class SessionInterface:
             session.permanent and app.config["SESSION_REFRESH_EACH_REQUEST"]
         )
 
-    def open_session(self, app, request):
+    def open_session(
+        self, app: "Flask", request: "Request"
+    ) -> t.Optional[SessionMixin]:
         """This method has to be implemented and must either return ``None``
         in case the loading failed because of a configuration error or an
         instance of a session object which implements a dictionary like
@@ -288,7 +298,9 @@ class SessionInterface:
         """
         raise NotImplementedError()
 
-    def save_session(self, app, session, response):
+    def save_session(
+        self, app: "Flask", session: SessionMixin, response: "Response"
+    ) -> None:
         """This is called for actual sessions returned by :meth:`open_session`
         at the end of the request.  This is still called during a request
         context so if you absolutely need access to the request you can do
@@ -319,7 +331,9 @@ class SecureCookieSessionInterface(SessionInterface):
     serializer = session_json_serializer
     session_class = SecureCookieSession
 
-    def get_signing_serializer(self, app):
+    def get_signing_serializer(
+        self, app: "Flask"
+    ) -> t.Optional[URLSafeTimedSerializer]:
         if not app.secret_key:
             return None
         signer_kwargs = dict(
@@ -332,7 +346,9 @@ class SecureCookieSessionInterface(SessionInterface):
             signer_kwargs=signer_kwargs,
         )
 
-    def open_session(self, app, request):
+    def open_session(
+        self, app: "Flask", request: "Request"
+    ) -> t.Optional[SecureCookieSession]:
         s = self.get_signing_serializer(app)
         if s is None:
             return None
@@ -346,7 +362,9 @@ class SecureCookieSessionInterface(SessionInterface):
         except BadSignature:
             return self.session_class()
 
-    def save_session(self, app, session, response):
+    def save_session(
+        self, app: "Flask", session: SessionMixin, response: "Response"
+    ) -> None:
         name = self.get_cookie_name(app)
         domain = self.get_cookie_domain(app)
         path = self.get_cookie_path(app)
@@ -372,10 +390,10 @@ class SecureCookieSessionInterface(SessionInterface):
 
         httponly = self.get_cookie_httponly(app)
         expires = self.get_expiration_time(app, session)
-        val = self.get_signing_serializer(app).dumps(dict(session))
+        val = self.get_signing_serializer(app).dumps(dict(session))  # type: ignore
         response.set_cookie(
             name,
-            val,
+            val,  # type: ignore
             expires=expires,
             httponly=httponly,
             domain=domain,

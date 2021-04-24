@@ -1,13 +1,17 @@
 import logging
 import sys
+import typing as t
 
 from werkzeug.local import LocalProxy
 
 from .globals import request
 
+if t.TYPE_CHECKING:
+    from .app import Flask
+
 
 @LocalProxy
-def wsgi_errors_stream():
+def wsgi_errors_stream() -> t.TextIO:
     """Find the most appropriate error stream for the application. If a request
     is active, log to ``wsgi.errors``, otherwise use ``sys.stderr``.
 
@@ -19,7 +23,7 @@ def wsgi_errors_stream():
     return request.environ["wsgi.errors"] if request else sys.stderr
 
 
-def has_level_handler(logger):
+def has_level_handler(logger: logging.Logger) -> bool:
     """Check if there is a handler in the logging chain that will handle the
     given logger's :meth:`effective level <~logging.Logger.getEffectiveLevel>`.
     """
@@ -33,20 +37,20 @@ def has_level_handler(logger):
         if not current.propagate:
             break
 
-        current = current.parent
+        current = current.parent  # type: ignore
 
     return False
 
 
 #: Log messages to :func:`~flask.logging.wsgi_errors_stream` with the format
 #: ``[%(asctime)s] %(levelname)s in %(module)s: %(message)s``.
-default_handler = logging.StreamHandler(wsgi_errors_stream)
+default_handler = logging.StreamHandler(wsgi_errors_stream)  # type: ignore
 default_handler.setFormatter(
     logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
 )
 
 
-def create_logger(app):
+def create_logger(app: "Flask") -> logging.Logger:
     """Get the Flask app's logger and configure it if needed.
 
     The logger name will be the same as

@@ -1,20 +1,25 @@
 import io
 import json as _json
+import typing as t
 import uuid
 import warnings
 from datetime import date
 
-from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps
+from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps  # type: ignore
 from werkzeug.http import http_date
 
 from ..globals import current_app
 from ..globals import request
 
+if t.TYPE_CHECKING:
+    from ..app import Flask
+    from ..wrappers import Response
+
 try:
     import dataclasses
 except ImportError:
     # Python < 3.7
-    dataclasses = None
+    dataclasses = None  # type: ignore
 
 
 class JSONEncoder(_json.JSONEncoder):
@@ -34,7 +39,7 @@ class JSONEncoder(_json.JSONEncoder):
     :attr:`flask.Blueprint.json_encoder` to override the default.
     """
 
-    def default(self, o):
+    def default(self, o: t.Any) -> t.Any:
         """Convert ``o`` to a JSON serializable type. See
         :meth:`json.JSONEncoder.default`. Python does not support
         overriding how basic types like ``str`` or ``list`` are
@@ -48,7 +53,7 @@ class JSONEncoder(_json.JSONEncoder):
             return dataclasses.asdict(o)
         if hasattr(o, "__html__"):
             return str(o.__html__())
-        return super().default(self, o)
+        return super().default(o)
 
 
 class JSONDecoder(_json.JSONDecoder):
@@ -62,14 +67,19 @@ class JSONDecoder(_json.JSONDecoder):
     """
 
 
-def _dump_arg_defaults(kwargs, app=None):
+def _dump_arg_defaults(
+    kwargs: t.Dict[str, t.Any], app: t.Optional["Flask"] = None
+) -> None:
     """Inject default arguments for dump functions."""
     if app is None:
         app = current_app
 
     if app:
-        bp = app.blueprints.get(request.blueprint) if request else None
-        cls = bp.json_encoder if bp and bp.json_encoder else app.json_encoder
+        cls = app.json_encoder
+        bp = app.blueprints.get(request.blueprint) if request else None  # type: ignore
+        if bp is not None and bp.json_encoder is not None:
+            cls = bp.json_encoder
+
         kwargs.setdefault("cls", cls)
         kwargs.setdefault("ensure_ascii", app.config["JSON_AS_ASCII"])
         kwargs.setdefault("sort_keys", app.config["JSON_SORT_KEYS"])
@@ -78,20 +88,25 @@ def _dump_arg_defaults(kwargs, app=None):
         kwargs.setdefault("cls", JSONEncoder)
 
 
-def _load_arg_defaults(kwargs, app=None):
+def _load_arg_defaults(
+    kwargs: t.Dict[str, t.Any], app: t.Optional["Flask"] = None
+) -> None:
     """Inject default arguments for load functions."""
     if app is None:
         app = current_app
 
     if app:
-        bp = app.blueprints.get(request.blueprint) if request else None
-        cls = bp.json_decoder if bp and bp.json_decoder else app.json_decoder
+        cls = app.json_decoder
+        bp = app.blueprints.get(request.blueprint) if request else None  # type: ignore
+        if bp is not None and bp.json_decoder is not None:
+            cls = bp.json_decoder
+
         kwargs.setdefault("cls", cls)
     else:
         kwargs.setdefault("cls", JSONDecoder)
 
 
-def dumps(obj, app=None, **kwargs):
+def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
     """Serialize an object to a string of JSON.
 
     Takes the same arguments as the built-in :func:`json.dumps`, with
@@ -121,12 +136,14 @@ def dumps(obj, app=None, **kwargs):
         )
 
         if isinstance(rv, str):
-            return rv.encode(encoding)
+            return rv.encode(encoding)  # type: ignore
 
     return rv
 
 
-def dump(obj, fp, app=None, **kwargs):
+def dump(
+    obj: t.Any, fp: t.IO[str], app: t.Optional["Flask"] = None, **kwargs: t.Any
+) -> None:
     """Serialize an object to JSON written to a file object.
 
     Takes the same arguments as the built-in :func:`json.dump`, with
@@ -150,7 +167,7 @@ def dump(obj, fp, app=None, **kwargs):
         fp.write("")
     except TypeError:
         show_warning = True
-        fp = io.TextIOWrapper(fp, encoding or "utf-8")
+        fp = io.TextIOWrapper(fp, encoding or "utf-8")  # type: ignore
 
     if show_warning:
         warnings.warn(
@@ -163,7 +180,7 @@ def dump(obj, fp, app=None, **kwargs):
     _json.dump(obj, fp, **kwargs)
 
 
-def loads(s, app=None, **kwargs):
+def loads(s: str, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> t.Any:
     """Deserialize an object from a string of JSON.
 
     Takes the same arguments as the built-in :func:`json.loads`, with
@@ -199,7 +216,7 @@ def loads(s, app=None, **kwargs):
     return _json.loads(s, **kwargs)
 
 
-def load(fp, app=None, **kwargs):
+def load(fp: t.IO[str], app: t.Optional["Flask"] = None, **kwargs: t.Any) -> t.Any:
     """Deserialize an object from JSON read from a file object.
 
     Takes the same arguments as the built-in :func:`json.load`, with
@@ -227,12 +244,12 @@ def load(fp, app=None, **kwargs):
         )
 
         if isinstance(fp.read(0), bytes):
-            fp = io.TextIOWrapper(fp, encoding)
+            fp = io.TextIOWrapper(fp, encoding)  # type: ignore
 
     return _json.load(fp, **kwargs)
 
 
-def htmlsafe_dumps(obj, **kwargs):
+def htmlsafe_dumps(obj: t.Any, **kwargs: t.Any) -> str:
     """Serialize an object to a string of JSON with :func:`dumps`, then
     replace HTML-unsafe characters with Unicode escapes and mark the
     result safe with :class:`~markupsafe.Markup`.
@@ -256,7 +273,7 @@ def htmlsafe_dumps(obj, **kwargs):
     return _jinja_htmlsafe_dumps(obj, dumps=dumps, **kwargs)
 
 
-def htmlsafe_dump(obj, fp, **kwargs):
+def htmlsafe_dump(obj: t.Any, fp: t.IO[str], **kwargs: t.Any) -> None:
     """Serialize an object to JSON written to a file object, replacing
     HTML-unsafe characters with Unicode escapes. See
     :func:`htmlsafe_dumps` and :func:`dumps`.
@@ -264,7 +281,7 @@ def htmlsafe_dump(obj, fp, **kwargs):
     fp.write(htmlsafe_dumps(obj, **kwargs))
 
 
-def jsonify(*args, **kwargs):
+def jsonify(*args: t.Any, **kwargs: t.Any) -> "Response":
     """Serialize data to JSON and wrap it in a :class:`~flask.Response`
     with the :mimetype:`application/json` mimetype.
 
