@@ -1,18 +1,18 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.12.0
+    rev: v2.13.0
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
         files: "^(?!examples/)"
         args: ["--application-directories", "src"]
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.4b0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
