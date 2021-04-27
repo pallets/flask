@@ -1,9 +1,14 @@
+import typing as t
+
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Request as RequestBase
 from werkzeug.wrappers import Response as ResponseBase
 
 from . import json
 from .globals import current_app
+
+if t.TYPE_CHECKING:
+    from werkzeug.routing import Rule
 
 
 class Request(RequestBase):
@@ -31,26 +36,28 @@ class Request(RequestBase):
     #: because the request was never internally bound.
     #:
     #: .. versionadded:: 0.6
-    url_rule = None
+    url_rule: t.Optional["Rule"] = None
 
     #: A dict of view arguments that matched the request.  If an exception
     #: happened when matching, this will be ``None``.
-    view_args = None
+    view_args: t.Optional[t.Dict[str, t.Any]] = None
 
     #: If matching the URL failed, this is the exception that will be
     #: raised / was raised as part of the request handling.  This is
     #: usually a :exc:`~werkzeug.exceptions.NotFound` exception or
     #: something similar.
-    routing_exception = None
+    routing_exception: t.Optional[Exception] = None
 
     @property
-    def max_content_length(self):
+    def max_content_length(self) -> t.Optional[int]:  # type: ignore
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         if current_app:
             return current_app.config["MAX_CONTENT_LENGTH"]
+        else:
+            return None
 
     @property
-    def endpoint(self):
+    def endpoint(self) -> t.Optional[str]:
         """The endpoint that matched the request.  This in combination with
         :attr:`view_args` can be used to reconstruct the same or a
         modified URL.  If an exception happened when matching, this will
@@ -58,14 +65,18 @@ class Request(RequestBase):
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
+        else:
+            return None
 
     @property
-    def blueprint(self):
+    def blueprint(self) -> t.Optional[str]:
         """The name of the current blueprint"""
         if self.url_rule and "." in self.url_rule.endpoint:
             return self.url_rule.endpoint.rsplit(".", 1)[0]
+        else:
+            return None
 
-    def _load_form_data(self):
+    def _load_form_data(self) -> None:
         RequestBase._load_form_data(self)
 
         # In debug mode we're replacing the files multidict with an ad-hoc
@@ -80,7 +91,7 @@ class Request(RequestBase):
 
             attach_enctype_error_multidict(self)
 
-    def on_json_loading_failed(self, e):
+    def on_json_loading_failed(self, e: Exception) -> t.NoReturn:
         if current_app and current_app.debug:
             raise BadRequest(f"Failed to decode JSON object: {e}")
 
@@ -110,7 +121,7 @@ class Response(ResponseBase):
     json_module = json
 
     @property
-    def max_cookie_size(self):
+    def max_cookie_size(self) -> int:  # type: ignore
         """Read-only view of the :data:`MAX_COOKIE_SIZE` config key.
 
         See :attr:`~werkzeug.wrappers.Response.max_cookie_size` in

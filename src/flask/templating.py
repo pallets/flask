@@ -1,5 +1,8 @@
+import typing as t
+
 from jinja2 import BaseLoader
 from jinja2 import Environment as BaseEnvironment
+from jinja2 import Template
 from jinja2 import TemplateNotFound
 
 from .globals import _app_ctx_stack
@@ -7,8 +10,12 @@ from .globals import _request_ctx_stack
 from .signals import before_render_template
 from .signals import template_rendered
 
+if t.TYPE_CHECKING:
+    from .app import Flask
+    from .scaffold import Scaffold
 
-def _default_template_ctx_processor():
+
+def _default_template_ctx_processor() -> t.Dict[str, t.Any]:
     """Default template context processor.  Injects `request`,
     `session` and `g`.
     """
@@ -29,7 +36,7 @@ class Environment(BaseEnvironment):
     name of the blueprint to referenced templates if necessary.
     """
 
-    def __init__(self, app, **options):
+    def __init__(self, app: "Flask", **options: t.Any) -> None:
         if "loader" not in options:
             options["loader"] = app.create_global_jinja_loader()
         BaseEnvironment.__init__(self, **options)
@@ -41,15 +48,19 @@ class DispatchingJinjaLoader(BaseLoader):
     the blueprint folders.
     """
 
-    def __init__(self, app):
+    def __init__(self, app: "Flask") -> None:
         self.app = app
 
-    def get_source(self, environment, template):
+    def get_source(
+        self, environment: Environment, template: str
+    ) -> t.Tuple[str, t.Optional[str], t.Callable]:
         if self.app.config["EXPLAIN_TEMPLATE_LOADING"]:
             return self._get_source_explained(environment, template)
         return self._get_source_fast(environment, template)
 
-    def _get_source_explained(self, environment, template):
+    def _get_source_explained(
+        self, environment: Environment, template: str
+    ) -> t.Tuple[str, t.Optional[str], t.Callable]:
         attempts = []
         trv = None
 
@@ -70,7 +81,9 @@ class DispatchingJinjaLoader(BaseLoader):
             return trv
         raise TemplateNotFound(template)
 
-    def _get_source_fast(self, environment, template):
+    def _get_source_fast(
+        self, environment: Environment, template: str
+    ) -> t.Tuple[str, t.Optional[str], t.Callable]:
         for _srcobj, loader in self._iter_loaders(template):
             try:
                 return loader.get_source(environment, template)
@@ -78,7 +91,9 @@ class DispatchingJinjaLoader(BaseLoader):
                 continue
         raise TemplateNotFound(template)
 
-    def _iter_loaders(self, template):
+    def _iter_loaders(
+        self, template: str
+    ) -> t.Generator[t.Tuple["Scaffold", BaseLoader], None, None]:
         loader = self.app.jinja_loader
         if loader is not None:
             yield self.app, loader
@@ -88,7 +103,7 @@ class DispatchingJinjaLoader(BaseLoader):
             if loader is not None:
                 yield blueprint, loader
 
-    def list_templates(self):
+    def list_templates(self) -> t.List[str]:
         result = set()
         loader = self.app.jinja_loader
         if loader is not None:
@@ -103,7 +118,7 @@ class DispatchingJinjaLoader(BaseLoader):
         return list(result)
 
 
-def _render(template, context, app):
+def _render(template: Template, context: dict, app: "Flask") -> str:
     """Renders the template and fires the signal"""
 
     before_render_template.send(app, template=template, context=context)
@@ -112,7 +127,9 @@ def _render(template, context, app):
     return rv
 
 
-def render_template(template_name_or_list, **context):
+def render_template(
+    template_name_or_list: t.Union[str, t.List[str]], **context: t.Any
+) -> str:
     """Renders a template from the template folder with the given
     context.
 
@@ -131,7 +148,7 @@ def render_template(template_name_or_list, **context):
     )
 
 
-def render_template_string(source, **context):
+def render_template_string(source: str, **context: t.Any) -> str:
     """Renders a template from the given template source string
     with the given context. Template variables will be autoescaped.
 
