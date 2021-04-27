@@ -1,6 +1,7 @@
 import errno
 import os
 import types
+import typing as t
 
 from werkzeug.utils import import_string
 
@@ -8,11 +9,11 @@ from werkzeug.utils import import_string
 class ConfigAttribute:
     """Makes an attribute forward to the config"""
 
-    def __init__(self, name, get_converter=None):
+    def __init__(self, name: str, get_converter: t.Optional[t.Callable] = None) -> None:
         self.__name__ = name
         self.get_converter = get_converter
 
-    def __get__(self, obj, type=None):
+    def __get__(self, obj: t.Any, owner: t.Any = None) -> t.Any:
         if obj is None:
             return self
         rv = obj.config[self.__name__]
@@ -20,7 +21,7 @@ class ConfigAttribute:
             rv = self.get_converter(rv)
         return rv
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: t.Any, value: t.Any) -> None:
         obj.config[self.__name__] = value
 
 
@@ -68,11 +69,11 @@ class Config(dict):
     :param defaults: an optional dictionary of default values
     """
 
-    def __init__(self, root_path, defaults=None):
+    def __init__(self, root_path: str, defaults: t.Optional[dict] = None) -> None:
         dict.__init__(self, defaults or {})
         self.root_path = root_path
 
-    def from_envvar(self, variable_name, silent=False):
+    def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
         """Loads a configuration from an environment variable pointing to
         a configuration file.  This is basically just a shortcut with nicer
         error messages for this line of code::
@@ -96,7 +97,7 @@ class Config(dict):
             )
         return self.from_pyfile(rv, silent=silent)
 
-    def from_pyfile(self, filename, silent=False):
+    def from_pyfile(self, filename: str, silent: bool = False) -> bool:
         """Updates the values in the config from a Python file.  This function
         behaves as if the file was imported as module with the
         :meth:`from_object` function.
@@ -124,7 +125,7 @@ class Config(dict):
         self.from_object(d)
         return True
 
-    def from_object(self, obj):
+    def from_object(self, obj: t.Union[object, str]) -> None:
         """Updates the values from the given object.  An object can be of one
         of the following two types:
 
@@ -162,7 +163,12 @@ class Config(dict):
             if key.isupper():
                 self[key] = getattr(obj, key)
 
-    def from_file(self, filename, load, silent=False):
+    def from_file(
+        self,
+        filename: str,
+        load: t.Callable[[t.IO[t.Any]], t.Mapping],
+        silent: bool = False,
+    ) -> bool:
         """Update the values in the config from a file that is loaded
         using the ``load`` parameter. The loaded data is passed to the
         :meth:`from_mapping` method.
@@ -196,30 +202,26 @@ class Config(dict):
 
         return self.from_mapping(obj)
 
-    def from_mapping(self, *mapping, **kwargs):
+    def from_mapping(
+        self, mapping: t.Optional[t.Mapping[str, t.Any]] = None, **kwargs: t.Any
+    ) -> bool:
         """Updates the config like :meth:`update` ignoring items with non-upper
         keys.
 
         .. versionadded:: 0.11
         """
-        mappings = []
-        if len(mapping) == 1:
-            if hasattr(mapping[0], "items"):
-                mappings.append(mapping[0].items())
-            else:
-                mappings.append(mapping[0])
-        elif len(mapping) > 1:
-            raise TypeError(
-                f"expected at most 1 positional argument, got {len(mapping)}"
-            )
-        mappings.append(kwargs.items())
-        for mapping in mappings:
-            for (key, value) in mapping:
-                if key.isupper():
-                    self[key] = value
+        mappings: t.Dict[str, t.Any] = {}
+        if mapping is not None:
+            mappings.update(mapping)
+        mappings.update(kwargs)
+        for key, value in mappings.items():
+            if key.isupper():
+                self[key] = value
         return True
 
-    def get_namespace(self, namespace, lowercase=True, trim_namespace=True):
+    def get_namespace(
+        self, namespace: str, lowercase: bool = True, trim_namespace: bool = True
+    ) -> t.Dict[str, t.Any]:
         """Returns a dictionary containing a subset of configuration options
         that match the specified namespace/prefix. Example usage::
 
@@ -260,5 +262,5 @@ class Config(dict):
             rv[key] = v
         return rv
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{type(self).__name__} {dict.__repr__(self)}>"

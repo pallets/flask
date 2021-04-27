@@ -1,11 +1,14 @@
 import functools
 import inspect
+import logging
 import os
 import sys
+import typing as t
 import weakref
 from datetime import timedelta
 from itertools import chain
 from threading import Lock
+from types import TracebackType
 
 from werkzeug.datastructures import Headers
 from werkzeug.datastructures import ImmutableDict
@@ -15,6 +18,7 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import InternalServerError
 from werkzeug.routing import BuildError
 from werkzeug.routing import Map
+from werkzeug.routing import MapAdapter
 from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
@@ -53,15 +57,30 @@ from .signals import request_started
 from .signals import request_tearing_down
 from .templating import DispatchingJinjaLoader
 from .templating import Environment
+from .typing import AfterRequestCallable
+from .typing import BeforeRequestCallable
+from .typing import ErrorHandlerCallable
+from .typing import ResponseReturnValue
+from .typing import TeardownCallable
+from .typing import TemplateContextProcessorCallable
+from .typing import TemplateFilterCallable
+from .typing import TemplateGlobalCallable
+from .typing import TemplateTestCallable
+from .typing import URLDefaultCallable
+from .typing import URLValuePreprocessorCallable
 from .wrappers import Request
 from .wrappers import Response
 
+if t.TYPE_CHECKING:
+    from .blueprints import Blueprint
+    from .testing import FlaskClient
+    from .testing import FlaskCliRunner
 
 if sys.version_info >= (3, 8):
     iscoroutinefunction = inspect.iscoroutinefunction
 else:
 
-    def iscoroutinefunction(func):
+    def iscoroutinefunction(func: t.Any) -> bool:
         while inspect.ismethod(func):
             func = func.__func__
 
@@ -71,7 +90,7 @@ else:
         return inspect.iscoroutinefunction(func)
 
 
-def _make_timedelta(value):
+def _make_timedelta(value: t.Optional[timedelta]) -> t.Optional[timedelta]:
     if value is None or isinstance(value, timedelta):
         return value
 
@@ -295,7 +314,7 @@ class Flask(Scaffold):
     #:     This is a ``dict`` instead of an ``ImmutableDict`` to allow
     #:     easier configuration.
     #:
-    jinja_options = {}
+    jinja_options: dict = {}
 
     #: Default configuration parameters.
     default_config = ImmutableDict(
@@ -347,7 +366,7 @@ class Flask(Scaffold):
     #: the test client that is used with when `test_client` is used.
     #:
     #: .. versionadded:: 0.7
-    test_client_class = None
+    test_client_class: t.Optional[t.Type["FlaskClient"]] = None
 
     #: The :class:`~click.testing.CliRunner` subclass, by default
     #: :class:`~flask.testing.FlaskCliRunner` that is used by
@@ -355,7 +374,7 @@ class Flask(Scaffold):
     #: Flask app object as the first argument.
     #:
     #: .. versionadded:: 1.0
-    test_cli_runner_class = None
+    test_cli_runner_class: t.Optional[t.Type["FlaskCliRunner"]] = None
 
     #: the session interface to use.  By default an instance of
     #: :class:`~flask.sessions.SecureCookieSessionInterface` is used here.
@@ -365,16 +384,16 @@ class Flask(Scaffold):
 
     def __init__(
         self,
-        import_name,
-        static_url_path=None,
-        static_folder="static",
-        static_host=None,
-        host_matching=False,
-        subdomain_matching=False,
-        template_folder="templates",
-        instance_path=None,
-        instance_relative_config=False,
-        root_path=None,
+        import_name: str,
+        static_url_path: t.Optional[str] = None,
+        static_folder: t.Optional[str] = "static",
+        static_host: t.Optional[str] = None,
+        host_matching: bool = False,
+        subdomain_matching: bool = False,
+        template_folder: t.Optional[str] = "templates",
+        instance_path: t.Optional[str] = None,
+        instance_relative_config: bool = False,
+        root_path: t.Optional[str] = None,
     ):
         super().__init__(
             import_name=import_name,
@@ -409,14 +428,16 @@ class Flask(Scaffold):
         #: tried.
         #:
         #: .. versionadded:: 0.9
-        self.url_build_error_handlers = []
+        self.url_build_error_handlers: t.List[
+            t.Callable[[Exception, str, dict], str]
+        ] = []
 
         #: A list of functions that will be called at the beginning of the
         #: first request to this instance. To register a function, use the
         #: :meth:`before_first_request` decorator.
         #:
         #: .. versionadded:: 0.8
-        self.before_first_request_funcs = []
+        self.before_first_request_funcs: t.List[BeforeRequestCallable] = []
 
         #: A list of functions that are called when the application context
         #: is destroyed.  Since the application context is also torn down
@@ -424,13 +445,13 @@ class Flask(Scaffold):
         #: from databases.
         #:
         #: .. versionadded:: 0.9
-        self.teardown_appcontext_funcs = []
+        self.teardown_appcontext_funcs: t.List[TeardownCallable] = []
 
         #: A list of shell context processor functions that should be run
         #: when a shell context is created.
         #:
         #: .. versionadded:: 0.11
-        self.shell_context_processors = []
+        self.shell_context_processors: t.List[t.Callable[[], t.Dict[str, t.Any]]] = []
 
         #: Maps registered blueprint names to blueprint objects. The
         #: dict retains the order the blueprints were registered in.
@@ -438,7 +459,7 @@ class Flask(Scaffold):
         #: not track how often they were attached.
         #:
         #: .. versionadded:: 0.7
-        self.blueprints = {}
+        self.blueprints: t.Dict[str, "Blueprint"] = {}
 
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
@@ -449,7 +470,7 @@ class Flask(Scaffold):
         #: ``'foo'``.
         #:
         #: .. versionadded:: 0.7
-        self.extensions = {}
+        self.extensions: dict = {}
 
         #: The :class:`~werkzeug.routing.Map` for this instance.  You can use
         #: this to change the routing converters after the class was created
@@ -492,18 +513,18 @@ class Flask(Scaffold):
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=lambda **kw: self_ref().send_static_file(**kw),
+                view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore # noqa: B950
             )
 
         # Set the name of the Click group in case someone wants to add
         # the app's commands to another CLI tool.
         self.cli.name = self.name
 
-    def _is_setup_finished(self):
+    def _is_setup_finished(self) -> bool:
         return self.debug and self._got_first_request
 
     @locked_cached_property
-    def name(self):
+    def name(self) -> str:  # type: ignore
         """The name of the application.  This is usually the import name
         with the difference that it's guessed from the run file if the
         import name is main.  This name is used as a display name when
@@ -520,7 +541,7 @@ class Flask(Scaffold):
         return self.import_name
 
     @property
-    def propagate_exceptions(self):
+    def propagate_exceptions(self) -> bool:
         """Returns the value of the ``PROPAGATE_EXCEPTIONS`` configuration
         value in case it's set, otherwise a sensible default is returned.
 
@@ -532,7 +553,7 @@ class Flask(Scaffold):
         return self.testing or self.debug
 
     @property
-    def preserve_context_on_exception(self):
+    def preserve_context_on_exception(self) -> bool:
         """Returns the value of the ``PRESERVE_CONTEXT_ON_EXCEPTION``
         configuration value in case it's set, otherwise a sensible default
         is returned.
@@ -545,7 +566,7 @@ class Flask(Scaffold):
         return self.debug
 
     @locked_cached_property
-    def logger(self):
+    def logger(self) -> logging.Logger:
         """A standard Python :class:`~logging.Logger` for the app, with
         the same name as :attr:`name`.
 
@@ -572,7 +593,7 @@ class Flask(Scaffold):
         return create_logger(self)
 
     @locked_cached_property
-    def jinja_env(self):
+    def jinja_env(self) -> Environment:
         """The Jinja environment used to load templates.
 
         The environment is created the first time this property is
@@ -582,7 +603,7 @@ class Flask(Scaffold):
         return self.create_jinja_environment()
 
     @property
-    def got_first_request(self):
+    def got_first_request(self) -> bool:
         """This attribute is set to ``True`` if the application started
         handling the first request.
 
@@ -590,7 +611,7 @@ class Flask(Scaffold):
         """
         return self._got_first_request
 
-    def make_config(self, instance_relative=False):
+    def make_config(self, instance_relative: bool = False) -> Config:
         """Used to create the config attribute by the Flask constructor.
         The `instance_relative` parameter is passed in from the constructor
         of Flask (there named `instance_relative_config`) and indicates if
@@ -607,7 +628,7 @@ class Flask(Scaffold):
         defaults["DEBUG"] = get_debug_flag()
         return self.config_class(root_path, defaults)
 
-    def auto_find_instance_path(self):
+    def auto_find_instance_path(self) -> str:
         """Tries to locate the instance path if it was not provided to the
         constructor of the application class.  It will basically calculate
         the path to a folder named ``instance`` next to your main file or
@@ -620,7 +641,7 @@ class Flask(Scaffold):
             return os.path.join(package_path, "instance")
         return os.path.join(prefix, "var", f"{self.name}-instance")
 
-    def open_instance_resource(self, resource, mode="rb"):
+    def open_instance_resource(self, resource: str, mode: str = "rb") -> t.IO[t.AnyStr]:
         """Opens a resource from the application's instance folder
         (:attr:`instance_path`).  Otherwise works like
         :meth:`open_resource`.  Instance resources can also be opened for
@@ -633,7 +654,7 @@ class Flask(Scaffold):
         return open(os.path.join(self.instance_path, resource), mode)
 
     @property
-    def templates_auto_reload(self):
+    def templates_auto_reload(self) -> bool:
         """Reload templates when they are changed. Used by
         :meth:`create_jinja_environment`.
 
@@ -648,10 +669,10 @@ class Flask(Scaffold):
         return rv if rv is not None else self.debug
 
     @templates_auto_reload.setter
-    def templates_auto_reload(self, value):
+    def templates_auto_reload(self, value: bool) -> None:
         self.config["TEMPLATES_AUTO_RELOAD"] = value
 
-    def create_jinja_environment(self):
+    def create_jinja_environment(self) -> Environment:
         """Create the Jinja environment based on :attr:`jinja_options`
         and the various Jinja-related methods of the app. Changing
         :attr:`jinja_options` after this will have no effect. Also adds
@@ -683,10 +704,10 @@ class Flask(Scaffold):
             session=session,
             g=g,
         )
-        rv.policies["json.dumps_function"] = json.dumps
+        rv.policies["json.dumps_function"] = json.dumps  # type: ignore
         return rv
 
-    def create_global_jinja_loader(self):
+    def create_global_jinja_loader(self) -> DispatchingJinjaLoader:
         """Creates the loader for the Jinja2 environment.  Can be used to
         override just the loader and keeping the rest unchanged.  It's
         discouraged to override this function.  Instead one should override
@@ -699,7 +720,7 @@ class Flask(Scaffold):
         """
         return DispatchingJinjaLoader(self)
 
-    def select_jinja_autoescape(self, filename):
+    def select_jinja_autoescape(self, filename: str) -> bool:
         """Returns ``True`` if autoescaping should be active for the given
         template name. If no template name is given, returns `True`.
 
@@ -709,7 +730,7 @@ class Flask(Scaffold):
             return True
         return filename.endswith((".html", ".htm", ".xml", ".xhtml"))
 
-    def update_template_context(self, context):
+    def update_template_context(self, context: dict) -> None:
         """Update the template context with some commonly used variables.
         This injects request, session, config and g into the template
         context as well as everything template context processors want
@@ -720,7 +741,9 @@ class Flask(Scaffold):
         :param context: the context as a dictionary that is updated in place
                         to add extra variables.
         """
-        funcs = self.template_context_processors[None]
+        funcs: t.Iterable[
+            TemplateContextProcessorCallable
+        ] = self.template_context_processors[None]
         reqctx = _request_ctx_stack.top
         if reqctx is not None:
             for bp in self._request_blueprints():
@@ -734,7 +757,7 @@ class Flask(Scaffold):
         # existing views.
         context.update(orig_ctx)
 
-    def make_shell_context(self):
+    def make_shell_context(self) -> dict:
         """Returns the shell context for an interactive shell for this
         application.  This runs all the registered shell context
         processors.
@@ -758,7 +781,7 @@ class Flask(Scaffold):
     env = ConfigAttribute("ENV")
 
     @property
-    def debug(self):
+    def debug(self) -> bool:
         """Whether debug mode is enabled. When using ``flask run`` to start
         the development server, an interactive debugger will be shown for
         unhandled exceptions, and the server will be reloaded when code
@@ -775,11 +798,18 @@ class Flask(Scaffold):
         return self.config["DEBUG"]
 
     @debug.setter
-    def debug(self, value):
+    def debug(self, value: bool) -> None:
         self.config["DEBUG"] = value
         self.jinja_env.auto_reload = self.templates_auto_reload
 
-    def run(self, host=None, port=None, debug=None, load_dotenv=True, **options):
+    def run(
+        self,
+        host: t.Optional[str] = None,
+        port: t.Optional[int] = None,
+        debug: t.Optional[bool] = None,
+        load_dotenv: bool = True,
+        **options: t.Any,
+    ) -> None:
         """Runs the application on a local development server.
 
         Do not use ``run()`` in a production setting. It is not intended to
@@ -887,14 +917,14 @@ class Flask(Scaffold):
         from werkzeug.serving import run_simple
 
         try:
-            run_simple(host, port, self, **options)
+            run_simple(t.cast(str, host), port, self, **options)
         finally:
             # reset the first request information if the development server
             # reset normally.  This makes it possible to restart the server
             # without reloader and that stuff from an interactive shell.
             self._got_first_request = False
 
-    def test_client(self, use_cookies=True, **kwargs):
+    def test_client(self, use_cookies: bool = True, **kwargs: t.Any) -> "FlaskClient":
         """Creates a test client for this application.  For information
         about unit testing head over to :doc:`/testing`.
 
@@ -947,10 +977,12 @@ class Flask(Scaffold):
         """
         cls = self.test_client_class
         if cls is None:
-            from .testing import FlaskClient as cls
-        return cls(self, self.response_class, use_cookies=use_cookies, **kwargs)
+            from .testing import FlaskClient as cls  # type: ignore
+        return cls(  # type: ignore
+            self, self.response_class, use_cookies=use_cookies, **kwargs
+        )
 
-    def test_cli_runner(self, **kwargs):
+    def test_cli_runner(self, **kwargs: t.Any) -> "FlaskCliRunner":
         """Create a CLI runner for testing CLI commands.
         See :ref:`testing-cli`.
 
@@ -963,12 +995,12 @@ class Flask(Scaffold):
         cls = self.test_cli_runner_class
 
         if cls is None:
-            from .testing import FlaskCliRunner as cls
+            from .testing import FlaskCliRunner as cls  # type: ignore
 
-        return cls(self, **kwargs)
+        return cls(self, **kwargs)  # type: ignore
 
     @setupmethod
-    def register_blueprint(self, blueprint, **options):
+    def register_blueprint(self, blueprint: "Blueprint", **options: t.Any) -> None:
         """Register a :class:`~flask.Blueprint` on the application. Keyword
         arguments passed to this method will override the defaults set on the
         blueprint.
@@ -989,7 +1021,7 @@ class Flask(Scaffold):
         """
         blueprint.register(self, options)
 
-    def iter_blueprints(self):
+    def iter_blueprints(self) -> t.ValuesView["Blueprint"]:
         """Iterates over all blueprints by the order they were registered.
 
         .. versionadded:: 0.11
@@ -999,14 +1031,14 @@ class Flask(Scaffold):
     @setupmethod
     def add_url_rule(
         self,
-        rule,
-        endpoint=None,
-        view_func=None,
-        provide_automatic_options=None,
-        **options,
-    ):
+        rule: str,
+        endpoint: t.Optional[str] = None,
+        view_func: t.Optional[t.Callable] = None,
+        provide_automatic_options: t.Optional[bool] = None,
+        **options: t.Any,
+    ) -> None:
         if endpoint is None:
-            endpoint = _endpoint_from_view_func(view_func)
+            endpoint = _endpoint_from_view_func(view_func)  # type: ignore
         options["endpoint"] = endpoint
         methods = options.pop("methods", None)
 
@@ -1043,13 +1075,13 @@ class Flask(Scaffold):
         methods |= required_methods
 
         rule = self.url_rule_class(rule, methods=methods, **options)
-        rule.provide_automatic_options = provide_automatic_options
+        rule.provide_automatic_options = provide_automatic_options  # type: ignore
 
         self.url_map.add(rule)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
             if getattr(old_func, "_flask_sync_wrapper", False):
-                old_func = old_func.__wrapped__
+                old_func = old_func.__wrapped__  # type: ignore
             if old_func is not None and old_func != view_func:
                 raise AssertionError(
                     "View function mapping is overwriting an existing"
@@ -1058,7 +1090,7 @@ class Flask(Scaffold):
             self.view_functions[endpoint] = self.ensure_sync(view_func)
 
     @setupmethod
-    def template_filter(self, name=None):
+    def template_filter(self, name: t.Optional[str] = None) -> t.Callable:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
@@ -1071,14 +1103,16 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f):
+        def decorator(f: TemplateFilterCallable) -> TemplateFilterCallable:
             self.add_template_filter(f, name=name)
             return f
 
         return decorator
 
     @setupmethod
-    def add_template_filter(self, f, name=None):
+    def add_template_filter(
+        self, f: TemplateFilterCallable, name: t.Optional[str] = None
+    ) -> None:
         """Register a custom template filter.  Works exactly like the
         :meth:`template_filter` decorator.
 
@@ -1088,7 +1122,7 @@ class Flask(Scaffold):
         self.jinja_env.filters[name or f.__name__] = f
 
     @setupmethod
-    def template_test(self, name=None):
+    def template_test(self, name: t.Optional[str] = None) -> t.Callable:
         """A decorator that is used to register custom template test.
         You can specify a name for the test, otherwise the function
         name will be used. Example::
@@ -1108,14 +1142,16 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f):
+        def decorator(f: TemplateTestCallable) -> TemplateTestCallable:
             self.add_template_test(f, name=name)
             return f
 
         return decorator
 
     @setupmethod
-    def add_template_test(self, f, name=None):
+    def add_template_test(
+        self, f: TemplateTestCallable, name: t.Optional[str] = None
+    ) -> None:
         """Register a custom template test.  Works exactly like the
         :meth:`template_test` decorator.
 
@@ -1127,7 +1163,7 @@ class Flask(Scaffold):
         self.jinja_env.tests[name or f.__name__] = f
 
     @setupmethod
-    def template_global(self, name=None):
+    def template_global(self, name: t.Optional[str] = None) -> t.Callable:
         """A decorator that is used to register a custom template global function.
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
@@ -1142,14 +1178,16 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f):
+        def decorator(f: TemplateGlobalCallable) -> TemplateGlobalCallable:
             self.add_template_global(f, name=name)
             return f
 
         return decorator
 
     @setupmethod
-    def add_template_global(self, f, name=None):
+    def add_template_global(
+        self, f: TemplateGlobalCallable, name: t.Optional[str] = None
+    ) -> None:
         """Register a custom template global function. Works exactly like the
         :meth:`template_global` decorator.
 
@@ -1161,7 +1199,7 @@ class Flask(Scaffold):
         self.jinja_env.globals[name or f.__name__] = f
 
     @setupmethod
-    def before_first_request(self, f):
+    def before_first_request(self, f: BeforeRequestCallable) -> BeforeRequestCallable:
         """Registers a function to be run before the first request to this
         instance of the application.
 
@@ -1174,7 +1212,7 @@ class Flask(Scaffold):
         return f
 
     @setupmethod
-    def teardown_appcontext(self, f):
+    def teardown_appcontext(self, f: TeardownCallable) -> TeardownCallable:
         """Registers a function to be called when the application context
         ends.  These functions are typically also called when the request
         context is popped.
@@ -1207,7 +1245,7 @@ class Flask(Scaffold):
         return f
 
     @setupmethod
-    def shell_context_processor(self, f):
+    def shell_context_processor(self, f: t.Callable) -> t.Callable:
         """Registers a shell context processor function.
 
         .. versionadded:: 0.11
@@ -1215,7 +1253,7 @@ class Flask(Scaffold):
         self.shell_context_processors.append(f)
         return f
 
-    def _find_error_handler(self, e):
+    def _find_error_handler(self, e: Exception) -> t.Optional[ErrorHandlerCallable]:
         """Return a registered error handler for an exception in this order:
         blueprint handler for a specific code, app handler for a specific code,
         blueprint handler for an exception class, app handler for an exception
@@ -1235,8 +1273,11 @@ class Flask(Scaffold):
 
                     if handler is not None:
                         return handler
+        return None
 
-    def handle_http_exception(self, e):
+    def handle_http_exception(
+        self, e: HTTPException
+    ) -> t.Union[HTTPException, ResponseReturnValue]:
         """Handles an HTTP exception.  By default this will invoke the
         registered error handlers and fall back to returning the
         exception as response.
@@ -1269,7 +1310,7 @@ class Flask(Scaffold):
             return e
         return handler(e)
 
-    def trap_http_exception(self, e):
+    def trap_http_exception(self, e: Exception) -> bool:
         """Checks if an HTTP exception should be trapped or not.  By default
         this will return ``False`` for all exceptions except for a bad request
         key error if ``TRAP_BAD_REQUEST_ERRORS`` is set to ``True``.  It
@@ -1304,7 +1345,9 @@ class Flask(Scaffold):
 
         return False
 
-    def handle_user_exception(self, e):
+    def handle_user_exception(
+        self, e: Exception
+    ) -> t.Union[HTTPException, ResponseReturnValue]:
         """This method is called whenever an exception occurs that
         should be handled. A special case is :class:`~werkzeug
         .exceptions.HTTPException` which is forwarded to the
@@ -1334,7 +1377,7 @@ class Flask(Scaffold):
 
         return handler(e)
 
-    def handle_exception(self, e):
+    def handle_exception(self, e: Exception) -> Response:
         """Handle an exception that did not have an error handler
         associated with it, or that was raised from an error handler.
         This always causes a 500 ``InternalServerError``.
@@ -1374,6 +1417,7 @@ class Flask(Scaffold):
             raise e
 
         self.log_exception(exc_info)
+        server_error: t.Union[InternalServerError, ResponseReturnValue]
         server_error = InternalServerError(original_exception=e)
         handler = self._find_error_handler(server_error)
 
@@ -1382,7 +1426,12 @@ class Flask(Scaffold):
 
         return self.finalize_request(server_error, from_error_handler=True)
 
-    def log_exception(self, exc_info):
+    def log_exception(
+        self,
+        exc_info: t.Union[
+            t.Tuple[type, BaseException, TracebackType], t.Tuple[None, None, None]
+        ],
+    ) -> None:
         """Logs an exception.  This is called by :meth:`handle_exception`
         if debugging is disabled and right before the handler is called.
         The default implementation logs the exception as error on the
@@ -1394,7 +1443,7 @@ class Flask(Scaffold):
             f"Exception on {request.path} [{request.method}]", exc_info=exc_info
         )
 
-    def raise_routing_exception(self, request):
+    def raise_routing_exception(self, request: Request) -> t.NoReturn:
         """Exceptions that are recording during routing are reraised with
         this method.  During debug we are not reraising redirect requests
         for non ``GET``, ``HEAD``, or ``OPTIONS`` requests and we're raising
@@ -1407,13 +1456,13 @@ class Flask(Scaffold):
             or not isinstance(request.routing_exception, RequestRedirect)
             or request.method in ("GET", "HEAD", "OPTIONS")
         ):
-            raise request.routing_exception
+            raise request.routing_exception  # type: ignore
 
         from .debughelpers import FormDataRoutingRedirect
 
         raise FormDataRoutingRedirect(request)
 
-    def dispatch_request(self):
+    def dispatch_request(self) -> ResponseReturnValue:
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
         be a response object.  In order to convert the return value to a
@@ -1437,7 +1486,7 @@ class Flask(Scaffold):
         # otherwise dispatch to the handler for that endpoint
         return self.view_functions[rule.endpoint](**req.view_args)
 
-    def full_dispatch_request(self):
+    def full_dispatch_request(self) -> Response:
         """Dispatches the request and on top of that performs request
         pre and postprocessing as well as HTTP exception catching and
         error handling.
@@ -1454,7 +1503,11 @@ class Flask(Scaffold):
             rv = self.handle_user_exception(e)
         return self.finalize_request(rv)
 
-    def finalize_request(self, rv, from_error_handler=False):
+    def finalize_request(
+        self,
+        rv: t.Union[ResponseReturnValue, HTTPException],
+        from_error_handler: bool = False,
+    ) -> Response:
         """Given the return value from a view function this finalizes
         the request by converting it into a response and invoking the
         postprocessing functions.  This is invoked for both normal
@@ -1479,7 +1532,7 @@ class Flask(Scaffold):
             )
         return response
 
-    def try_trigger_before_first_request_functions(self):
+    def try_trigger_before_first_request_functions(self) -> None:
         """Called before each request and will ensure that it triggers
         the :attr:`before_first_request_funcs` and only exactly once per
         application instance (which means process usually).
@@ -1495,7 +1548,7 @@ class Flask(Scaffold):
                 func()
             self._got_first_request = True
 
-    def make_default_options_response(self):
+    def make_default_options_response(self) -> Response:
         """This method is called to create the default ``OPTIONS`` response.
         This can be changed through subclassing to change the default
         behavior of ``OPTIONS`` responses.
@@ -1508,7 +1561,7 @@ class Flask(Scaffold):
         rv.allow.update(methods)
         return rv
 
-    def should_ignore_error(self, error):
+    def should_ignore_error(self, error: t.Optional[BaseException]) -> bool:
         """This is called to figure out if an error should be ignored
         or not as far as the teardown system is concerned.  If this
         function returns ``True`` then the teardown handlers will not be
@@ -1518,7 +1571,7 @@ class Flask(Scaffold):
         """
         return False
 
-    def ensure_sync(self, func):
+    def ensure_sync(self, func: t.Callable) -> t.Callable:
         """Ensure that the function is synchronous for WSGI workers.
         Plain ``def`` functions are returned as-is. ``async def``
         functions are wrapped to run and wait for the response.
@@ -1532,7 +1585,7 @@ class Flask(Scaffold):
 
         return func
 
-    def make_response(self, rv):
+    def make_response(self, rv: ResponseReturnValue) -> Response:
         """Convert the return value from a view function to an instance of
         :attr:`response_class`.
 
@@ -1620,7 +1673,7 @@ class Flask(Scaffold):
                 # evaluate a WSGI callable, or coerce a different response
                 # class to the correct type
                 try:
-                    rv = self.response_class.force_type(rv, request.environ)
+                    rv = self.response_class.force_type(rv, request.environ)  # type: ignore  # noqa: B950
                 except TypeError as e:
                     raise TypeError(
                         f"{e}\nThe view function did not return a valid"
@@ -1636,10 +1689,11 @@ class Flask(Scaffold):
                     f" callable, but it was a {type(rv).__name__}."
                 )
 
+        rv = t.cast(Response, rv)
         # prefer the status if it was provided
         if status is not None:
             if isinstance(status, (str, bytes, bytearray)):
-                rv.status = status
+                rv.status = status  # type: ignore
             else:
                 rv.status_code = status
 
@@ -1649,7 +1703,9 @@ class Flask(Scaffold):
 
         return rv
 
-    def create_url_adapter(self, request):
+    def create_url_adapter(
+        self, request: t.Optional[Request]
+    ) -> t.Optional[MapAdapter]:
         """Creates a URL adapter for the given request. The URL adapter
         is created at a point where the request context is not yet set
         up so the request is passed explicitly.
@@ -1687,21 +1743,25 @@ class Flask(Scaffold):
                 url_scheme=self.config["PREFERRED_URL_SCHEME"],
             )
 
-    def inject_url_defaults(self, endpoint, values):
+        return None
+
+    def inject_url_defaults(self, endpoint: str, values: dict) -> None:
         """Injects the URL defaults for the given endpoint directly into
         the values dictionary passed.  This is used internally and
         automatically called on URL building.
 
         .. versionadded:: 0.7
         """
-        funcs = self.url_default_functions[None]
+        funcs: t.Iterable[URLDefaultCallable] = self.url_default_functions[None]
         if "." in endpoint:
             bp = endpoint.rsplit(".", 1)[0]
             funcs = chain(funcs, self.url_default_functions[bp])
         for func in funcs:
             func(endpoint, values)
 
-    def handle_url_build_error(self, error, endpoint, values):
+    def handle_url_build_error(
+        self, error: Exception, endpoint: str, values: dict
+    ) -> str:
         """Handle :class:`~werkzeug.routing.BuildError` on
         :meth:`url_for`.
         """
@@ -1722,7 +1782,7 @@ class Flask(Scaffold):
 
         raise error
 
-    def preprocess_request(self):
+    def preprocess_request(self) -> t.Optional[ResponseReturnValue]:
         """Called before the request is dispatched. Calls
         :attr:`url_value_preprocessors` registered with the app and the
         current blueprint (if any). Then calls :attr:`before_request_funcs`
@@ -1733,14 +1793,16 @@ class Flask(Scaffold):
         further request handling is stopped.
         """
 
-        funcs = self.url_value_preprocessors[None]
+        funcs: t.Iterable[URLValuePreprocessorCallable] = self.url_value_preprocessors[
+            None
+        ]
         for bp in self._request_blueprints():
             if bp in self.url_value_preprocessors:
                 funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
-        funcs = self.before_request_funcs[None]
+        funcs: t.Iterable[BeforeRequestCallable] = self.before_request_funcs[None]
         for bp in self._request_blueprints():
             if bp in self.before_request_funcs:
                 funcs = chain(funcs, self.before_request_funcs[bp])
@@ -1749,7 +1811,9 @@ class Flask(Scaffold):
             if rv is not None:
                 return rv
 
-    def process_response(self, response):
+        return None
+
+    def process_response(self, response: Response) -> Response:
         """Can be overridden in order to modify the response object
         before it's sent to the WSGI server.  By default this will
         call all the :meth:`after_request` decorated functions.
@@ -1763,7 +1827,7 @@ class Flask(Scaffold):
                  instance of :attr:`response_class`.
         """
         ctx = _request_ctx_stack.top
-        funcs = ctx._after_request_functions
+        funcs: t.Iterable[AfterRequestCallable] = ctx._after_request_functions
         for bp in self._request_blueprints():
             if bp in self.after_request_funcs:
                 funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
@@ -1775,7 +1839,9 @@ class Flask(Scaffold):
             self.session_interface.save_session(self, ctx.session, response)
         return response
 
-    def do_teardown_request(self, exc=_sentinel):
+    def do_teardown_request(
+        self, exc: t.Optional[BaseException] = _sentinel  # type: ignore
+    ) -> None:
         """Called after the request is dispatched and the response is
         returned, right before the request context is popped.
 
@@ -1798,7 +1864,9 @@ class Flask(Scaffold):
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
-        funcs = reversed(self.teardown_request_funcs[None])
+        funcs: t.Iterable[TeardownCallable] = reversed(
+            self.teardown_request_funcs[None]
+        )
         for bp in self._request_blueprints():
             if bp in self.teardown_request_funcs:
                 funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
@@ -1806,7 +1874,9 @@ class Flask(Scaffold):
             func(exc)
         request_tearing_down.send(self, exc=exc)
 
-    def do_teardown_appcontext(self, exc=_sentinel):
+    def do_teardown_appcontext(
+        self, exc: t.Optional[BaseException] = _sentinel  # type: ignore
+    ) -> None:
         """Called right before the application context is popped.
 
         When handling a request, the application context is popped
@@ -1827,7 +1897,7 @@ class Flask(Scaffold):
             func(exc)
         appcontext_tearing_down.send(self, exc=exc)
 
-    def app_context(self):
+    def app_context(self) -> AppContext:
         """Create an :class:`~flask.ctx.AppContext`. Use as a ``with``
         block to push the context, which will make :data:`current_app`
         point at this application.
@@ -1848,7 +1918,7 @@ class Flask(Scaffold):
         """
         return AppContext(self)
 
-    def request_context(self, environ):
+    def request_context(self, environ: dict) -> RequestContext:
         """Create a :class:`~flask.ctx.RequestContext` representing a
         WSGI environment. Use a ``with`` block to push the context,
         which will make :data:`request` point at this request.
@@ -1864,7 +1934,7 @@ class Flask(Scaffold):
         """
         return RequestContext(self, environ)
 
-    def test_request_context(self, *args, **kwargs):
+    def test_request_context(self, *args: t.Any, **kwargs: t.Any) -> RequestContext:
         """Create a :class:`~flask.ctx.RequestContext` for a WSGI
         environment created from the given values. This is mostly useful
         during testing, where you may want to run a function that uses
@@ -1920,7 +1990,7 @@ class Flask(Scaffold):
         finally:
             builder.close()
 
-    def wsgi_app(self, environ, start_response):
+    def wsgi_app(self, environ: dict, start_response: t.Callable) -> t.Any:
         """The actual WSGI application. This is not implemented in
         :meth:`__call__` so that middlewares can be applied without
         losing a reference to the app object. Instead of doing this::
@@ -1946,7 +2016,7 @@ class Flask(Scaffold):
             start the response.
         """
         ctx = self.request_context(environ)
-        error = None
+        error: t.Optional[BaseException] = None
         try:
             try:
                 ctx.push()
@@ -1963,14 +2033,14 @@ class Flask(Scaffold):
                 error = None
             ctx.auto_pop(error)
 
-    def __call__(self, environ, start_response):
+    def __call__(self, environ: dict, start_response: t.Callable) -> t.Any:
         """The WSGI server calls the Flask application object as the
         WSGI application. This calls :meth:`wsgi_app`, which can be
         wrapped to apply middleware.
         """
         return self.wsgi_app(environ, start_response)
 
-    def _request_blueprints(self):
+    def _request_blueprints(self) -> t.Iterable[str]:
         if _request_ctx_stack.top.request.blueprint is None:
             return []
         else:

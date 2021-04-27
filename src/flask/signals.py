@@ -1,3 +1,5 @@
+import typing as t
+
 try:
     from blinker import Namespace
 
@@ -5,8 +7,8 @@ try:
 except ImportError:
     signals_available = False
 
-    class Namespace:
-        def signal(self, name, doc=None):
+    class Namespace:  # type: ignore
+        def signal(self, name: str, doc: t.Optional[str] = None) -> "_FakeSignal":
             return _FakeSignal(name, doc)
 
     class _FakeSignal:
@@ -16,14 +18,14 @@ except ImportError:
         will just ignore the arguments and do nothing instead.
         """
 
-        def __init__(self, name, doc=None):
+        def __init__(self, name: str, doc: t.Optional[str] = None) -> None:
             self.name = name
             self.__doc__ = doc
 
-        def send(self, *args, **kwargs):
+        def send(self, *args: t.Any, **kwargs: t.Any) -> t.Any:
             pass
 
-        def _fail(self, *args, **kwargs):
+        def _fail(self, *args: t.Any, **kwargs: t.Any) -> t.Any:
             raise RuntimeError(
                 "Signalling support is unavailable because the blinker"
                 " library is not installed."

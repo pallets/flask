@@ -77,6 +77,7 @@ Unreleased
     ``python`` shell if ``readline`` is installed. :issue:`3941`
 -   ``helpers.total_seconds()`` is deprecated. Use
     ``timedelta.total_seconds()`` instead. :pr:`3962`
+-   Add type hinting. :pr:`3973`.
 
 
 Version 1.1.2
