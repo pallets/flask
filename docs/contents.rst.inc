@@ -57,5 +57,5 @@ Design notes, legal information and changelog are here for the interested.
    styleguide
    python3
    upgrading
-   changelog
+   changes
    license
