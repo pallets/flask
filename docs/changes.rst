@@ -1,4 +1,4 @@
-Changelog
-=========
+Changes
+=======
 
 .. include:: ../CHANGES.rst

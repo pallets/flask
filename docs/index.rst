@@ -88,6 +88,6 @@ Design notes, legal information and changelog are here for the interested.
    extensiondev
    styleguide
    upgrading
-   changelog
+   changes
    license
    contributing
