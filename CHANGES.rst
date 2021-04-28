@@ -76,6 +76,8 @@ Unreleased
 -   Support async views, error handlers, before and after request, and
     teardown functions. :pr:`3412`
 -   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`
+-   Set the default encoding to "UTF-8" when loading ``.env`` and
+    ``.flaskenv`` files to allow to use non-ASCII characters. :issue:`3931`
 -   ``flask shell`` sets up tab and history completion like the default
     ``python`` shell if ``readline`` is installed. :issue:`3941`
 -   ``helpers.total_seconds()`` is deprecated. Use
