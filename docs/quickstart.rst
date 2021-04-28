@@ -74,6 +74,8 @@ This launches a very simple builtin server, which is good enough for
 testing but probably not what you want to use in production. For
 deployment options see :doc:`deploying/index`.
 
+You can choose not to create ``FLASK_APP`` if your file is called app.py The ``flask run`` command will run this file automatically
+
 Now head over to http://127.0.0.1:5000/, and you should see your hello
 world greeting.
 
