@@ -17,6 +17,12 @@ defined with ``async def`` and use ``await``.
         data = await async_db_query(...)
         return jsonify(data)
 
+.. admonition:: Using ``async`` on Windows on Python 3.8
+
+    Python 3.8 has a bug related to asyncio on Windows. If you encounter
+    something like ``ValueError: set_wakeup_fd only works in main thread``,
+    please upgrade to Python 3.9.
+
 
 Performance
 -----------
