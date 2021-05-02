@@ -92,6 +92,21 @@ not work with async views because they will not await the function or be
 awaitable. Other functions they provide will not be awaitable either and
 will probably be blocking if called within an async view.
 
+Extension authors can support async functions by utilising the
+:meth:`flask.Flask.ensure_sync` method. For example, if the extension
+provides a view function decorator add ``ensure_sync`` before calling
+the decorated function,
+
+.. code-block:: python
+
+    def extension(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            ...  # Extension logic
+            return current_app.ensure_sync(func)(*args, **kwargs)
+
+        return wrapper
+
 Check the changelog of the extension you want to use to see if they've
 implemented async support, or make a feature request or PR to them.
 
