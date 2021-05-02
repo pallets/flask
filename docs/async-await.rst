@@ -57,7 +57,7 @@ example via ``asyncio.create_task``.
 If you wish to use background tasks it is best to use a task queue to
 trigger background work, rather than spawn tasks in a view
 function. With that in mind you can spawn asyncio tasks by serving
-Flask with a ASGI server and utilising the asgiref WsgiToAsgi adapter
+Flask with an ASGI server and utilising the asgiref WsgiToAsgi adapter
 as described in :ref:`asgi`. This works as the adapter creates an
 event loop that runs continually.
 
@@ -70,7 +70,7 @@ to the way it is implemented. If you have a mainly async codebase it
 would make sense to consider `Quart`_. Quart is a reimplementation of
 Flask based on the `ASGI`_ standard instead of WSGI. This allows it to
 handle many concurrent requests, long running requests, and websockets
-without requiring individual worker processes or threads.
+without requiring multiple worker processes or threads.
 
 It has also already been possible to run Flask with Gevent or Eventlet
 to get many of the benefits of async request handling. These libraries
@@ -86,8 +86,8 @@ to understanding the specific needs of your project.
 Extensions
 ----------
 
-Existing Flask extensions only expect views to be synchronous. If they
-provide decorators to add functionality to views, those will probably
+Flask extensions predating Flask's async support do not expect async views.
+If they provide decorators to add functionality to views, those will probably
 not work with async views because they will not await the function or be
 awaitable. Other functions they provide will not be awaitable either and
 will probably be blocking if called within an async view.
