@@ -819,33 +819,8 @@ def run_async(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
         )
 
     @wraps(func)
-    def outer(*args: t.Any, **kwargs: t.Any) -> t.Any:
-        """This function grabs the current context for the inner function.
+    def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
+        return async_to_sync(func)(*args, **kwargs)
 
-        This is similar to the copy_current_xxx_context functions in the
-        ctx module, except it has an async inner.
-        """
-        ctx = None
-
-        if _request_ctx_stack.top is not None:
-            ctx = _request_ctx_stack.top.copy()
-
-        @wraps(func)
-        async def inner(*a: t.Any, **k: t.Any) -> t.Any:
-            """This restores the context before awaiting the func.
-
-            This is required as the function must be awaited within the
-            context. Only calling ``func`` (as per the
-            ``copy_current_xxx_context`` functions) doesn't work as the
-            with block will close before the coroutine is awaited.
-            """
-            if ctx is not None:
-                with ctx:
-                    return await func(*a, **k)
-            else:
-                return await func(*a, **k)
-
-        return async_to_sync(inner)(*args, **kwargs)
-
-    outer._flask_sync_wrapper = True  # type: ignore
-    return outer
+    wrapper._flask_sync_wrapper = True  # type: ignore
+    return wrapper
