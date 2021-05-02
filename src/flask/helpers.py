@@ -6,7 +6,6 @@ import typing as t
 import warnings
 from datetime import timedelta
 from functools import update_wrapper
-from functools import wraps
 from threading import RLock
 
 import werkzeug.utils
@@ -803,10 +802,15 @@ def is_ip(value: str) -> bool:
     return False
 
 
-def run_async(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
-    """Return a sync function that will run the coroutine function *func*."""
+def async_to_sync(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
+    """Return a sync function that will run the coroutine function *func*.
+
+    This can be used as so
+
+        result = async_to_async(func)(*args, **kwargs)
+    """
     try:
-        from asgiref.sync import async_to_sync
+        from asgiref.sync import async_to_sync as asgiref_async_to_sync
     except ImportError:
         raise RuntimeError(
             "Install Flask with the 'async' extra in order to use async views."
@@ -818,9 +822,4 @@ def run_async(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
             "Async cannot be used with this combination of Python & Greenlet versions."
         )
 
-    @wraps(func)
-    def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
-        return async_to_sync(func)(*args, **kwargs)
-
-    wrapper._flask_sync_wrapper = True  # type: ignore
-    return wrapper
+    return asgiref_async_to_sync(func)

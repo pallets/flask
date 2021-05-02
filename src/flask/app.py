@@ -35,12 +35,12 @@ from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
 from .globals import session
+from .helpers import async_to_sync
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import locked_cached_property
-from .helpers import run_async
 from .helpers import url_for
 from .json import jsonify
 from .logging import create_logger
@@ -1080,14 +1080,12 @@ class Flask(Scaffold):
         self.url_map.add(rule)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
-            if getattr(old_func, "_flask_sync_wrapper", False):
-                old_func = old_func.__wrapped__  # type: ignore
             if old_func is not None and old_func != view_func:
                 raise AssertionError(
                     "View function mapping is overwriting an existing"
                     f" endpoint function: {endpoint}"
                 )
-            self.view_functions[endpoint] = self.ensure_sync(view_func)
+            self.view_functions[endpoint] = view_func
 
     @setupmethod
     def template_filter(self, name: t.Optional[str] = None) -> t.Callable:
@@ -1208,7 +1206,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.8
         """
-        self.before_first_request_funcs.append(self.ensure_sync(f))
+        self.before_first_request_funcs.append(f)
         return f
 
     @setupmethod
@@ -1241,7 +1239,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.9
         """
-        self.teardown_appcontext_funcs.append(self.ensure_sync(f))
+        self.teardown_appcontext_funcs.append(f)
         return f
 
     @setupmethod
@@ -1308,7 +1306,7 @@ class Flask(Scaffold):
         handler = self._find_error_handler(e)
         if handler is None:
             return e
-        return handler(e)
+        return self.ensure_sync(handler)(e)
 
     def trap_http_exception(self, e: Exception) -> bool:
         """Checks if an HTTP exception should be trapped or not.  By default
@@ -1375,7 +1373,7 @@ class Flask(Scaffold):
         if handler is None:
             raise
 
-        return handler(e)
+        return self.ensure_sync(handler)(e)
 
     def handle_exception(self, e: Exception) -> Response:
         """Handle an exception that did not have an error handler
@@ -1422,7 +1420,7 @@ class Flask(Scaffold):
         handler = self._find_error_handler(server_error)
 
         if handler is not None:
-            server_error = handler(server_error)
+            server_error = self.ensure_sync(handler)(server_error)
 
         return self.finalize_request(server_error, from_error_handler=True)
 
@@ -1484,7 +1482,7 @@ class Flask(Scaffold):
         ):
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
-        return self.view_functions[rule.endpoint](**req.view_args)
+        return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
 
     def full_dispatch_request(self) -> Response:
         """Dispatches the request and on top of that performs request
@@ -1545,7 +1543,7 @@ class Flask(Scaffold):
             if self._got_first_request:
                 return
             for func in self.before_first_request_funcs:
-                func()
+                self.ensure_sync(func)()
             self._got_first_request = True
 
     def make_default_options_response(self) -> Response:
@@ -1581,7 +1579,7 @@ class Flask(Scaffold):
         .. versionadded:: 2.0
         """
         if iscoroutinefunction(func):
-            return run_async(func)
+            return async_to_sync(func)
 
         return func
 
@@ -1807,7 +1805,7 @@ class Flask(Scaffold):
             if bp in self.before_request_funcs:
                 funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
-            rv = func()
+            rv = self.ensure_sync(func)()
             if rv is not None:
                 return rv
 
@@ -1834,7 +1832,7 @@ class Flask(Scaffold):
         if None in self.after_request_funcs:
             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
         for handler in funcs:
-            response = handler(response)
+            response = self.ensure_sync(handler)(response)
         if not self.session_interface.is_null_session(ctx.session):
             self.session_interface.save_session(self, ctx.session, response)
         return response
@@ -1871,7 +1869,7 @@ class Flask(Scaffold):
             if bp in self.teardown_request_funcs:
                 funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         for func in funcs:
-            func(exc)
+            self.ensure_sync(func)(exc)
         request_tearing_down.send(self, exc=exc)
 
     def do_teardown_appcontext(
@@ -1894,7 +1892,7 @@ class Flask(Scaffold):
         if exc is _sentinel:
             exc = sys.exc_info()[1]
         for func in reversed(self.teardown_appcontext_funcs):
-            func(exc)
+            self.ensure_sync(func)(exc)
         appcontext_tearing_down.send(self, exc=exc)
 
     def app_context(self) -> AppContext:
