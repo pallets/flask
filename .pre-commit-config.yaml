@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.13.0
+    rev: v2.14.0
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
@@ -12,7 +12,7 @@ repos:
         files: "^(?!examples/)"
         args: ["--application-directories", "src"]
   - repo: https://github.com/psf/black
-    rev: 21.4b0
+    rev: 21.4b2
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
