@@ -6,12 +6,10 @@ import typing as t
 import warnings
 from datetime import timedelta
 from functools import update_wrapper
-from functools import wraps
 from threading import RLock
 
 import werkzeug.utils
 from werkzeug.exceptions import NotFound
-from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
@@ -801,51 +799,3 @@ def is_ip(value: str) -> bool:
             return True
 
     return False
-
-
-def run_async(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
-    """Return a sync function that will run the coroutine function *func*."""
-    try:
-        from asgiref.sync import async_to_sync
-    except ImportError:
-        raise RuntimeError(
-            "Install Flask with the 'async' extra in order to use async views."
-        )
-
-    # Check that Werkzeug isn't using its fallback ContextVar class.
-    if ContextVar.__module__ == "werkzeug.local":
-        raise RuntimeError(
-            "Async cannot be used with this combination of Python & Greenlet versions."
-        )
-
-    @wraps(func)
-    def outer(*args: t.Any, **kwargs: t.Any) -> t.Any:
-        """This function grabs the current context for the inner function.
-
-        This is similar to the copy_current_xxx_context functions in the
-        ctx module, except it has an async inner.
-        """
-        ctx = None
-
-        if _request_ctx_stack.top is not None:
-            ctx = _request_ctx_stack.top.copy()
-
-        @wraps(func)
-        async def inner(*a: t.Any, **k: t.Any) -> t.Any:
-            """This restores the context before awaiting the func.
-
-            This is required as the function must be awaited within the
-            context. Only calling ``func`` (as per the
-            ``copy_current_xxx_context`` functions) doesn't work as the
-            with block will close before the coroutine is awaited.
-            """
-            if ctx is not None:
-                with ctx:
-                    return await func(*a, **k)
-            else:
-                return await func(*a, **k)
-
-        return async_to_sync(inner)(*args, **kwargs)
-
-    outer._flask_sync_wrapper = True  # type: ignore
-    return outer
