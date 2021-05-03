@@ -6,7 +6,6 @@ import pytest
 from flask import Blueprint
 from flask import Flask
 from flask import request
-from flask.helpers import async_to_sync
 
 pytest.importorskip("asgiref")
 
@@ -136,5 +135,6 @@ def test_async_before_after_request():
 
 @pytest.mark.skipif(sys.version_info >= (3, 7), reason="should only raise Python < 3.7")
 def test_async_runtime_error():
+    app = Flask(__name__)
     with pytest.raises(RuntimeError):
-        async_to_sync(None)
+        app.async_to_sync(None)
