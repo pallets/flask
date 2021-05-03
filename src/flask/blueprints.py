@@ -292,12 +292,9 @@ class Blueprint(Scaffold):
         # Merge blueprint data into parent.
         if first_registration:
 
-            def extend(bp_dict, parent_dict, ensure_sync=False):
+            def extend(bp_dict, parent_dict):
                 for key, values in bp_dict.items():
                     key = self.name if key is None else f"{self.name}.{key}"
-
-                    if ensure_sync:
-                        values = [app.ensure_sync(func) for func in values]
 
                     parent_dict[key].extend(values)
 
@@ -307,8 +304,7 @@ class Blueprint(Scaffold):
                     dict,
                     {
                         code: {
-                            exc_class: app.ensure_sync(func)
-                            for exc_class, func in code_values.items()
+                            exc_class: func for exc_class, func in code_values.items()
                         }
                         for code, code_values in value.items()
                     },
@@ -316,16 +312,13 @@ class Blueprint(Scaffold):
                 app.error_handler_spec[key] = value
 
             for endpoint, func in self.view_functions.items():
-                app.view_functions[endpoint] = app.ensure_sync(func)
+                app.view_functions[endpoint] = func
 
-            extend(
-                self.before_request_funcs, app.before_request_funcs, ensure_sync=True
-            )
-            extend(self.after_request_funcs, app.after_request_funcs, ensure_sync=True)
+            extend(self.before_request_funcs, app.before_request_funcs)
+            extend(self.after_request_funcs, app.after_request_funcs)
             extend(
                 self.teardown_request_funcs,
                 app.teardown_request_funcs,
-                ensure_sync=True,
             )
             extend(self.url_default_functions, app.url_default_functions)
             extend(self.url_value_preprocessors, app.url_value_preprocessors)
@@ -478,9 +471,7 @@ class Blueprint(Scaffold):
         before each request, even if outside of a blueprint.
         """
         self.record_once(
-            lambda s: s.app.before_request_funcs.setdefault(None, []).append(
-                s.app.ensure_sync(f)
-            )
+            lambda s: s.app.before_request_funcs.setdefault(None, []).append(f)
         )
         return f
 
@@ -490,9 +481,7 @@ class Blueprint(Scaffold):
         """Like :meth:`Flask.before_first_request`.  Such a function is
         executed before the first request to the application.
         """
-        self.record_once(
-            lambda s: s.app.before_first_request_funcs.append(s.app.ensure_sync(f))
-        )
+        self.record_once(lambda s: s.app.before_first_request_funcs.append(f))
         return f
 
     def after_app_request(self, f: AfterRequestCallable) -> AfterRequestCallable:
@@ -500,9 +489,7 @@ class Blueprint(Scaffold):
         is executed after each request, even if outside of the blueprint.
         """
         self.record_once(
-            lambda s: s.app.after_request_funcs.setdefault(None, []).append(
-                s.app.ensure_sync(f)
-            )
+            lambda s: s.app.after_request_funcs.setdefault(None, []).append(f)
         )
         return f
 
@@ -552,15 +539,4 @@ class Blueprint(Scaffold):
         self.record_once(
             lambda s: s.app.url_default_functions.setdefault(None, []).append(f)
         )
-        return f
-
-    def ensure_sync(self, f: t.Callable) -> t.Callable:
-        """Ensure the function is synchronous.
-
-        Override if you would like custom async to sync behaviour in
-        this blueprint. Otherwise the app's
-        :meth:`~flask.Flask.ensure_sync` is used.
-
-        .. versionadded:: 2.0
-        """
         return f
