@@ -16,6 +16,7 @@ from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import InternalServerError
+from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.routing import Map
 from werkzeug.routing import MapAdapter
@@ -35,7 +36,6 @@ from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
 from .globals import session
-from .helpers import async_to_sync
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_flashed_messages
@@ -1579,9 +1579,39 @@ class Flask(Scaffold):
         .. versionadded:: 2.0
         """
         if iscoroutinefunction(func):
-            return async_to_sync(func)
+            return self.async_to_sync(func)
 
         return func
+
+    def async_to_sync(
+        self, func: t.Callable[..., t.Coroutine]
+    ) -> t.Callable[..., t.Any]:
+        """Return a sync function that will run the coroutine function.
+
+        .. code-block:: python
+
+            result = app.async_to_sync(func)(*args, **kwargs)
+
+        Override this method to change how the app converts async code
+        to be synchronously callable.
+
+        .. versionadded:: 2.0
+        """
+        try:
+            from asgiref.sync import async_to_sync as asgiref_async_to_sync
+        except ImportError:
+            raise RuntimeError(
+                "Install Flask with the 'async' extra in order to use async views."
+            )
+
+        # Check that Werkzeug isn't using its fallback ContextVar class.
+        if ContextVar.__module__ == "werkzeug.local":
+            raise RuntimeError(
+                "Async cannot be used with this combination of Python "
+                "and Greenlet versions."
+            )
+
+        return asgiref_async_to_sync(func)
 
     def make_response(self, rv: ResponseReturnValue) -> Response:
         """Convert the return value from a view function to an instance of

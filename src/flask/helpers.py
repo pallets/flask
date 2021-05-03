@@ -10,7 +10,6 @@ from threading import RLock
 
 import werkzeug.utils
 from werkzeug.exceptions import NotFound
-from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
@@ -800,26 +799,3 @@ def is_ip(value: str) -> bool:
             return True
 
     return False
-
-
-def async_to_sync(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
-    """Return a sync function that will run the coroutine function *func*.
-
-    This can be used as so
-
-        result = async_to_async(func)(*args, **kwargs)
-    """
-    try:
-        from asgiref.sync import async_to_sync as asgiref_async_to_sync
-    except ImportError:
-        raise RuntimeError(
-            "Install Flask with the 'async' extra in order to use async views."
-        )
-
-    # Check that Werkzeug isn't using its fallback ContextVar class.
-    if ContextVar.__module__ == "werkzeug.local":
-        raise RuntimeError(
-            "Async cannot be used with this combination of Python & Greenlet versions."
-        )
-
-    return asgiref_async_to_sync(func)
