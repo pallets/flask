@@ -50,7 +50,7 @@ to tell your terminal the application to work with by exporting the
 
       .. code-block:: text
 
-         $ export FLASK_APP=hello.py
+         $ export FLASK_APP=hello
          $ flask run
           * Running on http://127.0.0.1:5000/
 
@@ -58,7 +58,7 @@ to tell your terminal the application to work with by exporting the
 
       .. code-block:: text
 
-         > set FLASK_APP=hello.py
+         > set FLASK_APP=hello
          > flask run
           * Running on http://127.0.0.1:5000/
 
@@ -66,9 +66,15 @@ to tell your terminal the application to work with by exporting the
 
       .. code-block:: text
 
-         > $env:FLASK_APP = "hello.py"
+         > $env:FLASK_APP = "hello"
          > flask run
           * Running on http://127.0.0.1:5000/
+
+.. admonition:: Application Discovery Behavior
+
+    As a shortcut, if the file is named ``app.py`` or ``wsgi.py``, you
+    don't have to set the ``FLASK_APP`` environment variable. See
+    :doc:`/cli` for more details.
 
 This launches a very simple builtin server, which is good enough for
 testing but probably not what you want to use in production. For
