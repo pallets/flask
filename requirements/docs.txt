@@ -20,12 +20,10 @@ idna==2.10
     # via requests
 imagesize==1.2.0
     # via sphinx
-jinja2==2.11.3
+jinja2==3.0.0
     # via sphinx
-markupsafe==1.1.1
-    # via
-    #   jinja2
-    #   sphinx
+markupsafe==2.0.0
+    # via jinja2
 packaging==20.9
     # via
     #   pallets-sphinx-themes
@@ -48,7 +46,7 @@ sphinx-issues==1.2.0
     # via -r requirements/docs.in
 sphinx-tabs==3.0.0
     # via -r requirements/docs.in
-sphinx==4.0.1
+git+https://github.com/sphinx-doc/sphinx.git@96dbe5e3
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
