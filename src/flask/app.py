@@ -704,7 +704,7 @@ class Flask(Scaffold):
             session=session,
             g=g,
         )
-        rv.policies["json.dumps_function"] = json.dumps  # type: ignore
+        rv.policies["json.dumps_function"] = json.dumps
         return rv
 
     def create_global_jinja_loader(self) -> DispatchingJinjaLoader:

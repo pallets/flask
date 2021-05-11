@@ -10,5 +10,5 @@ mypy==0.812
     # via -r requirements/typing.in
 typed-ast==1.4.3
     # via mypy
-typing-extensions==3.7.4.3
+typing-extensions==3.10.0.0
     # via mypy
