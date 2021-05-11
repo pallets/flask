@@ -78,7 +78,7 @@ def github_link(name, rawtext, text, lineno, inliner, options=None, content=None
         words = None
 
     if packaging.version.parse(release).is_devrelease:
-        url = f"{base_url}master/{text}"
+        url = f"{base_url}main/{text}"
     else:
         url = f"{base_url}{release}/{text}"
 
