@@ -677,7 +677,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
 
     click.echo(f" * Environment: {env}")
 
-    if env == "production":
+    if env == "development":
         click.secho(
             "   WARNING: This is a development server. Do not use it in"
             " a production deployment.",
