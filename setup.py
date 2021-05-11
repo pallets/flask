@@ -7,7 +7,7 @@ setup(
         "Werkzeug>=2.0",
         "Jinja2>=3.0",
         "itsdangerous>=2.0",
-        "click>=7.1.2",
+        "click>=8.0",
     ],
     extras_require={
         "async": ["asgiref>=3.2"],
