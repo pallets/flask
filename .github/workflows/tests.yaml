@@ -2,7 +2,7 @@ name: Tests
 on:
   push:
     branches:
-      - master
+      - main
       - '*.x'
     paths-ignore:
       - 'docs/**'
@@ -10,7 +10,7 @@ on:
       - '*.rst'
   pull_request:
     branches:
-      - master
+      - main
       - '*.x'
     paths-ignore:
       - 'docs/**'
