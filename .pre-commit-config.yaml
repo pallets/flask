@@ -1,3 +1,5 @@
+ci:
+  autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.15.0
