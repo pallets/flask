@@ -1,5 +1,5 @@
 Pallets-Sphinx-Themes
-Sphinx
+git+https://github.com/sphinx-doc/sphinx.git@96dbe5e3  # https://github.com/sphinx-doc/sphinx/issues/921
 sphinx-issues
 sphinxcontrib-log-cabinet
 sphinx-tabs
