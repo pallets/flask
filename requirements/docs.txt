@@ -6,14 +6,16 @@
 #
 alabaster==0.7.12
     # via sphinx
-babel==2.9.0
+babel==2.9.1
     # via sphinx
 certifi==2020.12.5
     # via requests
 chardet==4.0.0
     # via requests
 docutils==0.16
-    # via sphinx
+    # via
+    #   sphinx
+    #   sphinx-tabs
 idna==2.10
     # via requests
 imagesize==1.2.0
@@ -21,14 +23,16 @@ imagesize==1.2.0
 jinja2==2.11.3
     # via sphinx
 markupsafe==1.1.1
-    # via jinja2
+    # via
+    #   jinja2
+    #   sphinx
 packaging==20.9
     # via
     #   pallets-sphinx-themes
     #   sphinx
-pallets-sphinx-themes==2.0.0rc1
+pallets-sphinx-themes==2.0.0
     # via -r requirements/docs.in
-pygments==2.8.1
+pygments==2.9.0
     # via
     #   sphinx
     #   sphinx-tabs
@@ -42,9 +46,9 @@ snowballstemmer==2.1.0
     # via sphinx
 sphinx-issues==1.2.0
     # via -r requirements/docs.in
-sphinx-tabs==2.1.0
+sphinx-tabs==3.0.0
     # via -r requirements/docs.in
-sphinx==3.5.4
+sphinx==4.0.1
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
