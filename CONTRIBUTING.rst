@@ -102,14 +102,14 @@ First time setup
 
           .. code-block:: text
 
-             $ python3 -m venv env
+             $ python3 -m venv venv
              $ . env/bin/activate
 
        .. group-tab:: Windows
 
           .. code-block:: text
 
-             > py -3 -m venv env
+             > py -3 -m venv venv
              > env\Scripts\activate
 
 -   Install the development dependencies, then install Flask in editable
