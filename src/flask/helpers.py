@@ -642,7 +642,9 @@ def safe_join(directory: str, *pathnames: str) -> str:
     return path
 
 
-def send_from_directory(directory: str, path: str, **kwargs: t.Any) -> "Response":
+def send_from_directory(
+    directory: str, path: str, filename: t.Optional[str] = None, **kwargs: t.Any
+) -> "Response":
     """Send a file from within a directory using :func:`send_file`.
 
     .. code-block:: python
@@ -666,12 +668,24 @@ def send_from_directory(directory: str, path: str, **kwargs: t.Any) -> "Response
         ``directory``.
     :param kwargs: Arguments to pass to :func:`send_file`.
 
+    .. versionchanged:: 2.0
+        ``path`` replaces the ``filename`` parameter.
+
     .. versionadded:: 2.0
         Moved the implementation to Werkzeug. This is now a wrapper to
         pass some Flask-specific arguments.
 
     .. versionadded:: 0.5
     """
+    if filename is not None:
+        warnings.warn(
+            "The 'filename' parameter has been renamed to 'path'. The"
+            " old name will be removed in Flask 2.1.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        path = filename
+
     return werkzeug.utils.send_from_directory(  # type: ignore
         directory, path, **_prepare_send_file_kwargs(**kwargs)
     )
