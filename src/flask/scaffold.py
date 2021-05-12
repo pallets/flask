@@ -288,7 +288,7 @@ class Scaffold:
 
         self._static_url_path = value
 
-    def get_send_file_max_age(self, filename: str) -> t.Optional[int]:
+    def get_send_file_max_age(self, filename: t.Optional[str]) -> t.Optional[int]:
         """Used by :func:`send_file` to determine the ``max_age`` cache
         value for a given file path if it wasn't passed.
 
