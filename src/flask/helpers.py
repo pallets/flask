@@ -4,6 +4,7 @@ import socket
 import sys
 import typing as t
 import warnings
+from datetime import datetime
 from datetime import timedelta
 from functools import update_wrapper
 from threading import RLock
@@ -436,14 +437,16 @@ def get_flashed_messages(
 
 
 def _prepare_send_file_kwargs(
-    download_name=None,
-    attachment_filename=None,
-    etag=None,
-    add_etags=None,
-    max_age=None,
-    cache_timeout=None,
-    **kwargs,
-):
+    download_name: t.Optional[str] = None,
+    attachment_filename: t.Optional[str] = None,
+    etag: t.Optional[t.Union[bool, str]] = None,
+    add_etags: t.Optional[t.Union[bool]] = None,
+    max_age: t.Optional[
+        t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
+    ] = None,
+    cache_timeout: t.Optional[int] = None,
+    **kwargs: t.Any,
+) -> t.Dict[str, t.Any]:
     if attachment_filename is not None:
         warnings.warn(
             "The 'attachment_filename' parameter has been renamed to"
@@ -482,23 +485,25 @@ def _prepare_send_file_kwargs(
         max_age=max_age,
         use_x_sendfile=current_app.use_x_sendfile,
         response_class=current_app.response_class,
-        _root_path=current_app.root_path,
+        _root_path=current_app.root_path,  # type: ignore
     )
     return kwargs
 
 
 def send_file(
-    path_or_file,
-    mimetype=None,
-    as_attachment=False,
-    download_name=None,
-    attachment_filename=None,
-    conditional=True,
-    etag=True,
-    add_etags=None,
-    last_modified=None,
-    max_age=None,
-    cache_timeout=None,
+    path_or_file: t.Union[os.PathLike, str, t.BinaryIO],
+    mimetype: t.Optional[str] = None,
+    as_attachment: bool = False,
+    download_name: t.Optional[str] = None,
+    attachment_filename: t.Optional[str] = None,
+    conditional: bool = True,
+    etag: t.Union[bool, str] = True,
+    add_etags: t.Optional[bool] = None,
+    last_modified: t.Optional[t.Union[datetime, int, float]] = None,
+    max_age: t.Optional[
+        t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
+    ] = None,
+    cache_timeout: t.Optional[int] = None,
 ):
     """Send the contents of a file to the client.
 
@@ -643,7 +648,10 @@ def safe_join(directory: str, *pathnames: str) -> str:
 
 
 def send_from_directory(
-    directory: str, path: str, filename: t.Optional[str] = None, **kwargs: t.Any
+    directory: t.Union[os.PathLike, str],
+    path: t.Union[os.PathLike, str],
+    filename: t.Optional[str] = None,
+    **kwargs: t.Any,
 ) -> "Response":
     """Send a file from within a directory using :func:`send_file`.
 
