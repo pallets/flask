@@ -666,6 +666,9 @@ def send_from_directory(directory: str, path: str, **kwargs: t.Any) -> "Response
         ``directory``.
     :param kwargs: Arguments to pass to :func:`send_file`.
 
+    .. versionchanged:: 2.0
+        ``path`` replaces the ``filename`` parameter.
+
     .. versionadded:: 2.0
         Moved the implementation to Werkzeug. This is now a wrapper to
         pass some Flask-specific arguments.

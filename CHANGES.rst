@@ -63,6 +63,8 @@ Released 2021-05-11
     deprecated. ``attachment_filename`` is renamed to ``download_name``.
     ``cache_timeout`` is renamed to ``max_age``. ``add_etags`` is
     renamed to ``etag``. :pr:`3828, 3883`
+-   The ``filename`` parameter in ``send_from_directory`` has been renamed
+    to ``path``. :pr:`3828`
 -   ``send_file`` passes ``download_name`` even if
     ``as_attachment=False`` by using ``Content-Disposition: inline``.
     :pr:`3828`
