@@ -5,6 +5,10 @@ Version 2.0.1
 
 Unreleased
 
+-   Re-add the ``filename`` parameter in ``send_from_directory``. The
+    ``filename`` parameter has been renamed to ``path``, the old name
+    is deprecated. :pr:`4019`
+
 
 Version 2.0.0
 -------------
