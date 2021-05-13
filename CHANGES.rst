@@ -5,7 +5,7 @@
 Version 1.1.3
 -------------
 
-Unreleased
+Released 2021-05-13
 
 -   Set maximum versions of Werkzeug, Jinja, Click, and ItsDangerous.
     :issue:`4043`
