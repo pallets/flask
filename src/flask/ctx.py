@@ -41,6 +41,24 @@ class _AppCtxGlobals:
         .. versionadded:: 0.10
     """
 
+    # Define attr methods to let mypy know this is a namespace object
+    # that has arbitrary attributes.
+
+    def __getattr__(self, name: str) -> t.Any:
+        try:
+            return self.__dict__[name]
+        except KeyError:
+            raise AttributeError(name) from None
+
+    def __setattr__(self, name: str, value: t.Any) -> None:
+        self.__dict__[name] = value
+
+    def __delattr__(self, name: str) -> None:
+        try:
+            del self.__dict__[name]
+        except KeyError:
+            raise AttributeError(name) from None
+
     def get(self, name: str, default: t.Optional[t.Any] = None) -> t.Any:
         """Get an attribute by name, or a default value. Like
         :meth:`dict.get`.
@@ -78,10 +96,10 @@ class _AppCtxGlobals:
         """
         return self.__dict__.setdefault(name, default)
 
-    def __contains__(self, item: t.Any) -> bool:
+    def __contains__(self, item: str) -> bool:
         return item in self.__dict__
 
-    def __iter__(self) -> t.Iterator:
+    def __iter__(self) -> t.Iterator[str]:
         return iter(self.__dict__)
 
     def __repr__(self) -> str:
