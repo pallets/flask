@@ -13,6 +13,8 @@ Unreleased
 -   Fix type annotation for ``g`` and inform mypy that it is a namespace
     object that has arbitrary attributes. :issue:`4020`
 -   Fix some types that weren't available in Python 3.6.0. :issue:`4040`
+-   Improve typing for ``send_file``, ``send_from_directory``, and
+    ``get_send_file_max_age``. :issue:`4044`, :pr:`4026`
 
 
 Version 2.0.0
