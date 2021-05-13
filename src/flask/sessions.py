@@ -12,6 +12,7 @@ from .helpers import is_ip
 from .json.tag import TaggedJSONSerializer
 
 if t.TYPE_CHECKING:
+    import typing_extensions as te
     from .app import Flask
     from .wrappers import Request, Response
 
@@ -92,7 +93,7 @@ class NullSession(SecureCookieSession):
     but fail on setting.
     """
 
-    def _fail(self, *args: t.Any, **kwargs: t.Any) -> t.NoReturn:
+    def _fail(self, *args: t.Any, **kwargs: t.Any) -> "te.NoReturn":
         raise RuntimeError(
             "The session is unavailable because no secret "
             "key was set.  Set the secret_key on the "
