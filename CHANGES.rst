@@ -8,6 +8,11 @@ Unreleased
 -   Re-add the ``filename`` parameter in ``send_from_directory``. The
     ``filename`` parameter has been renamed to ``path``, the old name
     is deprecated. :pr:`4019`
+-   Mark top-level names as exported so type checking understands
+    imports in user projects. :issue:`4024`
+-   Fix type annotation for ``g`` and inform mypy that it is a namespace
+    object that has arbitrary attributes. :issue:`4020`
+-   Fix some types that weren't available in Python 3.6.0. :issue:`4040`
 
 
 Version 2.0.0
