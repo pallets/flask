@@ -18,6 +18,8 @@ Unreleased
 -   Show an error when a blueprint name contains a dot. The ``.`` has
     special meaning, it is used to separate (nested) blueprint names and
     the endpoint name. :issue:`4041`
+-   Combine URL prefixes when nesting blueprints that were created with
+    a ``url_prefix`` value. :issue:`4037`
 
 
 Version 2.0.0

@@ -835,3 +835,36 @@ def test_nested_blueprint(app, client):
     assert client.get("/parent/no").data == b"Parent no"
     assert client.get("/parent/child/no").data == b"Parent no"
     assert client.get("/parent/child/grandchild/no").data == b"Grandchild no"
+
+
+def test_nested_blueprint_url_prefix(app, client):
+    parent = flask.Blueprint("parent", __name__, url_prefix="/parent")
+    child = flask.Blueprint("child", __name__, url_prefix="/child")
+    grandchild = flask.Blueprint("grandchild", __name__, url_prefix="/grandchild")
+    apple = flask.Blueprint("apple", __name__, url_prefix="/apple")
+
+    @parent.route("/")
+    def parent_index():
+        return "Parent"
+
+    @child.route("/")
+    def child_index():
+        return "Child"
+
+    @grandchild.route("/")
+    def grandchild_index():
+        return "Grandchild"
+
+    @apple.route("/")
+    def apple_index():
+        return "Apple"
+
+    child.register_blueprint(grandchild)
+    child.register_blueprint(apple, url_prefix="/orange")  # test overwrite
+    parent.register_blueprint(child)
+    app.register_blueprint(parent)
+
+    assert client.get("/parent/").data == b"Parent"
+    assert client.get("/parent/child/").data == b"Child"
+    assert client.get("/parent/child/grandchild/").data == b"Grandchild"
+    assert client.get("/parent/child/orange/").data == b"Apple"
