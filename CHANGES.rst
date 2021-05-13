@@ -10,6 +10,8 @@ Unreleased
     is deprecated. :pr:`4019`
 -   Mark top-level names as exported so type checking understands
     imports in user projects. :issue:`4024`
+-   Fix type annotation for ``g`` and inform mypy that it is a namespace
+    object that has arbitrary attributes. :issue:`4020`
 
 
 Version 2.0.0
