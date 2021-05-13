@@ -2,13 +2,15 @@
 
 
 
-Version 1.1.x
+Version 1.1.3
 -------------
 
-Not yet released.
+Unreleased
 
--   Officially support passing a :class:`pathlib.Path` for
-    ``static_folder`` which stopped working in 1.1.2. :pr:`3579`
+-   Set maximum versions of Werkzeug, Jinja, Click, and ItsDangerous.
+    :issue:`4043`
+-   Re-add support for passing a ``pathlib.Path`` for ``static_folder``.
+    :pr:`3579`
 
 
 Version 1.1.2
