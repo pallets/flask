@@ -260,7 +260,7 @@ class Blueprint(Scaffold):
         """Called by :meth:`Flask.register_blueprint` to register all
         views and callbacks registered on the blueprint with the
         application. Creates a :class:`.BlueprintSetupState` and calls
-        each :meth:`record` callbackwith it.
+        each :meth:`record` callback with it.
 
         :param app: The application this blueprint is being registered
             with.
@@ -344,13 +344,17 @@ class Blueprint(Scaffold):
                 app.cli.add_command(self.cli)
 
         for blueprint, bp_options in self._blueprints:
-            url_prefix = options.get("url_prefix", "")
-            if "url_prefix" in bp_options:
-                url_prefix = (
-                    url_prefix.rstrip("/") + "/" + bp_options["url_prefix"].lstrip("/")
+            bp_options = bp_options.copy()
+            bp_url_prefix = bp_options.get("url_prefix")
+
+            if bp_url_prefix is None:
+                bp_url_prefix = blueprint.url_prefix
+
+            if state.url_prefix is not None and bp_url_prefix is not None:
+                bp_options["url_prefix"] = (
+                    state.url_prefix.rstrip("/") + "/" + bp_url_prefix.lstrip("/")
                 )
 
-            bp_options["url_prefix"] = url_prefix
             bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
             blueprint.register(app, bp_options)
 
