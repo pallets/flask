@@ -15,6 +15,9 @@ Unreleased
 -   Fix some types that weren't available in Python 3.6.0. :issue:`4040`
 -   Improve typing for ``send_file``, ``send_from_directory``, and
     ``get_send_file_max_age``. :issue:`4044`, :pr:`4026`
+-   Show an error when a blueprint name contains a dot. The ``.`` has
+    special meaning, it is used to separate (nested) blueprint names and
+    the endpoint name. :issue:`4041`
 
 
 Version 2.0.0
