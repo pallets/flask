@@ -107,6 +107,17 @@ Released 2021-05-11
 -   Add type hinting. :pr:`3973`.
 
 
+Version 1.1.3
+-------------
+
+Released 2021-05-13
+
+-   Set maximum versions of Werkzeug, Jinja, Click, and ItsDangerous.
+    :issue:`4043`
+-   Re-add support for passing a ``pathlib.Path`` for ``static_folder``.
+    :pr:`3579`
+
+
 Version 1.1.2
 -------------
 
