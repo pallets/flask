@@ -72,6 +72,7 @@ from .wrappers import Request
 from .wrappers import Response
 
 if t.TYPE_CHECKING:
+    import typing_extensions as te
     from .blueprints import Blueprint
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
@@ -1441,7 +1442,7 @@ class Flask(Scaffold):
             f"Exception on {request.path} [{request.method}]", exc_info=exc_info
         )
 
-    def raise_routing_exception(self, request: Request) -> t.NoReturn:
+    def raise_routing_exception(self, request: Request) -> "te.NoReturn":
         """Exceptions that are recording during routing are reraised with
         this method.  During debug we are not reraising redirect requests
         for non ``GET``, ``HEAD``, or ``OPTIONS`` requests and we're raising

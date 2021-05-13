@@ -188,6 +188,10 @@ class Blueprint(Scaffold):
             template_folder=template_folder,
             root_path=root_path,
         )
+
+        if "." in name:
+            raise ValueError("'name' may not contain a dot '.' character.")
+
         self.name = name
         self.url_prefix = url_prefix
         self.subdomain = subdomain
@@ -256,7 +260,7 @@ class Blueprint(Scaffold):
         """Called by :meth:`Flask.register_blueprint` to register all
         views and callbacks registered on the blueprint with the
         application. Creates a :class:`.BlueprintSetupState` and calls
-        each :meth:`record` callbackwith it.
+        each :meth:`record` callback with it.
 
         :param app: The application this blueprint is being registered
             with.
@@ -340,13 +344,17 @@ class Blueprint(Scaffold):
                 app.cli.add_command(self.cli)
 
         for blueprint, bp_options in self._blueprints:
-            url_prefix = options.get("url_prefix", "")
-            if "url_prefix" in bp_options:
-                url_prefix = (
-                    url_prefix.rstrip("/") + "/" + bp_options["url_prefix"].lstrip("/")
+            bp_options = bp_options.copy()
+            bp_url_prefix = bp_options.get("url_prefix")
+
+            if bp_url_prefix is None:
+                bp_url_prefix = blueprint.url_prefix
+
+            if state.url_prefix is not None and bp_url_prefix is not None:
+                bp_options["url_prefix"] = (
+                    state.url_prefix.rstrip("/") + "/" + bp_url_prefix.lstrip("/")
                 )
 
-            bp_options["url_prefix"] = url_prefix
             bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
             blueprint.register(app, bp_options)
 
@@ -360,12 +368,12 @@ class Blueprint(Scaffold):
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the blueprint.
         """
-        if endpoint:
-            assert "." not in endpoint, "Blueprint endpoints should not contain dots"
-        if view_func and hasattr(view_func, "__name__"):
-            assert (
-                "." not in view_func.__name__
-            ), "Blueprint view function name should not contain dots"
+        if endpoint and "." in endpoint:
+            raise ValueError("'endpoint' may not contain a dot '.' character.")
+
+        if view_func and hasattr(view_func, "__name__") and "." in view_func.__name__:
+            raise ValueError("'view_func' name may not contain a dot '.' character.")
+
         self.record(lambda s: s.add_url_rule(rule, endpoint, view_func, **options))
 
     def app_template_filter(self, name: t.Optional[str] = None) -> t.Callable:
