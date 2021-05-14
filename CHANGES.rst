@@ -28,6 +28,9 @@ Unreleased
     the endpoint name. :issue:`4041`
 -   Combine URL prefixes when nesting blueprints that were created with
     a ``url_prefix`` value. :issue:`4037`
+-   Roll back a change to the order that URL matching was done. The
+    URL is again matched after the session is loaded, so the session is
+    available in custom URL converters. :issue:`4053`
 
 
 Version 2.0.0
