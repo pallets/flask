@@ -1,6 +1,7 @@
 from werkzeug.routing import BaseConverter
 
-from flask import has_request_context
+from flask import request
+from flask import session
 from flask import url_for
 
 
@@ -28,12 +29,13 @@ def test_custom_converters(app, client):
 def test_context_available(app, client):
     class ContextConverter(BaseConverter):
         def to_python(self, value):
-            assert has_request_context()
+            assert request is not None
+            assert session is not None
             return value
 
     app.url_map.converters["ctx"] = ContextConverter
 
-    @app.route("/<ctx:name>")
+    @app.get("/<ctx:name>")
     def index(name):
         return name
 
