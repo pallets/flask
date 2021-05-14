@@ -1425,7 +1425,6 @@ def test_static_url_empty_path_default(app):
     rv.close()
 
 
-@pytest.mark.skipif(sys.version_info < (3, 6), reason="requires Python >= 3.6")
 def test_static_folder_with_pathlib_path(app):
     from pathlib import Path
 
