@@ -3,10 +3,10 @@
 Version 1.1.4
 -------------
 
-Unreleased
+Released 2021-05-13
 
 -   Update ``static_folder`` to use ``_compat.fspath`` instead of
-    ``os.fspath`` to continue supporting Python <3.6 :issue:`4050`
+    ``os.fspath`` to continue supporting Python < 3.6 :issue:`4050`
 
 
 Version 1.1.3
