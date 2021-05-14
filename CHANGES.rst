@@ -115,6 +115,15 @@ Released 2021-05-11
 -   Add type hinting. :pr:`3973`.
 
 
+Version 1.1.4
+-------------
+
+Released 2021-05-13
+
+-   Update ``static_folder`` to use ``_compat.fspath`` instead of
+    ``os.fspath`` to continue supporting Python < 3.6 :issue:`4050`
+
+
 Version 1.1.3
 -------------
 
