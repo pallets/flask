@@ -1783,8 +1783,10 @@ class Flask(Scaffold):
         """
         funcs: t.Iterable[URLDefaultCallable] = self.url_default_functions[None]
         if "." in endpoint:
-            bp = endpoint.rsplit(".", 1)[0]
-            funcs = chain(funcs, self.url_default_functions[bp])
+            bps = reversed(endpoint.split(".")[:-1])
+            for bp in bps:
+                funcs = chain(funcs, self.url_default_functions[bp])
+
         for func in funcs:
             func(endpoint, values)
 
