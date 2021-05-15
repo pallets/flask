@@ -60,6 +60,16 @@ def test_method_route(app, client, method):
     assert client_method("/").data == b"Hello"
 
 
+def test_head_method_route(app, client):
+    @app.head("/")
+    def index():
+        return flask.request.method
+
+    rv = client.head("/")
+    assert rv.status_code == 200
+    assert not rv.data
+
+
 def test_method_route_no_methods(app):
     with pytest.raises(TypeError):
         app.get("/", methods=["GET", "POST"])

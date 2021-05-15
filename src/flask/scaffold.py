@@ -376,6 +376,13 @@ class Scaffold:
         """
         return self._method_route("GET", rule, options)
 
+    def head(self, rule: str, **options: t.Any) -> t.Callable:
+        """Shortcut for :meth:`route` with ``methods=["HEAD"]``.
+
+        .. versionadded:: 2.0
+        """
+        return self._method_route("HEAD", rule, options)
+
     def post(self, rule: str, **options: t.Any) -> t.Callable:
         """Shortcut for :meth:`route` with ``methods=["POST"]``.
 
