@@ -1,6 +1,7 @@
 import typing as t
 
 from werkzeug.exceptions import BadRequest
+from werkzeug.utils import cached_property
 from werkzeug.wrappers import Request as RequestBase
 from werkzeug.wrappers import Response as ResponseBase
 
@@ -73,9 +74,23 @@ class Request(RequestBase):
     def blueprint(self) -> t.Optional[str]:
         """The name of the current blueprint"""
         if self.url_rule and "." in self.url_rule.endpoint:
-            return self.url_rule.endpoint.rsplit(".", 1)[0]
+            return self.url_rule.endpoint.split(".")[-2]
         else:
             return None
+
+    @cached_property
+    def blueprints(self) -> t.List[str]:
+        """Return the names of the current blueprints.
+
+        The returned list is ordered from the current blueprint,
+        upwards through parent blueprints.
+        """
+        if self.url_rule and "." in self.url_rule.endpoint:
+            bps = self.url_rule.endpoint.split(".")[:-1]
+            bps.reverse()
+            return bps
+        else:
+            return []
 
     def _load_form_data(self) -> None:
         RequestBase._load_form_data(self)

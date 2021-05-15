@@ -23,7 +23,9 @@ Unreleased
 -   Roll back a change to the order that URL matching was done. The
     URL is again matched after the session is loaded, so the session is
     available in custom URL converters. :issue:`4053`
-
+-   Fix the request ``blueprint`` method to ensure it returns the
+    current blueprint name. A ``blueprints`` method is added to
+    replace any functionality lost in this fix. :pr:`4059`
 
 Version 2.0.0
 -------------
