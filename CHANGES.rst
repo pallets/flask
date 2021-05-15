@@ -23,6 +23,9 @@ Unreleased
 -   Roll back a change to the order that URL matching was done. The
     URL is again matched after the session is loaded, so the session is
     available in custom URL converters. :issue:`4053`
+-   Add support for HEAD method to sugar route syntax:
+    ``@app.head("/file-info")`` is a shortcut for
+    ``@app.route("/file-info", methods=["HEAD"])``. :pr:`4058`
 
 
 Version 2.0.0
