@@ -443,7 +443,7 @@ class Scaffold:
         view_func: t.Optional[t.Callable] = None,
         provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
-    ) -> t.Callable:
+    ) -> None:
         """Register a rule for routing incoming requests and building
         URLs. The :meth:`route` decorator is a shortcut to call this
         with the ``view_func`` argument. These are equivalent:
