@@ -365,6 +365,7 @@ class Blueprint(Scaffold):
         rule: str,
         endpoint: t.Optional[str] = None,
         view_func: t.Optional[t.Callable] = None,
+        provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
     ) -> None:
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
@@ -376,7 +377,15 @@ class Blueprint(Scaffold):
         if view_func and hasattr(view_func, "__name__") and "." in view_func.__name__:
             raise ValueError("'view_func' name may not contain a dot '.' character.")
 
-        self.record(lambda s: s.add_url_rule(rule, endpoint, view_func, **options))
+        self.record(
+            lambda s: s.add_url_rule(
+                rule,
+                endpoint,
+                view_func,
+                provide_automatic_options=provide_automatic_options,
+                **options,
+            )
+        )
 
     def app_template_filter(self, name: t.Optional[str] = None) -> t.Callable:
         """Register a custom template filter, available application wide.  Like
