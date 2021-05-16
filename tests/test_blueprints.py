@@ -868,3 +868,17 @@ def test_nested_blueprint_url_prefix(app, client):
     assert client.get("/parent/child/").data == b"Child"
     assert client.get("/parent/child/grandchild/").data == b"Grandchild"
     assert client.get("/parent/child/orange/").data == b"Apple"
+
+
+def test_nested_blueprint_url_prefix_only_parent_prefix(app, client):
+    parent = flask.Blueprint("parent", __name__)
+    child = flask.Blueprint("child", __name__)
+
+    @child.route("/child-endpoint")
+    def child_index():
+        return "Child"
+
+    parent.register_blueprint(child)
+    app.register_blueprint(parent, url_prefix="/parent")
+
+    assert client.get("/parent/child-endpoint").data == b"Child"
