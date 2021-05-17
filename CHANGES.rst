@@ -25,6 +25,8 @@ Unreleased
     available in custom URL converters. :issue:`4053`
 -   Re-add deprecated ``Config.from_json``, which was accidentally
     removed early. :issue:`4078`
+-   Improve typing for some functions using ``Callable`` in their type
+    signatures, focusing on decorator factories. :issue:`4060`
 
 
 Version 2.0.0
