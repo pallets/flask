@@ -870,7 +870,7 @@ def test_nested_blueprint_url_prefix(app, client):
     assert client.get("/parent/child/orange/").data == b"Apple"
 
 
-def test_nested_blueprint_url_prefix_only_parent_prefix(app, client):
+def test_nested_blueprint_url_prefix_only_parent_overwrite_prefix(app, client):
     parent = flask.Blueprint("parent", __name__)
     child = flask.Blueprint("child", __name__)
 
@@ -882,3 +882,55 @@ def test_nested_blueprint_url_prefix_only_parent_prefix(app, client):
     app.register_blueprint(parent, url_prefix="/parent")
 
     assert client.get("/parent/child-endpoint").data == b"Child"
+
+
+def test_nested_blueprint_url_prefix_only_child_overwrite_prefix(app, client):
+    parent = flask.Blueprint("parent", __name__)
+    child = flask.Blueprint("child", __name__)
+
+    @child.route("/child-endpoint")
+    def child_index():
+        return "Child"
+
+    parent.register_blueprint(child, url_prefix="/child")
+    app.register_blueprint(parent)
+
+    assert client.get("/child/child-endpoint").data == b"Child"
+
+
+def test_nested_blueprint_url_prefix_only_child_prefix(app, client):
+    parent = flask.Blueprint("parent", __name__, url_prefix="/parent")
+    child = flask.Blueprint("child", __name__)
+
+    @parent.route("/")
+    def parent_index():
+        return "Parent"
+
+    @child.route("/child/")
+    def child_index():
+        return "Child"
+
+    parent.register_blueprint(child)
+    app.register_blueprint(parent)
+
+    assert client.get("/parent/").data == b"Parent"
+    assert client.get("/parent/child/").data == b"Child"
+
+
+def test_nested_blueprint_url_prefix_only_parent_prefix(app, client):
+    parent = flask.Blueprint("parent", __name__)
+    child = flask.Blueprint("child", __name__, url_prefix="/child")
+
+    @parent.route("/parent/")
+    def parent_index():
+        return "Parent"
+
+    @child.route("/")
+    def child_index():
+        return "Child"
+
+    parent.register_blueprint(child)
+    app.register_blueprint(parent)
+
+    assert client.get("/parent/").data == b"Parent"
+    assert client.get("/child/").data == b"Child"
