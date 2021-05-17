@@ -387,7 +387,9 @@ class Blueprint(Scaffold):
             )
         )
 
-    def app_template_filter(self, name: t.Optional[str] = None) -> t.Callable:
+    def app_template_filter(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateFilterCallable], TemplateFilterCallable]:
         """Register a custom template filter, available application wide.  Like
         :meth:`Flask.template_filter` but for a blueprint.
 
@@ -417,7 +419,9 @@ class Blueprint(Scaffold):
 
         self.record_once(register_template)
 
-    def app_template_test(self, name: t.Optional[str] = None) -> t.Callable:
+    def app_template_test(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateTestCallable], TemplateTestCallable]:
         """Register a custom template test, available application wide.  Like
         :meth:`Flask.template_test` but for a blueprint.
 
@@ -451,7 +455,9 @@ class Blueprint(Scaffold):
 
         self.record_once(register_template)
 
-    def app_template_global(self, name: t.Optional[str] = None) -> t.Callable:
+    def app_template_global(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateGlobalCallable], TemplateGlobalCallable]:
         """Register a custom template global, available application wide.  Like
         :meth:`Flask.template_global` but for a blueprint.
 

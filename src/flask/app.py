@@ -1089,7 +1089,9 @@ class Flask(Scaffold):
             self.view_functions[endpoint] = view_func
 
     @setupmethod
-    def template_filter(self, name: t.Optional[str] = None) -> t.Callable:
+    def template_filter(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateFilterCallable], TemplateFilterCallable]:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
@@ -1121,7 +1123,9 @@ class Flask(Scaffold):
         self.jinja_env.filters[name or f.__name__] = f
 
     @setupmethod
-    def template_test(self, name: t.Optional[str] = None) -> t.Callable:
+    def template_test(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateTestCallable], TemplateTestCallable]:
         """A decorator that is used to register custom template test.
         You can specify a name for the test, otherwise the function
         name will be used. Example::
@@ -1162,7 +1166,9 @@ class Flask(Scaffold):
         self.jinja_env.tests[name or f.__name__] = f
 
     @setupmethod
-    def template_global(self, name: t.Optional[str] = None) -> t.Callable:
+    def template_global(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateGlobalCallable], TemplateGlobalCallable]:
         """A decorator that is used to register a custom template global function.
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
