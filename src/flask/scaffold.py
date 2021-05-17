@@ -33,8 +33,10 @@ if t.TYPE_CHECKING:
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
 
+F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
-def setupmethod(f: t.Callable) -> t.Callable:
+
+def setupmethod(f: F) -> F:
     """Wraps a method so that it performs a check in debug mode if the
     first request was already handled.
     """
@@ -53,7 +55,7 @@ def setupmethod(f: t.Callable) -> t.Callable:
             )
         return f(self, *args, **kwargs)
 
-    return update_wrapper(wrapper_func, f)
+    return t.cast(F, update_wrapper(wrapper_func, f))
 
 
 class Scaffold:
