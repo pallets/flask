@@ -866,3 +866,16 @@ def test_nesting_url_prefixes(
 
     response = client.get("/parent/child/")
     assert response.status_code == 200
+
+
+def test_unique_blueprint_names(app, client) -> None:
+    bp = flask.Blueprint("bp", __name__)
+    bp2 = flask.Blueprint("bp", __name__)
+
+    app.register_blueprint(bp)
+    app.register_blueprint(bp)  # same name, same object, no error
+
+    with pytest.raises(ValueError):
+        app.register_blueprint(bp2)  # same name, different object
+
+    app.register_blueprint(bp2, name="alt")  # different name
