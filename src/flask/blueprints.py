@@ -274,7 +274,8 @@ class Blueprint(Scaffold):
                 first_registration = False
 
         name_prefix = options.get("name_prefix", "")
-        name = f"{name_prefix}.{self.name}".lstrip(".")
+        self_name = options.get("name", self.name)
+        name = f"{name_prefix}.{self_name}".lstrip(".")
 
         if name in app.blueprints and app.blueprints[name] is not self:
             raise ValueError(
