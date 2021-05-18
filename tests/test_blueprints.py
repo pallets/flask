@@ -837,48 +837,32 @@ def test_nested_blueprint(app, client):
     assert client.get("/parent/child/grandchild/no").data == b"Grandchild no"
 
 
-def test_nested_blueprint_url_prefix(app, client):
-    parent = flask.Blueprint("parent", __name__, url_prefix="/parent")
-    child = flask.Blueprint("child", __name__, url_prefix="/child")
-    grandchild = flask.Blueprint("grandchild", __name__, url_prefix="/grandchild")
-    apple = flask.Blueprint("apple", __name__, url_prefix="/apple")
-
-    @parent.route("/")
-    def parent_index():
-        return "Parent"
+@pytest.mark.parametrize(
+    "parent_init, child_init, parent_registration, child_registration",
+    [
+        ("/parent", "/child", None, None),
+        ("/parent", None, None, "/child"),
+        (None, None, "/parent", "/child"),
+        ("/other", "/something", "/parent", "/child"),
+    ],
+)
+def test_nesting_url_prefixes(
+    parent_init,
+    child_init,
+    parent_registration,
+    child_registration,
+    app,
+    client,
+) -> None:
+    parent = flask.Blueprint("parent", __name__, url_prefix=parent_init)
+    child = flask.Blueprint("child", __name__, url_prefix=child_init)
 
     @child.route("/")
-    def child_index():
-        return "Child"
+    def index():
+        return "index"
 
-    @grandchild.route("/")
-    def grandchild_index():
-        return "Grandchild"
+    parent.register_blueprint(child, url_prefix=child_registration)
+    app.register_blueprint(parent, url_prefix=parent_registration)
 
-    @apple.route("/")
-    def apple_index():
-        return "Apple"
-
-    child.register_blueprint(grandchild)
-    child.register_blueprint(apple, url_prefix="/orange")  # test overwrite
-    parent.register_blueprint(child)
-    app.register_blueprint(parent)
-
-    assert client.get("/parent/").data == b"Parent"
-    assert client.get("/parent/child/").data == b"Child"
-    assert client.get("/parent/child/grandchild/").data == b"Grandchild"
-    assert client.get("/parent/child/orange/").data == b"Apple"
-
-
-def test_nested_blueprint_url_prefix_only_parent_prefix(app, client):
-    parent = flask.Blueprint("parent", __name__)
-    child = flask.Blueprint("child", __name__)
-
-    @child.route("/child-endpoint")
-    def child_index():
-        return "Child"
-
-    parent.register_blueprint(child)
-    app.register_blueprint(parent, url_prefix="/parent")
-
-    assert client.get("/parent/child-endpoint").data == b"Child"
+    response = client.get("/parent/child/")
+    assert response.status_code == 200
