@@ -98,7 +98,7 @@ class BlueprintSetupState:
             defaults = dict(defaults, **options.pop("defaults"))
         self.app.add_url_rule(
             rule,
-            f"{self.name_prefix}{self.blueprint.name}.{endpoint}",
+            f"{self.name_prefix}.{self.blueprint.name}.{endpoint}".lstrip("."),
             view_func,
             defaults=defaults,
             **options,
@@ -266,23 +266,24 @@ class Blueprint(Scaffold):
             with.
         :param options: Keyword arguments forwarded from
             :meth:`~Flask.register_blueprint`.
-        :param first_registration: Whether this is the first time this
-            blueprint has been registered on the application.
         """
-        first_registration = False
+        first_registration = True
 
-        if self.name in app.blueprints:
-            assert app.blueprints[self.name] is self, (
-                "A name collision occurred between blueprints"
-                f" {self!r} and {app.blueprints[self.name]!r}."
-                f" Both share the same name {self.name!r}."
-                f" Blueprints that are created on the fly need unique"
-                f" names."
+        for blueprint in app.blueprints.values():
+            if blueprint is self:
+                first_registration = False
+
+        name_prefix = options.get("name_prefix", "")
+        name = f"{name_prefix}.{self.name}".lstrip(".")
+
+        if name in app.blueprints and app.blueprints[name] is not self:
+            raise ValueError(
+                f"Blueprint name '{self.name}' "
+                f"is already registered by {app.blueprints[self.name]}. "
+                "Blueprints must have unique names."
             )
-        else:
-            app.blueprints[self.name] = self
-            first_registration = True
 
+        app.blueprints[name] = self
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
 
@@ -298,12 +299,11 @@ class Blueprint(Scaffold):
 
             def extend(bp_dict, parent_dict):
                 for key, values in bp_dict.items():
-                    key = self.name if key is None else f"{self.name}.{key}"
-
+                    key = name if key is None else f"{name}.{key}"
                     parent_dict[key].extend(values)
 
             for key, value in self.error_handler_spec.items():
-                key = self.name if key is None else f"{self.name}.{key}"
+                key = name if key is None else f"{name}.{key}"
                 value = defaultdict(
                     dict,
                     {
@@ -337,7 +337,7 @@ class Blueprint(Scaffold):
             if cli_resolved_group is None:
                 app.cli.commands.update(self.cli.commands)
             elif cli_resolved_group is _sentinel:
-                self.cli.name = self.name
+                self.cli.name = name
                 app.cli.add_command(self.cli)
             else:
                 self.cli.name = cli_resolved_group
@@ -359,7 +359,7 @@ class Blueprint(Scaffold):
             elif state.url_prefix is not None:
                 bp_options["url_prefix"] = state.url_prefix
 
-            bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
+            bp_options["name_prefix"] = name
             blueprint.register(app, bp_options)
 
     def add_url_rule(
