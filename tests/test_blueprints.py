@@ -140,7 +140,7 @@ def test_blueprint_url_defaults(app, client):
         return str(bar)
 
     app.register_blueprint(bp, url_prefix="/1", url_defaults={"bar": 23})
-    app.register_blueprint(bp, url_prefix="/2", url_defaults={"bar": 19})
+    app.register_blueprint(bp, name="test2", url_prefix="/2", url_defaults={"bar": 19})
 
     assert client.get("/1/foo").data == b"23/42"
     assert client.get("/2/foo").data == b"19/42"
@@ -873,9 +873,13 @@ def test_unique_blueprint_names(app, client) -> None:
     bp2 = flask.Blueprint("bp", __name__)
 
     app.register_blueprint(bp)
-    app.register_blueprint(bp)  # same name, same object, no error
+
+    with pytest.warns(UserWarning):
+        app.register_blueprint(bp)  # same bp, same name, warning
+
+    app.register_blueprint(bp, name="again")  # same bp, different name, ok
 
     with pytest.raises(ValueError):
-        app.register_blueprint(bp2)  # same name, different object
+        app.register_blueprint(bp2)  # different bp, same name, error
 
-    app.register_blueprint(bp2, name="alt")  # different name
+    app.register_blueprint(bp2, name="alt")  # different bp, different name, ok
