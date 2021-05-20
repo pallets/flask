@@ -6,6 +6,7 @@ import typing as t
 import warnings
 from datetime import datetime
 from datetime import timedelta
+from functools import lru_cache
 from functools import update_wrapper
 from threading import RLock
 
@@ -821,3 +822,13 @@ def is_ip(value: str) -> bool:
             return True
 
     return False
+
+
+@lru_cache(maxsize=None)
+def _split_blueprint_path(name: str) -> t.List[str]:
+    out: t.List[str] = [name]
+
+    if "." in name:
+        out.extend(_split_blueprint_path(name.rpartition(".")[0]))
+
+    return out
