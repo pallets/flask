@@ -252,6 +252,12 @@ class Blueprint(Scaffold):
         arguments passed to this method will override the defaults set
         on the blueprint.
 
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
+
         .. versionadded:: 2.0
         """
         self._blueprints.append((blueprint, options))
@@ -266,6 +272,17 @@ class Blueprint(Scaffold):
             with.
         :param options: Keyword arguments forwarded from
             :meth:`~Flask.register_blueprint`.
+
+        .. versionchanged:: 2.0.1
+            Nested blueprints are registered with their dotted name.
+            This allows different blueprints with the same name to be
+            nested at different locations.
+
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
         """
         first_registration = True
 

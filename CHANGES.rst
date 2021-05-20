@@ -27,6 +27,13 @@ Unreleased
     removed early. :issue:`4078`
 -   Improve typing for some functions using ``Callable`` in their type
     signatures, focusing on decorator factories. :issue:`4060`
+-   Nested blueprints are registered with their dotted name. This allows
+    different blueprints with the same name to be nested at different
+    locations. :issue:`4069`
+-   ``register_blueprint`` takes a ``name`` option to change the
+    (pre-dotted) name the blueprint is registered with. This allows the
+    same blueprint to be registered multiple times with unique names for
+    ``url_for``. :issue:`1091`
 
 
 Version 2.0.0
