@@ -57,7 +57,7 @@ Released 2021-05-11
     setting the session cookie name dynamically. :pr:`3369`
 -   Add :meth:`Config.from_file` to load config using arbitrary file
     loaders, such as ``toml.load`` or ``json.load``.
-    :meth:`Config.from_json` is deprecated in favor of this. :pr:`3398`
+    :meth:`Config.from_json` is deleted in favor of this. :pr:`3398`
 -   The ``flask run`` command will only defer errors on reload. Errors
     present during the initial call will cause the server to exit with
     the traceback immediately. :issue:`3431`
