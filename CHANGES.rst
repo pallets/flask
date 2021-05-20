@@ -33,7 +33,8 @@ Unreleased
 -   ``register_blueprint`` takes a ``name`` option to change the
     (pre-dotted) name the blueprint is registered with. This allows the
     same blueprint to be registered multiple times with unique names for
-    ``url_for``. :issue:`1091`
+    ``url_for``. Registering the same blueprint with the same name
+    multiple times is deprecated. :issue:`1091`
 
 
 Version 2.0.0

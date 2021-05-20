@@ -283,23 +283,35 @@ class Blueprint(Scaffold):
             name the blueprint is registered with. This allows the same
             blueprint to be registered multiple times with unique names
             for ``url_for``.
+
+        .. versionchanged:: 2.0.1
+            Registering the same blueprint with the same name multiple
+            times is deprecated and will become an error in Flask 2.1.
         """
-        first_registration = True
-
-        for blueprint in app.blueprints.values():
-            if blueprint is self:
-                first_registration = False
-
+        first_registration = not any(bp is self for bp in app.blueprints.values())
         name_prefix = options.get("name_prefix", "")
         self_name = options.get("name", self.name)
         name = f"{name_prefix}.{self_name}".lstrip(".")
 
-        if name in app.blueprints and app.blueprints[name] is not self:
-            raise ValueError(
-                f"Blueprint name '{self.name}' "
-                f"is already registered by {app.blueprints[self.name]}. "
-                "Blueprints must have unique names."
-            )
+        if name in app.blueprints:
+            existing_at = f" '{name}'" if self_name != name else ""
+
+            if app.blueprints[name] is not self:
+                raise ValueError(
+                    f"The name '{self_name}' is already registered for"
+                    f" a different blueprint{existing_at}. Use 'name='"
+                    " to provide a unique name."
+                )
+            else:
+                import warnings
+
+                warnings.warn(
+                    f"The name '{self_name}' is already registered for"
+                    f" this blueprint{existing_at}. Use 'name=' to"
+                    " provide a unique name. This will become an error"
+                    " in Flask 2.1.",
+                    stacklevel=4,
+                )
 
         app.blueprints[name] = self
         self._got_registered_once = True
