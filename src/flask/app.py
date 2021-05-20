@@ -36,6 +36,7 @@ from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
 from .globals import session
+from .helpers import _split_blueprint_path
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_flashed_messages
@@ -1790,13 +1791,11 @@ class Flask(Scaffold):
         funcs: t.Iterable[URLDefaultCallable] = self.url_default_functions[None]
 
         if "." in endpoint:
-            bps: t.List[str] = [endpoint.rsplit(".", 1)[0]]
-
-            while "." in bps[-1]:
-                bps.append(bps[-1].rpartition(".")[0])
-
-            for bp in bps:
-                funcs = chain(funcs, self.url_default_functions[bp])
+            # This is called by url_for, which can be called outside a
+            # request, can't use request.blueprints.
+            bps = _split_blueprint_path(endpoint.rpartition(".")[0])
+            bp_funcs = chain.from_iterable(self.url_default_functions[bp] for bp in bps)
+            funcs = chain(funcs, bp_funcs)
 
         for func in funcs:
             func(endpoint, values)
