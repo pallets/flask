@@ -883,3 +883,9 @@ def test_unique_blueprint_names(app, client) -> None:
         app.register_blueprint(bp2)  # different bp, same name, error
 
     app.register_blueprint(bp2, name="alt")  # different bp, different name, ok
+
+
+def test_self_registration(app, client) -> None:
+    bp = flask.Blueprint("bp", __name__)
+    with pytest.raises(ValueError):
+        bp.register_blueprint(bp)
