@@ -33,8 +33,10 @@ if t.TYPE_CHECKING:
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
 
+F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
-def setupmethod(f: t.Callable) -> t.Callable:
+
+def setupmethod(f: F) -> F:
     """Wraps a method so that it performs a check in debug mode if the
     first request was already handled.
     """
@@ -53,7 +55,7 @@ def setupmethod(f: t.Callable) -> t.Callable:
             )
         return f(self, *args, **kwargs)
 
-    return update_wrapper(wrapper_func, f)
+    return t.cast(F, update_wrapper(wrapper_func, f))
 
 
 class Scaffold:
@@ -443,7 +445,7 @@ class Scaffold:
         view_func: t.Optional[t.Callable] = None,
         provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
-    ) -> t.Callable:
+    ) -> None:
         """Register a rule for routing incoming requests and building
         URLs. The :meth:`route` decorator is a shortcut to call this
         with the ``view_func`` argument. These are equivalent:
@@ -642,7 +644,7 @@ class Scaffold:
     @setupmethod
     def errorhandler(
         self, code_or_exception: t.Union[t.Type[Exception], int]
-    ) -> t.Callable:
+    ) -> t.Callable[[ErrorHandlerCallable], ErrorHandlerCallable]:
         """Register a function to handle errors by code or exception class.
 
         A decorator that is used to register a function given an
