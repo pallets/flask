@@ -260,6 +260,8 @@ class Blueprint(Scaffold):
 
         .. versionadded:: 2.0
         """
+        if blueprint is self:
+            raise ValueError("Cannot register a blueprint on itself")
         self._blueprints.append((blueprint, options))
 
     def register(self, app: "Flask", options: dict) -> None:
