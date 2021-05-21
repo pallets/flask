@@ -3,7 +3,7 @@
 Version 2.0.1
 -------------
 
-Unreleased
+Released 2021-05-21
 
 -   Re-add the ``filename`` parameter in ``send_from_directory``. The
     ``filename`` parameter has been renamed to ``path``, the old name
