@@ -35,6 +35,7 @@ Unreleased
     same blueprint to be registered multiple times with unique names for
     ``url_for``. Registering the same blueprint with the same name
     multiple times is deprecated. :issue:`1091`
+-   Improve typing for ``stream_with_context``. :issue:`4052`
 
 
 Version 2.0.0
