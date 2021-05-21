@@ -31,6 +31,8 @@ Unreleased
 -   Roll back a change to the order that URL matching was done. The
     URL is again matched after the session is loaded, so the session is
     available in custom URL converters. :issue:`4053`
+-   Re-add deprecated ``Config.from_json``, which was accidentally
+    removed early. :issue:`4078`
 
 
 Version 2.0.0
