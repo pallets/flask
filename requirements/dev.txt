@@ -18,11 +18,11 @@ blinker==1.4
     # via -r requirements/tests.in
 certifi==2020.12.5
     # via requests
-cfgv==3.2.0
+cfgv==3.3.0
     # via pre-commit
 chardet==4.0.0
     # via requests
-click==8.0.0
+click==8.0.1
     # via pip-tools
 distlib==0.3.1
     # via virtualenv
@@ -44,9 +44,9 @@ imagesize==1.2.0
     # via sphinx
 iniconfig==1.1.1
     # via pytest
-jinja2==3.0.0
+jinja2==3.0.1
     # via sphinx
-markupsafe==2.0.0
+markupsafe==2.0.1
     # via jinja2
 mypy-extensions==0.4.3
     # via mypy
@@ -102,7 +102,7 @@ sphinx-issues==1.2.0
     # via -r requirements/docs.in
 sphinx-tabs==3.0.0
     # via -r requirements/docs.in
-git+https://github.com/sphinx-doc/sphinx.git@96dbe5e3
+sphinx==4.0.2
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
