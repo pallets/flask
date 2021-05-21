@@ -67,6 +67,7 @@ class BlueprintSetupState:
         #: blueprint.
         self.url_prefix = url_prefix
 
+        self.name = self.options.get("name", blueprint.name)
         self.name_prefix = self.options.get("name_prefix", "")
 
         #: A dictionary with URL defaults that is added to each and every
@@ -96,9 +97,10 @@ class BlueprintSetupState:
         defaults = self.url_defaults
         if "defaults" in options:
             defaults = dict(defaults, **options.pop("defaults"))
+
         self.app.add_url_rule(
             rule,
-            f"{self.name_prefix}.{self.blueprint.name}.{endpoint}".lstrip("."),
+            f"{self.name_prefix}.{self.name}.{endpoint}".lstrip("."),
             view_func,
             defaults=defaults,
             **options,
