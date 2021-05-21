@@ -6,6 +6,7 @@ import typing as t
 import warnings
 from datetime import datetime
 from datetime import timedelta
+from functools import lru_cache
 from functools import update_wrapper
 from threading import RLock
 
@@ -63,8 +64,10 @@ def get_load_dotenv(default: bool = True) -> bool:
 
 
 def stream_with_context(
-    generator_or_function: t.Union[t.Generator, t.Callable]
-) -> t.Generator:
+    generator_or_function: t.Union[
+        t.Iterator[t.AnyStr], t.Callable[..., t.Iterator[t.AnyStr]]
+    ]
+) -> t.Iterator[t.AnyStr]:
     """Request contexts disappear when the response is started on the server.
     This is done for efficiency reasons and to make it less likely to encounter
     memory leaks with badly written WSGI middlewares.  The downside is that if
@@ -821,3 +824,13 @@ def is_ip(value: str) -> bool:
             return True
 
     return False
+
+
+@lru_cache(maxsize=None)
+def _split_blueprint_path(name: str) -> t.List[str]:
+    out: t.List[str] = [name]
+
+    if "." in name:
+        out.extend(_split_blueprint_path(name.rpartition(".")[0]))
+
+    return out
