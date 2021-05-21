@@ -889,3 +889,25 @@ def test_self_registration(app, client) -> None:
     bp = flask.Blueprint("bp", __name__)
     with pytest.raises(ValueError):
         bp.register_blueprint(bp)
+
+
+def test_blueprint_renaming(app, client) -> None:
+    bp = flask.Blueprint("bp", __name__)
+    bp2 = flask.Blueprint("bp2", __name__)
+
+    @bp.get("/")
+    def index():
+        return flask.request.endpoint
+
+    @bp2.get("/")
+    def index2():
+        return flask.request.endpoint
+
+    bp.register_blueprint(bp2, url_prefix="/a", name="sub")
+    app.register_blueprint(bp, url_prefix="/a")
+    app.register_blueprint(bp, url_prefix="/b", name="alt")
+
+    assert client.get("/a/").data == b"bp.index"
+    assert client.get("/b/").data == b"alt.index"
+    assert client.get("/a/a/").data == b"bp.sub.index2"
+    assert client.get("/b/a/").data == b"alt.sub.index2"
