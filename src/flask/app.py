@@ -36,6 +36,7 @@ from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
 from .globals import session
+from .helpers import _split_blueprint_path
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_flashed_messages
@@ -747,7 +748,7 @@ class Flask(Scaffold):
         ] = self.template_context_processors[None]
         reqctx = _request_ctx_stack.top
         if reqctx is not None:
-            for bp in self._request_blueprints():
+            for bp in request.blueprints:
                 if bp in self.template_context_processors:
                     funcs = chain(funcs, self.template_context_processors[bp])
         orig_ctx = context.copy()
@@ -1018,6 +1019,12 @@ class Flask(Scaffold):
             :class:`~flask.blueprints.BlueprintSetupState`. They can be
             accessed in :meth:`~flask.Blueprint.record` callbacks.
 
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
+
         .. versionadded:: 0.7
         """
         blueprint.register(self, options)
@@ -1267,7 +1274,7 @@ class Flask(Scaffold):
         exc_class, code = self._get_exc_class_and_code(type(e))
 
         for c in [code, None]:
-            for name in chain(self._request_blueprints(), [None]):
+            for name in chain(request.blueprints, [None]):
                 handler_map = self.error_handler_spec[name][c]
 
                 if not handler_map:
@@ -1788,9 +1795,14 @@ class Flask(Scaffold):
         .. versionadded:: 0.7
         """
         funcs: t.Iterable[URLDefaultCallable] = self.url_default_functions[None]
+
         if "." in endpoint:
-            bp = endpoint.rsplit(".", 1)[0]
-            funcs = chain(funcs, self.url_default_functions[bp])
+            # This is called by url_for, which can be called outside a
+            # request, can't use request.blueprints.
+            bps = _split_blueprint_path(endpoint.rpartition(".")[0])
+            bp_funcs = chain.from_iterable(self.url_default_functions[bp] for bp in bps)
+            funcs = chain(funcs, bp_funcs)
+
         for func in funcs:
             func(endpoint, values)
 
@@ -1831,14 +1843,14 @@ class Flask(Scaffold):
         funcs: t.Iterable[URLValuePreprocessorCallable] = self.url_value_preprocessors[
             None
         ]
-        for bp in self._request_blueprints():
+        for bp in request.blueprints:
             if bp in self.url_value_preprocessors:
                 funcs = chain(funcs, self.url_value_preprocessors[bp])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
         funcs: t.Iterable[BeforeRequestCallable] = self.before_request_funcs[None]
-        for bp in self._request_blueprints():
+        for bp in request.blueprints:
             if bp in self.before_request_funcs:
                 funcs = chain(funcs, self.before_request_funcs[bp])
         for func in funcs:
@@ -1863,7 +1875,7 @@ class Flask(Scaffold):
         """
         ctx = _request_ctx_stack.top
         funcs: t.Iterable[AfterRequestCallable] = ctx._after_request_functions
-        for bp in self._request_blueprints():
+        for bp in request.blueprints:
             if bp in self.after_request_funcs:
                 funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
         if None in self.after_request_funcs:
@@ -1902,7 +1914,7 @@ class Flask(Scaffold):
         funcs: t.Iterable[TeardownCallable] = reversed(
             self.teardown_request_funcs[None]
         )
-        for bp in self._request_blueprints():
+        for bp in request.blueprints:
             if bp in self.teardown_request_funcs:
                 funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
         for func in funcs:
@@ -2074,9 +2086,3 @@ class Flask(Scaffold):
         wrapped to apply middleware.
         """
         return self.wsgi_app(environ, start_response)
-
-    def _request_blueprints(self) -> t.Iterable[str]:
-        if _request_ctx_stack.top.request.blueprint is None:
-            return []
-        else:
-            return reversed(_request_ctx_stack.top.request.blueprint.split("."))

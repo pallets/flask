@@ -67,6 +67,7 @@ class BlueprintSetupState:
         #: blueprint.
         self.url_prefix = url_prefix
 
+        self.name = self.options.get("name", blueprint.name)
         self.name_prefix = self.options.get("name_prefix", "")
 
         #: A dictionary with URL defaults that is added to each and every
@@ -96,9 +97,10 @@ class BlueprintSetupState:
         defaults = self.url_defaults
         if "defaults" in options:
             defaults = dict(defaults, **options.pop("defaults"))
+
         self.app.add_url_rule(
             rule,
-            f"{self.name_prefix}{self.blueprint.name}.{endpoint}",
+            f"{self.name_prefix}.{self.name}.{endpoint}".lstrip("."),
             view_func,
             defaults=defaults,
             **options,
@@ -252,8 +254,16 @@ class Blueprint(Scaffold):
         arguments passed to this method will override the defaults set
         on the blueprint.
 
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
+
         .. versionadded:: 2.0
         """
+        if blueprint is self:
+            raise ValueError("Cannot register a blueprint on itself")
         self._blueprints.append((blueprint, options))
 
     def register(self, app: "Flask", options: dict) -> None:
@@ -266,23 +276,48 @@ class Blueprint(Scaffold):
             with.
         :param options: Keyword arguments forwarded from
             :meth:`~Flask.register_blueprint`.
-        :param first_registration: Whether this is the first time this
-            blueprint has been registered on the application.
+
+        .. versionchanged:: 2.0.1
+            Nested blueprints are registered with their dotted name.
+            This allows different blueprints with the same name to be
+            nested at different locations.
+
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
+
+        .. versionchanged:: 2.0.1
+            Registering the same blueprint with the same name multiple
+            times is deprecated and will become an error in Flask 2.1.
         """
-        first_registration = False
+        first_registration = not any(bp is self for bp in app.blueprints.values())
+        name_prefix = options.get("name_prefix", "")
+        self_name = options.get("name", self.name)
+        name = f"{name_prefix}.{self_name}".lstrip(".")
 
-        if self.name in app.blueprints:
-            assert app.blueprints[self.name] is self, (
-                "A name collision occurred between blueprints"
-                f" {self!r} and {app.blueprints[self.name]!r}."
-                f" Both share the same name {self.name!r}."
-                f" Blueprints that are created on the fly need unique"
-                f" names."
-            )
-        else:
-            app.blueprints[self.name] = self
-            first_registration = True
+        if name in app.blueprints:
+            existing_at = f" '{name}'" if self_name != name else ""
 
+            if app.blueprints[name] is not self:
+                raise ValueError(
+                    f"The name '{self_name}' is already registered for"
+                    f" a different blueprint{existing_at}. Use 'name='"
+                    " to provide a unique name."
+                )
+            else:
+                import warnings
+
+                warnings.warn(
+                    f"The name '{self_name}' is already registered for"
+                    f" this blueprint{existing_at}. Use 'name=' to"
+                    " provide a unique name. This will become an error"
+                    " in Flask 2.1.",
+                    stacklevel=4,
+                )
+
+        app.blueprints[name] = self
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
 
@@ -298,12 +333,11 @@ class Blueprint(Scaffold):
 
             def extend(bp_dict, parent_dict):
                 for key, values in bp_dict.items():
-                    key = self.name if key is None else f"{self.name}.{key}"
-
+                    key = name if key is None else f"{name}.{key}"
                     parent_dict[key].extend(values)
 
             for key, value in self.error_handler_spec.items():
-                key = self.name if key is None else f"{self.name}.{key}"
+                key = name if key is None else f"{name}.{key}"
                 value = defaultdict(
                     dict,
                     {
@@ -337,7 +371,7 @@ class Blueprint(Scaffold):
             if cli_resolved_group is None:
                 app.cli.commands.update(self.cli.commands)
             elif cli_resolved_group is _sentinel:
-                self.cli.name = self.name
+                self.cli.name = name
                 app.cli.add_command(self.cli)
             else:
                 self.cli.name = cli_resolved_group
@@ -354,10 +388,12 @@ class Blueprint(Scaffold):
                 bp_options["url_prefix"] = (
                     state.url_prefix.rstrip("/") + "/" + bp_url_prefix.lstrip("/")
                 )
-            else:
+            elif bp_url_prefix is not None:
+                bp_options["url_prefix"] = bp_url_prefix
+            elif state.url_prefix is not None:
                 bp_options["url_prefix"] = state.url_prefix
 
-            bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
+            bp_options["name_prefix"] = name
             blueprint.register(app, bp_options)
 
     def add_url_rule(
