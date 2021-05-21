@@ -64,8 +64,10 @@ def get_load_dotenv(default: bool = True) -> bool:
 
 
 def stream_with_context(
-    generator_or_function: t.Union[t.Generator, t.Callable]
-) -> t.Generator:
+    generator_or_function: t.Union[
+        t.Iterator[t.AnyStr], t.Callable[..., t.Iterator[t.AnyStr]]
+    ]
+) -> t.Iterator[t.AnyStr]:
     """Request contexts disappear when the response is started on the server.
     This is done for efficiency reasons and to make it less likely to encounter
     memory leaks with badly written WSGI middlewares.  The downside is that if
