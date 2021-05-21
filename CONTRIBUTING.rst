@@ -112,21 +112,11 @@ First time setup
              > py -3 -m venv env
              > env\Scripts\activate
 
--   Update pip and setuptools.
+-   Upgrade pip and setuptools.
 
-    .. tabs::
+    .. code-block:: text
 
-       .. group-tab:: Linux/macOS
-
-          .. code-block:: text
-
-             $ python3 -m pip install --upgrade pip setuptools
-
-       .. group-tab:: Windows
-
-          .. code-block:: text
-
-             > py -3 -m pip install --upgrade pip setuptools
+        $ python -m pip install --upgrade pip setuptools
 
 -   Install the development dependencies, then install Flask in editable
     mode.
