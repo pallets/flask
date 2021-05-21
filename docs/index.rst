@@ -1,4 +1,4 @@
-.. rst-class:: hide-header
+.. rst-class:: Show-header
 
 Welcome to Flask
 ================
