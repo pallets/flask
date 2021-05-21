@@ -121,9 +121,26 @@ First time setup
 -   Install the development dependencies, then install Flask in editable
     mode.
 
-    .. code-block:: text
+    .. tabs::
 
-        $ pip install -r requirements/dev.txt && pip install -e .
+        .. group-tab:: Bash
+
+            .. code-block:: text
+
+                $ pip install -r requirements/dev.txt && pip install -e .
+
+        .. group-tab:: CMD
+
+            .. code-block:: text
+
+                > pip install -r requirements/dev.txt && pip install -e .
+
+        .. group-tab:: Powershell
+
+            .. code-block:: text
+
+                > pip install -r requirements/dev.txt
+                > pip install -e .
 
 -   Install the pre-commit hooks.
 
@@ -217,10 +234,21 @@ Building the docs
 
 Build the docs in the ``docs`` directory using Sphinx.
 
-.. code-block:: text
+.. tabs::
 
-    $ cd docs
-    $ make html
+    .. group-tab:: Linux/macOS
+
+        .. code-block:: text
+
+            $ cd docs
+            $ make html
+
+    .. group-tab:: Windows
+
+        .. code-block:: text
+
+            > cd docs
+            > .\make.bat html
 
 Open ``_build/html/index.html`` in your browser to view the docs.
 
