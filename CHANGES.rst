@@ -5,6 +5,8 @@ Version 2.0.2
 
 Unreleased
 
+-  Fix type annotation for ``teardown_request``. :issue:`4093`
+
 
 Version 2.0.1
 -------------
