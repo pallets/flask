@@ -6,6 +6,7 @@ from .scaffold import _endpoint_from_view_func
 from .scaffold import _sentinel
 from .scaffold import Scaffold
 from .typing import AfterRequestCallable
+from .typing import BeforeFirstRequestCallable
 from .typing import BeforeRequestCallable
 from .typing import ErrorHandlerCallable
 from .typing import TeardownCallable
@@ -537,8 +538,8 @@ class Blueprint(Scaffold):
         return f
 
     def before_app_first_request(
-        self, f: BeforeRequestCallable
-    ) -> BeforeRequestCallable:
+        self, f: BeforeFirstRequestCallable
+    ) -> BeforeFirstRequestCallable:
         """Like :meth:`Flask.before_first_request`.  Such a function is
         executed before the first request to the application.
         """
