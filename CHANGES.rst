@@ -5,7 +5,9 @@ Version 2.0.2
 
 Unreleased
 
--  Fix type annotation for ``teardown_request``. :issue:`4093`
+-   Fix type annotation for ``teardown_request``. :issue:`4093`
+-   Fix type annotation for ``before_request`` and ``before_app_request``
+    decorators. :issue:`4104`
 
 
 Version 2.0.1

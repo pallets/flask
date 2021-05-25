@@ -35,7 +35,8 @@ ResponseReturnValue = t.Union[
 
 AppOrBlueprintKey = t.Optional[str]  # The App key is None, whereas blueprints are named
 AfterRequestCallable = t.Callable[["Response"], "Response"]
-BeforeRequestCallable = t.Callable[[], None]
+BeforeFirstRequestCallable = t.Callable[[], None]
+BeforeRequestCallable = t.Callable[[], t.Optional[ResponseReturnValue]]
 ErrorHandlerCallable = t.Callable[[Exception], ResponseReturnValue]
 TeardownCallable = t.Callable[[t.Optional[BaseException]], None]
 TemplateContextProcessorCallable = t.Callable[[], t.Dict[str, t.Any]]
