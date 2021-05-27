@@ -64,8 +64,11 @@ screenshot below.
     :alt: screenshot of login page
 
 You can read more about CSS from `Mozilla's documentation <CSS_>`_. If
-you change a static file, refresh the browser page. If the change
-doesn't show up, try clearing your browser's cache.
+you change a static file, refresh the browser page. 
+
+.. admontation:: Flask 2.0 renewal
+    Starting with version 2.0, you no longer need to clear your
+    browser cache to display changes to a static file.
 
 .. _CSS: https://developer.mozilla.org/docs/Web/CSS
 
