@@ -18,6 +18,12 @@ defined with ``async def`` and use ``await``.
         data = await async_db_query(...)
         return jsonify(data)
 
+Pluggable class-based views also support handlers that are implemented as
+coroutines. This applies to the :meth:`~flask.views.View.dispatch_request`
+method in views that inherit from the :class:`flask.views.View` class, as
+well as all the HTTP method handlers in views that inherit from the
+:class:`flask.views.MethodView` class.
+
 .. admonition:: Using ``async`` on Windows on Python 3.8
 
     Python 3.8 has a bug related to asyncio on Windows. If you encounter
