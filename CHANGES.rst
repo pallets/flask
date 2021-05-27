@@ -10,6 +10,7 @@ Unreleased
     decorators. :issue:`4104`
 -   Fixed the issue where typing requires template global
     decorators to accept functions with no arguments. :issue:`4098`
+-   Support View and MethodView instances with async handlers. :issue:`4112`
 
 
 Version 2.0.1
