@@ -319,6 +319,8 @@ class Blueprint(Scaffold):
                 )
 
         app.blueprints[name] = self
+        if self not in app._blueprint_order:
+            app._blueprint_order.append(self)
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
 

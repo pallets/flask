@@ -8,6 +8,10 @@ Unreleased
 -   Fix type annotation for ``teardown_request``. :issue:`4093`
 -   Fix type annotation for ``before_request`` and ``before_app_request``
     decorators. :issue:`4104`
+-   Re-add the ``Flask._blueprint_order`` list. Take blueprint registration
+    order into consideration when searching for templates in
+    ``DispatchingJinjaLoader._iter_loaders()``,
+    ``DispatchingJinjaLoader.list_templates()``.
 
 
 Version 2.0.1

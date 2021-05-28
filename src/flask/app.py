@@ -463,6 +463,7 @@ class Flask(Scaffold):
         #:
         #: .. versionadded:: 0.7
         self.blueprints: t.Dict[str, "Blueprint"] = {}
+        self._blueprint_order: t.List[Blueprint] = []
 
         #: a place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
@@ -1035,7 +1036,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.11
         """
-        return self.blueprints.values()
+        return iter(self._blueprint_order)
 
     @setupmethod
     def add_url_rule(
