@@ -55,7 +55,7 @@ this structure and take full advantage of Flask's flexibility.
 .. image:: flaskr_edit.png
     :align: center
     :class: screenshot
-    :alt: screenshot of login page
+    :alt: screenshot of edit page
 
 :gh:`The tutorial project is available as an example in the Flask
 repository <examples/tutorial>`, if you want to compare your project
