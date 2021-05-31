@@ -8,7 +8,6 @@ from .scaffold import Scaffold
 from .typing import AfterRequestCallable
 from .typing import BeforeFirstRequestCallable
 from .typing import BeforeRequestCallable
-from .typing import ErrorHandlerCallable
 from .typing import TeardownCallable
 from .typing import TemplateContextProcessorCallable
 from .typing import TemplateFilterCallable
@@ -19,6 +18,7 @@ from .typing import URLValuePreprocessorCallable
 
 if t.TYPE_CHECKING:
     from .app import Flask
+    from .typing import ErrorHandlerCallable
 
 DeferredSetupFunction = t.Callable[["BlueprintSetupState"], t.Callable]
 
@@ -581,7 +581,9 @@ class Blueprint(Scaffold):
         handler is used for all requests, even if outside of the blueprint.
         """
 
-        def decorator(f: ErrorHandlerCallable) -> ErrorHandlerCallable:
+        def decorator(
+            f: "ErrorHandlerCallable[Exception]",
+        ) -> "ErrorHandlerCallable[Exception]":
             self.record_once(lambda s: s.app.errorhandler(code)(f))
             return f
 
