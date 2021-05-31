@@ -21,7 +21,7 @@ from .templating import _default_template_ctx_processor
 from .typing import AfterRequestCallable
 from .typing import AppOrBlueprintKey
 from .typing import BeforeRequestCallable
-from .typing import ErrorHandlerCallable
+from .typing import GenericException
 from .typing import TeardownCallable
 from .typing import TemplateContextProcessorCallable
 from .typing import URLDefaultCallable
@@ -29,6 +29,7 @@ from .typing import URLValuePreprocessorCallable
 
 if t.TYPE_CHECKING:
     from .wrappers import Response
+    from .typing import ErrorHandlerCallable
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
@@ -144,7 +145,10 @@ class Scaffold:
         #: directly and its format may change at any time.
         self.error_handler_spec: t.Dict[
             AppOrBlueprintKey,
-            t.Dict[t.Optional[int], t.Dict[t.Type[Exception], ErrorHandlerCallable]],
+            t.Dict[
+                t.Optional[int],
+                t.Dict[t.Type[Exception], "ErrorHandlerCallable[Exception]"],
+            ],
         ] = defaultdict(lambda: defaultdict(dict))
 
         #: A data structure of functions to call at the beginning of
@@ -643,8 +647,11 @@ class Scaffold:
 
     @setupmethod
     def errorhandler(
-        self, code_or_exception: t.Union[t.Type[Exception], int]
-    ) -> t.Callable[[ErrorHandlerCallable], ErrorHandlerCallable]:
+        self, code_or_exception: t.Union[t.Type[GenericException], int]
+    ) -> t.Callable[
+        ["ErrorHandlerCallable[GenericException]"],
+        "ErrorHandlerCallable[GenericException]",
+    ]:
         """Register a function to handle errors by code or exception class.
 
         A decorator that is used to register a function given an
@@ -674,7 +681,9 @@ class Scaffold:
                                   an arbitrary exception
         """
 
-        def decorator(f: ErrorHandlerCallable) -> ErrorHandlerCallable:
+        def decorator(
+            f: "ErrorHandlerCallable[GenericException]",
+        ) -> "ErrorHandlerCallable[GenericException]":
             self.register_error_handler(code_or_exception, f)
             return f
 
@@ -683,8 +692,8 @@ class Scaffold:
     @setupmethod
     def register_error_handler(
         self,
-        code_or_exception: t.Union[t.Type[Exception], int],
-        f: ErrorHandlerCallable,
+        code_or_exception: t.Union[t.Type[GenericException], int],
+        f: "ErrorHandlerCallable[GenericException]",
     ) -> None:
         """Alternative error attach function to the :meth:`errorhandler`
         decorator that is more straightforward to use for non decorator
@@ -708,7 +717,9 @@ class Scaffold:
                 " instead."
             )
 
-        self.error_handler_spec[None][code][exc_class] = f
+        self.error_handler_spec[None][code][exc_class] = t.cast(
+            "ErrorHandlerCallable[Exception]", f
+        )
 
     @staticmethod
     def _get_exc_class_and_code(
