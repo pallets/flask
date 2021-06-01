@@ -31,11 +31,11 @@ class AsyncView(View):
 class AsyncMethodView(MethodView):
     async def get(self):
         await asyncio.sleep(0)
-        return 'GET'
+        return "GET"
 
     async def post(self):
         await asyncio.sleep(0)
-        return 'POST'
+        return "POST"
 
 
 @pytest.fixture(name="async_app")
@@ -73,8 +73,8 @@ def _async_app():
 
     app.register_blueprint(blueprint, url_prefix="/bp")
 
-    app.add_url_rule('/view', view_func=AsyncView.as_view('view'))
-    app.add_url_rule('/methodview', view_func=AsyncMethodView.as_view('methodview'))
+    app.add_url_rule("/view", view_func=AsyncView.as_view("view"))
+    app.add_url_rule("/methodview", view_func=AsyncMethodView.as_view("methodview"))
 
     return app
 
