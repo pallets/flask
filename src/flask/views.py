@@ -1,6 +1,7 @@
 import typing as t
 
 from .globals import request
+from .helpers import ensure_sync
 from .typing import ResponseReturnValue
 
 
@@ -80,7 +81,7 @@ class View:
 
         def view(*args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
             self = view.view_class(*class_args, **class_kwargs)  # type: ignore
-            return self.dispatch_request(*args, **kwargs)
+            return ensure_sync(self.dispatch_request)(*args, **kwargs)
 
         if cls.decorators:
             view.__name__ = name
@@ -154,4 +155,4 @@ class MethodView(View, metaclass=MethodViewType):
             meth = getattr(self, "get", None)
 
         assert meth is not None, f"Unimplemented method {request.method!r}"
-        return meth(*args, **kwargs)
+        return ensure_sync(meth)(*args, **kwargs)
