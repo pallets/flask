@@ -1,3 +1,4 @@
+import inspect
 import os
 import pkgutil
 import socket
@@ -12,6 +13,7 @@ from threading import RLock
 
 import werkzeug.utils
 from werkzeug.exceptions import NotFound
+from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
@@ -24,6 +26,19 @@ from .signals import message_flashed
 
 if t.TYPE_CHECKING:
     from .wrappers import Response
+
+if sys.version_info >= (3, 8):
+    iscoroutinefunction = inspect.iscoroutinefunction
+else:
+
+    def iscoroutinefunction(func: t.Any) -> bool:
+        while inspect.ismethod(func):
+            func = func.__func__
+
+        while isinstance(func, functools.partial):
+            func = func.func
+
+        return inspect.iscoroutinefunction(func)
 
 
 def get_env() -> str:
@@ -834,3 +849,42 @@ def _split_blueprint_path(name: str) -> t.List[str]:
         out.extend(_split_blueprint_path(name.rpartition(".")[0]))
 
     return out
+
+
+def ensure_sync(func: t.Callable) -> t.Callable:
+    """Ensure that the function is synchronous for WSGI workers.
+    Plain ``def`` functions are returned as-is. ``async def``
+    functions are wrapped to run and wait for the response.
+
+    .. versionadded:: 2.0
+    """
+    if iscoroutinefunction(func):
+        return async_to_sync(func)
+
+    return func
+
+
+def async_to_sync(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
+    """Return a sync function that will run the coroutine function.
+
+    .. code-block:: python
+
+        result = async_to_sync(func)(*args, **kwargs)
+
+    .. versionadded:: 2.0
+    """
+    try:
+        from asgiref.sync import async_to_sync as asgiref_async_to_sync
+    except ImportError:
+        raise RuntimeError(
+            "Install Flask with the 'async' extra in order to use async views."
+        )
+
+    # Check that Werkzeug isn't using its fallback ContextVar class.
+    if ContextVar.__module__ == "werkzeug.local":
+        raise RuntimeError(
+            "Async cannot be used with this combination of Python "
+            "and Greenlet versions."
+        )
+
+    return asgiref_async_to_sync(func)
