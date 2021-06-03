@@ -6,7 +6,8 @@ import pytest
 from flask import Blueprint
 from flask import Flask
 from flask import request
-from flask.views import View, MethodView
+from flask.views import MethodView
+from flask.views import View
 
 pytest.importorskip("asgiref")
 
@@ -61,7 +62,7 @@ def _async_app():
             return request.method
 
     app.add_url_rule("/async_view", view_func=AsyncView.as_view("async_view"))
-    
+
     class AsyncMethodView(MethodView):
         async def get(self):
             return "GET"
@@ -69,13 +70,17 @@ def _async_app():
         async def post(self):
             return "POST"
 
-    app.add_url_rule("/async_methodview", view_func=AsyncMethodView.as_view("async_methodview"))
+    app.add_url_rule(
+        "/async_methodview", view_func=AsyncMethodView.as_view("async_methodview")
+    )
 
     return app
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
-@pytest.mark.parametrize("path", ["/", "/home", "/bp/", "async_view", "async_methodview"])
+@pytest.mark.parametrize(
+    "path", ["/", "/home", "/bp/", "async_view", "async_methodview"]
+)
 def test_async_route(path, async_app):
     test_client = async_app.test_client()
     response = test_client.get(path)
