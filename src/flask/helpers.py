@@ -1,3 +1,4 @@
+import functools
 import inspect
 import os
 import pkgutil
