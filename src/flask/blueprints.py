@@ -293,7 +293,6 @@ class Blueprint(Scaffold):
             Registering the same blueprint with the same name multiple
             times is deprecated and will become an error in Flask 2.1.
         """
-        first_registration = not any(bp is self for bp in app.blueprints.values())
         name_prefix = options.get("name_prefix", "")
         self_name = options.get("name", self.name)
         name = f"{name_prefix}.{self_name}".lstrip(".")
@@ -318,9 +317,12 @@ class Blueprint(Scaffold):
                     stacklevel=4,
                 )
 
+        first_bp_registration = not any(bp is self for bp in app.blueprints.values())
+        first_name_registration = name not in app.blueprints
+
         app.blueprints[name] = self
         self._got_registered_once = True
-        state = self.make_setup_state(app, options, first_registration)
+        state = self.make_setup_state(app, options, first_bp_registration)
 
         if self.has_static_folder:
             state.add_url_rule(
@@ -330,7 +332,7 @@ class Blueprint(Scaffold):
             )
 
         # Merge blueprint data into parent.
-        if first_registration:
+        if first_bp_registration or first_name_registration:
 
             def extend(bp_dict, parent_dict):
                 for key, values in bp_dict.items():
