@@ -2029,8 +2029,9 @@ def test_app_freed_on_zero_refcount():
 
 
 def test_validate_http_method_route(app, client):
-    
+
     with pytest.raises(TypeError):
+
         @app.route("/", methods=["BAD_METHOD"])
         def bad_method_func():
             return "Hello World"
