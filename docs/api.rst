@@ -747,6 +747,9 @@ Full example::
 .. versionadded:: 0.8
    The `provide_automatic_options` functionality was added.
 
+.. versionadded:: 2.1.1
+   Add specified HTTP method validation.
+
 Command Line Interface
 ----------------------
 
