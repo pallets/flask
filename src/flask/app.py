@@ -1083,6 +1083,19 @@ class Flask(Scaffold):
         # Add the required methods now.
         methods |= required_methods
 
+        # Check HTTP method
+        supported_http_methods = {
+            "GET", "POST", "PUT", "PATCH", "DELETE", 
+            "HEAD", "CONNECT", "OPTIONS", "TRACE",
+            "COPY", "LINK", "UNLINK", "PURGE",
+            "LOCK", "UNLOCK", "PROFIND", "VIEW"
+        }
+        for item in methods:
+            if item not in supported_http_methods:
+                raise TypeError(
+                    f"'{item}' method is not specified in HTTP."
+                )
+
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options  # type: ignore
 
