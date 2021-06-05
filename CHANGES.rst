@@ -1,5 +1,14 @@
 .. currentmodule:: flask
 
+
+Version 2.1.1
+-------------
+
+Unreleased
+
+-   Add specified HTTP method validation.
+
+
 Version 2.1.0
 -------------
 
