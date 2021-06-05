@@ -12,6 +12,7 @@ Unreleased
     decorators to accept functions with no arguments. :issue:`4098`
 -   Support View and MethodView instances with async handlers. :issue:`4112`
 -   Enhance typing of ``app.errorhandler`` decorator. :issue:`4095`
+-   Fix registering a blueprint twice with differing names. :issue:`4124`
 
 
 Version 2.0.1
