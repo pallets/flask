@@ -107,7 +107,7 @@ class Config(dict):
                          root path.
         :param silent: set to ``True`` if you want silent failure for missing
                        files.
-
+        :return: bool.
         .. versionadded:: 0.7
            `silent` parameter.
         """
@@ -185,6 +185,7 @@ class Config(dict):
         :type load: ``Callable[[Reader], Mapping]`` where ``Reader``
             implements a ``read`` method.
         :param silent: Ignore the file if it doesn't exist.
+        :return: bool.
 
         .. versionadded:: 2.0
         """
@@ -209,7 +210,7 @@ class Config(dict):
         :param filename: The path to the JSON file. This can be an
             absolute path or relative to the config root path.
         :param silent: Ignore the file if it doesn't exist.
-
+        :return: bool.
         .. deprecated:: 2.0.0
             Will be removed in Flask 2.1. Use :meth:`from_file` instead.
             This was removed early in 2.0.0, was added back in 2.0.1.
@@ -232,7 +233,7 @@ class Config(dict):
     ) -> bool:
         """Updates the config like :meth:`update` ignoring items with non-upper
         keys.
-
+        :return: bool.
         .. versionadded:: 0.11
         """
         mappings: t.Dict[str, t.Any] = {}
@@ -271,7 +272,6 @@ class Config(dict):
                           dictionary should be lowercase
         :param trim_namespace: a flag indicating if the keys of the resulting
                           dictionary should not include the namespace
-
         .. versionadded:: 0.11
         """
         rv = {}
