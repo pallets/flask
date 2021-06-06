@@ -5,7 +5,7 @@ Version 2.0.2
 
 Unreleased
 
--   Fix type annotation for ``teardown_request``. :issue:`4093`
+-   Fix type annotation for ``teardown_*`` methods. :issue:`4093`
 -   Fix type annotation for ``before_request`` and ``before_app_request``
     decorators. :issue:`4104`
 -   Fixed the issue where typing requires template global
