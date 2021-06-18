@@ -444,9 +444,9 @@ Here is an example template:
       <h1>Hello, World!</h1>
     {% endif %}
 
-Inside templates you also have access to the :class:`~flask.request`,
-:class:`~flask.session` and :class:`~flask.g` [#]_ objects
-as well as the :func:`~flask.get_flashed_messages` function.
+Inside templates you also have access to the :data:`~flask.Flask.config`,
+:class:`~flask.request`, :class:`~flask.session` and :class:`~flask.g` [#]_ objects
+as well as the :func:`~flask.url_for` and :func:`~flask.get_flashed_messages` functions.
 
 Templates are especially useful if inheritance is used.  If you want to
 know how that works, see :doc:`patterns/templateinheritance`. Basically
