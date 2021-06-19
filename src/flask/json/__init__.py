@@ -1,3 +1,4 @@
+import decimal
 import io
 import json as _json
 import typing as t
@@ -45,6 +46,8 @@ class JSONEncoder(_json.JSONEncoder):
         overriding how basic types like ``str`` or ``list`` are
         serialized, they are handled before this method.
         """
+        if isinstance(o, decimal.Decimal):
+            return str(o)
         if isinstance(o, date):
             return http_date(o)
         if isinstance(o, uuid.UUID):

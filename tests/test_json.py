@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import io
 import uuid
 
@@ -7,6 +8,11 @@ from werkzeug.http import http_date
 
 import flask
 from flask import json
+
+
+def test_json_encode_decimal():
+    decimal_ = decimal.Decimal(100)
+    assert flask.json.JSONEncoder().default(decimal_) == str(decimal_)
 
 
 @pytest.mark.parametrize("debug", (True, False))
