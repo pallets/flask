@@ -48,20 +48,21 @@ the application for testing and initializes a new database::
     import pytest
 
     from flaskr import create_app
+    from flaskr.db import init_db
 
 
     @pytest.fixture
     def client():
-        db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-        flaskr.app.config['TESTING'] = True
+        db_fd, db_path = tempfile.mkstemp()
+        app = create_app({'TESTING': True, 'DATABASE': db_path})
 
-        with flaskr.app.test_client() as client:
-            with flaskr.app.app_context():
-                flaskr.init_db()
+        with app.test_client() as client:
+            with app.app_context():
+                init_db()
             yield client
 
         os.close(db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
+        os.unlink(db_path)
 
 This client fixture will be called by each individual test.  It gives us a
 simple interface to the application, where we can trigger test requests to the
