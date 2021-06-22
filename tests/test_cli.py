@@ -17,6 +17,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import Flask
 from flask.cli import AppGroup
+from flask.cli import DispatchingApp
 from flask.cli import dotenv
 from flask.cli import find_best_app
 from flask.cli import FlaskGroup
@@ -659,3 +660,7 @@ def test_click_7_deprecated():
             pytest.deprecated_call(cli_main, match=".* Click 7 is deprecated")
         else:
             cli_main()
+
+
+def test_load_in_background():
+    pytest.raises(Exception, DispatchingApp, "appname123")
