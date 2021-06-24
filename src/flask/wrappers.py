@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.wrappers
     ~~~~~~~~~~~~~~
@@ -22,7 +21,7 @@ class JSONMixin(_JSONMixin):
 
     def on_json_loading_failed(self, e):
         if current_app and current_app.debug:
-            raise BadRequest("Failed to decode JSON object: {0}".format(e))
+            raise BadRequest(f"Failed to decode JSON object: {e}")
 
         raise BadRequest()
 
@@ -134,4 +133,4 @@ class Response(ResponseBase, JSONMixin):
             return current_app.config["MAX_COOKIE_SIZE"]
 
         # return Werkzeug's default when not in an app context
-        return super(Response, self).max_cookie_size
+        return super().max_cookie_size

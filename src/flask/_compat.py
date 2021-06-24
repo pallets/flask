@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask._compat
     ~~~~~~~~~~~~~
@@ -83,7 +82,7 @@ def with_metaclass(meta, *bases):
 BROKEN_PYPY_CTXMGR_EXIT = False
 if hasattr(sys, "pypy_version_info"):
 
-    class _Mgr(object):
+    class _Mgr:
         def __enter__(self):
             return self
 
@@ -115,7 +114,7 @@ except ImportError:
         return path.__fspath__() if hasattr(path, "__fspath__") else path
 
 
-class _DeprecatedBool(object):
+class _DeprecatedBool:
     def __init__(self, name, version, value):
         self.message = "'{}' is deprecated and will be removed in version {}.".format(
             name, version

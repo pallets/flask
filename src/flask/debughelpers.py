@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.debughelpers
     ~~~~~~~~~~~~~~~~~~
@@ -105,7 +104,7 @@ def attach_enctype_error_multidict(request):
 
 
 def _dump_loader_info(loader):
-    yield "class: %s.%s" % (type(loader).__module__, type(loader).__name__)
+    yield f"class: {type(loader).__module__}.{type(loader).__name__}"
     for key, value in sorted(loader.__dict__.items()):
         if key.startswith("_"):
             continue
@@ -118,7 +117,7 @@ def _dump_loader_info(loader):
             continue
         elif not isinstance(value, (str, text_type, int, float, bool)):
             continue
-        yield "%s: %r" % (key, value)
+        yield f"{key}: {value!r}"
 
 
 def explain_template_loading_attempts(app, template, attempts):
@@ -134,7 +133,7 @@ def explain_template_loading_attempts(app, template, attempts):
         if isinstance(srcobj, Flask):
             src_info = 'application "%s"' % srcobj.import_name
         elif isinstance(srcobj, Blueprint):
-            src_info = 'blueprint "%s" (%s)' % (srcobj.name, srcobj.import_name)
+            src_info = f'blueprint "{srcobj.name}" ({srcobj.import_name})'
         else:
             src_info = repr(srcobj)
 

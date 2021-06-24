@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 flask.logging
 ~~~~~~~~~~~~~
@@ -6,8 +5,6 @@ flask.logging
 :copyright: 2010 Pallets
 :license: BSD-3-Clause
 """
-from __future__ import absolute_import
-
 import logging
 import sys
 import warnings

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.views
     ~~~~~~~~~~~
@@ -17,7 +16,7 @@ http_method_funcs = frozenset(
 )
 
 
-class View(object):
+class View:
     """Alternative way to use view functions.  A subclass has to implement
     :meth:`dispatch_request` which is called with the view arguments from
     the URL routing system.  If :attr:`methods` is provided the methods
@@ -114,7 +113,7 @@ class MethodViewType(type):
     """
 
     def __init__(cls, name, bases, d):
-        super(MethodViewType, cls).__init__(name, bases, d)
+        super().__init__(name, bases, d)
 
         if "methods" not in d:
             methods = set()
