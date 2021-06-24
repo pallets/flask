@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tagged JSON
 ~~~~~~~~~~~
@@ -56,7 +55,7 @@ from ..json import dumps
 from ..json import loads
 
 
-class JSONTag(object):
+class JSONTag:
     """Base class for defining type tags for :class:`TaggedJSONSerializer`."""
 
     __slots__ = ("serializer",)
@@ -124,7 +123,7 @@ class PassDict(JSONTag):
     def to_json(self, value):
         # JSON objects may only have string keys, so don't bother tagging the
         # key here.
-        return dict((k, self.serializer.tag(v)) for k, v in iteritems(value))
+        return {k: self.serializer.tag(v) for k, v in iteritems(value)}
 
     tag = to_json
 
@@ -215,7 +214,7 @@ class TagDateTime(JSONTag):
         return parse_date(value)
 
 
-class TaggedJSONSerializer(object):
+class TaggedJSONSerializer:
     """Serializer that uses a tag system to compactly represent objects that
     are not JSON types. Passed as the intermediate serializer to
     :class:`itsdangerous.Serializer`.
@@ -271,7 +270,7 @@ class TaggedJSONSerializer(object):
 
         if key is not None:
             if not force and key in self.tags:
-                raise KeyError("Tag '{0}' is already registered.".format(key))
+                raise KeyError(f"Tag '{key}' is already registered.")
 
             self.tags[key] = tag
 

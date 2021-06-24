@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.config
     ~~~~~~~~~~~~
@@ -19,7 +18,7 @@ from ._compat import iteritems
 from ._compat import string_types
 
 
-class ConfigAttribute(object):
+class ConfigAttribute:
     """Makes an attribute forward to the config"""
 
     def __init__(self, name, get_converter=None):
@@ -130,7 +129,7 @@ class Config(dict):
         try:
             with open(filename, mode="rb") as config_file:
                 exec(compile(config_file.read(), filename, "exec"), d.__dict__)
-        except IOError as e:
+        except OSError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
                 return False
             e.strerror = "Unable to load configuration file (%s)" % e.strerror
@@ -194,7 +193,7 @@ class Config(dict):
         try:
             with open(filename) as json_file:
                 obj = json.loads(json_file.read())
-        except IOError as e:
+        except OSError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
             e.strerror = "Unable to load configuration file (%s)" % e.strerror
@@ -266,4 +265,4 @@ class Config(dict):
         return rv
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, dict.__repr__(self))
+        return f"<{self.__class__.__name__} {dict.__repr__(self)}>"

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     flask.cli
     ~~~~~~~~~
@@ -8,8 +7,6 @@
     :copyright: 2010 Pallets
     :license: BSD-3-Clause
 """
-from __future__ import print_function
-
 import ast
 import inspect
 import os
@@ -171,7 +168,7 @@ def find_app_by_string(script_info, module, app_name):
     if inspect.isfunction(attr):
         if args:
             try:
-                args = ast.literal_eval("({args},)".format(args=args))
+                args = ast.literal_eval(f"({args},)")
             except (ValueError, SyntaxError) as e:
                 raise NoAppException(
                     "Could not parse the arguments in "
@@ -247,7 +244,7 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
                 "\n\n{tb}".format(name=module_name, tb=traceback.format_exc())
             )
         elif raise_if_not_found:
-            raise NoAppException('Could not import "{name}".'.format(name=module_name))
+            raise NoAppException(f'Could not import "{module_name}".')
         else:
             return
 
@@ -289,7 +286,7 @@ version_option = click.Option(
 )
 
 
-class DispatchingApp(object):
+class DispatchingApp:
     """Special application that dispatches to a Flask application which
     is imported by name in a background thread.  If an error happens
     it is recorded and shown as part of the WSGI handling which in case
@@ -344,7 +341,7 @@ class DispatchingApp(object):
             return rv(environ, start_response)
 
 
-class ScriptInfo(object):
+class ScriptInfo:
     """Helper object to deal with Flask applications.  This is usually not
     necessary to interface with as it's used internally in the dispatching
     to click.  In future versions of Flask this object will most likely play
@@ -491,7 +488,7 @@ class FlaskGroup(AppGroup):
         add_version_option=True,
         load_dotenv=True,
         set_debug_flag=True,
-        **extra
+        **extra,
     ):
         params = list(extra.pop("params", None) or ())
 
@@ -583,7 +580,7 @@ class FlaskGroup(AppGroup):
 
         kwargs["obj"] = obj
         kwargs.setdefault("auto_envvar_prefix", "FLASK")
-        return super(FlaskGroup, self).main(*args, **kwargs)
+        return super().main(*args, **kwargs)
 
 
 def _path_is_ancestor(path, other):
@@ -662,14 +659,14 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
         return
 
     if app_import_path is not None:
-        message = ' * Serving Flask app "{0}"'.format(app_import_path)
+        message = f' * Serving Flask app "{app_import_path}"'
 
         if not eager_loading:
             message += " (lazy loading)"
 
         click.echo(message)
 
-    click.echo(" * Environment: {0}".format(env))
+    click.echo(f" * Environment: {env}")
 
     if env == "production":
         click.secho(
@@ -680,7 +677,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
         click.secho("   Use a production WSGI server instead.", dim=True)
 
     if debug is not None:
-        click.echo(" * Debug mode: {0}".format("on" if debug else "off"))
+        click.echo(" * Debug mode: {}".format("on" if debug else "off"))
 
 
 class CertParamType(click.ParamType):
@@ -772,7 +769,7 @@ class SeparatedPathType(click.Path):
 
     def convert(self, value, param, ctx):
         items = self.split_envvar_value(value)
-        super_convert = super(SeparatedPathType, self).convert
+        super_convert = super().convert
         return [super_convert(item, param, ctx) for item in items]
 
 
@@ -875,7 +872,7 @@ def shell_command():
     from .globals import _app_ctx_stack
 
     app = _app_ctx_stack.top.app
-    banner = "Python %s on %s\nApp: %s [%s]\nInstance: %s" % (
+    banner = "Python {} on {}\nApp: {} [{}]\nInstance: {}".format(
         sys.version,
         sys.platform,
         app.import_name,
@@ -888,7 +885,7 @@ def shell_command():
     # is using it.
     startup = os.environ.get("PYTHONSTARTUP")
     if startup and os.path.isfile(startup):
-        with open(startup, "r") as f:
+        with open(startup) as f:
             eval(compile(f.read(), startup, "exec"), ctx)
 
     ctx.update(app.make_shell_context())
