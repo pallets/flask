@@ -1,7 +1,18 @@
+# -*- coding: utf-8 -*-
+"""
+    flask.debughelpers
+    ~~~~~~~~~~~~~~~~~~
+
+    Various helpers to make the development experience better.
+
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
+"""
 import os
-import typing as t
 from warnings import warn
 
+from ._compat import implements_to_string
+from ._compat import text_type
 from .app import Flask
 from .blueprints import Blueprint
 from .globals import _request_ctx_stack
@@ -13,6 +24,7 @@ class UnexpectedUnicodeError(AssertionError, UnicodeError):
     """
 
 
+@implements_to_string
 class DebugFilesKeyError(KeyError, AssertionError):
     """Raised from request.files during debugging.  The idea is that it can
     provide a better error message than just a generic KeyError/BadRequest.
@@ -21,18 +33,17 @@ class DebugFilesKeyError(KeyError, AssertionError):
     def __init__(self, request, key):
         form_matches = request.form.getlist(key)
         buf = [
-            f"You tried to access the file {key!r} in the request.files"
-            " dictionary but it does not exist. The mimetype for the"
-            f" request is {request.mimetype!r} instead of"
-            " 'multipart/form-data' which means that no file contents"
-            " were transmitted. To fix this error you should provide"
-            ' enctype="multipart/form-data" in your form.'
+            'You tried to access the file "%s" in the request.files '
+            "dictionary but it does not exist.  The mimetype for the request "
+            'is "%s" instead of "multipart/form-data" which means that no '
+            "file contents were transmitted.  To fix this error you should "
+            'provide enctype="multipart/form-data" in your form.'
+            % (key, request.mimetype)
         ]
         if form_matches:
-            names = ", ".join(repr(x) for x in form_matches)
             buf.append(
                 "\n\nThe browser instead transmitted some file names. "
-                f"This was submitted: {names}"
+                "This was submitted: %s" % ", ".join('"%s"' % x for x in form_matches)
             )
         self.msg = "".join(buf)
 
@@ -49,24 +60,24 @@ class FormDataRoutingRedirect(AssertionError):
     def __init__(self, request):
         exc = request.routing_exception
         buf = [
-            f"A request was sent to this URL ({request.url}) but a"
-            " redirect was issued automatically by the routing system"
-            f" to {exc.new_url!r}."
+            "A request was sent to this URL (%s) but a redirect was "
+            'issued automatically by the routing system to "%s".'
+            % (request.url, exc.new_url)
         ]
 
         # In case just a slash was appended we can be extra helpful
-        if f"{request.base_url}/" == exc.new_url.split("?")[0]:
+        if request.base_url + "/" == exc.new_url.split("?")[0]:
             buf.append(
-                "  The URL was defined with a trailing slash so Flask"
-                " will automatically redirect to the URL with the"
-                " trailing slash if it was accessed without one."
+                "  The URL was defined with a trailing slash so "
+                "Flask will automatically redirect to the URL "
+                "with the trailing slash if it was accessed "
+                "without one."
             )
 
         buf.append(
-            "  Make sure to directly send your"
-            f" {request.method}-request to this URL since we can't make"
-            " browsers or HTTP clients redirect with form data reliably"
-            " or without user interaction."
+            "  Make sure to directly send your %s-request to this URL "
+            "since we can't make browsers or HTTP clients redirect "
+            "with form data reliably or without user interaction." % request.method
         )
         buf.append("\n\nNote: this exception is only raised in debug mode")
         AssertionError.__init__(self, "".join(buf).encode("utf-8"))
@@ -93,26 +104,26 @@ def attach_enctype_error_multidict(request):
     request.files.__class__ = newcls
 
 
-def _dump_loader_info(loader) -> t.Generator:
-    yield f"class: {type(loader).__module__}.{type(loader).__name__}"
+def _dump_loader_info(loader):
+    yield "class: %s.%s" % (type(loader).__module__, type(loader).__name__)
     for key, value in sorted(loader.__dict__.items()):
         if key.startswith("_"):
             continue
         if isinstance(value, (tuple, list)):
-            if not all(isinstance(x, str) for x in value):
+            if not all(isinstance(x, (str, text_type)) for x in value):
                 continue
-            yield f"{key}:"
+            yield "%s:" % key
             for item in value:
-                yield f"  - {item}"
+                yield "  - %s" % item
             continue
-        elif not isinstance(value, (str, int, float, bool)):
+        elif not isinstance(value, (str, text_type, int, float, bool)):
             continue
-        yield f"{key}: {value!r}"
+        yield "%s: %r" % (key, value)
 
 
-def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
+def explain_template_loading_attempts(app, template, attempts):
     """This should help developers understand what failed"""
-    info = [f"Locating template {template!r}:"]
+    info = ['Locating template "%s":' % template]
     total_found = 0
     blueprint = None
     reqctx = _request_ctx_stack.top
@@ -121,23 +132,23 @@ def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
 
     for idx, (loader, srcobj, triple) in enumerate(attempts):
         if isinstance(srcobj, Flask):
-            src_info = f"application {srcobj.import_name!r}"
+            src_info = 'application "%s"' % srcobj.import_name
         elif isinstance(srcobj, Blueprint):
-            src_info = f"blueprint {srcobj.name!r} ({srcobj.import_name})"
+            src_info = 'blueprint "%s" (%s)' % (srcobj.name, srcobj.import_name)
         else:
             src_info = repr(srcobj)
 
-        info.append(f"{idx + 1:5}: trying loader of {src_info}")
+        info.append("% 5d: trying loader of %s" % (idx + 1, src_info))
 
         for line in _dump_loader_info(loader):
-            info.append(f"       {line}")
+            info.append("       %s" % line)
 
         if triple is None:
             detail = "no match"
         else:
-            detail = f"found ({triple[1] or '<string>'!r})"
+            detail = "found (%r)" % (triple[1] or "<string>")
             total_found += 1
-        info.append(f"       -> {detail}")
+        info.append("       -> %s" % detail)
 
     seems_fishy = False
     if total_found == 0:
@@ -149,23 +160,24 @@ def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
 
     if blueprint is not None and seems_fishy:
         info.append(
-            "  The template was looked up from an endpoint that belongs"
-            f" to the blueprint {blueprint!r}."
+            "  The template was looked up from an endpoint that "
+            'belongs to the blueprint "%s".' % blueprint
         )
         info.append("  Maybe you did not place a template in the right folder?")
-        info.append("  See https://flask.palletsprojects.com/blueprints/#templates")
+        info.append("  See http://flask.pocoo.org/docs/blueprints/#templates")
 
     app.logger.info("\n".join(info))
 
 
-def explain_ignored_app_run() -> None:
+def explain_ignored_app_run():
     if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
         warn(
             Warning(
-                "Silently ignoring app.run() because the application is"
-                " run from the flask command line executable. Consider"
-                ' putting app.run() behind an if __name__ == "__main__"'
-                " guard to silence this warning."
+                "Silently ignoring app.run() because the "
+                "application is run from the flask command line "
+                "executable.  Consider putting app.run() behind an "
+                'if __name__ == "__main__" guard to silence this '
+                "warning."
             ),
             stacklevel=3,
         )

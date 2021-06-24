@@ -1,7 +1,15 @@
-import typing as t
+# -*- coding: utf-8 -*-
+"""
+    flask.views
+    ~~~~~~~~~~~
 
+    This module provides class-based views inspired by the ones in Django.
+
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
+"""
+from ._compat import with_metaclass
 from .globals import request
-from .typing import ResponseReturnValue
 
 
 http_method_funcs = frozenset(
@@ -9,7 +17,7 @@ http_method_funcs = frozenset(
 )
 
 
-class View:
+class View(object):
     """Alternative way to use view functions.  A subclass has to implement
     :meth:`dispatch_request` which is called with the view arguments from
     the URL routing system.  If :attr:`methods` is provided the methods
@@ -20,7 +28,7 @@ class View:
             methods = ['GET']
 
             def dispatch_request(self, name):
-                return f"Hello {name}!"
+                return 'Hello %s!' % name
 
         app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
 
@@ -42,10 +50,10 @@ class View:
     """
 
     #: A list of methods this view can handle.
-    methods: t.Optional[t.List[str]] = None
+    methods = None
 
     #: Setting this disables or force-enables the automatic options handling.
-    provide_automatic_options: t.Optional[bool] = None
+    provide_automatic_options = None
 
     #: The canonical way to decorate class-based views is to decorate the
     #: return value of as_view().  However since this moves parts of the
@@ -56,9 +64,9 @@ class View:
     #: view function is created the result is automatically decorated.
     #:
     #: .. versionadded:: 0.8
-    decorators: t.List[t.Callable] = []
+    decorators = ()
 
-    def dispatch_request(self) -> ResponseReturnValue:
+    def dispatch_request(self):
         """Subclasses have to override this method to implement the
         actual view function code.  This method is called with all
         the arguments from the URL rule.
@@ -66,9 +74,7 @@ class View:
         raise NotImplementedError()
 
     @classmethod
-    def as_view(
-        cls, name: str, *class_args: t.Any, **class_kwargs: t.Any
-    ) -> t.Callable:
+    def as_view(cls, name, *class_args, **class_kwargs):
         """Converts the class into an actual view function that can be used
         with the routing system.  Internally this generates a function on the
         fly which will instantiate the :class:`View` on each request and call
@@ -78,8 +84,8 @@ class View:
         constructor of the class.
         """
 
-        def view(*args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
-            self = view.view_class(*class_args, **class_kwargs)  # type: ignore
+        def view(*args, **kwargs):
+            self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
 
         if cls.decorators:
@@ -93,12 +99,12 @@ class View:
         # view this thing came from, secondly it's also used for instantiating
         # the view class so you can actually replace it with something else
         # for testing purposes and debugging.
-        view.view_class = cls  # type: ignore
+        view.view_class = cls
         view.__name__ = name
         view.__doc__ = cls.__doc__
         view.__module__ = cls.__module__
-        view.methods = cls.methods  # type: ignore
-        view.provide_automatic_options = cls.provide_automatic_options  # type: ignore
+        view.methods = cls.methods
+        view.provide_automatic_options = cls.provide_automatic_options
         return view
 
 
@@ -108,7 +114,7 @@ class MethodViewType(type):
     """
 
     def __init__(cls, name, bases, d):
-        super().__init__(name, bases, d)
+        super(MethodViewType, cls).__init__(name, bases, d)
 
         if "methods" not in d:
             methods = set()
@@ -129,7 +135,7 @@ class MethodViewType(type):
                 cls.methods = methods
 
 
-class MethodView(View, metaclass=MethodViewType):
+class MethodView(with_metaclass(MethodViewType, View)):
     """A class-based view that dispatches request methods to the corresponding
     class methods. For example, if you implement a ``get`` method, it will be
     used to handle ``GET`` requests. ::
@@ -145,7 +151,7 @@ class MethodView(View, metaclass=MethodViewType):
         app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
     """
 
-    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
+    def dispatch_request(self, *args, **kwargs):
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it
@@ -153,5 +159,5 @@ class MethodView(View, metaclass=MethodViewType):
         if meth is None and request.method == "HEAD":
             meth = getattr(self, "get", None)
 
-        assert meth is not None, f"Unimplemented method {request.method!r}"
+        assert meth is not None, "Unimplemented method %r" % request.method
         return meth(*args, **kwargs)

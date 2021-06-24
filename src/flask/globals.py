@@ -1,14 +1,19 @@
-import typing as t
+# -*- coding: utf-8 -*-
+"""
+    flask.globals
+    ~~~~~~~~~~~~~
+
+    Defines all the global objects that are proxies to the current
+    active context.
+
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
+"""
 from functools import partial
 
 from werkzeug.local import LocalProxy
 from werkzeug.local import LocalStack
 
-if t.TYPE_CHECKING:
-    from .app import Flask
-    from .ctx import _AppCtxGlobals
-    from .sessions import SessionMixin
-    from .wrappers import Request
 
 _request_ctx_err_msg = """\
 Working outside of request context.
@@ -51,9 +56,7 @@ def _find_app():
 # context locals
 _request_ctx_stack = LocalStack()
 _app_ctx_stack = LocalStack()
-current_app: "Flask" = LocalProxy(_find_app)  # type: ignore
-request: "Request" = LocalProxy(partial(_lookup_req_object, "request"))  # type: ignore
-session: "SessionMixin" = LocalProxy(  # type: ignore
-    partial(_lookup_req_object, "session")
-)
-g: "_AppCtxGlobals" = LocalProxy(partial(_lookup_app_object, "g"))  # type: ignore
+current_app = LocalProxy(_find_app)
+request = LocalProxy(partial(_lookup_req_object, "request"))
+session = LocalProxy(partial(_lookup_req_object, "session"))
+g = LocalProxy(partial(_lookup_app_object, "g"))

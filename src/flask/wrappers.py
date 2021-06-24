@@ -1,19 +1,33 @@
-import typing as t
+# -*- coding: utf-8 -*-
+"""
+    flask.wrappers
+    ~~~~~~~~~~~~~~
 
+    Implements the WSGI wrappers (request and response).
+
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
+"""
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Request as RequestBase
 from werkzeug.wrappers import Response as ResponseBase
+from werkzeug.wrappers.json import JSONMixin as _JSONMixin
 
 from . import json
 from .globals import current_app
-from .helpers import _split_blueprint_path
-
-if t.TYPE_CHECKING:
-    import typing_extensions as te
-    from werkzeug.routing import Rule
 
 
-class Request(RequestBase):
+class JSONMixin(_JSONMixin):
+    json_module = json
+
+    def on_json_loading_failed(self, e):
+        if current_app and current_app.debug:
+            raise BadRequest("Failed to decode JSON object: {0}".format(e))
+
+        raise BadRequest()
+
+
+class Request(RequestBase, JSONMixin):
     """The request object used by default in Flask.  Remembers the
     matched endpoint and view arguments.
 
@@ -26,8 +40,6 @@ class Request(RequestBase):
     specific ones.
     """
 
-    json_module = json
-
     #: The internal URL rule that matched the request.  This can be
     #: useful to inspect which methods are allowed for the URL from
     #: a before/after handler (``request.url_rule.methods``) etc.
@@ -38,78 +50,41 @@ class Request(RequestBase):
     #: because the request was never internally bound.
     #:
     #: .. versionadded:: 0.6
-    url_rule: t.Optional["Rule"] = None
+    url_rule = None
 
     #: A dict of view arguments that matched the request.  If an exception
     #: happened when matching, this will be ``None``.
-    view_args: t.Optional[t.Dict[str, t.Any]] = None
+    view_args = None
 
     #: If matching the URL failed, this is the exception that will be
     #: raised / was raised as part of the request handling.  This is
     #: usually a :exc:`~werkzeug.exceptions.NotFound` exception or
     #: something similar.
-    routing_exception: t.Optional[Exception] = None
+    routing_exception = None
 
     @property
-    def max_content_length(self) -> t.Optional[int]:  # type: ignore
+    def max_content_length(self):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         if current_app:
             return current_app.config["MAX_CONTENT_LENGTH"]
-        else:
-            return None
 
     @property
-    def endpoint(self) -> t.Optional[str]:
-        """The endpoint that matched the request URL.
-
-        This will be ``None`` if matching failed or has not been
-        performed yet.
-
-        This in combination with :attr:`view_args` can be used to
-        reconstruct the same URL or a modified URL.
+    def endpoint(self):
+        """The endpoint that matched the request.  This in combination with
+        :attr:`view_args` can be used to reconstruct the same or a
+        modified URL.  If an exception happened when matching, this will
+        be ``None``.
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
 
-        return None
-
     @property
-    def blueprint(self) -> t.Optional[str]:
-        """The registered name of the current blueprint.
+    def blueprint(self):
+        """The name of the current blueprint"""
+        if self.url_rule and "." in self.url_rule.endpoint:
+            return self.url_rule.endpoint.rsplit(".", 1)[0]
 
-        This will be ``None`` if the endpoint is not part of a
-        blueprint, or if URL matching failed or has not been performed
-        yet.
-
-        This does not necessarily match the name the blueprint was
-        created with. It may have been nested, or registered with a
-        different name.
-        """
-        endpoint = self.endpoint
-
-        if endpoint is not None and "." in endpoint:
-            return endpoint.rpartition(".")[0]
-
-        return None
-
-    @property
-    def blueprints(self) -> t.List[str]:
-        """The registered names of the current blueprint upwards through
-        parent blueprints.
-
-        This will be an empty list if there is no current blueprint, or
-        if URL matching failed.
-
-        .. versionadded:: 2.0.1
-        """
-        name = self.blueprint
-
-        if name is None:
-            return []
-
-        return _split_blueprint_path(name)
-
-    def _load_form_data(self) -> None:
+    def _load_form_data(self):
         RequestBase._load_form_data(self)
 
         # In debug mode we're replacing the files multidict with an ad-hoc
@@ -124,14 +99,8 @@ class Request(RequestBase):
 
             attach_enctype_error_multidict(self)
 
-    def on_json_loading_failed(self, e: Exception) -> "te.NoReturn":
-        if current_app and current_app.debug:
-            raise BadRequest(f"Failed to decode JSON object: {e}")
 
-        raise BadRequest()
-
-
-class Response(ResponseBase):
+class Response(ResponseBase, JSONMixin):
     """The response object that is used by default in Flask.  Works like the
     response object from Werkzeug but is set to have an HTML mimetype by
     default.  Quite often you don't have to create this object yourself because
@@ -151,17 +120,18 @@ class Response(ResponseBase):
 
     default_mimetype = "text/html"
 
-    json_module = json
+    def _get_data_for_json(self, cache):
+        return self.get_data()
 
     @property
-    def max_cookie_size(self) -> int:  # type: ignore
+    def max_cookie_size(self):
         """Read-only view of the :data:`MAX_COOKIE_SIZE` config key.
 
-        See :attr:`~werkzeug.wrappers.Response.max_cookie_size` in
+        See :attr:`~werkzeug.wrappers.BaseResponse.max_cookie_size` in
         Werkzeug's docs.
         """
         if current_app:
             return current_app.config["MAX_COOKIE_SIZE"]
 
         # return Werkzeug's default when not in an app context
-        return super().max_cookie_size
+        return super(Response, self).max_cookie_size
