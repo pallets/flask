@@ -19,6 +19,8 @@ Unreleased
     :issue:`4157`
 -   Correctly handle raising deferred errors in CLI lazy loading.
     :issue:`4096`
+-   The CLI loader handles ``**kwargs`` in a ``create_app`` function.
+    :issue:`4170`
 
 
 Version 2.0.1
