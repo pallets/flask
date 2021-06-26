@@ -13,11 +13,14 @@ Version 2.0.2
 
 Unreleased
 
--   Fix type annotation for ``teardown_request``. :issue:`4093`
+-   Fix type annotation for ``teardown_*`` methods. :issue:`4093`
 -   Fix type annotation for ``before_request`` and ``before_app_request``
     decorators. :issue:`4104`
 -   Fixed the issue where typing requires template global
     decorators to accept functions with no arguments. :issue:`4098`
+-   Support View and MethodView instances with async handlers. :issue:`4112`
+-   Enhance typing of ``app.errorhandler`` decorator. :issue:`4095`
+-   Fix registering a blueprint twice with differing names. :issue:`4124`
 
 
 Version 2.0.1

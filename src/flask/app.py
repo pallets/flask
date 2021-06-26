@@ -61,7 +61,6 @@ from .templating import Environment
 from .typing import AfterRequestCallable
 from .typing import BeforeFirstRequestCallable
 from .typing import BeforeRequestCallable
-from .typing import ErrorHandlerCallable
 from .typing import ResponseReturnValue
 from .typing import TeardownCallable
 from .typing import TemplateContextProcessorCallable
@@ -78,6 +77,7 @@ if t.TYPE_CHECKING:
     from .blueprints import Blueprint
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
+    from .typing import ErrorHandlerCallable
 
 if sys.version_info >= (3, 8):
     iscoroutinefunction = inspect.iscoroutinefunction
@@ -1268,7 +1268,9 @@ class Flask(Scaffold):
         self.shell_context_processors.append(f)
         return f
 
-    def _find_error_handler(self, e: Exception) -> t.Optional[ErrorHandlerCallable]:
+    def _find_error_handler(
+        self, e: Exception
+    ) -> t.Optional["ErrorHandlerCallable[Exception]"]:
         """Return a registered error handler for an exception in this order:
         blueprint handler for a specific code, app handler for a specific code,
         blueprint handler for an exception class, app handler for an exception
@@ -1276,7 +1278,7 @@ class Flask(Scaffold):
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
 
-        for c in [code, None]:
+        for c in [code, None] if code is not None else [None]:
             for name in chain(request.blueprints, [None]):
                 handler_map = self.error_handler_spec[name][c]
 
