@@ -7,7 +7,8 @@ Using ``async`` and ``await``
 
 Routes, error handlers, before request, after request, and teardown
 functions can all be coroutine functions if Flask is installed with the
-``async`` extra (``pip install flask[async]``). This allows views to be
+``async`` extra (``pip install flask[async]``). It requires Python 3.7+
+where ``contextvars.ContextVar`` is available. This allows views to be
 defined with ``async def`` and use ``await``.
 
 .. code-block:: python
@@ -16,6 +17,12 @@ defined with ``async def`` and use ``await``.
     async def get_data():
         data = await async_db_query(...)
         return jsonify(data)
+
+Pluggable class-based views also support handlers that are implemented as
+coroutines. This applies to the :meth:`~flask.views.View.dispatch_request`
+method in views that inherit from the :class:`flask.views.View` class, as
+well as all the HTTP method handlers in views that inherit from the
+:class:`flask.views.MethodView` class.
 
 .. admonition:: Using ``async`` on Windows on Python 3.8
 

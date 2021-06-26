@@ -48,20 +48,21 @@ the application for testing and initializes a new database::
     import pytest
 
     from flaskr import create_app
+    from flaskr.db import init_db
 
 
     @pytest.fixture
     def client():
-        db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-        flaskr.app.config['TESTING'] = True
+        db_fd, db_path = tempfile.mkstemp()
+        app = create_app({'TESTING': True, 'DATABASE': db_path})
 
-        with flaskr.app.test_client() as client:
-            with flaskr.app.app_context():
-                flaskr.init_db()
+        with app.test_client() as client:
+            with app.app_context():
+                init_db()
             yield client
 
         os.close(db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
+        os.unlink(db_path)
 
 This client fixture will be called by each individual test.  It gives us a
 simple interface to the application, where we can trigger test requests to the
@@ -224,13 +225,13 @@ temporarily.  With this you can access the :class:`~flask.request`,
 :class:`~flask.g` and :class:`~flask.session` objects like in view
 functions.  Here is a full example that demonstrates this approach::
 
-    import flask
+    from flask import Flask, request
 
-    app = flask.Flask(__name__)
+    app = Flask(__name__)
 
     with app.test_request_context('/?name=Peter'):
-        assert flask.request.path == '/'
-        assert flask.request.args['name'] == 'Peter'
+        assert request.path == '/'
+        assert request.args['name'] == 'Peter'
 
 All the other objects that are context bound can be used in the same
 way.
@@ -247,7 +248,7 @@ the test request context leaves the ``with`` block.  If you do want the
 :meth:`~flask.Flask.before_request` functions to be called as well, you
 need to call :meth:`~flask.Flask.preprocess_request` yourself::
 
-    app = flask.Flask(__name__)
+    app = Flask(__name__)
 
     with app.test_request_context('/?name=Peter'):
         app.preprocess_request()
@@ -260,7 +261,7 @@ If you want to call the :meth:`~flask.Flask.after_request` functions you
 need to call into :meth:`~flask.Flask.process_response` which however
 requires that you pass it a response object::
 
-    app = flask.Flask(__name__)
+    app = Flask(__name__)
 
     with app.test_request_context('/?name=Peter'):
         resp = Response('...')
@@ -329,7 +330,7 @@ context around for a little longer so that additional introspection can
 happen.  With Flask 0.4 this is possible by using the
 :meth:`~flask.Flask.test_client` with a ``with`` block::
 
-    app = flask.Flask(__name__)
+    app = Flask(__name__)
 
     with app.test_client() as c:
         rv = c.get('/?tequila=42')
@@ -353,7 +354,7 @@ keep the context around and access :data:`flask.session`::
 
     with app.test_client() as c:
         rv = c.get('/')
-        assert flask.session['foo'] == 42
+        assert session['foo'] == 42
 
 This however does not make it possible to also modify the session or to
 access the session before a request was fired.  Starting with Flask 0.8 we

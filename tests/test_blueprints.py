@@ -899,6 +899,14 @@ def test_blueprint_renaming(app, client) -> None:
     def index():
         return flask.request.endpoint
 
+    @bp.get("/error")
+    def error():
+        flask.abort(403)
+
+    @bp.errorhandler(403)
+    def forbidden(_: Exception):
+        return "Error", 403
+
     @bp2.get("/")
     def index2():
         return flask.request.endpoint
@@ -911,3 +919,5 @@ def test_blueprint_renaming(app, client) -> None:
     assert client.get("/b/").data == b"alt.index"
     assert client.get("/a/a/").data == b"bp.sub.index2"
     assert client.get("/b/a/").data == b"alt.sub.index2"
+    assert client.get("/a/error").data == b"Error"
+    assert client.get("/b/error").data == b"Error"
