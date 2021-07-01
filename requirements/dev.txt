@@ -64,7 +64,7 @@ pallets-sphinx-themes==2.0.1
     # via -r requirements/docs.in
 pep517==0.10.0
     # via pip-tools
-pip-tools==6.1.0
+pip-tools==6.2.0
     # via -r requirements/dev.in
 pluggy==0.13.1
     # via
@@ -141,6 +141,8 @@ virtualenv==20.4.6
     # via
     #   pre-commit
     #   tox
+wheel==0.36.2
+    # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
