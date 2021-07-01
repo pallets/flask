@@ -4,11 +4,11 @@
 #
 #    pip-compile requirements/typing.in
 #
+mypy==0.910
+    # via -r requirements/typing.in
 mypy-extensions==0.4.3
     # via mypy
-mypy==0.812
-    # via -r requirements/typing.in
-typed-ast==1.4.3
+toml==0.10.2
     # via mypy
 typing-extensions==3.10.0.0
     # via mypy
