@@ -29,7 +29,7 @@ packaging==20.9
     #   pallets-sphinx-themes
     #   sphinx
 pallets-sphinx-themes==2.0.1
-    # via -r docs.in
+    # via -r requirements/docs.in
 pygments==2.9.0
     # via
     #   sphinx
@@ -42,17 +42,17 @@ requests==2.25.1
     # via sphinx
 snowballstemmer==2.1.0
     # via sphinx
-sphinx-issues==1.2.0
-    # via -r docs.in
-sphinx-tabs==3.0.0
-    # via -r docs.in
 sphinx==4.0.2
     # via
-    #   -r docs.in
+    #   -r requirements/docs.in
     #   pallets-sphinx-themes
     #   sphinx-issues
     #   sphinx-tabs
     #   sphinxcontrib-log-cabinet
+sphinx-issues==1.2.0
+    # via -r requirements/docs.in
+sphinx-tabs==3.1.0
+    # via -r requirements/docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -62,7 +62,7 @@ sphinxcontrib-htmlhelp==1.0.3
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-log-cabinet==1.0.1
-    # via -r docs.in
+    # via -r requirements/docs.in
 sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.4
