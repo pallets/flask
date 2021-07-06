@@ -1306,7 +1306,7 @@ class Flask(Scaffold):
 
         .. versionchanged:: 1.0
             Exceptions are looked up by code *and* by MRO, so
-            ``HTTPExcpetion`` subclasses can be handled with a catch-all
+            ``HTTPException`` subclasses can be handled with a catch-all
             handler for the base ``HTTPException``.
 
         .. versionadded:: 0.3
