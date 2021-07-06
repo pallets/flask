@@ -262,6 +262,15 @@ separated with ``:``, or ``;`` on Windows.
            * Detected change in '/path/to/file1', reloading
 
 
+Ignore files with the Reloader
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The reloader can also ignore files using :mod:`fnmatch` patterns with
+the ``--exclude-patterns`` option, or the ``FLASK_RUN_EXCLUDE_PATTERNS``
+environment variable. Multiple patterns are separated with ``:``, or
+``;`` on Windows.
+
+
 Debug Mode
 ----------
 

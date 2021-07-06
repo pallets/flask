@@ -796,9 +796,28 @@ class SeparatedPathType(click.Path):
         f" are separated by {os.path.pathsep!r}."
     ),
 )
+@click.option(
+    "--exclude-patterns",
+    default=None,
+    type=SeparatedPathType(),
+    help=(
+        "Files matching these fnmatch patterns will not trigger a reload"
+        " on change. Multiple patterns are separated by"
+        f" {os.path.pathsep!r}."
+    ),
+)
 @pass_script_info
 def run_command(
-    info, host, port, reload, debugger, eager_loading, with_threads, cert, extra_files
+    info,
+    host,
+    port,
+    reload,
+    debugger,
+    eager_loading,
+    with_threads,
+    cert,
+    extra_files,
+    exclude_patterns,
 ):
     """Run a local development server.
 
@@ -830,6 +849,7 @@ def run_command(
         threaded=with_threads,
         ssl_context=cert,
         extra_files=extra_files,
+        exclude_patterns=exclude_patterns,
     )
 
 
