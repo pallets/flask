@@ -23,8 +23,7 @@ to add a script statement to the bottom of your ``<body>`` to load jQuery:
 
 .. sourcecode:: html
 
-   <script type=text/javascript src="{{
-     url_for('static', filename='jquery.js') }}"></script>
+   <script src="{{ url_for('static', filename='jquery.js') }}"></script>
 
 Another method is using Google's `AJAX Libraries API
 <https://developers.google.com/speed/libraries/>`_ to load jQuery:
@@ -59,7 +58,7 @@ like this:
 
 .. sourcecode:: html+jinja
 
-   <script type=text/javascript>
+   <script>
      $SCRIPT_ROOT = {{ request.script_root|tojson }};
    </script>
 
@@ -109,7 +108,7 @@ usually a better idea to have that in a separate script file:
 
 .. sourcecode:: html
 
-    <script type=text/javascript>
+    <script>
       $(function() {
         $('a#calculate').bind('click', function() {
           $.getJSON($SCRIPT_ROOT + '/_add_numbers', {
