@@ -256,7 +256,7 @@ the filter to render data inside ``<script>`` tags.
 
 .. sourcecode:: html+jinja
 
-    <script type=text/javascript>
+    <script>
         const names = {{ names|tosjon }};
         renderChart(names, {{ axis_data|tojson }});
     </script>
