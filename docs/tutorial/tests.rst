@@ -270,7 +270,7 @@ messages.
 
         with app.app_context():
             assert get_db().execute(
-                "select * from user where username = 'a'",
+                "SELECT * FROM user WHERE username = 'a'",
             ).fetchone() is not None
 
 
