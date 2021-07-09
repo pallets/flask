@@ -2002,14 +2002,13 @@ def test_max_cookie_size(app, client, recwarn):
         return r
 
     client.get("/")
-    assert len(recwarn) == 1
-    w = recwarn.pop()
-    assert "cookie is too large" in str(w.message)
+    assert sum("cookie is too large" in str(w.message) for w in recwarn) == 1
 
     app.config["MAX_COOKIE_SIZE"] = 0
+    recwarn.clear()
 
     client.get("/")
-    assert len(recwarn) == 0
+    assert not any("cookie is too large" in str(w.message) for w in recwarn)
 
 
 @require_cpython_gc
