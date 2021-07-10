@@ -9,3 +9,6 @@ contact_links:
   - name: Questions and discussions
     url: https://discord.gg/pallets
     about: Discuss questions about your code on our Discord chat.
+  - name: Github Discussions
+    url: https://github.com/pallets/flask/discussions
+    about: Discuss questions about Flask and your code on Github Discussinos
