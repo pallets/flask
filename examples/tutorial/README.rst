@@ -71,11 +71,15 @@ Test
     $ pytest
 
 Run with coverage report::
-    If you haven't install `coverage`_.
+    If you haven't install `coverage`_. You may want to install it in order to use coverage report.
 
 .. _coverage: https://coverage.readthedocs.io
 
+::    
+
     $ pip install coverage # skip this line if you already installed coverage.
+    
+::  
 
     $ coverage run -m pytest
     $ coverage report
