@@ -75,11 +75,11 @@ Run with coverage report::
 
 .. _coverage: https://coverage.readthedocs.io
 
-::    
+::
 
     $ pip install coverage # skip this line if you already installed coverage.
-    
-::  
+
+::
 
     $ coverage run -m pytest
     $ coverage report
