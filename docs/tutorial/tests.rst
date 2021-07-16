@@ -349,6 +349,7 @@ not contain ``user_id`` after logging out.
         auth.login()
 
         with client:
+            client.get('/')
             auth.logout()
             assert 'user_id' not in session
 
