@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements/tests.in
 #
-asgiref==3.4.0
+asgiref==3.4.1
     # via -r requirements/tests.in
 attrs==21.2.0
     # via pytest
