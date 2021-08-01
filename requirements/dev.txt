@@ -130,7 +130,7 @@ toml==0.10.2
     #   pre-commit
     #   pytest
     #   tox
-tox==3.23.1
+tox==3.24.1
     # via -r requirements/dev.in
 typing-extensions==3.10.0.0
     # via mypy
