@@ -232,6 +232,7 @@ separated with ``:``, or ``;`` on Windows.
 
 Alternatively, you can set the ``FLASK_RUN_EXTRA_FILES`` config
 variable, which takes a list of files::
+
   from flask import Flask
 
   app = Flask(__name__)
