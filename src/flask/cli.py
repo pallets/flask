@@ -841,6 +841,11 @@ def run_command(
     if debugger is None:
         debugger = debug
 
+    # Override extra_files argument with config variable if specified
+    app = info.load_app()
+    if app.config.get("FLASK_RUN_EXTRA_FILES"):
+        extra_files = app.config.get("FLASK_RUN_EXTRA_FILES")
+
     show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 

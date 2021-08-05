@@ -914,6 +914,7 @@ class Flask(Scaffold):
         options.setdefault("use_reloader", self.debug)
         options.setdefault("use_debugger", self.debug)
         options.setdefault("threaded", True)
+        options.setdefault("extra_files", self.config.get("FLASK_RUN_EXTRA_FILES"))
 
         cli.show_server_banner(self.env, self.debug, self.name, False)
 

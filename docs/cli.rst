@@ -184,11 +184,15 @@ reloader.
 Watch Extra Files with the Reloader
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. versionadded:: 2.1
+  Support for the ``FLASK_RUN_EXTRA_FILES`` config variable was added.
+
 When using development mode, the reloader will trigger whenever your
 Python code or imported modules change. The reloader can watch
 additional files with the ``--extra-files`` option, or the
 ``FLASK_RUN_EXTRA_FILES`` environment variable. Multiple paths are
 separated with ``:``, or ``;`` on Windows.
+
 
 .. tabs::
 
@@ -224,6 +228,15 @@ separated with ``:``, or ``;`` on Windows.
           > flask run
            * Running on http://127.0.0.1:8000/
            * Detected change in '/path/to/file1', reloading
+
+
+Alternatively, you can set the ``FLASK_RUN_EXTRA_FILES`` config
+variable, which takes a list of files::
+  from flask import Flask
+
+  app = Flask(__name__)
+  app.config['FLASK_RUN_EXTRA_FILES'] = ["file1", "dirA/file2", "dirB/"]
+
 
 
 Debug Mode
