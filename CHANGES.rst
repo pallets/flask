@@ -6,6 +6,7 @@ Version 2.1.0
 Unreleased
 
 -   Update Click dependency to >= 8.0.
+-   Add support for a `FLASK_RUN_EXTRA_FILES` config variable.
 
 
 Version 2.0.2
