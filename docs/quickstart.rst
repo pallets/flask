@@ -626,7 +626,7 @@ Werkzeug provides for you::
     def upload_file():
         if request.method == 'POST':
             file = request.files['the_file']
-            file.save(f"/var/www/uploads/{secure_filename(f.filename)}")
+            file.save(f"/var/www/uploads/{secure_filename(file.filename)}")
         ...
 
 For some better examples, see :doc:`patterns/fileuploads`.
