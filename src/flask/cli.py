@@ -312,7 +312,7 @@ class DispatchingApp:
         self.loader = loader
         self._app = None
         self._lock = Lock()
-        self._bg_loading_exc_info = None
+        self._bg_loading_exc = None
 
         if use_eager_loading is None:
             use_eager_loading = os.environ.get("WERKZEUG_RUN_MAIN") != "true"
@@ -328,23 +328,24 @@ class DispatchingApp:
             with self._lock:
                 try:
                     self._load_unlocked()
-                except Exception:
-                    self._bg_loading_exc_info = sys.exc_info()
+                except Exception as e:
+                    self._bg_loading_exc = e
 
         t = Thread(target=_load_app, args=())
         t.start()
 
     def _flush_bg_loading_exception(self):
         __traceback_hide__ = True  # noqa: F841
-        exc_info = self._bg_loading_exc_info
-        if exc_info is not None:
-            self._bg_loading_exc_info = None
-            raise exc_info
+        exc = self._bg_loading_exc
+
+        if exc is not None:
+            self._bg_loading_exc = None
+            raise exc
 
     def _load_unlocked(self):
         __traceback_hide__ = True  # noqa: F841
         self._app = rv = self.loader()
-        self._bg_loading_exc_info = None
+        self._bg_loading_exc = None
         return rv
 
     def __call__(self, environ, start_response):

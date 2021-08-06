@@ -17,6 +17,8 @@ Unreleased
     :issue:`4150`
 -   ``jsonify`` handles ``decimal.Decimal`` by encoding to ``str``.
     :issue:`4157`
+-   Correctly handle raising deferred errors in CLI lazy loading.
+    :issue:`4096`
 
 
 Version 2.0.1
