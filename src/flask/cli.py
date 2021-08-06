@@ -103,18 +103,21 @@ def call_factory(script_info, app_factory, args=None, kwargs=None):
         )
         kwargs["script_info"] = script_info
 
-    if (
-        not args
-        and len(sig.parameters) == 1
-        and next(iter(sig.parameters.values())).default is inspect.Parameter.empty
-    ):
-        warnings.warn(
-            "Script info is deprecated and will not be passed as the"
-            " single argument to the app factory function in Flask"
-            " 2.1.",
-            DeprecationWarning,
-        )
-        args.append(script_info)
+    if not args and len(sig.parameters) == 1:
+        first_parameter = next(iter(sig.parameters.values()))
+
+        if (
+            first_parameter.default is inspect.Parameter.empty
+            # **kwargs is reported as an empty default, ignore it
+            and first_parameter.kind is not inspect.Parameter.VAR_KEYWORD
+        ):
+            warnings.warn(
+                "Script info is deprecated and will not be passed as the"
+                " single argument to the app factory function in Flask"
+                " 2.1.",
+                DeprecationWarning,
+            )
+            args.append(script_info)
 
     return app_factory(*args, **kwargs)
 
@@ -312,7 +315,7 @@ class DispatchingApp:
         self.loader = loader
         self._app = None
         self._lock = Lock()
-        self._bg_loading_exc_info = None
+        self._bg_loading_exc = None
 
         if use_eager_loading is None:
             use_eager_loading = os.environ.get("WERKZEUG_RUN_MAIN") != "true"
@@ -328,23 +331,24 @@ class DispatchingApp:
             with self._lock:
                 try:
                     self._load_unlocked()
-                except Exception:
-                    self._bg_loading_exc_info = sys.exc_info()
+                except Exception as e:
+                    self._bg_loading_exc = e
 
         t = Thread(target=_load_app, args=())
         t.start()
 
     def _flush_bg_loading_exception(self):
         __traceback_hide__ = True  # noqa: F841
-        exc_info = self._bg_loading_exc_info
-        if exc_info is not None:
-            self._bg_loading_exc_info = None
-            raise exc_info
+        exc = self._bg_loading_exc
+
+        if exc is not None:
+            self._bg_loading_exc = None
+            raise exc
 
     def _load_unlocked(self):
         __traceback_hide__ = True  # noqa: F841
         self._app = rv = self.loader()
-        self._bg_loading_exc_info = None
+        self._bg_loading_exc = None
         return rv
 
     def __call__(self, environ, start_response):

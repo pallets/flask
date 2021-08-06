@@ -92,7 +92,7 @@ class Scaffold:
     def __init__(
         self,
         import_name: str,
-        static_folder: t.Optional[str] = None,
+        static_folder: t.Optional[t.Union[str, os.PathLike]] = None,
         static_url_path: t.Optional[str] = None,
         template_folder: t.Optional[str] = None,
         root_path: t.Optional[str] = None,
@@ -101,7 +101,7 @@ class Scaffold:
         #: to. Do not change this once it is set by the constructor.
         self.import_name = import_name
 
-        self.static_folder = static_folder
+        self.static_folder = static_folder  # type: ignore
         self.static_url_path = static_url_path
 
         #: The path to the templates folder, relative to
@@ -257,7 +257,7 @@ class Scaffold:
             return None
 
     @static_folder.setter
-    def static_folder(self, value: t.Optional[str]) -> None:
+    def static_folder(self, value: t.Optional[t.Union[str, os.PathLike]]) -> None:
         if value is not None:
             value = os.fspath(value).rstrip(r"\/")
 

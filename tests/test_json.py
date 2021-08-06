@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import io
 import uuid
 
@@ -185,6 +186,11 @@ def test_jsonify_uuid_types(app, client):
     assert rv_x == str(test_uuid)
     rv_uuid = uuid.UUID(rv_x)
     assert rv_uuid == test_uuid
+
+
+def test_json_decimal():
+    rv = flask.json.dumps(decimal.Decimal("0.003"))
+    assert rv == '"0.003"'
 
 
 def test_json_attr(app, client):
