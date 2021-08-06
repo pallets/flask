@@ -51,18 +51,21 @@ class DispatchingJinjaLoader(BaseLoader):
     def __init__(self, app: "Flask") -> None:
         self.app = app
 
-    def get_source(
+    def get_source(  # type: ignore
         self, environment: Environment, template: str
-    ) -> t.Tuple[str, t.Optional[str], t.Callable]:
+    ) -> t.Tuple[str, t.Optional[str], t.Optional[t.Callable]]:
         if self.app.config["EXPLAIN_TEMPLATE_LOADING"]:
             return self._get_source_explained(environment, template)
         return self._get_source_fast(environment, template)
 
     def _get_source_explained(
         self, environment: Environment, template: str
-    ) -> t.Tuple[str, t.Optional[str], t.Callable]:
+    ) -> t.Tuple[str, t.Optional[str], t.Optional[t.Callable]]:
         attempts = []
-        trv = None
+        rv: t.Optional[t.Tuple[str, t.Optional[str], t.Optional[t.Callable[[], bool]]]]
+        trv: t.Optional[
+            t.Tuple[str, t.Optional[str], t.Optional[t.Callable[[], bool]]]
+        ] = None
 
         for srcobj, loader in self._iter_loaders(template):
             try:
@@ -83,7 +86,7 @@ class DispatchingJinjaLoader(BaseLoader):
 
     def _get_source_fast(
         self, environment: Environment, template: str
-    ) -> t.Tuple[str, t.Optional[str], t.Callable]:
+    ) -> t.Tuple[str, t.Optional[str], t.Optional[t.Callable]]:
         for _srcobj, loader in self._iter_loaders(template):
             try:
                 return loader.get_source(environment, template)

@@ -5,7 +5,7 @@ import uuid
 import warnings
 from datetime import date
 
-from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps  # type: ignore
+from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps
 from werkzeug.http import http_date
 
 from ..globals import current_app

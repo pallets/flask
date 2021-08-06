@@ -1448,7 +1448,6 @@ def test_static_url_empty_path_default(app):
     rv.close()
 
 
-@pytest.mark.skipif(sys.version_info < (3, 6), reason="requires Python >= 3.6")
 def test_static_folder_with_pathlib_path(app):
     from pathlib import Path
 
@@ -1631,7 +1630,7 @@ def test_url_processors(app, client):
 
 
 def test_inject_blueprint_url_defaults(app):
-    bp = flask.Blueprint("foo.bar.baz", __name__, template_folder="template")
+    bp = flask.Blueprint("foo", __name__, template_folder="template")
 
     @bp.url_defaults
     def bp_defaults(endpoint, values):
@@ -1644,12 +1643,12 @@ def test_inject_blueprint_url_defaults(app):
     app.register_blueprint(bp)
 
     values = dict()
-    app.inject_url_defaults("foo.bar.baz.view", values)
+    app.inject_url_defaults("foo.view", values)
     expected = dict(page="login")
     assert values == expected
 
     with app.test_request_context("/somepage"):
-        url = flask.url_for("foo.bar.baz.view")
+        url = flask.url_for("foo.view")
     expected = "/login"
     assert url == expected
 

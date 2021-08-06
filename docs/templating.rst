@@ -37,7 +37,7 @@ by default:
 .. data:: config
    :noindex:
 
-   The current configuration object (:data:`flask.config`)
+   The current configuration object (:data:`flask.Flask.config`)
 
    .. versionadded:: 0.6
 

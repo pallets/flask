@@ -127,8 +127,8 @@ It is possible to register a blueprint on another blueprint.
 
 .. code-block:: python
 
-    parent = Blueprint("parent", __name__, url_prefix="/parent")
-    child = Blueprint("child", __name__, url_prefix="/child)
+    parent = Blueprint('parent', __name__, url_prefix='/parent')
+    child = Blueprint('child', __name__, url_prefix='/child')
     parent.register_blueprint(child)
     app.register_blueprint(parent)
 

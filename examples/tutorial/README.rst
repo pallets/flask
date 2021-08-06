@@ -11,7 +11,7 @@ Install
 
 **Be sure to use the same version of the code as the version of the docs
 you're reading.** You probably want the latest tagged version, but the
-default Git version is the master branch. ::
+default Git version is the main branch. ::
 
     # clone the repository
     $ git clone https://github.com/pallets/flask
@@ -35,7 +35,7 @@ Install Flaskr::
 
     $ pip install -e .
 
-Or if you are using the master branch, install Flask from source before
+Or if you are using the main branch, install Flask from source before
 installing Flaskr::
 
     $ pip install -e ../..

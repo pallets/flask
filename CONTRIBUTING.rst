@@ -12,14 +12,16 @@ to address bugs and feature requests in Flask itself. Use one of the
 following resources for questions about using Flask or issues with your
 own code:
 
--   The ``#get-help`` channel on our Discord chat:
+-   The ``#questions`` channel on our Discord chat:
     https://discord.gg/pallets
 -   The mailing list flask@python.org for long term discussion or larger
     issues.
 -   Ask on `Stack Overflow`_. Search with Google first using:
     ``site:stackoverflow.com flask {search term, exception message, etc.}``
+-   Ask on our `GitHub Discussions`_.
 
 .. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?tab=Frequent
+.. _GitHub Discussions: https://github.com/pallets/flask/discussions
 
 
 Reporting issues
@@ -92,7 +94,7 @@ First time setup
 
     .. code-block:: text
 
-        git remote add fork https://github.com/{username}/flask
+        $ git remote add fork https://github.com/{username}/flask
 
 -   Create a virtualenv.
 
@@ -112,6 +114,12 @@ First time setup
              > py -3 -m venv env
              > env\Scripts\activate
 
+-   Upgrade pip and setuptools.
+
+    .. code-block:: text
+
+        $ python -m pip install --upgrade pip setuptools
+
 -   Install the development dependencies, then install Flask in editable
     mode.
 
@@ -129,7 +137,7 @@ First time setup
 .. _username: https://docs.github.com/en/github/using-git/setting-your-username-in-git
 .. _email: https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address
 .. _GitHub account: https://github.com/join
-.. _Fork: https://github.com/pallets/jinja/fork
+.. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
 
@@ -143,15 +151,15 @@ Start coding
     .. code-block:: text
 
         $ git fetch origin
-        $ git checkout -b your-branch-name origin/1.1.x
+        $ git checkout -b your-branch-name origin/2.0.x
 
     If you're submitting a feature addition or change, branch off of the
-    "master" branch.
+    "main" branch.
 
     .. code-block:: text
 
         $ git fetch origin
-        $ git checkout -b your-branch-name origin/master
+        $ git checkout -b your-branch-name origin/main
 
 -   Using your favorite editor, make your changes,
     `committing as you go`_.

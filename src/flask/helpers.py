@@ -4,14 +4,14 @@ import socket
 import sys
 import typing as t
 import warnings
+from datetime import datetime
 from datetime import timedelta
+from functools import lru_cache
 from functools import update_wrapper
-from functools import wraps
 from threading import RLock
 
 import werkzeug.utils
 from werkzeug.exceptions import NotFound
-from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
@@ -64,8 +64,10 @@ def get_load_dotenv(default: bool = True) -> bool:
 
 
 def stream_with_context(
-    generator_or_function: t.Union[t.Generator, t.Callable]
-) -> t.Generator:
+    generator_or_function: t.Union[
+        t.Iterator[t.AnyStr], t.Callable[..., t.Iterator[t.AnyStr]]
+    ]
+) -> t.Iterator[t.AnyStr]:
     """Request contexts disappear when the response is started on the server.
     This is done for efficiency reasons and to make it less likely to encounter
     memory leaks with badly written WSGI middlewares.  The downside is that if
@@ -438,14 +440,16 @@ def get_flashed_messages(
 
 
 def _prepare_send_file_kwargs(
-    download_name=None,
-    attachment_filename=None,
-    etag=None,
-    add_etags=None,
-    max_age=None,
-    cache_timeout=None,
-    **kwargs,
-):
+    download_name: t.Optional[str] = None,
+    attachment_filename: t.Optional[str] = None,
+    etag: t.Optional[t.Union[bool, str]] = None,
+    add_etags: t.Optional[t.Union[bool]] = None,
+    max_age: t.Optional[
+        t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
+    ] = None,
+    cache_timeout: t.Optional[int] = None,
+    **kwargs: t.Any,
+) -> t.Dict[str, t.Any]:
     if attachment_filename is not None:
         warnings.warn(
             "The 'attachment_filename' parameter has been renamed to"
@@ -484,23 +488,25 @@ def _prepare_send_file_kwargs(
         max_age=max_age,
         use_x_sendfile=current_app.use_x_sendfile,
         response_class=current_app.response_class,
-        _root_path=current_app.root_path,
+        _root_path=current_app.root_path,  # type: ignore
     )
     return kwargs
 
 
 def send_file(
-    path_or_file,
-    mimetype=None,
-    as_attachment=False,
-    download_name=None,
-    attachment_filename=None,
-    conditional=True,
-    etag=True,
-    add_etags=None,
-    last_modified=None,
-    max_age=None,
-    cache_timeout=None,
+    path_or_file: t.Union[os.PathLike, str, t.BinaryIO],
+    mimetype: t.Optional[str] = None,
+    as_attachment: bool = False,
+    download_name: t.Optional[str] = None,
+    attachment_filename: t.Optional[str] = None,
+    conditional: bool = True,
+    etag: t.Union[bool, str] = True,
+    add_etags: t.Optional[bool] = None,
+    last_modified: t.Optional[t.Union[datetime, int, float]] = None,
+    max_age: t.Optional[
+        t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
+    ] = None,
+    cache_timeout: t.Optional[int] = None,
 ):
     """Send the contents of a file to the client.
 
@@ -644,7 +650,12 @@ def safe_join(directory: str, *pathnames: str) -> str:
     return path
 
 
-def send_from_directory(directory: str, path: str, **kwargs: t.Any) -> "Response":
+def send_from_directory(
+    directory: t.Union[os.PathLike, str],
+    path: t.Union[os.PathLike, str],
+    filename: t.Optional[str] = None,
+    **kwargs: t.Any,
+) -> "Response":
     """Send a file from within a directory using :func:`send_file`.
 
     .. code-block:: python
@@ -668,12 +679,24 @@ def send_from_directory(directory: str, path: str, **kwargs: t.Any) -> "Response
         ``directory``.
     :param kwargs: Arguments to pass to :func:`send_file`.
 
+    .. versionchanged:: 2.0
+        ``path`` replaces the ``filename`` parameter.
+
     .. versionadded:: 2.0
         Moved the implementation to Werkzeug. This is now a wrapper to
         pass some Flask-specific arguments.
 
     .. versionadded:: 0.5
     """
+    if filename is not None:
+        warnings.warn(
+            "The 'filename' parameter has been renamed to 'path'. The"
+            " old name will be removed in Flask 2.1.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        path = filename
+
     return werkzeug.utils.send_from_directory(  # type: ignore
         directory, path, **_prepare_send_file_kwargs(**kwargs)
     )
@@ -803,49 +826,11 @@ def is_ip(value: str) -> bool:
     return False
 
 
-def run_async(func: t.Callable[..., t.Coroutine]) -> t.Callable[..., t.Any]:
-    """Return a sync function that will run the coroutine function *func*."""
-    try:
-        from asgiref.sync import async_to_sync
-    except ImportError:
-        raise RuntimeError(
-            "Install Flask with the 'async' extra in order to use async views."
-        )
+@lru_cache(maxsize=None)
+def _split_blueprint_path(name: str) -> t.List[str]:
+    out: t.List[str] = [name]
 
-    # Check that Werkzeug isn't using its fallback ContextVar class.
-    if ContextVar.__module__ == "werkzeug.local":
-        raise RuntimeError(
-            "Async cannot be used with this combination of Python & Greenlet versions."
-        )
+    if "." in name:
+        out.extend(_split_blueprint_path(name.rpartition(".")[0]))
 
-    @wraps(func)
-    def outer(*args: t.Any, **kwargs: t.Any) -> t.Any:
-        """This function grabs the current context for the inner function.
-
-        This is similar to the copy_current_xxx_context functions in the
-        ctx module, except it has an async inner.
-        """
-        ctx = None
-
-        if _request_ctx_stack.top is not None:
-            ctx = _request_ctx_stack.top.copy()
-
-        @wraps(func)
-        async def inner(*a: t.Any, **k: t.Any) -> t.Any:
-            """This restores the context before awaiting the func.
-
-            This is required as the function must be awaited within the
-            context. Only calling ``func`` (as per the
-            ``copy_current_xxx_context`` functions) doesn't work as the
-            with block will close before the coroutine is awaited.
-            """
-            if ctx is not None:
-                with ctx:
-                    return await func(*a, **k)
-            else:
-                return await func(*a, **k)
-
-        return async_to_sync(inner)(*args, **kwargs)
-
-    outer._flask_sync_wrapper = True  # type: ignore
-    return outer
+    return out

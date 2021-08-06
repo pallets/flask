@@ -6,8 +6,8 @@ from .scaffold import _endpoint_from_view_func
 from .scaffold import _sentinel
 from .scaffold import Scaffold
 from .typing import AfterRequestCallable
+from .typing import BeforeFirstRequestCallable
 from .typing import BeforeRequestCallable
-from .typing import ErrorHandlerCallable
 from .typing import TeardownCallable
 from .typing import TemplateContextProcessorCallable
 from .typing import TemplateFilterCallable
@@ -20,6 +20,7 @@ from .views import View
 
 if t.TYPE_CHECKING:
     from .app import Flask
+    from .typing import ErrorHandlerCallable
 
 DeferredSetupFunction = t.Callable[["BlueprintSetupState"], t.Callable]
 
@@ -69,6 +70,7 @@ class BlueprintSetupState:
         #: blueprint.
         self.url_prefix = url_prefix
 
+        self.name = self.options.get("name", blueprint.name)
         self.name_prefix = self.options.get("name_prefix", "")
 
         #: A dictionary with URL defaults that is added to each and every
@@ -103,9 +105,10 @@ class BlueprintSetupState:
             defaults = dict(defaults, **options.pop("defaults"))
         if isinstance(view_func, type) and issubclass(view_func, View):
             view_func = view_func.as_view(endpoint)
+
         self.app.add_url_rule(
             rule,
-            f"{self.name_prefix}{self.blueprint.name}.{endpoint}",
+            f"{self.name_prefix}.{self.name}.{endpoint}".lstrip("."),
             view_func,
             defaults=defaults,
             **options,
@@ -195,6 +198,10 @@ class Blueprint(Scaffold):
             template_folder=template_folder,
             root_path=root_path,
         )
+
+        if "." in name:
+            raise ValueError("'name' may not contain a dot '.' character.")
+
         self.name = name
         self.url_prefix = url_prefix
         self.subdomain = subdomain
@@ -255,39 +262,74 @@ class Blueprint(Scaffold):
         arguments passed to this method will override the defaults set
         on the blueprint.
 
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
+
         .. versionadded:: 2.0
         """
+        if blueprint is self:
+            raise ValueError("Cannot register a blueprint on itself")
         self._blueprints.append((blueprint, options))
 
     def register(self, app: "Flask", options: dict) -> None:
         """Called by :meth:`Flask.register_blueprint` to register all
         views and callbacks registered on the blueprint with the
         application. Creates a :class:`.BlueprintSetupState` and calls
-        each :meth:`record` callbackwith it.
+        each :meth:`record` callback with it.
 
         :param app: The application this blueprint is being registered
             with.
         :param options: Keyword arguments forwarded from
             :meth:`~Flask.register_blueprint`.
-        :param first_registration: Whether this is the first time this
-            blueprint has been registered on the application.
+
+        .. versionchanged:: 2.0.1
+            Nested blueprints are registered with their dotted name.
+            This allows different blueprints with the same name to be
+            nested at different locations.
+
+        .. versionchanged:: 2.0.1
+            The ``name`` option can be used to change the (pre-dotted)
+            name the blueprint is registered with. This allows the same
+            blueprint to be registered multiple times with unique names
+            for ``url_for``.
+
+        .. versionchanged:: 2.0.1
+            Registering the same blueprint with the same name multiple
+            times is deprecated and will become an error in Flask 2.1.
         """
-        first_registration = False
+        name_prefix = options.get("name_prefix", "")
+        self_name = options.get("name", self.name)
+        name = f"{name_prefix}.{self_name}".lstrip(".")
 
-        if self.name in app.blueprints:
-            assert app.blueprints[self.name] is self, (
-                "A name collision occurred between blueprints"
-                f" {self!r} and {app.blueprints[self.name]!r}."
-                f" Both share the same name {self.name!r}."
-                f" Blueprints that are created on the fly need unique"
-                f" names."
-            )
-        else:
-            app.blueprints[self.name] = self
-            first_registration = True
+        if name in app.blueprints:
+            existing_at = f" '{name}'" if self_name != name else ""
 
+            if app.blueprints[name] is not self:
+                raise ValueError(
+                    f"The name '{self_name}' is already registered for"
+                    f" a different blueprint{existing_at}. Use 'name='"
+                    " to provide a unique name."
+                )
+            else:
+                import warnings
+
+                warnings.warn(
+                    f"The name '{self_name}' is already registered for"
+                    f" this blueprint{existing_at}. Use 'name=' to"
+                    " provide a unique name. This will become an error"
+                    " in Flask 2.1.",
+                    stacklevel=4,
+                )
+
+        first_bp_registration = not any(bp is self for bp in app.blueprints.values())
+        first_name_registration = name not in app.blueprints
+
+        app.blueprints[name] = self
         self._got_registered_once = True
-        state = self.make_setup_state(app, options, first_registration)
+        state = self.make_setup_state(app, options, first_bp_registration)
 
         if self.has_static_folder:
             state.add_url_rule(
@@ -297,25 +339,20 @@ class Blueprint(Scaffold):
             )
 
         # Merge blueprint data into parent.
-        if first_registration:
+        if first_bp_registration or first_name_registration:
 
-            def extend(bp_dict, parent_dict, ensure_sync=False):
+            def extend(bp_dict, parent_dict):
                 for key, values in bp_dict.items():
-                    key = self.name if key is None else f"{self.name}.{key}"
-
-                    if ensure_sync:
-                        values = [app.ensure_sync(func) for func in values]
-
+                    key = name if key is None else f"{name}.{key}"
                     parent_dict[key].extend(values)
 
             for key, value in self.error_handler_spec.items():
-                key = self.name if key is None else f"{self.name}.{key}"
+                key = name if key is None else f"{name}.{key}"
                 value = defaultdict(
                     dict,
                     {
                         code: {
-                            exc_class: app.ensure_sync(func)
-                            for exc_class, func in code_values.items()
+                            exc_class: func for exc_class, func in code_values.items()
                         }
                         for code, code_values in value.items()
                     },
@@ -323,16 +360,13 @@ class Blueprint(Scaffold):
                 app.error_handler_spec[key] = value
 
             for endpoint, func in self.view_functions.items():
-                app.view_functions[endpoint] = app.ensure_sync(func)
+                app.view_functions[endpoint] = func
 
-            extend(
-                self.before_request_funcs, app.before_request_funcs, ensure_sync=True
-            )
-            extend(self.after_request_funcs, app.after_request_funcs, ensure_sync=True)
+            extend(self.before_request_funcs, app.before_request_funcs)
+            extend(self.after_request_funcs, app.after_request_funcs)
             extend(
                 self.teardown_request_funcs,
                 app.teardown_request_funcs,
-                ensure_sync=True,
             )
             extend(self.url_default_functions, app.url_default_functions)
             extend(self.url_value_preprocessors, app.url_value_preprocessors)
@@ -347,21 +381,29 @@ class Blueprint(Scaffold):
             if cli_resolved_group is None:
                 app.cli.commands.update(self.cli.commands)
             elif cli_resolved_group is _sentinel:
-                self.cli.name = self.name
+                self.cli.name = name
                 app.cli.add_command(self.cli)
             else:
                 self.cli.name = cli_resolved_group
                 app.cli.add_command(self.cli)
 
         for blueprint, bp_options in self._blueprints:
-            url_prefix = options.get("url_prefix", "")
-            if "url_prefix" in bp_options:
-                url_prefix = (
-                    url_prefix.rstrip("/") + "/" + bp_options["url_prefix"].lstrip("/")
-                )
+            bp_options = bp_options.copy()
+            bp_url_prefix = bp_options.get("url_prefix")
 
-            bp_options["url_prefix"] = url_prefix
-            bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
+            if bp_url_prefix is None:
+                bp_url_prefix = blueprint.url_prefix
+
+            if state.url_prefix is not None and bp_url_prefix is not None:
+                bp_options["url_prefix"] = (
+                    state.url_prefix.rstrip("/") + "/" + bp_url_prefix.lstrip("/")
+                )
+            elif bp_url_prefix is not None:
+                bp_options["url_prefix"] = bp_url_prefix
+            elif state.url_prefix is not None:
+                bp_options["url_prefix"] = state.url_prefix
+
+            bp_options["name_prefix"] = name
             blueprint.register(app, bp_options)
 
     def add_url_rule(
@@ -369,20 +411,31 @@ class Blueprint(Scaffold):
         rule: str,
         endpoint: t.Optional[str] = None,
         view_func: t.Optional[t.Callable] = None,
+        provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
     ) -> None:
         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
         the :func:`url_for` function is prefixed with the name of the blueprint.
         """
-        if endpoint:
-            assert "." not in endpoint, "Blueprint endpoints should not contain dots"
-        if view_func and hasattr(view_func, "__name__"):
-            assert (
-                "." not in view_func.__name__
-            ), "Blueprint view function name should not contain dots"
-        self.record(lambda s: s.add_url_rule(rule, endpoint, view_func, **options))
+        if endpoint and "." in endpoint:
+            raise ValueError("'endpoint' may not contain a dot '.' character.")
 
-    def app_template_filter(self, name: t.Optional[str] = None) -> t.Callable:
+        if view_func and hasattr(view_func, "__name__") and "." in view_func.__name__:
+            raise ValueError("'view_func' name may not contain a dot '.' character.")
+
+        self.record(
+            lambda s: s.add_url_rule(
+                rule,
+                endpoint,
+                view_func,
+                provide_automatic_options=provide_automatic_options,
+                **options,
+            )
+        )
+
+    def app_template_filter(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateFilterCallable], TemplateFilterCallable]:
         """Register a custom template filter, available application wide.  Like
         :meth:`Flask.template_filter` but for a blueprint.
 
@@ -412,7 +465,9 @@ class Blueprint(Scaffold):
 
         self.record_once(register_template)
 
-    def app_template_test(self, name: t.Optional[str] = None) -> t.Callable:
+    def app_template_test(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateTestCallable], TemplateTestCallable]:
         """Register a custom template test, available application wide.  Like
         :meth:`Flask.template_test` but for a blueprint.
 
@@ -446,7 +501,9 @@ class Blueprint(Scaffold):
 
         self.record_once(register_template)
 
-    def app_template_global(self, name: t.Optional[str] = None) -> t.Callable:
+    def app_template_global(
+        self, name: t.Optional[str] = None
+    ) -> t.Callable[[TemplateGlobalCallable], TemplateGlobalCallable]:
         """Register a custom template global, available application wide.  Like
         :meth:`Flask.template_global` but for a blueprint.
 
@@ -485,21 +542,17 @@ class Blueprint(Scaffold):
         before each request, even if outside of a blueprint.
         """
         self.record_once(
-            lambda s: s.app.before_request_funcs.setdefault(None, []).append(
-                s.app.ensure_sync(f)
-            )
+            lambda s: s.app.before_request_funcs.setdefault(None, []).append(f)
         )
         return f
 
     def before_app_first_request(
-        self, f: BeforeRequestCallable
-    ) -> BeforeRequestCallable:
+        self, f: BeforeFirstRequestCallable
+    ) -> BeforeFirstRequestCallable:
         """Like :meth:`Flask.before_first_request`.  Such a function is
         executed before the first request to the application.
         """
-        self.record_once(
-            lambda s: s.app.before_first_request_funcs.append(s.app.ensure_sync(f))
-        )
+        self.record_once(lambda s: s.app.before_first_request_funcs.append(f))
         return f
 
     def after_app_request(self, f: AfterRequestCallable) -> AfterRequestCallable:
@@ -507,9 +560,7 @@ class Blueprint(Scaffold):
         is executed after each request, even if outside of the blueprint.
         """
         self.record_once(
-            lambda s: s.app.after_request_funcs.setdefault(None, []).append(
-                s.app.ensure_sync(f)
-            )
+            lambda s: s.app.after_request_funcs.setdefault(None, []).append(f)
         )
         return f
 
@@ -539,7 +590,9 @@ class Blueprint(Scaffold):
         handler is used for all requests, even if outside of the blueprint.
         """
 
-        def decorator(f: ErrorHandlerCallable) -> ErrorHandlerCallable:
+        def decorator(
+            f: "ErrorHandlerCallable[Exception]",
+        ) -> "ErrorHandlerCallable[Exception]":
             self.record_once(lambda s: s.app.errorhandler(code)(f))
             return f
 
@@ -559,15 +612,4 @@ class Blueprint(Scaffold):
         self.record_once(
             lambda s: s.app.url_default_functions.setdefault(None, []).append(f)
         )
-        return f
-
-    def ensure_sync(self, f: t.Callable) -> t.Callable:
-        """Ensure the function is synchronous.
-
-        Override if you would like custom async to sync behaviour in
-        this blueprint. Otherwise the app's
-        :meth:`~flask.Flask.ensure_sync` is used.
-
-        .. versionadded:: 2.0
-        """
         return f

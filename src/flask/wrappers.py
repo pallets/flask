@@ -6,8 +6,10 @@ from werkzeug.wrappers import Response as ResponseBase
 
 from . import json
 from .globals import current_app
+from .helpers import _split_blueprint_path
 
 if t.TYPE_CHECKING:
+    import typing_extensions as te
     from werkzeug.routing import Rule
 
 
@@ -58,23 +60,54 @@ class Request(RequestBase):
 
     @property
     def endpoint(self) -> t.Optional[str]:
-        """The endpoint that matched the request.  This in combination with
-        :attr:`view_args` can be used to reconstruct the same or a
-        modified URL.  If an exception happened when matching, this will
-        be ``None``.
+        """The endpoint that matched the request URL.
+
+        This will be ``None`` if matching failed or has not been
+        performed yet.
+
+        This in combination with :attr:`view_args` can be used to
+        reconstruct the same URL or a modified URL.
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
-        else:
-            return None
+
+        return None
 
     @property
     def blueprint(self) -> t.Optional[str]:
-        """The name of the current blueprint"""
-        if self.url_rule and "." in self.url_rule.endpoint:
-            return self.url_rule.endpoint.rsplit(".", 1)[0]
-        else:
-            return None
+        """The registered name of the current blueprint.
+
+        This will be ``None`` if the endpoint is not part of a
+        blueprint, or if URL matching failed or has not been performed
+        yet.
+
+        This does not necessarily match the name the blueprint was
+        created with. It may have been nested, or registered with a
+        different name.
+        """
+        endpoint = self.endpoint
+
+        if endpoint is not None and "." in endpoint:
+            return endpoint.rpartition(".")[0]
+
+        return None
+
+    @property
+    def blueprints(self) -> t.List[str]:
+        """The registered names of the current blueprint upwards through
+        parent blueprints.
+
+        This will be an empty list if there is no current blueprint, or
+        if URL matching failed.
+
+        .. versionadded:: 2.0.1
+        """
+        name = self.blueprint
+
+        if name is None:
+            return []
+
+        return _split_blueprint_path(name)
 
     def _load_form_data(self) -> None:
         RequestBase._load_form_data(self)
@@ -91,7 +124,7 @@ class Request(RequestBase):
 
             attach_enctype_error_multidict(self)
 
-    def on_json_loading_failed(self, e: Exception) -> t.NoReturn:
+    def on_json_loading_failed(self, e: Exception) -> "te.NoReturn":
         if current_app and current_app.debug:
             raise BadRequest(f"Failed to decode JSON object: {e}")
 

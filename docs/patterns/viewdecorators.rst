@@ -142,7 +142,7 @@ Here is the code for that decorator::
             def decorated_function(*args, **kwargs):
                 template_name = template
                 if template_name is None:
-                    template_name = f"'{request.endpoint.replace('.', '/')}.html'"
+                    template_name = f"{request.endpoint.replace('.', '/')}.html"
                 ctx = f(*args, **kwargs)
                 if ctx is None:
                     ctx = {}

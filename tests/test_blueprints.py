@@ -1,5 +1,3 @@
-import functools
-
 import pytest
 from jinja2 import TemplateNotFound
 from werkzeug.http import parse_cache_control_header
@@ -142,7 +140,7 @@ def test_blueprint_url_defaults(app, client):
         return str(bar)
 
     app.register_blueprint(bp, url_prefix="/1", url_defaults={"bar": 23})
-    app.register_blueprint(bp, url_prefix="/2", url_defaults={"bar": 19})
+    app.register_blueprint(bp, name="test2", url_prefix="/2", url_defaults={"bar": 19})
 
     assert client.get("/1/foo").data == b"23/42"
     assert client.get("/2/foo").data == b"19/42"
@@ -253,28 +251,9 @@ def test_templates_list(test_apps):
     assert templates == ["admin/index.html", "frontend/index.html"]
 
 
-def test_dotted_names(app, client):
-    frontend = flask.Blueprint("myapp.frontend", __name__)
-    backend = flask.Blueprint("myapp.backend", __name__)
-
-    @frontend.route("/fe")
-    def frontend_index():
-        return flask.url_for("myapp.backend.backend_index")
-
-    @frontend.route("/fe2")
-    def frontend_page2():
-        return flask.url_for(".frontend_index")
-
-    @backend.route("/be")
-    def backend_index():
-        return flask.url_for("myapp.frontend.frontend_index")
-
-    app.register_blueprint(frontend)
-    app.register_blueprint(backend)
-
-    assert client.get("/fe").data.strip() == b"/be"
-    assert client.get("/fe2").data.strip() == b"/fe"
-    assert client.get("/be").data.strip() == b"/fe"
+def test_dotted_name_not_allowed(app, client):
+    with pytest.raises(ValueError):
+        flask.Blueprint("app.ui", __name__)
 
 
 def test_dotted_names_from_app(app, client):
@@ -343,62 +322,19 @@ def test_route_decorator_custom_endpoint(app, client):
 def test_route_decorator_custom_endpoint_with_dots(app, client):
     bp = flask.Blueprint("bp", __name__)
 
-    @bp.route("/foo")
-    def foo():
-        return flask.request.endpoint
+    with pytest.raises(ValueError):
+        bp.route("/", endpoint="a.b")(lambda: "")
 
-    try:
+    with pytest.raises(ValueError):
+        bp.add_url_rule("/", endpoint="a.b")
 
-        @bp.route("/bar", endpoint="bar.bar")
-        def foo_bar():
-            return flask.request.endpoint
+    def view():
+        return ""
 
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError("expected AssertionError not raised")
+    view.__name__ = "a.b"
 
-    try:
-
-        @bp.route("/bar/123", endpoint="bar.123")
-        def foo_bar_foo():
-            return flask.request.endpoint
-
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError("expected AssertionError not raised")
-
-    def foo_foo_foo():
-        pass
-
-    pytest.raises(
-        AssertionError,
-        lambda: bp.add_url_rule("/bar/123", endpoint="bar.123", view_func=foo_foo_foo),
-    )
-
-    pytest.raises(
-        AssertionError, bp.route("/bar/123", endpoint="bar.123"), lambda: None
-    )
-
-    foo_foo_foo.__name__ = "bar.123"
-
-    pytest.raises(
-        AssertionError, lambda: bp.add_url_rule("/bar/123", view_func=foo_foo_foo)
-    )
-
-    bp.add_url_rule(
-        "/bar/456", endpoint="foofoofoo", view_func=functools.partial(foo_foo_foo)
-    )
-
-    app.register_blueprint(bp, url_prefix="/py")
-
-    assert client.get("/py/foo").data == b"bp.foo"
-    # The rule's didn't actually made it through
-    rv = client.get("/py/bar")
-    assert rv.status_code == 404
-    rv = client.get("/py/bar/123")
-    assert rv.status_code == 404
+    with pytest.raises(ValueError):
+        bp.add_url_rule("/", view_func=view)
 
 
 def test_endpoint_decorator(app, client):
@@ -899,3 +835,89 @@ def test_nested_blueprint(app, client):
     assert client.get("/parent/no").data == b"Parent no"
     assert client.get("/parent/child/no").data == b"Parent no"
     assert client.get("/parent/child/grandchild/no").data == b"Grandchild no"
+
+
+@pytest.mark.parametrize(
+    "parent_init, child_init, parent_registration, child_registration",
+    [
+        ("/parent", "/child", None, None),
+        ("/parent", None, None, "/child"),
+        (None, None, "/parent", "/child"),
+        ("/other", "/something", "/parent", "/child"),
+    ],
+)
+def test_nesting_url_prefixes(
+    parent_init,
+    child_init,
+    parent_registration,
+    child_registration,
+    app,
+    client,
+) -> None:
+    parent = flask.Blueprint("parent", __name__, url_prefix=parent_init)
+    child = flask.Blueprint("child", __name__, url_prefix=child_init)
+
+    @child.route("/")
+    def index():
+        return "index"
+
+    parent.register_blueprint(child, url_prefix=child_registration)
+    app.register_blueprint(parent, url_prefix=parent_registration)
+
+    response = client.get("/parent/child/")
+    assert response.status_code == 200
+
+
+def test_unique_blueprint_names(app, client) -> None:
+    bp = flask.Blueprint("bp", __name__)
+    bp2 = flask.Blueprint("bp", __name__)
+
+    app.register_blueprint(bp)
+
+    with pytest.warns(UserWarning):
+        app.register_blueprint(bp)  # same bp, same name, warning
+
+    app.register_blueprint(bp, name="again")  # same bp, different name, ok
+
+    with pytest.raises(ValueError):
+        app.register_blueprint(bp2)  # different bp, same name, error
+
+    app.register_blueprint(bp2, name="alt")  # different bp, different name, ok
+
+
+def test_self_registration(app, client) -> None:
+    bp = flask.Blueprint("bp", __name__)
+    with pytest.raises(ValueError):
+        bp.register_blueprint(bp)
+
+
+def test_blueprint_renaming(app, client) -> None:
+    bp = flask.Blueprint("bp", __name__)
+    bp2 = flask.Blueprint("bp2", __name__)
+
+    @bp.get("/")
+    def index():
+        return flask.request.endpoint
+
+    @bp.get("/error")
+    def error():
+        flask.abort(403)
+
+    @bp.errorhandler(403)
+    def forbidden(_: Exception):
+        return "Error", 403
+
+    @bp2.get("/")
+    def index2():
+        return flask.request.endpoint
+
+    bp.register_blueprint(bp2, url_prefix="/a", name="sub")
+    app.register_blueprint(bp, url_prefix="/a")
+    app.register_blueprint(bp, url_prefix="/b", name="alt")
+
+    assert client.get("/a/").data == b"bp.index"
+    assert client.get("/b/").data == b"alt.index"
+    assert client.get("/a/a/").data == b"bp.sub.index2"
+    assert client.get("/b/a/").data == b"alt.sub.index2"
+    assert client.get("/a/error").data == b"Error"
+    assert client.get("/b/error").data == b"Error"

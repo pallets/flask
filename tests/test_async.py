@@ -6,7 +6,8 @@ import pytest
 from flask import Blueprint
 from flask import Flask
 from flask import request
-from flask.helpers import run_async
+from flask.views import MethodView
+from flask.views import View
 
 pytest.importorskip("asgiref")
 
@@ -17,6 +18,24 @@ class AppError(Exception):
 
 class BlueprintError(Exception):
     pass
+
+
+class AsyncView(View):
+    methods = ["GET", "POST"]
+
+    async def dispatch_request(self):
+        await asyncio.sleep(0)
+        return request.method
+
+
+class AsyncMethodView(MethodView):
+    async def get(self):
+        await asyncio.sleep(0)
+        return "GET"
+
+    async def post(self):
+        await asyncio.sleep(0)
+        return "POST"
 
 
 @pytest.fixture(name="async_app")
@@ -54,11 +73,14 @@ def _async_app():
 
     app.register_blueprint(blueprint, url_prefix="/bp")
 
+    app.add_url_rule("/view", view_func=AsyncView.as_view("view"))
+    app.add_url_rule("/methodview", view_func=AsyncMethodView.as_view("methodview"))
+
     return app
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
-@pytest.mark.parametrize("path", ["/", "/home", "/bp/"])
+@pytest.mark.parametrize("path", ["/", "/home", "/bp/", "/view", "/methodview"])
 def test_async_route(path, async_app):
     test_client = async_app.test_client()
     response = test_client.get(path)
@@ -136,5 +158,6 @@ def test_async_before_after_request():
 
 @pytest.mark.skipif(sys.version_info >= (3, 7), reason="should only raise Python < 3.7")
 def test_async_runtime_error():
+    app = Flask(__name__)
     with pytest.raises(RuntimeError):
-        run_async(None)
+        app.async_to_sync(None)

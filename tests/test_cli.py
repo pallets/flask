@@ -5,6 +5,7 @@ import ssl
 import sys
 import types
 from functools import partial
+from pathlib import Path
 from unittest.mock import patch
 
 import click
@@ -29,8 +30,8 @@ from flask.cli import run_command
 from flask.cli import ScriptInfo
 from flask.cli import with_appcontext
 
-cwd = os.getcwd()
-test_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "test_apps"))
+cwd = Path.cwd()
+test_path = (Path(__file__) / ".." / "test_apps").resolve()
 
 
 @pytest.fixture
@@ -152,29 +153,25 @@ def test_find_best_app(test_apps):
     (
         ("test", cwd, "test"),
         ("test.py", cwd, "test"),
-        ("a/test", os.path.join(cwd, "a"), "test"),
+        ("a/test", cwd / "a", "test"),
         ("test/__init__.py", cwd, "test"),
         ("test/__init__", cwd, "test"),
         # nested package
         (
-            os.path.join(test_path, "cliapp", "inner1", "__init__"),
+            test_path / "cliapp" / "inner1" / "__init__",
             test_path,
             "cliapp.inner1",
         ),
         (
-            os.path.join(test_path, "cliapp", "inner1", "inner2"),
+            test_path / "cliapp" / "inner1" / "inner2",
             test_path,
             "cliapp.inner1.inner2",
         ),
         # dotted name
         ("test.a.b", cwd, "test.a.b"),
-        (os.path.join(test_path, "cliapp.app"), test_path, "cliapp.app"),
+        (test_path / "cliapp.app", test_path, "cliapp.app"),
         # not a Python file, will be caught during import
-        (
-            os.path.join(test_path, "cliapp", "message.txt"),
-            test_path,
-            "cliapp.message.txt",
-        ),
+        (test_path / "cliapp" / "message.txt", test_path, "cliapp.message.txt"),
     ),
 )
 def test_prepare_import(request, value, path, result):
@@ -193,7 +190,7 @@ def test_prepare_import(request, value, path, result):
     request.addfinalizer(reset_path)
 
     assert prepare_import(value) == result
-    assert sys.path[0] == path
+    assert sys.path[0] == str(path)
 
 
 @pytest.mark.parametrize(
@@ -278,9 +275,8 @@ def test_scriptinfo(test_apps, monkeypatch):
     assert obj.load_app() is app
 
     # import app with module's absolute path
-    cli_app_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "test_apps", "cliapp", "app.py")
-    )
+    cli_app_path = str(test_path / "cliapp" / "app.py")
+
     obj = ScriptInfo(app_import_path=cli_app_path)
     app = obj.load_app()
     assert app.name == "testapp"
@@ -302,19 +298,13 @@ def test_scriptinfo(test_apps, monkeypatch):
     pytest.raises(NoAppException, obj.load_app)
 
     # import app from wsgi.py in current directory
-    monkeypatch.chdir(
-        os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "test_apps", "helloworld")
-        )
-    )
+    monkeypatch.chdir(test_path / "helloworld")
     obj = ScriptInfo()
     app = obj.load_app()
     assert app.name == "hello"
 
     # import app from app.py in current directory
-    monkeypatch.chdir(
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "test_apps", "cliapp"))
-    )
+    monkeypatch.chdir(test_path / "cliapp")
     obj = ScriptInfo()
     app = obj.load_app()
     assert app.name == "testapp"
@@ -513,7 +503,7 @@ def test_load_dotenv(monkeypatch):
     monkeypatch.setenv("EGGS", "3")
     monkeypatch.chdir(test_path)
     assert load_dotenv()
-    assert os.getcwd() == test_path
+    assert Path.cwd() == test_path
     # .flaskenv doesn't overwrite .env
     assert os.environ["FOO"] == "env"
     # set only in .flaskenv
@@ -533,9 +523,8 @@ def test_dotenv_path(monkeypatch):
     for item in ("FOO", "BAR", "EGGS"):
         monkeypatch._setitem.append((os.environ, item, notset))
 
-    cwd = os.getcwd()
-    load_dotenv(os.path.join(test_path, ".flaskenv"))
-    assert os.getcwd() == cwd
+    load_dotenv(test_path / ".flaskenv")
+    assert Path.cwd() == cwd
     assert "FOO" in os.environ
 
 
