@@ -1,3 +1,4 @@
+import os
 import typing as t
 from collections import defaultdict
 from functools import update_wrapper
@@ -175,7 +176,7 @@ class Blueprint(Scaffold):
         self,
         name: str,
         import_name: str,
-        static_folder: t.Optional[str] = None,
+        static_folder: t.Optional[t.Union[str, os.PathLike]] = None,
         static_url_path: t.Optional[str] = None,
         template_folder: t.Optional[str] = None,
         url_prefix: t.Optional[str] = None,
