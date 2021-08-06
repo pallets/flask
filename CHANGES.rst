@@ -13,6 +13,8 @@ Unreleased
 -   Support View and MethodView instances with async handlers. :issue:`4112`
 -   Enhance typing of ``app.errorhandler`` decorator. :issue:`4095`
 -   Fix registering a blueprint twice with differing names. :issue:`4124`
+-   Fix the type of ``static_folder`` to accept ``pathlib.Path``.
+    :issue:`4150`
 
 
 Version 2.0.1
