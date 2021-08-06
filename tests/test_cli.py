@@ -311,6 +311,23 @@ def test_scriptinfo(test_apps, monkeypatch):
     assert app.name == "testapp"
 
 
+def test_lazy_load_error(monkeypatch):
+    """When using lazy loading, the correct exception should be
+    re-raised.
+    """
+
+    class BadExc(Exception):
+        pass
+
+    def bad_load():
+        raise BadExc
+
+    lazy = DispatchingApp(bad_load, use_eager_loading=False)
+
+    with pytest.raises(BadExc):
+        lazy._flush_bg_loading_exception()
+
+
 def test_with_appcontext(runner):
     @click.command()
     @with_appcontext
@@ -660,7 +677,3 @@ def test_click_7_deprecated():
             pytest.deprecated_call(cli_main, match=".* Click 7 is deprecated")
         else:
             cli_main()
-
-
-def test_load_in_background():
-    pytest.raises(Exception, DispatchingApp, "appname123")
