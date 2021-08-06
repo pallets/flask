@@ -83,7 +83,7 @@ class Config(dict):
         :param variable_name: name of the environment variable
         :param silent: set to ``True`` if you want silent failure for missing
                        files.
-        :return: bool. ``True`` if able to load config, ``False`` otherwise.
+        :return: ``True`` if the file was loaded successfully.
         """
         rv = os.environ.get(variable_name)
         if not rv:
@@ -107,6 +107,7 @@ class Config(dict):
                          root path.
         :param silent: set to ``True`` if you want silent failure for missing
                        files.
+        :return: ``True`` if the file was loaded successfully.
 
         .. versionadded:: 0.7
            `silent` parameter.
@@ -185,6 +186,7 @@ class Config(dict):
         :type load: ``Callable[[Reader], Mapping]`` where ``Reader``
             implements a ``read`` method.
         :param silent: Ignore the file if it doesn't exist.
+        :return: ``True`` if the file was loaded successfully.
 
         .. versionadded:: 2.0
         """
@@ -209,6 +211,7 @@ class Config(dict):
         :param filename: The path to the JSON file. This can be an
             absolute path or relative to the config root path.
         :param silent: Ignore the file if it doesn't exist.
+        :return: ``True`` if the file was loaded successfully.
 
         .. deprecated:: 2.0.0
             Will be removed in Flask 2.1. Use :meth:`from_file` instead.
@@ -232,6 +235,7 @@ class Config(dict):
     ) -> bool:
         """Updates the config like :meth:`update` ignoring items with non-upper
         keys.
+        :return: Always returns ``True``.
 
         .. versionadded:: 0.11
         """
