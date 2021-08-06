@@ -1,3 +1,4 @@
+import decimal
 import io
 import json as _json
 import typing as t
@@ -47,7 +48,7 @@ class JSONEncoder(_json.JSONEncoder):
         """
         if isinstance(o, date):
             return http_date(o)
-        if isinstance(o, uuid.UUID):
+        if isinstance(o, (decimal.Decimal, uuid.UUID)):
             return str(o)
         if dataclasses and dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
@@ -116,6 +117,9 @@ def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
     :param app: Use this app's config instead of the active app context
         or defaults.
     :param kwargs: Extra arguments passed to :func:`json.dumps`.
+
+    .. versionchanged:: 2.0.2
+        :class:`decimal.Decimal` is supported by converting to a string.
 
     .. versionchanged:: 2.0
         ``encoding`` is deprecated and will be removed in Flask 2.1.
@@ -323,6 +327,9 @@ def jsonify(*args: t.Any, **kwargs: t.Any) -> "Response":
     The default output omits indents and spaces after separators. In
     debug mode or if :data:`JSONIFY_PRETTYPRINT_REGULAR` is ``True``,
     the output will be formatted to be easier to read.
+
+    .. versionchanged:: 2.0.2
+        :class:`decimal.Decimal` is supported by converting to a string.
 
     .. versionchanged:: 0.11
         Added support for serializing top-level arrays. This introduces

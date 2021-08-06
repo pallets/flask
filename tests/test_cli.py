@@ -17,6 +17,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import Flask
 from flask.cli import AppGroup
+from flask.cli import DispatchingApp
 from flask.cli import dotenv
 from flask.cli import find_best_app
 from flask.cli import FlaskGroup
@@ -67,6 +68,15 @@ def test_find_best_app(test_apps):
     class Module:
         @staticmethod
         def create_app():
+            return Flask("appname")
+
+    app = find_best_app(script_info, Module)
+    assert isinstance(app, Flask)
+    assert app.name == "appname"
+
+    class Module:
+        @staticmethod
+        def create_app(**kwargs):
             return Flask("appname")
 
     app = find_best_app(script_info, Module)
@@ -308,6 +318,23 @@ def test_scriptinfo(test_apps, monkeypatch):
     obj = ScriptInfo()
     app = obj.load_app()
     assert app.name == "testapp"
+
+
+def test_lazy_load_error(monkeypatch):
+    """When using lazy loading, the correct exception should be
+    re-raised.
+    """
+
+    class BadExc(Exception):
+        pass
+
+    def bad_load():
+        raise BadExc
+
+    lazy = DispatchingApp(bad_load, use_eager_loading=False)
+
+    with pytest.raises(BadExc):
+        lazy._flush_bg_loading_exception()
 
 
 def test_with_appcontext(runner):

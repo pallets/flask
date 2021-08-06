@@ -91,18 +91,18 @@ write templates to generate the HTML form.
                 error = 'Username is required.'
             elif not password:
                 error = 'Password is required.'
-            elif db.execute(
-                'SELECT id FROM user WHERE username = ?', (username,)
-            ).fetchone() is not None:
-                error = f"User {username} is already registered."
 
             if error is None:
-                db.execute(
-                    'INSERT INTO user (username, password) VALUES (?, ?)',
-                    (username, generate_password_hash(password))
-                )
-                db.commit()
-                return redirect(url_for('auth.login'))
+                try:
+                    db.execute(
+                        "INSERT INTO user (username, password) VALUES (?, ?)",
+                        (username, generate_password_hash(password)),
+                    )
+                    db.commit()
+                except db.IntegrityError:
+                    error = f"User {username} is already registered."
+                else:
+                    return redirect(url_for("auth.login"))
 
             flash(error)
 
@@ -125,26 +125,25 @@ Here's what the ``register`` view function is doing:
 
 #.  Validate that ``username`` and ``password`` are not empty.
 
-#.  Validate that ``username`` is not already registered by querying the
-    database and checking if a result is returned.
-    :meth:`db.execute <sqlite3.Connection.execute>` takes a SQL query
-    with ``?`` placeholders for any user input, and a tuple of values
-    to replace the placeholders with. The database library will take
-    care of escaping the values so you are not vulnerable to a
-    *SQL injection attack*.
-
-    :meth:`~sqlite3.Cursor.fetchone` returns one row from the query.
-    If the query returned no results, it returns ``None``. Later,
-    :meth:`~sqlite3.Cursor.fetchall` is used, which returns a list of
-    all results.
-
 #.  If validation succeeds, insert the new user data into the database.
-    For security, passwords should never be stored in the database
-    directly. Instead,
-    :func:`~werkzeug.security.generate_password_hash` is used to
-    securely hash the password, and that hash is stored. Since this
-    query modifies data, :meth:`db.commit() <sqlite3.Connection.commit>`
-    needs to be called afterwards to save the changes.
+
+    -   :meth:`db.execute <sqlite3.Connection.execute>` takes a SQL
+        query with ``?`` placeholders for any user input, and a tuple of
+        values to replace the placeholders with. The database library
+        will take care of escaping the values so you are not vulnerable
+        to a *SQL injection attack*.
+
+    -   For security, passwords should never be stored in the database
+        directly. Instead,
+        :func:`~werkzeug.security.generate_password_hash` is used to
+        securely hash the password, and that hash is stored. Since this
+        query modifies data,
+        :meth:`db.commit() <sqlite3.Connection.commit>` needs to be
+        called afterwards to save the changes.
+
+    -   An :exc:`sqlite3.IntegrityError` will occur if the username
+        already exists, which should be shown to the user as another
+        validation error.
 
 #.  After storing the user, they are redirected to the login page.
     :func:`url_for` generates the URL for the login view based on its
@@ -199,6 +198,11 @@ This view follows the same pattern as the ``register`` view above.
 There are a few differences from the ``register`` view:
 
 #.  The user is queried first and stored in a variable for later use.
+
+    :meth:`~sqlite3.Cursor.fetchone` returns one row from the query.
+    If the query returned no results, it returns ``None``. Later,
+    :meth:`~sqlite3.Cursor.fetchall` will be used, which returns a list
+    of all results.
 
 #.  :func:`~werkzeug.security.check_password_hash` hashes the submitted
     password in the same way as the stored hash and securely compares

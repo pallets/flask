@@ -389,7 +389,7 @@ class Flask(Scaffold):
         self,
         import_name: str,
         static_url_path: t.Optional[str] = None,
-        static_folder: t.Optional[str] = "static",
+        static_folder: t.Optional[t.Union[str, os.PathLike]] = "static",
         static_host: t.Optional[str] = None,
         host_matching: bool = False,
         subdomain_matching: bool = False,
