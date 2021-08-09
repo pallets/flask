@@ -745,12 +745,12 @@ class Flask(Scaffold):
         :param context: the context as a dictionary that is updated in place
                         to add extra variables.
         """
-        funcs: t.Iterable[
-            TemplateContextProcessorCallable
-        ] = self.template_context_processors[None]
+        funcs: t.Iterable[TemplateContextProcessorCallable] = []
+        if None in self.template_context_processors:
+            funcs = chain(funcs, self.template_context_processors[None])
         reqctx = _request_ctx_stack.top
         if reqctx is not None:
-            for bp in request.blueprints:
+            for bp in reversed(request.blueprints):
                 if bp in self.template_context_processors:
                     funcs = chain(funcs, self.template_context_processors[bp])
         orig_ctx = context.copy()
@@ -1806,7 +1806,9 @@ class Flask(Scaffold):
             # This is called by url_for, which can be called outside a
             # request, can't use request.blueprints.
             bps = _split_blueprint_path(endpoint.rpartition(".")[0])
-            bp_funcs = chain.from_iterable(self.url_default_functions[bp] for bp in bps)
+            bp_funcs = chain.from_iterable(
+                self.url_default_functions[bp] for bp in reversed(bps)
+            )
             funcs = chain(funcs, bp_funcs)
 
         for func in funcs:
@@ -1846,19 +1848,17 @@ class Flask(Scaffold):
         further request handling is stopped.
         """
 
-        funcs: t.Iterable[URLValuePreprocessorCallable] = self.url_value_preprocessors[
-            None
-        ]
-        for bp in request.blueprints:
-            if bp in self.url_value_preprocessors:
-                funcs = chain(funcs, self.url_value_preprocessors[bp])
+        funcs: t.Iterable[URLValuePreprocessorCallable] = []
+        for name in chain([None], reversed(request.blueprints)):
+            if name in self.url_value_preprocessors:
+                funcs = chain(funcs, self.url_value_preprocessors[name])
         for func in funcs:
             func(request.endpoint, request.view_args)
 
-        funcs: t.Iterable[BeforeRequestCallable] = self.before_request_funcs[None]
-        for bp in request.blueprints:
-            if bp in self.before_request_funcs:
-                funcs = chain(funcs, self.before_request_funcs[bp])
+        funcs: t.Iterable[BeforeRequestCallable] = []
+        for name in chain([None], reversed(request.blueprints)):
+            if name in self.before_request_funcs:
+                funcs = chain(funcs, self.before_request_funcs[name])
         for func in funcs:
             rv = self.ensure_sync(func)()
             if rv is not None:
@@ -1881,11 +1881,9 @@ class Flask(Scaffold):
         """
         ctx = _request_ctx_stack.top
         funcs: t.Iterable[AfterRequestCallable] = ctx._after_request_functions
-        for bp in request.blueprints:
-            if bp in self.after_request_funcs:
-                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
-        if None in self.after_request_funcs:
-            funcs = chain(funcs, reversed(self.after_request_funcs[None]))
+        for name in chain(request.blueprints, [None]):
+            if name in self.after_request_funcs:
+                funcs = chain(funcs, reversed(self.after_request_funcs[name]))
         for handler in funcs:
             response = self.ensure_sync(handler)(response)
         if not self.session_interface.is_null_session(ctx.session):
@@ -1917,12 +1915,10 @@ class Flask(Scaffold):
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
-        funcs: t.Iterable[TeardownCallable] = reversed(
-            self.teardown_request_funcs[None]
-        )
-        for bp in request.blueprints:
-            if bp in self.teardown_request_funcs:
-                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
+        funcs: t.Iterable[TeardownCallable] = []
+        for name in chain(request.blueprints, [None]):
+            if name in self.teardown_request_funcs:
+                funcs = chain(funcs, reversed(self.teardown_request_funcs[name]))
         for func in funcs:
             self.ensure_sync(func)(exc)
         request_tearing_down.send(self, exc=exc)
