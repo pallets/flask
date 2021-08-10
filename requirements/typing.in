@@ -1,1 +1,4 @@
 mypy
+types-dataclasses
+types-setuptools
+cryptography
