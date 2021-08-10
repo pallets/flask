@@ -18,12 +18,16 @@ blinker==1.4
     # via -r requirements/tests.in
 certifi==2021.5.30
     # via requests
+cffi==1.14.6
+    # via cryptography
 cfgv==3.3.0
     # via pre-commit
 charset-normalizer==2.0.4
     # via requests
 click==8.0.1
     # via pip-tools
+cryptography==3.4.7
+    # via -r requirements/typing.in
 distlib==0.3.2
     # via virtualenv
 docutils==0.16
@@ -78,6 +82,8 @@ py==1.10.0
     # via
     #   pytest
     #   tox
+pycparser==2.20
+    # via cffi
 pygments==2.9.0
     # via
     #   sphinx
@@ -135,6 +141,10 @@ tomli==1.2.1
     # via pep517
 tox==3.24.1
     # via -r requirements/dev.in
+types-dataclasses==0.1.7
+    # via -r requirements/typing.in
+types-setuptools==57.0.2
+    # via -r requirements/typing.in
 typing-extensions==3.10.0.0
     # via mypy
 urllib3==1.26.6
