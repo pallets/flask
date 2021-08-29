@@ -1,7 +1,6 @@
 import typing as t
 from contextlib import contextmanager
 from copy import copy
-from types import TracebackType
 
 import werkzeug.test
 from click.testing import CliRunner
@@ -226,9 +225,7 @@ class FlaskClient(Client):
         self.preserve_context = True
         return self
 
-    def __exit__(
-        self, exc_type: type, exc_value: BaseException, tb: TracebackType
-    ) -> None:
+    def __exit__(self, exc_type, exc_value, tb) -> None:
         self.preserve_context = False
 
         # Normally the request context is preserved until the next

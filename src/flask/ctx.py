@@ -1,7 +1,6 @@
 import sys
 import typing as t
 from functools import update_wrapper
-from types import TracebackType
 
 from werkzeug.exceptions import HTTPException
 
@@ -257,9 +256,7 @@ class AppContext:
         self.push()
         return self
 
-    def __exit__(
-        self, exc_type: type, exc_value: BaseException, tb: TracebackType
-    ) -> None:
+    def __exit__(self, exc_type, exc_value, tb) -> None:
         self.pop(exc_value)
 
 
@@ -463,9 +460,7 @@ class RequestContext:
         self.push()
         return self
 
-    def __exit__(
-        self, exc_type: type, exc_value: BaseException, tb: TracebackType
-    ) -> None:
+    def __exit__(self, exc_type, exc_value, tb) -> None:
         # do not pop the request stack if we are in debug mode and an
         # exception happened.  This will allow the debugger to still
         # access the request object in the interactive shell.  Furthermore

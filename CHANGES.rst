@@ -21,6 +21,7 @@ Unreleased
     :issue:`4096`
 -   The CLI loader handles ``**kwargs`` in a ``create_app`` function.
     :issue:`4170`
+-   Removed type-hints in ``__exit__`` methods. :pr:`4250`
 
 
 Version 2.0.1
