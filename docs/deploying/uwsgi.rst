@@ -67,5 +67,5 @@ to have it in the URL root its a bit simpler::
 
 .. _nginx: https://nginx.org/
 .. _lighttpd: https://www.lighttpd.net/
-.. _cherokee: http://cherokee-project.com/
+.. _cherokee: https://cherokee-project.com/
 .. _uwsgi: https://uwsgi-docs.readthedocs.io/en/latest/
