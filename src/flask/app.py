@@ -1093,7 +1093,9 @@ class Flask(Scaffold):
             if old_func is not None and old_func != view_func:
                 raise AssertionError(
                     "View function mapping is overwriting an existing"
-                    f" endpoint function: {endpoint}"
+                    f" endpoint function: {endpoint}.\n"
+                    "Use 'route(... , endpoint=\"other_name\")' to"
+                    " specify a different name."
                 )
             self.view_functions[endpoint] = view_func
 
