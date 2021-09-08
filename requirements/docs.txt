@@ -30,7 +30,7 @@ packaging==21.0
     #   sphinx
 pallets-sphinx-themes==2.0.1
     # via -r requirements/docs.in
-pygments==2.9.0
+pygments==2.10.0
     # via
     #   sphinx
     #   sphinx-tabs
