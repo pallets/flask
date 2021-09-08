@@ -16,7 +16,7 @@ iniconfig==1.1.1
     # via pytest
 packaging==21.0
     # via pytest
-pluggy==0.13.1
+pluggy==1.0.0
     # via pytest
 py==1.10.0
     # via pytest

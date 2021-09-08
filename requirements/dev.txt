@@ -20,7 +20,7 @@ certifi==2021.5.30
     # via requests
 cffi==1.14.6
     # via cryptography
-cfgv==3.3.0
+cfgv==3.3.1
     # via pre-commit
 charset-normalizer==2.0.4
     # via requests
@@ -70,13 +70,13 @@ pep517==0.11.0
     # via pip-tools
 pip-tools==6.2.0
     # via -r requirements/dev.in
-platformdirs==2.2.0
+platformdirs==2.3.0
     # via virtualenv
-pluggy==0.13.1
+pluggy==1.0.0
     # via
     #   pytest
     #   tox
-pre-commit==2.14.1
+pre-commit==2.15.0
     # via -r requirements/dev.in
 py==1.10.0
     # via
@@ -84,7 +84,7 @@ py==1.10.0
     #   tox
 pycparser==2.20
     # via cffi
-pygments==2.9.0
+pygments==2.10.0
     # via
     #   sphinx
     #   sphinx-tabs
@@ -147,11 +147,11 @@ types-dataclasses==0.1.7
     # via -r requirements/typing.in
 types-setuptools==57.0.2
     # via -r requirements/typing.in
-typing-extensions==3.10.0.0
+typing-extensions==3.10.0.2
     # via mypy
 urllib3==1.26.6
     # via requests
-virtualenv==20.7.1
+virtualenv==20.7.2
     # via
     #   pre-commit
     #   tox
