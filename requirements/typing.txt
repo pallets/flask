@@ -22,5 +22,5 @@ types-dataclasses==0.1.7
     # via -r requirements/typing.in
 types-setuptools==57.0.2
     # via -r requirements/typing.in
-typing-extensions==3.10.0.0
+typing-extensions==3.10.0.2
     # via mypy
