@@ -108,6 +108,7 @@ class FlaskClient(Client):
 
     application: "Flask"
     preserve_context = False
+    arg = None
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -189,9 +190,11 @@ class FlaskClient(Client):
                 "flask._preserve_context": self.preserve_context,
             }
 
+        if len(args) < 1:
+            pass
+        else:
+            self.arg = arg = args[0]
         if not kwargs and len(args) == 1:
-            arg = args[0]
-
             if isinstance(arg, werkzeug.test.EnvironBuilder):
                 builder = copy(arg)
                 builder.environ_base = copy_environ(builder.environ_base or {})
@@ -205,13 +208,17 @@ class FlaskClient(Client):
                 request.environ = copy_environ(request.environ)
 
         if request is None:
-            kwargs["environ_base"] = copy_environ(kwargs.get("environ_base", {}))
-            builder = EnvironBuilder(self.application, *args, **kwargs)
-
-            try:
+            if isinstance(self.arg, werkzeug.test.EnvironBuilder):
+                builder = copy(arg)
+                builder.environ_base = copy_environ(builder.environ_base or {})
                 request = builder.get_request()
-            finally:
-                builder.close()
+            else:
+                kwargs["environ_base"] = copy_environ(kwargs.get("environ_base", {}))
+                builder = EnvironBuilder(self.application, *args, **kwargs)
+                try:
+                    request = builder.get_request()
+                finally:
+                    builder.close()
 
         return super().open(  # type: ignore
             request,

@@ -21,7 +21,7 @@ Unreleased
     :issue:`4096`
 -   The CLI loader handles ``**kwargs`` in a ``create_app`` function.
     :issue:`4170`
-
+-   Fix Unable to extend FlaskClient with follow_redirects. :issue:`3396`
 
 Version 2.0.1
 -------------
