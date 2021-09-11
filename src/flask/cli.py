@@ -22,7 +22,7 @@ from .helpers import get_load_dotenv
 try:
     import dotenv
 except ImportError:
-    dotenv = None  # type: ignore
+    dotenv = None
 
 try:
     import ssl
