@@ -108,7 +108,7 @@ class FlaskClient(Client):
 
     application: "Flask"
     preserve_context = False
-    arg = None
+    arg = None  # type: ignore
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
