@@ -108,7 +108,7 @@ class FlaskClient(Client):
 
     application: "Flask"
     preserve_context = False
-    arg = None  # type: ignore
+    ex = None  # type: ignore
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -193,7 +193,7 @@ class FlaskClient(Client):
         if len(args) < 1:
             pass
         else:
-            self.arg = arg = args[0]
+            self.ex = arg = args[0]
         if not kwargs and len(args) == 1:
             if isinstance(arg, werkzeug.test.EnvironBuilder):
                 builder = copy(arg)
@@ -208,7 +208,7 @@ class FlaskClient(Client):
                 request.environ = copy_environ(request.environ)
 
         if request is None:
-            if isinstance(self.arg, werkzeug.test.EnvironBuilder):
+            if isinstance(self.ex, werkzeug.test.EnvironBuilder):
                 builder = copy(arg)
                 builder.environ_base = copy_environ(builder.environ_base or {})
                 request = builder.get_request()
