@@ -21,8 +21,7 @@ that these functions are not only there for interactive shell usage, but
 also for unit testing and other situations that require a faked request
 context.
 
-Generally it's recommended that you read the :doc:`reqcontext`
-chapter of the documentation first.
+Generally it's recommended that you read :doc:`reqcontext` first.
 
 Command Line Interface
 ----------------------
