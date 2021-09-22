@@ -589,10 +589,10 @@ class Scaffold:
         stack of active contexts.  This becomes relevant if you are using
         such constructs in tests.
 
-        Teardown functions must avoid raising exceptions, since they . If they
-        execute code that might fail they
-        will have to surround the execution of these code by try/except
-        statements and log occurring errors.
+        Teardown functions must avoid raising exceptions. If
+        they execute code that might fail they
+        will have to surround the execution of that code with try/except
+        statements and log any errors.
 
         When a teardown function was called because of an exception it will
         be passed an error object.
