@@ -591,8 +591,8 @@ class Scaffold:
 
         Teardown functions must avoid raising exceptions. If
         they execute code that might fail they
-        will have to surround the execution of these code by try/except
-        statements and log occurring errors.
+        will have to surround the execution of that code with try/except
+        statements and log any errors.
 
         When a teardown function was called because of an exception it will
         be passed an error object.
