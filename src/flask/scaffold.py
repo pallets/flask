@@ -715,7 +715,7 @@ class Scaffold:
                 f"'{code_or_exception}' is not a recognized HTTP error"
                 " code. Use a subclass of HTTPException with that code"
                 " instead."
-            )
+            ) from None
 
         self.error_handler_spec[None][code][exc_class] = t.cast(
             "ErrorHandlerCallable[Exception]", f
