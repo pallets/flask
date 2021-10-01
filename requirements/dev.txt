@@ -22,25 +22,25 @@ cffi==1.14.6
     # via cryptography
 cfgv==3.3.1
     # via pre-commit
-charset-normalizer==2.0.4
+charset-normalizer==2.0.6
     # via requests
 click==8.0.1
     # via pip-tools
-cryptography==3.4.8
+cryptography==35.0.0
     # via -r requirements/typing.in
-distlib==0.3.2
+distlib==0.3.3
     # via virtualenv
 docutils==0.16
     # via
     #   sphinx
     #   sphinx-tabs
-filelock==3.0.12
+filelock==3.2.0
     # via
     #   tox
     #   virtualenv
-greenlet==1.1.1
+greenlet==1.1.2
     # via -r requirements/tests.in
-identify==2.2.13
+identify==2.2.15
     # via pre-commit
 idna==3.2
     # via requests
@@ -68,9 +68,9 @@ pallets-sphinx-themes==2.0.1
     # via -r requirements/docs.in
 pep517==0.11.0
     # via pip-tools
-pip-tools==6.2.0
+pip-tools==6.3.0
     # via -r requirements/dev.in
-platformdirs==2.3.0
+platformdirs==2.4.0
     # via virtualenv
 pluggy==1.0.0
     # via
@@ -106,7 +106,7 @@ six==1.16.0
     #   virtualenv
 snowballstemmer==2.1.0
     # via sphinx
-sphinx==4.1.2
+sphinx==4.2.0
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
@@ -139,19 +139,19 @@ toml==0.10.2
     #   tox
 tomli==1.2.1
     # via pep517
-tox==3.24.3
+tox==3.24.4
     # via -r requirements/dev.in
 types-contextvars==0.1.4
     # via -r requirements/typing.in
 types-dataclasses==0.1.7
     # via -r requirements/typing.in
-types-setuptools==57.0.2
+types-setuptools==57.4.0
     # via -r requirements/typing.in
 typing-extensions==3.10.0.2
     # via mypy
-urllib3==1.26.6
+urllib3==1.26.7
     # via requests
-virtualenv==20.7.2
+virtualenv==20.8.1
     # via
     #   pre-commit
     #   tox

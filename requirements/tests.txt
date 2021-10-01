@@ -10,7 +10,7 @@ attrs==21.2.0
     # via pytest
 blinker==1.4
     # via -r requirements/tests.in
-greenlet==1.1.1
+greenlet==1.1.2
     # via -r requirements/tests.in
 iniconfig==1.1.1
     # via pytest
