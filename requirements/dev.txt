@@ -139,7 +139,7 @@ toml==0.10.2
     #   tox
 tomli==1.2.1
     # via pep517
-tox==3.24.3
+tox==3.24.4
     # via -r requirements/dev.in
 types-contextvars==0.1.4
     # via -r requirements/typing.in
