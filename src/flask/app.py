@@ -366,7 +366,8 @@ class Flask(Scaffold):
     #: .. versionadded:: 1.1.0
     url_map_class = Map
 
-    #: the test client that is used with when `test_client` is used.
+    #: The :meth:`test_client` method creates an instance of this test
+    #: client class. Defaults to :class:`~flask.testing.FlaskClient`.
     #:
     #: .. versionadded:: 0.7
     test_client_class: t.Optional[t.Type["FlaskClient"]] = None
