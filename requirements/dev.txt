@@ -38,7 +38,7 @@ filelock==3.0.12
     # via
     #   tox
     #   virtualenv
-greenlet==1.1.1
+greenlet==1.1.2
     # via -r requirements/tests.in
 identify==2.2.13
     # via pre-commit
