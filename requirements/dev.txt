@@ -26,7 +26,7 @@ charset-normalizer==2.0.4
     # via requests
 click==8.0.1
     # via pip-tools
-cryptography==3.4.8
+cryptography==35.0.0
     # via -r requirements/typing.in
 distlib==0.3.2
     # via virtualenv
