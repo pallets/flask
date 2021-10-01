@@ -1621,7 +1621,7 @@ class Flask(Scaffold):
         except ImportError:
             raise RuntimeError(
                 "Install Flask with the 'async' extra in order to use async views."
-            )
+            ) from None
 
         # Check that Werkzeug isn't using its fallback ContextVar class.
         if ContextVar.__module__ == "werkzeug.local":
@@ -1727,7 +1727,7 @@ class Flask(Scaffold):
                         " response. The return type must be a string,"
                         " dict, tuple, Response instance, or WSGI"
                         f" callable, but it was a {type(rv).__name__}."
-                    ).with_traceback(sys.exc_info()[2])
+                    ).with_traceback(sys.exc_info()[2]) from None
             else:
                 raise TypeError(
                     "The view function did not return a valid"
