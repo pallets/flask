@@ -29,7 +29,7 @@ except ImportError:
             raise RuntimeError(
                 "Signalling support is unavailable because the blinker"
                 " library is not installed."
-            )
+            ) from None
 
         connect = connect_via = connected_to = temporarily_connected_to = _fail
         disconnect = _fail
