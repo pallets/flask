@@ -58,17 +58,12 @@ from .signals import request_started
 from .signals import request_tearing_down
 from .templating import DispatchingJinjaLoader
 from .templating import Environment
-from .typing import AfterRequestCallable
 from .typing import BeforeFirstRequestCallable
-from .typing import BeforeRequestCallable
 from .typing import ResponseReturnValue
 from .typing import TeardownCallable
-from .typing import TemplateContextProcessorCallable
 from .typing import TemplateFilterCallable
 from .typing import TemplateGlobalCallable
 from .typing import TemplateTestCallable
-from .typing import URLDefaultCallable
-from .typing import URLValuePreprocessorCallable
 from .wrappers import Request
 from .wrappers import Response
 
@@ -366,7 +361,8 @@ class Flask(Scaffold):
     #: .. versionadded:: 1.1.0
     url_map_class = Map
 
-    #: the test client that is used with when `test_client` is used.
+    #: The :meth:`test_client` method creates an instance of this test
+    #: client class. Defaults to :class:`~flask.testing.FlaskClient`.
     #:
     #: .. versionadded:: 0.7
     test_client_class: t.Optional[t.Type["FlaskClient"]] = None
@@ -744,20 +740,21 @@ class Flask(Scaffold):
         :param context: the context as a dictionary that is updated in place
                         to add extra variables.
         """
-        funcs: t.Iterable[
-            TemplateContextProcessorCallable
-        ] = self.template_context_processors[None]
-        reqctx = _request_ctx_stack.top
-        if reqctx is not None:
-            for bp in request.blueprints:
-                if bp in self.template_context_processors:
-                    funcs = chain(funcs, self.template_context_processors[bp])
+        names: t.Iterable[t.Optional[str]] = (None,)
+
+        # A template may be rendered outside a request context.
+        if request:
+            names = chain(names, reversed(request.blueprints))
+
+        # The values passed to render_template take precedence. Keep a
+        # copy to re-apply after all context functions.
         orig_ctx = context.copy()
-        for func in funcs:
-            context.update(func())
-        # make sure the original values win.  This makes it possible to
-        # easier add new variables in context processors without breaking
-        # existing views.
+
+        for name in names:
+            if name in self.template_context_processors:
+                for func in self.template_context_processors[name]:
+                    context.update(func())
+
         context.update(orig_ctx)
 
     def make_shell_context(self) -> dict:
@@ -1277,9 +1274,10 @@ class Flask(Scaffold):
         class, or ``None`` if a suitable handler is not found.
         """
         exc_class, code = self._get_exc_class_and_code(type(e))
+        names = (*request.blueprints, None)
 
-        for c in [code, None] if code is not None else [None]:
-            for name in chain(request.blueprints, [None]):
+        for c in (code, None) if code is not None else (None,):
+            for name in names:
                 handler_map = self.error_handler_spec[name][c]
 
                 if not handler_map:
@@ -1799,17 +1797,19 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        funcs: t.Iterable[URLDefaultCallable] = self.url_default_functions[None]
+        names: t.Iterable[t.Optional[str]] = (None,)
 
+        # url_for may be called outside a request context, parse the
+        # passed endpoint instead of using request.blueprints.
         if "." in endpoint:
-            # This is called by url_for, which can be called outside a
-            # request, can't use request.blueprints.
-            bps = _split_blueprint_path(endpoint.rpartition(".")[0])
-            bp_funcs = chain.from_iterable(self.url_default_functions[bp] for bp in bps)
-            funcs = chain(funcs, bp_funcs)
+            names = chain(
+                names, reversed(_split_blueprint_path(endpoint.rpartition(".")[0]))
+            )
 
-        for func in funcs:
-            func(endpoint, values)
+        for name in names:
+            if name in self.url_default_functions:
+                for func in self.url_default_functions[name]:
+                    func(endpoint, values)
 
     def handle_url_build_error(
         self, error: Exception, endpoint: str, values: dict
@@ -1844,24 +1844,20 @@ class Flask(Scaffold):
         value is handled as if it was the return value from the view, and
         further request handling is stopped.
         """
+        names = (None, *reversed(request.blueprints))
 
-        funcs: t.Iterable[URLValuePreprocessorCallable] = self.url_value_preprocessors[
-            None
-        ]
-        for bp in request.blueprints:
-            if bp in self.url_value_preprocessors:
-                funcs = chain(funcs, self.url_value_preprocessors[bp])
-        for func in funcs:
-            func(request.endpoint, request.view_args)
+        for name in names:
+            if name in self.url_value_preprocessors:
+                for url_func in self.url_value_preprocessors[name]:
+                    url_func(request.endpoint, request.view_args)
 
-        funcs: t.Iterable[BeforeRequestCallable] = self.before_request_funcs[None]
-        for bp in request.blueprints:
-            if bp in self.before_request_funcs:
-                funcs = chain(funcs, self.before_request_funcs[bp])
-        for func in funcs:
-            rv = self.ensure_sync(func)()
-            if rv is not None:
-                return rv
+        for name in names:
+            if name in self.before_request_funcs:
+                for before_func in self.before_request_funcs[name]:
+                    rv = self.ensure_sync(before_func)()
+
+                    if rv is not None:
+                        return rv
 
         return None
 
@@ -1879,16 +1875,18 @@ class Flask(Scaffold):
                  instance of :attr:`response_class`.
         """
         ctx = _request_ctx_stack.top
-        funcs: t.Iterable[AfterRequestCallable] = ctx._after_request_functions
-        for bp in request.blueprints:
-            if bp in self.after_request_funcs:
-                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
-        if None in self.after_request_funcs:
-            funcs = chain(funcs, reversed(self.after_request_funcs[None]))
-        for handler in funcs:
-            response = self.ensure_sync(handler)(response)
+
+        for func in ctx._after_request_functions:
+            response = self.ensure_sync(func)(response)
+
+        for name in chain(request.blueprints, (None,)):
+            if name in self.after_request_funcs:
+                for func in reversed(self.after_request_funcs[name]):
+                    response = self.ensure_sync(func)(response)
+
         if not self.session_interface.is_null_session(ctx.session):
             self.session_interface.save_session(self, ctx.session, response)
+
         return response
 
     def do_teardown_request(
@@ -1916,14 +1914,12 @@ class Flask(Scaffold):
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
-        funcs: t.Iterable[TeardownCallable] = reversed(
-            self.teardown_request_funcs[None]
-        )
-        for bp in request.blueprints:
-            if bp in self.teardown_request_funcs:
-                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
-        for func in funcs:
-            self.ensure_sync(func)(exc)
+
+        for name in chain(request.blueprints, (None,)):
+            if name in self.teardown_request_funcs:
+                for func in reversed(self.teardown_request_funcs[name]):
+                    self.ensure_sync(func)(exc)
+
         request_tearing_down.send(self, exc=exc)
 
     def do_teardown_appcontext(
@@ -1945,8 +1941,10 @@ class Flask(Scaffold):
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
+
         for func in reversed(self.teardown_appcontext_funcs):
             self.ensure_sync(func)(exc)
+
         appcontext_tearing_down.send(self, exc=exc)
 
     def app_context(self) -> AppContext:

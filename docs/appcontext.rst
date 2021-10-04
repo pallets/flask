@@ -8,7 +8,7 @@ a request, CLI command, or other activity. Rather than passing the
 application around to each function, the :data:`current_app` and
 :data:`g` proxies are accessed instead.
 
-This is similar to the :doc:`/reqcontext`, which keeps track of
+This is similar to :doc:`/reqcontext`, which keeps track of
 request-level data during a request. A corresponding application context
 is pushed when a request context is pushed.
 
