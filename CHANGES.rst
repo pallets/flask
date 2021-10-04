@@ -3,7 +3,7 @@
 Version 2.0.2
 -------------
 
-Unreleased
+Released 2021-10-04
 
 -   Fix type annotation for ``teardown_*`` methods. :issue:`4093`
 -   Fix type annotation for ``before_request`` and ``before_app_request``
