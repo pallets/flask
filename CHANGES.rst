@@ -21,6 +21,9 @@ Unreleased
     :issue:`4096`
 -   The CLI loader handles ``**kwargs`` in a ``create_app`` function.
     :issue:`4170`
+-   Fix the order of ``before_request`` and other callbacks that trigger
+    before the view returns. They are called from the app down to the
+    closest nested blueprint. :issue:`4229`
 
 
 Version 2.0.1

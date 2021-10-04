@@ -837,6 +837,86 @@ def test_nested_blueprint(app, client):
     assert client.get("/parent/child/grandchild/no").data == b"Grandchild no"
 
 
+def test_nested_callback_order(app, client):
+    parent = flask.Blueprint("parent", __name__)
+    child = flask.Blueprint("child", __name__)
+
+    @app.before_request
+    def app_before1():
+        flask.g.setdefault("seen", []).append("app_1")
+
+    @app.teardown_request
+    def app_teardown1(e=None):
+        assert flask.g.seen.pop() == "app_1"
+
+    @app.before_request
+    def app_before2():
+        flask.g.setdefault("seen", []).append("app_2")
+
+    @app.teardown_request
+    def app_teardown2(e=None):
+        assert flask.g.seen.pop() == "app_2"
+
+    @app.context_processor
+    def app_ctx():
+        return dict(key="app")
+
+    @parent.before_request
+    def parent_before1():
+        flask.g.setdefault("seen", []).append("parent_1")
+
+    @parent.teardown_request
+    def parent_teardown1(e=None):
+        assert flask.g.seen.pop() == "parent_1"
+
+    @parent.before_request
+    def parent_before2():
+        flask.g.setdefault("seen", []).append("parent_2")
+
+    @parent.teardown_request
+    def parent_teardown2(e=None):
+        assert flask.g.seen.pop() == "parent_2"
+
+    @parent.context_processor
+    def parent_ctx():
+        return dict(key="parent")
+
+    @child.before_request
+    def child_before1():
+        flask.g.setdefault("seen", []).append("child_1")
+
+    @child.teardown_request
+    def child_teardown1(e=None):
+        assert flask.g.seen.pop() == "child_1"
+
+    @child.before_request
+    def child_before2():
+        flask.g.setdefault("seen", []).append("child_2")
+
+    @child.teardown_request
+    def child_teardown2(e=None):
+        assert flask.g.seen.pop() == "child_2"
+
+    @child.context_processor
+    def child_ctx():
+        return dict(key="child")
+
+    @child.route("/a")
+    def a():
+        return ", ".join(flask.g.seen)
+
+    @child.route("/b")
+    def b():
+        return flask.render_template_string("{{ key }}")
+
+    parent.register_blueprint(child)
+    app.register_blueprint(parent)
+    assert (
+        client.get("/a").data == b"app_1, app_2, parent_1, parent_2, child_1, child_2"
+    )
+    assert client.get("/b").data == b"child"
+
+
 @pytest.mark.parametrize(
     "parent_init, child_init, parent_registration, child_registration",
     [
