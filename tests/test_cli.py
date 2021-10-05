@@ -1,6 +1,7 @@
 # This file was part of Flask-CLI and was modified under the terms of
 # its Revised BSD License. Copyright © 2015 CERN.
 import os
+import platform
 import ssl
 import sys
 import types
@@ -320,6 +321,7 @@ def test_scriptinfo(test_apps, monkeypatch):
     assert app.name == "testapp"
 
 
+@pytest.mark.xfail(platform.python_implementation() == "PyPy", reason="flaky on pypy")
 def test_lazy_load_error(monkeypatch):
     """When using lazy loading, the correct exception should be
     re-raised.
