@@ -3,7 +3,7 @@
 Version 2.0.2
 -------------
 
-Unreleased
+Released 2021-10-04
 
 -   Fix type annotation for ``teardown_*`` methods. :issue:`4093`
 -   Fix type annotation for ``before_request`` and ``before_app_request``
@@ -21,6 +21,9 @@ Unreleased
     :issue:`4096`
 -   The CLI loader handles ``**kwargs`` in a ``create_app`` function.
     :issue:`4170`
+-   Fix the order of ``before_request`` and other callbacks that trigger
+    before the view returns. They are called from the app down to the
+    closest nested blueprint. :issue:`4229`
 -   Fix Unable to extend FlaskClient with follow_redirects. :issue:`3396`
 
 Version 2.0.1

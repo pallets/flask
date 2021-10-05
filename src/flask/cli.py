@@ -69,15 +69,16 @@ def find_best_app(script_info, module):
 
                 if isinstance(app, Flask):
                     return app
-            except TypeError:
+            except TypeError as e:
                 if not _called_with_wrong_args(app_factory):
                     raise
+
                 raise NoAppException(
                     f"Detected factory {attr_name!r} in module {module.__name__!r},"
                     " but could not call it without arguments. Use"
                     f" \"FLASK_APP='{module.__name__}:{attr_name}(args)'\""
                     " to specify arguments."
-                )
+                ) from e
 
     raise NoAppException(
         "Failed to find Flask application or factory in module"
@@ -161,7 +162,7 @@ def find_app_by_string(script_info, module, app_name):
     except SyntaxError:
         raise NoAppException(
             f"Failed to parse {app_name!r} as an attribute name or function call."
-        )
+        ) from None
 
     if isinstance(expr, ast.Name):
         name = expr.id
@@ -184,7 +185,7 @@ def find_app_by_string(script_info, module, app_name):
             # message with the full expression instead.
             raise NoAppException(
                 f"Failed to parse arguments as literal values: {app_name!r}."
-            )
+            ) from None
     else:
         raise NoAppException(
             f"Failed to parse {app_name!r} as an attribute name or function call."
@@ -192,17 +193,17 @@ def find_app_by_string(script_info, module, app_name):
 
     try:
         attr = getattr(module, name)
-    except AttributeError:
+    except AttributeError as e:
         raise NoAppException(
             f"Failed to find attribute {name!r} in {module.__name__!r}."
-        )
+        ) from e
 
     # If the attribute is a function, call it with any args and kwargs
     # to get the real application.
     if inspect.isfunction(attr):
         try:
             app = call_factory(script_info, attr, args, kwargs)
-        except TypeError:
+        except TypeError as e:
             if not _called_with_wrong_args(attr):
                 raise
 
@@ -210,7 +211,7 @@ def find_app_by_string(script_info, module, app_name):
                 f"The factory {app_name!r} in module"
                 f" {module.__name__!r} could not be called with the"
                 " specified arguments."
-            )
+            ) from e
     else:
         app = attr
 
@@ -257,16 +258,15 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
 
     try:
         __import__(module_name)
-    except ImportError:
+    except ImportError as e:
         # Reraise the ImportError if it occurred within the imported module.
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[2].tb_next:
             raise NoAppException(
-                f"While importing {module_name!r}, an ImportError was"
-                f" raised:\n\n{traceback.format_exc()}"
-            )
+                f"While importing {module_name!r}, an ImportError was raised."
+            ) from e
         elif raise_if_not_found:
-            raise NoAppException(f"Could not import {module_name!r}.")
+            raise NoAppException(f"Could not import {module_name!r}.") from e
         else:
             return
 
@@ -725,7 +725,7 @@ class CertParamType(click.ParamType):
                         "Using ad-hoc certificates requires the cryptography library.",
                         ctx,
                         param,
-                    )
+                    ) from None
 
                 return value
 

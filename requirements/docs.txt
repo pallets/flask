@@ -10,7 +10,7 @@ babel==2.9.1
     # via sphinx
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.4
+charset-normalizer==2.0.6
     # via requests
 docutils==0.16
     # via
@@ -42,7 +42,7 @@ requests==2.26.0
     # via sphinx
 snowballstemmer==2.1.0
     # via sphinx
-sphinx==4.1.2
+sphinx==4.2.0
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
@@ -67,7 +67,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.6
+urllib3==1.26.7
     # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
