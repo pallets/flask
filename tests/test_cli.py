@@ -334,7 +334,9 @@ def test_lazy_load_error(monkeypatch):
     lazy = DispatchingApp(bad_load, use_eager_loading=False)
 
     with pytest.raises(BadExc):
-        lazy._flush_bg_loading_exception()
+        # reduce flakiness by waiting for the internal loading lock
+        with lazy._lock:
+            lazy._flush_bg_loading_exception()
 
 
 def test_with_appcontext(runner):
