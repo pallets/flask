@@ -1,5 +1,13 @@
 .. currentmodule:: flask
 
+Version 2.0.3
+-------------
+
+Unreleased
+
+- Fix type issue with `app.errorhandler` decorator. :issue `4295`
+
+
 Version 2.0.2
 -------------
 
