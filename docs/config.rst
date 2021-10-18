@@ -180,7 +180,7 @@ The following configuration values are used internally by Flask:
     application. It should be a long random ``bytes`` or ``str``. For
     example, copy the output of this to your config::
 
-        $ python -c 'import secrets; print(secrets.token_hex()))'
+        $ python -c 'import secrets; print(secrets.token_hex())'
         '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
     **Do not reveal the secret key when posting questions or committing code.**
