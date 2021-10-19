@@ -24,6 +24,8 @@ Released 2021-10-04
 -   Fix the order of ``before_request`` and other callbacks that trigger
     before the view returns. They are called from the app down to the
     closest nested blueprint. :issue:`4229`
+-   Fix ``Blueprint.errorhandler`` restricts type of result function which
+    avoids chaining. :issue:`4297`
 
 
 Version 2.0.1

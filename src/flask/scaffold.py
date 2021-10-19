@@ -80,7 +80,7 @@ class Scaffold:
     name: str
     _static_folder: t.Optional[str] = None
     _static_url_path: t.Optional[str] = None
-
+    T = t.TypeVar("T", t.Callable[..., t.Any], t.Any)
     #: JSON encoder class used by :func:`flask.json.dumps`. If a
     #: blueprint sets this, it will be used instead of the app's value.
     json_encoder: t.Optional[t.Type[JSONEncoder]] = None
@@ -646,12 +646,7 @@ class Scaffold:
         return f
 
     @setupmethod
-    def errorhandler(
-        self, code_or_exception: t.Union[t.Type[GenericException], int]
-    ) -> t.Callable[
-        ["ErrorHandlerCallable[GenericException]"],
-        "ErrorHandlerCallable[GenericException]",
-    ]:
+    def errorhandler(self, code_or_exception: t.Union[T, int]) -> T:
         """Register a function to handle errors by code or exception class.
 
         A decorator that is used to register a function given an
