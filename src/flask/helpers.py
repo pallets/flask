@@ -627,10 +627,12 @@ def send_file(
     )
 
 def send_chunked_file(filepath:str , chunk_size: int = 8192):
-    """ If you serve binary files, you should not iterate through lines since
+    """ If you serve binary files,
+    you should not iterate through lines since
     it basically contains only one line, which means you still load the
     whole file all at once into the RAM. The only proper
-    way to read largit checkout files is via chunks with this function: read_file_chunks(path, chunk_size)
+    way to read largit checkout files is via chunks with 
+    this function: read_file_chunks(path, chunk_size)
     send every chunks with stream_with_context function
     :param filepath: file exists there . If not
         provided, error occured.
