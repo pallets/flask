@@ -626,37 +626,39 @@ def send_file(
         )
     )
 
-def send_chunked_file(filepath:str , chunk_size: int = 8192):
-    """ If you serve binary files,
+
+def send_chunked_file(filepath: str, chunk_size: int = 8192):
+    """If you serve binary files,
     you should not iterate through lines since
     it basically contains only one line, which means you still load the
     whole file all at once into the RAM. The only proper
-    way to read largit checkout files is via chunks with 
+    way to read largit checkout files is via chunks with
     this function: read_file_chunks(path, chunk_size)
     send every chunks with stream_with_context function
     :param filepath: file exists there . If not
         provided, error occured.
     :param chunk_size: defult size is 8192
     """
-    name_splited = filepath.split('/')
+    name_splited = filepath.split("/")
     filename = name_splited[len(name_splited) - 1]
+
     def read_file_chunks(path, chunk_size):
-        with open(path, 'rb') as fd:
+        with open(path, "rb") as fd:
             while 1:
                 buf = fd.read(chunk_size)
                 if buf:
                     yield buf
                 else:
                     break
+
     if os.path.isfile(filepath):
         return current_app.response_class(
             stream_with_context(read_file_chunks(filepath, chunk_size)),
-            headers={
-                'Content-Disposition': f'attachment; filename={filename}'
-            }
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
         )
     else:
         raise NotFound()
+
 
 def safe_join(directory: str, *pathnames: str) -> str:
     """Safely join zero or more untrusted path components to a base

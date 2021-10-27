@@ -24,8 +24,8 @@ from .helpers import get_flashed_messages as get_flashed_messages
 from .helpers import get_template_attribute as get_template_attribute
 from .helpers import make_response as make_response
 from .helpers import safe_join as safe_join
-from .helpers import send_file as send_file
 from .helpers import send_chunked_file as send_chunked_file
+from .helpers import send_file as send_file
 from .helpers import send_from_directory as send_from_directory
 from .helpers import stream_with_context as stream_with_context
 from .helpers import url_for as url_for
