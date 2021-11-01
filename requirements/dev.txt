@@ -24,7 +24,7 @@ cfgv==3.3.1
     # via pre-commit
 charset-normalizer==2.0.6
     # via requests
-click==8.0.1
+click==8.0.3
     # via pip-tools
 cryptography==35.0.0
     # via -r requirements/typing.in
