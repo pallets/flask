@@ -16,7 +16,7 @@ pycparser==2.20
     # via cffi
 toml==0.10.2
     # via mypy
-types-contextvars==0.1.4
+types-contextvars==2.4.0
     # via -r requirements/typing.in
 types-dataclasses==0.1.7
     # via -r requirements/typing.in

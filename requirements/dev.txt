@@ -141,7 +141,7 @@ tomli==1.2.1
     # via pep517
 tox==3.24.4
     # via -r requirements/dev.in
-types-contextvars==0.1.4
+types-contextvars==2.4.0
     # via -r requirements/typing.in
 types-dataclasses==0.1.7
     # via -r requirements/typing.in
