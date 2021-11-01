@@ -48,7 +48,7 @@ imagesize==1.2.0
     # via sphinx
 iniconfig==1.1.1
     # via pytest
-jinja2==3.0.1
+jinja2==3.0.2
     # via sphinx
 markupsafe==2.0.1
     # via jinja2
