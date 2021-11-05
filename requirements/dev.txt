@@ -78,7 +78,7 @@ pluggy==1.0.0
     #   tox
 pre-commit==2.15.0
     # via -r requirements/dev.in
-py==1.10.0
+py==1.11.0
     # via
     #   pytest
     #   tox
