@@ -468,7 +468,7 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
     >>> Markup.escape('<blink>hacker</blink>')
     Markup('&lt;blink&gt;hacker&lt;/blink&gt;')
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-    'Marked up \xbb HTML'
+    'Marked up » HTML'
 
 .. versionchanged:: 0.5
 
