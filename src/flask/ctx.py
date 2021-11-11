@@ -130,7 +130,14 @@ def after_this_request(f: AfterRequestCallable) -> AfterRequestCallable:
 
     .. versionadded:: 0.9
     """
-    _request_ctx_stack.top._after_request_functions.append(f)
+    try:
+        _request_ctx_stack.top._after_request_functions.append(f)
+    except Exception:
+        print(
+            "This decorator can only be used at local scopes "
+            "when a request context is on the stack.  For instance within "
+            "view functions."
+        )
     return f
 
 

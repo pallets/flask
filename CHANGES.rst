@@ -24,6 +24,8 @@ Released 2021-10-04
 -   Fix the order of ``before_request`` and other callbacks that trigger
     before the view returns. They are called from the app down to the
     closest nested blueprint. :issue:`4229`
+-   Fix ``after_this_request`` fails with a meaningless error when used
+    outside request context. :issue:`4333`
 
 
 Version 2.0.1
