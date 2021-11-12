@@ -10,6 +10,8 @@ Unreleased
 -   Remove previously deprecated code. :pr:`4337`
 
     -   The CLI does not pass ``script_info`` to app factory functions.
+    -   ``config.from_json`` is replaced by
+        ``config.from_file(name, load=json.load)``.
 
 
 Version 2.0.2
