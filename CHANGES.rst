@@ -17,6 +17,8 @@ Unreleased
         instead.
     -   ``total_seconds`` is removed, use ``timedelta.total_seconds``
         instead.
+    -   The same blueprint cannot be registered with the same name. Use
+        ``name=`` when registering to specify a unique name.
 
 
 Version 2.0.2

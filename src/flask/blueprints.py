@@ -299,24 +299,14 @@ class Blueprint(Scaffold):
         name = f"{name_prefix}.{self_name}".lstrip(".")
 
         if name in app.blueprints:
+            bp_desc = "this" if app.blueprints[name] is self else "a different"
             existing_at = f" '{name}'" if self_name != name else ""
 
-            if app.blueprints[name] is not self:
-                raise ValueError(
-                    f"The name '{self_name}' is already registered for"
-                    f" a different blueprint{existing_at}. Use 'name='"
-                    " to provide a unique name."
-                )
-            else:
-                import warnings
-
-                warnings.warn(
-                    f"The name '{self_name}' is already registered for"
-                    f" this blueprint{existing_at}. Use 'name=' to"
-                    " provide a unique name. This will become an error"
-                    " in Flask 2.1.",
-                    stacklevel=4,
-                )
+            raise ValueError(
+                f"The name '{self_name}' is already registered for"
+                f" {bp_desc} blueprint{existing_at}. Use 'name=' to"
+                f" provide a unique name."
+            )
 
         first_bp_registration = not any(bp is self for bp in app.blueprints.values())
         first_name_registration = name not in app.blueprints
