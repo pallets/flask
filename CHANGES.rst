@@ -15,6 +15,8 @@ Unreleased
     -   ``json`` functions no longer take an ``encoding`` parameter.
     -   ``safe_join`` is removed, use ``werkzeug.utils.safe_join``
         instead.
+    -   ``total_seconds`` is removed, use ``timedelta.total_seconds``
+        instead.
 
 
 Version 2.0.2

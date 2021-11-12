@@ -5,7 +5,6 @@ import sys
 import typing as t
 import warnings
 from datetime import datetime
-from datetime import timedelta
 from functools import lru_cache
 from functools import update_wrapper
 from threading import RLock
@@ -759,27 +758,6 @@ class locked_cached_property(werkzeug.utils.cached_property):
     def __delete__(self, obj: object) -> None:
         with self.lock:
             super().__delete__(obj)
-
-
-def total_seconds(td: timedelta) -> int:
-    """Returns the total seconds from a timedelta object.
-
-    :param timedelta td: the timedelta to be converted in seconds
-
-    :returns: number of seconds
-    :rtype: int
-
-    .. deprecated:: 2.0
-        Will be removed in Flask 2.1. Use
-        :meth:`timedelta.total_seconds` instead.
-    """
-    warnings.warn(
-        "'total_seconds' is deprecated and will be removed in Flask"
-        " 2.1. Use 'timedelta.total_seconds' instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return td.days * 60 * 60 * 24 + td.seconds
 
 
 def is_ip(value: str) -> bool:
