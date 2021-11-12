@@ -6,9 +6,7 @@ Python Version
 --------------
 
 We recommend using the latest version of Python. Flask supports Python
-3.6 and newer.
-
-``async`` support in Flask requires Python 3.7+ for ``contextvars.ContextVar``.
+3.7 and newer.
 
 
 Dependencies
@@ -49,6 +47,18 @@ use them if you install them.
 .. _Blinker: https://pythonhosted.org/blinker/
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 .. _watchdog: https://pythonhosted.org/watchdog/
+
+
+greenlet
+~~~~~~~~
+
+You may choose to use gevent or eventlet with your application. In this
+case, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
+required.
+
+These are not minimum supported versions, they only indicate the first
+versions that added necessary features. You should use the latest
+versions of each.
 
 
 Virtual environments

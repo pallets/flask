@@ -16,7 +16,6 @@ from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import InternalServerError
-from werkzeug.local import ContextVar
 from werkzeug.routing import BuildError
 from werkzeug.routing import Map
 from werkzeug.routing import MapAdapter
@@ -1620,13 +1619,6 @@ class Flask(Scaffold):
             raise RuntimeError(
                 "Install Flask with the 'async' extra in order to use async views."
             ) from None
-
-        # Check that Werkzeug isn't using its fallback ContextVar class.
-        if ContextVar.__module__ == "werkzeug.local":
-            raise RuntimeError(
-                "Async cannot be used with this combination of Python "
-                "and Greenlet versions."
-            )
 
         return asgiref_async_to_sync(func)
 

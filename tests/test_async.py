@@ -1,5 +1,4 @@
 import asyncio
-import sys
 
 import pytest
 
@@ -79,7 +78,6 @@ def _async_app():
     return app
 
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
 @pytest.mark.parametrize("path", ["/", "/home", "/bp/", "/view", "/methodview"])
 def test_async_route(path, async_app):
     test_client = async_app.test_client()
@@ -89,7 +87,6 @@ def test_async_route(path, async_app):
     assert b"POST" in response.get_data()
 
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
 @pytest.mark.parametrize("path", ["/error", "/bp/error"])
 def test_async_error_handler(path, async_app):
     test_client = async_app.test_client()
@@ -97,7 +94,6 @@ def test_async_error_handler(path, async_app):
     assert response.status_code == 412
 
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires Python >= 3.7")
 def test_async_before_after_request():
     app_first_called = False
     app_before_called = False
@@ -154,10 +150,3 @@ def test_async_before_after_request():
     test_client.get("/bp/")
     assert bp_before_called
     assert bp_after_called
-
-
-@pytest.mark.skipif(sys.version_info >= (3, 7), reason="should only raise Python < 3.7")
-def test_async_runtime_error():
-    app = Flask(__name__)
-    with pytest.raises(RuntimeError):
-        app.async_to_sync(None)
