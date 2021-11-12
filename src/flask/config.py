@@ -176,6 +176,9 @@ class Config(dict):
 
         .. code-block:: python
 
+            import json
+            app.config.from_file("config.json", load=json.load)
+
             import toml
             app.config.from_file("config.toml", load=toml.load)
 
@@ -203,32 +206,6 @@ class Config(dict):
             raise
 
         return self.from_mapping(obj)
-
-    def from_json(self, filename: str, silent: bool = False) -> bool:
-        """Update the values in the config from a JSON file. The loaded
-        data is passed to the :meth:`from_mapping` method.
-
-        :param filename: The path to the JSON file. This can be an
-            absolute path or relative to the config root path.
-        :param silent: Ignore the file if it doesn't exist.
-        :return: ``True`` if the file was loaded successfully.
-
-        .. deprecated:: 2.0.0
-            Will be removed in Flask 2.1. Use :meth:`from_file` instead.
-            This was removed early in 2.0.0, was added back in 2.0.1.
-
-        .. versionadded:: 0.11
-        """
-        import warnings
-        from . import json
-
-        warnings.warn(
-            "'from_json' is deprecated and will be removed in Flask"
-            " 2.1. Use 'from_file(path, json.load)' instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.from_file(filename, json.load, silent=silent)
 
     def from_mapping(
         self, mapping: t.Optional[t.Mapping[str, t.Any]] = None, **kwargs: t.Any

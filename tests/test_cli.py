@@ -49,29 +49,27 @@ def test_cli_name(test_apps):
 
 
 def test_find_best_app(test_apps):
-    script_info = ScriptInfo()
-
     class Module:
         app = Flask("appname")
 
-    assert find_best_app(script_info, Module) == Module.app
+    assert find_best_app(Module) == Module.app
 
     class Module:
         application = Flask("appname")
 
-    assert find_best_app(script_info, Module) == Module.application
+    assert find_best_app(Module) == Module.application
 
     class Module:
         myapp = Flask("appname")
 
-    assert find_best_app(script_info, Module) == Module.myapp
+    assert find_best_app(Module) == Module.myapp
 
     class Module:
         @staticmethod
         def create_app():
             return Flask("appname")
 
-    app = find_best_app(script_info, Module)
+    app = find_best_app(Module)
     assert isinstance(app, Flask)
     assert app.name == "appname"
 
@@ -80,29 +78,7 @@ def test_find_best_app(test_apps):
         def create_app(**kwargs):
             return Flask("appname")
 
-    app = find_best_app(script_info, Module)
-    assert isinstance(app, Flask)
-    assert app.name == "appname"
-
-    class Module:
-        @staticmethod
-        def create_app(foo):
-            return Flask("appname")
-
-    with pytest.deprecated_call(match="Script info"):
-        app = find_best_app(script_info, Module)
-
-    assert isinstance(app, Flask)
-    assert app.name == "appname"
-
-    class Module:
-        @staticmethod
-        def create_app(foo=None, script_info=None):
-            return Flask("appname")
-
-    with pytest.deprecated_call(match="script_info"):
-        app = find_best_app(script_info, Module)
-
+    app = find_best_app(Module)
     assert isinstance(app, Flask)
     assert app.name == "appname"
 
@@ -111,7 +87,7 @@ def test_find_best_app(test_apps):
         def make_app():
             return Flask("appname")
 
-    app = find_best_app(script_info, Module)
+    app = find_best_app(Module)
     assert isinstance(app, Flask)
     assert app.name == "appname"
 
@@ -122,7 +98,7 @@ def test_find_best_app(test_apps):
         def create_app():
             return Flask("appname2")
 
-    assert find_best_app(script_info, Module) == Module.myapp
+    assert find_best_app(Module) == Module.myapp
 
     class Module:
         myapp = Flask("appname1")
@@ -131,32 +107,32 @@ def test_find_best_app(test_apps):
         def create_app():
             return Flask("appname2")
 
-    assert find_best_app(script_info, Module) == Module.myapp
+    assert find_best_app(Module) == Module.myapp
 
     class Module:
         pass
 
-    pytest.raises(NoAppException, find_best_app, script_info, Module)
+    pytest.raises(NoAppException, find_best_app, Module)
 
     class Module:
         myapp1 = Flask("appname1")
         myapp2 = Flask("appname2")
 
-    pytest.raises(NoAppException, find_best_app, script_info, Module)
+    pytest.raises(NoAppException, find_best_app, Module)
 
     class Module:
         @staticmethod
         def create_app(foo, bar):
             return Flask("appname2")
 
-    pytest.raises(NoAppException, find_best_app, script_info, Module)
+    pytest.raises(NoAppException, find_best_app, Module)
 
     class Module:
         @staticmethod
         def create_app():
             raise TypeError("bad bad factory!")
 
-    pytest.raises(TypeError, find_best_app, script_info, Module)
+    pytest.raises(TypeError, find_best_app, Module)
 
 
 @pytest.mark.parametrize(
@@ -220,8 +196,7 @@ def test_prepare_import(request, value, path, result):
     ),
 )
 def test_locate_app(test_apps, iname, aname, result):
-    info = ScriptInfo()
-    assert locate_app(info, iname, aname).name == result
+    assert locate_app(iname, aname).name == result
 
 
 @pytest.mark.parametrize(
@@ -243,20 +218,17 @@ def test_locate_app(test_apps, iname, aname, result):
     ),
 )
 def test_locate_app_raises(test_apps, iname, aname):
-    info = ScriptInfo()
-
     with pytest.raises(NoAppException):
-        locate_app(info, iname, aname)
+        locate_app(iname, aname)
 
 
 def test_locate_app_suppress_raise(test_apps):
-    info = ScriptInfo()
-    app = locate_app(info, "notanapp.py", None, raise_if_not_found=False)
+    app = locate_app("notanapp.py", None, raise_if_not_found=False)
     assert app is None
 
     # only direct import error is suppressed
     with pytest.raises(NoAppException):
-        locate_app(info, "cliapp.importerrorapp", None, raise_if_not_found=False)
+        locate_app("cliapp.importerrorapp", None, raise_if_not_found=False)
 
 
 def test_get_version(test_apps, capsys):

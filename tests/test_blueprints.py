@@ -954,8 +954,8 @@ def test_unique_blueprint_names(app, client) -> None:
 
     app.register_blueprint(bp)
 
-    with pytest.warns(UserWarning):
-        app.register_blueprint(bp)  # same bp, same name, warning
+    with pytest.raises(ValueError):
+        app.register_blueprint(bp)  # same bp, same name, error
 
     app.register_blueprint(bp, name="again")  # same bp, different name, ok
 
