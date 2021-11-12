@@ -12,6 +12,7 @@ Unreleased
     -   The CLI does not pass ``script_info`` to app factory functions.
     -   ``config.from_json`` is replaced by
         ``config.from_file(name, load=json.load)``.
+    -   ``json`` functions no longer take an ``encoding`` parameter.
 
 
 Version 2.0.2
