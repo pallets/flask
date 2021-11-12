@@ -5,7 +5,6 @@ import platform
 import re
 import sys
 import traceback
-import warnings
 from functools import update_wrapper
 from operator import attrgetter
 from threading import Lock
@@ -34,7 +33,7 @@ class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
 
-def find_best_app(script_info, module):
+def find_best_app(module):
     """Given a module instance this tries to find the best possible
     application in the module or raises an exception.
     """
@@ -65,7 +64,7 @@ def find_best_app(script_info, module):
 
         if inspect.isfunction(app_factory):
             try:
-                app = call_factory(script_info, app_factory)
+                app = app_factory()
 
                 if isinstance(app, Flask):
                     return app
@@ -85,42 +84,6 @@ def find_best_app(script_info, module):
         f" {module.__name__!r}. Use 'FLASK_APP={module.__name__}:name'"
         " to specify one."
     )
-
-
-def call_factory(script_info, app_factory, args=None, kwargs=None):
-    """Takes an app factory, a ``script_info` object and  optionally a tuple
-    of arguments. Checks for the existence of a script_info argument and calls
-    the app_factory depending on that and the arguments provided.
-    """
-    sig = inspect.signature(app_factory)
-    args = [] if args is None else args
-    kwargs = {} if kwargs is None else kwargs
-
-    if "script_info" in sig.parameters:
-        warnings.warn(
-            "The 'script_info' argument is deprecated and will not be"
-            " passed to the app factory function in Flask 2.1.",
-            DeprecationWarning,
-        )
-        kwargs["script_info"] = script_info
-
-    if not args and len(sig.parameters) == 1:
-        first_parameter = next(iter(sig.parameters.values()))
-
-        if (
-            first_parameter.default is inspect.Parameter.empty
-            # **kwargs is reported as an empty default, ignore it
-            and first_parameter.kind is not inspect.Parameter.VAR_KEYWORD
-        ):
-            warnings.warn(
-                "Script info is deprecated and will not be passed as the"
-                " single argument to the app factory function in Flask"
-                " 2.1.",
-                DeprecationWarning,
-            )
-            args.append(script_info)
-
-    return app_factory(*args, **kwargs)
 
 
 def _called_with_wrong_args(f):
@@ -149,7 +112,7 @@ def _called_with_wrong_args(f):
         del tb
 
 
-def find_app_by_string(script_info, module, app_name):
+def find_app_by_string(module, app_name):
     """Check if the given string is a variable name or a function. Call
     a function to get the app instance, or return the variable directly.
     """
@@ -166,7 +129,8 @@ def find_app_by_string(script_info, module, app_name):
 
     if isinstance(expr, ast.Name):
         name = expr.id
-        args = kwargs = None
+        args = []
+        kwargs = {}
     elif isinstance(expr, ast.Call):
         # Ensure the function name is an attribute name only.
         if not isinstance(expr.func, ast.Name):
@@ -202,7 +166,7 @@ def find_app_by_string(script_info, module, app_name):
     # to get the real application.
     if inspect.isfunction(attr):
         try:
-            app = call_factory(script_info, attr, args, kwargs)
+            app = attr(*args, **kwargs)
         except TypeError as e:
             if not _called_with_wrong_args(attr):
                 raise
@@ -253,7 +217,7 @@ def prepare_import(path):
     return ".".join(module_name[::-1])
 
 
-def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
+def locate_app(module_name, app_name, raise_if_not_found=True):
     __traceback_hide__ = True  # noqa: F841
 
     try:
@@ -273,9 +237,9 @@ def locate_app(script_info, module_name, app_name, raise_if_not_found=True):
     module = sys.modules[module_name]
 
     if app_name is None:
-        return find_best_app(script_info, module)
+        return find_best_app(module)
     else:
-        return find_app_by_string(script_info, module, app_name)
+        return find_app_by_string(module, app_name)
 
 
 def get_version(ctx, param, value):
@@ -396,18 +360,18 @@ class ScriptInfo:
             return self._loaded_app
 
         if self.create_app is not None:
-            app = call_factory(self, self.create_app)
+            app = self.create_app()
         else:
             if self.app_import_path:
                 path, name = (
                     re.split(r":(?![\\/])", self.app_import_path, 1) + [None]
                 )[:2]
                 import_name = prepare_import(path)
-                app = locate_app(self, import_name, name)
+                app = locate_app(import_name, name)
             else:
                 for path in ("wsgi.py", "app.py"):
                     import_name = prepare_import(path)
-                    app = locate_app(self, import_name, None, raise_if_not_found=False)
+                    app = locate_app(import_name, None, raise_if_not_found=False)
 
                     if app:
                         break
@@ -983,15 +947,7 @@ debug mode.
 
 
 def main() -> None:
-    if int(click.__version__[0]) < 8:
-        warnings.warn(
-            "Using the `flask` cli with Click 7 is deprecated and"
-            " will not be supported starting with Flask 2.1."
-            " Please upgrade to Click 8 as soon as possible.",
-            DeprecationWarning,
-        )
-    # TODO omit sys.argv once https://github.com/pallets/click/issues/536 is fixed
-    cli.main(args=sys.argv[1:])
+    cli.main()
 
 
 if __name__ == "__main__":

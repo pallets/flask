@@ -5,7 +5,11 @@ Version 2.1.0
 
 Unreleased
 
--   Update Click dependency to >= 8.0.
+-   Drop support for Python 3.6. :pr:`4335`
+-   Update Click dependency to >= 8.0. :pr:`4008`
+-   Remove previously deprecated code. :pr:`4337`
+
+    -   The CLI does not pass ``script_info`` to app factory functions.
 
 
 Version 2.0.2
