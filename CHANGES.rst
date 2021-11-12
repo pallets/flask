@@ -13,6 +13,8 @@ Unreleased
     -   ``config.from_json`` is replaced by
         ``config.from_file(name, load=json.load)``.
     -   ``json`` functions no longer take an ``encoding`` parameter.
+    -   ``safe_join`` is removed, use ``werkzeug.utils.safe_join``
+        instead.
 
 
 Version 2.0.2

@@ -11,7 +11,6 @@ from functools import update_wrapper
 from threading import RLock
 
 import werkzeug.utils
-from werkzeug.exceptions import NotFound
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 
@@ -625,29 +624,6 @@ def send_file(
             cache_timeout=cache_timeout,
         )
     )
-
-
-def safe_join(directory: str, *pathnames: str) -> str:
-    """Safely join zero or more untrusted path components to a base
-    directory to avoid escaping the base directory.
-
-    :param directory: The trusted base directory.
-    :param pathnames: The untrusted path components relative to the
-        base directory.
-    :return: A safe path, otherwise ``None``.
-    """
-    warnings.warn(
-        "'flask.helpers.safe_join' is deprecated and will be removed in"
-        " Flask 2.1. Use 'werkzeug.utils.safe_join' instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    path = werkzeug.utils.safe_join(directory, *pathnames)
-
-    if path is None:
-        raise NotFound()
-
-    return path
 
 
 def send_from_directory(
