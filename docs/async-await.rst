@@ -7,8 +7,7 @@ Using ``async`` and ``await``
 
 Routes, error handlers, before request, after request, and teardown
 functions can all be coroutine functions if Flask is installed with the
-``async`` extra (``pip install flask[async]``). It requires Python 3.7+
-where ``contextvars.ContextVar`` is available. This allows views to be
+``async`` extra (``pip install flask[async]``). This allows views to be
 defined with ``async def`` and use ``await``.
 
 .. code-block:: python
@@ -29,6 +28,12 @@ well as all the HTTP method handlers in views that inherit from the
     Python 3.8 has a bug related to asyncio on Windows. If you encounter
     something like ``ValueError: set_wakeup_fd only works in main thread``,
     please upgrade to Python 3.9.
+
+.. admonition:: Using ``async`` with greenlet
+
+    When using gevent or eventlet to serve an application or patch the
+    runtime, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
+    required.
 
 
 Performance

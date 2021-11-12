@@ -49,6 +49,18 @@ use them if you install them.
 .. _watchdog: https://pythonhosted.org/watchdog/
 
 
+greenlet
+~~~~~~~~
+
+You may choose to use gevent or eventlet with your application. In this
+case, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
+required.
+
+These are not minimum supported versions, they only indicate the first
+versions that added necessary features. You should use the latest
+versions of each.
+
+
 Virtual environments
 --------------------
 
