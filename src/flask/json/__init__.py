@@ -1,3 +1,4 @@
+import dataclasses
 import decimal
 import io
 import json as _json
@@ -15,12 +16,6 @@ from ..globals import request
 if t.TYPE_CHECKING:
     from ..app import Flask
     from ..wrappers import Response
-
-try:
-    import dataclasses
-except ImportError:
-    # Python < 3.7
-    dataclasses = None  # type: ignore
 
 
 class JSONEncoder(_json.JSONEncoder):

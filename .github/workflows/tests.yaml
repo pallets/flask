@@ -31,7 +31,6 @@ jobs:
           - {name: '3.9', python: '3.9', os: ubuntu-latest, tox: py39}
           - {name: '3.8', python: '3.8', os: ubuntu-latest, tox: py38}
           - {name: '3.7', python: '3.7', os: ubuntu-latest, tox: py37}
-          - {name: '3.6', python: '3.6', os: ubuntu-latest, tox: py36}
           - {name: 'PyPy', python: 'pypy-3.7', os: ubuntu-latest, tox: pypy37}
           - {name: Typing, python: '3.10', os: ubuntu-latest, tox: typing}
     steps:

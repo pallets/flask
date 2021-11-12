@@ -322,9 +322,9 @@ ecosystem remain consistent and compatible.
     `Official Pallets Themes`_. A link to the documentation or project
     website must be in the PyPI metadata or the readme.
 7.  For maximum compatibility, the extension should support the same
-    versions of Python that Flask supports. 3.6+ is recommended as of
-    2020. Use ``python_requires=">= 3.6"`` in ``setup.py`` to indicate
-    supported versions.
+    versions of Python that Flask supports. 3.7+ is recommended as of
+    December 2021. Use ``python_requires=">= 3.7"`` in ``setup.py`` to
+    indicate supported versions.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _mailinglist: https://mail.python.org/mailman/listinfo/flask

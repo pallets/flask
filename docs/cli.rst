@@ -112,10 +112,9 @@ shell with the :func:`shell <cli.shell_command>` command. An application
 context will be active, and the app instance will be imported. ::
 
     $ flask shell
-    Python 3.6.2 (default, Jul 20 2017, 03:52:27)
-    [GCC 7.1.1 20170630] on linux
-    App: example
-    Instance: /home/user/Projects/hello/instance
+    Python 3.10.0 (default, Oct 27 2021, 06:59:51) [GCC 11.1.0] on linux
+    App: example [production]
+    Instance: /home/david/Projects/pallets/flask/instance
     >>>
 
 Use :meth:`~Flask.shell_context_processor` to add other automatic imports.

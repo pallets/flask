@@ -6,9 +6,7 @@ Python Version
 --------------
 
 We recommend using the latest version of Python. Flask supports Python
-3.6 and newer.
-
-``async`` support in Flask requires Python 3.7+ for ``contextvars.ContextVar``.
+3.7 and newer.
 
 
 Dependencies
