@@ -452,7 +452,7 @@ def _prepare_send_file_kwargs(
         warnings.warn(
             "The 'attachment_filename' parameter has been renamed to"
             " 'download_name'. The old name will be removed in Flask"
-            " 2.1.",
+            " 2.2.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -461,7 +461,7 @@ def _prepare_send_file_kwargs(
     if cache_timeout is not None:
         warnings.warn(
             "The 'cache_timeout' parameter has been renamed to"
-            " 'max_age'. The old name will be removed in Flask 2.1.",
+            " 'max_age'. The old name will be removed in Flask 2.2.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -470,7 +470,7 @@ def _prepare_send_file_kwargs(
     if add_etags is not None:
         warnings.warn(
             "The 'add_etags' parameter has been renamed to 'etag'. The"
-            " old name will be removed in Flask 2.1.",
+            " old name will be removed in Flask 2.2.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -666,7 +666,7 @@ def send_from_directory(
     if filename is not None:
         warnings.warn(
             "The 'filename' parameter has been renamed to 'path'. The"
-            " old name will be removed in Flask 2.1.",
+            " old name will be removed in Flask 2.2.",
             DeprecationWarning,
             stacklevel=2,
         )

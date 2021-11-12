@@ -20,6 +20,15 @@ Unreleased
     -   The same blueprint cannot be registered with the same name. Use
         ``name=`` when registering to specify a unique name.
 
+-   Some parameters in ``send_file`` and ``send_from_directory`` were
+    renamed in 2.0. The deprecation period for the old names is extended
+    to 2.2. Be sure to test with deprecation warnings visible.
+
+    -   ``attachment_filename`` is renamed to ``download_name``.
+    -   ``cache_timeout`` is renamed to ``max_age``.
+    -   ``add_etags`` is renamed to ``etag``.
+    -   ``filename`` is renamed to ``path``.
+
 
 Version 2.0.2
 -------------
