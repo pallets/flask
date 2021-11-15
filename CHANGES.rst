@@ -1,5 +1,16 @@
 .. currentmodule:: flask
 
+Version 2.0.3
+-------------
+
+Unreleased
+
+-   The test client's ``as_tuple`` parameter is deprecated and will be
+    removed in Werkzeug 2.1. It is now also deprecated in Flask, to be
+    removed in Flask 2.1, while remaining compatible with both in
+    2.0.x. Use ``response.request.environ`` instead. :pr:`4341`
+
+
 Version 2.0.2
 -------------
 
