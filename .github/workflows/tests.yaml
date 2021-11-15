@@ -33,6 +33,8 @@ jobs:
           - {name: '3.7', python: '3.7', os: ubuntu-latest, tox: py37}
           - {name: '3.6', python: '3.6', os: ubuntu-latest, tox: py36}
           - {name: 'PyPy', python: 'pypy-3.7', os: ubuntu-latest, tox: pypy37}
+          - {name: 'Pallets Minimum Versions', python: '3.10', os: ubuntu-latest, tox: py-min}
+          - {name: 'Pallets Development Versions', python: '3.7', os: ubuntu-latest, tox: py-dev}
           - {name: Typing, python: '3.10', os: ubuntu-latest, tox: typing}
     steps:
       - uses: actions/checkout@v2
