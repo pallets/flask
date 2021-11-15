@@ -46,11 +46,4 @@ TemplateGlobalCallable = t.Callable[..., t.Any]
 TemplateTestCallable = t.Callable[..., bool]
 URLDefaultCallable = t.Callable[[str, dict], None]
 URLValuePreprocessorCallable = t.Callable[[t.Optional[str], t.Optional[dict]], None]
-
-
-if t.TYPE_CHECKING:
-    import typing_extensions as te
-
-    class ErrorHandlerCallable(te.Protocol[GenericException]):
-        def __call__(self, error: GenericException) -> ResponseReturnValue:
-            ...
+ErrorHandlerCallable = t.Callable[[GenericException], ResponseReturnValue]
