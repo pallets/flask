@@ -39,6 +39,9 @@ Unreleased
     removed in Werkzeug 2.1. It is now also deprecated in Flask, to be
     removed in Flask 2.1, while remaining compatible with both in
     2.0.x. Use ``response.request.environ`` instead. :pr:`4341`
+-   Fix type annotation for ``errorhandler`` decorator. :issue:`4295`
+-   Revert a change to the CLI that caused it to hide ``ImportError``
+    tracebacks when importing the application. :issue:`4307`
 
 
 Version 2.0.2
