@@ -169,7 +169,7 @@ def copy_current_request_context(f: t.Callable) -> t.Callable:
 
     def wrapper(*args, **kwargs):
         with reqctx:
-            return f(*args, **kwargs)
+            return reqctx.app.ensure_sync(f)(*args, **kwargs)
 
     return update_wrapper(wrapper, f)
 

@@ -29,6 +29,9 @@ Unreleased
     -   ``add_etags`` is renamed to ``etag``.
     -   ``filename`` is renamed to ``path``.
 
+-   ``copy_current_request_context`` can decorate async functions.
+    :pr:`4303`
+
 
 Version 2.0.3
 -------------
