@@ -83,6 +83,11 @@ deployment options see :doc:`deploying/index`.
 Now head over to http://127.0.0.1:5000/, and you should see your hello
 world greeting.
 
+If another program is already using port 5000, you'll see
+``OSError: [Errno 98]`` or ``OSError: [WinError 10013]`` when the
+server tries to start. See :ref:`address-already-in-use` for how to
+handle that.
+
 .. _public-server:
 
 .. admonition:: Externally Visible Server
