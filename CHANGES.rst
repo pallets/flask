@@ -29,6 +29,8 @@ Unreleased
     -   ``add_etags`` is renamed to ``etag``.
     -   ``filename`` is renamed to ``path``.
 
+-   The ``RequestContext.g`` property is deprecated. Use ``g`` directly
+    or ``AppContext.g`` instead. :issue:`3898`
 -   ``copy_current_request_context`` can decorate async functions.
     :pr:`4303`
 
