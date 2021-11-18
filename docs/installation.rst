@@ -109,7 +109,7 @@ Before you work on your project, activate the corresponding environment:
 
       .. code-block:: text
 
-         $ . venv/bin/activate
+         $ source venv/bin/activate
 
    .. group-tab:: Windows
 
