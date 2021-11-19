@@ -15,6 +15,8 @@ Unreleased
 -   ``app.json_encoder`` and ``json_decoder`` are only passed to
     ``dumps`` and ``loads`` if they have custom behavior. This improves
     performance, mainly on PyPy. :issue:`4349`
+-   Fix error message for ``after_this_request`` when it used outside
+    request context. :issue:`4333`
 
 
 Version 2.0.2
