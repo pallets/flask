@@ -81,6 +81,11 @@ def _dump_arg_defaults(
         if bp is not None and bp.json_encoder is not None:
             cls = bp.json_encoder
 
+        # Only set a custom encoder if it has custom behavior. This is
+        # faster on PyPy.
+        if cls is not _json.JSONEncoder:
+            kwargs.setdefault("cls", cls)
+
         kwargs.setdefault("cls", cls)
         kwargs.setdefault("ensure_ascii", app.config["JSON_AS_ASCII"])
         kwargs.setdefault("sort_keys", app.config["JSON_SORT_KEYS"])
@@ -102,9 +107,10 @@ def _load_arg_defaults(
         if bp is not None and bp.json_decoder is not None:
             cls = bp.json_decoder
 
-        kwargs.setdefault("cls", cls)
-    else:
-        kwargs.setdefault("cls", JSONDecoder)
+        # Only set a custom decoder if it has custom behavior. This is
+        # faster on PyPy.
+        if cls not in {JSONDecoder, _json.JSONDecoder}:
+            kwargs.setdefault("cls", cls)
 
 
 def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
