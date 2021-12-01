@@ -76,7 +76,7 @@ pluggy==1.0.0
     # via
     #   pytest
     #   tox
-pre-commit==2.15.0
+pre-commit==2.16.0
     # via -r requirements/dev.in
 py==1.11.0
     # via
