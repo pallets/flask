@@ -20,7 +20,7 @@ types-contextvars==2.4.0
     # via -r requirements/typing.in
 types-dataclasses==0.6.1
     # via -r requirements/typing.in
-types-setuptools==57.4.2
+types-setuptools==57.4.4
     # via -r requirements/typing.in
 typing-extensions==3.10.0.2
     # via mypy
