@@ -14,5 +14,5 @@ markupsafe==2.0.0
     # via
     #   -r requirements/tests-pallets-min.in
     #   jinja2
-werkzeug==2.0.0
+werkzeug==2.0.2
     # via -r requirements/tests-pallets-min.in
