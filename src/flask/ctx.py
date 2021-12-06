@@ -130,7 +130,11 @@ def after_this_request(f: AfterRequestCallable) -> AfterRequestCallable:
 
     .. versionadded:: 0.9
     """
-    _request_ctx_stack.top._after_request_functions.append(f)
+
+    try:
+        _request_ctx_stack.top._after_request_functions.append(f)
+    except AttributeError:
+        pass
     return f
 
 
