@@ -69,7 +69,7 @@ donate today`_.
 .. _please donate today: https://palletsprojects.com/donate
 
 
-Links
+Useful Links
 -----
 
 -   Documentation: https://flask.palletsprojects.com/
@@ -79,4 +79,8 @@ Links
 -   Issue Tracker: https://github.com/pallets/flask/issues/
 -   Website: https://palletsprojects.com/p/flask/
 -   Twitter: https://twitter.com/PalletsTeam
+
+Join the community!
+-----
+
 -   Chat: https://discord.gg/pallets
