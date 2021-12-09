@@ -54,7 +54,7 @@ to it. These show up in the sidebar. No need to ask if you can work on
 an issue that interests you.
 
 To find current issues and to engage with other developers on how best to
-imporve Flask visit our discord developers section: 
+imporve Flask visit our discord developers section:
 https://discord.gg/c5bg8dMZ
 
 Include the following in your patch:
