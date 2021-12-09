@@ -12,16 +12,16 @@ to address bugs and feature requests in Flask itself. Use one of the
 following resources for questions about using Flask or issues with your
 own code:
 
--   The ``#questions`` channel on our Discord chat:
-    https://discord.gg/pallets
+
 -   The mailing list flask@python.org for long term discussion or larger
     issues.
 -   Ask on `Stack Overflow`_. Search with Google first using:
     ``site:stackoverflow.com flask {search term, exception message, etc.}``
--   Ask on our `GitHub Discussions`_.
+-   Ask on our #help discussion on discord.
+-   Discord link: https://discord.gg/c5bg8dMZ
 
 .. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?tab=Frequent
-.. _GitHub Discussions: https://github.com/pallets/flask/discussions
+.. _GitHub Discussions: https://discord.gg/c5bg8dMZ
 
 
 Reporting issues
@@ -38,8 +38,10 @@ Include the following information in your post:
 -   List your Python and Flask versions. If possible, check if this
     issue is already fixed in the latest releases or the latest code in
     the repository.
+-   Subimt your report to the discord current-issues chat
 
 .. _minimal reproducible example: https://stackoverflow.com/help/minimal-reproducible-example
+.. _current-issues chat: https://discord.gg/c5bg8dMZ
 
 
 Submitting patches
@@ -50,6 +52,10 @@ opening one for discussion before working on a PR. You can work on any
 issue that doesn't have an open PR linked to it or a maintainer assigned
 to it. These show up in the sidebar. No need to ask if you can work on
 an issue that interests you.
+
+To find current issues and to engage with other developers on how best to
+imporve Flask visit our discord developers section: 
+https://discord.gg/c5bg8dMZ
 
 Include the following in your patch:
 
