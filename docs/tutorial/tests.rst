@@ -226,7 +226,7 @@ for each test.
 .. code-block:: python
     :caption: ``tests/conftest.py``
 
-    class AuthActions(object):
+    class AuthActions():
         def __init__(self, client):
             self._client = client
 
