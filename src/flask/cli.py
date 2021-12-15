@@ -244,6 +244,14 @@ def locate_app(module_name, app_name, raise_if_not_found=True):
 
 
 def get_version(ctx, param, value):
+    """
+
+    Prints out the Python version, the Flask version, and the Werkzeug
+    (a WSGI utility for WSGI applications) version.
+
+
+    Written by Trelent
+    """
     if not value or ctx.resilient_parsing:
         return
 
@@ -292,6 +300,15 @@ class DispatchingApp:
 
     def _load_in_background(self):
         def _load_app():
+            """
+
+            Loads the application and sets up the request context.
+
+            This is a private function that does not need to be called from outside of this class.  It loads the application, creates a new :class:`~flask_unchained.RequestLocal` object, and pushes it onto ``g`` so that its methods can be used in templates or other functions throughout the request lifecycle.
+
+
+            Written by Trelent
+            """
             __traceback_hide__ = True  # noqa: F841
             with self._lock:
                 try:

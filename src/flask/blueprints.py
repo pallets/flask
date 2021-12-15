@@ -326,6 +326,17 @@ class Blueprint(Scaffold):
         if first_bp_registration or first_name_registration:
 
             def extend(bp_dict, parent_dict):
+                """
+
+                Extend a dictionary of breakpoint information with another dictionary.
+
+                :param bp_dict: A dictionary of breakpoint information.
+                :type bp_dict: dict(str, list(int))
+                :param parent_dict: The parent to which the child is being added. This function will extend it in-place and return None. If you want to use the result, assign it like this ``parent = extend(bp_dict, parent)`` . 
+
+
+                Written by Trelent
+                """
                 for key, values in bp_dict.items():
                     key = name if key is None else f"{name}.{key}"
                     parent_dict[key].extend(values)
