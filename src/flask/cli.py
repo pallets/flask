@@ -301,7 +301,7 @@ class DispatchingApp:
         def _load_app():
             """
             Loads the application and sets up the request context.
-            
+
             Written by Trelent
             """
             __traceback_hide__ = True  # noqa: F841
