@@ -332,7 +332,7 @@ class Blueprint(Scaffold):
 
                 :param bp_dict: A dictionary of breakpoint information.
                 :type bp_dict: dict(str, list(int))
-                :param parent_dict: The parent to which the child is being added. This function will extend it in-place and return None. If you want to use the result, assign it like this ``parent = extend(bp_dict, parent)`` . 
+                :param parent_dict: The parent to which the child is being added. This function will extend it in-place and return None. If you want to use the result, assign it like this ``parent = extend(bp_dict, parent)`` .
 
 
                 Written by Trelent
