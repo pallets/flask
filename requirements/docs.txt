@@ -10,7 +10,7 @@ babel==2.9.1
     # via sphinx
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.7
+charset-normalizer==2.0.9
     # via requests
 docutils==0.16
     # via
@@ -18,31 +18,31 @@ docutils==0.16
     #   sphinx-tabs
 idna==3.3
     # via requests
-imagesize==1.2.0
+imagesize==1.3.0
     # via sphinx
-jinja2==3.0.2
+jinja2==3.0.3
     # via sphinx
 markupsafe==2.0.1
     # via jinja2
-packaging==21.2
+packaging==21.3
     # via
     #   pallets-sphinx-themes
     #   sphinx
-pallets-sphinx-themes==2.0.1
+pallets-sphinx-themes==2.0.2
     # via -r requirements/docs.in
 pygments==2.10.0
     # via
     #   sphinx
     #   sphinx-tabs
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via packaging
 pytz==2021.3
     # via babel
 requests==2.26.0
     # via sphinx
-snowballstemmer==2.1.0
+snowballstemmer==2.2.0
     # via sphinx
-sphinx==4.2.0
+sphinx==4.3.2
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
