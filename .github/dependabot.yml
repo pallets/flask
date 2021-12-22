@@ -10,3 +10,10 @@ updates:
     time: "16:00"
     timezone: "UTC"
   open-pull-requests-limit: 99
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "monthly"
+    day: "monday"
+    time: "16:00"
+    timezone: "UTC"
