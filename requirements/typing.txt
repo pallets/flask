@@ -6,21 +6,21 @@
 #
 cffi==1.15.0
     # via cryptography
-cryptography==35.0.0
+cryptography==36.0.1
     # via -r requirements/typing.in
-mypy==0.910
+mypy==0.930
     # via -r requirements/typing.in
 mypy-extensions==0.4.3
     # via mypy
-pycparser==2.20
+pycparser==2.21
     # via cffi
-toml==0.10.2
+tomli==2.0.0
     # via mypy
 types-contextvars==2.4.0
     # via -r requirements/typing.in
 types-dataclasses==0.6.1
     # via -r requirements/typing.in
-types-setuptools==57.4.2
+types-setuptools==57.4.4
     # via -r requirements/typing.in
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via mypy

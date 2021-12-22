@@ -103,6 +103,11 @@ replaces the :meth:`Flask.run` method in most cases. ::
     is provided for convenience, but is not designed to be particularly secure,
     stable, or efficient. See :doc:`/deploying/index` for how to run in production.
 
+If another program is already using port 5000, you'll see
+``OSError: [Errno 98]`` or ``OSError: [WinError 10013]`` when the
+server tries to start. See :ref:`address-already-in-use` for how to
+handle that.
+
 
 Open a Shell
 ------------
