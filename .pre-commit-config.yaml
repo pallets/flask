@@ -1,4 +1,5 @@
 ci:
+  autoupdate_branch: "2.0.x"
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
