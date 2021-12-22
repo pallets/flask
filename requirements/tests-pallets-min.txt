@@ -10,7 +10,7 @@ itsdangerous==2.0.0
     # via -r requirements/tests-pallets-min.in
 jinja2==3.0.0
     # via -r requirements/tests-pallets-min.in
-markupsafe==2.0.0
+markupsafe==2.0.1
     # via
     #   -r requirements/tests-pallets-min.in
     #   jinja2
