@@ -714,7 +714,7 @@ def get_root_path(import_name: str) -> str:
     # Module already imported and has a file attribute. Use that first.
     mod = sys.modules.get(import_name)
 
-    if mod is not None and hasattr(mod, "__file__"):
+    if mod is not None and hasattr(mod, "__file__") and mod.__file__ is not None:
         return os.path.dirname(os.path.abspath(mod.__file__))
 
     # Next attempt: check the loader.

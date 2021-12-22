@@ -14,17 +14,17 @@ greenlet==1.1.2 ; python_version < "3.11"
     # via -r requirements/tests.in
 iniconfig==1.1.1
     # via pytest
-packaging==21.2
+packaging==21.3
     # via pytest
 pluggy==1.0.0
     # via pytest
 py==1.11.0
     # via pytest
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via packaging
 pytest==6.2.5
     # via -r requirements/tests.in
-python-dotenv==0.19.1
+python-dotenv==0.19.2
     # via -r requirements/tests.in
 toml==0.10.2
     # via pytest
