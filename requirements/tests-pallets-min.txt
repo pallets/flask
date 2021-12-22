@@ -8,7 +8,7 @@ click==8.0.0
     # via -r requirements/tests-pallets-min.in
 itsdangerous==2.0.0
     # via -r requirements/tests-pallets-min.in
-jinja2==3.0.0
+jinja2==3.0.3
     # via -r requirements/tests-pallets-min.in
 markupsafe==2.0.0
     # via
