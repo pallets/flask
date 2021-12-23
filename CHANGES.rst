@@ -47,6 +47,11 @@ Unreleased
 -   Fix type annotation for ``errorhandler`` decorator. :issue:`4295`
 -   Revert a change to the CLI that caused it to hide ``ImportError``
     tracebacks when importing the application. :issue:`4307`
+-   ``app.json_encoder`` and ``json_decoder`` are only passed to
+    ``dumps`` and ``loads`` if they have custom behavior. This improves
+    performance, mainly on PyPy. :issue:`4349`
+-   Clearer error message when ``after_this_request`` is used outside a
+    request context. :issue:`4333`
 
 
 Version 2.0.2
