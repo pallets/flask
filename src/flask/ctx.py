@@ -131,14 +131,14 @@ def after_this_request(f: AfterRequestCallable) -> AfterRequestCallable:
     .. versionadded:: 0.9
     """
     top = _request_ctx_stack.top
+
     if top is None:
         raise RuntimeError(
-            "This decorator can only be used at local scopes "
-            "when a request context is on the stack. For instance within "
-            "view functions."
+            "This decorator can only be used when a request context is"
+            " active, such as within a view function."
         )
-    top._after_request_functions.append(f)
 
+    top._after_request_functions.append(f)
     return f
 
 
@@ -167,12 +167,13 @@ def copy_current_request_context(f: t.Callable) -> t.Callable:
     .. versionadded:: 0.10
     """
     top = _request_ctx_stack.top
+
     if top is None:
         raise RuntimeError(
-            "This decorator can only be used at local scopes "
-            "when a request context is on the stack.  For instance within "
-            "view functions."
+            "This decorator can only be used when a request context is"
+            " active, such as within a view function."
         )
+
     reqctx = top.copy()
 
     def wrapper(*args, **kwargs):
