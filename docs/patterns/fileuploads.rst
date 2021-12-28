@@ -63,7 +63,7 @@ the file and redirects the user to the URL for the uploaded file::
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                return redirect(url_for('download_file', name=filename))
+                return redirect(url_for('upload_file', name=filename))
         return '''
         <!doctype html>
         <title>Upload new File</title>
