@@ -1046,6 +1046,7 @@ class Flask(Scaffold):
             endpoint = _endpoint_from_view_func(view_func)  # type: ignore
         options["endpoint"] = endpoint
         methods = options.pop("methods", None)
+        no_auto_head = options.pop("no_auto_head", None)
 
         # if the methods are not given and the view_func object knows its
         # methods we can use that instead.  If neither exists, we go with
@@ -1081,6 +1082,14 @@ class Flask(Scaffold):
 
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options  # type: ignore
+
+        # If GET is only specified method, Werkzeug automatically adds HEAD method.
+        # This option will disable that feature to allow the user to write their
+        # own handling for HEAD.
+        only_get = methods == {"GET", "OPTIONS"}
+
+        if only_get and no_auto_head is not None:
+            rule.methods.discard("HEAD")
 
         self.url_map.add(rule)
         if view_func is not None:

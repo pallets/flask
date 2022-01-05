@@ -2024,3 +2024,16 @@ def test_app_freed_on_zero_refcount():
         assert weak() is None
     finally:
         gc.enable()
+
+
+def test_no_auto_head_option(app, client):
+    @app.route("/", methods=["GET"], no_auto_head=True)
+    def index():
+        return "Hello world", 200
+
+    @app.route("/", methods=["HEAD"])
+    def index_head():
+        return "", 200, {"test-header": "test-value"}
+
+    assert client.get("/").data == b"Hello world"
+    assert "test-header" in client.head("/").headers
