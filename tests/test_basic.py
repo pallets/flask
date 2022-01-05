@@ -2035,5 +2035,10 @@ def test_no_auto_head_option(app, client):
     def index_head():
         return "", 200, {"test-header": "test-value"}
 
-    assert client.get("/").data == b"Hello world"
-    assert "test-header" in client.head("/").headers
+    rv = client.get("/")
+    assert rv.data == b"Hello world"
+    assert "test-header" not in rv.headers
+
+    rv = client.head("/")
+    assert rv.data == b""
+    assert "test-header" in rv.headers
