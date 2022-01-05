@@ -697,7 +697,7 @@ instead of the `view_func` parameter.
                 of methods this rule should be limited to (``GET``, ``POST``
                 etc.).  By default a rule just listens for ``GET`` (and
                 implicitly ``HEAD``, although this can be disabled with the
-                keyword argument ```no_auto_head=True```).  Starting with
+                keyword argument ``no_auto_head=True``).  Starting with
                 Flask 0.6, ``OPTIONS`` is implicitly added and handled by
                 the standard request handling.  They have to be specified
                 as keyword arguments.
