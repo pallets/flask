@@ -33,6 +33,10 @@ Unreleased
     or ``AppContext.g`` instead. :issue:`3898`
 -   ``copy_current_request_context`` can decorate async functions.
     :pr:`4303`
+-   ``no_auto_head`` keyword argument added to ```app.route``` decorator
+    to optionally prevent Werkzeug from automatically adding a HEAD method
+    to a route that only has a GET method specified, allowing the user to
+    implement their own logic to handle HEAD requests. :pr:`4407`
 
 
 Version 2.0.3
