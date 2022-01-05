@@ -1083,9 +1083,10 @@ class Flask(Scaffold):
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options  # type: ignore
 
-        # If GET is only specified method, Werkzeug automatically adds HEAD method.
-        # This option will disable that feature to allow the user to write their
-        # own handling for HEAD.
+        # When GET is only specified method, Werkzeug automatically adds HEAD method.
+        # If GET is the only user-specified method and the ``no_auto_head`` option
+        # is to True, this will disable that feature to allow the user to write their
+        # own handling for HEAD requests.
         only_get = methods == {"GET", "OPTIONS"}
 
         if only_get and no_auto_head is True:
