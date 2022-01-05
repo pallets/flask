@@ -1089,7 +1089,7 @@ class Flask(Scaffold):
         only_get = methods == {"GET", "OPTIONS"}
 
         if only_get and no_auto_head is not None:
-            rule.methods.discard("HEAD")
+            rule.methods.discard("HEAD")  # type: ignore
 
         self.url_map.add(rule)
         if view_func is not None:
