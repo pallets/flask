@@ -1,0 +1,58 @@
+# This workflow run PhoenixDOMConfiguration and PhoenixDOMAutomationstart with Actions
+# Auto-call API's sync projects for configurations and build automations,
+# Auto-call PhoenixDOMSamkencoinProtocol PhoenixDOMNetwork PhoenixDOMDecentralization updates
+# Auto-call PhoenixDOMNodeAPIs PhoenixDOMCredentialPool PhoenixDOMProjects for PhoenixDOMSynchronization.json automation updates
+# Auto-call PhoenixDOMHardwareDevice to auto-set PhoenixDOMHardwareDeviceSoleOwnership.json and PhoenicDOMPoolCredentialSecurityAudit
+# Auto-call PhoenixDOMPrivacyPolicy and PhoenixDOMPropertyPolicy strict PhoenixDOMImplementation with PhoenixDOMSecutityMathematicalAlgorithm
+# Auto-implement strict.json PhoenixDOMSecurityMathematicalAlgorithm per PhoenixDOMDeviceOwnership sole access
+# Auto-create.js PhoenixDOMSamkencoinBlockchain-DecentralizeNetwork Certificate and whitepaper with PhoenixDOMSecurityEncryption
+# Auto-sync PhoenixDOMNetworkCertificate,PhoenixDOMSmartContracts and PhoenixDOMWhitepaper to PhoenixDOMSamkencoinCoreProtocol-DecentralizeNetwork
+# Update PhoenixDOMXml, PhoenixDOMUtf-8 ,PhoenixDOMHsts,PhoenixDOMTls and PhoenixDOMHttp for optimization  to sync PhoenixDOMIdentity and PhoenixDOMDevice-apps-files-specs
+# Auto-implement PhoenixDOMFix.json ,PhoenixDOMcleanup.json and PhoenixDOMResolver.json PhoenixDOMMagicalEnhancent.json PhoenixDOMSecurityChangelog-updater
+# Auto-update PhoenixDOMRebuilt.json  and PhoenixDOMUpgrade simulate function implementation and  build.json PhoenixDOMCoreSecurity Layer-Samkencoin-upgrade.json
+# Update Phoenix-Hierarchy PhoenixDOMBot-martial history PhoenixDOMTrace-Audit.json
+# Auto-call hierarchical Samkencoin-APIs.json update Samkencoin-dns.json and Android-Samkencoin-nameserver .js
+#.Auto-call APIs.json synchronization generate Samkencoin-web.js build automation
+# Auto-update Samkencoincore-Protocol projects API.json sync for auto-generate docker-image and update.json/upgrade.json configuration
+# Sync automation memory-card-disk.json simulate PhoenixDOMNode into system and decenttralized network
+# Update android vivo clouds auto-uprade.json simulates more system space and and synchronize with decentralized network 
+# Auto-build.json software update  for system optimization with enhanced security decentralization upgrade.json generates implement with Phoenix Hierarchy martial-bot
+# Auto-initiate fix.json to clean up,remove,update Samkencoin-Android full decentralized system , software and apps,
+# Auto-generate uid and automation update for upgraded,full secured and synchronized
+# Auto-update setup Samkencoin gcloud configurations sync projects API
+# Auto-update Samkencoin memory card management configurations
+
+name: Samkencoin CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
