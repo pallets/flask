@@ -98,6 +98,13 @@ To run such an application, you can use the :command:`flask` command:
          $ export FLASK_APP=myapp
          $ flask run
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_APP myapp
+         $ flask run
+
    .. group-tab:: CMD
 
       .. code-block:: text
@@ -122,6 +129,13 @@ in ``myapp``. You can also pass arguments to the factory like this:
       .. code-block:: text
 
          $ export FLASK_APP="myapp:create_app('dev')"
+         $ flask run
+
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_APP "myapp:create_app('dev')"
          $ flask run
 
    .. group-tab:: CMD
