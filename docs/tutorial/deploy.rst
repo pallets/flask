@@ -88,9 +88,9 @@ You can use the following command to output a random secret key:
 
 .. code-block:: none
 
-    $ python -c 'import os; print(os.urandom(16))'
+    $ python -c 'import secrets; print(secrets.token_hex())'
 
-    b'_5#y2L"F4Q8z\n\xec]/'
+    '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
 Create the ``config.py`` file in the instance folder, which the factory
 will read from if it exists. Copy the generated value into it.
@@ -98,7 +98,7 @@ will read from if it exists. Copy the generated value into it.
 .. code-block:: python
     :caption: ``venv/var/flaskr-instance/config.py``
 
-    SECRET_KEY = b'_5#y2L"F4Q8z\n\xec]/'
+    SECRET_KEY = '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
 You can also set any other necessary configuration here, although
 ``SECRET_KEY`` is the only one needed for Flaskr.

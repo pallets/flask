@@ -9,14 +9,15 @@ from werkzeug.test import Client
 from werkzeug.urls import url_parse
 from werkzeug.wrappers import Request as BaseRequest
 
-from . import _request_ctx_stack
 from .cli import ScriptInfo
+from .globals import _request_ctx_stack
 from .json import dumps as json_dumps
 from .sessions import SessionMixin
 
 if t.TYPE_CHECKING:
+    from werkzeug.test import TestResponse
+
     from .app import Flask
-    from .wrappers import Response
 
 
 class EnvironBuilder(werkzeug.test.EnvironBuilder):
@@ -171,14 +172,15 @@ class FlaskClient(Client):
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
-    def open(  # type: ignore
+    def open(
         self,
         *args: t.Any,
-        as_tuple: bool = False,
         buffered: bool = False,
         follow_redirects: bool = False,
         **kwargs: t.Any,
-    ) -> "Response":
+    ) -> "TestResponse":
+        as_tuple = kwargs.pop("as_tuple", None)
+
         # Same logic as super.open, but apply environ_base and preserve_context.
         request = None
 
@@ -213,12 +215,28 @@ class FlaskClient(Client):
             finally:
                 builder.close()
 
-        return super().open(  # type: ignore
-            request,
-            as_tuple=as_tuple,
-            buffered=buffered,
-            follow_redirects=follow_redirects,
-        )
+        if as_tuple is not None:
+            import warnings
+
+            warnings.warn(
+                "'as_tuple' is deprecated and will be removed in"
+                " Werkzeug 2.1 and Flask 2.1. Use"
+                " 'response.request.environ' instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            return super().open(
+                request,
+                as_tuple=as_tuple,
+                buffered=buffered,
+                follow_redirects=follow_redirects,
+            )
+        else:
+            return super().open(
+                request,
+                buffered=buffered,
+                follow_redirects=follow_redirects,
+            )
 
     def __enter__(self) -> "FlaskClient":
         if self.preserve_context:
@@ -272,7 +290,7 @@ class FlaskCliRunner(CliRunner):
         :return: a :class:`~click.testing.Result` object.
         """
         if cli is None:
-            cli = self.app.cli
+            cli = self.app.cli  # type: ignore
 
         if "obj" not in kwargs:
             kwargs["obj"] = ScriptInfo(create_app=lambda: self.app)

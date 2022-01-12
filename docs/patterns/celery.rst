@@ -64,7 +64,7 @@ An example task
 
 Let's write a task that adds two numbers together and returns the result. We
 configure Celery's broker and backend to use Redis, create a ``celery``
-application using the factor from above, and then use it to define the task. ::
+application using the factory from above, and then use it to define the task. ::
 
     from flask import Flask
 

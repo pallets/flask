@@ -83,6 +83,11 @@ deployment options see :doc:`deploying/index`.
 Now head over to http://127.0.0.1:5000/, and you should see your hello
 world greeting.
 
+If another program is already using port 5000, you'll see
+``OSError: [Errno 98]`` or ``OSError: [WinError 10013]`` when the
+server tries to start. See :ref:`address-already-in-use` for how to
+handle that.
+
 .. _public-server:
 
 .. admonition:: Externally Visible Server
@@ -444,9 +449,9 @@ Here is an example template:
       <h1>Hello, World!</h1>
     {% endif %}
 
-Inside templates you also have access to the :class:`~flask.request`,
-:class:`~flask.session` and :class:`~flask.g` [#]_ objects
-as well as the :func:`~flask.get_flashed_messages` function.
+Inside templates you also have access to the :data:`~flask.Flask.config`,
+:class:`~flask.request`, :class:`~flask.session` and :class:`~flask.g` [#]_ objects
+as well as the :func:`~flask.url_for` and :func:`~flask.get_flashed_messages` functions.
 
 Templates are especially useful if inheritance is used.  If you want to
 know how that works, see :doc:`patterns/templateinheritance`. Basically
@@ -468,7 +473,7 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
     >>> Markup.escape('<blink>hacker</blink>')
     Markup('&lt;blink&gt;hacker&lt;/blink&gt;')
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-    'Marked up \xbb HTML'
+    'Marked up » HTML'
 
 .. versionchanged:: 0.5
 
@@ -626,7 +631,7 @@ Werkzeug provides for you::
     def upload_file():
         if request.method == 'POST':
             file = request.files['the_file']
-            file.save(f"/var/www/uploads/{secure_filename(f.filename)}")
+            file.save(f"/var/www/uploads/{secure_filename(file.filename)}")
         ...
 
 For some better examples, see :doc:`patterns/fileuploads`.
@@ -847,8 +852,8 @@ sessions work::
     generator. Use the following command to quickly generate a value for
     :attr:`Flask.secret_key` (or :data:`SECRET_KEY`)::
 
-        $ python -c 'import os; print(os.urandom(16))'
-        b'_5#y2L"F4Q8z\n\xec]/'
+        $ python -c 'import secrets; print(secrets.token_hex())'
+        '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
 A note on cookie-based sessions: Flask will take the values you put into the
 session object and serialize them into a cookie.  If you are finding some

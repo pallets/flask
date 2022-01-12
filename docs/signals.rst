@@ -177,7 +177,7 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
 
     @template_rendered.connect_via(app)
     def when_template_rendered(sender, template, context, **extra):
-        print f'Template {template.name} is rendered with {context}'
+        print(f'Template {template.name} is rendered with {context}')
 
 Core Signals
 ------------

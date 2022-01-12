@@ -113,8 +113,8 @@ Method Based Dispatching
 
 For RESTful APIs it's especially helpful to execute a different function
 for each HTTP method.  With the :class:`flask.views.MethodView` you can
-easily do that.  Each HTTP method maps to a function with the same name
-(just in lowercase)::
+easily do that.  Each HTTP method maps to a method of the class with the
+same name (just in lowercase)::
 
     from flask.views import MethodView
 

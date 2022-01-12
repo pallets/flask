@@ -10,7 +10,7 @@ following conditions are met:
 1.  Redistributions of source code must retain the above copyright
     notice and this list of conditions.
 
-3.  Neither the name of the copyright holder nor the names of its
+2.  Neither the name of the copyright holder nor the names of its
     contributors may be used to endorse or promote products derived from
     this software without specific prior written permission.
 

@@ -113,16 +113,16 @@ raw cursor and connection objects.
 Here is how you can use it::
 
     for user in query_db('select * from users'):
-        print user['username'], 'has the id', user['user_id']
+        print(user['username'], 'has the id', user['user_id'])
 
 Or if you just want a single result::
 
     user = query_db('select * from users where username = ?',
                     [the_username], one=True)
     if user is None:
-        print 'No such user'
+        print('No such user')
     else:
-        print the_username, 'has the id', user['user_id']
+        print(the_username, 'has the id', user['user_id'])
 
 To pass variable parts to the SQL statement, use a question mark in the
 statement and pass in the arguments as a list.  Never directly add them to

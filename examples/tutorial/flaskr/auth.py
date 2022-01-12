@@ -60,21 +60,21 @@ def register():
             error = "Username is required."
         elif not password:
             error = "Password is required."
-        elif (
-            db.execute("SELECT id FROM user WHERE username = ?", (username,)).fetchone()
-            is not None
-        ):
-            error = f"User {username} is already registered."
 
         if error is None:
-            # the name is available, store it in the database and go to
-            # the login page
-            db.execute(
-                "INSERT INTO user (username, password) VALUES (?, ?)",
-                (username, generate_password_hash(password)),
-            )
-            db.commit()
-            return redirect(url_for("auth.login"))
+            try:
+                db.execute(
+                    "INSERT INTO user (username, password) VALUES (?, ?)",
+                    (username, generate_password_hash(password)),
+                )
+                db.commit()
+            except db.IntegrityError:
+                # The username was already taken, which caused the
+                # commit to fail. Show a validation error.
+                error = f"User {username} is already registered."
+            else:
+                # Success, go to the login page.
+                return redirect(url_for("auth.login"))
 
         flash(error)
 

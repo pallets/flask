@@ -8,7 +8,7 @@ request. Rather than passing the request object to each function that
 runs during a request, the :data:`request` and :data:`session` proxies
 are accessed instead.
 
-This is similar to the :doc:`/appcontext`, which keeps track of the
+This is similar to :doc:`/appcontext`, which keeps track of the
 application-level data independent of a request. A corresponding
 application context is pushed when a request context is pushed.
 
@@ -33,8 +33,8 @@ Lifetime of the Context
 -----------------------
 
 When a Flask application begins handling a request, it pushes a request
-context, which also pushes an :doc:`/appcontext`. When the request ends
-it pops the request context then the application context.
+context, which also pushes an :doc:`app context </appcontext>`. When the
+request ends it pops the request context then the application context.
 
 The context is unique to each thread (or other worker type).
 :data:`request` cannot be passed to another thread, the other thread

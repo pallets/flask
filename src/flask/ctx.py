@@ -130,7 +130,15 @@ def after_this_request(f: AfterRequestCallable) -> AfterRequestCallable:
 
     .. versionadded:: 0.9
     """
-    _request_ctx_stack.top._after_request_functions.append(f)
+    top = _request_ctx_stack.top
+
+    if top is None:
+        raise RuntimeError(
+            "This decorator can only be used when a request context is"
+            " active, such as within a view function."
+        )
+
+    top._after_request_functions.append(f)
     return f
 
 
@@ -159,17 +167,18 @@ def copy_current_request_context(f: t.Callable) -> t.Callable:
     .. versionadded:: 0.10
     """
     top = _request_ctx_stack.top
+
     if top is None:
         raise RuntimeError(
-            "This decorator can only be used at local scopes "
-            "when a request context is on the stack.  For instance within "
-            "view functions."
+            "This decorator can only be used when a request context is"
+            " active, such as within a view function."
         )
+
     reqctx = top.copy()
 
     def wrapper(*args, **kwargs):
         with reqctx:
-            return f(*args, **kwargs)
+            return reqctx.app.ensure_sync(f)(*args, **kwargs)
 
     return update_wrapper(wrapper, f)
 
@@ -332,11 +341,29 @@ class RequestContext:
         self._after_request_functions: t.List[AfterRequestCallable] = []
 
     @property
-    def g(self) -> AppContext:
+    def g(self) -> _AppCtxGlobals:
+        import warnings
+
+        warnings.warn(
+            "Accessing 'g' on the request context is deprecated and"
+            " will be removed in Flask 2.2. Access `g` directly or from"
+            "the application context instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return _app_ctx_stack.top.g
 
     @g.setter
-    def g(self, value: AppContext) -> None:
+    def g(self, value: _AppCtxGlobals) -> None:
+        import warnings
+
+        warnings.warn(
+            "Setting 'g' on the request context is deprecated and"
+            " will be removed in Flask 2.2. Set it on the application"
+            " context instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _app_ctx_stack.top.g = value
 
     def copy(self) -> "RequestContext":

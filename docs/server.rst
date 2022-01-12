@@ -64,6 +64,54 @@ and using the CLI.
     above.
 
 
+.. _address-already-in-use:
+
+Address already in use
+~~~~~~~~~~~~~~~~~~~~~~
+
+If another program is already using port 5000, you'll see an ``OSError``
+when the server tries to start. It may have one of the following
+messages:
+
+-   ``OSError: [Errno 98] Address already in use``
+-   ``OSError: [WinError 10013] An attempt was made to access a socket
+    in a way forbidden by its access permissions``
+
+Either identify and stop the other program, or use
+``flask run --port 5001`` to pick a different port.
+
+You can use ``netstat`` or ``lsof`` to identify what process id is using
+a port, then use other operating system tools stop that process. The
+following example shows that process id 6847 is using port 5000.
+
+.. tabs::
+
+    .. tab:: ``netstat`` (Linux)
+
+        .. code-block:: text
+
+            $ netstat -nlp | grep 5000
+            tcp 0 0 127.0.0.1:5000 0.0.0.0:* LISTEN 6847/python
+
+    .. tab:: ``lsof`` (macOS / Linux)
+
+        .. code-block:: text
+
+            $ lsof -P -i :5000
+            Python 6847 IPv4 TCP localhost:5000 (LISTEN)
+
+    .. tab:: ``netstat`` (Windows)
+
+        .. code-block:: text
+
+            > netstat -ano | findstr 5000
+            TCP 127.0.0.1:5000 0.0.0.0:0 LISTENING 6847
+
+macOS Monterey and later automatically starts a service that uses port
+5000. To disable the service, go to System Preferences, Sharing, and
+disable "AirPlay Receiver".
+
+
 Lazy or Eager Loading
 ~~~~~~~~~~~~~~~~~~~~~
 

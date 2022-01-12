@@ -1,8 +1,8 @@
-import io
+import dataclasses
+import decimal
 import json as _json
 import typing as t
 import uuid
-import warnings
 from datetime import date
 
 from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps
@@ -14,12 +14,6 @@ from ..globals import request
 if t.TYPE_CHECKING:
     from ..app import Flask
     from ..wrappers import Response
-
-try:
-    import dataclasses
-except ImportError:
-    # Python < 3.7
-    dataclasses = None  # type: ignore
 
 
 class JSONEncoder(_json.JSONEncoder):
@@ -47,7 +41,7 @@ class JSONEncoder(_json.JSONEncoder):
         """
         if isinstance(o, date):
             return http_date(o)
-        if isinstance(o, uuid.UUID):
+        if isinstance(o, (decimal.Decimal, uuid.UUID)):
             return str(o)
         if dataclasses and dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
@@ -80,6 +74,11 @@ def _dump_arg_defaults(
         if bp is not None and bp.json_encoder is not None:
             cls = bp.json_encoder
 
+        # Only set a custom encoder if it has custom behavior. This is
+        # faster on PyPy.
+        if cls is not _json.JSONEncoder:
+            kwargs.setdefault("cls", cls)
+
         kwargs.setdefault("cls", cls)
         kwargs.setdefault("ensure_ascii", app.config["JSON_AS_ASCII"])
         kwargs.setdefault("sort_keys", app.config["JSON_SORT_KEYS"])
@@ -101,9 +100,10 @@ def _load_arg_defaults(
         if bp is not None and bp.json_decoder is not None:
             cls = bp.json_decoder
 
-        kwargs.setdefault("cls", cls)
-    else:
-        kwargs.setdefault("cls", JSONDecoder)
+        # Only set a custom decoder if it has custom behavior. This is
+        # faster on PyPy.
+        if cls not in {JSONDecoder, _json.JSONDecoder}:
+            kwargs.setdefault("cls", cls)
 
 
 def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
@@ -117,6 +117,9 @@ def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
         or defaults.
     :param kwargs: Extra arguments passed to :func:`json.dumps`.
 
+    .. versionchanged:: 2.0.2
+        :class:`decimal.Decimal` is supported by converting to a string.
+
     .. versionchanged:: 2.0
         ``encoding`` is deprecated and will be removed in Flask 2.1.
 
@@ -125,20 +128,7 @@ def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
         context for configuration.
     """
     _dump_arg_defaults(kwargs, app=app)
-    encoding = kwargs.pop("encoding", None)
-    rv = _json.dumps(obj, **kwargs)
-
-    if encoding is not None:
-        warnings.warn(
-            "'encoding' is deprecated and will be removed in Flask 2.1.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        if isinstance(rv, str):
-            return rv.encode(encoding)  # type: ignore
-
-    return rv
+    return _json.dumps(obj, **kwargs)
 
 
 def dump(
@@ -160,23 +150,6 @@ def dump(
         deprecated and will be removed in Flask 2.1.
     """
     _dump_arg_defaults(kwargs, app=app)
-    encoding = kwargs.pop("encoding", None)
-    show_warning = encoding is not None
-
-    try:
-        fp.write("")
-    except TypeError:
-        show_warning = True
-        fp = io.TextIOWrapper(fp, encoding or "utf-8")  # type: ignore
-
-    if show_warning:
-        warnings.warn(
-            "Writing to a binary file, and the 'encoding' argument, is"
-            " deprecated and will be removed in Flask 2.1.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
     _json.dump(obj, fp, **kwargs)
 
 
@@ -200,19 +173,6 @@ def loads(s: str, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> t.Any:
         context for configuration.
     """
     _load_arg_defaults(kwargs, app=app)
-    encoding = kwargs.pop("encoding", None)
-
-    if encoding is not None:
-        warnings.warn(
-            "'encoding' is deprecated and will be removed in Flask 2.1."
-            " The data must be a string or UTF-8 bytes.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        if isinstance(s, bytes):
-            s = s.decode(encoding)
-
     return _json.loads(s, **kwargs)
 
 
@@ -232,20 +192,6 @@ def load(fp: t.IO[str], app: t.Optional["Flask"] = None, **kwargs: t.Any) -> t.A
         file must be text mode, or binary mode with UTF-8 bytes.
     """
     _load_arg_defaults(kwargs, app=app)
-    encoding = kwargs.pop("encoding", None)
-
-    if encoding is not None:
-        warnings.warn(
-            "'encoding' is deprecated and will be removed in Flask 2.1."
-            " The file must be text mode, or binary mode with UTF-8"
-            " bytes.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        if isinstance(fp.read(0), bytes):
-            fp = io.TextIOWrapper(fp, encoding)  # type: ignore
-
     return _json.load(fp, **kwargs)
 
 
@@ -323,6 +269,9 @@ def jsonify(*args: t.Any, **kwargs: t.Any) -> "Response":
     The default output omits indents and spaces after separators. In
     debug mode or if :data:`JSONIFY_PRETTYPRINT_REGULAR` is ``True``,
     the output will be formatted to be easier to read.
+
+    .. versionchanged:: 2.0.2
+        :class:`decimal.Decimal` is supported by converting to a string.
 
     .. versionchanged:: 0.11
         Added support for serializing top-level arrays. This introduces

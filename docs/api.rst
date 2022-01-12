@@ -218,8 +218,6 @@ Useful Functions and Classes
 
 .. autofunction:: send_from_directory
 
-.. autofunction:: safe_join
-
 .. autofunction:: escape
 
 .. autoclass:: Markup
@@ -256,7 +254,7 @@ the filter to render data inside ``<script>`` tags.
 
 .. sourcecode:: html+jinja
 
-    <script type=text/javascript>
+    <script>
         const names = {{ names|tosjon }};
         renderChart(names, {{ axis_data|tojson }});
     </script>

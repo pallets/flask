@@ -1,67 +1,171 @@
-Standalone WSGI Containers
-==========================
+Standalone WSGI Servers
+=======================
 
-There are popular servers written in Python that contain WSGI applications and
-serve HTTP.  These servers stand alone when they run; you can proxy to them
-from your web server.  Note the section on :ref:`deploying-proxy-setups` if you
-run into issues.
+Most WSGI servers also provide HTTP servers, so they can run a WSGI
+application and make it available externally.
+
+It may still be a good idea to run the server behind a dedicated HTTP
+server such as Apache or Nginx. See :ref:`deploying-proxy-setups` if you
+run into issues with that.
+
 
 Gunicorn
 --------
 
-`Gunicorn`_ 'Green Unicorn' is a WSGI HTTP Server for UNIX. It's a pre-fork
-worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
-and `greenlet`_. Running a Flask application on this server is quite simple::
+`Gunicorn`_ is a WSGI and HTTP server for UNIX. To run a Flask
+application, tell Gunicorn how to import your Flask app object.
 
-    $ gunicorn myproject:app
+.. code-block:: text
 
-`Gunicorn`_ provides many command-line options -- see ``gunicorn -h``.
-For example, to run a Flask application with 4 worker processes (``-w
-4``) binding to localhost port 4000 (``-b 127.0.0.1:4000``)::
+    $ gunicorn -w 4 -b 0.0.0.0:5000 your_project:app
 
-    $ gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
+The ``-w 4`` option uses 4 workers to handle 4 requests at once. The
+``-b 0.0.0.0:5000`` serves the application on all interfaces on port
+5000.
 
-The ``gunicorn`` command expects the names of your application module or
-package and the application instance within the module. If you use the
-application factory pattern, you can pass a call to that::
+Gunicorn provides many options for configuring the server, either
+through a configuration file or with command line options. Use
+``gunicorn --help`` or see the docs for more information.
 
-    $ gunicorn "myproject:create_app()"
+The command expects the name of your module or package to import and
+the application instance within the module. If you use the application
+factory pattern, you can pass a call to that.
+
+.. code-block:: text
+
+    $ gunicorn -w 4 -b 0.0.0.0:5000 "myproject:create_app()"
+
+
+Async with Gevent or Eventlet
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The default sync worker is appropriate for many use cases. If you need
+asynchronous support, Gunicorn provides workers using either `gevent`_
+or `eventlet`_. This is not the same as Python's ``async/await``, or the
+ASGI server spec.
+
+When using either gevent or eventlet, greenlet>=1.0 is required,
+otherwise context locals such as ``request`` will not work as expected.
+When using PyPy, PyPy>=7.3.7 is required.
+
+To use gevent:
+
+.. code-block:: text
+
+    $ gunicorn -k gevent -b 0.0.0.0:5000 your_project:app
+
+To use eventlet:
+
+.. code-block:: text
+
+    $ gunicorn -k eventlet -b 0.0.0.0:5000 your_project:app
+
 
 .. _Gunicorn: https://gunicorn.org/
+.. _gevent: http://www.gevent.org/
 .. _eventlet: https://eventlet.net/
+.. _greenlet: https://greenlet.readthedocs.io/en/latest/
 
 
 uWSGI
---------
+-----
 
-`uWSGI`_ is a fast application server written in C. It is very configurable
-which makes it more complicated to setup than gunicorn.
+`uWSGI`_ is a fast application server written in C. It is very
+configurable, which makes it more complicated to setup than Gunicorn.
+It also provides many other utilities for writing robust web
+applications. To run a Flask application, tell Gunicorn how to import
+your Flask app object.
 
-Running `uWSGI HTTP Router`_::
+.. code-block:: text
 
-    $ uwsgi --http 127.0.0.1:5000 --module myproject:app
+    $ uwsgi --master -p 4 --http 0.0.0.0:5000 -w your_project:app
 
-For a more optimized setup, see :doc:`configuring uWSGI and NGINX <uwsgi>`.
+The ``-p 4`` option uses 4 workers to handle 4 requests at once. The
+``--http 0.0.0.0:5000`` serves the application on all interfaces on port
+5000.
+
+uWSGI has optimized integration with Nginx and Apache instead of using
+a standard HTTP proxy. See :doc:`configuring uWSGI and Nginx <uwsgi>`.
+
+
+Async with Gevent
+~~~~~~~~~~~~~~~~~
+
+The default sync worker is appropriate for many use cases. If you need
+asynchronous support, uWSGI provides workers using `gevent`_. It also
+supports other async modes, see the docs for more information. This is
+not the same as Python's ``async/await``, or the ASGI server spec.
+
+When using gevent, greenlet>=1.0 is required, otherwise context locals
+such as ``request`` will not work as expected. When using PyPy,
+PyPy>=7.3.7 is required.
+
+.. code-block:: text
+
+    $ uwsgi --master --gevent 100 --http 0.0.0.0:5000 -w your_project:app
 
 .. _uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
-.. _uWSGI HTTP Router: https://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
+
 
 Gevent
--------
+------
 
-`Gevent`_ is a coroutine-based Python networking library that uses
-`greenlet`_ to provide a high-level synchronous API on top of `libev`_
-event loop::
+Prefer using `Gunicorn`_ with Gevent workers rather than using Gevent
+directly. Gunicorn provides a much more configurable and
+production-tested server. See the section on Gunicorn above.
+
+`Gevent`_ allows writing asynchronous, coroutine-based code that looks
+like standard synchronous Python. It uses `greenlet`_ to enable task
+switching without writing ``async/await`` or using ``asyncio``.
+
+It provides a WSGI server that can handle many connections at once
+instead of one per worker process.
+
+`Eventlet`_, described below, is another library that does the same
+thing. Certain dependencies you have, or other consideration, may affect
+which of the two you choose to use
+
+To use gevent to serve your application, import its ``WSGIServer`` and
+use it to run your ``app``.
+
+.. code-block:: python
 
     from gevent.pywsgi import WSGIServer
-    from yourapplication import app
+    from your_project import app
 
-    http_server = WSGIServer(('', 5000), app)
+    http_server = WSGIServer(("", 5000), app)
     http_server.serve_forever()
 
-.. _Gevent: http://www.gevent.org/
-.. _greenlet: https://greenlet.readthedocs.io/en/latest/
-.. _libev: http://software.schmorp.de/pkg/libev.html
+
+Eventlet
+--------
+
+Prefer using `Gunicorn`_ with Eventlet workers rather than using
+Eventlet directly. Gunicorn provides a much more configurable and
+production-tested server. See the section on Gunicorn above.
+
+`Eventlet`_ allows writing asynchronous, coroutine-based code that looks
+like standard synchronous Python. It uses `greenlet`_ to enable task
+switching without writing ``async/await`` or using ``asyncio``.
+
+It provides a WSGI server that can handle many connections at once
+instead of one per worker process.
+
+`Gevent`_, described above, is another library that does the same
+thing. Certain dependencies you have, or other consideration, may affect
+which of the two you choose to use
+
+To use eventlet to serve your application, import its ``wsgi.server``
+and use it to run your ``app``.
+
+.. code-block:: python
+
+    import eventlet
+    from eventlet import wsgi
+    from your_project import app
+
+    wsgi.server(eventlet.listen(("", 5000), app)
+
 
 Twisted Web
 -----------
@@ -69,7 +173,9 @@ Twisted Web
 `Twisted Web`_ is the web server shipped with `Twisted`_, a mature,
 non-blocking event-driven networking library. Twisted Web comes with a
 standard WSGI container which can be controlled from the command line using
-the ``twistd`` utility::
+the ``twistd`` utility:
+
+.. code-block:: text
 
     $ twistd web --wsgi myproject.app
 
@@ -79,12 +185,15 @@ This example will run a Flask application called ``app`` from a module named
 Twisted Web supports many flags and options, and the ``twistd`` utility does
 as well; see ``twistd -h`` and ``twistd web -h`` for more information. For
 example, to run a Twisted Web server in the foreground, on port 8080, with an
-application from ``myproject``::
+application from ``myproject``:
+
+.. code-block:: text
 
     $ twistd -n web --port tcp:8080 --wsgi myproject.app
 
 .. _Twisted: https://twistedmatrix.com/trac/
 .. _Twisted Web: https://twistedmatrix.com/trac/wiki/TwistedWeb
+
 
 .. _deploying-proxy-setups:
 

@@ -1,31 +1,32 @@
 ci:
+  autoupdate_branch: "2.0.x"
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.15.0
+    rev: v2.29.1
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.5.0
+    rev: v2.6.0
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
         files: "^(?!examples/)"
         args: ["--application-directories", "src"]
   - repo: https://github.com/psf/black
-    rev: 21.5b1
+    rev: 21.12b0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 4.0.1
     hooks:
       - id: flake8
         additional_dependencies:
           - flake8-bugbear
           - flake8-implicit-str-concat
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
       - id: fix-byte-order-marker
       - id: trailing-whitespace
