@@ -8,12 +8,10 @@ alabaster==0.7.12
     # via sphinx
 asgiref==3.4.1
     # via -r requirements/tests.in
-attrs==21.2.0
+attrs==21.4.0
     # via pytest
 babel==2.9.1
     # via sphinx
-backports.entry-points-selectable==1.1.1
-    # via virtualenv
 blinker==1.4
     # via -r requirements/tests.in
 certifi==2021.10.8
@@ -22,7 +20,7 @@ cffi==1.15.0
     # via cryptography
 cfgv==3.3.1
     # via pre-commit
-charset-normalizer==2.0.9
+charset-normalizer==2.0.10
     # via requests
 click==8.0.3
     # via pip-tools
@@ -34,13 +32,13 @@ docutils==0.16
     # via
     #   sphinx
     #   sphinx-tabs
-filelock==3.4.0
+filelock==3.4.2
     # via
     #   tox
     #   virtualenv
 greenlet==1.1.2 ; python_version < "3.11"
     # via -r requirements/tests.in
-identify==2.4.0
+identify==2.4.3
     # via pre-commit
 idna==3.3
     # via requests
@@ -52,7 +50,7 @@ jinja2==3.0.3
     # via sphinx
 markupsafe==2.0.1
     # via jinja2
-mypy==0.930
+mypy==0.931
     # via -r requirements/typing.in
 mypy-extensions==0.4.3
     # via mypy
@@ -70,7 +68,7 @@ pep517==0.12.0
     # via pip-tools
 pip-tools==6.4.0
     # via -r requirements/dev.in
-platformdirs==2.4.0
+platformdirs==2.4.1
     # via virtualenv
 pluggy==1.0.0
     # via
@@ -84,7 +82,7 @@ py==1.11.0
     #   tox
 pycparser==2.21
     # via cffi
-pygments==2.10.0
+pygments==2.11.2
     # via
     #   sphinx
     #   sphinx-tabs
@@ -98,7 +96,7 @@ pytz==2021.3
     # via babel
 pyyaml==6.0
     # via pre-commit
-requests==2.26.0
+requests==2.27.1
     # via sphinx
 six==1.16.0
     # via
@@ -113,7 +111,7 @@ sphinx==4.3.2
     #   sphinx-issues
     #   sphinx-tabs
     #   sphinxcontrib-log-cabinet
-sphinx-issues==1.2.0
+sphinx-issues==3.0.1
     # via -r requirements/docs.in
 sphinx-tabs==3.2.0
     # via -r requirements/docs.in
@@ -140,19 +138,19 @@ tomli==2.0.0
     # via
     #   mypy
     #   pep517
-tox==3.24.4
+tox==3.24.5
     # via -r requirements/dev.in
-types-contextvars==2.4.0
+types-contextvars==2.4.1
     # via -r requirements/typing.in
-types-dataclasses==0.6.1
+types-dataclasses==0.6.4
     # via -r requirements/typing.in
-types-setuptools==57.4.4
+types-setuptools==57.4.7
     # via -r requirements/typing.in
 typing-extensions==4.0.1
     # via mypy
-urllib3==1.26.7
+urllib3==1.26.8
     # via requests
-virtualenv==20.10.0
+virtualenv==20.13.0
     # via
     #   pre-commit
     #   tox
