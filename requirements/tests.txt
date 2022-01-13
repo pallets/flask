@@ -6,7 +6,7 @@
 #
 asgiref==3.4.1
     # via -r requirements/tests.in
-attrs==21.2.0
+attrs==21.4.0
     # via pytest
 blinker==1.4
     # via -r requirements/tests.in
