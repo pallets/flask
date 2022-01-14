@@ -173,18 +173,6 @@ invisibly to clicks on your page's elements. This is also known as
 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
 
-X-XSS-Protection
-~~~~~~~~~~~~~~~~
-
-The browser will try to prevent reflected XSS attacks by not loading the page
-if the request contains something that looks like JavaScript and the response
-contains the same data. ::
-
-    response.headers['X-XSS-Protection'] = '1; mode=block'
-
-- https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-
-
 .. _security-cookie:
 
 Set-Cookie options
