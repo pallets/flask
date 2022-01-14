@@ -179,8 +179,6 @@ class FlaskClient(Client):
         follow_redirects: bool = False,
         **kwargs: t.Any,
     ) -> "TestResponse":
-        as_tuple = kwargs.pop("as_tuple", None)
-
         # Same logic as super.open, but apply environ_base and preserve_context.
         request = None
 
@@ -215,28 +213,11 @@ class FlaskClient(Client):
             finally:
                 builder.close()
 
-        if as_tuple is not None:
-            import warnings
-
-            warnings.warn(
-                "'as_tuple' is deprecated and will be removed in"
-                " Werkzeug 2.1 and Flask 2.1. Use"
-                " 'response.request.environ' instead.",
-                DeprecationWarning,
-                stacklevel=3,
-            )
-            return super().open(
-                request,
-                as_tuple=as_tuple,
-                buffered=buffered,
-                follow_redirects=follow_redirects,
-            )
-        else:
-            return super().open(
-                request,
-                buffered=buffered,
-                follow_redirects=follow_redirects,
-            )
+        return super().open(
+            request,
+            buffered=buffered,
+            follow_redirects=follow_redirects,
+        )
 
     def __enter__(self) -> "FlaskClient":
         if self.preserve_context:

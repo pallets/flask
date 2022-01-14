@@ -19,6 +19,8 @@ Unreleased
         instead.
     -   The same blueprint cannot be registered with the same name. Use
         ``name=`` when registering to specify a unique name.
+    -   The test client's ``as_tuple`` parameter is removed. Use
+        ``response.request.environ`` instead. :pr:`4417`
 
 -   Some parameters in ``send_file`` and ``send_from_directory`` were
     renamed in 2.0. The deprecation period for the old names is extended
