@@ -54,6 +54,14 @@ to tell your terminal the application to work with by exporting the
          $ flask run
           * Running on http://127.0.0.1:5000/
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_APP hello
+         $ flask run
+          * Running on http://127.0.0.1:5000/
+
    .. group-tab:: CMD
 
       .. code-block:: text
@@ -164,6 +172,13 @@ variable to ``development`` before calling ``flask run``.
       .. code-block:: text
 
          $ export FLASK_ENV=development
+         $ flask run
+
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_ENV development
          $ flask run
 
    .. group-tab:: CMD
