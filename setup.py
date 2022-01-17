@@ -8,6 +8,7 @@ setup(
         "Jinja2 >= 3.0",
         "itsdangerous >= 2.0",
         "click >= 8.0",
+        "importlib-metadata; python_version < '3.10'",
     ],
     extras_require={
         "async": ["asgiref >= 3.2"],

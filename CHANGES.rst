@@ -35,6 +35,8 @@ Unreleased
     or ``AppContext.g`` instead. :issue:`3898`
 -   ``copy_current_request_context`` can decorate async functions.
     :pr:`4303`
+-   Replace the previously undocumented ``setuptools`` dependency in the CLI
+    with ``importlib.metadata``. :issue:`4419`
 
 
 Version 2.0.3

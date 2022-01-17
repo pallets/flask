@@ -28,6 +28,16 @@ try:
 except ImportError:
     ssl = None  # type: ignore
 
+if sys.version_info >= (3, 10):
+    from importlib import metadata
+else:
+    # Use a backport on Python < 3.10.
+    #
+    # We technically have importlib.metadata on 3.8+,
+    # but the API changed in 3.10, so use the backport
+    # for consistency.
+    import importlib_metadata as metadata  # type: ignore
+
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -494,14 +504,10 @@ class FlaskGroup(AppGroup):
     def _load_plugin_commands(self):
         if self._loaded_plugin_commands:
             return
-        try:
-            import pkg_resources
-        except ImportError:
-            self._loaded_plugin_commands = True
-            return
 
-        for ep in pkg_resources.iter_entry_points("flask.commands"):
+        for ep in metadata.entry_points(group="flask.commands"):
             self.add_command(ep.load(), ep.name)
+
         self._loaded_plugin_commands = True
 
     def get_command(self, ctx, name):
