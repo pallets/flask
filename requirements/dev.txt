@@ -6,14 +6,14 @@
 #
 alabaster==0.7.12
     # via sphinx
-asgiref==3.4.1
-    # via -r requirements/tests.in
+asgiref==3.5.0
+    # via -r tests.in
 attrs==21.4.0
     # via pytest
 babel==2.9.1
     # via sphinx
 blinker==1.4
-    # via -r requirements/tests.in
+    # via -r tests.in
 certifi==2021.10.8
     # via requests
 cffi==1.15.0
@@ -25,7 +25,7 @@ charset-normalizer==2.0.10
 click==8.0.3
     # via pip-tools
 cryptography==36.0.1
-    # via -r requirements/typing.in
+    # via -r typing.in
 distlib==0.3.4
     # via virtualenv
 docutils==0.16
@@ -37,7 +37,7 @@ filelock==3.4.2
     #   tox
     #   virtualenv
 greenlet==1.1.2 ; python_version < "3.11"
-    # via -r requirements/tests.in
+    # via -r tests.in
 identify==2.4.3
     # via pre-commit
 idna==3.3
@@ -51,7 +51,7 @@ jinja2==3.0.3
 markupsafe==2.0.1
     # via jinja2
 mypy==0.931
-    # via -r requirements/typing.in
+    # via -r typing.in
 mypy-extensions==0.4.3
     # via mypy
 nodeenv==1.6.0
@@ -63,11 +63,11 @@ packaging==21.3
     #   sphinx
     #   tox
 pallets-sphinx-themes==2.0.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 pep517==0.12.0
     # via pip-tools
 pip-tools==6.4.0
-    # via -r requirements/dev.in
+    # via -r dev.in
 platformdirs==2.4.1
     # via virtualenv
 pluggy==1.0.0
@@ -75,7 +75,7 @@ pluggy==1.0.0
     #   pytest
     #   tox
 pre-commit==2.16.0
-    # via -r requirements/dev.in
+    # via -r dev.in
 py==1.11.0
     # via
     #   pytest
@@ -89,9 +89,9 @@ pygments==2.11.2
 pyparsing==3.0.6
     # via packaging
 pytest==6.2.5
-    # via -r requirements/tests.in
+    # via -r tests.in
 python-dotenv==0.19.2
-    # via -r requirements/tests.in
+    # via -r tests.in
 pytz==2021.3
     # via babel
 pyyaml==6.0
@@ -106,15 +106,15 @@ snowballstemmer==2.2.0
     # via sphinx
 sphinx==4.3.2
     # via
-    #   -r requirements/docs.in
+    #   -r docs.in
     #   pallets-sphinx-themes
     #   sphinx-issues
     #   sphinx-tabs
     #   sphinxcontrib-log-cabinet
 sphinx-issues==3.0.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-tabs==3.2.0
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -124,7 +124,7 @@ sphinxcontrib-htmlhelp==2.0.0
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-log-cabinet==1.0.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
@@ -139,13 +139,13 @@ tomli==2.0.0
     #   mypy
     #   pep517
 tox==3.24.5
-    # via -r requirements/dev.in
+    # via -r dev.in
 types-contextvars==2.4.1
-    # via -r requirements/typing.in
+    # via -r typing.in
 types-dataclasses==0.6.4
-    # via -r requirements/typing.in
+    # via -r typing.in
 types-setuptools==57.4.7
-    # via -r requirements/typing.in
+    # via -r typing.in
 typing-extensions==4.0.1
     # via mypy
 urllib3==1.26.8

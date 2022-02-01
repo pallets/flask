@@ -4,14 +4,14 @@
 #
 #    pip-compile requirements/tests.in
 #
-asgiref==3.4.1
-    # via -r requirements/tests.in
+asgiref==3.5.0
+    # via -r tests.in
 attrs==21.4.0
     # via pytest
 blinker==1.4
-    # via -r requirements/tests.in
+    # via -r tests.in
 greenlet==1.1.2 ; python_version < "3.11"
-    # via -r requirements/tests.in
+    # via -r tests.in
 iniconfig==1.1.1
     # via pytest
 packaging==21.3
@@ -23,8 +23,8 @@ py==1.11.0
 pyparsing==3.0.6
     # via packaging
 pytest==6.2.5
-    # via -r requirements/tests.in
+    # via -r tests.in
 python-dotenv==0.19.2
-    # via -r requirements/tests.in
+    # via -r tests.in
 toml==0.10.2
     # via pytest
