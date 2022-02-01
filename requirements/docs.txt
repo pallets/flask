@@ -29,7 +29,7 @@ packaging==21.3
     #   pallets-sphinx-themes
     #   sphinx
 pallets-sphinx-themes==2.0.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 pygments==2.11.2
     # via
     #   sphinx
@@ -42,17 +42,17 @@ requests==2.27.1
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==4.3.2
+sphinx==4.4.0
     # via
-    #   -r requirements/docs.in
+    #   -r docs.in
     #   pallets-sphinx-themes
     #   sphinx-issues
     #   sphinx-tabs
     #   sphinxcontrib-log-cabinet
 sphinx-issues==3.0.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-tabs==3.2.0
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -62,13 +62,10 @@ sphinxcontrib-htmlhelp==2.0.0
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-log-cabinet==1.0.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
 urllib3==1.26.8
     # via requests
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
