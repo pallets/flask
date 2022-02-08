@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 import flask
@@ -81,7 +83,10 @@ def test_proper_test_request_context(app):
         )
 
     # suppress Werkzeug 0.15 warning about name mismatch
-    with pytest.warns(None):
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", "Current server name", UserWarning, "flask.app"
+        )
         with app.test_request_context(
             "/", environ_overrides={"HTTP_HOST": "localhost"}
         ):
