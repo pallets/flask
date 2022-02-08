@@ -1,15 +1,5 @@
 version: 2
 updates:
-- package-ecosystem: "pip"
-  directory: "/requirements"
-  target-branch: "2.0.x"
-  versioning-strategy: "lockfile-only"
-  schedule:
-    interval: "monthly"
-    day: "monday"
-    time: "16:00"
-    timezone: "UTC"
-  open-pull-requests-limit: 99
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
