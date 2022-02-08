@@ -3,6 +3,7 @@ import re
 import sys
 import time
 import uuid
+import warnings
 import weakref
 from datetime import datetime
 from platform import python_implementation
@@ -1527,8 +1528,11 @@ def test_server_name_subdomain():
     rv = client.get("/", "https://dev.local")
     assert rv.data == b"default"
 
-    # suppress Werkzeug 1.0 warning about name mismatch
-    with pytest.warns(None):
+    # suppress Werkzeug 0.15 warning about name mismatch
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", "Current server name", UserWarning, "flask.app"
+        )
         rv = client.get("/", "http://foo.localhost")
         assert rv.status_code == 404
 
@@ -1895,7 +1899,10 @@ def test_subdomain_matching_other_name(matching):
         return "", 204
 
     # suppress Werkzeug 0.15 warning about name mismatch
-    with pytest.warns(None):
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", "Current server name", UserWarning, "flask.app"
+        )
         # ip address can't match name
         rv = client.get("/", "http://127.0.0.1:3000/")
         assert rv.status_code == 404 if matching else 204
