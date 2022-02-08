@@ -41,18 +41,12 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
       - name: update pip
         run: |
           pip install -U wheel
           pip install -U setuptools
           python -m pip install -U pip
-      - name: get pip cache dir
-        id: pip-cache
-        run: echo "::set-output name=dir::$(pip cache dir)"
-      - name: cache pip
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: pip|${{ runner.os }}|${{ matrix.python }}|${{ hashFiles('setup.py') }}|${{ hashFiles('requirements/*.txt') }}
       - run: pip install tox
       - run: tox -e ${{ matrix.tox }}
