@@ -37,6 +37,8 @@ Unreleased
     :pr:`4303`
 -   The CLI uses ``importlib.metadata`` instead of ``setuptools`` to
     load command entry points. :issue:`4419`
+-   Overriding ``FlaskClient.open`` will not cause an error on redirect.
+    :issue:`3396`
 
 
 Version 2.0.3

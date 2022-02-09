@@ -172,6 +172,22 @@ class FlaskClient(Client):
             headers = resp.get_wsgi_headers(c.request.environ)
             self.cookie_jar.extract_wsgi(c.request.environ, headers)
 
+    def _copy_environ(self, other):
+        return {
+            **self.environ_base,
+            **other,
+            "flask._preserve_context": self.preserve_context,
+        }
+
+    def _request_from_builder_args(self, args, kwargs):
+        kwargs["environ_base"] = self._copy_environ(kwargs.get("environ_base", {}))
+        builder = EnvironBuilder(self.application, *args, **kwargs)
+
+        try:
+            return builder.get_request()
+        finally:
+            builder.close()
+
     def open(
         self,
         *args: t.Any,
@@ -179,39 +195,24 @@ class FlaskClient(Client):
         follow_redirects: bool = False,
         **kwargs: t.Any,
     ) -> "TestResponse":
-        # Same logic as super.open, but apply environ_base and preserve_context.
-        request = None
-
-        def copy_environ(other):
-            return {
-                **self.environ_base,
-                **other,
-                "flask._preserve_context": self.preserve_context,
-            }
-
-        if not kwargs and len(args) == 1:
-            arg = args[0]
-
-            if isinstance(arg, werkzeug.test.EnvironBuilder):
-                builder = copy(arg)
-                builder.environ_base = copy_environ(builder.environ_base or {})
+        if args and isinstance(
+            args[0], (werkzeug.test.EnvironBuilder, dict, BaseRequest)
+        ):
+            if isinstance(args[0], werkzeug.test.EnvironBuilder):
+                builder = copy(args[0])
+                builder.environ_base = self._copy_environ(builder.environ_base or {})
                 request = builder.get_request()
-            elif isinstance(arg, dict):
+            elif isinstance(args[0], dict):
                 request = EnvironBuilder.from_environ(
-                    arg, app=self.application, environ_base=copy_environ({})
+                    args[0], app=self.application, environ_base=self._copy_environ({})
                 ).get_request()
-            elif isinstance(arg, BaseRequest):
-                request = copy(arg)
-                request.environ = copy_environ(request.environ)
-
-        if request is None:
-            kwargs["environ_base"] = copy_environ(kwargs.get("environ_base", {}))
-            builder = EnvironBuilder(self.application, *args, **kwargs)
-
-            try:
-                request = builder.get_request()
-            finally:
-                builder.close()
+            else:
+                # isinstance(args[0], BaseRequest)
+                request = copy(args[0])
+                request.environ = self._copy_environ(request.environ)
+        else:
+            # request is None
+            request = self._request_from_builder_args(args, kwargs)
 
         return super().open(
             request,
