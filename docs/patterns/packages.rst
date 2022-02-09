@@ -67,6 +67,12 @@ that tells Flask where to find the application instance:
 
          $ export FLASK_APP=yourapplication
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_APP yourapplication
+
    .. group-tab:: CMD
 
       .. code-block:: text
@@ -90,6 +96,12 @@ development features like this:
       .. code-block:: text
 
          $ export FLASK_ENV=development
+
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_ENV development
 
    .. group-tab:: CMD
 

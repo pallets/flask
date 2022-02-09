@@ -145,6 +145,14 @@ follow the tutorial.
          $ export FLASK_ENV=development
          $ flask run
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_APP flaskr
+         $ set -x FLASK_ENV development
+         $ flask run
+
    .. group-tab:: CMD
 
       .. code-block:: text

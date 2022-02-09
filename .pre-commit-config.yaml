@@ -8,14 +8,14 @@ repos:
       - id: pyupgrade
         args: ["--py36-plus"]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.6.0
+    rev: v2.7.1
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
         files: "^(?!examples/)"
         args: ["--application-directories", "src"]
   - repo: https://github.com/psf/black
-    rev: 21.12b0
+    rev: 22.1.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
@@ -25,6 +25,10 @@ repos:
         additional_dependencies:
           - flake8-bugbear
           - flake8-implicit-str-concat
+  - repo: https://github.com/peterdemin/pip-compile-multi
+    rev: v2.4.3
+    hooks:
+      - id: pip-compile-multi-verify
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.1.0
     hooks:

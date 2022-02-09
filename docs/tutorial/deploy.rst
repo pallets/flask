@@ -57,6 +57,13 @@ create the database in the instance folder.
          $ export FLASK_APP=flaskr
          $ flask init-db
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_APP flaskr
+         $ flask init-db
+
    .. group-tab:: CMD
 
       .. code-block:: text

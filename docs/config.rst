@@ -76,6 +76,13 @@ set :envvar:`FLASK_ENV`:
          $ export FLASK_ENV=development
          $ flask run
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x FLASK_ENV development
+         $ flask run
+
    .. group-tab:: CMD
 
       .. code-block:: text
@@ -445,6 +452,14 @@ in the shell before starting the server:
          $ flask run
           * Running on http://127.0.0.1:5000/
 
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x YOURAPPLICATION_SETTINGS /path/to/settings.cfg
+         $ flask run
+          * Running on http://127.0.0.1:5000/
+
    .. group-tab:: CMD
 
       .. code-block:: text
@@ -514,6 +529,15 @@ Environment variables can be set in the shell before starting the server:
 
          $ export SECRET_KEY="5f352379324c22463451387a0aec5d2f"
          $ export MAIL_ENABLED=false
+         $ flask run
+          * Running on http://127.0.0.1:5000/
+
+   .. group-tab:: Fish
+
+      .. code-block:: text
+
+         $ set -x SECRET_KEY "5f352379324c22463451387a0aec5d2f"
+         $ set -x MAIL_ENABLED false
          $ flask run
           * Running on http://127.0.0.1:5000/
 
