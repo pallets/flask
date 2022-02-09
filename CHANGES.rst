@@ -39,6 +39,9 @@ Unreleased
     load command entry points. :issue:`4419`
 -   Overriding ``FlaskClient.open`` will not cause an error on redirect.
     :issue:`3396`
+-   Add an ``--exclude-patterns`` option to the ``flask run`` CLI
+    command to specify patterns that will be ignored by the reloader.
+    :issue:`4188`
 
 
 Version 2.0.3
