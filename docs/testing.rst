@@ -1,463 +1,319 @@
 Testing Flask Applications
 ==========================
 
-   **Something that is untested is broken.**
+Flask provides utilities for testing an application. This documentation
+goes over techniques for working with different parts of the application
+in tests.
 
-The origin of this quote is unknown and while it is not entirely correct, it
-is also not far from the truth.  Untested applications make it hard to
-improve existing code and developers of untested applications tend to
-become pretty paranoid.  If an application has automated tests, you can
-safely make changes and instantly know if anything breaks.
+We will use the `pytest`_ framework to set up and run our tests.
 
-Flask provides a way to test your application by exposing the Werkzeug
-test :class:`~werkzeug.test.Client` and handling the context locals for you.
-You can then use that with your favourite testing solution.
-
-In this documentation we will use the `pytest`_ package as the base
-framework for our tests. You can install it with ``pip``, like so::
+.. code-block:: text
 
     $ pip install pytest
 
 .. _pytest: https://docs.pytest.org/
 
-The Application
----------------
+The :doc:`tutorial </tutorial/index>` goes over how to write tests for
+100% coverage of the sample Flaskr blog application. See
+:doc:`the tutorial on tests </tutorial/tests>` for a detailed
+explanation of specific tests for an application.
 
-First, we need an application to test; we will use the application from
-the :doc:`tutorial/index`. If you don't have that application yet, get
-the source code from :gh:`the examples <examples/tutorial>`.
 
-So that we can import the module ``flaskr`` correctly, we need to run
-``pip install -e .`` in the folder ``tutorial``.
-
-The Testing Skeleton
---------------------
-
-We begin by adding a tests directory under the application root.  Then
-create a Python file to store our tests (:file:`test_flaskr.py`). When we
-format the filename like ``test_*.py``, it will be auto-discoverable by
-pytest.
-
-Next, we create a `pytest fixture`_ called
-:func:`client` that configures
-the application for testing and initializes a new database::
-
-    import os
-    import tempfile
-
-    import pytest
-
-    from flaskr import create_app
-    from flaskr.db import init_db
-
-
-    @pytest.fixture
-    def client():
-        db_fd, db_path = tempfile.mkstemp()
-        app = create_app({'TESTING': True, 'DATABASE': db_path})
-
-        with app.test_client() as client:
-            with app.app_context():
-                init_db()
-            yield client
-
-        os.close(db_fd)
-        os.unlink(db_path)
-
-This client fixture will be called by each individual test.  It gives us a
-simple interface to the application, where we can trigger test requests to the
-application.  The client will also keep track of cookies for us.
-
-During setup, the ``TESTING`` config flag is activated.  What
-this does is disable error catching during request handling, so that
-you get better error reports when performing test requests against the
-application.
-
-Because SQLite3 is filesystem-based, we can easily use the
-:mod:`tempfile` module to create a temporary database and initialize it.
-The :func:`~tempfile.mkstemp` function does two things for us: it returns a
-low-level file handle and a random file name, the latter we use as
-database name.  We just have to keep the `db_fd` around so that we can use
-the :func:`os.close` function to close the file.
-
-To delete the database after the test, the fixture closes the file and removes
-it from the filesystem.
-
-If we now run the test suite, we should see the following output::
-
-    $ pytest
-
-    ================ test session starts ================
-    rootdir: ./flask/examples/flaskr, inifile: setup.cfg
-    collected 0 items
-
-    =========== no tests ran in 0.07 seconds ============
-
-Even though it did not run any actual tests, we already know that our
-``flaskr`` application is syntactically valid, otherwise the import
-would have died with an exception.
-
-.. _pytest fixture:
-   https://docs.pytest.org/en/latest/fixture.html
-
-The First Test
---------------
-
-Now it's time to start testing the functionality of the application.
-Let's check that the application shows "No entries here so far" if we
-access the root of the application (``/``).  To do this, we add a new
-test function to :file:`test_flaskr.py`, like this::
-
-    def test_empty_db(client):
-        """Start with a blank database."""
-
-        rv = client.get('/')
-        assert b'No entries here so far' in rv.data
-
-Notice that our test functions begin with the word `test`; this allows
-`pytest`_ to automatically identify the function as a test to run.
-
-By using ``client.get`` we can send an HTTP ``GET`` request to the
-application with the given path.  The return value will be a
-:class:`~flask.Flask.response_class` object. We can now use the
-:attr:`~werkzeug.wrappers.Response.data` attribute to inspect
-the return value (as string) from the application.
-In this case, we ensure that ``'No entries here so far'``
-is part of the output.
-
-Run it again and you should see one passing test::
-
-    $ pytest -v
-
-    ================ test session starts ================
-    rootdir: ./flask/examples/flaskr, inifile: setup.cfg
-    collected 1 items
-
-    tests/test_flaskr.py::test_empty_db PASSED
-
-    ============= 1 passed in 0.10 seconds ==============
-
-Logging In and Out
-------------------
-
-The majority of the functionality of our application is only available for
-the administrative user, so we need a way to log our test client in and out
-of the application.  To do this, we fire some requests to the login and logout
-pages with the required form data (username and password).  And because the
-login and logout pages redirect, we tell the client to `follow_redirects`.
-
-Add the following two functions to your :file:`test_flaskr.py` file::
-
-    def login(client, username, password):
-        return client.post('/login', data=dict(
-            username=username,
-            password=password
-        ), follow_redirects=True)
-
-
-    def logout(client):
-        return client.get('/logout', follow_redirects=True)
-
-Now we can easily test that logging in and out works and that it fails with
-invalid credentials.  Add this new test function::
-
-    def test_login_logout(client):
-        """Make sure login and logout works."""
-
-        username = flaskr.app.config["USERNAME"]
-        password = flaskr.app.config["PASSWORD"]
-
-        rv = login(client, username, password)
-        assert b'You were logged in' in rv.data
-
-        rv = logout(client)
-        assert b'You were logged out' in rv.data
-
-        rv = login(client, f"{username}x", password)
-        assert b'Invalid username' in rv.data
-
-        rv = login(client, username, f'{password}x')
-        assert b'Invalid password' in rv.data
-
-Test Adding Messages
---------------------
-
-We should also test that adding messages works.  Add a new test function
-like this::
-
-    def test_messages(client):
-        """Test that messages work."""
-
-        login(client, flaskr.app.config['USERNAME'], flaskr.app.config['PASSWORD'])
-        rv = client.post('/add', data=dict(
-            title='<Hello>',
-            text='<strong>HTML</strong> allowed here'
-        ), follow_redirects=True)
-        assert b'No entries here so far' not in rv.data
-        assert b'&lt;Hello&gt;' in rv.data
-        assert b'<strong>HTML</strong> allowed here' in rv.data
-
-Here we check that HTML is allowed in the text but not in the title,
-which is the intended behavior.
-
-Running that should now give us three passing tests::
-
-    $ pytest -v
-
-    ================ test session starts ================
-    rootdir: ./flask/examples/flaskr, inifile: setup.cfg
-    collected 3 items
-
-    tests/test_flaskr.py::test_empty_db PASSED
-    tests/test_flaskr.py::test_login_logout PASSED
-    tests/test_flaskr.py::test_messages PASSED
-
-    ============= 3 passed in 0.23 seconds ==============
-
-
-Other Testing Tricks
---------------------
-
-Besides using the test client as shown above, there is also the
-:meth:`~flask.Flask.test_request_context` method that can be used
-in combination with the ``with`` statement to activate a request context
-temporarily.  With this you can access the :class:`~flask.request`,
-:class:`~flask.g` and :class:`~flask.session` objects like in view
-functions.  Here is a full example that demonstrates this approach::
-
-    from flask import Flask, request
-
-    app = Flask(__name__)
-
-    with app.test_request_context('/?name=Peter'):
-        assert request.path == '/'
-        assert request.args['name'] == 'Peter'
-
-All the other objects that are context bound can be used in the same
-way.
-
-If you want to test your application with different configurations and
-there does not seem to be a good way to do that, consider switching to
-application factories (see :doc:`patterns/appfactories`).
-
-Note however that if you are using a test request context, the
-:meth:`~flask.Flask.before_request` and :meth:`~flask.Flask.after_request`
-functions are not called automatically.  However
-:meth:`~flask.Flask.teardown_request` functions are indeed executed when
-the test request context leaves the ``with`` block.  If you do want the
-:meth:`~flask.Flask.before_request` functions to be called as well, you
-need to call :meth:`~flask.Flask.preprocess_request` yourself::
-
-    app = Flask(__name__)
-
-    with app.test_request_context('/?name=Peter'):
-        app.preprocess_request()
-        ...
-
-This can be necessary to open database connections or something similar
-depending on how your application was designed.
-
-If you want to call the :meth:`~flask.Flask.after_request` functions you
-need to call into :meth:`~flask.Flask.process_response` which however
-requires that you pass it a response object::
-
-    app = Flask(__name__)
-
-    with app.test_request_context('/?name=Peter'):
-        resp = Response('...')
-        resp = app.process_response(resp)
-        ...
-
-This in general is less useful because at that point you can directly
-start using the test client.
-
-.. _faking-resources:
-
-Faking Resources and Context
-----------------------------
-
-.. versionadded:: 0.10
-
-A very common pattern is to store user authorization information and
-database connections on the application context or the :attr:`flask.g`
-object.  The general pattern for this is to put the object on there on
-first usage and then to remove it on a teardown.  Imagine for instance
-this code to get the current user::
-
-    def get_user():
-        user = getattr(g, 'user', None)
-        if user is None:
-            user = fetch_current_user_from_database()
-            g.user = user
-        return user
-
-For a test it would be nice to override this user from the outside without
-having to change some code.  This can be accomplished with
-hooking the :data:`flask.appcontext_pushed` signal::
-
-    from contextlib import contextmanager
-    from flask import appcontext_pushed, g
-
-    @contextmanager
-    def user_set(app, user):
-        def handler(sender, **kwargs):
-            g.user = user
-        with appcontext_pushed.connected_to(handler, app):
-            yield
-
-And then to use it::
-
-    from flask import json, jsonify
-
-    @app.route('/users/me')
-    def users_me():
-        return jsonify(username=g.user.username)
-
-    with user_set(app, my_user):
-        with app.test_client() as c:
-            resp = c.get('/users/me')
-            data = json.loads(resp.data)
-            assert data['username'] == my_user.username
-
-
-Keeping the Context Around
---------------------------
-
-.. versionadded:: 0.4
-
-Sometimes it is helpful to trigger a regular request but still keep the
-context around for a little longer so that additional introspection can
-happen.  With Flask 0.4 this is possible by using the
-:meth:`~flask.Flask.test_client` with a ``with`` block::
-
-    app = Flask(__name__)
-
-    with app.test_client() as c:
-        rv = c.get('/?tequila=42')
-        assert request.args['tequila'] == '42'
-
-If you were to use just the :meth:`~flask.Flask.test_client` without
-the ``with`` block, the ``assert`` would fail with an error because `request`
-is no longer available (because you are trying to use it
-outside of the actual request).
-
-
-Accessing and Modifying Sessions
---------------------------------
-
-.. versionadded:: 0.8
-
-Sometimes it can be very helpful to access or modify the sessions from the
-test client.  Generally there are two ways for this.  If you just want to
-ensure that a session has certain keys set to certain values you can just
-keep the context around and access :data:`flask.session`::
-
-    with app.test_client() as c:
-        rv = c.get('/')
-        assert session['foo'] == 42
-
-This however does not make it possible to also modify the session or to
-access the session before a request was fired.  Starting with Flask 0.8 we
-provide a so called “session transaction” which simulates the appropriate
-calls to open a session in the context of the test client and to modify
-it. At the end of the transaction the session is stored and ready to be
-used by the test client. This works independently of the session backend used::
-
-    with app.test_client() as c:
-        with c.session_transaction() as sess:
-            sess['a_key'] = 'a value'
-
-        # once this is reached the session was stored and ready to be used by the client
-        c.get(...)
-
-Note that in this case you have to use the ``sess`` object instead of the
-:data:`flask.session` proxy.  The object however itself will provide the
-same interface.
-
-
-Testing JSON APIs
+Identifying Tests
 -----------------
 
-.. versionadded:: 1.0
+Tests are typically located in the ``tests`` folder. Tests are functions
+that start with ``test_``, in Python modules that start with ``test_``.
+Tests can also be further grouped in classes that start with ``Test``.
 
-Flask has great support for JSON, and is a popular choice for building JSON
-APIs. Making requests with JSON data and examining JSON data in responses is
-very convenient::
+It can be difficult to know what to test. Generally, try to test the
+code that you write, not the code of libraries that you use, since they
+are already tested. Try to extract complex behaviors as separate
+functions to test individually.
 
-    from flask import request, jsonify
 
-    @app.route('/api/auth')
-    def auth():
-        json_data = request.get_json()
-        email = json_data['email']
-        password = json_data['password']
-        return jsonify(token=generate_token(email, password))
+Fixtures
+--------
 
-    with app.test_client() as c:
-        rv = c.post('/api/auth', json={
-            'email': 'flask@example.com', 'password': 'secret'
+Pytest *fixtures* allow writing pieces of code that are reusable across
+tests. A simple fixture returns a value, but a fixture can also do
+setup, yield a value, then do teardown. Fixtures for the application,
+test client, and CLI runner are shown below, they can be placed in
+``tests/conftest.py``.
+
+If you're using an
+:doc:`application factory </patterns/appfactories>`, define an ``app``
+fixture to create and configure an app instance. You can add code before
+and after the ``yield`` to set up and tear down other resources, such as
+creating and clearing a database.
+
+If you're not using a factory, you already have an app object you can
+import and configure directly. You can still use an ``app`` fixture to
+set up and tear down resources.
+
+.. code-block:: python
+
+    import pytest
+    from my_project import create_app
+
+    @pytest.fixture()
+    def app():
+        app = create_app()
+        app.config.update({
+            "TESTING": True,
         })
-        json_data = rv.get_json()
-        assert verify_token(email, json_data['token'])
 
-Passing the ``json`` argument in the test client methods sets the request data
-to the JSON-serialized object and sets the content type to
-``application/json``. You can get the JSON data from the request or response
-with ``get_json``.
+        # other setup can go here
+
+        yield app
+
+        # clean up / reset resources here
+
+
+    @pytest.fixture()
+    def client(app):
+        return app.test_client()
+
+
+    @pytest.fixture()
+    def runner(app):
+        return app.test_cli_runner()
+
+
+Sending Requests with the Test Client
+-------------------------------------
+
+The test client makes requests to the application without running a live
+server. Flask's client extends
+:doc:`Werkzeug's client <werkzeug:test>`, see those docs for additional
+information.
+
+The ``client`` has methods that match the common HTTP request methods,
+such as ``client.get()`` and ``client.post()``. They take many arguments
+for building the request; you can find the full documentation in
+:class:`~werkzeug.test.EnvironBuilder`. Typically you'll use ``path``,
+``query``, ``headers``, and ``data`` or ``json``.
+
+To make a request, call the method the request should use with the path
+to the route to test. A :class:`~werkzeug.test.TestResponse` is returned
+to examine the response data. It has all the usual properties of a
+response object. You'll usually look at ``response.data``, which is the
+bytes returned by the view. If you want to use text, Werkzeug 2.1
+provides ``response.text``, or use ``response.get_data(as_text=True)``.
+
+.. code-block:: python
+
+    def test_request_example(client):
+        response = client.get("/posts")
+        assert b"<h2>Hello, World!</h2>" in response.data
+
+
+Pass a dict ``query={"key": "value", ...}`` to set arguments in the
+query string (after the ``?`` in the URL). Pass a dict ``headers={}``
+to set request headers.
+
+To send a request body in a POST or PUT request, pass a value to
+``data``. If raw bytes are passed, that exact body is used. Usually,
+you'll pass a dict to set form data.
+
+
+Form Data
+~~~~~~~~~
+
+To send form data, pass a dict to ``data``. The ``Content-Type`` header
+will be set to ``multipart/form-data`` or
+``application/x-www-form-urlencoded`` automatically.
+
+If a value is a file object opened for reading bytes (``"rb"`` mode), it
+will be treated as an uploaded file. To change the detected filename and
+content type, pass a ``(file, filename, content_type)`` tuple. File
+objects will be closed after making the request, so they do not need to
+use the usual ``with open() as f:`` pattern.
+
+It can be useful to store files in a ``tests/resources`` folder, then
+use ``pathlib.Path`` to get files relative to the current test file.
+
+.. code-block:: python
+
+    from pathlib import Path
+
+    # get the resources folder in the tests folder
+    resources = Path(__file__).parent / "resources"
+
+    def test_edit_user(client):
+        response = client.post("/user/2/edit", data={
+            name="Flask",
+            theme="dark",
+            picture=(resources / "picture.png").open("rb"),
+        })
+        assert response.status_code == 200
+
+
+JSON Data
+~~~~~~~~~
+
+To send JSON data, pass an object to ``json``. The ``Content-Type``
+header will be set to ``application/json`` automatically.
+
+Similarly, if the response contains JSON data, the ``response.json``
+attribute will contain the deserialized object.
+
+.. code-block:: python
+
+    def test_json_data(client):
+        response = client.post("/graphql", json={
+            "query": """
+                query User($id: String!) {
+                    user(id: $id) {
+                        name
+                        theme
+                        picture_url
+                    }
+                }
+            """,
+            variables={"id": 2},
+        })
+        assert response.json["data"]["user"]["name"] == "Flask"
+
+
+Following Redirects
+-------------------
+
+By default, the client does not make additional requests if the response
+is a redirect. By passing ``follow_redirects=True`` to a request method,
+the client will continue to make requests until a non-redirect response
+is returned.
+
+:attr:`TestResponse.history <werkzeug.test.TestResponse.history>` is
+a tuple of the responses that led up to the final response. Each
+response has a :attr:`~werkzeug.test.TestResponse.request` attribute
+which records the request that produced that response.
+
+.. code-block:: python
+
+    def test_logout_redirect(client):
+        response = client.get("/logout")
+        # Check that there was one redirect response.
+        assert len(response.history) == 1
+        # Check that the second request was to the index page.
+        assert response.request.path == "/index"
+
+
+Accessing and Modifying the Session
+-----------------------------------
+
+To access Flask's context variables, mainly
+:data:`~flask.session`, use the client in a ``with`` statement.
+The app and request context will remain active *after* making a request,
+until the ``with`` block ends.
+
+.. code-block:: python
+
+    from flask import session
+
+    def test_access_session(client):
+        with client:
+            client.post("/auth/login", data={"username": "flask"})
+            # session is still accessible
+            assert session["user_id"] == 1
+
+        # session is no longer accessible
+
+If you want to access or set a value in the session *before* making a
+request, use the client's
+:meth:`~flask.testing.FlaskClient.session_transaction` method in a
+``with`` statement. It returns a session object, and will save the
+session once the block ends.
+
+.. code-block:: python
+
+    from flask import session
+
+    def test_modify_session(client):
+        with client.session_transaction() as session:
+            # set a user id without going through the login route
+            session["user_id"] = 1
+
+        # session is saved now
+
+        response = client.get("/users/me")
+        assert response.json["username"] == "flask"
 
 
 .. _testing-cli:
 
-Testing CLI Commands
---------------------
-
-Click comes with `utilities for testing`_ your CLI commands. A
-:class:`~click.testing.CliRunner` runs commands in isolation and
-captures the output in a :class:`~click.testing.Result` object.
+Running Commands with the CLI Runner
+------------------------------------
 
 Flask provides :meth:`~flask.Flask.test_cli_runner` to create a
-:class:`~flask.testing.FlaskCliRunner` that passes the Flask app to the
-CLI automatically. Use its :meth:`~flask.testing.FlaskCliRunner.invoke`
-method to call commands in the same way they would be called from the
-command line. ::
+:class:`~flask.testing.FlaskCliRunner`, which runs CLI commands in
+isolation and captures the output in a :class:`~click.testing.Result`
+object. Flask's runner extends :doc:`Click's runner <click:testing>`,
+see those docs for additional information.
+
+Use the runner's :meth:`~flask.testing.FlaskCliRunner.invoke` method to
+call commands in the same way they would be called with the ``flask``
+command from the command line.
+
+.. code-block:: python
 
     import click
 
-    @app.cli.command('hello')
-    @click.option('--name', default='World')
+    @app.cli.command("hello")
+    @click.option("--name", default="World")
     def hello_command(name):
-        click.echo(f'Hello, {name}!')
+        click.echo(f"Hello, {name}!")
 
-    def test_hello():
-        runner = app.test_cli_runner()
+    def test_hello_command(runner):
+        result = runner.invoke(["hello"])
+        assert "World" in result.output
 
-        # invoke the command directly
-        result = runner.invoke(hello_command, ['--name', 'Flask'])
-        assert 'Hello, Flask' in result.output
+        result = runner.invoke(["hello", "--name", "Flask"])
+        assert "Flask" in result.output
 
-        # or by name
-        result = runner.invoke(args=['hello'])
-        assert 'World' in result.output
 
-In the example above, invoking the command by name is useful because it
-verifies that the command was correctly registered with the app.
+Tests that depend on an Active Context
+--------------------------------------
 
-If you want to test how your command parses parameters, without running
-the command, use its :meth:`~click.BaseCommand.make_context` method.
-This is useful for testing complex validation rules and custom types. ::
+You may have functions that are called from views or commands, that
+expect an active :doc:`application context </appcontext>` or
+:doc:`request context  </reqcontext>` because they access ``request``,
+``session``, or ``current_app``. Rather than testing them by making a
+request or invoking the command, you can create and activate a context
+directly.
 
-    def upper(ctx, param, value):
-        if value is not None:
-            return value.upper()
+Use ``with app.app_context()`` to push an application context. For
+example, database extensions usually require an active app context to
+make queries.
 
-    @app.cli.command('hello')
-    @click.option('--name', default='World', callback=upper)
-    def hello_command(name):
-        click.echo(f'Hello, {name}!')
+.. code-block:: python
 
-    def test_hello_params():
-        context = hello_command.make_context('hello', ['--name', 'flask'])
-        assert context.params['name'] == 'FLASK'
+    def test_db_post_model(app):
+        with app.app_context():
+            post = db.session.query(Post).get(1)
 
-.. _click: https://click.palletsprojects.com/
-.. _utilities for testing: https://click.palletsprojects.com/testing/
+Use ``with app.test_request_context()`` to push a request context. It
+takes the same arguments as the test client's request methods.
+
+.. code-block:: python
+
+    def test_validate_user_edit(app):
+        with app.test_request_context(
+            "/user/2/edit", method="POST", data={"name": ""}
+        ):
+            # call a function that accesses `request`
+            messages = validate_edit_user()
+
+        assert messages["name"][0] == "Name cannot be empty."
+
+Creating a test request context doesn't run any of the Flask dispatching
+code, so ``before_request`` functions are not called. If you need to
+call these, usually it's better to make a full request instead. However,
+it's possible to call them manually.
+
+.. code-block:: python
+
+    def test_auth_token(app):
+        with app.test_request_context("/user/2/edit", headers={"X-Auth-Token": "1"}):
+            app.preprocess_request()
+            assert g.user.name == "Flask"
