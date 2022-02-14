@@ -47,7 +47,7 @@ Unreleased
 Version 2.0.3
 -------------
 
-Unreleased
+Released 2022-02-14
 
 -   The test client's ``as_tuple`` parameter is deprecated and will be
     removed in Werkzeug 2.1. It is now also deprecated in Flask, to be
