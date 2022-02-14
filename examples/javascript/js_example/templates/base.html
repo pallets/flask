@@ -1,7 +1,7 @@
 <!doctype html>
 <title>JavaScript Example</title>
-<link rel="stylesheet" href="https://unpkg.com/sakura.css@1.0.0/css/normalize.css">
-<link rel="stylesheet" href="https://unpkg.com/sakura.css@1.0.0/css/sakura-earthly.css">
+<link rel="stylesheet" href="https://unpkg.com/normalize.css@8.0.1/normalize.css">
+<link rel="stylesheet" href="https://unpkg.com/sakura.css@1.3.1/css/sakura.css">
 <style>
   ul { margin: 0; padding: 0; display: flex; list-style-type: none; }
   li > * { padding: 1em; }
@@ -13,10 +13,10 @@
 </style>
 <ul>
   <li><span>Type:</span>
-  <li class="{% if js == 'plain' %}active{% endif %}">
-    <a href="{{ url_for('index', js='plain') }}">Plain</a>
   <li class="{% if js == 'fetch' %}active{% endif %}">
     <a href="{{ url_for('index', js='fetch') }}">Fetch</a>
+  <li class="{% if js == 'xhr' %}active{% endif %}">
+    <a href="{{ url_for('index', js='xhr') }}">XHR</a>
   <li class="{% if js == 'jquery' %}active{% endif %}">
     <a href="{{ url_for('index', js='jquery') }}">jQuery</a>
 </ul>
