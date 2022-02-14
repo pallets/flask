@@ -2,8 +2,9 @@
 
 {% block intro %}
   <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"><code>XMLHttpRequest</code></a>
-  is the plain JavaScript way to make requests. It's natively supported
-  by all browsers.
+  is the original JavaScript way to make requests. It's natively supported
+  by all browsers, but has been superseded by
+  <a href="{{ url_for("index", js="fetch") }}"><code>fetch</code></a>.
 {% endblock %}
 
 {% block script %}
