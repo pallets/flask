@@ -50,6 +50,7 @@ from .scaffold import find_package
 from .scaffold import Scaffold
 from .scaffold import setupmethod
 from .sessions import SecureCookieSessionInterface
+from .sessions import SessionInterface
 from .signals import appcontext_tearing_down
 from .signals import got_request_exception
 from .signals import request_finished
@@ -378,7 +379,7 @@ class Flask(Scaffold):
     #: :class:`~flask.sessions.SecureCookieSessionInterface` is used here.
     #:
     #: .. versionadded:: 0.8
-    session_interface = SecureCookieSessionInterface()
+    session_interface: SessionInterface = SecureCookieSessionInterface()
 
     def __init__(
         self,
