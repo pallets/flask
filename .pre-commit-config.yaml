@@ -14,6 +14,7 @@ repos:
         name: Reorder Python imports (src, tests)
         files: "^(?!examples/)"
         args: ["--application-directories", "src"]
+        additional_dependencies: ["setuptools>60.9"]
   - repo: https://github.com/psf/black
     rev: 22.1.0
     hooks:
