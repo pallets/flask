@@ -98,21 +98,34 @@ First time setup
 
 -   Create a virtualenv.
 
-    .. tabs::
+    .. raw:: html
 
-       .. group-tab:: Linux/macOS
+       <details>
+       <summary><code>Linux/macOS</code></summary>
 
-          .. code-block:: text
+    .. code-block:: console
 
-             $ python3 -m venv env
-             $ . env/bin/activate
+       $ python3 -m venv env
+       $ . env/bin/activate
 
-       .. group-tab:: Windows
+    .. raw:: html
 
-          .. code-block:: text
+       </details>
 
-             > py -3 -m venv env
-             > env\Scripts\activate
+
+    .. raw:: html
+
+       <details>
+       <summary><code>Windows</code></summary>
+
+    .. code-block:: console
+
+       > py -3 -m venv env
+       > env\Scripts\activate
+
+    .. raw:: html
+
+       </details>
 
 -   Upgrade pip and setuptools.
 
