@@ -301,9 +301,17 @@ class DispatchingApp:
             self._load_in_background()
 
     def _load_in_background(self):
+        # Store the Click context and push it in the loader thread so
+        # script_info is still available.
+        ctx = click.get_current_context(silent=True)
+
         def _load_app():
             __traceback_hide__ = True  # noqa: F841
+
             with self._lock:
+                if ctx is not None:
+                    click.globals.push_context(ctx)
+
                 try:
                     self._load_unlocked()
                 except Exception as e:
