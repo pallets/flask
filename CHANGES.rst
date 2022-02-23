@@ -42,6 +42,9 @@ Unreleased
 -   Add an ``--exclude-patterns`` option to the ``flask run`` CLI
     command to specify patterns that will be ignored by the reloader.
     :issue:`4188`
+-   When using lazy loading (the default with the debugger), the Click
+    context from the ``flask run`` command remains available in the
+    loader thread. :issue:`4460`
 
 
 Version 2.0.3
