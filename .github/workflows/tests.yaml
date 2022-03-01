@@ -37,7 +37,7 @@ jobs:
           - {name: Typing, python: '3.10', os: ubuntu-latest, tox: typing}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
