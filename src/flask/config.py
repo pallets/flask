@@ -1,9 +1,17 @@
 import errno
+import json
 import os
 import types
 import typing as t
 
 from werkzeug.utils import import_string
+
+
+def _json_loads(raw: t.Union[str, bytes]) -> t.Any:
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return raw
 
 
 class ConfigAttribute:
@@ -96,6 +104,44 @@ class Config(dict):
                 " file"
             )
         return self.from_pyfile(rv, silent=silent)
+
+    def from_prefixed_env(
+        self,
+        prefix: str = "FLASK_",
+        *,
+        loads: t.Callable[[t.Union[str, bytes]], t.Any] = _json_loads,
+    ) -> bool:
+        """Updates the config from environment variables with the prefix.
+
+        Calling this method will result in every environment variable
+        starting with **prefix** being placed into the configuration
+        without the **prefix**. The prefix is configurable as an
+        argument. Note that this method updates the existing config.
+
+        For example if there is an environment variable
+        ``FLASK_SECRET_KEY`` with value ``secretly`` and the prefix is
+        ``FLASK_`` the config will contain the key ``SECRET_KEY`` with
+        the value ``secretly`` after calling this method.
+
+        The value of the environment variable will be passed to the
+        **loads** parameter before being placed into the config. By
+        default **loads** utilises the stdlib json.loads to parse the
+        value, falling back to the value itself on parsing error.
+
+        :param loads: A callable that takes a str (or bytes) returns
+            the parsed value.
+        :return: Always returns ``True``.
+
+        .. versionadded:: 2.1.0
+
+        """
+        mapping = {}
+        for raw_key, value in os.environ.items():
+            if raw_key.startswith(prefix):
+                key = raw_key[len(prefix) :]  # Use removeprefix with Python 3.9
+                mapping[key] = loads(value)
+
+        return self.from_mapping(mapping)
 
     def from_pyfile(self, filename: str, silent: bool = False) -> bool:
         """Updates the values in the config from a Python file.  This function

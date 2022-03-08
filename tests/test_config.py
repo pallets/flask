@@ -38,6 +38,30 @@ def test_config_from_file():
     common_object_test(app)
 
 
+def test_config_from_prefixed_env(monkeypatch):
+    app = flask.Flask(__name__)
+    monkeypatch.setenv("FLASK_A", "A value")
+    monkeypatch.setenv("FLASK_B", "true")
+    monkeypatch.setenv("FLASK_C", "1")
+    monkeypatch.setenv("FLASK_D", "1.2")
+    monkeypatch.setenv("NOT_FLASK_A", "Another value")
+    app.config.from_prefixed_env()
+    assert app.config["A"] == "A value"
+    assert app.config["B"] is True
+    assert app.config["C"] == 1
+    assert app.config["D"] == 1.2
+    assert "Another value" not in app.config.items()
+
+
+def test_config_from_custom_prefixed_env(monkeypatch):
+    app = flask.Flask(__name__)
+    monkeypatch.setenv("FLASK_A", "A value")
+    monkeypatch.setenv("NOT_FLASK_A", "Another value")
+    app.config.from_prefixed_env("NOT_FLASK_")
+    assert app.config["A"] == "Another value"
+    assert "A value" not in app.config.items()
+
+
 def test_config_from_mapping():
     app = flask.Flask(__name__)
     app.config.from_mapping({"SECRET_KEY": "config", "TEST_KEY": "foo"})

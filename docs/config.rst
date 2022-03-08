@@ -515,9 +515,11 @@ Or from a JSON file:
 Configuring from Environment Variables
 --------------------------------------
 
-In addition to pointing to configuration files using environment variables, you
-may find it useful (or necessary) to control your configuration values directly
-from the environment.
+In addition to pointing to configuration files using environment
+variables, you may find it useful (or necessary) to control your
+configuration values directly from the environment. Flask can be
+instructed to load all environment variables starting with a specific
+prefix into the config using :meth:`~flask.Config.from_prefixed_env`.
 
 Environment variables can be set in the shell before starting the server:
 
@@ -527,8 +529,8 @@ Environment variables can be set in the shell before starting the server:
 
       .. code-block:: text
 
-         $ export SECRET_KEY="5f352379324c22463451387a0aec5d2f"
-         $ export MAIL_ENABLED=false
+         $ export FLASK_SECRET_KEY="5f352379324c22463451387a0aec5d2f"
+         $ export FLASK_MAIL_ENABLED=false
          $ flask run
           * Running on http://127.0.0.1:5000/
 
@@ -536,8 +538,8 @@ Environment variables can be set in the shell before starting the server:
 
       .. code-block:: text
 
-         $ set -x SECRET_KEY "5f352379324c22463451387a0aec5d2f"
-         $ set -x MAIL_ENABLED false
+         $ set -x FLASK_SECRET_KEY "5f352379324c22463451387a0aec5d2f"
+         $ set -x FLASK_MAIL_ENABLED false
          $ flask run
           * Running on http://127.0.0.1:5000/
 
@@ -545,8 +547,8 @@ Environment variables can be set in the shell before starting the server:
 
       .. code-block:: text
 
-         > set SECRET_KEY="5f352379324c22463451387a0aec5d2f"
-         > set MAIL_ENABLED=false
+         > set FLASK_SECRET_KEY="5f352379324c22463451387a0aec5d2f"
+         > set FLASK_MAIL_ENABLED=false
          > flask run
           * Running on http://127.0.0.1:5000/
 
@@ -554,27 +556,26 @@ Environment variables can be set in the shell before starting the server:
 
       .. code-block:: text
 
-         > $env:SECRET_KEY = "5f352379324c22463451387a0aec5d2f"
-         > $env:MAIL_ENABLED = "false"
+         > $env:FLASK_SECRET_KEY = "5f352379324c22463451387a0aec5d2f"
+         > $env:FLASK_MAIL_ENABLED = "false"
          > flask run
           * Running on http://127.0.0.1:5000/
 
-While this approach is straightforward to use, it is important to remember that
-environment variables are strings -- they are not automatically deserialized
-into Python types.
+The variables can then be loaded and accessed via the config with a
+key equal to the environment variable name without the prefix i.e.
 
-Here is an example of a configuration file that uses environment variables::
+.. code-block:: python
 
-    import os
+    app.config.from_prefixed_env()
+    app.config["SECRET_KEY"]  # Is "5f352379324c22463451387a0aec5d2f"
 
-    _mail_enabled = os.environ.get("MAIL_ENABLED", default="true")
-    MAIL_ENABLED = _mail_enabled.lower() in {"1", "t", "true"}
+The prefix is ``FLASK_`` by default, however it is an configurable via
+the ``prefix`` argument of :meth:`~flask.Config.from_prefixed_env`.
 
-    SECRET_KEY = os.environ.get("SECRET_KEY")
-
-    if not SECRET_KEY:
-        raise ValueError("No SECRET_KEY set for Flask application")
-
+Whilst the value of any environment variable is a string, it will be
+parsed before being placed into the flask config. By default the
+parsing is done by json.loads, however this is configurable via the
+``loads`` argument of :meth:`~flask.Config.from_prefixed_env`.
 
 Notice that any value besides an empty string will be interpreted as a boolean
 ``True`` value in Python, which requires care if an environment explicitly sets
