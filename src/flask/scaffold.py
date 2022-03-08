@@ -369,48 +369,53 @@ class Scaffold:
 
         return open(os.path.join(self.root_path, resource), mode)
 
-    def _method_route(self, method: str, rule: str, options: dict) -> t.Callable:
+    def _method_route(
+        self,
+        method: str,
+        rule: str,
+        options: dict,
+    ) -> t.Callable[[F], F]:
         if "methods" in options:
             raise TypeError("Use the 'route' decorator to use the 'methods' argument.")
 
         return self.route(rule, methods=[method], **options)
 
-    def get(self, rule: str, **options: t.Any) -> t.Callable:
+    def get(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["GET"]``.
 
         .. versionadded:: 2.0
         """
         return self._method_route("GET", rule, options)
 
-    def post(self, rule: str, **options: t.Any) -> t.Callable:
+    def post(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["POST"]``.
 
         .. versionadded:: 2.0
         """
         return self._method_route("POST", rule, options)
 
-    def put(self, rule: str, **options: t.Any) -> t.Callable:
+    def put(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["PUT"]``.
 
         .. versionadded:: 2.0
         """
         return self._method_route("PUT", rule, options)
 
-    def delete(self, rule: str, **options: t.Any) -> t.Callable:
+    def delete(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["DELETE"]``.
 
         .. versionadded:: 2.0
         """
         return self._method_route("DELETE", rule, options)
 
-    def patch(self, rule: str, **options: t.Any) -> t.Callable:
+    def patch(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["PATCH"]``.
 
         .. versionadded:: 2.0
         """
         return self._method_route("PATCH", rule, options)
 
-    def route(self, rule: str, **options: t.Any) -> t.Callable:
+    def route(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Decorate a view function to register it with the given URL
         rule and options. Calls :meth:`add_url_rule`, which has more
         details about the implementation.
@@ -434,7 +439,7 @@ class Scaffold:
             :class:`~werkzeug.routing.Rule` object.
         """
 
-        def decorator(f: t.Callable) -> t.Callable:
+        def decorator(f: F) -> F:
             endpoint = options.pop("endpoint", None)
             self.add_url_rule(rule, endpoint, f, **options)
             return f
