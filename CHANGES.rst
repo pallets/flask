@@ -50,6 +50,8 @@ Unreleased
 -   Relax typing for ``errorhandler`` to allow the user to use more
     precise types and decorate the same function multiple times.
     :issue:`4095, 4295, 4297`
+-   Fix typing for ``__exit__`` methods for better compatibility with
+    ``ExitStack``. :issue:`4474`
 
 
 Version 2.0.3
