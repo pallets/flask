@@ -33,8 +33,6 @@ ResponseReturnValue = t.Union[
     "WSGIApplication",
 ]
 
-GenericException = t.TypeVar("GenericException", bound=Exception, contravariant=True)
-
 AppOrBlueprintKey = t.Optional[str]  # The App key is None, whereas blueprints are named
 AfterRequestCallable = t.Callable[["Response"], "Response"]
 BeforeFirstRequestCallable = t.Callable[[], None]
@@ -46,4 +44,10 @@ TemplateGlobalCallable = t.Callable[..., t.Any]
 TemplateTestCallable = t.Callable[..., bool]
 URLDefaultCallable = t.Callable[[str, dict], None]
 URLValuePreprocessorCallable = t.Callable[[t.Optional[str], t.Optional[dict]], None]
-ErrorHandlerCallable = t.Callable[[GenericException], ResponseReturnValue]
+# This should take Exception, but that either breaks typing the argument
+# with a specific exception, or decorating multiple times with different
+# exceptions (and using a union type on the argument).
+# https://github.com/pallets/flask/issues/4095
+# https://github.com/pallets/flask/issues/4295
+# https://github.com/pallets/flask/issues/4297
+ErrorHandlerCallable = t.Callable[[t.Any], ResponseReturnValue]

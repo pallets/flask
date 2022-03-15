@@ -47,6 +47,9 @@ Unreleased
     loader thread. :issue:`4460`
 -   Deleting the session cookie uses the ``httponly`` flag.
     :issue:`4485`
+-   Relax typing for ``errorhandler`` to allow the user to use more
+    precise types and decorate the same function multiple times.
+    :issue:`4095, 4295, 4297`
 
 
 Version 2.0.3
