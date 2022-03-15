@@ -1672,13 +1672,13 @@ class Flask(Scaffold):
 
             # a 3-tuple is unpacked directly
             if len_rv == 3:
-                rv, status, headers = rv
+                rv, status, headers = rv  # type: ignore[misc]
             # decide if a 2-tuple has status or headers
             elif len_rv == 2:
                 if isinstance(rv[1], (Headers, dict, tuple, list)):
                     rv, headers = rv
                 else:
-                    rv, status = rv
+                    rv, status = rv  # type: ignore[misc]
             # other sized tuples are not allowed
             else:
                 raise TypeError(
@@ -1701,7 +1701,11 @@ class Flask(Scaffold):
                 # let the response class set the status and headers instead of
                 # waiting to do it manually, so that the class can handle any
                 # special logic
-                rv = self.response_class(rv, status=status, headers=headers)
+                rv = self.response_class(
+                    rv,
+                    status=status,
+                    headers=headers,  # type: ignore[arg-type]
+                )
                 status = headers = None
             elif isinstance(rv, dict):
                 rv = jsonify(rv)
@@ -1729,13 +1733,13 @@ class Flask(Scaffold):
         # prefer the status if it was provided
         if status is not None:
             if isinstance(status, (str, bytes, bytearray)):
-                rv.status = status  # type: ignore
+                rv.status = status
             else:
                 rv.status_code = status
 
         # extend existing headers with provided headers
         if headers:
-            rv.headers.update(headers)
+            rv.headers.update(headers)  # type: ignore[arg-type]
 
         return rv
 

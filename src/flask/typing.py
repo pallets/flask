@@ -4,14 +4,16 @@ import typing as t
 if t.TYPE_CHECKING:
     from _typeshed.wsgi import WSGIApplication  # noqa: F401
     from werkzeug.datastructures import Headers  # noqa: F401
-    from .wrappers import Response  # noqa: F401
+    from werkzeug.wrappers.response import Response  # noqa: F401
 
 # The possible types that are directly convertible or are a Response object.
 ResponseValue = t.Union[
     "Response",
-    t.AnyStr,
+    str,
+    bytes,
     t.Dict[str, t.Any],  # any jsonify-able dict
-    t.Generator[t.AnyStr, None, None],
+    t.Iterator[str],
+    t.Iterator[bytes],
 ]
 StatusCode = int
 
