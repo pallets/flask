@@ -45,6 +45,8 @@ Unreleased
 -   When using lazy loading (the default with the debugger), the Click
     context from the ``flask run`` command remains available in the
     loader thread. :issue:`4460`
+-   Deleting the session cookie uses the ``httponly`` flag.
+    :issue:`4485`
 
 
 Version 2.0.3
