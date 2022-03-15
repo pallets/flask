@@ -574,9 +574,7 @@ class Blueprint(Scaffold):
         handler is used for all requests, even if outside of the blueprint.
         """
 
-        def decorator(
-            f: "ErrorHandlerCallable[Exception]",
-        ) -> "ErrorHandlerCallable[Exception]":
+        def decorator(f: "ErrorHandlerCallable") -> "ErrorHandlerCallable":
             self.record_once(lambda s: s.app.errorhandler(code)(f))
             return f
 
