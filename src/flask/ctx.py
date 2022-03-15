@@ -267,7 +267,10 @@ class AppContext:
         return self
 
     def __exit__(
-        self, exc_type: type, exc_value: BaseException, tb: TracebackType
+        self,
+        exc_type: t.Optional[type],
+        exc_value: t.Optional[BaseException],
+        tb: t.Optional[TracebackType],
     ) -> None:
         self.pop(exc_value)
 
@@ -491,7 +494,10 @@ class RequestContext:
         return self
 
     def __exit__(
-        self, exc_type: type, exc_value: BaseException, tb: TracebackType
+        self,
+        exc_type: t.Optional[type],
+        exc_value: t.Optional[BaseException],
+        tb: t.Optional[TracebackType],
     ) -> None:
         # do not pop the request stack if we are in debug mode and an
         # exception happened.  This will allow the debugger to still
