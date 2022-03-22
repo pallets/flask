@@ -151,7 +151,7 @@ If a route receives an unallowed request method, a "405 Method Not Allowed"
 subclasses of :class:`~werkzeug.exceptions.HTTPException` and are provided by
 default in Flask.
 
-Flask gives you to the ability to raise any HTTP exception registered by
+Flask gives you the ability to raise any HTTP exception registered by
 Werkzeug. However, the default HTTP exceptions return simple exception
 pages. You might want to show custom error pages to the user when an error occurs.
 This can be done by registering error handlers.
