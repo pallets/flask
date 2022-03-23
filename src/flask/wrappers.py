@@ -110,7 +110,7 @@ class Request(RequestBase):
         return _split_blueprint_path(name)
 
     def _load_form_data(self) -> None:
-        RequestBase._load_form_data(self)
+        super()._load_form_data()
 
         # In debug mode we're replacing the files multidict with an ad-hoc
         # subclass that raises a different error for key errors.
