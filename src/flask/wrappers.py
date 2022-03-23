@@ -9,7 +9,6 @@ from .globals import current_app
 from .helpers import _split_blueprint_path
 
 if t.TYPE_CHECKING:
-    import typing_extensions as te
     from werkzeug.routing import Rule
 
 
@@ -124,11 +123,14 @@ class Request(RequestBase):
 
             attach_enctype_error_multidict(self)
 
-    def on_json_loading_failed(self, e: Exception) -> "te.NoReturn":
-        if current_app and current_app.debug:
-            raise BadRequest(f"Failed to decode JSON object: {e}")
+    def on_json_loading_failed(self, e: ValueError) -> t.Any:
+        try:
+            return super().on_json_loading_failed(e)
+        except BadRequest as e:
+            if current_app and current_app.debug:
+                raise
 
-        raise BadRequest()
+            raise BadRequest() from e
 
 
 class Response(ResponseBase):
