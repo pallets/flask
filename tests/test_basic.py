@@ -15,6 +15,7 @@ from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
+from werkzeug.routing import RequestRedirect
 
 import flask
 
@@ -1724,28 +1725,29 @@ def test_before_first_request_functions_concurrent(app, client):
     assert app.got_first_request
 
 
-def test_routing_redirect_debugging(app, client):
-    app.debug = True
-
+def test_routing_redirect_debugging(monkeypatch, app, client):
     @app.route("/foo/", methods=["GET", "POST"])
     def foo():
         return "success"
 
-    with client:
-        with pytest.raises(AssertionError) as e:
-            client.post("/foo", data={})
-        assert "http://localhost/foo/" in str(e.value)
-        assert "Make sure to directly send your POST-request to this URL" in str(
-            e.value
-        )
-
-        rv = client.get("/foo", data={}, follow_redirects=True)
-        assert rv.data == b"success"
-
     app.debug = False
+    rv = client.post("/foo", data={}, follow_redirects=True)
+    assert rv.data == b"success"
+
+    app.debug = True
+
     with client:
         rv = client.post("/foo", data={}, follow_redirects=True)
         assert rv.data == b"success"
+        rv = client.get("/foo", data={}, follow_redirects=True)
+        assert rv.data == b"success"
+
+    monkeypatch.setattr(RequestRedirect, "code", 301)
+
+    with client, pytest.raises(AssertionError) as e:
+        client.post("/foo", data={})
+
+    assert "canonical URL 'http://localhost/foo/'" in str(e.value)
 
 
 def test_route_decorator_custom_endpoint(app, client):

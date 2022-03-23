@@ -41,35 +41,33 @@ class DebugFilesKeyError(KeyError, AssertionError):
 
 
 class FormDataRoutingRedirect(AssertionError):
-    """This exception is raised by Flask in debug mode if it detects a
-    redirect caused by the routing system when the request method is not
-    GET, HEAD or OPTIONS.  Reasoning: form data will be dropped.
+    """This exception is raised in debug mode if a routing redirect
+    would cause the browser to drop the method or body. This happens
+    when method is not GET, HEAD or OPTIONS and the status code is not
+    307 or 308.
     """
 
     def __init__(self, request):
         exc = request.routing_exception
         buf = [
-            f"A request was sent to this URL ({request.url}) but a"
-            " redirect was issued automatically by the routing system"
-            f" to {exc.new_url!r}."
+            f"A request was sent to '{request.url}', but routing issued"
+            f" a redirect to the canonical URL '{exc.new_url}'."
         ]
 
-        # In case just a slash was appended we can be extra helpful
-        if f"{request.base_url}/" == exc.new_url.split("?")[0]:
+        if f"{request.base_url}/" == exc.new_url.partition("?")[0]:
             buf.append(
-                "  The URL was defined with a trailing slash so Flask"
-                " will automatically redirect to the URL with the"
-                " trailing slash if it was accessed without one."
+                " The URL was defined with a trailing slash. Flask"
+                " will redirect to the URL with a trailing slash if it"
+                " was accessed without one."
             )
 
         buf.append(
-            "  Make sure to directly send your"
-            f" {request.method}-request to this URL since we can't make"
-            " browsers or HTTP clients redirect with form data reliably"
-            " or without user interaction."
+            " Send requests to the canonical URL, or use 307 or 308 for"
+            " routing redirects. Otherwise, browsers will drop form"
+            " data.\n\n"
+            "This exception is only raised in debug mode."
         )
-        buf.append("\n\nNote: this exception is only raised in debug mode")
-        AssertionError.__init__(self, "".join(buf).encode("utf-8"))
+        super().__init__("".join(buf))
 
 
 def attach_enctype_error_multidict(request):
