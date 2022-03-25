@@ -79,12 +79,24 @@ def test_from_prefixed_env_nested(monkeypatch):
     app.config["EXIST"] = {"ok": "value", "flag": True, "inner": {"ik": 1}}
     app.config.from_prefixed_env()
 
-    assert app.config["EXIST"] == {
-        "ok": "other",
-        "flag": True,
-        "inner": {"ik": 2},
-        "new": {"more": {"k": False}},
-    }
+    if os.name != "nt":
+        assert app.config["EXIST"] == {
+            "ok": "other",
+            "flag": True,
+            "inner": {"ik": 2},
+            "new": {"more": {"k": False}},
+        }
+    else:
+        # Windows env var keys are always uppercase.
+        assert app.config["EXIST"] == {
+            "ok": "value",
+            "OK": "other",
+            "flag": True,
+            "inner": {"ik": 1},
+            "INNER": {"IK": 2},
+            "NEW": {"MORE": {"k": False}},
+        }
+
     assert app.config["NEW"] == {"K": "v"}
 
 

@@ -594,9 +594,12 @@ exist on the parent dict will be initialized to an empty dict.
 
     app.config["MYAPI"]["credentials"]["username"]  # Is "user123"
 
-For even more config loading features, including merging, try a
-dedicated library such as Dynaconf_, which includes integration with
-Flask.
+On Windows, environment variable keys are always uppercase, therefore
+the above example would end up as ``MYAPI__CREDENTIALS__USERNAME``.
+
+For even more config loading features, including merging and
+case-insensitive Windows support, try a dedicated library such as
+Dynaconf_, which includes integration with Flask.
 
 .. _Dynaconf: https://www.dynaconf.com/
 
