@@ -78,7 +78,7 @@ class Config(dict):
     """
 
     def __init__(self, root_path: str, defaults: t.Optional[dict] = None) -> None:
-        dict.__init__(self, defaults or {})
+        super().__init__(defaults or {})
         self.root_path = root_path
 
     def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
@@ -106,42 +106,68 @@ class Config(dict):
         return self.from_pyfile(rv, silent=silent)
 
     def from_prefixed_env(
-        self,
-        prefix: str = "FLASK_",
-        *,
-        loads: t.Callable[[t.Union[str, bytes]], t.Any] = _json_loads,
+        self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads
     ) -> bool:
-        """Updates the config from environment variables with the prefix.
+        """Load any environment variables that start with ``FLASK_``,
+        dropping the prefix from the env key for the config key. Values
+        are passed through a loading function to attempt to convert them
+        to more specific types than strings.
 
-        Calling this method will result in every environment variable
-        starting with **prefix** being placed into the configuration
-        without the **prefix**. The prefix is configurable as an
-        argument. Note that this method updates the existing config.
+        Keys are loaded in :func:`sorted` order.
 
-        For example if there is an environment variable
-        ``FLASK_SECRET_KEY`` with value ``secretly`` and the prefix is
-        ``FLASK_`` the config will contain the key ``SECRET_KEY`` with
-        the value ``secretly`` after calling this method.
+        The default loading function attempts to parse values as any
+        valid JSON type, including dicts and lists.
 
-        The value of the environment variable will be passed to the
-        **loads** parameter before being placed into the config. By
-        default **loads** utilises the stdlib json.loads to parse the
-        value, falling back to the value itself on parsing error.
+        Specific items in nested dicts can be set by separating the
+        keys with double underscores (``__``). If an intermediate key
+        doesn't exist, it will be initialized to an empty dict.
 
-        :param loads: A callable that takes a str (or bytes) returns
-            the parsed value.
-        :return: Always returns ``True``.
+        :param prefix: Load env vars that start with this prefix,
+            separated with an underscore (``_``).
+        :param loads: Pass each string value to this function and use
+            the returned value as the config value. If any error is
+            raised it is ignored and the value remains a string. The
+            default is :func:`json.loads`.
 
-        .. versionadded:: 2.1.0
-
+        .. versionadded:: 2.1
         """
-        mapping = {}
-        for raw_key, value in os.environ.items():
-            if raw_key.startswith(prefix):
-                key = raw_key[len(prefix) :]  # Use removeprefix with Python 3.9
-                mapping[key] = loads(value)
+        prefix = f"{prefix}_"
+        len_prefix = len(prefix)
 
-        return self.from_mapping(mapping)
+        for key in sorted(os.environ):
+            if not key.startswith(prefix):
+                continue
+
+            value = os.environ[key]
+
+            try:
+                value = loads(value)
+            except Exception:
+                # Keep the value as a string if loading failed.
+                pass
+
+            # Change to key.removeprefix(prefix) on Python >= 3.9.
+            key = key[len_prefix:]
+
+            if "__" not in key:
+                # A non-nested key, set directly.
+                self[key] = value
+                continue
+
+            # Traverse nested dictionaries with keys separated by "__".
+            current = self
+            *parts, tail = key.split("__")
+
+            for part in parts:
+                # If an intermediate dict does not exist, create it.
+                if part not in current:
+                    current[part] = {}
+
+                current = current[part]
+
+            current[tail] = value
+
+        return True
 
     def from_pyfile(self, filename: str, silent: bool = False) -> bool:
         """Updates the values in the config from a Python file.  This function

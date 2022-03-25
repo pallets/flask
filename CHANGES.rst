@@ -55,6 +55,10 @@ Unreleased
 -   From Werkzeug, for redirect responses the ``Location`` header URL
     will remain relative, and exclude the scheme and domain, by default.
     :pr:`4496`
+-   Add ``Config.from_prefixed_env()`` to load config values from
+    environment variables that start with ``FLASK_`` or another prefix.
+    This parses values as JSON by default, and allows setting keys in
+    nested dicts. :pr:`4479`
 
 
 Version 2.0.3

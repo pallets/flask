@@ -38,28 +38,54 @@ def test_config_from_file():
     common_object_test(app)
 
 
-def test_config_from_prefixed_env(monkeypatch):
+def test_from_prefixed_env(monkeypatch):
+    monkeypatch.setenv("FLASK_STRING", "value")
+    monkeypatch.setenv("FLASK_BOOL", "true")
+    monkeypatch.setenv("FLASK_INT", "1")
+    monkeypatch.setenv("FLASK_FLOAT", "1.2")
+    monkeypatch.setenv("FLASK_LIST", "[1, 2]")
+    monkeypatch.setenv("FLASK_DICT", '{"k": "v"}')
+    monkeypatch.setenv("NOT_FLASK_OTHER", "other")
+
     app = flask.Flask(__name__)
-    monkeypatch.setenv("FLASK_A", "A value")
-    monkeypatch.setenv("FLASK_B", "true")
-    monkeypatch.setenv("FLASK_C", "1")
-    monkeypatch.setenv("FLASK_D", "1.2")
-    monkeypatch.setenv("NOT_FLASK_A", "Another value")
     app.config.from_prefixed_env()
-    assert app.config["A"] == "A value"
-    assert app.config["B"] is True
-    assert app.config["C"] == 1
-    assert app.config["D"] == 1.2
-    assert "Another value" not in app.config.items()
+
+    assert app.config["STRING"] == "value"
+    assert app.config["BOOL"] is True
+    assert app.config["INT"] == 1
+    assert app.config["FLOAT"] == 1.2
+    assert app.config["LIST"] == [1, 2]
+    assert app.config["DICT"] == {"k": "v"}
+    assert "OTHER" not in app.config
 
 
-def test_config_from_custom_prefixed_env(monkeypatch):
+def test_from_prefixed_env_custom_prefix(monkeypatch):
+    monkeypatch.setenv("FLASK_A", "a")
+    monkeypatch.setenv("NOT_FLASK_A", "b")
+
     app = flask.Flask(__name__)
-    monkeypatch.setenv("FLASK_A", "A value")
-    monkeypatch.setenv("NOT_FLASK_A", "Another value")
-    app.config.from_prefixed_env("NOT_FLASK_")
-    assert app.config["A"] == "Another value"
-    assert "A value" not in app.config.items()
+    app.config.from_prefixed_env("NOT_FLASK")
+
+    assert app.config["A"] == "b"
+
+
+def test_from_prefixed_env_nested(monkeypatch):
+    monkeypatch.setenv("FLASK_EXIST__ok", "other")
+    monkeypatch.setenv("FLASK_EXIST__inner__ik", "2")
+    monkeypatch.setenv("FLASK_EXIST__new__more", '{"k": false}')
+    monkeypatch.setenv("FLASK_NEW__K", "v")
+
+    app = flask.Flask(__name__)
+    app.config["EXIST"] = {"ok": "value", "flag": True, "inner": {"ik": 1}}
+    app.config.from_prefixed_env()
+
+    assert app.config["EXIST"] == {
+        "ok": "other",
+        "flag": True,
+        "inner": {"ik": 2},
+        "new": {"more": {"k": False}},
+    }
+    assert app.config["NEW"] == {"K": "v"}
 
 
 def test_config_from_mapping():
