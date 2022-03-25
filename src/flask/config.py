@@ -7,13 +7,6 @@ import typing as t
 from werkzeug.utils import import_string
 
 
-def _json_loads(raw: t.Union[str, bytes]) -> t.Any:
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        return raw
-
-
 class ConfigAttribute:
     """Makes an attribute forward to the config"""
 
