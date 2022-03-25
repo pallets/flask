@@ -52,6 +52,9 @@ Unreleased
     :issue:`4095, 4295, 4297`
 -   Fix typing for ``__exit__`` methods for better compatibility with
     ``ExitStack``. :issue:`4474`
+-   From Werkzeug, for redirect responses the ``Location`` header URL
+    will remain relative, and exclude the scheme and domain, by default.
+    :pr:`4496`
 
 
 Version 2.0.3

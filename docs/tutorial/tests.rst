@@ -266,7 +266,7 @@ messages.
         response = client.post(
             '/auth/register', data={'username': 'a', 'password': 'a'}
         )
-        assert 'http://localhost/auth/login' == response.headers['Location']
+        assert response.headers["Location"] == "/auth/login"
 
         with app.app_context():
             assert get_db().execute(
@@ -319,7 +319,7 @@ The tests for the ``login`` view are very similar to those for
     def test_login(client, auth):
         assert client.get('/auth/login').status_code == 200
         response = auth.login()
-        assert response.headers['Location'] == 'http://localhost/'
+        assert response.headers["Location"] == "/"
 
         with client:
             client.get('/')
@@ -404,7 +404,7 @@ is returned. If a ``post`` with the given ``id`` doesn't exist,
     ))
     def test_login_required(client, path):
         response = client.post(path)
-        assert response.headers['Location'] == 'http://localhost/auth/login'
+        assert response.headers["Location"] == "/auth/login"
 
 
     def test_author_required(app, client, auth):
@@ -479,7 +479,7 @@ no longer exist in the database.
     def test_delete(client, auth, app):
         auth.login()
         response = client.post('/1/delete')
-        assert response.headers['Location'] == 'http://localhost/'
+        assert response.headers["Location"] == "/"
 
         with app.app_context():
             db = get_db()
