@@ -19,6 +19,12 @@ def test_aborting(app):
 
     with app.test_client() as c:
         rv = c.get("/")
-        assert rv.headers["Location"] == "http://localhost/test"
+        location_parts = rv.headers["Location"].rpartition("/")
+
+        if location_parts[0]:
+            # For older Werkzeug that used absolute redirects.
+            assert location_parts[0] == "http://localhost"
+
+        assert location_parts[2] == "test"
         rv = c.get("/test")
         assert rv.data == b"42"
