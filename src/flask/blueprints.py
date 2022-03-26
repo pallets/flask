@@ -153,6 +153,8 @@ class Blueprint(Scaffold):
         this based on ``import_name``. In certain situations this
         automatic detection can fail, so the path can be specified
         manually instead.
+    :param cli_group: The name of the blueprint's CLI group. If not set,
+        the blueprint name will be used.
 
     .. versionchanged:: 1.1.0
         Blueprints have a ``cli`` group to register nested CLI commands.
