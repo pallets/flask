@@ -123,7 +123,7 @@ class Request(RequestBase):
 
             attach_enctype_error_multidict(self)
 
-    def on_json_loading_failed(self, e: ValueError) -> t.Any:
+    def on_json_loading_failed(self, e: t.Optional[ValueError]) -> t.Any:
         try:
             return super().on_json_loading_failed(e)
         except BadRequest as e:
