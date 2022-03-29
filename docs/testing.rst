@@ -56,7 +56,7 @@ set up and tear down resources.
     import pytest
     from my_project import create_app
 
-    @pytest.fixture()
+    @pytest.fixture(scope="module")
     def app():
         app = create_app()
         app.config.update({
@@ -70,12 +70,12 @@ set up and tear down resources.
         # clean up / reset resources here
 
 
-    @pytest.fixture()
+    @pytest.fixture(scope="module")
     def client(app):
         return app.test_client()
 
 
-    @pytest.fixture()
+    @pytest.fixture(scope="module")
     def runner(app):
         return app.test_cli_runner()
 
