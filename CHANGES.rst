@@ -5,6 +5,9 @@ Version 2.1.1
 
 Unreleased
 
+-   Set the minimum required version of importlib_metadata to 3.6.0,
+    which is required on Python < 3.10. :issue:`4502`
+
 
 Version 2.1.0
 -------------
