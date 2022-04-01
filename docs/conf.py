@@ -3,8 +3,8 @@ from pallets_sphinx_themes import get_version
 from pallets_sphinx_themes import ProjectLink
 
 # Constants ------------------------------------------------------------
-ETHICALADS_PATH="ethicalads.html"
-LOCALTOC_PATH="localtoc.html"
+ETHICALADS_PATH = "ethicalads.html"
+LOCALTOC_PATH = "localtoc.html"
 
 
 # Project --------------------------------------------------------------
