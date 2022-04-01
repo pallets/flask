@@ -36,7 +36,7 @@ jobs:
           - {name: 'Pallets Development Versions', python: '3.7', os: ubuntu-latest, tox: py-dev}
           - {name: Typing, python: '3.10', os: ubuntu-latest, tox: typing}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
