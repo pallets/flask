@@ -10,29 +10,29 @@
 -r typing.txt
 cfgv==3.3.1
     # via pre-commit
-click==8.0.3
+click==8.1.2
     # via
     #   pip-compile-multi
     #   pip-tools
 distlib==0.3.4
     # via virtualenv
-filelock==3.4.2
+filelock==3.6.0
     # via
     #   tox
     #   virtualenv
 greenlet==1.1.2 ; python_version < "3.11"
     # via -r requirements/tests.in
-identify==2.4.8
+identify==2.4.12
     # via pre-commit
 nodeenv==1.6.0
     # via pre-commit
 pep517==0.12.0
     # via pip-tools
-pip-compile-multi==2.4.3
+pip-compile-multi==2.4.4
     # via -r requirements/dev.in
 pip-tools==6.5.1
     # via pip-compile-multi
-platformdirs==2.4.1
+platformdirs==2.5.1
     # via virtualenv
 pre-commit==2.17.0
     # via -r requirements/dev.in
@@ -50,7 +50,7 @@ toposort==1.7
     # via pip-compile-multi
 tox==3.24.5
     # via -r requirements/dev.in
-virtualenv==20.13.1
+virtualenv==20.14.0
     # via
     #   pre-commit
     #   tox
