@@ -51,7 +51,7 @@ setup(
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     install_requires=[
         'Werkzeug>=0.14',
-        'Jinja2>=2.4',
+        'Jinja2>=2.4, <3.1',
         'itsdangerous>=0.21',
         'click>=2.0',
     ],
