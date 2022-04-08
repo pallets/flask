@@ -489,7 +489,7 @@ This is a simple example:
 
     @app.errorhandler(InvalidAPIUsage)
     def invalid_api_usage(e):
-        return jsonify(e.to_dict())
+        return jsonify(e.to_dict()), e.status_code
 
     # an API app route for getting user information
     # a correct request might be /api/user?user_id=420
