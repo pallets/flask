@@ -265,10 +265,10 @@ command from the command line.
         click.echo(f"Hello, {name}!")
 
     def test_hello_command(runner):
-        result = runner.invoke(["hello"])
+        result = runner.invoke(args="hello")
         assert "World" in result.output
 
-        result = runner.invoke(["hello", "--name", "Flask"])
+        result = runner.invoke(args=["hello", "--name", "Flask"])
         assert "Flask" in result.output
 
 

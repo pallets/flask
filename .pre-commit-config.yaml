@@ -1,5 +1,5 @@
 ci:
-  autoupdate_branch: "2.0.x"
+  autoupdate_branch: "2.1.x"
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
@@ -27,7 +27,7 @@ repos:
           - flake8-bugbear
           - flake8-implicit-str-concat
   - repo: https://github.com/peterdemin/pip-compile-multi
-    rev: v2.4.4
+    rev: v2.4.5
     hooks:
       - id: pip-compile-multi-verify
   - repo: https://github.com/pre-commit/pre-commit-hooks
