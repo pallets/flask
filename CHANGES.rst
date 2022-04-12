@@ -5,6 +5,9 @@ Version 2.1.2
 
 Unreleased
 
+-   Fix type annotation for ``json.loads``, it accepts str or bytes.
+    :issue:`4519`
+
 
 Version 2.1.1
 -------------
