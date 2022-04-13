@@ -142,9 +142,9 @@ use ``pathlib.Path`` to get files relative to the current test file.
 
     def test_edit_user(client):
         response = client.post("/user/2/edit", data={
-            name="Flask",
-            theme="dark",
-            picture=(resources / "picture.png").open("rb"),
+            "name": "Flask",
+            "theme": "dark",
+            "picture": (resources / "picture.png").open("rb"),
         })
         assert response.status_code == 200
 
