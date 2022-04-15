@@ -153,13 +153,16 @@ def dump(
     _json.dump(obj, fp, **kwargs)
 
 
-def loads(s: str, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> t.Any:
-    """Deserialize an object from a string of JSON.
+def loads(
+    s: t.Union[str, bytes, bytearray], app: t.Optional["Flask"] = None, **kwargs: t.Any
+) -> t.Any:
+    """Deserialize a string, bytes or bytearray instance containing
+    a JSON document to a Python object.
 
     Takes the same arguments as the built-in :func:`json.loads`, with
     some defaults from application configuration.
 
-    :param s: JSON string to deserialize.
+    :param s: String, bytes or bytearray instance to deserialize.
     :param app: Use this app's config instead of the active app context
         or defaults.
     :param kwargs: Extra arguments passed to :func:`json.loads`.
