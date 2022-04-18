@@ -553,7 +553,12 @@ def test_run_cert_path():
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--key", __file__])
 
+    # cert specified first
     ctx = run_command.make_context("run", ["--cert", __file__, "--key", __file__])
+    assert ctx.params["cert"] == (__file__, __file__)
+
+    # key specified first
+    ctx = run_command.make_context("run", ["--key", __file__, "--cert", __file__])
     assert ctx.params["cert"] == (__file__, __file__)
 
 
