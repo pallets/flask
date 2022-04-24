@@ -7,7 +7,7 @@
 #
 alabaster==0.7.12
     # via sphinx
-babel==2.9.1
+babel==2.10.1
     # via sphinx
 certifi==2021.10.8
     # via requests
@@ -31,11 +31,11 @@ packaging==21.3
     #   sphinx
 pallets-sphinx-themes==2.0.2
     # via -r requirements/docs.in
-pygments==2.11.2
+pygments==2.12.0
     # via
     #   sphinx
     #   sphinx-tabs
-pyparsing==3.0.7
+pyparsing==3.0.8
     # via packaging
 pytz==2022.1
     # via babel

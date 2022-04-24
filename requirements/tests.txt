@@ -21,9 +21,9 @@ pluggy==1.0.0
     # via pytest
 py==1.11.0
     # via pytest
-pyparsing==3.0.7
+pyparsing==3.0.8
     # via packaging
-pytest==7.1.1
+pytest==7.1.2
     # via -r requirements/tests.in
 python-dotenv==0.20.0
     # via -r requirements/tests.in
