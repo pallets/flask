@@ -1,5 +1,11 @@
 .. currentmodule:: flask
 
+Version 2.1.2
+-------------
+
+Unreleased
+
+
 Version 2.1.1
 -------------
 
