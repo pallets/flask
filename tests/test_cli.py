@@ -7,7 +7,6 @@ import sys
 import types
 from functools import partial
 from pathlib import Path
-from unittest.mock import patch
 
 import click
 import pytest
@@ -25,7 +24,6 @@ from flask.cli import FlaskGroup
 from flask.cli import get_version
 from flask.cli import load_dotenv
 from flask.cli import locate_app
-from flask.cli import main as cli_main
 from flask.cli import NoAppException
 from flask.cli import prepare_import
 from flask.cli import run_command
@@ -555,7 +553,12 @@ def test_run_cert_path():
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--key", __file__])
 
+    # cert specified first
     ctx = run_command.make_context("run", ["--cert", __file__, "--key", __file__])
+    assert ctx.params["cert"] == (__file__, __file__)
+
+    # key specified first
+    ctx = run_command.make_context("run", ["--key", __file__, "--cert", __file__])
     assert ctx.params["cert"] == (__file__, __file__)
 
 
@@ -654,11 +657,3 @@ def test_cli_empty(app):
 
     result = app.test_cli_runner().invoke(args=["blue", "--help"])
     assert result.exit_code == 2, f"Unexpected success:\n\n{result.output}"
-
-
-def test_click_7_deprecated():
-    with patch("flask.cli.cli"):
-        if int(click.__version__[0]) < 8:
-            pytest.deprecated_call(cli_main, match=".* Click 7 is deprecated")
-        else:
-            cli_main()
