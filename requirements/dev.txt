@@ -28,13 +28,13 @@ nodeenv==1.6.0
     # via pre-commit
 pep517==0.12.0
     # via pip-tools
-pip-compile-multi==2.4.4
+pip-compile-multi==2.4.5
     # via -r requirements/dev.in
-pip-tools==6.5.1
+pip-tools==6.6.0
     # via pip-compile-multi
-platformdirs==2.5.1
+platformdirs==2.5.2
     # via virtualenv
-pre-commit==2.17.0
+pre-commit==2.18.1
     # via -r requirements/dev.in
 pyyaml==6.0
     # via pre-commit
@@ -48,9 +48,9 @@ toml==0.10.2
     #   tox
 toposort==1.7
     # via pip-compile-multi
-tox==3.24.5
+tox==3.25.0
     # via -r requirements/dev.in
-virtualenv==20.14.0
+virtualenv==20.14.1
     # via
     #   pre-commit
     #   tox
