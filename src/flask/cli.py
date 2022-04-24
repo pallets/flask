@@ -763,7 +763,10 @@ class SeparatedPathType(click.Path):
 @click.option("--host", "-h", default="127.0.0.1", help="The interface to bind to.")
 @click.option("--port", "-p", default=5000, help="The port to bind to.")
 @click.option(
-    "--cert", type=CertParamType(), help="Specify a certificate file to use HTTPS."
+    "--cert",
+    type=CertParamType(),
+    help="Specify a certificate file to use HTTPS.",
+    is_eager=True,
 )
 @click.option(
     "--key",
