@@ -73,7 +73,7 @@ uWSGI
 `uWSGI`_ is a fast application server written in C. It is very
 configurable, which makes it more complicated to setup than Gunicorn.
 It also provides many other utilities for writing robust web
-applications. To run a Flask application, tell Gunicorn how to import
+applications. To run a Flask application, tell uWSGI how to import
 your Flask app object.
 
 .. code-block:: text
