@@ -358,7 +358,7 @@ class ScriptInfo:
 
     def __init__(self, app_import_path=None, create_app=None, set_debug_flag=True):
         #: Optionally the import path for the Flask application.
-        self.app_import_path = app_import_path or os.environ.get("FLASK_APP")
+        self.app_import_path = app_import_path
         #: Optionally a function that is passed the script info to create
         #: the instance of the application.
         self.create_app = create_app
@@ -423,8 +423,11 @@ def with_appcontext(f):
 
     @click.pass_context
     def decorator(__ctx, *args, **kwargs):
-        with __ctx.ensure_object(ScriptInfo).load_app().app_context():
-            return __ctx.invoke(f, *args, **kwargs)
+        if not current_app:
+            app = __ctx.ensure_object(ScriptInfo).load_app()
+            __ctx.with_resource(app.app_context())
+
+        return __ctx.invoke(f, *args, **kwargs)
 
     return update_wrapper(decorator, f)
 
@@ -497,7 +500,36 @@ class FlaskGroup(AppGroup):
         if add_version_option:
             params.append(version_option)
 
-        AppGroup.__init__(self, params=params, **extra)
+        def set_app(ctx, param, value):
+            info: ScriptInfo = ctx.ensure_object(ScriptInfo)
+            info.app_import_path = value
+
+        def set_env(ctx, param, value):
+            info: ScriptInfo = ctx.ensure_object(ScriptInfo)
+            info.app_env = value
+
+        params.append(
+            click.Option(
+                ["--app"],
+                metavar="IMPORT",
+                help="Import string for a Flask app object or factory function.",
+                callback=set_app,
+                is_eager=True,
+            )
+        )
+        params.append(
+            click.Option(
+                ["--env"],
+                metavar="ENV",
+                help="Runtime environment name.",
+                default="production",
+                show_default=True,
+                callback=set_env,
+                is_eager=True,
+            )
+        )
+        super().__init__(params=params, **extra)
+
         self.create_app = create_app
         self.load_dotenv = load_dotenv
         self.set_debug_flag = set_debug_flag
