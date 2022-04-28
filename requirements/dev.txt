@@ -22,7 +22,7 @@ filelock==3.6.0
     #   virtualenv
 greenlet==1.1.2 ; python_version < "3.11"
     # via -r requirements/tests.in
-identify==2.4.12
+identify==2.5.0
     # via pre-commit
 nodeenv==1.6.0
     # via pre-commit
