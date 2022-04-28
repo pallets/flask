@@ -133,9 +133,11 @@ def test_config_from_class():
 def test_config_from_envvar(monkeypatch):
     monkeypatch.setattr("os.environ", {})
     app = flask.Flask(__name__)
+
     with pytest.raises(RuntimeError) as e:
         app.config.from_envvar("FOO_SETTINGS")
-        assert "'FOO_SETTINGS' is not set" in str(e.value)
+
+    assert "'FOO_SETTINGS' is not set" in str(e.value)
     assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
 
     monkeypatch.setattr(
@@ -147,8 +149,8 @@ def test_config_from_envvar(monkeypatch):
 
 def test_config_from_envvar_missing(monkeypatch):
     monkeypatch.setattr("os.environ", {"FOO_SETTINGS": "missing.cfg"})
+    app = flask.Flask(__name__)
     with pytest.raises(IOError) as e:
-        app = flask.Flask(__name__)
         app.config.from_envvar("FOO_SETTINGS")
     msg = str(e.value)
     assert msg.startswith(
