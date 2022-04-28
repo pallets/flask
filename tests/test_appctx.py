@@ -120,7 +120,7 @@ def test_app_tearing_down_with_unhandled_exception(app, client):
     def index():
         raise Exception("dummy")
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match="dummy"):
         with app.app_context():
             client.get("/")
 
