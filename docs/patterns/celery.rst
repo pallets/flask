@@ -34,17 +34,15 @@ Celery without any reconfiguration with Flask, it becomes a bit nicer by
 subclassing tasks and adding support for Flask's application contexts and
 hooking it up with the Flask configuration.
 
-This is all that is necessary to properly integrate Celery with Flask::
+This is all that is necessary to integrate Celery with Flask:
+
+.. code-block:: python
 
     from celery import Celery
 
     def make_celery(app):
-        celery = Celery(
-            app.import_name,
-            backend=app.config['CELERY_RESULT_BACKEND'],
-            broker=app.config['CELERY_BROKER_URL']
-        )
-        celery.conf.update(app.config)
+        celery = Celery(app.import_name)
+        celery.conf.update(app.config["CELERY_CONFIG"])
 
         class ContextTask(celery.Task):
             def __call__(self, *args, **kwargs):
@@ -59,6 +57,12 @@ from the application config, updates the rest of the Celery config from
 the Flask config and then creates a subclass of the task that wraps the
 task execution in an application context.
 
+.. note::
+    Celery 5.x deprecated uppercase configuration keys, and 6.x will
+    remove them. See their official `migration guide`_.
+
+.. _migration guide: https://docs.celeryproject.org/en/stable/userguide/configuration.html#conf-old-settings-map.
+
 An example task
 ---------------
 
@@ -69,10 +73,10 @@ application using the factory from above, and then use it to define the task. ::
     from flask import Flask
 
     flask_app = Flask(__name__)
-    flask_app.config.update(
-        CELERY_BROKER_URL='redis://localhost:6379',
-        CELERY_RESULT_BACKEND='redis://localhost:6379'
-    )
+    flask_app.config.update(CELERY_CONFIG={
+        'broker_url': 'redis://localhost:6379',
+        'result_backend': 'redis://localhost:6379',
+    })
     celery = make_celery(flask_app)
 
     @celery.task()
