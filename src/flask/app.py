@@ -22,6 +22,7 @@ from werkzeug.routing import MapAdapter
 from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
+from werkzeug.utils import redirect as _wz_redirect
 from werkzeug.wrappers import Response as BaseResponse
 
 from . import cli
@@ -1629,6 +1630,16 @@ class Flask(Scaffold):
             ) from None
 
         return asgiref_async_to_sync(func)
+
+    def redirect(self, location: str, code: int = 302) -> BaseResponse:
+        """Create a redirect response object.
+
+        :param location: the url of the redirect
+        :param code: http return code
+
+        .. versionadded:: 2.2
+        """
+        return _wz_redirect(location, code=code, Response=self.response_class)
 
     def make_response(self, rv: ResponseReturnValue) -> Response:
         """Convert the return value from a view function to an instance of
