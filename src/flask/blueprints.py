@@ -162,7 +162,6 @@ class Blueprint(Scaffold):
     .. versionadded:: 0.7
     """
 
-    warn_on_modifications = False
     _got_registered_once = False
 
     #: Blueprint local JSON encoder class to use. Set to ``None`` to use
@@ -209,7 +208,7 @@ class Blueprint(Scaffold):
         self._blueprints: t.List[t.Tuple["Blueprint", dict]] = []
 
     def _is_setup_finished(self) -> bool:
-        return self.warn_on_modifications and self._got_registered_once
+        return self._got_registered_once
 
     def record(self, func: t.Callable) -> None:
         """Registers a function that is called when the blueprint is
@@ -217,14 +216,15 @@ class Blueprint(Scaffold):
         state as argument as returned by the :meth:`make_setup_state`
         method.
         """
-        if self._got_registered_once and self.warn_on_modifications:
+        if self._got_registered_once:
+            # TODO: Upgrade this to an error and unify it setupmethod in 2.3
             from warnings import warn
 
             warn(
                 Warning(
                     "The blueprint was already registered once but is"
                     " getting modified now. These changes will not show"
-                    " up."
+                    " up.\n This warning will be become an exception in 2.3."
                 )
             )
         self.deferred_functions.append(func)

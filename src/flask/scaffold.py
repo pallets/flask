@@ -27,8 +27,8 @@ from .typing import URLDefaultCallable
 from .typing import URLValuePreprocessorCallable
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    from .wrappers import Response
     from .typing import ErrorHandlerCallable
+    from .wrappers import Response
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
@@ -411,6 +411,7 @@ class Scaffold:
         """
         return self._method_route("PATCH", rule, options)
 
+    @setupmethod
     def route(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Decorate a view function to register it with the given URL
         rule and options. Calls :meth:`add_url_rule`, which has more
@@ -510,6 +511,7 @@ class Scaffold:
         """
         raise NotImplementedError
 
+    @setupmethod
     def endpoint(self, endpoint: str) -> t.Callable:
         """Decorate a view function to register it for the given
         endpoint. Used if a rule is added without a ``view_func`` with
