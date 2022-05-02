@@ -23,6 +23,7 @@ from werkzeug.routing import MapAdapter
 from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
+from werkzeug.urls import url_quote
 from werkzeug.utils import redirect as _wz_redirect
 from werkzeug.wrappers import Response as BaseResponse
 
@@ -1660,6 +1661,50 @@ class Flask(Scaffold):
             ) from None
 
         return asgiref_async_to_sync(func)
+
+    def url_for(
+        self,
+        endpoint: str,
+        external: bool,
+        url_adapter,
+        **values: t.Any,
+    ) -> str:
+
+        anchor = values.pop("_anchor", None)
+        method = values.pop("_method", None)
+        scheme = values.pop("_scheme", None)
+        self.inject_url_defaults(endpoint, values)
+
+        # This is not the best way to deal with this but currently the
+        # underlying Werkzeug router does not support overriding the scheme on
+        # a per build call basis.
+        old_scheme = None
+        if scheme is not None:
+            if not external:
+                raise ValueError("When specifying _scheme, _external must be True")
+            old_scheme = url_adapter.url_scheme
+            url_adapter.url_scheme = scheme
+
+        try:
+            try:
+                rv = url_adapter.build(
+                    endpoint, values, method=method, force_external=external
+                )
+            finally:
+                if old_scheme is not None:
+                    url_adapter.url_scheme = old_scheme
+        except BuildError as error:
+            # We need to inject the values again so that the app callback can
+            # deal with that sort of stuff.
+            values["_external"] = external
+            values["_anchor"] = anchor
+            values["_method"] = method
+            values["_scheme"] = scheme
+            return self.handle_url_build_error(error, endpoint, values)
+
+        if anchor is not None:
+            rv += f"#{url_quote(anchor)}"
+        return rv
 
     def redirect(self, location: str, code: int = 302) -> BaseResponse:
         """Create a redirect response object.
