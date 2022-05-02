@@ -11,7 +11,7 @@ from werkzeug.datastructures import CallbackDict
 from .helpers import is_ip
 from .json.tag import TaggedJSONSerializer
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
     from .app import Flask
     from .wrappers import Request, Response

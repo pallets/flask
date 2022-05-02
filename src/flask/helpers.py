@@ -20,7 +20,7 @@ from .globals import request
 from .globals import session
 from .signals import message_flashed
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .wrappers import Response
 
 

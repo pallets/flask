@@ -26,7 +26,7 @@ from .typing import TemplateContextProcessorCallable
 from .typing import URLDefaultCallable
 from .typing import URLValuePreprocessorCallable
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .wrappers import Response
     from .typing import ErrorHandlerCallable
 
