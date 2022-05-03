@@ -11,7 +11,7 @@ from .signals import appcontext_popped
 from .signals import appcontext_pushed
 from .typing import AfterRequestCallable
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .app import Flask
     from .sessions import SessionMixin
     from .wrappers import Request

@@ -17,7 +17,7 @@ from .typing import TemplateTestCallable
 from .typing import URLDefaultCallable
 from .typing import URLValuePreprocessorCallable
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .app import Flask
     from .typing import ErrorHandlerCallable
 

@@ -10,7 +10,7 @@ from .globals import _request_ctx_stack
 from .signals import before_render_template
 from .signals import template_rendered
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .app import Flask
     from .scaffold import Scaffold
 

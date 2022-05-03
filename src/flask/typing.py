@@ -1,7 +1,7 @@
 import typing as t
 
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from _typeshed.wsgi import WSGIApplication  # noqa: F401
     from werkzeug.datastructures import Headers  # noqa: F401
     from werkzeug.wrappers.response import Response  # noqa: F401

@@ -67,7 +67,7 @@ from .typing import TemplateTestCallable
 from .wrappers import Request
 from .wrappers import Response
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
     from .blueprints import Blueprint
     from .testing import FlaskClient

@@ -8,7 +8,7 @@ from . import json
 from .globals import current_app
 from .helpers import _split_blueprint_path
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.routing import Rule
 
 

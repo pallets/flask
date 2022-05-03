@@ -6,7 +6,7 @@ from werkzeug.local import LocalProxy
 
 from .globals import request
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .app import Flask
 
 

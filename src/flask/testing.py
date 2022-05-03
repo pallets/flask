@@ -14,7 +14,7 @@ from .globals import _request_ctx_stack
 from .json import dumps as json_dumps
 from .sessions import SessionMixin
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.test import TestResponse
 
     from .app import Flask
