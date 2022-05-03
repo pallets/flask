@@ -5,6 +5,9 @@ Version 2.2.0
 
 Unreleased
 
+-   Refactor ``register_error_handler`` to consolidate error checking.
+    Rewrite some error messages to be more consistent. :issue:`4559`
+
 
 Version 2.1.2
 -------------

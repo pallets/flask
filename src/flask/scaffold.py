@@ -697,22 +697,7 @@ class Scaffold:
 
         .. versionadded:: 0.7
         """
-        if isinstance(code_or_exception, HTTPException):  # old broken behavior
-            raise ValueError(
-                "Tried to register a handler for an exception instance"
-                f" {code_or_exception!r}. Handlers can only be"
-                " registered for exception classes or HTTP error codes."
-            )
-
-        try:
-            exc_class, code = self._get_exc_class_and_code(code_or_exception)
-        except KeyError:
-            raise KeyError(
-                f"'{code_or_exception}' is not a recognized HTTP error"
-                " code. Use a subclass of HTTPException with that code"
-                " instead."
-            ) from None
-
+        exc_class, code = self._get_exc_class_and_code(code_or_exception)
         self.error_handler_spec[None][code][exc_class] = f
 
     @staticmethod
@@ -727,14 +712,32 @@ class Scaffold:
             code as an integer.
         """
         exc_class: t.Type[Exception]
+
         if isinstance(exc_class_or_code, int):
-            exc_class = default_exceptions[exc_class_or_code]
+            try:
+                exc_class = default_exceptions[exc_class_or_code]
+            except KeyError:
+                raise ValueError(
+                    f"'{exc_class_or_code}' is not a recognized HTTP"
+                    " error code. Use a subclass of HTTPException with"
+                    " that code instead."
+                ) from None
         else:
             exc_class = exc_class_or_code
 
-        assert issubclass(
-            exc_class, Exception
-        ), "Custom exceptions must be subclasses of Exception."
+        if isinstance(exc_class, Exception):
+            raise TypeError(
+                f"{exc_class!r} is an instance, not a class. Handlers"
+                " can only be registered for Exception classes or HTTP"
+                " error codes."
+            )
+
+        if not issubclass(exc_class, Exception):
+            raise ValueError(
+                f"'{exc_class.__name__}' is not a subclass of Exception."
+                " Handlers can only be registered for Exception classes"
+                " or HTTP error codes."
+            )
 
         if issubclass(exc_class, HTTPException):
             return exc_class, exc_class.code

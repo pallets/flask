@@ -11,28 +11,34 @@ def test_error_handler_no_match(app, client):
     class CustomException(Exception):
         pass
 
-    class UnacceptableCustomException(BaseException):
-        pass
-
     @app.errorhandler(CustomException)
     def custom_exception_handler(e):
         assert isinstance(e, CustomException)
         return "custom"
 
-    with pytest.raises(
-        AssertionError, match="Custom exceptions must be subclasses of Exception."
-    ):
-        app.register_error_handler(UnacceptableCustomException, None)
+    with pytest.raises(TypeError) as exc_info:
+        app.register_error_handler(CustomException(), None)
+
+    assert "CustomException() is an instance, not a class." in str(exc_info.value)
+
+    with pytest.raises(ValueError) as exc_info:
+        app.register_error_handler(list, None)
+
+    assert "'list' is not a subclass of Exception." in str(exc_info.value)
 
     @app.errorhandler(500)
     def handle_500(e):
         assert isinstance(e, InternalServerError)
-        original = getattr(e, "original_exception", None)
 
-        if original is not None:
-            return f"wrapped {type(original).__name__}"
+        if e.original_exception is not None:
+            return f"wrapped {type(e.original_exception).__name__}"
 
         return "direct"
+
+    with pytest.raises(ValueError) as exc_info:
+        app.register_error_handler(999, None)
+
+    assert "Use a subclass of HTTPException" in str(exc_info.value)
 
     @app.route("/custom")
     def custom_test():
