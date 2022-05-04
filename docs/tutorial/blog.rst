@@ -106,7 +106,7 @@ available in the result.
               <h1>{{ post['title'] }}</h1>
               <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
             </div>
-            {% if g.user['id'] == post['author_id'] %}
+            {% if g.user['id']|int() == post['author_id']|int() %}
               <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
             {% endif %}
           </header>
@@ -120,12 +120,15 @@ available in the result.
 
 When a user is logged in, the ``header`` block adds a link to the
 ``create`` view. When the user is the author of a post, they'll see an
-"Edit" link to the ``update`` view for that post. ``loop.last`` is a
+"Edit" link to the ``update`` view for that post. The ``|int()`` invocations
+are `Jinja filters`_ that are used to cast both operands of the comparison
+operation (``==``) to integers prior to evaluating the comparison. ``loop.last`` is a
 special variable available inside `Jinja for loops`_. It's used to
 display a line after each post except the last one, to visually separate
 them.
 
 .. _Jinja for loops: https://jinja.palletsprojects.com/templates/#for
+.. _Jinja filters: https://jinja.palletsprojects.com/en/3.1.x/templates/#filters
 
 
 Create
