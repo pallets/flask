@@ -299,9 +299,7 @@ used for public variables, such as ``FLASK_APP``, while :file:`.env` should not
 be committed to your repository so that it can set private variables.
 
 Directories are scanned upwards from the directory you call ``flask``
-from to locate the files. The current working directory will be set to the
-location of the file, with the assumption that that is the top level project
-directory.
+from to locate the files.
 
 The files are only loaded by the ``flask`` command or calling
 :meth:`~Flask.run`. If you would like to load these files when running in
