@@ -47,7 +47,7 @@ SQLAlchemy or another database tool, introduce non-relational data persistence
 as appropriate, and take advantage of framework-agnostic tools built for WSGI,
 the Python web interface.
 
-Flask includes many hooks to customize its behavior. Should you need more
-customization, the Flask class is built for subclassing. If you are interested
-in that, check out the :doc:`becomingbig` chapter.  If you are curious about
-the Flask design principles, head over to the section about :doc:`design`.
+Flask includes many hooks to customize its behavior. Should you need
+more customization, the Flask class is built for subclassing. If you are
+curious about the Flask design principles, head over to the section
+about :doc:`design`.
