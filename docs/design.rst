@@ -167,9 +167,6 @@ large applications harder to maintain.  However Flask is just not designed
 for large applications or asynchronous servers.  Flask wants to make it
 quick and easy to write a traditional web application.
 
-Also see the :doc:`/becomingbig` section of the documentation for some
-inspiration for larger applications based on Flask.
-
 
 Async/await and ASGI support
 ----------------------------

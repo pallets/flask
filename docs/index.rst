@@ -58,7 +58,6 @@ instructions for web development with Flask.
    shell
    patterns/index
    deploying/index
-   becomingbig
    async-await
 
 
