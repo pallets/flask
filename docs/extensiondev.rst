@@ -271,16 +271,16 @@ Learn from Others
 
 This documentation only touches the bare minimum for extension development.
 If you want to learn more, it's a very good idea to check out existing extensions
-on the `PyPI`_.  If you feel lost there is still the `mailinglist`_ and the
-`Discord server`_ to get some ideas for nice looking APIs.  Especially if you do
+on `PyPI`_.  If you feel lost there is `Discord Chat`_ or
+`GitHub Discussions`_ to get some ideas for nice looking APIs.  Especially if you do
 something nobody before you did, it might be a very good idea to get some more
 input.  This not only generates useful feedback on what people might want from
 an extension, but also avoids having multiple developers working in isolation
 on pretty much the same problem.
 
-Remember: good API design is hard, so introduce your project on the
-mailing list, and let other developers give you a helping hand with
-designing the API.
+Remember: good API design is hard, so introduce your project on
+`Discord Chat`_ or `GitHub Discussions`_, and let other developers give
+you a helping hand with designing the API.
 
 The best Flask extensions are extensions that share common idioms for the
 API.  And this can only work if collaboration happens early.
@@ -327,6 +327,6 @@ ecosystem remain consistent and compatible.
     indicate supported versions.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
-.. _mailinglist: https://mail.python.org/mailman/listinfo/flask
-.. _Discord server: https://discord.gg/pallets
+.. _Discord Chat: https://discord.gg/pallets
+.. _GitHub Discussions: https://github.com/pallets/flask/discussions
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/

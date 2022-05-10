@@ -14,11 +14,10 @@ own code:
 
 -   The ``#questions`` channel on our Discord chat:
     https://discord.gg/pallets
--   The mailing list flask@python.org for long term discussion or larger
-    issues.
 -   Ask on `Stack Overflow`_. Search with Google first using:
     ``site:stackoverflow.com flask {search term, exception message, etc.}``
--   Ask on our `GitHub Discussions`_.
+-   Ask on our `GitHub Discussions`_ for long term discussion or larger
+    questions.
 
 .. _Stack Overflow: https://stackoverflow.com/questions/tagged/flask?tab=Frequent
 .. _GitHub Discussions: https://github.com/pallets/flask/discussions
