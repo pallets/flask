@@ -158,6 +158,22 @@ class TestUrlFor:
         assert flask.url_for("myview", _method="POST") == "/myview/create"
 
 
+def test_redirect_no_app():
+    response = flask.redirect("https://localhost", 307)
+    assert response.location == "https://localhost"
+    assert response.status_code == 307
+
+
+def test_redirect_with_app(app):
+    def redirect(location, code=302):
+        raise ValueError
+
+    app.redirect = redirect
+
+    with app.app_context(), pytest.raises(ValueError):
+        flask.redirect("other")
+
+
 class TestNoImports:
     """Test Flasks are created without import.
 

@@ -12,6 +12,7 @@ from threading import RLock
 import werkzeug.utils
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
+from werkzeug.utils import redirect as _wz_redirect
 
 from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
@@ -21,6 +22,7 @@ from .globals import session
 from .signals import message_flashed
 
 if t.TYPE_CHECKING:  # pragma: no cover
+    from werkzeug.wrappers import Response as BaseResponse
     from .wrappers import Response
 
 
@@ -338,6 +340,28 @@ def url_for(endpoint: str, **values: t.Any) -> str:
     if anchor is not None:
         rv += f"#{url_quote(anchor)}"
     return rv
+
+
+def redirect(
+    location: str, code: int = 302, Response: t.Optional[t.Type["BaseResponse"]] = None
+) -> "BaseResponse":
+    """Create a redirect response object.
+
+    If :data:`~flask.current_app` is available, it will use
+    :meth:`~flask.app.Flask.redirect`, otherwise it will use
+    :func:`werkzeug.utils.redirect`.
+
+    :param location: The URL to redirect to.
+    :param code: The status code for the redirect.
+    :param Response: The response class to use. Not used when
+        ``current_app`` is active, which uses ``app.response_class``.
+
+    .. versionadded:: 2.2
+    """
+    if current_app:
+        return current_app.redirect(location, code=code)
+
+    return _wz_redirect(location, code=code, Response=Response)
 
 
 def get_template_attribute(template_name: str, attribute: str) -> t.Any:
