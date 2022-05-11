@@ -9,6 +9,8 @@ from functools import update_wrapper
 from operator import attrgetter
 from threading import Lock
 from threading import Thread
+from typing import Any
+from typing import TYPE_CHECKING
 
 import click
 from werkzeug.utils import import_string
@@ -36,7 +38,12 @@ else:
     # We technically have importlib.metadata on 3.8+,
     # but the API changed in 3.10, so use the backport
     # for consistency.
-    import importlib_metadata as metadata  # type: ignore
+    if TYPE_CHECKING:
+        metadata: Any
+    else:
+        # we do this to avoid a version dependent mypy error
+        # because importlib_metadata is not installed in python3.10+
+        import importlib_metadata as metadata
 
 
 class NoAppException(click.UsageError):

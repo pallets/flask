@@ -173,10 +173,6 @@ You should then end up with something like that::
    ensuring the module is imported and we are doing that at the bottom of
    the file.
 
-   There are still some problems with that approach but if you want to use
-   decorators there is no way around that.  Check out the
-   :doc:`/becomingbig` section for some inspiration how to deal with that.
-
 
 Working with Blueprints
 -----------------------
