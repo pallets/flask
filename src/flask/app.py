@@ -1664,8 +1664,11 @@ class Flask(Scaffold):
     def redirect(self, location: str, code: int = 302) -> BaseResponse:
         """Create a redirect response object.
 
-        :param location: the url of the redirect
-        :param code: http return code
+        This is called by :func:`flask.redirect`, and can be called
+        directly as well.
+
+        :param location: The URL to redirect to.
+        :param code: The status code for the redirect.
 
         .. versionadded:: 2.2
         """

@@ -5,13 +5,14 @@ Version 2.2.0
 
 Unreleased
 
--   Add ``aborter_class`` and ``aborter`` attributes to the Flask app
-    object. ``flask.abort`` will call ``app.aborter``. This makes it
-    possible for an app to override how aborts work, including custom
-    status codes. :issue:`4567`
--   Add an ``app.redirect`` method, which ``flask.redirect`` will call.
-    This makes it possible for an app to override how redirects work.
-    :issue:`4569`
+-   Add new customization points to the ``Flask`` app object for many
+    previously global behaviors.
+
+    -   ``flask.abort`` will call ``app.aborter``.
+        ``Flask.aborter_class`` and ``Flask.make_aborter`` can be used
+        to customize this aborter. :issue:`4567`
+    -   ``flask.redirect`` will call ``app.redirect``. :issue:`4569`
+
 -   Refactor ``register_error_handler`` to consolidate error checking.
     Rewrite some error messages to be more consistent. :issue:`4559`
 

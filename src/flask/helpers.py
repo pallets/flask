@@ -349,8 +349,8 @@ def redirect(
 ) -> "BaseResponse":
     """Create a redirect response object.
 
-    If :data:`~flask.current_app` is available, it will use
-    :meth:`~flask.app.Flask.redirect`, otherwise it will use
+    If :data:`~flask.current_app` is available, it will use its
+    :meth:`~flask.Flask.redirect` method, otherwise it will use
     :func:`werkzeug.utils.redirect`.
 
     :param location: The URL to redirect to.
@@ -359,6 +359,8 @@ def redirect(
         ``current_app`` is active, which uses ``app.response_class``.
 
     .. versionadded:: 2.2
+        Calls ``current_app.redirect`` if available instead of always
+        using Werkzeug's default ``redirect``.
     """
     if current_app:
         return current_app.redirect(location, code=code)
