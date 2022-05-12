@@ -12,6 +12,7 @@ from types import TracebackType
 
 from werkzeug.datastructures import Headers
 from werkzeug.datastructures import ImmutableDict
+from werkzeug.exceptions import Aborter
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.exceptions import HTTPException
@@ -200,6 +201,16 @@ class Flask(Scaffold):
     #: The class that is used for response objects.  See
     #: :class:`~flask.Response` for more information.
     response_class = Response
+
+    #: The class of the object assigned to :attr:`aborter`, created by
+    #: :meth:`create_aborter`. That object is called by
+    #: :func:`flask.abort` to raise HTTP errors, and can be
+    #: called directly as well.
+    #:
+    #: Defaults to :class:`werkzeug.exceptions.Aborter`.
+    #:
+    #: .. versionadded:: 2.2
+    aborter_class = Aborter
 
     #: The class that is used for the Jinja environment.
     #:
@@ -421,6 +432,13 @@ class Flask(Scaffold):
         #: to load a config from files.
         self.config = self.make_config(instance_relative_config)
 
+        #: An instance of :attr:`aborter_class` created by
+        #: :meth:`make_aborter`. This is called by :func:`flask.abort`
+        #: to raise HTTP errors, and can be called directly as well.
+        #:
+        #: .. versionadded:: 2.2
+        self.aborter = self.make_aborter()
+
         #: A list of functions that are called when :meth:`url_for` raises a
         #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
         #: is called with `error`, `endpoint` and `values`.  If a function
@@ -627,6 +645,18 @@ class Flask(Scaffold):
         defaults["ENV"] = get_env()
         defaults["DEBUG"] = get_debug_flag()
         return self.config_class(root_path, defaults)
+
+    def make_aborter(self) -> Aborter:
+        """Create the object to assign to :attr:`aborter`. That object
+        is called by :func:`flask.abort` to raise HTTP errors, and can
+        be called directly as well.
+
+        By default, this creates an instance of :attr:`aborter_class`,
+        which defaults to :class:`werkzeug.exceptions.Aborter`.
+
+        .. versionadded:: 2.2
+        """
+        return self.aborter_class()
 
     def auto_find_instance_path(self) -> str:
         """Tries to locate the instance path if it was not provided to the

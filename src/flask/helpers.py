@@ -10,6 +10,7 @@ from functools import update_wrapper
 from threading import RLock
 
 import werkzeug.utils
+from werkzeug.exceptions import abort as _wz_abort
 from werkzeug.routing import BuildError
 from werkzeug.urls import url_quote
 from werkzeug.utils import redirect as _wz_redirect
@@ -24,6 +25,7 @@ from .signals import message_flashed
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
     from .wrappers import Response
+    import typing_extensions as te
 
 
 def get_env() -> str:
@@ -362,6 +364,31 @@ def redirect(
         return current_app.redirect(location, code=code)
 
     return _wz_redirect(location, code=code, Response=Response)
+
+
+def abort(  # type: ignore[misc]
+    code: t.Union[int, "BaseResponse"], *args: t.Any, **kwargs: t.Any
+) -> "te.NoReturn":
+    """Raise an :exc:`~werkzeug.exceptions.HTTPException` for the given
+    status code.
+
+    If :data:`~flask.current_app` is available, it will call its
+    :attr:`~flask.Flask.aborter` object, otherwise it will use
+    :func:`werkzeug.exceptions.abort`.
+
+    :param code: The status code for the exception, which must be
+        registered in ``app.aborter``.
+    :param args: Passed to the exception.
+    :param kwargs: Passed to the exception.
+
+    .. versionadded:: 2.2
+        Calls ``current_app.aborter`` if available instead of always
+        using Werkzeug's default ``abort``.
+    """
+    if current_app:
+        current_app.aborter(code, *args, **kwargs)
+
+    _wz_abort(code, *args, **kwargs)
 
 
 def get_template_attribute(template_name: str, attribute: str) -> t.Any:

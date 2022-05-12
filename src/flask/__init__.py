@@ -1,6 +1,5 @@
 from markupsafe import escape
 from markupsafe import Markup
-from werkzeug.exceptions import abort as abort
 
 from . import json as json
 from .app import Flask as Flask
@@ -18,6 +17,7 @@ from .globals import current_app as current_app
 from .globals import g as g
 from .globals import request as request
 from .globals import session as session
+from .helpers import abort as abort
 from .helpers import flash as flash
 from .helpers import get_flashed_messages as get_flashed_messages
 from .helpers import get_template_attribute as get_template_attribute
