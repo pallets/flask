@@ -34,6 +34,7 @@ from .config import ConfigAttribute
 from .ctx import _AppCtxGlobals
 from .ctx import AppContext
 from .ctx import RequestContext
+from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .globals import g
 from .globals import request
@@ -440,15 +441,16 @@ class Flask(Scaffold):
         #: .. versionadded:: 2.2
         self.aborter = self.make_aborter()
 
-        #: A list of functions that are called when :meth:`url_for` raises a
-        #: :exc:`~werkzeug.routing.BuildError`.  Each function registered here
-        #: is called with `error`, `endpoint` and `values`.  If a function
-        #: returns ``None`` or raises a :exc:`BuildError` the next function is
-        #: tried.
+        #: A list of functions that are called by
+        #: :meth:`handle_url_build_error` when :meth:`.url_for` raises a
+        #: :exc:`~werkzeug.routing.BuildError`. Each function is called
+        #: with ``error``, ``endpoint`` and ``values``. If a function
+        #: returns ``None`` or raises a ``BuildError``, it is skipped.
+        #: Otherwise, its return value is returned by ``url_for``.
         #:
         #: .. versionadded:: 0.9
         self.url_build_error_handlers: t.List[
-            t.Callable[[Exception, str, dict], str]
+            t.Callable[[Exception, str, t.Dict[str, t.Any]], str]
         ] = []
 
         #: A list of functions that will be called at the beginning of the
@@ -1665,45 +1667,125 @@ class Flask(Scaffold):
     def url_for(
         self,
         endpoint: str,
-        external: bool,
-        url_adapter,
+        *,
+        _anchor: t.Optional[str] = None,
+        _method: t.Optional[str] = None,
+        _scheme: t.Optional[str] = None,
+        _external: t.Optional[bool] = None,
         **values: t.Any,
     ) -> str:
+        """Generate a URL to the given endpoint with the given values.
 
-        anchor = values.pop("_anchor", None)
-        method = values.pop("_method", None)
-        scheme = values.pop("_scheme", None)
+        This is called by :func:`flask.url_for`, and can be called
+        directly as well.
+
+        An *endpoint* is the name of a URL rule, usually added with
+        :meth:`@app.route() <route>`, and usually the same name as the
+        view function. A route defined in a :class:`~flask.Blueprint`
+        will prepend the blueprint's name separated by a ``.`` to the
+        endpoint.
+
+        In some cases, such as email messages, you want URLs to include
+        the scheme and domain, like ``https://example.com/hello``. When
+        not in an active request, URLs will be external by default, but
+        this requires setting :data:`SERVER_NAME` so Flask knows what
+        domain to use. :data:`APPLICATION_ROOT` and
+        :data:`PREFERRED_URL_SCHEME` should also be configured as
+        needed. This config is only used when not in an active request.
+
+        Functions can be decorated with :meth:`url_defaults` to modify
+        keyword arguments before the URL is built.
+
+        If building fails for some reason, such as an unknown endpoint
+        or incorrect values, the app's :meth:`handle_url_build_error`
+        method is called. If that returns a string, that is returned,
+        otherwise a :exc:`~werkzeug.routing.BuildError` is raised.
+
+        :param endpoint: The endpoint name associated with the URL to
+            generate. If this starts with a ``.``, the current blueprint
+            name (if any) will be used.
+        :param _anchor: If given, append this as ``#anchor`` to the URL.
+        :param _method: If given, generate the URL associated with this
+            method for the endpoint.
+        :param _scheme: If given, the URL will have this scheme if it
+            is external.
+        :param _external: If given, prefer the URL to be internal
+            (False) or require it to be external (True). External URLs
+            include the scheme and domain. When not in an active
+            request, URLs are external by default.
+        :param values: Values to use for the variable parts of the URL
+            rule. Unknown keys are appended as query string arguments,
+            like ``?a=b&c=d``.
+
+        .. versionadded:: 2.2
+            Moved from ``flask.url_for``, which calls this method.
+        """
+        req_ctx = _request_ctx_stack.top
+
+        if req_ctx is not None:
+            url_adapter = req_ctx.url_adapter
+            blueprint_name = req_ctx.request.blueprint
+
+            # If the endpoint starts with "." and the request matches a
+            # blueprint, the endpoint is relative to the blueprint.
+            if endpoint[:1] == ".":
+                if blueprint_name is not None:
+                    endpoint = f"{blueprint_name}{endpoint}"
+                else:
+                    endpoint = endpoint[1:]
+
+            # When in a request, generate a URL without scheme and
+            # domain by default, unless a scheme is given.
+            if _external is None:
+                _external = _scheme is not None
+        else:
+            app_ctx = _app_ctx_stack.top
+
+            # If called by helpers.url_for, an app context is active,
+            # use its url_adapter. Otherwise, app.url_for was called
+            # directly, build an adapter.
+            if app_ctx is not None:
+                url_adapter = app_ctx.url_adapter
+            else:
+                url_adapter = self.create_url_adapter(None)
+
+            if url_adapter is None:
+                raise RuntimeError(
+                    "Unable to build URLs outside an active request"
+                    " without 'SERVER_NAME' configured. Also configure"
+                    " 'APPLICATION_ROOT' and 'PREFERRED_URL_SCHEME' as"
+                    " needed."
+                )
+
+            # When outside a request, generate a URL with scheme and
+            # domain by default.
+            if _external is None:
+                _external = True
+
+        # It is an error to set _scheme when _external=False, in order
+        # to avoid accidental insecure URLs.
+        if _scheme is not None and not _external:
+            raise ValueError("When specifying '_scheme', '_external' must be True.")
+
         self.inject_url_defaults(endpoint, values)
 
-        # This is not the best way to deal with this but currently the
-        # underlying Werkzeug router does not support overriding the scheme on
-        # a per build call basis.
-        old_scheme = None
-        if scheme is not None:
-            if not external:
-                raise ValueError("When specifying _scheme, _external must be True")
-            old_scheme = url_adapter.url_scheme
-            url_adapter.url_scheme = scheme
-
         try:
-            try:
-                rv = url_adapter.build(
-                    endpoint, values, method=method, force_external=external
-                )
-            finally:
-                if old_scheme is not None:
-                    url_adapter.url_scheme = old_scheme
+            rv = url_adapter.build(
+                endpoint,
+                values,
+                method=_method,
+                url_scheme=_scheme,
+                force_external=_external,
+            )
         except BuildError as error:
-            # We need to inject the values again so that the app callback can
-            # deal with that sort of stuff.
-            values["_external"] = external
-            values["_anchor"] = anchor
-            values["_method"] = method
-            values["_scheme"] = scheme
+            values.update(
+                _anchor=_anchor, _method=_method, _scheme=_scheme, _external=_external
+            )
             return self.handle_url_build_error(error, endpoint, values)
 
-        if anchor is not None:
-            rv += f"#{url_quote(anchor)}"
+        if _anchor is not None:
+            rv = f"{rv}#{url_quote(_anchor)}"
+
         return rv
 
     def redirect(self, location: str, code: int = 302) -> BaseResponse:
@@ -1905,10 +1987,21 @@ class Flask(Scaffold):
                     func(endpoint, values)
 
     def handle_url_build_error(
-        self, error: Exception, endpoint: str, values: dict
+        self, error: BuildError, endpoint: str, values: t.Dict[str, t.Any]
     ) -> str:
-        """Handle :class:`~werkzeug.routing.BuildError` on
-        :meth:`url_for`.
+        """Called by :meth:`.url_for` if a
+        :exc:`~werkzeug.routing.BuildError` was raised. If this returns
+        a value, it will be returned by ``url_for``, otherwise the error
+        will be re-raised.
+
+        Each function in :attr:`url_build_error_handlers` is called with
+        ``error``, ``endpoint`` and ``values``. If a function returns
+        ``None`` or raises a ``BuildError``, it is skipped. Otherwise,
+        its return value is returned by ``url_for``.
+
+        :param error: The active ``BuildError`` being handled.
+        :param endpoint: The endpoint being built.
+        :param values: The keyword arguments passed to ``url_for``.
         """
         for handler in self.url_build_error_handlers:
             try:

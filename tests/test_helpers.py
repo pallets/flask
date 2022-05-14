@@ -119,11 +119,15 @@ class TestUrlFor:
         )
 
     def test_url_for_with_scheme_not_external(self, app, req_ctx):
-        @app.route("/")
-        def index():
-            return "42"
+        app.add_url_rule("/", endpoint="index")
 
-        pytest.raises(ValueError, flask.url_for, "index", _scheme="https")
+        # Implicit external with scheme.
+        url = flask.url_for("index", _scheme="https")
+        assert url == "https://localhost/"
+
+        # Error when external=False with scheme
+        with pytest.raises(ValueError):
+            flask.url_for("index", _scheme="https", _external=False)
 
     def test_url_for_with_alternating_schemes(self, app, req_ctx):
         @app.route("/")
