@@ -11,11 +11,8 @@ from threading import RLock
 
 import werkzeug.utils
 from werkzeug.exceptions import abort as _wz_abort
-from werkzeug.routing import BuildError
-from werkzeug.urls import url_quote
 from werkzeug.utils import redirect as _wz_redirect
 
-from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .globals import current_app
 from .globals import request
@@ -193,155 +190,58 @@ def make_response(*args: t.Any) -> "Response":
     return current_app.make_response(args)  # type: ignore
 
 
-def url_for(endpoint: str, **values: t.Any) -> str:
-    """Generates a URL to the given endpoint with the method provided.
+def url_for(
+    endpoint: str,
+    *,
+    _anchor: t.Optional[str] = None,
+    _method: t.Optional[str] = None,
+    _scheme: t.Optional[str] = None,
+    _external: t.Optional[bool] = None,
+    **values: t.Any,
+) -> str:
+    """Generate a URL to the given endpoint with the given values.
 
-    Variable arguments that are unknown to the target endpoint are appended
-    to the generated URL as query arguments.  If the value of a query argument
-    is ``None``, the whole pair is skipped.  In case blueprints are active
-    you can shortcut references to the same blueprint by prefixing the
-    local endpoint with a dot (``.``).
+    This requires an active request or application context, and calls
+    :meth:`current_app.url_for() <flask.Flask.url_for>`. See that method
+    for full documentation.
 
-    This will reference the index function local to the current blueprint::
+    :param endpoint: The endpoint name associated with the URL to
+        generate. If this starts with a ``.``, the current blueprint
+        name (if any) will be used.
+    :param _anchor: If given, append this as ``#anchor`` to the URL.
+    :param _method: If given, generate the URL associated with this
+        method for the endpoint.
+    :param _scheme: If given, the URL will have this scheme if it is
+        external.
+    :param _external: If given, prefer the URL to be internal (False) or
+        require it to be external (True). External URLs include the
+        scheme and domain. When not in an active request, URLs are
+        external by default.
+    :param values: Values to use for the variable parts of the URL rule.
+        Unknown keys are appended as query string arguments, like
+        ``?a=b&c=d``.
 
-        url_for('.index')
+    .. versionchanged:: 2.2
+        Calls ``current_app.url_for``, allowing an app to override the
+        behavior.
 
-    See :ref:`url-building`.
+    .. versionchanged:: 0.10
+       The ``_scheme`` parameter was added.
 
-    Configuration values ``APPLICATION_ROOT`` and ``SERVER_NAME`` are only used when
-    generating URLs outside of a request context.
+    .. versionchanged:: 0.9
+       The ``_anchor`` and ``_method`` parameters were added.
 
-    To integrate applications, :class:`Flask` has a hook to intercept URL build
-    errors through :attr:`Flask.url_build_error_handlers`.  The `url_for`
-    function results in a :exc:`~werkzeug.routing.BuildError` when the current
-    app does not have a URL for the given endpoint and values.  When it does, the
-    :data:`~flask.current_app` calls its :attr:`~Flask.url_build_error_handlers` if
-    it is not ``None``, which can return a string to use as the result of
-    `url_for` (instead of `url_for`'s default to raise the
-    :exc:`~werkzeug.routing.BuildError` exception) or re-raise the exception.
-    An example::
-
-        def external_url_handler(error, endpoint, values):
-            "Looks up an external URL when `url_for` cannot build a URL."
-            # This is an example of hooking the build_error_handler.
-            # Here, lookup_url is some utility function you've built
-            # which looks up the endpoint in some external URL registry.
-            url = lookup_url(endpoint, **values)
-            if url is None:
-                # External lookup did not have a URL.
-                # Re-raise the BuildError, in context of original traceback.
-                exc_type, exc_value, tb = sys.exc_info()
-                if exc_value is error:
-                    raise exc_type(exc_value).with_traceback(tb)
-                else:
-                    raise error
-            # url_for will use this result, instead of raising BuildError.
-            return url
-
-        app.url_build_error_handlers.append(external_url_handler)
-
-    Here, `error` is the instance of :exc:`~werkzeug.routing.BuildError`, and
-    `endpoint` and `values` are the arguments passed into `url_for`.  Note
-    that this is for building URLs outside the current application, and not for
-    handling 404 NotFound errors.
-
-    .. versionadded:: 0.10
-       The `_scheme` parameter was added.
-
-    .. versionadded:: 0.9
-       The `_anchor` and `_method` parameters were added.
-
-    .. versionadded:: 0.9
-       Calls :meth:`Flask.handle_build_error` on
-       :exc:`~werkzeug.routing.BuildError`.
-
-    :param endpoint: the endpoint of the URL (name of the function)
-    :param values: the variable arguments of the URL rule
-    :param _external: if set to ``True``, an absolute URL is generated. Server
-      address can be changed via ``SERVER_NAME`` configuration variable which
-      falls back to the `Host` header, then to the IP and port of the request.
-    :param _scheme: a string specifying the desired URL scheme. The `_external`
-      parameter must be set to ``True`` or a :exc:`ValueError` is raised. The default
-      behavior uses the same scheme as the current request, or
-      :data:`PREFERRED_URL_SCHEME` if no request context is available.
-      This also can be set to an empty string to build protocol-relative
-      URLs.
-    :param _anchor: if provided this is added as anchor to the URL.
-    :param _method: if provided this explicitly specifies an HTTP method.
+    .. versionchanged:: 0.9
+       Calls ``app.handle_url_build_error`` on build errors.
     """
-    appctx = _app_ctx_stack.top
-    reqctx = _request_ctx_stack.top
-
-    if appctx is None:
-        raise RuntimeError(
-            "Attempted to generate a URL without the application context being"
-            " pushed. This has to be executed when application context is"
-            " available."
-        )
-
-    # If request specific information is available we have some extra
-    # features that support "relative" URLs.
-    if reqctx is not None:
-        url_adapter = reqctx.url_adapter
-        blueprint_name = request.blueprint
-
-        if endpoint[:1] == ".":
-            if blueprint_name is not None:
-                endpoint = f"{blueprint_name}{endpoint}"
-            else:
-                endpoint = endpoint[1:]
-
-        external = values.pop("_external", False)
-
-    # Otherwise go with the url adapter from the appctx and make
-    # the URLs external by default.
-    else:
-        url_adapter = appctx.url_adapter
-
-        if url_adapter is None:
-            raise RuntimeError(
-                "Application was not able to create a URL adapter for request"
-                " independent URL generation. You might be able to fix this by"
-                " setting the SERVER_NAME config variable."
-            )
-
-        external = values.pop("_external", True)
-
-    anchor = values.pop("_anchor", None)
-    method = values.pop("_method", None)
-    scheme = values.pop("_scheme", None)
-    appctx.app.inject_url_defaults(endpoint, values)
-
-    # This is not the best way to deal with this but currently the
-    # underlying Werkzeug router does not support overriding the scheme on
-    # a per build call basis.
-    old_scheme = None
-    if scheme is not None:
-        if not external:
-            raise ValueError("When specifying _scheme, _external must be True")
-        old_scheme = url_adapter.url_scheme
-        url_adapter.url_scheme = scheme
-
-    try:
-        try:
-            rv = url_adapter.build(
-                endpoint, values, method=method, force_external=external
-            )
-        finally:
-            if old_scheme is not None:
-                url_adapter.url_scheme = old_scheme
-    except BuildError as error:
-        # We need to inject the values again so that the app callback can
-        # deal with that sort of stuff.
-        values["_external"] = external
-        values["_anchor"] = anchor
-        values["_method"] = method
-        values["_scheme"] = scheme
-        return appctx.app.handle_url_build_error(error, endpoint, values)
-
-    if anchor is not None:
-        rv += f"#{url_quote(anchor)}"
-    return rv
+    return current_app.url_for(
+        endpoint,
+        _anchor=_anchor,
+        _method=_method,
+        _scheme=_scheme,
+        _external=_external,
+        **values,
+    )
 
 
 def redirect(
