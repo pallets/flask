@@ -8,6 +8,7 @@ Unreleased
 -   Add new customization points to the ``Flask`` app object for many
     previously global behaviors.
 
+    -   ``flask.url_for`` will call ``app.url_for``. :issue:`4568`
     -   ``flask.abort`` will call ``app.aborter``.
         ``Flask.aborter_class`` and ``Flask.make_aborter`` can be used
         to customize this aborter. :issue:`4567`

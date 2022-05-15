@@ -45,7 +45,6 @@ from .helpers import get_env
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import locked_cached_property
-from .helpers import url_for
 from .json import jsonify
 from .logging import create_logger
 from .scaffold import _endpoint_from_view_func
@@ -439,6 +438,7 @@ class Flask(Scaffold):
         #: to raise HTTP errors, and can be called directly as well.
         #:
         #: .. versionadded:: 2.2
+        #:     Moved from ``flask.abort``, which calls this object.
         self.aborter = self.make_aborter()
 
         #: A list of functions that are called by
@@ -727,7 +727,7 @@ class Flask(Scaffold):
 
         rv = self.jinja_environment(self, **options)
         rv.globals.update(
-            url_for=url_for,
+            url_for=self.url_for,
             get_flashed_messages=get_flashed_messages,
             config=self.config,
             # request, session and g are normally added with the
@@ -1798,6 +1798,7 @@ class Flask(Scaffold):
         :param code: The status code for the redirect.
 
         .. versionadded:: 2.2
+            Moved from ``flask.redirect``, which calls this method.
         """
         return _wz_redirect(location, code=code, Response=self.response_class)
 
