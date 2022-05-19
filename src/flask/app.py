@@ -524,7 +524,6 @@ class Flask(Scaffold):
         # For one, it might be created while the server is running (e.g. during
         # development). Also, Google App Engine stores static files somewhere
 
-
         if self.has_static_folder:
             assert (
                 bool(static_host) == host_matching
@@ -539,8 +538,8 @@ class Flask(Scaffold):
                 view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore # noqa: B950
             )
 
-       #Set the name of the Click group in case someone wants to add
-       #the app's commands to another CLI tool.
+        # Set the name of the Click group in case someone wants to add
+        # the app's commands to another CLI tool.
         self.cli.name = self.name
 
     def _is_setup_finished(self) -> bool:
