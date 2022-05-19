@@ -388,7 +388,7 @@ class Flask(Scaffold):
     #: .. versionadded:: 1.0
     test_cli_runner_class: t.Optional[t.Type["FlaskCliRunner"]] = None
 
-    #: the session interface to use.  By default an instance of
+    #: The session interface to use.  By default an instance of
     #: :class:`~flask.sessions.SecureCookieSessionInterface` is used here.
     #:
     #: .. versionadded:: 0.8
@@ -482,7 +482,7 @@ class Flask(Scaffold):
         #: .. versionadded:: 0.7
         self.blueprints: t.Dict[str, "Blueprint"] = {}
 
-        #: a place where extensions can store application specific state.  For
+        #: A place where extensions can store application specific state.  For
         #: example this is where an extension could store database engines and
         #: similar things.
         #:
@@ -518,11 +518,13 @@ class Flask(Scaffold):
         self._got_first_request = False
         self._before_request_lock = Lock()
 
-        # Add a static route using the provided static_url_path, static_host,
-        # and static_folder if there is a configured static_folder.
-        # Note we do this without checking if static_folder exists.
-        # For one, it might be created while the server is running (e.g. during
-        # development). Also, Google App Engine stores static files somewhere
+        """# Add a static route using the provided static_url_path, static_host,
+           # and static_folder if there is a configured static_folder.
+           # Note we do this without checking if static_folder exists.
+           # For one, it might be created while the server is running (e.g. during
+           # development). Also, Google App Engine stores static files somewhere"""
+        
+        
         if self.has_static_folder:
             assert (
                 bool(static_host) == host_matching
@@ -537,8 +539,8 @@ class Flask(Scaffold):
                 view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore # noqa: B950
             )
 
-        # Set the name of the Click group in case someone wants to add
-        # the app's commands to another CLI tool.
+       """ Set the name of the Click group in case someone wants to add
+        the app's commands to another CLI tool."""
         self.cli.name = self.name
 
     def _is_setup_finished(self) -> bool:
@@ -1519,8 +1521,8 @@ class Flask(Scaffold):
         raise FormDataRoutingRedirect(request)
 
     def dispatch_request(self) -> ResponseReturnValue:
-        """Does the request dispatching.  Matches the URL and returns the
-        return value of the view or error handler.  This does not have to
+        """Does the request dispatching, matches the URL and returns the
+        return value of the view or error handler?  This does not have to
         be a response object.  In order to convert the return value to a
         proper response object, call :func:`make_response`.
 
