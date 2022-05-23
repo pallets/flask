@@ -5,7 +5,7 @@
 #
 #    pip-compile-multi
 #
-asgiref==3.5.0
+asgiref==3.5.2
     # via -r requirements/tests.in
 attrs==21.4.0
     # via pytest
@@ -21,7 +21,7 @@ pluggy==1.0.0
     # via pytest
 py==1.11.0
     # via pytest
-pyparsing==3.0.8
+pyparsing==3.0.9
     # via packaging
 pytest==7.1.2
     # via -r requirements/tests.in
