@@ -1,5 +1,14 @@
 .. currentmodule:: flask
 
+Version 2.1.3
+-------------
+
+Unreleased
+
+-   Inline some optional imports that are only used for certain CLI
+    commands. :pr:`4606`
+
+
 Version 2.1.2
 -------------
 
