@@ -541,8 +541,17 @@ class Flask(Scaffold):
         # the app's commands to another CLI tool.
         self.cli.name = self.name
 
-    def _is_setup_finished(self) -> bool:
-        return self.debug and self._got_first_request
+    def _check_setup_finished(self, f_name: str) -> None:
+        if self._got_first_request:
+            raise AssertionError(
+                f"The setup method '{f_name}' can no longer be called"
+                " on the application. It has already handled its first"
+                " request, any changes will not be applied"
+                " consistently.\n"
+                "Make sure all imports, decorators, functions, etc."
+                " needed to set up the application are done before"
+                " running it."
+            )
 
     @locked_cached_property
     def name(self) -> str:  # type: ignore
