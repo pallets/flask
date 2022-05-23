@@ -329,6 +329,11 @@ def test_session_using_session_settings(app, client):
         flask.session["testing"] = 42
         return "Hello World"
 
+    @app.route("/clear")
+    def clear():
+        flask.session.pop("testing", None)
+        return "Goodbye World"
+
     rv = client.get("/", "http://www.example.com:8080/test/")
     cookie = rv.headers["set-cookie"].lower()
     assert "domain=.example.com" in cookie
@@ -336,11 +341,6 @@ def test_session_using_session_settings(app, client):
     assert "secure" in cookie
     assert "httponly" not in cookie
     assert "samesite" in cookie
-
-    @app.route("/clear")
-    def clear():
-        flask.session.pop("testing", None)
-        return "Goodbye World"
 
     rv = client.get("/clear", "http://www.example.com:8080/test/")
     cookie = rv.headers["set-cookie"].lower()
@@ -1031,7 +1031,14 @@ def test_errorhandler_precedence(app, client):
     assert rv.data == b"E2"
 
 
-def test_trapping_of_bad_request_key_errors(app, client):
+@pytest.mark.parametrize(
+    ("debug", "trap", "expect_key", "expect_abort"),
+    [(False, None, True, True), (True, None, False, True), (False, True, False, False)],
+)
+def test_trap_bad_request_key_error(app, client, debug, trap, expect_key, expect_abort):
+    app.config["DEBUG"] = debug
+    app.config["TRAP_BAD_REQUEST_ERRORS"] = trap
+
     @app.route("/key")
     def fail():
         flask.request.form["missing_key"]
@@ -1040,26 +1047,23 @@ def test_trapping_of_bad_request_key_errors(app, client):
     def allow_abort():
         flask.abort(400)
 
-    rv = client.get("/key")
-    assert rv.status_code == 400
-    assert b"missing_key" not in rv.data
-    rv = client.get("/abort")
-    assert rv.status_code == 400
+    if expect_key:
+        rv = client.get("/key")
+        assert rv.status_code == 400
+        assert b"missing_key" not in rv.data
+    else:
+        with pytest.raises(KeyError) as exc_info:
+            client.get("/key")
 
-    app.debug = True
-    with pytest.raises(KeyError) as e:
-        client.get("/key")
-    assert e.errisinstance(BadRequest)
-    assert "missing_key" in e.value.get_description()
-    rv = client.get("/abort")
-    assert rv.status_code == 400
+        assert exc_info.errisinstance(BadRequest)
+        assert "missing_key" in exc_info.value.get_description()
 
-    app.debug = False
-    app.config["TRAP_BAD_REQUEST_ERRORS"] = True
-    with pytest.raises(KeyError):
-        client.get("/key")
-    with pytest.raises(BadRequest):
-        client.get("/abort")
+    if expect_abort:
+        rv = client.get("/abort")
+        assert rv.status_code == 400
+    else:
+        with pytest.raises(BadRequest):
+            client.get("/abort")
 
 
 def test_trapping_of_all_http_exceptions(app, client):
@@ -1661,7 +1665,7 @@ def test_nonascii_pathinfo(app, client):
     assert rv.data == b"Hello World!"
 
 
-def test_debug_mode_complains_after_first_request(app, client):
+def test_no_setup_after_first_request(app, client):
     app.debug = True
 
     @app.route("/")
@@ -1671,19 +1675,10 @@ def test_debug_mode_complains_after_first_request(app, client):
     assert not app.got_first_request
     assert client.get("/").data == b"Awesome"
 
-    with pytest.raises(AssertionError) as e:
+    with pytest.raises(AssertionError) as exc_info:
         app.add_url_rule("/foo", endpoint="late")
 
-    assert "A setup function was called" in str(e.value)
-
-    app.debug = False
-
-    @app.route("/foo")
-    def working():
-        return "Meh"
-
-    assert client.get("/foo").data == b"Meh"
-    assert app.got_first_request
+    assert "setup method 'add_url_rule'" in str(exc_info.value)
 
 
 def test_before_first_request_functions(app, client):
@@ -1720,28 +1715,23 @@ def test_before_first_request_functions_concurrent(app, client):
 
 
 def test_routing_redirect_debugging(monkeypatch, app, client):
-    @app.route("/foo/", methods=["GET", "POST"])
-    def foo():
-        return "success"
+    app.config["DEBUG"] = True
 
-    app.debug = False
-    rv = client.post("/foo", data={}, follow_redirects=True)
+    @app.route("/user/", methods=["GET", "POST"])
+    def user():
+        return flask.request.form["status"]
+
+    # default redirect code preserves form data
+    rv = client.post("/user", data={"status": "success"}, follow_redirects=True)
     assert rv.data == b"success"
 
-    app.debug = True
-
-    with client:
-        rv = client.post("/foo", data={}, follow_redirects=True)
-        assert rv.data == b"success"
-        rv = client.get("/foo", data={}, follow_redirects=True)
-        assert rv.data == b"success"
-
+    # 301 and 302 raise error
     monkeypatch.setattr(RequestRedirect, "code", 301)
 
-    with client, pytest.raises(AssertionError) as e:
-        client.post("/foo", data={})
+    with client, pytest.raises(AssertionError) as exc_info:
+        client.post("/user", data={"status": "error"}, follow_redirects=True)
 
-    assert "canonical URL 'http://localhost/foo/'" in str(e.value)
+    assert "canonical URL 'http://localhost/user/'" in str(exc_info.value)
 
 
 def test_route_decorator_custom_endpoint(app, client):
