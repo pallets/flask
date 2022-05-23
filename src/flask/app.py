@@ -26,6 +26,7 @@ from werkzeug.wrappers import Response as BaseResponse
 
 from . import cli
 from . import json
+from . import typing as ft
 from .config import Config
 from .config import ConfigAttribute
 from .ctx import _AppCtxGlobals
@@ -58,12 +59,6 @@ from .signals import request_started
 from .signals import request_tearing_down
 from .templating import DispatchingJinjaLoader
 from .templating import Environment
-from .typing import BeforeFirstRequestCallable
-from .typing import ResponseReturnValue
-from .typing import TeardownCallable
-from .typing import TemplateFilterCallable
-from .typing import TemplateGlobalCallable
-from .typing import TemplateTestCallable
 from .wrappers import Request
 from .wrappers import Response
 
@@ -72,7 +67,6 @@ if t.TYPE_CHECKING:
     from .blueprints import Blueprint
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
-    from .typing import ErrorHandlerCallable
 
 if sys.version_info >= (3, 8):
     iscoroutinefunction = inspect.iscoroutinefunction
@@ -436,7 +430,7 @@ class Flask(Scaffold):
         #: :meth:`before_first_request` decorator.
         #:
         #: .. versionadded:: 0.8
-        self.before_first_request_funcs: t.List[BeforeFirstRequestCallable] = []
+        self.before_first_request_funcs: t.List[ft.BeforeFirstRequestCallable] = []
 
         #: A list of functions that are called when the application context
         #: is destroyed.  Since the application context is also torn down
@@ -444,7 +438,7 @@ class Flask(Scaffold):
         #: from databases.
         #:
         #: .. versionadded:: 0.9
-        self.teardown_appcontext_funcs: t.List[TeardownCallable] = []
+        self.teardown_appcontext_funcs: t.List[ft.TeardownCallable] = []
 
         #: A list of shell context processor functions that should be run
         #: when a shell context is created.
@@ -1096,7 +1090,7 @@ class Flask(Scaffold):
     @setupmethod
     def template_filter(
         self, name: t.Optional[str] = None
-    ) -> t.Callable[[TemplateFilterCallable], TemplateFilterCallable]:
+    ) -> t.Callable[[ft.TemplateFilterCallable], ft.TemplateFilterCallable]:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
@@ -1109,7 +1103,7 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f: TemplateFilterCallable) -> TemplateFilterCallable:
+        def decorator(f: ft.TemplateFilterCallable) -> ft.TemplateFilterCallable:
             self.add_template_filter(f, name=name)
             return f
 
@@ -1117,7 +1111,7 @@ class Flask(Scaffold):
 
     @setupmethod
     def add_template_filter(
-        self, f: TemplateFilterCallable, name: t.Optional[str] = None
+        self, f: ft.TemplateFilterCallable, name: t.Optional[str] = None
     ) -> None:
         """Register a custom template filter.  Works exactly like the
         :meth:`template_filter` decorator.
@@ -1130,7 +1124,7 @@ class Flask(Scaffold):
     @setupmethod
     def template_test(
         self, name: t.Optional[str] = None
-    ) -> t.Callable[[TemplateTestCallable], TemplateTestCallable]:
+    ) -> t.Callable[[ft.TemplateTestCallable], ft.TemplateTestCallable]:
         """A decorator that is used to register custom template test.
         You can specify a name for the test, otherwise the function
         name will be used. Example::
@@ -1150,7 +1144,7 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f: TemplateTestCallable) -> TemplateTestCallable:
+        def decorator(f: ft.TemplateTestCallable) -> ft.TemplateTestCallable:
             self.add_template_test(f, name=name)
             return f
 
@@ -1158,7 +1152,7 @@ class Flask(Scaffold):
 
     @setupmethod
     def add_template_test(
-        self, f: TemplateTestCallable, name: t.Optional[str] = None
+        self, f: ft.TemplateTestCallable, name: t.Optional[str] = None
     ) -> None:
         """Register a custom template test.  Works exactly like the
         :meth:`template_test` decorator.
@@ -1173,7 +1167,7 @@ class Flask(Scaffold):
     @setupmethod
     def template_global(
         self, name: t.Optional[str] = None
-    ) -> t.Callable[[TemplateGlobalCallable], TemplateGlobalCallable]:
+    ) -> t.Callable[[ft.TemplateGlobalCallable], ft.TemplateGlobalCallable]:
         """A decorator that is used to register a custom template global function.
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
@@ -1188,7 +1182,7 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f: TemplateGlobalCallable) -> TemplateGlobalCallable:
+        def decorator(f: ft.TemplateGlobalCallable) -> ft.TemplateGlobalCallable:
             self.add_template_global(f, name=name)
             return f
 
@@ -1196,7 +1190,7 @@ class Flask(Scaffold):
 
     @setupmethod
     def add_template_global(
-        self, f: TemplateGlobalCallable, name: t.Optional[str] = None
+        self, f: ft.TemplateGlobalCallable, name: t.Optional[str] = None
     ) -> None:
         """Register a custom template global function. Works exactly like the
         :meth:`template_global` decorator.
@@ -1210,8 +1204,8 @@ class Flask(Scaffold):
 
     @setupmethod
     def before_first_request(
-        self, f: BeforeFirstRequestCallable
-    ) -> BeforeFirstRequestCallable:
+        self, f: ft.BeforeFirstRequestCallable
+    ) -> ft.BeforeFirstRequestCallable:
         """Registers a function to be run before the first request to this
         instance of the application.
 
@@ -1224,7 +1218,7 @@ class Flask(Scaffold):
         return f
 
     @setupmethod
-    def teardown_appcontext(self, f: TeardownCallable) -> TeardownCallable:
+    def teardown_appcontext(self, f: ft.TeardownCallable) -> ft.TeardownCallable:
         """Registers a function to be called when the application context
         ends.  These functions are typically also called when the request
         context is popped.
@@ -1265,7 +1259,7 @@ class Flask(Scaffold):
         self.shell_context_processors.append(f)
         return f
 
-    def _find_error_handler(self, e: Exception) -> t.Optional["ErrorHandlerCallable"]:
+    def _find_error_handler(self, e: Exception) -> t.Optional[ft.ErrorHandlerCallable]:
         """Return a registered error handler for an exception in this order:
         blueprint handler for a specific code, app handler for a specific code,
         blueprint handler for an exception class, app handler for an exception
@@ -1290,7 +1284,7 @@ class Flask(Scaffold):
 
     def handle_http_exception(
         self, e: HTTPException
-    ) -> t.Union[HTTPException, ResponseReturnValue]:
+    ) -> t.Union[HTTPException, ft.ResponseReturnValue]:
         """Handles an HTTP exception.  By default this will invoke the
         registered error handlers and fall back to returning the
         exception as response.
@@ -1360,7 +1354,7 @@ class Flask(Scaffold):
 
     def handle_user_exception(
         self, e: Exception
-    ) -> t.Union[HTTPException, ResponseReturnValue]:
+    ) -> t.Union[HTTPException, ft.ResponseReturnValue]:
         """This method is called whenever an exception occurs that
         should be handled. A special case is :class:`~werkzeug
         .exceptions.HTTPException` which is forwarded to the
@@ -1430,7 +1424,7 @@ class Flask(Scaffold):
             raise e
 
         self.log_exception(exc_info)
-        server_error: t.Union[InternalServerError, ResponseReturnValue]
+        server_error: t.Union[InternalServerError, ft.ResponseReturnValue]
         server_error = InternalServerError(original_exception=e)
         handler = self._find_error_handler(server_error)
 
@@ -1484,7 +1478,7 @@ class Flask(Scaffold):
 
         raise FormDataRoutingRedirect(request)
 
-    def dispatch_request(self) -> ResponseReturnValue:
+    def dispatch_request(self) -> ft.ResponseReturnValue:
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
         be a response object.  In order to convert the return value to a
@@ -1527,7 +1521,7 @@ class Flask(Scaffold):
 
     def finalize_request(
         self,
-        rv: t.Union[ResponseReturnValue, HTTPException],
+        rv: t.Union[ft.ResponseReturnValue, HTTPException],
         from_error_handler: bool = False,
     ) -> Response:
         """Given the return value from a view function this finalizes
@@ -1630,7 +1624,7 @@ class Flask(Scaffold):
 
         return asgiref_async_to_sync(func)
 
-    def make_response(self, rv: ResponseReturnValue) -> Response:
+    def make_response(self, rv: ft.ResponseReturnValue) -> Response:
         """Convert the return value from a view function to an instance of
         :attr:`response_class`.
 
@@ -1722,7 +1716,9 @@ class Flask(Scaffold):
                 # evaluate a WSGI callable, or coerce a different response
                 # class to the correct type
                 try:
-                    rv = self.response_class.force_type(rv, request.environ)  # type: ignore  # noqa: B950
+                    rv = self.response_class.force_type(
+                        rv, request.environ  # type: ignore[arg-type]
+                    )
                 except TypeError as e:
                     raise TypeError(
                         f"{e}\nThe view function did not return a valid"
@@ -1838,7 +1834,7 @@ class Flask(Scaffold):
 
         raise error
 
-    def preprocess_request(self) -> t.Optional[ResponseReturnValue]:
+    def preprocess_request(self) -> t.Optional[ft.ResponseReturnValue]:
         """Called before the request is dispatched. Calls
         :attr:`url_value_preprocessors` registered with the app and the
         current blueprint (if any). Then calls :attr:`before_request_funcs`

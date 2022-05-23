@@ -1,8 +1,8 @@
 import typing as t
 
+from . import typing as ft
 from .globals import current_app
 from .globals import request
-from .typing import ResponseReturnValue
 
 
 http_method_funcs = frozenset(
@@ -59,7 +59,7 @@ class View:
     #: .. versionadded:: 0.8
     decorators: t.List[t.Callable] = []
 
-    def dispatch_request(self) -> ResponseReturnValue:
+    def dispatch_request(self) -> ft.ResponseReturnValue:
         """Subclasses have to override this method to implement the
         actual view function code.  This method is called with all
         the arguments from the URL rule.
@@ -79,7 +79,7 @@ class View:
         constructor of the class.
         """
 
-        def view(*args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
+        def view(*args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
             self = view.view_class(*class_args, **class_kwargs)  # type: ignore
             return current_app.ensure_sync(self.dispatch_request)(*args, **kwargs)
 
@@ -146,7 +146,7 @@ class MethodView(View, metaclass=MethodViewType):
         app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
     """
 
-    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ResponseReturnValue:
+    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it
