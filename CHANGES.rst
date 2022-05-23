@@ -16,6 +16,10 @@ Unreleased
 
 -   Refactor ``register_error_handler`` to consolidate error checking.
     Rewrite some error messages to be more consistent. :issue:`4559`
+-   Use Blueprint decorators and functions intended for setup after
+    registering the blueprint will show a warning. In the next version,
+    this will become an error just like the application setup methods.
+    :issue:`4571`
 
 
 Version 2.1.2

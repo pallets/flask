@@ -27,8 +27,8 @@ from .typing import URLDefaultCallable
 from .typing import URLValuePreprocessorCallable
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    from .wrappers import Response
     from .typing import ErrorHandlerCallable
+    from .wrappers import Response
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
@@ -37,22 +37,10 @@ F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
 
 def setupmethod(f: F) -> F:
-    """Wraps a method so that it performs a check in debug mode if the
-    first request was already handled.
-    """
+    f_name = f.__name__
 
     def wrapper_func(self, *args: t.Any, **kwargs: t.Any) -> t.Any:
-        if self._is_setup_finished():
-            raise AssertionError(
-                "A setup function was called after the first request "
-                "was handled. This usually indicates a bug in the"
-                " application where a module was not imported and"
-                " decorators or other functionality was called too"
-                " late.\nTo fix this make sure to import all your view"
-                " modules, database models, and everything related at a"
-                " central place before the application starts serving"
-                " requests."
-            )
+        self._check_setup_finished(f_name)
         return f(self, *args, **kwargs)
 
     return t.cast(F, update_wrapper(wrapper_func, f))
@@ -239,7 +227,7 @@ class Scaffold:
     def __repr__(self) -> str:
         return f"<{type(self).__name__} {self.name!r}>"
 
-    def _is_setup_finished(self) -> bool:
+    def _check_setup_finished(self, f_name: str) -> None:
         raise NotImplementedError
 
     @property
@@ -376,6 +364,7 @@ class Scaffold:
 
         return self.route(rule, methods=[method], **options)
 
+    @setupmethod
     def get(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["GET"]``.
 
@@ -383,6 +372,7 @@ class Scaffold:
         """
         return self._method_route("GET", rule, options)
 
+    @setupmethod
     def post(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["POST"]``.
 
@@ -390,6 +380,7 @@ class Scaffold:
         """
         return self._method_route("POST", rule, options)
 
+    @setupmethod
     def put(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["PUT"]``.
 
@@ -397,6 +388,7 @@ class Scaffold:
         """
         return self._method_route("PUT", rule, options)
 
+    @setupmethod
     def delete(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["DELETE"]``.
 
@@ -404,6 +396,7 @@ class Scaffold:
         """
         return self._method_route("DELETE", rule, options)
 
+    @setupmethod
     def patch(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Shortcut for :meth:`route` with ``methods=["PATCH"]``.
 
@@ -411,6 +404,7 @@ class Scaffold:
         """
         return self._method_route("PATCH", rule, options)
 
+    @setupmethod
     def route(self, rule: str, **options: t.Any) -> t.Callable[[F], F]:
         """Decorate a view function to register it with the given URL
         rule and options. Calls :meth:`add_url_rule`, which has more
@@ -510,6 +504,7 @@ class Scaffold:
         """
         raise NotImplementedError
 
+    @setupmethod
     def endpoint(self, endpoint: str) -> t.Callable:
         """Decorate a view function to register it for the given
         endpoint. Used if a rule is added without a ``view_func`` with
