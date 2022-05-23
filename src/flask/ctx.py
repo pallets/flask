@@ -5,11 +5,11 @@ from types import TracebackType
 
 from werkzeug.exceptions import HTTPException
 
+from . import typing as ft
 from .globals import _app_ctx_stack
 from .globals import _request_ctx_stack
 from .signals import appcontext_popped
 from .signals import appcontext_pushed
-from .typing import AfterRequestCallable
 
 if t.TYPE_CHECKING:
     from .app import Flask
@@ -109,7 +109,7 @@ class _AppCtxGlobals:
         return object.__repr__(self)
 
 
-def after_this_request(f: AfterRequestCallable) -> AfterRequestCallable:
+def after_this_request(f: ft.AfterRequestCallable) -> ft.AfterRequestCallable:
     """Executes a function after this request.  This is useful to modify
     response objects.  The function is passed the response object and has
     to return the same or a new one.
@@ -341,7 +341,7 @@ class RequestContext:
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
         # functions.
-        self._after_request_functions: t.List[AfterRequestCallable] = []
+        self._after_request_functions: t.List[ft.AfterRequestCallable] = []
 
     @property
     def g(self) -> _AppCtxGlobals:

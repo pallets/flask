@@ -4,7 +4,7 @@ import typing as t
 if t.TYPE_CHECKING:
     from _typeshed.wsgi import WSGIApplication  # noqa: F401
     from werkzeug.datastructures import Headers  # noqa: F401
-    from werkzeug.wrappers.response import Response  # noqa: F401
+    from werkzeug.wrappers import Response  # noqa: F401
 
 # The possible types that are directly convertible or are a Response object.
 ResponseValue = t.Union[
@@ -35,8 +35,13 @@ ResponseReturnValue = t.Union[
     "WSGIApplication",
 ]
 
+# Allow any subclass of werkzeug.Response, such as the one from Flask,
+# as a callback argument. Using werkzeug.Response directly makes a
+# callback annotated with flask.Response fail type checking.
+ResponseClass = t.TypeVar("ResponseClass", bound="Response")
+
 AppOrBlueprintKey = t.Optional[str]  # The App key is None, whereas blueprints are named
-AfterRequestCallable = t.Callable[["Response"], "Response"]
+AfterRequestCallable = t.Callable[[ResponseClass], ResponseClass]
 BeforeFirstRequestCallable = t.Callable[[], None]
 BeforeRequestCallable = t.Callable[[], t.Optional[ResponseReturnValue]]
 TeardownCallable = t.Callable[[t.Optional[BaseException]], None]
