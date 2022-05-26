@@ -59,6 +59,25 @@ def test_uninstalled_package_paths(modules_tmpdir, purge_module):
     assert app.instance_path == str(modules_tmpdir.join("instance"))
 
 
+def test_uninstalled_namespace_paths(tmpdir, monkeypatch, purge_module):
+    def create_namespace(package):
+        project = tmpdir.join(f"project-{package}")
+        monkeypatch.syspath_prepend(str(project))
+        project.join("namespace").join(package).join("__init__.py").write(
+            "import flask\napp = flask.Flask(__name__)\n", ensure=True
+        )
+        return project
+
+    _ = create_namespace("package1")
+    project2 = create_namespace("package2")
+    purge_module("namespace.package2")
+    purge_module("namespace")
+
+    from namespace.package2 import app
+
+    assert app.instance_path == str(project2.join("instance"))
+
+
 def test_installed_module_paths(
     modules_tmpdir, modules_tmpdir_prefix, purge_module, site_packages, limit_loader
 ):
