@@ -114,6 +114,10 @@ def test_config_from_mapping():
     common_object_test(app)
 
     app = flask.Flask(__name__)
+    app.config.from_mapping(SECRET_KEY="config", TEST_KEY="foo", skip_key="skip")
+    common_object_test(app)
+
+    app = flask.Flask(__name__)
     with pytest.raises(TypeError):
         app.config.from_mapping({}, {})
 
