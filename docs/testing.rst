@@ -108,9 +108,9 @@ provides ``response.text``, or use ``response.get_data(as_text=True)``.
         assert b"<h2>Hello, World!</h2>" in response.data
 
 
-Pass a dict ``query={"key": "value", ...}`` to set arguments in the
-query string (after the ``?`` in the URL). Pass a dict ``headers={}``
-to set request headers.
+Pass a dict ``query_string={"key": "value", ...}`` to set arguments in
+the query string (after the ``?`` in the URL). Pass a dict
+``headers={}`` to set request headers.
 
 To send a request body in a POST or PUT request, pass a value to
 ``data``. If raw bytes are passed, that exact body is used. Usually,
