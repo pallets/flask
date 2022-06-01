@@ -16,7 +16,7 @@ click==8.1.3
     #   pip-tools
 distlib==0.3.4
     # via virtualenv
-filelock==3.7.0
+filelock==3.7.1
     # via
     #   tox
     #   virtualenv
@@ -30,7 +30,7 @@ pep517==0.12.0
     # via pip-tools
 pip-compile-multi==2.4.5
     # via -r requirements/dev.in
-pip-tools==6.6.1
+pip-tools==6.6.2
     # via pip-compile-multi
 platformdirs==2.5.2
     # via virtualenv
