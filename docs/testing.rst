@@ -92,7 +92,7 @@ The ``client`` has methods that match the common HTTP request methods,
 such as ``client.get()`` and ``client.post()``. They take many arguments
 for building the request; you can find the full documentation in
 :class:`~werkzeug.test.EnvironBuilder`. Typically you'll use ``path``,
-``query``, ``headers``, and ``data`` or ``json``.
+``query_string``, ``headers``, and ``data`` or ``json``.
 
 To make a request, call the method the request should use with the path
 to the route to test. A :class:`~werkzeug.test.TestResponse` is returned
@@ -108,9 +108,9 @@ provides ``response.text``, or use ``response.get_data(as_text=True)``.
         assert b"<h2>Hello, World!</h2>" in response.data
 
 
-Pass a dict ``query={"key": "value", ...}`` to set arguments in the
-query string (after the ``?`` in the URL). Pass a dict ``headers={}``
-to set request headers.
+Pass a dict ``query_string={"key": "value", ...}`` to set arguments in
+the query string (after the ``?`` in the URL). Pass a dict
+``headers={}`` to set request headers.
 
 To send a request body in a POST or PUT request, pass a value to
 ``data``. If raw bytes are passed, that exact body is used. Usually,
