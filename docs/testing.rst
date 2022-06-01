@@ -92,7 +92,7 @@ The ``client`` has methods that match the common HTTP request methods,
 such as ``client.get()`` and ``client.post()``. They take many arguments
 for building the request; you can find the full documentation in
 :class:`~werkzeug.test.EnvironBuilder`. Typically you'll use ``path``,
-``query``, ``headers``, and ``data`` or ``json``.
+``query_string``, ``headers``, and ``data`` or ``json``.
 
 To make a request, call the method the request should use with the path
 to the route to test. A :class:`~werkzeug.test.TestResponse` is returned
