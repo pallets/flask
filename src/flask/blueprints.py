@@ -384,7 +384,7 @@ class Blueprint(Scaffold):
         self,
         rule: str,
         endpoint: t.Optional[str] = None,
-        view_func: t.Optional[t.Callable] = None,
+        view_func: t.Optional[ft.ViewCallable] = None,
         provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
     ) -> None:
