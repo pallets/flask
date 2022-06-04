@@ -22,6 +22,7 @@ collected in the following pages.
    distribute
    fabric
    sqlite3
+   mysql
    sqlalchemy
    fileuploads
    caching
