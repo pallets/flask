@@ -1033,7 +1033,7 @@ class Flask(Scaffold):
         self,
         rule: str,
         endpoint: t.Optional[str] = None,
-        view_func: t.Optional[t.Callable] = None,
+        view_func: t.Optional[ft.ViewCallable] = None,
         provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
     ) -> None:
@@ -1681,7 +1681,7 @@ class Flask(Scaffold):
                 if isinstance(rv[1], (Headers, dict, tuple, list)):
                     rv, headers = rv
                 else:
-                    rv, status = rv  # type: ignore[misc]
+                    rv, status = rv  # type: ignore[assignment,misc]
             # other sized tuples are not allowed
             else:
                 raise TypeError(

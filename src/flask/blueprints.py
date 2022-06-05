@@ -384,7 +384,7 @@ class Blueprint(Scaffold):
         self,
         rule: str,
         endpoint: t.Optional[str] = None,
-        view_func: t.Optional[t.Callable] = None,
+        view_func: t.Optional[ft.ViewCallable] = None,
         provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
     ) -> None:
@@ -561,12 +561,14 @@ class Blueprint(Scaffold):
         )
         return f
 
-    def app_errorhandler(self, code: t.Union[t.Type[Exception], int]) -> t.Callable:
+    def app_errorhandler(
+        self, code: t.Union[t.Type[Exception], int]
+    ) -> t.Callable[[ft.ErrorHandlerDecorator], ft.ErrorHandlerDecorator]:
         """Like :meth:`Flask.errorhandler` but for a blueprint.  This
         handler is used for all requests, even if outside of the blueprint.
         """
 
-        def decorator(f: ft.ErrorHandlerCallable) -> ft.ErrorHandlerCallable:
+        def decorator(f: ft.ErrorHandlerDecorator) -> ft.ErrorHandlerDecorator:
             self.record_once(lambda s: s.app.errorhandler(code)(f))
             return f
 
