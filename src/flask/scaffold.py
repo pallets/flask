@@ -654,7 +654,7 @@ class Scaffold:
     @setupmethod
     def errorhandler(
         self, code_or_exception: t.Union[t.Type[Exception], int]
-    ) -> t.Callable[[ft.ErrorHandlerCallable], ft.ErrorHandlerCallable]:
+    ) -> t.Callable[[ft.ErrorHandlerDecorator], ft.ErrorHandlerDecorator]:
         """Register a function to handle errors by code or exception class.
 
         A decorator that is used to register a function given an
@@ -684,7 +684,7 @@ class Scaffold:
                                   an arbitrary exception
         """
 
-        def decorator(f: ft.ErrorHandlerCallable) -> ft.ErrorHandlerCallable:
+        def decorator(f: ft.ErrorHandlerDecorator) -> ft.ErrorHandlerDecorator:
             self.register_error_handler(code_or_exception, f)
             return f
 

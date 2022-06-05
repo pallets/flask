@@ -52,6 +52,7 @@ URLValuePreprocessorCallable = t.Callable[[t.Optional[str], t.Optional[dict]], N
 # https://github.com/pallets/flask/issues/4295
 # https://github.com/pallets/flask/issues/4297
 ErrorHandlerCallable = t.Callable[[t.Any], ResponseReturnValue]
+ErrorHandlerDecorator = t.TypeVar("ErrorHandlerDecorator", bound=ErrorHandlerCallable)
 
 ViewCallable = t.Callable[..., ResponseReturnValue]
 RouteDecorator = t.TypeVar("RouteDecorator", bound=ViewCallable)
