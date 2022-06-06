@@ -1,5 +1,6 @@
 import importlib.util
 import os
+import pathlib
 import pkgutil
 import sys
 import typing as t
@@ -780,30 +781,55 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     )
 
 
-def _find_package_path(root_mod_name):
-    """Find the path that contains the package or module."""
+def _path_is_relative_to(path: pathlib.PurePath, base: str) -> bool:
+    # Path.is_relative_to doesn't exist until Python 3.9
     try:
-        spec = importlib.util.find_spec(root_mod_name)
+        path.relative_to(base)
+        return True
+    except ValueError:
+        return False
 
-        if spec is None:
+
+def _find_package_path(import_name):
+    """Find the path that contains the package or module."""
+    root_mod_name, _, _ = import_name.partition(".")
+
+    try:
+        root_spec = importlib.util.find_spec(root_mod_name)
+
+        if root_spec is None:
             raise ValueError("not found")
     # ImportError: the machinery told us it does not exist
     # ValueError:
     #    - the module name was invalid
     #    - the module name is __main__
-    #    - *we* raised `ValueError` due to `spec` being `None`
+    #    - *we* raised `ValueError` due to `root_spec` being `None`
     except (ImportError, ValueError):
         pass  # handled below
     else:
         # namespace package
-        if spec.origin in {"namespace", None}:
-            return os.path.dirname(next(iter(spec.submodule_search_locations)))
+        if root_spec.origin in {"namespace", None}:
+            package_spec = importlib.util.find_spec(import_name)
+            if package_spec is not None and package_spec.submodule_search_locations:
+                # Pick the path in the namespace that contains the submodule.
+                package_path = pathlib.Path(
+                    os.path.commonpath(package_spec.submodule_search_locations)
+                )
+                search_locations = (
+                    location
+                    for location in root_spec.submodule_search_locations
+                    if _path_is_relative_to(package_path, location)
+                )
+            else:
+                # Pick the first path.
+                search_locations = iter(root_spec.submodule_search_locations)
+            return os.path.dirname(next(search_locations))
         # a package (with __init__.py)
-        elif spec.submodule_search_locations:
-            return os.path.dirname(os.path.dirname(spec.origin))
+        elif root_spec.submodule_search_locations:
+            return os.path.dirname(os.path.dirname(root_spec.origin))
         # just a normal module
         else:
-            return os.path.dirname(spec.origin)
+            return os.path.dirname(root_spec.origin)
 
     # we were unable to find the `package_path` using PEP 451 loaders
     loader = pkgutil.get_loader(root_mod_name)
@@ -845,12 +871,11 @@ def find_package(import_name: str):
     for import. If the package is not installed, it's assumed that the
     package was imported from the current working directory.
     """
-    root_mod_name, _, _ = import_name.partition(".")
-    package_path = _find_package_path(root_mod_name)
+    package_path = _find_package_path(import_name)
     py_prefix = os.path.abspath(sys.prefix)
 
     # installed to the system
-    if package_path.startswith(py_prefix):
+    if _path_is_relative_to(pathlib.PurePath(package_path), py_prefix):
         return py_prefix, package_path
 
     site_parent, site_folder = os.path.split(package_path)

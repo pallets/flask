@@ -1,4 +1,3 @@
-import os
 import sys
 
 import pytest
@@ -15,19 +14,6 @@ def test_explicit_instance_paths(modules_tmpdir):
     assert app.instance_path == str(modules_tmpdir)
 
 
-@pytest.mark.xfail(reason="weird interaction with tox")
-def test_main_module_paths(modules_tmpdir, purge_module):
-    app = modules_tmpdir.join("main_app.py")
-    app.write('import flask\n\napp = flask.Flask("__main__")')
-    purge_module("main_app")
-
-    from main_app import app
-
-    here = os.path.abspath(os.getcwd())
-    assert app.instance_path == os.path.join(here, "instance")
-
-
-@pytest.mark.xfail(reason="weird interaction with tox")
 def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.join("config_module_app.py").write(
         "import os\n"
@@ -42,7 +28,6 @@ def test_uninstalled_module_paths(modules_tmpdir, purge_module):
     assert app.instance_path == str(modules_tmpdir.join("instance"))
 
 
-@pytest.mark.xfail(reason="weird interaction with tox")
 def test_uninstalled_package_paths(modules_tmpdir, purge_module):
     app = modules_tmpdir.mkdir("config_package_app")
     init = app.join("__init__.py")
@@ -57,6 +42,25 @@ def test_uninstalled_package_paths(modules_tmpdir, purge_module):
     from config_package_app import app
 
     assert app.instance_path == str(modules_tmpdir.join("instance"))
+
+
+def test_uninstalled_namespace_paths(tmpdir, monkeypatch, purge_module):
+    def create_namespace(package):
+        project = tmpdir.join(f"project-{package}")
+        monkeypatch.syspath_prepend(str(project))
+        project.join("namespace").join(package).join("__init__.py").write(
+            "import flask\napp = flask.Flask(__name__)\n", ensure=True
+        )
+        return project
+
+    _ = create_namespace("package1")
+    project2 = create_namespace("package2")
+    purge_module("namespace.package2")
+    purge_module("namespace")
+
+    from namespace.package2 import app
+
+    assert app.instance_path == str(project2.join("instance"))
 
 
 def test_installed_module_paths(
