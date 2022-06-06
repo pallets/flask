@@ -722,9 +722,11 @@ def test_app_request_processing(app, client):
     bp = flask.Blueprint("bp", __name__)
     evts = []
 
-    @bp.before_app_first_request
-    def before_first_request():
-        evts.append("first")
+    with pytest.deprecated_call():
+
+        @bp.before_app_first_request
+        def before_first_request():
+            evts.append("first")
 
     @bp.before_app_request
     def before_app():

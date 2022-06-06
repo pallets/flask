@@ -1684,9 +1684,11 @@ def test_no_setup_after_first_request(app, client):
 def test_before_first_request_functions(app, client):
     got = []
 
-    @app.before_first_request
-    def foo():
-        got.append(42)
+    with pytest.deprecated_call():
+
+        @app.before_first_request
+        def foo():
+            got.append(42)
 
     client.get("/")
     assert got == [42]
@@ -1698,10 +1700,12 @@ def test_before_first_request_functions(app, client):
 def test_before_first_request_functions_concurrent(app, client):
     got = []
 
-    @app.before_first_request
-    def foo():
-        time.sleep(0.2)
-        got.append(42)
+    with pytest.deprecated_call():
+
+        @app.before_first_request
+        def foo():
+            time.sleep(0.2)
+            got.append(42)
 
     def get_and_assert():
         client.get("/")

@@ -20,6 +20,8 @@ Unreleased
     registering the blueprint will show a warning. In the next version,
     this will become an error just like the application setup methods.
     :issue:`4571`
+-   ``before_first_request`` is deprecated. Run setup code when creating
+    the application instead. :issue:`4605`
 
 
 Version 2.1.3
@@ -1032,8 +1034,7 @@ Released 2011-09-29, codename Rakija
     earlier feedback when users forget to import view code ahead of
     time.
 -   Added the ability to register callbacks that are only triggered once
-    at the beginning of the first request.
-    (:meth:`Flask.before_first_request`)
+    at the beginning of the first request. (``before_first_request``)
 -   Malformed JSON data will now trigger a bad request HTTP exception
     instead of a value error which usually would result in a 500
     internal server error if not handled. This is a backwards

@@ -451,6 +451,10 @@ class Flask(Scaffold):
         #: first request to this instance. To register a function, use the
         #: :meth:`before_first_request` decorator.
         #:
+        #: .. deprecated:: 2.2
+        #:     Will be removed in Flask 2.3. Run setup code when
+        #:     creating the application instead.
+        #:
         #: .. versionadded:: 0.8
         self.before_first_request_funcs: t.List[ft.BeforeFirstRequestCallable] = []
 
@@ -1255,8 +1259,21 @@ class Flask(Scaffold):
         The function will be called without any arguments and its return
         value is ignored.
 
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3. Run setup code when creating
+            the application instead.
+
         .. versionadded:: 0.8
         """
+        import warnings
+
+        warnings.warn(
+            "'before_first_request' is deprecated and will be removed"
+            " in Flask 2.3. Run setup code while creating the"
+            " application instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.before_first_request_funcs.append(f)
         return f
 
@@ -1552,7 +1569,17 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        self.try_trigger_before_first_request_functions()
+        # Run before_first_request functions if this is the thread's first request.
+        # Inlined to avoid a method call on subsequent requests.
+        # This is deprecated, will be removed in Flask 2.3.
+        if not self._got_first_request:
+            with self._before_request_lock:
+                if not self._got_first_request:
+                    for func in self.before_first_request_funcs:
+                        self.ensure_sync(func)()
+
+                    self._got_first_request = True
+
         try:
             request_started.send(self)
             rv = self.preprocess_request()
@@ -1590,22 +1617,6 @@ class Flask(Scaffold):
                 "Request finalizing failed with an error while handling an error"
             )
         return response
-
-    def try_trigger_before_first_request_functions(self) -> None:
-        """Called before each request and will ensure that it triggers
-        the :attr:`before_first_request_funcs` and only exactly once per
-        application instance (which means process usually).
-
-        :internal:
-        """
-        if self._got_first_request:
-            return
-        with self._before_request_lock:
-            if self._got_first_request:
-                return
-            for func in self.before_first_request_funcs:
-                self.ensure_sync(func)()
-            self._got_first_request = True
 
     def make_default_options_response(self) -> Response:
         """This method is called to create the default ``OPTIONS`` response.
