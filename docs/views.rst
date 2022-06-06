@@ -1,235 +1,319 @@
-Pluggable Views
-===============
+Class-based Views
+=================
 
-.. versionadded:: 0.7
+.. currentmodule:: flask.views
 
-Flask 0.7 introduces pluggable views inspired by the generic views from
-Django which are based on classes instead of functions.  The main
-intention is that you can replace parts of the implementations and this
-way have customizable pluggable views.
+This page introduces using the :class:`View` and :class:`MethodView`
+classes to write class-based views.
 
-Basic Principle
----------------
+A class-based view is a class that acts as a view function. Because it
+is a class, different instances of the class can be created with
+different arguments, to change the behavior of the view. This is also
+known as generic, reusable, or pluggable views.
 
-Consider you have a function that loads a list of objects from the
-database and renders into a template::
+An example of where this is useful is defining a class that creates an
+API based on the database model it is initialized with.
 
-    @app.route('/users/')
-    def show_users(page):
+For more complex API behavior and customization, look into the various
+API extensions for Flask.
+
+
+Basic Reusable View
+-------------------
+
+Let's walk through an example converting a view function to a view
+class. We start with a view function that queries a list of users then
+renders a template to show the list.
+
+.. code-block:: python
+
+    @app.route("/users/")
+    def user_list():
         users = User.query.all()
-        return render_template('users.html', users=users)
+        return render_template("users.html", users=users)
 
-This is simple and flexible, but if you want to provide this view in a
-generic fashion that can be adapted to other models and templates as well
-you might want more flexibility.  This is where pluggable class-based
-views come into place.  As the first step to convert this into a class
-based view you would do this::
+This works for the user model, but let's say you also had more models
+that needed list pages. You'd need to write another view function for
+each model, even though the only thing that would change is the model
+and template name.
 
+Instead, you can write a :class:`View` subclass that will query a model
+and render a template. As the first step, we'll convert the view to a
+class without any customization.
+
+.. code-block:: python
 
     from flask.views import View
 
-    class ShowUsers(View):
-
+    class UserList(View):
         def dispatch_request(self):
             users = User.query.all()
-            return render_template('users.html', objects=users)
+            return render_template("users.html", objects=users)
 
-    app.add_url_rule('/users/', view_func=ShowUsers.as_view('show_users'))
+    app.add_url_rule("/users/", view_func=UserList.as_view("user_list"))
 
-As you can see what you have to do is to create a subclass of
-:class:`flask.views.View` and implement
-:meth:`~flask.views.View.dispatch_request`.  Then we have to convert that
-class into an actual view function by using the
-:meth:`~flask.views.View.as_view` class method.  The string you pass to
-that function is the name of the endpoint that view will then have.  But
-this by itself is not helpful, so let's refactor the code a bit::
+The :meth:`View.dispatch_request` method is the equivalent of the view
+function. Calling :meth:`View.as_view` method will create a view
+function that can be registered on the app with its
+:meth:`~flask.Flask.add_url_rule` method. The first argument to
+``as_view`` is the name to use to refer to the view with
+:func:`~flask.url_for`.
 
+.. note::
 
-    from flask.views import View
+    You can't decorate the class with ``@app.route()`` the way you'd
+    do with a basic view function.
+
+Next, we need to be able to register the same view class for different
+models and templates, to make it more useful than the original function.
+The class will take two arguments, the model and template, and store
+them on ``self``. Then ``dispatch_request`` can reference these instead
+of hard-coded values.
+
+.. code-block:: python
 
     class ListView(View):
-
-        def get_template_name(self):
-            raise NotImplementedError()
-
-        def render_template(self, context):
-            return render_template(self.get_template_name(), **context)
+        def __init__(self, model, template):
+            self.model = model
+            self.template = template
 
         def dispatch_request(self):
-            context = {'objects': self.get_objects()}
-            return self.render_template(context)
+            items = self.model.query.all()
+            return render_template(self.template, items=items)
 
-    class UserView(ListView):
+Remember, we create the view function with ``View.as_view()`` instead of
+creating the class directly. Any extra arguments passed to ``as_view``
+are then passed when creating the class. Now we can register the same
+view to handle multiple models.
 
-        def get_template_name(self):
-            return 'users.html'
+.. code-block:: python
 
-        def get_objects(self):
-            return User.query.all()
+    app.add_url_rule(
+        "/users/",
+        view_func=ListView.as_view("user_list", User, "users.html"),
+    )
+    app.add_url_rule(
+        "/stories/",
+        view_func=ListView.as_view("story_list", Story, "stories.html"),
+    )
 
-This of course is not that helpful for such a small example, but it's good
-enough to explain the basic principle.  When you have a class-based view
-the question comes up what ``self`` points to.  The way this works is that
-whenever the request is dispatched a new instance of the class is created
-and the :meth:`~flask.views.View.dispatch_request` method is called with
-the parameters from the URL rule.  The class itself is instantiated with
-the parameters passed to the :meth:`~flask.views.View.as_view` function.
-For instance you can write a class like this::
 
-    class RenderTemplateView(View):
-        def __init__(self, template_name):
-            self.template_name = template_name
+URL Variables
+-------------
+
+Any variables captured by the URL are passed as keyword arguments to the
+``dispatch_request`` method, as they would be for a regular view
+function.
+
+.. code-block:: python
+
+    class DetailView(View):
+        def __init__(self, model):
+            self.model = model
+            self.template = f"{model.__name__.lower()}/detail.html"
+
+        def dispatch_request(self, id)
+            item = self.model.query.get_or_404(id)
+            return render_template(self.template, item=item)
+
+    app.add_url_rule("/users/<int:id>", view_func=DetailView.as_view("user_detail"))
+
+
+View Lifetime and ``self``
+--------------------------
+
+By default, a new instance of the view class is created every time a
+request is handled. This means that it is safe to write other data to
+``self`` during the request, since the next request will not see it,
+unlike other forms of global state.
+
+However, if your view class needs to do a lot of complex initialization,
+doing it for every request is unnecessary and can be inefficient. To
+avoid this, set :attr:`View.init_every_request` to ``False``, which will
+only create one instance of the class and use it for every request. In
+this case, writing to ``self`` is not safe. If you need to store data
+during the request, use :data:`~flask.g` instead.
+
+In the ``ListView`` example, nothing writes to ``self`` during the
+request, so it is more efficient to create a single instance.
+
+.. code-block:: python
+
+    class ListView(View):
+        init_every_request = False
+
+        def __init__(self, model, template):
+            self.model = model
+            self.template = template
+
         def dispatch_request(self):
-            return render_template(self.template_name)
+            items = self.model.query.all()
+            return render_template(self.template, items=items)
 
-And then you can register it like this::
+Different instances will still be created each for each ``as_view``
+call, but not for each request to those views.
 
-    app.add_url_rule('/about', view_func=RenderTemplateView.as_view(
-        'about_page', template_name='about.html'))
+
+View Decorators
+---------------
+
+The view class itself is not the view function. View decorators need to
+be applied to the view function returned by ``as_view``, not the class
+itself. Set :attr:`View.decorators` to a list of decorators to apply.
+
+.. code-block:: python
+
+    class UserList(View):
+        decorators = [cache(minutes=2), login_required]
+
+    app.add_url_rule('/users/', view_func=UserList.as_view())
+
+If you didn't set ``decorators``, you could apply them manually instead.
+This is equivalent to:
+
+.. code-block:: python
+
+    view = UserList.as_view("users_list")
+    view = cache(minutes=2)(view)
+    view = login_required(view)
+    app.add_url_rule('/users/', view_func=view)
+
+Keep in mind that order matters. If you're used to ``@decorator`` style,
+this is equivalent to:
+
+.. code-block:: python
+
+    @app.route("/users/")
+    @login_required
+    @cache(minutes=2)
+    def user_list():
+        ...
+
 
 Method Hints
 ------------
 
-Pluggable views are attached to the application like a regular function by
-either using :func:`~flask.Flask.route` or better
-:meth:`~flask.Flask.add_url_rule`.  That however also means that you would
-have to provide the names of the HTTP methods the view supports when you
-attach this.  In order to move that information to the class you can
-provide a :attr:`~flask.views.View.methods` attribute that has this
-information::
+A common pattern is to register a view with ``methods=["GET", "POST"]``,
+then check ``request.method == "POST"`` to decide what to do. Setting
+:attr:`View.methods` is equivalent to passing the list of methods to
+``add_url_rule`` or ``route``.
+
+.. code-block:: python
 
     class MyView(View):
-        methods = ['GET', 'POST']
+        methods = ["GET", "POST"]
 
         def dispatch_request(self):
-            if request.method == 'POST':
+            if request.method == "POST":
                 ...
             ...
 
-    app.add_url_rule('/myview', view_func=MyView.as_view('myview'))
+    app.add_url_rule('/my-view', view_func=MyView.as_view('my-view'))
 
-Method Based Dispatching
-------------------------
+This is equivalent to the following, except further subclasses can
+inherit or change the methods.
 
-For RESTful APIs it's especially helpful to execute a different function
-for each HTTP method.  With the :class:`flask.views.MethodView` you can
-easily do that.  Each HTTP method maps to a method of the class with the
-same name (just in lowercase)::
+.. code-block:: python
+
+    app.add_url_rule(
+        "/my-view",
+        view_func=MyView.as_view("my-view"),
+        methods=["GET", "POST"],
+    )
+
+
+Method Dispatching and APIs
+---------------------------
+
+For APIs it can be helpful to use a different function for each HTTP
+method. :class:`MethodView` extends the basic :class:`View` to dispatch
+to different methods of the class based on the request method. Each HTTP
+method maps to a method of the class with the same (lowercase) name.
+
+:class:`MethodView` automatically sets :attr:`View.methods` based on the
+methods defined by the class. It even knows how to handle subclasses
+that override or define other methods.
+
+We can make a generic ``ItemAPI`` class that provides get (detail),
+patch (edit), and delete methods for a given model. A ``GroupAPI`` can
+provide get (list) and post (create) methods.
+
+.. code-block:: python
 
     from flask.views import MethodView
 
-    class UserAPI(MethodView):
+    class ItemAPI(MethodView):
+        init_every_request = False
+
+        def __init__(self, model):
+            self.model
+            self.validator = generate_validator(model)
+
+        def _get_item(self, id):
+            return self.model.query.get_or_404(id)
+
+        def get(self, id):
+            user = self._get_item(id)
+            return jsonify(item.to_json())
+
+        def patch(self, id):
+            item = self._get_item(id)
+            errors = self.validator.validate(item, request.json)
+
+            if errors:
+                return jsonify(errors), 400
+
+            item.update_from_json(request.json)
+            db.session.commit()
+            return jsonify(item.to_json())
+
+        def delete(self, id):
+            item = self._get_item(id)
+            db.session.delete(item)
+            db.session.commit()
+            return "", 204
+
+    class GroupAPI(MethodView):
+        init_every_request = False
+
+        def __init__(self, model):
+            self.model = model
+            self.validator = generate_validator(model, create=True)
 
         def get(self):
-            users = User.query.all()
-            ...
+            items = self.model.query.all()
+            return jsonify([item.to_json() for item in items])
 
         def post(self):
-            user = User.from_form_data(request.form)
-            ...
+            errors = self.validator.validate(request.json)
 
-    app.add_url_rule('/users/', view_func=UserAPI.as_view('users'))
+            if errors:
+                return jsonify(errors), 400
 
-That way you also don't have to provide the
-:attr:`~flask.views.View.methods` attribute.  It's automatically set based
-on the methods defined in the class.
+            db.session.add(self.model.from_json(request.json))
+            db.session.commit()
+            return jsonify(item.to_json())
 
-Decorating Views
-----------------
+    def register_api(app, model, url):
+        app.add_url_rule(f"/{name}/<int:id>", view_func=ItemAPI(f"{name}-item", model))
+        app.add_url_rule(f"/{name}/", view_func=GroupAPI(f"{name}-group", model))
 
-Since the view class itself is not the view function that is added to the
-routing system it does not make much sense to decorate the class itself.
-Instead you either have to decorate the return value of
-:meth:`~flask.views.View.as_view` by hand::
+    register_api(app, User, "users")
+    register_api(app, Story, "stories")
 
-    def user_required(f):
-        """Checks whether user is logged in or raises error 401."""
-        def decorator(*args, **kwargs):
-            if not g.user:
-                abort(401)
-            return f(*args, **kwargs)
-        return decorator
+This produces the following views, a standard REST API!
 
-    view = user_required(UserAPI.as_view('users'))
-    app.add_url_rule('/users/', view_func=view)
-
-Starting with Flask 0.8 there is also an alternative way where you can
-specify a list of decorators to apply in the class declaration::
-
-    class UserAPI(MethodView):
-        decorators = [user_required]
-
-Due to the implicit self from the caller's perspective you cannot use
-regular view decorators on the individual methods of the view however,
-keep this in mind.
-
-Method Views for APIs
----------------------
-
-Web APIs are often working very closely with HTTP verbs so it makes a lot
-of sense to implement such an API based on the
-:class:`~flask.views.MethodView`.  That said, you will notice that the API
-will require different URL rules that go to the same method view most of
-the time.  For instance consider that you are exposing a user object on
-the web:
-
-=============== =============== ======================================
-URL             Method          Description
---------------- --------------- --------------------------------------
-``/users/``     ``GET``         Gives a list of all users
-``/users/``     ``POST``        Creates a new user
-``/users/<id>`` ``GET``         Shows a single user
-``/users/<id>`` ``PUT``         Updates a single user
-``/users/<id>`` ``DELETE``      Deletes a single user
-=============== =============== ======================================
-
-So how would you go about doing that with the
-:class:`~flask.views.MethodView`?  The trick is to take advantage of the
-fact that you can provide multiple rules to the same view.
-
-Let's assume for the moment the view would look like this::
-
-    class UserAPI(MethodView):
-
-        def get(self, user_id):
-            if user_id is None:
-                # return a list of users
-                pass
-            else:
-                # expose a single user
-                pass
-
-        def post(self):
-            # create a new user
-            pass
-
-        def delete(self, user_id):
-            # delete a single user
-            pass
-
-        def put(self, user_id):
-            # update a single user
-            pass
-
-So how do we hook this up with the routing system?  By adding two rules
-and explicitly mentioning the methods for each::
-
-    user_view = UserAPI.as_view('user_api')
-    app.add_url_rule('/users/', defaults={'user_id': None},
-                     view_func=user_view, methods=['GET',])
-    app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
-    app.add_url_rule('/users/<int:user_id>', view_func=user_view,
-                     methods=['GET', 'PUT', 'DELETE'])
-
-If you have a lot of APIs that look similar you can refactor that
-registration code::
-
-    def register_api(view, endpoint, url, pk='id', pk_type='int'):
-        view_func = view.as_view(endpoint)
-        app.add_url_rule(url, defaults={pk: None},
-                         view_func=view_func, methods=['GET',])
-        app.add_url_rule(url, view_func=view_func, methods=['POST',])
-        app.add_url_rule(f'{url}<{pk_type}:{pk}>', view_func=view_func,
-                         methods=['GET', 'PUT', 'DELETE'])
-
-    register_api(UserAPI, 'user_api', '/users/', pk='user_id')
+================= ========== ===================
+URL               Method     Description
+----------------- ---------- -------------------
+``/users/``       ``GET``    List all users
+``/users/``       ``POST``   Create a new user
+``/users/<id>``   ``GET``    Show a single user
+``/users/<id>``   ``PATCH``  Update a user
+``/users/<id>``   ``DELETE`` Delete a user
+``/stories/``     ``GET``    List all stories
+``/stories/``     ``POST``   Create a new story
+``/stories/<id>`` ``GET``    Show a single story
+``/stories/<id>`` ``PATCH``  Update a story
+``/stories/<id>`` ``DELETE`` Delete a story
+================= ========== ===================

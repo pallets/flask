@@ -11,53 +11,54 @@ http_method_funcs = frozenset(
 
 
 class View:
-    """Alternative way to use view functions.  A subclass has to implement
-    :meth:`dispatch_request` which is called with the view arguments from
-    the URL routing system.  If :attr:`methods` is provided the methods
-    do not have to be passed to the :meth:`~flask.Flask.add_url_rule`
-    method explicitly::
+    """Subclass this class and override :meth:`dispatch_request` to
+    create a generic class-based view. Call :meth:`as_view` to create a
+    view function that creates an instance of the class with the given
+    arguments and calls its ``dispatch_request`` method with any URL
+    variables.
 
-        class MyView(View):
-            methods = ['GET']
+    See :doc:`views` for a detailed guide.
+
+    .. code-block:: python
+
+        class Hello(View):
+            init_every_request = False
 
             def dispatch_request(self, name):
-                return f"Hello {name}!"
+                return f"Hello, {name}!"
 
-        app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
+        app.add_url_rule(
+            "/hello/<name>", view_func=Hello.as_view("hello")
+        )
 
-    When you want to decorate a pluggable view you will have to either do that
-    when the view function is created (by wrapping the return value of
-    :meth:`as_view`) or you can use the :attr:`decorators` attribute::
+    Set :attr:`methods` on the class to change what methods the view
+    accepts.
 
-        class SecretView(View):
-            methods = ['GET']
-            decorators = [superuser_required]
+    Set :attr:`decorators` on the class to apply a list of decorators to
+    the generated view function. Decorators applied to the class itself
+    will not be applied to the generated view function!
 
-            def dispatch_request(self):
-                ...
-
-    The decorators stored in the decorators list are applied one after another
-    when the view function is created.  Note that you can *not* use the class
-    based decorators since those would decorate the view class and not the
-    generated view function!
+    Set :attr:`init_every_request` to ``False`` for efficiency, unless
+    you need to store request-global data on ``self``.
     """
 
-    #: A list of methods this view can handle.
-    methods: t.Optional[t.List[str]] = None
+    #: The methods this view is registered for. Uses the same default
+    #: (``["GET", "HEAD", "OPTIONS"]``) as ``route`` and
+    #: ``add_url_rule`` by default.
+    methods: t.ClassVar[t.Optional[t.List[str]]] = None
 
-    #: Setting this disables or force-enables the automatic options handling.
-    provide_automatic_options: t.Optional[bool] = None
+    #: Control whether the ``OPTIONS`` method is handled automatically.
+    #: Uses the same default (``True``) as ``route`` and
+    #: ``add_url_rule`` by default.
+    provide_automatic_options: t.ClassVar[t.Optional[bool]] = None
 
-    #: The canonical way to decorate class-based views is to decorate the
-    #: return value of as_view().  However since this moves parts of the
-    #: logic from the class declaration to the place where it's hooked
-    #: into the routing system.
-    #:
-    #: You can place one or more decorators in this list and whenever the
-    #: view function is created the result is automatically decorated.
+    #: A list of decorators to apply, in order, to the generated view
+    #: function. Remember that ``@decorator`` syntax is applied bottom
+    #: to top, so the first decorator in the list would be the bottom
+    #: decorator.
     #:
     #: .. versionadded:: 0.8
-    decorators: t.List[t.Callable] = []
+    decorators: t.ClassVar[t.List[t.Callable]] = []
 
     #: Create a new instance of this view class for every request by
     #: default. If a view subclass sets this to ``False``, the same
@@ -72,9 +73,9 @@ class View:
     init_every_request: t.ClassVar[bool] = True
 
     def dispatch_request(self) -> ft.ResponseReturnValue:
-        """Subclasses have to override this method to implement the
-        actual view function code.  This method is called with all
-        the arguments from the URL rule.
+        """The actual view function behavior. Subclasses must override
+        this and return a valid response. Any variables from the URL
+        rule are passed as keyword arguments.
         """
         raise NotImplementedError()
 
@@ -159,19 +160,30 @@ class MethodViewType(type):
 
 
 class MethodView(View, metaclass=MethodViewType):
-    """A class-based view that dispatches request methods to the corresponding
-    class methods. For example, if you implement a ``get`` method, it will be
-    used to handle ``GET`` requests. ::
+    """Dispatches request methods to the corresponding instance methods.
+    For example, if you implement a ``get`` method, it will be used to
+    handle ``GET`` requests.
+
+    This can be useful for defining a REST API.
+
+    :attr:`methods` is automatically set based on the methods defined on
+    the class.
+
+    See :doc:`views` for a detailed guide.
+
+    .. code-block:: python
 
         class CounterAPI(MethodView):
             def get(self):
-                return session.get('counter', 0)
+                return str(session.get("counter", 0))
 
             def post(self):
-                session['counter'] = session.get('counter', 0) + 1
-                return 'OK'
+                session["counter"] = session.get("counter", 0) + 1
+                return redirect(url_for("counter"))
 
-        app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
+        app.add_url_rule(
+            "/counter", view_func=CounterAPI.as_view("counter")
+        )
     """
 
     def dispatch_request(self, **kwargs: t.Any) -> ft.ResponseReturnValue:
