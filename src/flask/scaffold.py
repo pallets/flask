@@ -1,5 +1,6 @@
 import importlib.util
 import os
+import pathlib
 import pkgutil
 import sys
 import typing as t
@@ -780,6 +781,15 @@ def _matching_loader_thinks_module_is_package(loader, mod_name):
     )
 
 
+def _path_is_relative_to(path: pathlib.PurePath, base: str) -> bool:
+    # Path.is_relative_to doesn't exist until Python 3.9
+    try:
+        path.relative_to(base)
+        return True
+    except ValueError:
+        return False
+
+
 def _find_package_path(import_name):
     """Find the path that contains the package or module."""
     root_mod_name, _, _ = import_name.partition(".")
@@ -802,13 +812,13 @@ def _find_package_path(import_name):
             package_spec = importlib.util.find_spec(import_name)
             if package_spec is not None and package_spec.submodule_search_locations:
                 # Pick the path in the namespace that contains the submodule.
-                package_path = os.path.commonpath(
-                    package_spec.submodule_search_locations
+                package_path = pathlib.Path(
+                    os.path.commonpath(package_spec.submodule_search_locations)
                 )
                 search_locations = (
                     location
                     for location in root_spec.submodule_search_locations
-                    if package_path.startswith(location)
+                    if _path_is_relative_to(package_path, location)
                 )
             else:
                 # Pick the first path.
@@ -865,7 +875,7 @@ def find_package(import_name: str):
     py_prefix = os.path.abspath(sys.prefix)
 
     # installed to the system
-    if package_path.startswith(py_prefix):
+    if _path_is_relative_to(pathlib.PurePath(package_path), py_prefix):
         return py_prefix, package_path
 
     site_parent, site_folder = os.path.split(package_path)
