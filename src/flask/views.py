@@ -45,7 +45,7 @@ class View:
     #: The methods this view is registered for. Uses the same default
     #: (``["GET", "HEAD", "OPTIONS"]``) as ``route`` and
     #: ``add_url_rule`` by default.
-    methods: t.ClassVar[t.Optional[t.List[str]]] = None
+    methods: t.ClassVar[t.Optional[t.Collection[str]]] = None
 
     #: Control whether the ``OPTIONS`` method is handled automatically.
     #: Uses the same default (``True``) as ``route`` and
@@ -132,34 +132,7 @@ class View:
         return view
 
 
-class MethodViewType(type):
-    """Metaclass for :class:`MethodView` that determines what methods the view
-    defines.
-    """
-
-    def __init__(cls, name, bases, d):
-        super().__init__(name, bases, d)
-
-        if "methods" not in d:
-            methods = set()
-
-            for base in bases:
-                if getattr(base, "methods", None):
-                    methods.update(base.methods)
-
-            for key in http_method_funcs:
-                if hasattr(cls, key):
-                    methods.add(key.upper())
-
-            # If we have no method at all in there we don't want to add a
-            # method list. This is for instance the case for the base class
-            # or another subclass of a base method view that does not introduce
-            # new methods.
-            if methods:
-                cls.methods = methods
-
-
-class MethodView(View, metaclass=MethodViewType):
+class MethodView(View):
     """Dispatches request methods to the corresponding instance methods.
     For example, if you implement a ``get`` method, it will be used to
     handle ``GET`` requests.
@@ -185,6 +158,23 @@ class MethodView(View, metaclass=MethodViewType):
             "/counter", view_func=CounterAPI.as_view("counter")
         )
     """
+
+    def __init_subclass__(cls, **kwargs: t.Any) -> None:
+        super().__init_subclass__(**kwargs)
+
+        if "methods" not in cls.__dict__:
+            methods = set()
+
+            for base in cls.__bases__:
+                if getattr(base, "methods", None):
+                    methods.update(base.methods)  # type: ignore[attr-defined]
+
+            for key in http_method_funcs:
+                if hasattr(cls, key):
+                    methods.add(key.upper())
+
+            if methods:
+                cls.methods = methods
 
     def dispatch_request(self, **kwargs: t.Any) -> ft.ResponseReturnValue:
         meth = getattr(self, request.method.lower(), None)
