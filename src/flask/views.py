@@ -59,6 +59,18 @@ class View:
     #: .. versionadded:: 0.8
     decorators: t.List[t.Callable] = []
 
+    #: Create a new instance of this view class for every request by
+    #: default. If a view subclass sets this to ``False``, the same
+    #: instance is used for every request.
+    #:
+    #: A single instance is more efficient, especially if complex setup
+    #: is done during init. However, storing data on ``self`` is no
+    #: longer safe across requests, and :data:`~flask.g` should be used
+    #: instead.
+    #:
+    #: .. versionadded:: 2.2
+    init_every_request: t.ClassVar[bool] = True
+
     def dispatch_request(self) -> ft.ResponseReturnValue:
         """Subclasses have to override this method to implement the
         actual view function code.  This method is called with all
@@ -69,19 +81,35 @@ class View:
     @classmethod
     def as_view(
         cls, name: str, *class_args: t.Any, **class_kwargs: t.Any
-    ) -> t.Callable:
-        """Converts the class into an actual view function that can be used
-        with the routing system.  Internally this generates a function on the
-        fly which will instantiate the :class:`View` on each request and call
-        the :meth:`dispatch_request` method on it.
+    ) -> ft.ViewCallable:
+        """Convert the class into a view function that can be registered
+        for a route.
 
-        The arguments passed to :meth:`as_view` are forwarded to the
-        constructor of the class.
+        By default, the generated view will create a new instance of the
+        view class for every request and call its
+        :meth:`dispatch_request` method. If the view class sets
+        :attr:`init_every_request` to ``False``, the same instance will
+        be used for every request.
+
+        The arguments passed to this method are forwarded to the view
+        class ``__init__`` method.
+
+        .. versionchanged:: 2.2
+            Added the ``init_every_request`` class attribute.
         """
+        if cls.init_every_request:
 
-        def view(*args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
-            self = view.view_class(*class_args, **class_kwargs)  # type: ignore
-            return current_app.ensure_sync(self.dispatch_request)(*args, **kwargs)
+            def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
+                self = view.view_class(  # type: ignore[attr-defined]
+                    *class_args, **class_kwargs
+                )
+                return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+
+        else:
+            self = cls(*class_args, **class_kwargs)
+
+            def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
+                return current_app.ensure_sync(self.dispatch_request)(**kwargs)
 
         if cls.decorators:
             view.__name__ = name
@@ -146,7 +174,7 @@ class MethodView(View, metaclass=MethodViewType):
         app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
     """
 
-    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
+    def dispatch_request(self, **kwargs: t.Any) -> ft.ResponseReturnValue:
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it
@@ -155,4 +183,4 @@ class MethodView(View, metaclass=MethodViewType):
             meth = getattr(self, "get", None)
 
         assert meth is not None, f"Unimplemented method {request.method!r}"
-        return current_app.ensure_sync(meth)(*args, **kwargs)
+        return current_app.ensure_sync(meth)(**kwargs)

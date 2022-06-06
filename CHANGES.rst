@@ -22,7 +22,9 @@ Unreleased
     :issue:`4571`
 -   ``before_first_request`` is deprecated. Run setup code when creating
     the application instead. :issue:`4605`
-
+-   Added the ``View.init_every_request`` class attribute. If a view
+    subclass sets this to ``False``, the view will not create a new
+    instance on every request. :issue:`2520`.
 
 Version 2.1.3
 -------------
