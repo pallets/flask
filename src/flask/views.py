@@ -11,77 +11,106 @@ http_method_funcs = frozenset(
 
 
 class View:
-    """Alternative way to use view functions.  A subclass has to implement
-    :meth:`dispatch_request` which is called with the view arguments from
-    the URL routing system.  If :attr:`methods` is provided the methods
-    do not have to be passed to the :meth:`~flask.Flask.add_url_rule`
-    method explicitly::
+    """Subclass this class and override :meth:`dispatch_request` to
+    create a generic class-based view. Call :meth:`as_view` to create a
+    view function that creates an instance of the class with the given
+    arguments and calls its ``dispatch_request`` method with any URL
+    variables.
 
-        class MyView(View):
-            methods = ['GET']
+    See :doc:`views` for a detailed guide.
+
+    .. code-block:: python
+
+        class Hello(View):
+            init_every_request = False
 
             def dispatch_request(self, name):
-                return f"Hello {name}!"
+                return f"Hello, {name}!"
 
-        app.add_url_rule('/hello/<name>', view_func=MyView.as_view('myview'))
+        app.add_url_rule(
+            "/hello/<name>", view_func=Hello.as_view("hello")
+        )
 
-    When you want to decorate a pluggable view you will have to either do that
-    when the view function is created (by wrapping the return value of
-    :meth:`as_view`) or you can use the :attr:`decorators` attribute::
+    Set :attr:`methods` on the class to change what methods the view
+    accepts.
 
-        class SecretView(View):
-            methods = ['GET']
-            decorators = [superuser_required]
+    Set :attr:`decorators` on the class to apply a list of decorators to
+    the generated view function. Decorators applied to the class itself
+    will not be applied to the generated view function!
 
-            def dispatch_request(self):
-                ...
-
-    The decorators stored in the decorators list are applied one after another
-    when the view function is created.  Note that you can *not* use the class
-    based decorators since those would decorate the view class and not the
-    generated view function!
+    Set :attr:`init_every_request` to ``False`` for efficiency, unless
+    you need to store request-global data on ``self``.
     """
 
-    #: A list of methods this view can handle.
-    methods: t.Optional[t.List[str]] = None
+    #: The methods this view is registered for. Uses the same default
+    #: (``["GET", "HEAD", "OPTIONS"]``) as ``route`` and
+    #: ``add_url_rule`` by default.
+    methods: t.ClassVar[t.Optional[t.Collection[str]]] = None
 
-    #: Setting this disables or force-enables the automatic options handling.
-    provide_automatic_options: t.Optional[bool] = None
+    #: Control whether the ``OPTIONS`` method is handled automatically.
+    #: Uses the same default (``True``) as ``route`` and
+    #: ``add_url_rule`` by default.
+    provide_automatic_options: t.ClassVar[t.Optional[bool]] = None
 
-    #: The canonical way to decorate class-based views is to decorate the
-    #: return value of as_view().  However since this moves parts of the
-    #: logic from the class declaration to the place where it's hooked
-    #: into the routing system.
-    #:
-    #: You can place one or more decorators in this list and whenever the
-    #: view function is created the result is automatically decorated.
+    #: A list of decorators to apply, in order, to the generated view
+    #: function. Remember that ``@decorator`` syntax is applied bottom
+    #: to top, so the first decorator in the list would be the bottom
+    #: decorator.
     #:
     #: .. versionadded:: 0.8
-    decorators: t.List[t.Callable] = []
+    decorators: t.ClassVar[t.List[t.Callable]] = []
+
+    #: Create a new instance of this view class for every request by
+    #: default. If a view subclass sets this to ``False``, the same
+    #: instance is used for every request.
+    #:
+    #: A single instance is more efficient, especially if complex setup
+    #: is done during init. However, storing data on ``self`` is no
+    #: longer safe across requests, and :data:`~flask.g` should be used
+    #: instead.
+    #:
+    #: .. versionadded:: 2.2
+    init_every_request: t.ClassVar[bool] = True
 
     def dispatch_request(self) -> ft.ResponseReturnValue:
-        """Subclasses have to override this method to implement the
-        actual view function code.  This method is called with all
-        the arguments from the URL rule.
+        """The actual view function behavior. Subclasses must override
+        this and return a valid response. Any variables from the URL
+        rule are passed as keyword arguments.
         """
         raise NotImplementedError()
 
     @classmethod
     def as_view(
         cls, name: str, *class_args: t.Any, **class_kwargs: t.Any
-    ) -> t.Callable:
-        """Converts the class into an actual view function that can be used
-        with the routing system.  Internally this generates a function on the
-        fly which will instantiate the :class:`View` on each request and call
-        the :meth:`dispatch_request` method on it.
+    ) -> ft.ViewCallable:
+        """Convert the class into a view function that can be registered
+        for a route.
 
-        The arguments passed to :meth:`as_view` are forwarded to the
-        constructor of the class.
+        By default, the generated view will create a new instance of the
+        view class for every request and call its
+        :meth:`dispatch_request` method. If the view class sets
+        :attr:`init_every_request` to ``False``, the same instance will
+        be used for every request.
+
+        The arguments passed to this method are forwarded to the view
+        class ``__init__`` method.
+
+        .. versionchanged:: 2.2
+            Added the ``init_every_request`` class attribute.
         """
+        if cls.init_every_request:
 
-        def view(*args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
-            self = view.view_class(*class_args, **class_kwargs)  # type: ignore
-            return current_app.ensure_sync(self.dispatch_request)(*args, **kwargs)
+            def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
+                self = view.view_class(  # type: ignore[attr-defined]
+                    *class_args, **class_kwargs
+                )
+                return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+
+        else:
+            self = cls(*class_args, **class_kwargs)
+
+            def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
+                return current_app.ensure_sync(self.dispatch_request)(**kwargs)
 
         if cls.decorators:
             view.__name__ = name
@@ -103,50 +132,51 @@ class View:
         return view
 
 
-class MethodViewType(type):
-    """Metaclass for :class:`MethodView` that determines what methods the view
-    defines.
+class MethodView(View):
+    """Dispatches request methods to the corresponding instance methods.
+    For example, if you implement a ``get`` method, it will be used to
+    handle ``GET`` requests.
+
+    This can be useful for defining a REST API.
+
+    :attr:`methods` is automatically set based on the methods defined on
+    the class.
+
+    See :doc:`views` for a detailed guide.
+
+    .. code-block:: python
+
+        class CounterAPI(MethodView):
+            def get(self):
+                return str(session.get("counter", 0))
+
+            def post(self):
+                session["counter"] = session.get("counter", 0) + 1
+                return redirect(url_for("counter"))
+
+        app.add_url_rule(
+            "/counter", view_func=CounterAPI.as_view("counter")
+        )
     """
 
-    def __init__(cls, name, bases, d):
-        super().__init__(name, bases, d)
+    def __init_subclass__(cls, **kwargs: t.Any) -> None:
+        super().__init_subclass__(**kwargs)
 
-        if "methods" not in d:
+        if "methods" not in cls.__dict__:
             methods = set()
 
-            for base in bases:
+            for base in cls.__bases__:
                 if getattr(base, "methods", None):
-                    methods.update(base.methods)
+                    methods.update(base.methods)  # type: ignore[attr-defined]
 
             for key in http_method_funcs:
                 if hasattr(cls, key):
                     methods.add(key.upper())
 
-            # If we have no method at all in there we don't want to add a
-            # method list. This is for instance the case for the base class
-            # or another subclass of a base method view that does not introduce
-            # new methods.
             if methods:
                 cls.methods = methods
 
-
-class MethodView(View, metaclass=MethodViewType):
-    """A class-based view that dispatches request methods to the corresponding
-    class methods. For example, if you implement a ``get`` method, it will be
-    used to handle ``GET`` requests. ::
-
-        class CounterAPI(MethodView):
-            def get(self):
-                return session.get('counter', 0)
-
-            def post(self):
-                session['counter'] = session.get('counter', 0) + 1
-                return 'OK'
-
-        app.add_url_rule('/counter', view_func=CounterAPI.as_view('counter'))
-    """
-
-    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
+    def dispatch_request(self, **kwargs: t.Any) -> ft.ResponseReturnValue:
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it
@@ -155,4 +185,4 @@ class MethodView(View, metaclass=MethodViewType):
             meth = getattr(self, "get", None)
 
         assert meth is not None, f"Unimplemented method {request.method!r}"
-        return current_app.ensure_sync(meth)(*args, **kwargs)
+        return current_app.ensure_sync(meth)(**kwargs)
