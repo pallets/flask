@@ -107,10 +107,12 @@ def test_async_before_after_request():
     def index():
         return ""
 
-    @app.before_first_request
-    async def before_first():
-        nonlocal app_first_called
-        app_first_called = True
+    with pytest.deprecated_call():
+
+        @app.before_first_request
+        async def before_first():
+            nonlocal app_first_called
+            app_first_called = True
 
     @app.before_request
     async def before():
