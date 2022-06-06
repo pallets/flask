@@ -1,4 +1,3 @@
-import os
 import sys
 
 import pytest
@@ -13,17 +12,6 @@ def test_explicit_instance_paths(modules_tmpdir):
 
     app = flask.Flask(__name__, instance_path=str(modules_tmpdir))
     assert app.instance_path == str(modules_tmpdir)
-
-
-def test_main_module_paths(modules_tmpdir, purge_module):
-    app = modules_tmpdir.join("main_app.py")
-    app.write('import flask\n\napp = flask.Flask("__main__")')
-    purge_module("main_app")
-
-    from main_app import app
-
-    here = os.path.abspath(os.getcwd())
-    assert app.instance_path == os.path.join(here, "instance")
 
 
 def test_uninstalled_module_paths(modules_tmpdir, purge_module):
