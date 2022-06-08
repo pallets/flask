@@ -333,7 +333,7 @@ Response Objects
     flask.Response.stream
     flask.Response.vary
     flask.Response.www_authenticate
-    
+
 .. autoclass:: flask.Response
     :members:
     :inherited-members:
