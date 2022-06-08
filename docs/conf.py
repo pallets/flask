@@ -19,6 +19,7 @@ extensions = [
     "pallets_sphinx_themes",
     "sphinx_issues",
     "sphinx_tabs.tabs",
+    "sphinx.ext.autosummary",
 ]
 autodoc_typehints = "description"
 intersphinx_mapping = {
