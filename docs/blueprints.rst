@@ -3,7 +3,14 @@ Modular Applications with Blueprints
 
 .. currentmodule:: flask
 
-.. versionadded:: 0.7
+A :class:`Blueprint` object works similarly to the :class:`Flask`
+application object, but it is not actually an application. It is a
+*blueprint* of how to construct or extend an application.
+
+When you register a blueprint on an application, all the functions that
+were registered on the blueprint, such as routes and error handlers, are
+applied to the application. In this way, you can define the parts of an
+application without needing the application itself.
 
 Flask uses a concept of *blueprints* for making application components and
 supporting common patterns within an application or across applications.
