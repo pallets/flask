@@ -11,7 +11,7 @@ from werkzeug.http import http_date
 from ..globals import current_app
 from ..globals import request
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from ..app import Flask
     from ..wrappers import Response
 

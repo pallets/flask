@@ -4,7 +4,7 @@ from functools import partial
 from werkzeug.local import LocalProxy
 from werkzeug.local import LocalStack
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     from .app import Flask
     from .ctx import _AppCtxGlobals
     from .sessions import SessionMixin

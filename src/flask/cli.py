@@ -18,26 +18,6 @@ from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_load_dotenv
 
-try:
-    import dotenv
-except ImportError:
-    dotenv = None
-
-try:
-    import ssl
-except ImportError:
-    ssl = None  # type: ignore
-
-if sys.version_info >= (3, 10):
-    from importlib import metadata
-else:
-    # Use a backport on Python < 3.10.
-    #
-    # We technically have importlib.metadata on 3.8+,
-    # but the API changed in 3.10, so use the backport
-    # for consistency.
-    import importlib_metadata as metadata  # type: ignore
-
 
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
@@ -513,6 +493,14 @@ class FlaskGroup(AppGroup):
         if self._loaded_plugin_commands:
             return
 
+        if sys.version_info >= (3, 10):
+            from importlib import metadata
+        else:
+            # Use a backport on Python < 3.10. We technically have
+            # importlib.metadata on 3.8+, but the API changed in 3.10,
+            # so use the backport for consistency.
+            import importlib_metadata as metadata
+
         for ep in metadata.entry_points(group="flask.commands"):
             self.add_command(ep.load(), ep.name)
 
@@ -608,7 +596,9 @@ def load_dotenv(path=None):
 
     .. versionadded:: 1.0
     """
-    if dotenv is None:
+    try:
+        import dotenv
+    except ImportError:
         if path or os.path.isfile(".env") or os.path.isfile(".flaskenv"):
             click.secho(
                 " * Tip: There are .env or .flaskenv files present."
@@ -684,12 +674,14 @@ class CertParamType(click.ParamType):
         self.path_type = click.Path(exists=True, dir_okay=False, resolve_path=True)
 
     def convert(self, value, param, ctx):
-        if ssl is None:
+        try:
+            import ssl
+        except ImportError:
             raise click.BadParameter(
                 'Using "--cert" requires Python to be compiled with SSL support.',
                 ctx,
                 param,
-            )
+            ) from None
 
         try:
             return self.path_type(value, param, ctx)
@@ -722,7 +714,13 @@ def _validate_key(ctx, param, value):
     """
     cert = ctx.params.get("cert")
     is_adhoc = cert == "adhoc"
-    is_context = ssl and isinstance(cert, ssl.SSLContext)
+
+    try:
+        import ssl
+    except ImportError:
+        is_context = False
+    else:
+        is_context = isinstance(cert, ssl.SSLContext)
 
     if value is not None:
         if is_adhoc:

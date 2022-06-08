@@ -2,6 +2,7 @@ import io
 import os
 
 import pytest
+import werkzeug.exceptions
 
 import flask
 from flask.helpers import get_debug_flag
@@ -118,11 +119,15 @@ class TestUrlFor:
         )
 
     def test_url_for_with_scheme_not_external(self, app, req_ctx):
-        @app.route("/")
-        def index():
-            return "42"
+        app.add_url_rule("/", endpoint="index")
 
-        pytest.raises(ValueError, flask.url_for, "index", _scheme="https")
+        # Implicit external with scheme.
+        url = flask.url_for("index", _scheme="https")
+        assert url == "https://localhost/"
+
+        # Error when external=False with scheme
+        with pytest.raises(ValueError):
+            flask.url_for("index", _scheme="https", _external=False)
 
     def test_url_for_with_alternating_schemes(self, app, req_ctx):
         @app.route("/")
@@ -156,6 +161,51 @@ class TestUrlFor:
         assert flask.url_for("myview", _method="GET") == "/myview/"
         assert flask.url_for("myview", id=42, _method="GET") == "/myview/42"
         assert flask.url_for("myview", _method="POST") == "/myview/create"
+
+
+def test_redirect_no_app():
+    response = flask.redirect("https://localhost", 307)
+    assert response.location == "https://localhost"
+    assert response.status_code == 307
+
+
+def test_redirect_with_app(app):
+    def redirect(location, code=302):
+        raise ValueError
+
+    app.redirect = redirect
+
+    with app.app_context(), pytest.raises(ValueError):
+        flask.redirect("other")
+
+
+def test_abort_no_app():
+    with pytest.raises(werkzeug.exceptions.Unauthorized):
+        flask.abort(401)
+
+    with pytest.raises(LookupError):
+        flask.abort(900)
+
+
+def test_app_aborter_class():
+    class MyAborter(werkzeug.exceptions.Aborter):
+        pass
+
+    class MyFlask(flask.Flask):
+        aborter_class = MyAborter
+
+    app = MyFlask(__name__)
+    assert isinstance(app.aborter, MyAborter)
+
+
+def test_abort_with_app(app):
+    class My900Error(werkzeug.exceptions.HTTPException):
+        code = 900
+
+    app.aborter.mapping[900] = My900Error
+
+    with app.app_context(), pytest.raises(My900Error):
+        flask.abort(900)
 
 
 class TestNoImports:

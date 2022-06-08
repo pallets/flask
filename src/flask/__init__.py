@@ -1,7 +1,5 @@
 from markupsafe import escape
 from markupsafe import Markup
-from werkzeug.exceptions import abort as abort
-from werkzeug.utils import redirect as redirect
 
 from . import json as json
 from .app import Flask as Flask
@@ -19,10 +17,12 @@ from .globals import current_app as current_app
 from .globals import g as g
 from .globals import request as request
 from .globals import session as session
+from .helpers import abort as abort
 from .helpers import flash as flash
 from .helpers import get_flashed_messages as get_flashed_messages
 from .helpers import get_template_attribute as get_template_attribute
 from .helpers import make_response as make_response
+from .helpers import redirect as redirect
 from .helpers import send_file as send_file
 from .helpers import send_from_directory as send_from_directory
 from .helpers import stream_with_context as stream_with_context
@@ -42,4 +42,4 @@ from .signals import template_rendered as template_rendered
 from .templating import render_template as render_template
 from .templating import render_template_string as render_template_string
 
-__version__ = "2.1.2"
+__version__ = "2.2.0.dev0"
