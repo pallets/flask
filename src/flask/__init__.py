@@ -41,5 +41,7 @@ from .signals import signals_available as signals_available
 from .signals import template_rendered as template_rendered
 from .templating import render_template as render_template
 from .templating import render_template_string as render_template_string
+from .templating import stream_template as stream_template
+from .templating import stream_template_string as stream_template_string
 
 __version__ = "2.2.0.dev0"

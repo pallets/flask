@@ -287,6 +287,10 @@ Template Rendering
 
 .. autofunction:: render_template_string
 
+.. autofunction:: stream_template
+
+.. autofunction:: stream_template_string
+
 .. autofunction:: get_template_attribute
 
 Configuration

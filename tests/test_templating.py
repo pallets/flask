@@ -29,6 +29,15 @@ def test_original_win(app, client):
     assert rv.data == b"42"
 
 
+def test_simple_stream(app, client):
+    @app.route("/")
+    def index():
+        return flask.stream_template_string("{{ config }}", config=42)
+
+    rv = client.get("/")
+    assert rv.data == b"42"
+
+
 def test_request_less_rendering(app, app_ctx):
     app.config["WORLD_NAME"] = "Special World"
 
