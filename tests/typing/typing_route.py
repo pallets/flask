@@ -25,7 +25,8 @@ def hello_bytes() -> bytes:
 def hello_json() -> Response:
     return jsonify({"response": "Hello, World!"})
 
-#Returns hello with the current status code when "/status" is accessed or "/status" is accessed with the parameter "code"
+
+# Returns hello with the current status code when "/status" is accessed or "/status" is accessed with the parameter "code"
 @app.route("/status")
 @app.route("/status/<int:code>")
 def tuple_status(code: int = 200) -> tuple[str, int]:
@@ -41,8 +42,9 @@ def tuple_status_enum() -> tuple[str, int]:
 def tuple_headers() -> tuple[str, dict[str, str]]:
     return "Hello, World!", {"Content-Type": "text/plain"}
 
-#Returns "index.html" when "/template" or "/template" with parameter "name" included is accessed by the user
-#"name" is passed as an argument for the html document when rendering it only if it was specified in the url
+
+# Returns "index.html" when "/template" or "/template" with parameter "name" included is accessed by the user
+# "name" is passed as an argument for the html document when rendering it only if it was specified in the url
 @app.route("/template")
 @app.route("/template/<name>")
 def return_template(name: str | None = None) -> str:
