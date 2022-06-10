@@ -25,7 +25,7 @@ def hello_bytes() -> bytes:
 def hello_json() -> Response:
     return jsonify({"response": "Hello, World!"})
 
-
+#Returns hello with the current status code when "/status" is accessed or "/status" is accessed with the parameter "code"
 @app.route("/status")
 @app.route("/status/<int:code>")
 def tuple_status(code: int = 200) -> tuple[str, int]:
