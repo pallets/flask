@@ -2,14 +2,11 @@
 
 {% block intro %}
   <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch"><code>fetch</code></a>
-  is the <em>new</em> plain JavaScript way to make requests. It's
-  supported in all modern browsers except IE, which requires a
-  <a href="https://github.com/github/fetch">polyfill</a>.
+  is the <em>modern</em> plain JavaScript way to make requests. It's
+  supported in all modern browsers.
 {% endblock %}
 
 {% block script %}
-  <script src="https://unpkg.com/promise-polyfill@7.1.2/dist/polyfill.min.js"></script>
-  <script src="https://unpkg.com/whatwg-fetch@2.0.4/fetch.js"></script>
   <script>
     function addSubmit(ev) {
       ev.preventDefault();

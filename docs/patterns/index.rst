@@ -29,7 +29,7 @@ collected in the following pages.
    wtforms
    templateinheritance
    flashing
-   jquery
+   javascript
    lazyloading
    mongoengine
    favicon
