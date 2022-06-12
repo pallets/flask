@@ -7,8 +7,7 @@ start the server without needing to write Apache httpd configuration.
 
 *   Tightly integrated with Apache httpd.
 *   Supports Windows directly.
-*   Requires a compiler to install. Requires Apache installed separately
-    on Windows.
+*   Requires a compiler and the Apache development headers to install.
 *   Does not require a reverse proxy setup.
 
 This page outlines the basics of running mod_wsgi-express, not the more
@@ -24,12 +23,12 @@ understand what features are available.
 Installing
 ----------
 
-On Linux/Mac, the most straightforward way to install mod_wsgi is to
-install the ``mod_wsgi-standalone`` package, which will compile an
-up-to-date version of Apache httpd as well.
+Installing mod_wsgi requires a compiler and the Apache server and
+development headers installed. You will get an error if they are not.
+How to install them depends on the OS and package manager that you use.
 
 Create a virtualenv, install your application, then install
-``mod_wsgi-standalone``.
+``mod_wsgi``.
 
 .. code-block:: text
 
@@ -37,16 +36,6 @@ Create a virtualenv, install your application, then install
     $ python -m venv venv
     $ . venv/bin/activate
     $ pip install .  # install your application
-    $ pip install mod_wsgi-standalone
-
-If you want to use the system-installed version of Apache httpd
-(required on Windows, optional but faster on Linux/Mac), install the
-``mod_wsgi`` package instead. You will get an error if Apache and its
-development headers are not available. How to install them depends on
-what OS and package manager you use.
-
-.. code-block:: text
-
     $ pip install mod_wsgi
 
 
