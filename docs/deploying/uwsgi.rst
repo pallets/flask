@@ -1,71 +1,145 @@
 uWSGI
 =====
 
-uWSGI is a deployment option on servers like `nginx`_, `lighttpd`_, and
-`cherokee`_; see :doc:`fastcgi` and :doc:`wsgi-standalone` for other options.
-To use your WSGI application with uWSGI protocol you will need a uWSGI server
-first. uWSGI is both a protocol and an application server; the application
-server can serve uWSGI, FastCGI, and HTTP protocols.
+`uWSGI`_ is a fast, compiled server suite with extensive configuration
+and capabilities beyond a basic server.
 
-The most popular uWSGI server is `uwsgi`_, which we will use for this
-guide. Make sure to have it installed to follow along.
+*   It can be very performant due to being a compiled program.
+*   It is complex to configure beyond the basic application, and has so
+    many options that it can be difficult for beginners to understand.
+*   It does not support Windows (but does run on WSL).
+*   It requires a compiler to install in some cases.
 
-.. admonition:: Watch Out
+This page outlines the basics of running uWSGI. Be sure to read its
+documentation to understand what features are available.
 
-   Please make sure in advance that any ``app.run()`` calls you might
-   have in your application file are inside an ``if __name__ ==
-   '__main__':`` block or moved to a separate file.  Just make sure it's
-   not called because this will always start a local WSGI server which
-   we do not want if we deploy that application to uWSGI.
+.. _uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
 
-Starting your app with uwsgi
-----------------------------
 
-`uwsgi` is designed to operate on WSGI callables found in python modules.
+Installing
+----------
 
-Given a flask application in myapp.py, use the following command:
+uWSGI has multiple ways to install it. The most straightforward is to
+install the ``pyuwsgi`` package, which provides precompiled wheels for
+common platforms. However, it does not provide SSL support, which can be
+provided with a reverse proxy instead.
 
-.. sourcecode:: text
+Create a virtualenv, install your application, then install ``pyuwsgi``.
 
-    $ uwsgi -s /tmp/yourapplication.sock --manage-script-name --mount /yourapplication=myapp:app
+.. code-block:: text
 
-The ``--manage-script-name`` will move the handling of ``SCRIPT_NAME``
-to uwsgi, since it is smarter about that.
-It is used together with the ``--mount`` directive which will make
-requests to ``/yourapplication`` be directed to ``myapp:app``.
-If your application is accessible at root level, you can use a
-single ``/`` instead of ``/yourapplication``. ``myapp`` refers to the name of
-the file of your flask application (without extension) or the module which
-provides ``app``. ``app`` is the callable inside of your application (usually
-the line reads ``app = Flask(__name__)``).
+    $ cd hello-app
+    $ python -m venv venv
+    $ . venv/bin/activate
+    $ pip install .  # install your application
+    $ pip install pyuwsgi
 
-If you want to deploy your flask application inside of a virtual environment,
-you need to also add ``--virtualenv /path/to/virtual/environment``. You might
-also need to add ``--plugin python`` or ``--plugin python3`` depending on which
-python version you use for your project.
+If you have a compiler available, you can install the ``uwsgi`` package
+instead. Or install the ``pyuwsgi`` package from sdist instead of wheel.
+Either method will include SSL support.
 
-Configuring nginx
+.. code-block:: text
+
+    $ pip install uwsgi
+
+    # or
+    $ pip install --no-binary pyuwsgi pyuwsgi
+
+
+Running
+-------
+
+The most basic way to run uWSGI is to tell it to start an HTTP server
+and import your application.
+
+.. code-block:: text
+
+    $ uwsgi --http 127.0.0.1:8000 --master -p 4 -w hello:app
+
+    *** Starting uWSGI 2.0.20 (64bit) on [x] ***
+    *** Operational MODE: preforking ***
+    mounting hello:app on /
+    spawned uWSGI master process (pid: x)
+    spawned uWSGI worker 1 (pid: x, cores: 1)
+    spawned uWSGI worker 2 (pid: x, cores: 1)
+    spawned uWSGI worker 3 (pid: x, cores: 1)
+    spawned uWSGI worker 4 (pid: x, cores: 1)
+    spawned uWSGI http 1 (pid: x)
+
+If you're using the app factory pattern, you'll need to create a small
+Python file to create the app, then point uWSGI at that.
+
+.. code-block:: python
+    :caption: ``wsgi.py``
+
+    from hello import create_app
+
+    app = create_app()
+
+.. code-block:: text
+
+    $ uwsgi --http 127.0.0.1:8000 --master -p 4 -w wsgi:app
+
+The ``--http`` option starts an HTTP server at 127.0.0.1 port 8000. The
+``--master`` option specifies the standard worker manager. The ``-p``
+option starts 4 worker processes; a starting value could be ``CPU * 2``.
+The ``-w`` option tells uWSGI how to import your application
+
+
+Binding Externally
+------------------
+
+uWSGI should not be run as root with the configuration shown in this doc
+because it would cause your application code to run as root, which is
+not secure. However, this means it will not be possible to bind to port
+80 or 443. Instead, a reverse proxy such as :doc:`nginx` or
+:doc:`apache-httpd` should be used in front of uWSGI. It is possible to
+run uWSGI as root securely, but that is beyond the scope of this doc.
+
+uWSGI has optimized integration with `Nginx uWSGI`_ and
+`Apache mod_proxy_uwsgi`_, and possibly other servers, instead of using
+a standard HTTP proxy. That configuration is beyond the scope of this
+doc, see the links for more information.
+
+.. _Nginx uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/Nginx.html
+.. _Apache mod_proxy_uwsgi: https://uwsgi-docs.readthedocs.io/en/latest/Apache.html#mod-proxy-uwsgi
+
+You can bind to all external IPs on a non-privileged port using the
+``--http 0.0.0.0:8000`` option. Don't do this when using a reverse proxy
+setup, otherwise it will be possible to bypass the proxy.
+
+.. code-block:: text
+
+    $ uwsgi --http 0.0.0.0:8000 --master -p 4 -w wsgi:app
+
+``0.0.0.0`` is not a valid address to navigate to, you'd use a specific
+IP address in your browser.
+
+
+Async with gevent
 -----------------
 
-A basic flask nginx configuration looks like this::
+The default sync worker is appropriate for many use cases. If you need
+asynchronous support, uWSGI provides a `gevent`_ worker. This is not the
+same as Python's ``async/await``, or the ASGI server spec. You must
+actually use gevent in your own code to see any benefit to using the
+worker.
 
-    location = /yourapplication { rewrite ^ /yourapplication/; }
-    location /yourapplication { try_files $uri @yourapplication; }
-    location @yourapplication {
-      include uwsgi_params;
-      uwsgi_pass unix:/tmp/yourapplication.sock;
-    }
+When using gevent, greenlet>=1.0 is required, otherwise context locals
+such as ``request`` will not work as expected. When using PyPy,
+PyPy>=7.3.7 is required.
 
-This configuration binds the application to ``/yourapplication``.  If you want
-to have it in the URL root its a bit simpler::
+.. code-block:: text
 
-    location / { try_files $uri @yourapplication; }
-    location @yourapplication {
-        include uwsgi_params;
-        uwsgi_pass unix:/tmp/yourapplication.sock;
-    }
+    $ uwsgi --http 127.0.0.1:8000 --master --gevent 100 -w wsgi:app
 
-.. _nginx: https://nginx.org/
-.. _lighttpd: https://www.lighttpd.net/
-.. _cherokee: https://cherokee-project.com/
-.. _uwsgi: https://uwsgi-docs.readthedocs.io/en/latest/
+    *** Starting uWSGI 2.0.20 (64bit) on [x] ***
+    *** Operational MODE: async ***
+    mounting hello:app on /
+    spawned uWSGI master process (pid: x)
+    spawned uWSGI worker 1 (pid: x, cores: 100)
+    spawned uWSGI http 1 (pid: x)
+    *** running gevent loop engine [addr:x] ***
+
+
+.. _gevent: https://www.gevent.org/
