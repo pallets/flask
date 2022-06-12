@@ -70,8 +70,8 @@ If you wish to use background tasks it is best to use a task queue to
 trigger background work, rather than spawn tasks in a view
 function. With that in mind you can spawn asyncio tasks by serving
 Flask with an ASGI server and utilising the asgiref WsgiToAsgi adapter
-as described in :ref:`asgi`. This works as the adapter creates an
-event loop that runs continually.
+as described in :doc:`deploying/asgi`. This works as the adapter creates
+an event loop that runs continually.
 
 
 When to use Quart instead

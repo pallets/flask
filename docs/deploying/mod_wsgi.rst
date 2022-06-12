@@ -1,216 +1,105 @@
-mod_wsgi (Apache)
-=================
+mod_wsgi
+========
 
-If you are using the `Apache`_ webserver, consider using `mod_wsgi`_.
+`mod_wsgi`_ is a WSGI server integrated with the `Apache httpd`_ server.
+The modern `mod_wsgi-express`_ command makes it easy to configure and
+start the server without needing to write Apache httpd configuration.
 
-.. admonition:: Watch Out
+*   Tightly integrated with Apache httpd.
+*   Supports Windows directly.
+*   Requires a compiler to install. Requires Apache installed separately
+    on Windows.
+*   Does not require a reverse proxy setup.
 
-   Please make sure in advance that any ``app.run()`` calls you might
-   have in your application file are inside an ``if __name__ ==
-   '__main__':`` block or moved to a separate file.  Just make sure it's
-   not called because this will always start a local WSGI server which
-   we do not want if we deploy that application to mod_wsgi.
+This page outlines the basics of running mod_wsgi-express, not the more
+complex installation and configuration with httpd. Be sure to read the
+`mod_wsgi-express`_, `mod_wsgi`_, and `Apache httpd`_ documentation to
+understand what features are available.
 
-.. _Apache: https://httpd.apache.org/
+.. _mod_wsgi-express: https://pypi.org/project/mod-wsgi/
+.. _mod_wsgi: https://modwsgi.readthedocs.io/
+.. _Apache httpd: https://httpd.apache.org/
 
-Installing `mod_wsgi`
----------------------
 
-If you don't have `mod_wsgi` installed yet you have to either install it
-using a package manager or compile it yourself.  The mod_wsgi
-`installation instructions`_ cover source installations on UNIX systems.
+Installing
+----------
 
-If you are using Ubuntu/Debian you can apt-get it and activate it as
-follows:
+On Linux/Mac, the most straightforward way to install mod_wsgi is to
+install the ``mod_wsgi-standalone`` package, which will compile an
+up-to-date version of Apache httpd as well.
 
-.. sourcecode:: text
+Create a virtualenv, install your application, then install
+``mod_wsgi-standalone``.
 
-    $ apt-get install libapache2-mod-wsgi-py3
+.. code-block:: text
 
-If you are using a yum based distribution (Fedora, OpenSUSE, etc..) you
-can install it as follows:
+    $ cd hello-app
+    $ python -m venv venv
+    $ . venv/bin/activate
+    $ pip install .  # install your application
+    $ pip install mod_wsgi-standalone
 
-.. sourcecode:: text
+If you want to use the system-installed version of Apache httpd
+(required on Windows, optional but faster on Linux/Mac), install the
+``mod_wsgi`` package instead. You will get an error if Apache and its
+development headers are not available. How to install them depends on
+what OS and package manager you use.
 
-    $ yum install mod_wsgi
+.. code-block:: text
 
-On FreeBSD install `mod_wsgi` by compiling the `www/mod_wsgi` port or by
-using pkg_add:
+    $ pip install mod_wsgi
 
-.. sourcecode:: text
 
-    $ pkg install ap24-py37-mod_wsgi
+Running
+-------
 
-If you are using pkgsrc you can install `mod_wsgi` by compiling the
-`www/ap2-wsgi` package.
+The only argument to ``mod_wsgi-express`` specifies a script containing
+your Flask application, which must be called ``application``. You can
+write a small script to import your app with this name, or to create it
+if using the app factory pattern.
 
-If you encounter segfaulting child processes after the first apache
-reload you can safely ignore them.  Just restart the server.
+.. code-block:: python
+    :caption: ``wsgi.py``
 
-Creating a `.wsgi` file
------------------------
+    from hello import app
 
-To run your application you need a :file:`yourapplication.wsgi` file.
-This file contains the code `mod_wsgi` is executing on startup
-to get the application object.  The object called `application`
-in that file is then used as application.
+    application = app
 
-For most applications the following file should be sufficient::
+.. code-block:: python
+    :caption: ``wsgi.py``
 
-    from yourapplication import app as application
+    from hello import create_app
 
-If a factory function is used in a :file:`__init__.py` file, then the function should be imported::
-
-    from yourapplication import create_app
     application = create_app()
 
-If you don't have a factory function for application creation but a singleton
-instance you can directly import that one as `application`.
+Now run the ``mod_wsgi-express start-server`` command.
 
-Store that file somewhere that you will find it again (e.g.:
-:file:`/var/www/yourapplication`) and make sure that `yourapplication` and all
-the libraries that are in use are on the python load path.  If you don't
-want to install it system wide consider using a `virtual python`_
-instance.  Keep in mind that you will have to actually install your
-application into the virtualenv as well.  Alternatively there is the
-option to just patch the path in the ``.wsgi`` file before the import::
+.. code-block:: text
 
-    import sys
-    sys.path.insert(0, '/path/to/the/application')
+    $ mod_wsgi-express start-server wsgi.py --processes 4
 
-Configuring Apache
+The ``--processes`` option specifies the number of worker processes to
+run; a starting value could be ``CPU * 2``.
+
+Logs for each request aren't show in the terminal. If an error occurs,
+its information is written to the error log file shown when starting the
+server.
+
+
+Binding Externally
 ------------------
 
-The last thing you have to do is to create an Apache configuration file
-for your application.  In this example we are telling `mod_wsgi` to
-execute the application under a different user for security reasons:
+Unlike the other WSGI servers in these docs, mod_wsgi can be run as
+root to bind to privileged ports like 80 and 443. However, it must be
+configured to drop permissions to a different user and group for the
+worker processes.
 
-.. sourcecode:: apache
+For example, if you created a ``hello`` user and group, you should
+install your virtualenv and application as that user, then tell
+mod_wsgi to drop to that user after starting.
 
-    <VirtualHost *>
-        ServerName example.com
+.. code-block:: text
 
-        WSGIDaemonProcess yourapplication user=user1 group=group1 threads=5
-        WSGIScriptAlias / /var/www/yourapplication/yourapplication.wsgi
-
-        <Directory /var/www/yourapplication>
-            WSGIProcessGroup yourapplication
-            WSGIApplicationGroup %{GLOBAL}
-            Order deny,allow
-            Allow from all
-        </Directory>
-    </VirtualHost>
-
-Note: WSGIDaemonProcess isn't implemented in Windows and Apache will
-refuse to run with the above configuration. On a Windows system, eliminate those lines:
-
-.. sourcecode:: apache
-
-    <VirtualHost *>
-        ServerName example.com
-        WSGIScriptAlias / C:\yourdir\yourapp.wsgi
-        <Directory C:\yourdir>
-            Order deny,allow
-            Allow from all
-        </Directory>
-    </VirtualHost>
-
-Note: There have been some changes in access control configuration
-for `Apache 2.4`_.
-
-.. _Apache 2.4: https://httpd.apache.org/docs/trunk/upgrading.html
-
-Most notably, the syntax for directory permissions has changed from httpd 2.2
-
-.. sourcecode:: apache
-
-    Order allow,deny
-    Allow from all
-
-to httpd 2.4 syntax
-
-.. sourcecode:: apache
-
-    Require all granted
-
-
-For more information consult the `mod_wsgi documentation`_.
-
-.. _mod_wsgi: https://github.com/GrahamDumpleton/mod_wsgi
-.. _installation instructions: https://modwsgi.readthedocs.io/en/develop/installation.html
-.. _virtual python: https://pypi.org/project/virtualenv/
-.. _mod_wsgi documentation: https://modwsgi.readthedocs.io/en/develop/index.html
-
-Troubleshooting
----------------
-
-If your application does not run, follow this guide to troubleshoot:
-
-**Problem:** application does not run, errorlog shows SystemExit ignored
-    You have an ``app.run()`` call in your application file that is not
-    guarded by an ``if __name__ == '__main__':`` condition.  Either
-    remove that :meth:`~flask.Flask.run` call from the file and move it
-    into a separate :file:`run.py` file or put it into such an if block.
-
-**Problem:** application gives permission errors
-    Probably caused by your application running as the wrong user.  Make
-    sure the folders the application needs access to have the proper
-    privileges set and the application runs as the correct user
-    (``user`` and ``group`` parameter to the `WSGIDaemonProcess`
-    directive)
-
-**Problem:** application dies with an error on print
-    Keep in mind that mod_wsgi disallows doing anything with
-    :data:`sys.stdout` and :data:`sys.stderr`.  You can disable this
-    protection from the config by setting the `WSGIRestrictStdout` to
-    ``off``:
-
-    .. sourcecode:: apache
-
-        WSGIRestrictStdout Off
-
-    Alternatively you can also replace the standard out in the .wsgi file
-    with a different stream::
-
-        import sys
-        sys.stdout = sys.stderr
-
-**Problem:** accessing resources gives IO errors
-    Your application probably is a single .py file you symlinked into
-    the site-packages folder.  Please be aware that this does not work,
-    instead you either have to put the folder into the pythonpath the
-    file is stored in, or convert your application into a package.
-
-    The reason for this is that for non-installed packages, the module
-    filename is used to locate the resources and for symlinks the wrong
-    filename is picked up.
-
-Support for Automatic Reloading
--------------------------------
-
-To help deployment tools you can activate support for automatic
-reloading.  Whenever something changes the ``.wsgi`` file, `mod_wsgi` will
-reload all the daemon processes for us.
-
-For that, just add the following directive to your `Directory` section:
-
-.. sourcecode:: apache
-
-   WSGIScriptReloading On
-
-Working with Virtual Environments
----------------------------------
-
-Virtual environments have the advantage that they never install the
-required dependencies system wide so you have a better control over what
-is used where.  If you want to use a virtual environment with mod_wsgi
-you have to modify your ``.wsgi`` file slightly.
-
-Add the following lines to the top of your ``.wsgi`` file::
-
-    activate_this = '/path/to/env/bin/activate_this.py'
-    with open(activate_this) as file_:
-        exec(file_.read(), dict(__file__=activate_this))
-
-This sets up the load paths according to the settings of the virtual
-environment.  Keep in mind that the path has to be absolute.
+    $ sudo /home/hello/venv/bin/mod_wsgi-express start-server \
+        /home/hello/wsgi.py \
+        --user hello --group hello --port 80 --processes 4
