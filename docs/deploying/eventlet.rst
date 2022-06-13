@@ -44,7 +44,7 @@ Running
 -------
 
 To use eventlet to serve your application, write a script that imports
-its ```wsgi.server``, as well as your app or app factory.
+its ``wsgi.server``, as well as your app or app factory.
 
 .. code-block:: python
     :caption: ``wsgi.py``
