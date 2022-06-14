@@ -17,10 +17,10 @@ community that make adding new functionality easy.
 .. _Jinja: https://jinja.palletsprojects.com/
 
 
-Installing
-----------
+Installation
+------------
 
-Install and update using `pip`_:
+Install and update using the `pip`_ package manager:
 
 .. code-block:: text
 
