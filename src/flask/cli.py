@@ -5,6 +5,7 @@ import platform
 import re
 import sys
 import traceback
+import typing as t
 from functools import update_wrapper
 from operator import attrgetter
 from threading import Lock
@@ -478,7 +479,13 @@ class FlaskGroup(AppGroup):
         if add_version_option:
             params.append(version_option)
 
-        AppGroup.__init__(self, params=params, **extra)
+        if "context_settings" not in extra:
+            extra["context_settings"] = {}
+
+        extra["context_settings"].setdefault("auto_envvar_prefix", "FLASK")
+
+        super().__init__(params=params, **extra)
+
         self.create_app = create_app
         self.load_dotenv = load_dotenv
         self.set_debug_flag = set_debug_flag
@@ -546,20 +553,22 @@ class FlaskGroup(AppGroup):
 
         return sorted(rv)
 
-    def main(self, *args, **kwargs):
+    def make_context(
+        self,
+        info_name: t.Optional[str],
+        args: t.List[str],
+        parent: t.Optional[click.Context] = None,
+        **extra: t.Any,
+    ) -> click.Context:
         if get_load_dotenv(self.load_dotenv):
             load_dotenv()
 
-        obj = kwargs.get("obj")
-
-        if obj is None:
-            obj = ScriptInfo(
+        if "obj" not in extra and "obj" not in self.context_settings:
+            extra["obj"] = ScriptInfo(
                 create_app=self.create_app, set_debug_flag=self.set_debug_flag
             )
 
-        kwargs["obj"] = obj
-        kwargs.setdefault("auto_envvar_prefix", "FLASK")
-        return super().main(*args, **kwargs)
+        return super().make_context(info_name, args, parent=parent, **extra)
 
 
 def _path_is_ancestor(path, other):
@@ -958,6 +967,7 @@ def routes_command(sort: str, all_methods: bool) -> None:
 
 
 cli = FlaskGroup(
+    name="flask",
     help="""\
 A general utility script for Flask applications.
 
@@ -973,7 +983,7 @@ debug mode.
 """.format(
         cmd="export" if os.name == "posix" else "set",
         prefix="$ " if os.name == "posix" else "> ",
-    )
+    ),
 )
 
 
