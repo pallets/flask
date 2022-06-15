@@ -388,6 +388,19 @@ def test_flaskgroup_debug(runner, set_debug_flag):
     assert result.output == f"{not set_debug_flag}\n"
 
 
+def test_flaskgroup_nested(app, runner):
+    cli = click.Group("cli")
+    flask_group = FlaskGroup(name="flask", create_app=lambda: app)
+    cli.add_command(flask_group)
+
+    @flask_group.command()
+    def show():
+        click.echo(current_app.name)
+
+    result = runner.invoke(cli, ["flask", "show"])
+    assert result.output == "flask_test\n"
+
+
 def test_no_command_echo_loading_error():
     from flask.cli import cli
 

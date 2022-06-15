@@ -10,6 +10,7 @@ from itertools import chain
 from threading import Lock
 from types import TracebackType
 
+import click
 from werkzeug.datastructures import Headers
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.exceptions import Aborter
@@ -23,6 +24,7 @@ from werkzeug.routing import MapAdapter
 from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
+from werkzeug.serving import is_running_from_reloader
 from werkzeug.urls import url_quote
 from werkzeug.utils import redirect as _wz_redirect
 from werkzeug.wrappers import Response as BaseResponse
@@ -908,12 +910,18 @@ class Flask(Scaffold):
             The default port is now picked from the ``SERVER_NAME``
             variable.
         """
-        # Change this into a no-op if the server is invoked from the
-        # command line. Have a look at cli.py for more information.
+        # Ignore this call so that it doesn't start another server if
+        # the 'flask run' command is used.
         if os.environ.get("FLASK_RUN_FROM_CLI") == "true":
-            from .debughelpers import explain_ignored_app_run
+            if not is_running_from_reloader():
+                click.secho(
+                    " * Ignoring a call to 'app.run()', the server is"
+                    " already being run with the 'flask run' command.\n"
+                    "   Only call 'app.run()' in an 'if __name__ =="
+                    ' "__main__"\' guard.',
+                    fg="red",
+                )
 
-            explain_ignored_app_run()
             return
 
         if get_load_dotenv(load_dotenv):

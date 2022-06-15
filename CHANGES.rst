@@ -25,6 +25,9 @@ Unreleased
 -   Added the ``View.init_every_request`` class attribute. If a view
     subclass sets this to ``False``, the view will not create a new
     instance on every request. :issue:`2520`.
+-   A ``flask.cli.FlaskGroup`` Click group can be nested as a
+    sub-command in a custom CLI. :issue:`3263`
+
 
 Version 2.1.3
 -------------

@@ -5,12 +5,14 @@ import platform
 import re
 import sys
 import traceback
+import typing as t
 from functools import update_wrapper
 from operator import attrgetter
 from threading import Lock
 from threading import Thread
 
 import click
+from werkzeug.serving import is_running_from_reloader
 from werkzeug.utils import import_string
 
 from .globals import current_app
@@ -273,7 +275,7 @@ class DispatchingApp:
         self._bg_loading_exc = None
 
         if use_eager_loading is None:
-            use_eager_loading = os.environ.get("WERKZEUG_RUN_MAIN") != "true"
+            use_eager_loading = not is_running_from_reloader()
 
         if use_eager_loading:
             self._load_unlocked()
@@ -477,7 +479,13 @@ class FlaskGroup(AppGroup):
         if add_version_option:
             params.append(version_option)
 
-        AppGroup.__init__(self, params=params, **extra)
+        if "context_settings" not in extra:
+            extra["context_settings"] = {}
+
+        extra["context_settings"].setdefault("auto_envvar_prefix", "FLASK")
+
+        super().__init__(params=params, **extra)
+
         self.create_app = create_app
         self.load_dotenv = load_dotenv
         self.set_debug_flag = set_debug_flag
@@ -545,26 +553,22 @@ class FlaskGroup(AppGroup):
 
         return sorted(rv)
 
-    def main(self, *args, **kwargs):
-        # Set a global flag that indicates that we were invoked from the
-        # command line interface. This is detected by Flask.run to make the
-        # call into a no-op. This is necessary to avoid ugly errors when the
-        # script that is loaded here also attempts to start a server.
-        os.environ["FLASK_RUN_FROM_CLI"] = "true"
-
+    def make_context(
+        self,
+        info_name: t.Optional[str],
+        args: t.List[str],
+        parent: t.Optional[click.Context] = None,
+        **extra: t.Any,
+    ) -> click.Context:
         if get_load_dotenv(self.load_dotenv):
             load_dotenv()
 
-        obj = kwargs.get("obj")
-
-        if obj is None:
-            obj = ScriptInfo(
+        if "obj" not in extra and "obj" not in self.context_settings:
+            extra["obj"] = ScriptInfo(
                 create_app=self.create_app, set_debug_flag=self.set_debug_flag
             )
 
-        kwargs["obj"] = obj
-        kwargs.setdefault("auto_envvar_prefix", "FLASK")
-        return super().main(*args, **kwargs)
+        return super().make_context(info_name, args, parent=parent, **extra)
 
 
 def _path_is_ancestor(path, other):
@@ -637,7 +641,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
     """Show extra startup messages the first time the server is run,
     ignoring the reloader.
     """
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    if is_running_from_reloader():
         return
 
     if app_import_path is not None:
@@ -653,10 +657,10 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
     if env == "production":
         click.secho(
             "   WARNING: This is a development server. Do not use it in"
-            " a production deployment.",
+            " a production deployment.\n   Use a production WSGI server"
+            " instead.",
             fg="red",
         )
-        click.secho("   Use a production WSGI server instead.", dim=True)
 
     if debug is not None:
         click.echo(f" * Debug mode: {'on' if debug else 'off'}")
@@ -963,6 +967,7 @@ def routes_command(sort: str, all_methods: bool) -> None:
 
 
 cli = FlaskGroup(
+    name="flask",
     help="""\
 A general utility script for Flask applications.
 
@@ -978,7 +983,7 @@ debug mode.
 """.format(
         cmd="export" if os.name == "posix" else "set",
         prefix="$ " if os.name == "posix" else "> ",
-    )
+    ),
 )
 
 
