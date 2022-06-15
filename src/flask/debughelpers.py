@@ -1,6 +1,4 @@
-import os
 import typing as t
-from warnings import warn
 
 from .app import Flask
 from .blueprints import Blueprint
@@ -159,16 +157,3 @@ def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
         info.append("  See https://flask.palletsprojects.com/blueprints/#templates")
 
     app.logger.info("\n".join(info))
-
-
-def explain_ignored_app_run() -> None:
-    if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
-        warn(
-            Warning(
-                "Silently ignoring app.run() because the application is"
-                " run from the flask command line executable. Consider"
-                ' putting app.run() behind an if __name__ == "__main__"'
-                " guard to silence this warning."
-            ),
-            stacklevel=3,
-        )

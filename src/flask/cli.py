@@ -11,6 +11,7 @@ from threading import Lock
 from threading import Thread
 
 import click
+from werkzeug.serving import is_running_from_reloader
 from werkzeug.utils import import_string
 
 from .globals import current_app
@@ -273,7 +274,7 @@ class DispatchingApp:
         self._bg_loading_exc = None
 
         if use_eager_loading is None:
-            use_eager_loading = os.environ.get("WERKZEUG_RUN_MAIN") != "true"
+            use_eager_loading = not is_running_from_reloader()
 
         if use_eager_loading:
             self._load_unlocked()
@@ -546,12 +547,6 @@ class FlaskGroup(AppGroup):
         return sorted(rv)
 
     def main(self, *args, **kwargs):
-        # Set a global flag that indicates that we were invoked from the
-        # command line interface. This is detected by Flask.run to make the
-        # call into a no-op. This is necessary to avoid ugly errors when the
-        # script that is loaded here also attempts to start a server.
-        os.environ["FLASK_RUN_FROM_CLI"] = "true"
-
         if get_load_dotenv(self.load_dotenv):
             load_dotenv()
 
@@ -637,7 +632,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
     """Show extra startup messages the first time the server is run,
     ignoring the reloader.
     """
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    if is_running_from_reloader():
         return
 
     if app_import_path is not None:
@@ -653,10 +648,10 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
     if env == "production":
         click.secho(
             "   WARNING: This is a development server. Do not use it in"
-            " a production deployment.",
+            " a production deployment.\n   Use a production WSGI server"
+            " instead.",
             fg="red",
         )
-        click.secho("   Use a production WSGI server instead.", dim=True)
 
     if debug is not None:
         click.echo(f" * Debug mode: {'on' if debug else 'off'}")
