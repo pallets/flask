@@ -19,6 +19,7 @@ The following example demonstrates how to serve an SPA along with an API::
 
 
     @app.route('/', defaults={'path': ''})
+    @app.route('/<string:path>')
     @app.route('/<path:path>')
     def catch_all(path):
         return app.send_static_file("index.html")
