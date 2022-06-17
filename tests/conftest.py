@@ -18,6 +18,7 @@ def _standard_os_environ():
     """
     mp = monkeypatch.MonkeyPatch()
     out = (
+        (os.environ, "FLASK_ENV_FILE", monkeypatch.notset),
         (os.environ, "FLASK_APP", monkeypatch.notset),
         (os.environ, "FLASK_ENV", monkeypatch.notset),
         (os.environ, "FLASK_DEBUG", monkeypatch.notset),

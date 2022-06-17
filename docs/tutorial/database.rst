@@ -196,15 +196,13 @@ previous page.
     If you're still running the server from the previous page, you can
     either stop the server, or run this command in a new terminal. If
     you use a new terminal, remember to change to your project directory
-    and activate the env as described in :doc:`/installation`. You'll
-    also need to set ``FLASK_APP`` and ``FLASK_ENV`` as shown on the
-    previous page.
+    and activate the env as described in :doc:`/installation`.
 
 Run the ``init-db`` command:
 
 .. code-block:: none
 
-    $ flask init-db
+    $ flask --app flaskr init-db
     Initialized the database.
 
 There will now be a ``flaskr.sqlite`` file in the ``instance`` folder in

@@ -15,40 +15,10 @@ Application Discovery
 ---------------------
 
 The ``flask`` command is installed by Flask, not your application; it must be
-told where to find your application in order to use it. The ``FLASK_APP``
-environment variable is used to specify how to load the application.
+told where to find your application in order to use it. The ``--app``
+option is used to specify how to load the application.
 
-.. tabs::
-
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP=hello
-         $ flask run
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP hello
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=hello
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "hello"
-         > flask run
-
-While ``FLASK_APP`` supports a variety of options for specifying your
+While ``--app`` supports a variety of options for specifying your
 application, most use cases should be simple. Here are the typical values:
 
 (nothing)
@@ -56,32 +26,32 @@ application, most use cases should be simple. Here are the typical values:
     automatically detecting an app (``app`` or ``application``) or
     factory (``create_app`` or ``make_app``).
 
-``FLASK_APP=hello``
+``--app hello``
     The given name is imported, automatically detecting an app (``app``
     or ``application``) or factory (``create_app`` or ``make_app``).
 
 ----
 
-``FLASK_APP`` has three parts: an optional path that sets the current working
+``--app`` has three parts: an optional path that sets the current working
 directory, a Python file or dotted import path, and an optional variable
 name of the instance or factory. If the name is a factory, it can optionally
 be followed by arguments in parentheses. The following values demonstrate these
 parts:
 
-``FLASK_APP=src/hello``
+``--app src/hello``
     Sets the current working directory to ``src`` then imports ``hello``.
 
-``FLASK_APP=hello.web``
+``--app hello.web``
     Imports the path ``hello.web``.
 
-``FLASK_APP=hello:app2``
+``--app hello:app2``
     Uses the ``app2`` Flask instance in ``hello``.
 
-``FLASK_APP="hello:create_app('dev')"``
+``--app 'hello:create_app("dev")'``
     The ``create_app`` factory in ``hello`` is called with the string ``'dev'``
     as the argument.
 
-If ``FLASK_APP`` is not set, the command will try to import "app" or
+If ``--app`` is not set, the command will try to import "app" or
 "wsgi" (as a ".py" file, or package) and try to detect an application
 instance or factory.
 
@@ -137,8 +107,9 @@ Environments
 
 .. versionadded:: 1.0
 
-The environment in which the Flask app runs is set by the
-:envvar:`FLASK_ENV` environment variable. If not set it defaults to
+The environment in which the Flask app executes is set by the
+``FLASK_ENV`` environment variable. When using the ``flask`` command, it
+can also be set with the ``--env`` option. If not set it defaults to
 ``production``. The other recognized environment is ``development``.
 Flask and extensions may choose to enable behaviors based on the
 environment.
@@ -147,63 +118,16 @@ If the env is set to ``development``, the ``flask`` command will enable
 debug mode and ``flask run`` will enable the interactive debugger and
 reloader.
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_ENV=development
-         $ flask run
-          * Serving Flask app "hello"
-          * Environment: development
-          * Debug mode: on
-          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-          * Restarting with inotify reloader
-          * Debugger is active!
-          * Debugger PIN: 223-456-919
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_ENV development
-         $ flask run
-          * Serving Flask app "hello"
-          * Environment: development
-          * Debug mode: on
-          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-          * Restarting with inotify reloader
-          * Debugger is active!
-          * Debugger PIN: 223-456-919
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_ENV=development
-         > flask run
-          * Serving Flask app "hello"
-          * Environment: development
-          * Debug mode: on
-          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-          * Restarting with inotify reloader
-          * Debugger is active!
-          * Debugger PIN: 223-456-919
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_ENV = "development"
-         > flask run
-          * Serving Flask app "hello"
-          * Environment: development
-          * Debug mode: on
-          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-          * Restarting with inotify reloader
-          * Debugger is active!
-          * Debugger PIN: 223-456-919
+     $ flask --app hello --env development run
+      * Serving Flask app "hello"
+      * Environment: development
+      * Debug mode: on
+      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+      * Restarting with inotify reloader
+      * Debugger is active!
+      * Debugger PIN: 223-456-919
 
 
 Watch Extra Files with the Reloader
@@ -211,72 +135,31 @@ Watch Extra Files with the Reloader
 
 When using development mode, the reloader will trigger whenever your
 Python code or imported modules change. The reloader can watch
-additional files with the ``--extra-files`` option, or the
-``FLASK_RUN_EXTRA_FILES`` environment variable. Multiple paths are
+additional files with the ``--extra-files`` option. Multiple paths are
 separated with ``:``, or ``;`` on Windows.
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-          $ flask run --extra-files file1:dirA/file2:dirB/
-          # or
-          $ export FLASK_RUN_EXTRA_FILES=file1:dirA/file2:dirB/
-          $ flask run
-           * Running on http://127.0.0.1:8000/
-           * Detected change in '/path/to/file1', reloading
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-          $ flask run --extra-files file1:dirA/file2:dirB/
-          # or
-          $ set -x FLASK_RUN_EXTRA_FILES file1 dirA/file2 dirB/
-          $ flask run
-           * Running on http://127.0.0.1:8000/
-           * Detected change in '/path/to/file1', reloading
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-          > flask run --extra-files file1:dirA/file2:dirB/
-          # or
-          > set FLASK_RUN_EXTRA_FILES=file1:dirA/file2:dirB/
-          > flask run
-           * Running on http://127.0.0.1:8000/
-           * Detected change in '/path/to/file1', reloading
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-          > flask run --extra-files file1:dirA/file2:dirB/
-          # or
-          > $env:FLASK_RUN_EXTRA_FILES = "file1:dirA/file2:dirB/"
-          > flask run
-           * Running on http://127.0.0.1:8000/
-           * Detected change in '/path/to/file1', reloading
+    $ flask run --extra-files file1:dirA/file2:dirB/
+     * Running on http://127.0.0.1:8000/
+     * Detected change in '/path/to/file1', reloading
 
 
 Ignore files with the Reloader
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The reloader can also ignore files using :mod:`fnmatch` patterns with
-the ``--exclude-patterns`` option, or the ``FLASK_RUN_EXCLUDE_PATTERNS``
-environment variable. Multiple patterns are separated with ``:``, or
-``;`` on Windows.
+the ``--exclude-patterns`` option. Multiple patterns are separated with
+``:``, or ``;`` on Windows.
 
 
 Debug Mode
 ----------
 
-Debug mode will be enabled when :envvar:`FLASK_ENV` is ``development``,
-as described above. If you want to control debug mode separately, use
-:envvar:`FLASK_DEBUG`. The value ``1`` enables it, ``0`` disables it.
+Debug mode will be enabled when the execution environment is
+``development``, as described above. If you want to control debug mode
+separately, use the ``--debug/--no-debug`` option or the ``FLASK_DEBUG``
+environment variable.
 
 
 .. _dotenv:
@@ -284,14 +167,21 @@ as described above. If you want to control debug mode separately, use
 Environment Variables From dotenv
 ---------------------------------
 
-Rather than setting ``FLASK_APP`` each time you open a new terminal, you can
-use Flask's dotenv support to set environment variables automatically.
+The ``flask`` command supports setting any option for any command with
+environment variables. The variables are named like ``FLASK_OPTION`` or
+``FLASK_COMMAND_OPTION``, for example ``FLASK_APP`` or
+``FLASK_RUN_PORT``.
+
+Rather than passing options every time you run a command, or environment
+variables every time you open a new terminal, you can use Flask's dotenv
+support to set environment variables automatically.
 
 If `python-dotenv`_ is installed, running the ``flask`` command will set
-environment variables defined in the files :file:`.env` and :file:`.flaskenv`.
-This can be used to avoid having to set ``FLASK_APP`` manually every time you
-open a new terminal, and to set configuration using environment variables
-similar to how some deployment services work.
+environment variables defined in the files ``.env`` and ``.flaskenv``.
+You can also specify an extra file to load with the ``--env-file``
+option. Dotenv files can be used to avoid having to set ``--app`` or
+``FLASK_APP`` manually, and to set configuration using environment
+variables similar to how some deployment services work.
 
 Variables set on the command line are used over those set in :file:`.env`,
 which are used over those set in :file:`.flaskenv`. :file:`.flaskenv` should be
@@ -612,7 +502,7 @@ Custom Scripts
 --------------
 
 When you are using the app factory pattern, it may be more convenient to define
-your own Click script. Instead of using ``FLASK_APP`` and letting Flask load
+your own Click script. Instead of using ``--app`` and letting Flask load
 your application, you can create your own Click object and export it as a
 `console script`_ entry point.
 
@@ -646,7 +536,7 @@ Define the entry point in :file:`setup.py`::
     )
 
 Install the application in the virtualenv in editable mode and the custom
-script is available. Note that you don't need to set ``FLASK_APP``. ::
+script is available. Note that you don't need to set ``--app``. ::
 
     $ pip install -e .
     $ wiki run

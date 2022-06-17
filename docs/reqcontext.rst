@@ -227,8 +227,8 @@ associated with it is destroyed. If an error occurs during development,
 it is useful to delay destroying the data for debugging purposes.
 
 When the development server is running in development mode (the
-``FLASK_ENV`` environment variable is set to ``'development'``), the
-error and data will be preserved and shown in the interactive debugger.
+``--env`` option is set to ``'development'``), the error and data will
+be preserved and shown in the interactive debugger.
 
 This behavior can be controlled with the
 :data:`PRESERVE_CONTEXT_ON_EXCEPTION` config. As described above, it

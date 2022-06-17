@@ -56,70 +56,17 @@ a big problem, just add a new file called :file:`setup.py` next to the inner
         ],
     )
 
-In order to run the application you need to export an environment variable
-that tells Flask where to find the application instance:
+Install your application so it is importable:
 
-.. tabs::
-
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP=yourapplication
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP yourapplication
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=yourapplication
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "yourapplication"
-
-If you are outside of the project directory make sure to provide the exact
-path to your application directory. Similarly you can turn on the
-development features like this:
-
-.. tabs::
-
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_ENV=development
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_ENV development
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_ENV=development
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_ENV = "development"
-
-In order to install and run the application you need to issue the following
-commands::
+.. code-block:: text
 
     $ pip install -e .
-    $ flask run
+
+To use the ``flask`` command and run your application you need to set
+the ``--app`` option that tells Flask where to find the application
+instance:
+
+    $ flask --app yourapplication run
 
 What did we gain from this?  Now we can restructure the application a bit
 into multiple modules.  The only thing you have to remember is the

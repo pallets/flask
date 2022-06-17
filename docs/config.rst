@@ -47,61 +47,33 @@ Environment and Debug Features
 
 The :data:`ENV` and :data:`DEBUG` config values are special because they
 may behave inconsistently if changed after the app has begun setting up.
-In order to set the environment and debug mode reliably, Flask uses
-environment variables.
+In order to set the environment and debug mode reliably, pass options to
+the ``flask`` command or use environment variables.
 
-The environment is used to indicate to Flask, extensions, and other
-programs, like Sentry, what context Flask is running in. It is
-controlled with the :envvar:`FLASK_ENV` environment variable and
-defaults to ``production``.
+The execution environment is used to indicate to Flask, extensions, and
+other programs, like Sentry, what context Flask is running in. It is
+controlled with the ``FLASK_ENV`` environment variable, or the
+``--env`` option when using the ``flask`` command, and defaults to
+``production``.
 
-Setting :envvar:`FLASK_ENV` to ``development`` will enable debug mode.
-``flask run`` will use the interactive debugger and reloader by default
-in debug mode. To control this separately from the environment, use the
-:envvar:`FLASK_DEBUG` flag.
-
-.. versionchanged:: 1.0
-    Added :envvar:`FLASK_ENV` to control the environment separately
-    from debug mode. The development environment enables debug mode.
+Setting ``--env development`` will enable debug mode. ``flask run`` will
+use the interactive debugger and reloader by default in debug mode. To
+control this separately from the environment, use the
+``--debug/--no-debug`` option or the ``FLASK_DEBUG`` environment
+variable.
 
 To switch Flask to the development environment and enable debug mode,
-set :envvar:`FLASK_ENV`:
+set ``--env``:
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
+    $ flask --app hello --env development run
 
-      .. code-block:: text
-
-         $ export FLASK_ENV=development
-         $ flask run
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_ENV development
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_ENV=development
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_ENV = "development"
-         > flask run
-
-Using the environment variables as described above is recommended. While
-it is possible to set :data:`ENV` and :data:`DEBUG` in your config or
-code, this is strongly discouraged. They can't be read early by the
-``flask`` command, and some systems or extensions may have already
-configured themselves based on a previous value.
+Using the options or environment variables as described above is
+recommended. While it is possible to set :data:`ENV` and :data:`DEBUG`
+in your config or code, this is strongly discouraged. They can't be read
+early by the ``flask`` command, and some systems or extensions may have
+already configured themselves based on a previous value.
 
 
 Builtin Configuration Values
