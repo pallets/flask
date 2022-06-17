@@ -410,15 +410,25 @@ pass_script_info = click.make_pass_decorator(ScriptInfo, ensure=True)
 
 def with_appcontext(f):
     """Wraps a callback so that it's guaranteed to be executed with the
-    script's application context.  If callbacks are registered directly
-    to the ``app.cli`` object then they are wrapped with this function
-    by default unless it's disabled.
+    script's application context.
+
+    Custom commands (and their options) registered under ``app.cli`` or
+    ``blueprint.cli`` will always have an app context available, this
+    decorator is not required in that case.
+
+    .. versionchanged:: 2.2
+        The app context is active for subcommands as well as the
+        decorated callback. The app context is always available to
+        ``app.cli`` command and parameter callbacks.
     """
 
     @click.pass_context
     def decorator(__ctx, *args, **kwargs):
-        with __ctx.ensure_object(ScriptInfo).load_app().app_context():
-            return __ctx.invoke(f, *args, **kwargs)
+        if not current_app:
+            app = __ctx.ensure_object(ScriptInfo).load_app()
+            __ctx.with_resource(app.app_context())
+
+        return __ctx.invoke(f, *args, **kwargs)
 
     return update_wrapper(decorator, f)
 
@@ -587,6 +597,10 @@ class FlaskGroup(AppGroup):
         Added the ``-A/--app``, ``-E/--env``, ``--debug/--no-debug``,
         and ``-e/--env-file`` options.
 
+    .. versionchanged:: 2.2
+        An app context is pushed when running ``app.cli`` commands, so
+        ``@with_appcontext`` is no longer required for those commands.
+
     .. versionchanged:: 1.0
         If installed, python-dotenv will be used to load environment variables
         from :file:`.env` and :file:`.flaskenv` files.
@@ -660,9 +674,18 @@ class FlaskGroup(AppGroup):
         # Look up commands provided by the app, showing an error and
         # continuing if the app couldn't be loaded.
         try:
-            return info.load_app().cli.get_command(ctx, name)
+            app = info.load_app()
         except NoAppException as e:
             click.secho(f"Error: {e.format_message()}\n", err=True, fg="red")
+            return None
+
+        # Push an app context for the loaded app unless it is already
+        # active somehow. This makes the context available to parameter
+        # and command callbacks without needing @with_appcontext.
+        if not current_app or current_app._get_current_object() is not app:
+            ctx.with_resource(app.app_context())
+
+        return app.cli.get_command(ctx, name)
 
     def list_commands(self, ctx):
         self._load_plugin_commands()

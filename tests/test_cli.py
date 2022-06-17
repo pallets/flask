@@ -13,6 +13,7 @@ import pytest
 from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
+from flask import _app_ctx_stack
 from flask import Blueprint
 from flask import current_app
 from flask import Flask
@@ -310,6 +311,26 @@ def test_lazy_load_error(monkeypatch):
             lazy._flush_bg_loading_exception()
 
 
+def test_app_cli_has_app_context(app, runner):
+    def _param_cb(ctx, param, value):
+        # current_app should be available in parameter callbacks
+        return bool(current_app)
+
+    @app.cli.command()
+    @click.argument("value", callback=_param_cb)
+    def check(value):
+        app = click.get_current_context().obj.load_app()
+        # the loaded app should be the same as current_app
+        same_app = current_app._get_current_object() is app
+        # only one app context should be pushed
+        stack_size = len(_app_ctx_stack._local.stack)
+        return same_app, stack_size, value
+
+    cli = FlaskGroup(create_app=lambda: app)
+    result = runner.invoke(cli, ["check", "x"], standalone_mode=False)
+    assert result.return_value == (True, 1, True)
+
+
 def test_with_appcontext(runner):
     @click.command()
     @with_appcontext
@@ -323,12 +344,12 @@ def test_with_appcontext(runner):
     assert result.output == "testapp\n"
 
 
-def test_appgroup(runner):
+def test_appgroup_app_context(runner):
     @click.group(cls=AppGroup)
     def cli():
         pass
 
-    @cli.command(with_appcontext=True)
+    @cli.command()
     def test():
         click.echo(current_app.name)
 
@@ -336,7 +357,7 @@ def test_appgroup(runner):
     def subgroup():
         pass
 
-    @subgroup.command(with_appcontext=True)
+    @subgroup.command()
     def test2():
         click.echo(current_app.name)
 
@@ -351,7 +372,7 @@ def test_appgroup(runner):
     assert result.output == "testappgroup\n"
 
 
-def test_flaskgroup(runner):
+def test_flaskgroup_app_context(runner):
     def create_app():
         return Flask("flaskgroup")
 

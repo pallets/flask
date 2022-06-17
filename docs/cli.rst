@@ -437,12 +437,14 @@ commands directly to the application's level:
 Application Context
 ~~~~~~~~~~~~~~~~~~~
 
-Commands added using the Flask app's :attr:`~Flask.cli`
-:meth:`~cli.AppGroup.command` decorator will be executed with an application
-context pushed, so your command and extensions have access to the app and its
-configuration. If you create a command using the Click :func:`~click.command`
-decorator instead of the Flask decorator, you can use
-:func:`~cli.with_appcontext` to get the same behavior. ::
+Commands added using the Flask app's :attr:`~Flask.cli` or
+:class:`~flask.cli.FlaskGroup` :meth:`~cli.AppGroup.command` decorator
+will be executed with an application context pushed, so your custom
+commands and parameters have access to the app and its configuration. The
+:func:`~cli.with_appcontext` decorator can be used to get the same
+behavior, but is not needed in most cases.
+
+.. code-block:: python
 
     import click
     from flask.cli import with_appcontext
@@ -453,12 +455,6 @@ decorator instead of the Flask decorator, you can use
         ...
 
     app.cli.add_command(do_work)
-
-If you're sure a command doesn't need the context, you can disable it::
-
-    @app.cli.command(with_appcontext=False)
-    def do_work():
-        ...
 
 
 Plugins

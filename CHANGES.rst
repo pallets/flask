@@ -33,6 +33,9 @@ Unreleased
 -   Add ``--env-file`` option to the ``flask`` CLI. This allows
     specifying a dotenv file to load in addition to ``.env`` and
     ``.flaskenv``. :issue:`3108`
+-   It is no longer required to decorate custom CLI commands on
+    ``app.cli`` or ``blueprint.cli`` with ``@with_appcontext``, an app
+    context will already be active at that point. :issue:`2410`
 
 
 Version 2.1.3
