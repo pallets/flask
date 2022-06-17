@@ -40,7 +40,6 @@ response is sent.
 
     import click
     from flask import current_app, g
-    from flask.cli import with_appcontext
 
 
     def get_db():
@@ -128,7 +127,6 @@ Add the Python functions that will run these SQL commands to the
 
 
     @click.command('init-db')
-    @with_appcontext
     def init_db_command():
         """Clear the existing data and create new tables."""
         init_db()
