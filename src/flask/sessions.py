@@ -3,6 +3,7 @@ import typing as t
 import warnings
 from collections.abc import MutableMapping
 from datetime import datetime
+from datetime import timezone
 
 from itsdangerous import BadSignature
 from itsdangerous import URLSafeTimedSerializer
@@ -277,7 +278,7 @@ class SessionInterface:
         lifetime configured on the application.
         """
         if session.permanent:
-            return datetime.utcnow() + app.permanent_session_lifetime
+            return datetime.now(timezone.utc) + app.permanent_session_lifetime
         return None
 
     def should_set_cookie(self, app: "Flask", session: SessionMixin) -> bool:

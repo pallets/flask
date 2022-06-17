@@ -36,6 +36,8 @@ Unreleased
 -   It is no longer required to decorate custom CLI commands on
     ``app.cli`` or ``blueprint.cli`` with ``@with_appcontext``, an app
     context will already be active at that point. :issue:`2410`
+-   ``SessionInterface.get_expiration_time`` uses a timezone-aware
+    value. :pr:`4645`
 
 
 Version 2.1.3
