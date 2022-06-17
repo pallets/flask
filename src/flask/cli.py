@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ast
 import inspect
 import os
@@ -12,6 +14,7 @@ from threading import Lock
 from threading import Thread
 
 import click
+from click.core import ParameterSource
 from werkzeug.serving import is_running_from_reloader
 from werkzeug.utils import import_string
 
@@ -19,6 +22,9 @@ from .globals import current_app
 from .helpers import get_debug_flag
 from .helpers import get_env
 from .helpers import get_load_dotenv
+
+if t.TYPE_CHECKING:
+    from .app import Flask
 
 
 class NoAppException(click.UsageError):
@@ -46,8 +52,8 @@ def find_best_app(module):
     elif len(matches) > 1:
         raise NoAppException(
             "Detected multiple Flask applications in module"
-            f" {module.__name__!r}. Use 'FLASK_APP={module.__name__}:name'"
-            f" to specify the correct one."
+            f" '{module.__name__}'. Use '{module.__name__}:name'"
+            " to specify the correct one."
         )
 
     # Search for app factory functions.
@@ -65,15 +71,15 @@ def find_best_app(module):
                     raise
 
                 raise NoAppException(
-                    f"Detected factory {attr_name!r} in module {module.__name__!r},"
+                    f"Detected factory '{attr_name}' in module '{module.__name__}',"
                     " but could not call it without arguments. Use"
-                    f" \"FLASK_APP='{module.__name__}:{attr_name}(args)'\""
+                    f" '{module.__name__}:{attr_name}(args)'"
                     " to specify arguments."
                 ) from e
 
     raise NoAppException(
         "Failed to find Flask application or factory in module"
-        f" {module.__name__!r}. Use 'FLASK_APP={module.__name__}:name'"
+        f" '{module.__name__}'. Use '{module.__name__}:name'"
         " to specify one."
     )
 
@@ -253,7 +259,7 @@ def get_version(ctx, param, value):
 
 version_option = click.Option(
     ["--version"],
-    help="Show the flask version",
+    help="Show the Flask version.",
     expose_value=False,
     callback=get_version,
     is_flag=True,
@@ -338,19 +344,24 @@ class ScriptInfo:
     onwards as click object.
     """
 
-    def __init__(self, app_import_path=None, create_app=None, set_debug_flag=True):
+    def __init__(
+        self,
+        app_import_path: str | None = None,
+        create_app: t.Callable[..., Flask] | None = None,
+        set_debug_flag: bool = True,
+    ) -> None:
         #: Optionally the import path for the Flask application.
-        self.app_import_path = app_import_path or os.environ.get("FLASK_APP")
+        self.app_import_path = app_import_path
         #: Optionally a function that is passed the script info to create
         #: the instance of the application.
         self.create_app = create_app
         #: A dictionary with arbitrary data that can be associated with
         #: this script info.
-        self.data = {}
+        self.data: t.Dict[t.Any, t.Any] = {}
         self.set_debug_flag = set_debug_flag
-        self._loaded_app = None
+        self._loaded_app: Flask | None = None
 
-    def load_app(self):
+    def load_app(self) -> Flask:
         """Loads the Flask app (if not yet loaded) and returns it.  Calling
         this multiple times will just result in the already loaded app to
         be returned.
@@ -379,9 +390,10 @@ class ScriptInfo:
 
         if not app:
             raise NoAppException(
-                "Could not locate a Flask application. You did not provide "
-                'the "FLASK_APP" environment variable, and a "wsgi.py" or '
-                '"app.py" module was not found in the current directory.'
+                "Could not locate a Flask application. Use the"
+                " 'flask --app' option, 'FLASK_APP' environment"
+                " variable, or a 'wsgi.py' or 'app.py' file in the"
+                " current directory."
             )
 
         if self.set_debug_flag:
@@ -442,6 +454,117 @@ class AppGroup(click.Group):
         return click.Group.group(self, *args, **kwargs)
 
 
+def _set_app(ctx: click.Context, param: click.Option, value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    info = ctx.ensure_object(ScriptInfo)
+    info.app_import_path = value
+    return value
+
+
+# This option is eager so the app will be available if --help is given.
+# --help is also eager, so --app must be before it in the param list.
+# no_args_is_help bypasses eager processing, so this option must be
+# processed manually in that case to ensure FLASK_APP gets picked up.
+_app_option = click.Option(
+    ["-A", "--app"],
+    metavar="IMPORT",
+    help=(
+        "The Flask application or factory function to load, in the form 'module:name'."
+        " Module can be a dotted import or file path. Name is not required if it is"
+        " 'app', 'application', 'create_app', or 'make_app', and can be 'name(args)' to"
+        " pass arguments."
+    ),
+    is_eager=True,
+    expose_value=False,
+    callback=_set_app,
+)
+
+
+def _set_env(ctx: click.Context, param: click.Option, value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    # Set with env var instead of ScriptInfo.load so that it can be
+    # accessed early during a factory function.
+    os.environ["FLASK_ENV"] = value
+    return value
+
+
+_env_option = click.Option(
+    ["-E", "--env"],
+    metavar="NAME",
+    help=(
+        "The execution environment name to set in 'app.env'. Defaults to"
+        " 'production'. 'development' will enable 'app.debug' and start the"
+        " debugger and reloader when running the server."
+    ),
+    expose_value=False,
+    callback=_set_env,
+)
+
+
+def _set_debug(ctx: click.Context, param: click.Option, value: bool) -> bool | None:
+    # If the flag isn't provided, it will default to False. Don't use
+    # that, let debug be set by env in that case.
+    source = ctx.get_parameter_source(param.name)  # type: ignore[arg-type]
+
+    if source is not None and source in (
+        ParameterSource.DEFAULT,
+        ParameterSource.DEFAULT_MAP,
+    ):
+        return None
+
+    # Set with env var instead of ScriptInfo.load so that it can be
+    # accessed early during a factory function.
+    os.environ["FLASK_DEBUG"] = "1" if value else "0"
+    return value
+
+
+_debug_option = click.Option(
+    ["--debug/--no-debug"],
+    help="Set 'app.debug' separately from '--env'.",
+    expose_value=False,
+    callback=_set_debug,
+)
+
+
+def _env_file_callback(
+    ctx: click.Context, param: click.Option, value: str | None
+) -> str | None:
+    if value is None:
+        return None
+
+    import importlib
+
+    try:
+        importlib.import_module("dotenv")
+    except ImportError:
+        raise click.BadParameter(
+            "python-dotenv must be installed to load an env file.",
+            ctx=ctx,
+            param=param,
+        ) from None
+
+    # Don't check FLASK_SKIP_DOTENV, that only disables automatically
+    # loading .env and .flaskenv files.
+    load_dotenv(value)
+    return value
+
+
+# This option is eager so env vars are loaded as early as possible to be
+# used by other options.
+_env_file_option = click.Option(
+    ["-e", "--env-file"],
+    type=click.Path(exists=True, dir_okay=False),
+    help="Load environment variables from this file. python-dotenv must be installed.",
+    is_eager=True,
+    expose_value=False,
+    callback=_env_file_callback,
+)
+
+
 class FlaskGroup(AppGroup):
     """Special subclass of the :class:`AppGroup` group that supports
     loading more commands from the configured Flask app.  Normally a
@@ -460,6 +583,10 @@ class FlaskGroup(AppGroup):
     :param set_debug_flag: Set the app's debug flag based on the active
         environment
 
+    .. versionchanged:: 2.2
+        Added the ``-A/--app``, ``-E/--env``, ``--debug/--no-debug``,
+        and ``-e/--env-file`` options.
+
     .. versionchanged:: 1.0
         If installed, python-dotenv will be used to load environment variables
         from :file:`.env` and :file:`.flaskenv` files.
@@ -467,14 +594,19 @@ class FlaskGroup(AppGroup):
 
     def __init__(
         self,
-        add_default_commands=True,
-        create_app=None,
-        add_version_option=True,
-        load_dotenv=True,
-        set_debug_flag=True,
-        **extra,
-    ):
+        add_default_commands: bool = True,
+        create_app: t.Callable[..., Flask] | None = None,
+        add_version_option: bool = True,
+        load_dotenv: bool = True,
+        set_debug_flag: bool = True,
+        **extra: t.Any,
+    ) -> None:
         params = list(extra.pop("params", None) or ())
+        # Processing is done with option callbacks instead of a group
+        # callback. This allows users to make a custom group callback
+        # without losing the behavior. --env-file must come first so
+        # that it is eagerly evaluated before --app.
+        params.extend((_env_file_option, _app_option, _env_option, _debug_option))
 
         if add_version_option:
             params.append(version_option)
@@ -555,11 +687,13 @@ class FlaskGroup(AppGroup):
 
     def make_context(
         self,
-        info_name: t.Optional[str],
-        args: t.List[str],
-        parent: t.Optional[click.Context] = None,
+        info_name: str | None,
+        args: list[str],
+        parent: click.Context | None = None,
         **extra: t.Any,
     ) -> click.Context:
+        # Attempt to load .env and .flask env files. The --env-file
+        # option can cause another file to be loaded.
         if get_load_dotenv(self.load_dotenv):
             load_dotenv()
 
@@ -570,6 +704,16 @@ class FlaskGroup(AppGroup):
 
         return super().make_context(info_name, args, parent=parent, **extra)
 
+    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
+        if not args and self.no_args_is_help:
+            # Attempt to load --env-file and --app early in case they
+            # were given as env vars. Otherwise no_args_is_help will not
+            # see commands from app.cli.
+            _env_file_option.handle_parse_result(ctx, {}, [])
+            _app_option.handle_parse_result(ctx, {}, [])
+
+        return super().parse_args(ctx, args)
+
 
 def _path_is_ancestor(path, other):
     """Take ``other`` and remove the length of ``path`` from it. Then join it
@@ -578,7 +722,7 @@ def _path_is_ancestor(path, other):
     return os.path.join(path, other[len(path) :].lstrip(os.sep)) == other
 
 
-def load_dotenv(path=None):
+def load_dotenv(path: str | os.PathLike | None = None) -> bool:
     """Load "dotenv" files in order of precedence to set environment variables.
 
     If an env var is already set it is not overwritten, so earlier files in the
@@ -591,12 +735,16 @@ def load_dotenv(path=None):
     :param path: Load the file at this location instead of searching.
     :return: ``True`` if a file was loaded.
 
-    .. versionchanged:: 1.1.0
-        Returns ``False`` when python-dotenv is not installed, or when
-        the given path isn't a file.
+    .. versionchanged:: 2.0
+        The current directory is not changed to the location of the
+        loaded file.
 
     .. versionchanged:: 2.0
         When loading the env files, set the default encoding to UTF-8.
+
+    .. versionchanged:: 1.1.0
+        Returns ``False`` when python-dotenv is not installed, or when
+        the given path isn't a file.
 
     .. versionadded:: 1.0
     """
@@ -613,15 +761,15 @@ def load_dotenv(path=None):
 
         return False
 
-    # if the given path specifies the actual file then return True,
-    # else False
+    # Always return after attempting to load a given path, don't load
+    # the default files.
     if path is not None:
         if os.path.isfile(path):
             return dotenv.load_dotenv(path, encoding="utf-8")
 
         return False
 
-    new_dir = None
+    loaded = False
 
     for name in (".env", ".flaskenv"):
         path = dotenv.find_dotenv(name, usecwd=True)
@@ -629,12 +777,10 @@ def load_dotenv(path=None):
         if not path:
             continue
 
-        if new_dir is None:
-            new_dir = os.path.dirname(path)
-
         dotenv.load_dotenv(path, encoding="utf-8")
+        loaded = True
 
-    return new_dir is not None  # at least one file was located and loaded
+    return loaded  # True if at least one file was located and loaded.
 
 
 def show_server_banner(env, debug, app_import_path, eager_loading):
@@ -837,9 +983,10 @@ def run_command(
     This server is for development purposes only. It does not provide
     the stability, security, or performance of production WSGI servers.
 
-    The reloader and debugger are enabled by default if
-    FLASK_ENV=development or FLASK_DEBUG=1.
+    The reloader and debugger are enabled by default with the
+    '--env development' or '--debug' options.
     """
+    app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
     debug = get_debug_flag()
 
     if reload is None:
@@ -849,7 +996,6 @@ def run_command(
         debugger = debug
 
     show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
-    app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
 
     from werkzeug.serving import run_simple
 
@@ -971,19 +1117,10 @@ cli = FlaskGroup(
     help="""\
 A general utility script for Flask applications.
 
-Provides commands from Flask, extensions, and the application. Loads the
-application defined in the FLASK_APP environment variable, or from a wsgi.py
-file. Setting the FLASK_ENV environment variable to 'development' will enable
-debug mode.
-
-\b
-  {prefix}{cmd} FLASK_APP=hello.py
-  {prefix}{cmd} FLASK_ENV=development
-  {prefix}flask run
-""".format(
-        cmd="export" if os.name == "posix" else "set",
-        prefix="$ " if os.name == "posix" else "> ",
-    ),
+An application to load must be given with the '--app' option,
+'FLASK_APP' environment variable, or with a 'wsgi.py' or 'app.py' file
+in the current directory.
+""",
 )
 
 

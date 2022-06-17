@@ -48,9 +48,9 @@ def get_debug_flag() -> bool:
 
 
 def get_load_dotenv(default: bool = True) -> bool:
-    """Get whether the user has disabled loading dotenv files by setting
-    :envvar:`FLASK_SKIP_DOTENV`. The default is ``True``, load the
-    files.
+    """Get whether the user has disabled loading default dotenv files by
+    setting :envvar:`FLASK_SKIP_DOTENV`. The default is ``True``, load
+    the files.
 
     :param default: What to return if the env var isn't set.
     """

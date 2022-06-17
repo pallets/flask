@@ -27,6 +27,12 @@ Unreleased
     instance on every request. :issue:`2520`.
 -   A ``flask.cli.FlaskGroup`` Click group can be nested as a
     sub-command in a custom CLI. :issue:`3263`
+-   Add ``--app``, ``--env``, and ``--debug`` options to the ``flask``
+    CLI, instead of requiring that they are set through environment
+    variables. :issue:`2836`
+-   Add ``--env-file`` option to the ``flask`` CLI. This allows
+    specifying a dotenv file to load in addition to ``.env`` and
+    ``.flaskenv``. :issue:`3108`
 
 
 Version 2.1.3
