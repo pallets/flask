@@ -33,8 +33,7 @@ Run
 
 .. code-block:: text
 
-    $ export FLASK_APP=js_example
-    $ flask run
+    $ flask --app js_example run
 
 Open http://127.0.0.1:5000 in a browser.
 

@@ -39,50 +39,20 @@ Save it as :file:`hello.py` or something similar. Make sure to not call
 your application :file:`flask.py` because this would conflict with Flask
 itself.
 
-To run the application, use the :command:`flask` command or
-:command:`python -m flask`. Before you can do that you need
-to tell your terminal the application to work with by exporting the
-``FLASK_APP`` environment variable:
+To run the application, use the ``flask`` command or
+``python -m flask``. You need to tell the Flask where your application
+is with the ``-app`` option.
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP=hello
-         $ flask run
-          * Running on http://127.0.0.1:5000/
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP hello
-         $ flask run
-          * Running on http://127.0.0.1:5000/
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=hello
-         > flask run
-          * Running on http://127.0.0.1:5000/
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "hello"
-         > flask run
-          * Running on http://127.0.0.1:5000/
+    $ flask --app hello run
+     * Serving Flask app 'hello' (lazy loading)
+     * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
 
 .. admonition:: Application Discovery Behavior
 
     As a shortcut, if the file is named ``app.py`` or ``wsgi.py``, you
-    don't have to set the ``FLASK_APP`` environment variable. See
-    :doc:`/cli` for more details.
+    don't have to use ``--app``. See :doc:`/cli` for more details.
 
 This launches a very simple builtin server, which is good enough for
 testing but probably not what you want to use in production. For
@@ -114,34 +84,6 @@ handle that.
    This tells your operating system to listen on all public IPs.
 
 
-What to do if the Server does not Start
----------------------------------------
-
-In case the :command:`python -m flask` fails or :command:`flask`
-does not exist, there are multiple reasons this might be the case.
-First of all you need to look at the error message.
-
-Old Version of Flask
-````````````````````
-
-Versions of Flask older than 0.11 used to have different ways to start the
-application.  In short, the :command:`flask` command did not exist, and
-neither did :command:`python -m flask`.  In that case you have two options:
-either upgrade to newer Flask versions or have a look at :doc:`/server`
-to see the alternative method for running a server.
-
-Invalid Import Name
-```````````````````
-
-The ``FLASK_APP`` environment variable is the name of the module to import at
-:command:`flask run`. In case that module is incorrectly named you will get an
-import error upon start (or if debug is enabled when you navigate to the
-application). It will tell you what it tried to import and why it failed.
-
-The most common reason is a typo or because you did not actually create an
-``app`` object.
-
-
 Debug Mode
 ----------
 
@@ -162,38 +104,19 @@ error occurs during a request.
     security risk. Do not run the development server or debugger in a
     production environment.
 
-To enable all development features, set the ``FLASK_ENV`` environment
-variable to ``development`` before calling ``flask run``.
+To enable all development features, set the ``--env`` option to
+``development``.
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_ENV=development
-         $ flask run
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_ENV development
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_ENV=development
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_ENV = "development"
-         > flask run
+    $ flask --app hello --env development run
+     * Serving Flask app 'hello' (lazy loading)
+     * Environment: development
+     * Debug mode: on
+     * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+     * Restarting with stat
+     * Debugger is active!
+     * Debugger PIN: nnn-nnn-nnn
 
 See also:
 

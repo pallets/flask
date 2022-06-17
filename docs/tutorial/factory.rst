@@ -135,43 +135,13 @@ exception, and restarts the server whenever you make changes to the
 code. You can leave it running and just reload the browser page as you
 follow the tutorial.
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP=flaskr
-         $ export FLASK_ENV=development
-         $ flask run
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP flaskr
-         $ set -x FLASK_ENV development
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=flaskr
-         > set FLASK_ENV=development
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "flaskr"
-         > $env:FLASK_ENV = "development"
-         > flask run
+    $ flask --app flaskr --env development run
 
 You'll see output similar to this:
 
-.. code-block:: none
+.. code-block:: text
 
      * Serving Flask app "flaskr"
      * Environment: development
@@ -179,7 +149,7 @@ You'll see output similar to this:
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
      * Restarting with stat
      * Debugger is active!
-     * Debugger PIN: 855-212-761
+     * Debugger PIN: nnn-nnn-nnn
 
 Visit http://127.0.0.1:5000/hello in a browser and you should see the
 "Hello, World!" message. Congratulations, you're now running your Flask

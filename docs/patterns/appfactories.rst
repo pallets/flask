@@ -89,71 +89,20 @@ Using Applications
 
 To run such an application, you can use the :command:`flask` command:
 
-.. tabs::
+.. code-block:: text
 
-   .. group-tab:: Bash
+    $ flask run --app hello run
 
-      .. code-block:: text
+Flask will automatically detect the factory if it is named
+``create_app`` or ``make_app`` in ``hello``. You can also pass arguments
+to the factory like this:
 
-         $ export FLASK_APP=myapp
-         $ flask run
+.. code-block:: text
 
-   .. group-tab:: Fish
+    $ flask run --app hello:create_app(local_auth=True)``
 
-      .. code-block:: text
-
-         $ set -x FLASK_APP myapp
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=myapp
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "myapp"
-         > flask run
-
-Flask will automatically detect the factory (``create_app`` or ``make_app``)
-in ``myapp``. You can also pass arguments to the factory like this:
-
-.. tabs::
-
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP="myapp:create_app('dev')"
-         $ flask run
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP "myapp:create_app('dev')"
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP="myapp:create_app('dev')"
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "myapp:create_app('dev')"
-         > flask run
-
-Then the ``create_app`` factory in ``myapp`` is called with the string
-``'dev'`` as the argument. See :doc:`/cli` for more detail.
+Then the ``create_app`` factory in ``myapp`` is called with the keyword
+argument ``local_auth=True``. See :doc:`/cli` for more detail.
 
 Factory Improvements
 --------------------

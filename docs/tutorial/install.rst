@@ -109,7 +109,7 @@ You can observe that the project is now installed with ``pip list``.
     wheel          0.30.0
 
 Nothing changes from how you've been running your project so far.
-``FLASK_APP`` is still set to ``flaskr`` and ``flask run`` still runs
+``--app`` is still set to ``flaskr`` and ``flask run`` still runs
 the application, but you can call it from anywhere, not just the
 ``flask-tutorial`` directory.
 

@@ -48,35 +48,9 @@ Pip will install your project along with its dependencies.
 Since this is a different machine, you need to run ``init-db`` again to
 create the database in the instance folder.
 
-.. tabs::
+    .. code-block:: text
 
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP=flaskr
-         $ flask init-db
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP flaskr
-         $ flask init-db
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=flaskr
-         > flask init-db
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "flaskr"
-         > flask init-db
+        $ flask --app flaskr init-db
 
 When Flask detects that it's installed (not in editable mode), it uses
 a different directory for the instance folder. You can find it at
@@ -127,7 +101,7 @@ first install it in the virtual environment:
     $ pip install waitress
 
 You need to tell Waitress about your application, but it doesn't use
-``FLASK_APP`` like ``flask run`` does. You need to tell it to import and
+``--app`` like ``flask run`` does. You need to tell it to import and
 call the application factory to get an application object.
 
 .. code-block:: none

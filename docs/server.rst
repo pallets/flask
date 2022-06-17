@@ -19,9 +19,16 @@ Command Line
 ------------
 
 The ``flask run`` command line script is the recommended way to run the
-development server. It requires setting the ``FLASK_APP`` environment
-variable to point to your application, and ``FLASK_ENV=development`` to
-fully enable development mode.
+development server. Use the ``--app`` option to point to your
+application, and the ``--env development`` option to fully enable
+development mode.
+
+.. code-block:: text
+
+    $ flask --app hello --env development run
+
+These options (and any others) can also be set using environment
+variables.
 
 .. tabs::
 
@@ -65,11 +72,11 @@ and using the CLI.
 
 .. note::
 
-    Prior to Flask 1.0 the ``FLASK_ENV`` environment variable was not
-    supported and you needed to enable debug mode by exporting
-    ``FLASK_DEBUG=1``. This can still be used to control debug mode, but
-    you should prefer setting the development environment as shown
-    above.
+    Debug mode can be controlled separately from the development
+    environment with the ``--debug/--no-debug`` option or the
+    ``FLASK_DEBUG`` environment variable. This is how older versions of
+    Flask worked. You should prefer setting the development environment
+    as shown above.
 
 
 .. _address-already-in-use:
