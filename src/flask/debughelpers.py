@@ -9,6 +9,7 @@ class UnexpectedUnicodeError(AssertionError, UnicodeError):
     """Raised in places where we want some better error reporting for
     unexpected unicode or binary data.
     """
+
     pass
 
 
