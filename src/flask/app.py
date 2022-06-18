@@ -5,6 +5,7 @@ import os
 import sys
 import typing as t
 import weakref
+from collections.abc import Iterator as _abc_Iterator
 from datetime import timedelta
 from itertools import chain
 from threading import Lock
@@ -1843,6 +1844,10 @@ class Flask(Scaffold):
             ``dict``
                 A dictionary that will be jsonify'd before being returned.
 
+            ``generator`` or ``iterator``
+                A generator that returns ``str`` or ``bytes`` to be
+                streamed as the response.
+
             ``tuple``
                 Either ``(body, status, headers)``, ``(body, status)``, or
                 ``(body, headers)``, where ``body`` is any of the other types
@@ -1861,6 +1866,12 @@ class Flask(Scaffold):
             :func:`callable`
                 The function is called as a WSGI application. The result is
                 used to create a response object.
+
+        .. versionchanged:: 2.2
+            A generator will be converted to a streaming response.
+
+        .. versionchanged:: 1.1
+            A dict will be converted to a JSON response.
 
         .. versionchanged:: 0.9
            Previously a tuple was interpreted as the arguments for the
@@ -1900,7 +1911,7 @@ class Flask(Scaffold):
 
         # make sure the body is an instance of the response class
         if not isinstance(rv, self.response_class):
-            if isinstance(rv, (str, bytes, bytearray)):
+            if isinstance(rv, (str, bytes, bytearray)) or isinstance(rv, _abc_Iterator):
                 # let the response class set the status and headers instead of
                 # waiting to do it manually, so that the class can handle any
                 # special logic

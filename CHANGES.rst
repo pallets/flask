@@ -38,6 +38,10 @@ Unreleased
     context will already be active at that point. :issue:`2410`
 -   ``SessionInterface.get_expiration_time`` uses a timezone-aware
     value. :pr:`4645`
+-   View functions can return generators directly instead of wrapping
+    them in a ``Response``. :pr:`4629`
+-   Add ``stream_template`` and ``stream_template_string`` functions to
+    render a template as a stream of pieces. :pr:`4629`
 
 
 Version 2.1.3

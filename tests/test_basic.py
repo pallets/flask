@@ -1276,6 +1276,11 @@ def test_make_response(app, req_ctx):
     assert rv.data == b"W00t"
     assert rv.mimetype == "text/html"
 
+    rv = flask.make_response(c for c in "Hello")
+    assert rv.status_code == 200
+    assert rv.data == b"Hello"
+    assert rv.mimetype == "text/html"
+
 
 def test_make_response_with_response_instance(app, req_ctx):
     rv = flask.make_response(flask.jsonify({"msg": "W00t"}), 400)

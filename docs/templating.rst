@@ -201,3 +201,29 @@ templates::
 You could also build `format_price` as a template filter (see
 :ref:`registering-filters`), but this demonstrates how to pass functions in a
 context processor.
+
+Streaming
+---------
+
+It can be useful to not render the whole template as one complete
+string, instead render it as a stream, yielding smaller incremental
+strings. This can be used for streaming HTML in chunks to speed up
+initial page load, or to save memory when rendering a very large
+template.
+
+The Jinja2 template engine supports rendering a template piece
+by piece, returning an iterator of strings. Flask provides the
+:func:`~flask.stream_template` and :func:`~flask.stream_template_string`
+functions to make this easier to use.
+
+.. code-block:: python
+
+    from flask import stream_template
+
+    @app.get("/timeline")
+    def timeline():
+        return stream_template("timeline.html")
+
+These functions automatically apply the
+:func:`~flask.stream_with_context` wrapper if a request is active, so
+that it remains available in the template.
