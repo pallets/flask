@@ -390,6 +390,24 @@ of the :meth:`~flask.Flask.route` decorator to handle different HTTP methods.
         else:
             return show_the_login_form()
 
+The example above keeps all methods for the route within one function,
+which can be useful if each part uses some common data.
+
+You can also separate views for different methods into different
+functions. Flask provides a shortcut for decorating such routes with
+:meth:`~flask.Flask.get`, :meth:`~flask.Flask.post`, etc. for each
+common HTTP method.
+
+.. code-block:: python
+
+    @app.get('/login')
+    def login_get():
+        return show_the_login_form()
+
+    @app.post('/login')
+    def login_post():
+        return do_the_login()
+
 If ``GET`` is present, Flask automatically adds support for the ``HEAD`` method
 and handles ``HEAD`` requests according to the `HTTP RFC`_. Likewise,
 ``OPTIONS`` is automatically implemented for you.
