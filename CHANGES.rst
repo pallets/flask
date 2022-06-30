@@ -42,6 +42,18 @@ Unreleased
     them in a ``Response``. :pr:`4629`
 -   Add ``stream_template`` and ``stream_template_string`` functions to
     render a template as a stream of pieces. :pr:`4629`
+-   A new implementation of context preservation during debugging and
+    testing. :pr:`4666`
+
+    -   ``request``, ``g``, and other context-locals point to the
+        correct data when running code in the interactive debugger
+        console. :issue:`2836`
+    -   Teardown functions are always run at the end of the request,
+        even if the context is preserved. They are also run after the
+        preserved context is popped.
+    -   ``stream_with_context`` preserves context separately from a
+        ``with client`` block. It will be cleaned up when
+        ``response.get_data()`` or ``response.close()`` is called.
 
 
 Version 2.1.3

@@ -600,13 +600,6 @@ class Scaffold:
         be passed an error object.
 
         The return values of teardown functions are ignored.
-
-        .. admonition:: Debug Note
-
-           In debug mode Flask will not tear down a request on an exception
-           immediately.  Instead it will keep it alive so that the interactive
-           debugger can still access it.  This behavior can be controlled
-           by the ``PRESERVE_CONTEXT_ON_EXCEPTION`` configuration variable.
         """
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f

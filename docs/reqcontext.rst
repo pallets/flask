@@ -219,25 +219,6 @@ sent:
     :meth:`~Flask.teardown_request` functions are called.
 
 
-Context Preservation on Error
------------------------------
-
-At the end of a request, the request context is popped and all data
-associated with it is destroyed. If an error occurs during development,
-it is useful to delay destroying the data for debugging purposes.
-
-When the development server is running in development mode (the
-``--env`` option is set to ``'development'``), the error and data will
-be preserved and shown in the interactive debugger.
-
-This behavior can be controlled with the
-:data:`PRESERVE_CONTEXT_ON_EXCEPTION` config. As described above, it
-defaults to ``True`` in the development environment.
-
-Do not enable :data:`PRESERVE_CONTEXT_ON_EXCEPTION` in production, as it
-will cause your application to leak memory on exceptions.
-
-
 .. _notes-on-proxies:
 
 Notes On Proxies

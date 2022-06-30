@@ -187,7 +187,6 @@ def test_session_transactions(app, client):
 
 def test_session_transactions_no_null_sessions():
     app = flask.Flask(__name__)
-    app.testing = True
 
     with app.test_client() as c:
         with pytest.raises(RuntimeError) as e:
@@ -252,29 +251,6 @@ def test_reuse_client(client):
 
     with c:
         assert client.get("/").status_code == 404
-
-
-def test_test_client_calls_teardown_handlers(app, client):
-    called = []
-
-    @app.teardown_request
-    def remember(error):
-        called.append(error)
-
-    with client:
-        assert called == []
-        client.get("/")
-        assert called == []
-    assert called == [None]
-
-    del called[:]
-    with client:
-        assert called == []
-        client.get("/")
-        assert called == []
-        client.get("/")
-        assert called == [None]
-    assert called == [None, None]
 
 
 def test_full_url_request(app, client):
@@ -412,13 +388,15 @@ def test_cli_custom_obj(app):
 def test_client_pop_all_preserved(app, req_ctx, client):
     @app.route("/")
     def index():
-        # stream_with_context pushes a third context, preserved by client
-        return flask.Response(flask.stream_with_context("hello"))
+        # stream_with_context pushes a third context, preserved by response
+        return flask.stream_with_context("hello")
 
-    # req_ctx fixture pushed an initial context, not marked preserved
+    # req_ctx fixture pushed an initial context
     with client:
         # request pushes a second request context, preserved by client
-        client.get("/")
+        rv = client.get("/")
 
+    # close the response, releasing the context held by stream_with_context
+    rv.close()
     # only req_ctx fixture should still be pushed
     assert flask._request_ctx_stack.top is req_ctx
