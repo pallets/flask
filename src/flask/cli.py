@@ -715,6 +715,11 @@ class FlaskGroup(AppGroup):
         parent: click.Context | None = None,
         **extra: t.Any,
     ) -> click.Context:
+        # Set a flag to tell app.run to become a no-op. If app.run was
+        # not in a __name__ == __main__ guard, it would start the server
+        # when importing, blocking whatever command is being called.
+        os.environ["FLASK_RUN_FROM_CLI"] = "true"
+
         # Attempt to load .env and .flask env files. The --env-file
         # option can cause another file to be loaded.
         if get_load_dotenv(self.load_dotenv):
