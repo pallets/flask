@@ -916,8 +916,8 @@ class Flask(Scaffold):
         if os.environ.get("FLASK_RUN_FROM_CLI") == "true":
             if not is_running_from_reloader():
                 click.secho(
-                    " * Ignoring a call to 'app.run()', the server is"
-                    " already being run with the 'flask run' command.\n"
+                    " * Ignoring a call to 'app.run()' that would block"
+                    " the current 'flask' CLI command.\n"
                     "   Only call 'app.run()' in an 'if __name__ =="
                     ' "__main__"\' guard.',
                     fg="red",

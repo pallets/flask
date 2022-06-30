@@ -13,7 +13,6 @@ import pytest
 from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
-from flask import _app_ctx_stack
 from flask import Blueprint
 from flask import current_app
 from flask import Flask
@@ -322,13 +321,11 @@ def test_app_cli_has_app_context(app, runner):
         app = click.get_current_context().obj.load_app()
         # the loaded app should be the same as current_app
         same_app = current_app._get_current_object() is app
-        # only one app context should be pushed
-        stack_size = len(_app_ctx_stack._local.stack)
-        return same_app, stack_size, value
+        return same_app, value
 
     cli = FlaskGroup(create_app=lambda: app)
     result = runner.invoke(cli, ["check", "x"], standalone_mode=False)
-    assert result.return_value == (True, 1, True)
+    assert result.return_value == (True, True)
 
 
 def test_with_appcontext(runner):
