@@ -327,32 +327,6 @@ class RequestContext:
         # functions.
         self._after_request_functions: t.List[ft.AfterRequestCallable] = []
 
-    @property
-    def g(self) -> _AppCtxGlobals:
-        import warnings
-
-        warnings.warn(
-            "Accessing 'g' on the request context is deprecated and"
-            " will be removed in Flask 2.2. Access `g` directly or from"
-            "the application context instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return _app_ctx_stack.top.g
-
-    @g.setter
-    def g(self, value: _AppCtxGlobals) -> None:
-        import warnings
-
-        warnings.warn(
-            "Setting 'g' on the request context is deprecated and"
-            " will be removed in Flask 2.2. Set it on the application"
-            " context instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        _app_ctx_stack.top.g = value
-
     def copy(self) -> "RequestContext":
         """Creates a copy of this request context with the same request object.
         This can be used to move a request context to a different greenlet.
