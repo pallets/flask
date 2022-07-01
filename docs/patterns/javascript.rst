@@ -184,8 +184,8 @@ Replacing Content
 A response might be new HTML, either a new section of the page to add or
 replace, or an entirely new page. In general, if you're returning the
 entire page, it would be better to handle that with a redirect as shown
-in the previous section. The following example shows how to a ``<div>``
-with the HTML returned by a request.
+in the previous section. The following example shows how to replace a
+``<div>`` with the HTML returned by a request.
 
 .. code-block:: html
 
