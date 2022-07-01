@@ -5,6 +5,10 @@ Version 2.2.0
 
 Unreleased
 
+-   Remove previously deprecated code. :pr:`4337`
+
+    -   The ``RequestContext.g`` proxy to ``AppContext.g`` is removed.
+
 -   Add new customization points to the ``Flask`` app object for many
     previously global behaviors.
 
