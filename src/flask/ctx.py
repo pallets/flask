@@ -289,20 +289,12 @@ class RequestContext:
     functions registered on the application for teardown execution
     (:meth:`~flask.Flask.teardown_request`).
 
-    The request context is automatically popped at the end of the request
-    for you.  In debug mode the request context is kept around if
-    exceptions happen so that interactive debuggers have a chance to
-    introspect the data.  With 0.4 this can also be forced for requests
-    that did not fail and outside of ``DEBUG`` mode.  By setting
-    ``'flask._preserve_context'`` to ``True`` on the WSGI environment the
-    context will not pop itself at the end of the request.  This is used by
-    the :meth:`~flask.Flask.test_client` for example to implement the
-    deferred cleanup functionality.
-
-    You might find this helpful for unittests where you need the
-    information from the context local around for a little longer.  Make
-    sure to properly :meth:`~werkzeug.LocalStack.pop` the stack yourself in
-    that situation, otherwise your unittests will leak memory.
+    The request context is automatically popped at the end of the
+    request. When using the interactive debugger, the context will be
+    restored so ``request`` is still accessible. Similarly, the test
+    client can preserve the context after the request ends. However,
+    teardown functions may already have closed some resources such as
+    database connections.
     """
 
     def __init__(
@@ -329,14 +321,6 @@ class RequestContext:
         # get rid of them.  Additionally if an application context is missing
         # one is created implicitly so for each level we add this information
         self._implicit_app_ctx_stack: t.List[t.Optional["AppContext"]] = []
-
-        # indicator if the context was preserved.  Next time another context
-        # is pushed the preserved context is popped.
-        self.preserved = False
-
-        # remembers the exception for pop if there is one in case the context
-        # preservation kicks in.
-        self._preserved_exc = None
 
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
@@ -400,19 +384,6 @@ class RequestContext:
             self.request.routing_exception = e
 
     def push(self) -> None:
-        """Binds the request context to the current context."""
-        # If an exception occurs in debug mode or if context preservation is
-        # activated under exception situations exactly one context stays
-        # on the stack.  The rationale is that you want to access that
-        # information under debug situations.  However if someone forgets to
-        # pop that context again we want to make sure that on the next push
-        # it's invalidated, otherwise we run at risk that something leaks
-        # memory.  This is usually only a problem in test suite since this
-        # functionality is not active in production environments.
-        top = _request_ctx_stack.top
-        if top is not None and top.preserved:
-            top.pop(top._preserved_exc)
-
         # Before we push the request context we have to ensure that there
         # is an application context.
         app_ctx = _app_ctx_stack.top
@@ -454,8 +425,6 @@ class RequestContext:
 
         try:
             if not self._implicit_app_ctx_stack:
-                self.preserved = False
-                self._preserved_exc = None
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
                 self.app.do_teardown_request(exc)
@@ -481,13 +450,18 @@ class RequestContext:
             ), f"Popped wrong request context. ({rv!r} instead of {self!r})"
 
     def auto_pop(self, exc: t.Optional[BaseException]) -> None:
-        if self.request.environ.get("flask._preserve_context") or (
-            exc is not None and self.app.preserve_context_on_exception
-        ):
-            self.preserved = True
-            self._preserved_exc = exc  # type: ignore
-        else:
-            self.pop(exc)
+        """
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3.
+        """
+        import warnings
+
+        warnings.warn(
+            "'ctx.auto_pop' is deprecated and will be removed in Flask 2.3.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.pop(exc)
 
     def __enter__(self) -> "RequestContext":
         self.push()
@@ -499,12 +473,7 @@ class RequestContext:
         exc_value: t.Optional[BaseException],
         tb: t.Optional[TracebackType],
     ) -> None:
-        # do not pop the request stack if we are in debug mode and an
-        # exception happened.  This will allow the debugger to still
-        # access the request object in the interactive shell.  Furthermore
-        # the context can be force kept alive for the test client.
-        # See flask.testing for how this works.
-        self.auto_pop(exc_value)
+        self.pop(exc_value)
 
     def __repr__(self) -> str:
         return (

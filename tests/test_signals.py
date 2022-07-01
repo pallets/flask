@@ -123,8 +123,7 @@ def test_request_exception_signal():
         flask.got_request_exception.disconnect(record, app)
 
 
-def test_appcontext_signals():
-    app = flask.Flask(__name__)
+def test_appcontext_signals(app, client):
     recorded = []
 
     def record_push(sender, **kwargs):
@@ -140,10 +139,8 @@ def test_appcontext_signals():
     flask.appcontext_pushed.connect(record_push, app)
     flask.appcontext_popped.connect(record_pop, app)
     try:
-        with app.test_client() as c:
-            rv = c.get("/")
-            assert rv.data == b"Hello"
-            assert recorded == ["push"]
+        rv = client.get("/")
+        assert rv.data == b"Hello"
         assert recorded == ["push", "pop"]
     finally:
         flask.appcontext_pushed.disconnect(record_push, app)
@@ -174,12 +171,12 @@ def test_flash_signal(app):
         flask.message_flashed.disconnect(record, app)
 
 
-def test_appcontext_tearing_down_signal():
-    app = flask.Flask(__name__)
+def test_appcontext_tearing_down_signal(app, client):
+    app.testing = False
     recorded = []
 
-    def record_teardown(sender, **kwargs):
-        recorded.append(("tear_down", kwargs))
+    def record_teardown(sender, exc):
+        recorded.append(exc)
 
     @app.route("/")
     def index():
@@ -187,10 +184,9 @@ def test_appcontext_tearing_down_signal():
 
     flask.appcontext_tearing_down.connect(record_teardown, app)
     try:
-        with app.test_client() as c:
-            rv = c.get("/")
-            assert rv.status_code == 500
-            assert recorded == []
-        assert recorded == [("tear_down", {"exc": None})]
+        rv = client.get("/")
+        assert rv.status_code == 500
+        assert len(recorded) == 1
+        assert isinstance(recorded[0], ZeroDivisionError)
     finally:
         flask.appcontext_tearing_down.disconnect(record_teardown, app)

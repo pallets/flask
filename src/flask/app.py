@@ -331,7 +331,6 @@ class Flask(Scaffold):
             "DEBUG": None,
             "TESTING": False,
             "PROPAGATE_EXCEPTIONS": None,
-            "PRESERVE_CONTEXT_ON_EXCEPTION": None,
             "SECRET_KEY": None,
             "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
             "USE_X_SENDFILE": False,
@@ -582,19 +581,6 @@ class Flask(Scaffold):
         if rv is not None:
             return rv
         return self.testing or self.debug
-
-    @property
-    def preserve_context_on_exception(self) -> bool:
-        """Returns the value of the ``PRESERVE_CONTEXT_ON_EXCEPTION``
-        configuration value in case it's set, otherwise a sensible default
-        is returned.
-
-        .. versionadded:: 0.7
-        """
-        rv = self.config["PRESERVE_CONTEXT_ON_EXCEPTION"]
-        if rv is not None:
-            return rv
-        return self.debug
 
     @locked_cached_property
     def logger(self) -> logging.Logger:
@@ -2301,9 +2287,14 @@ class Flask(Scaffold):
                 raise
             return response(environ, start_response)
         finally:
-            if self.should_ignore_error(error):
+            if "werkzeug.debug.preserve_context" in environ:
+                environ["werkzeug.debug.preserve_context"](_app_ctx_stack.top)
+                environ["werkzeug.debug.preserve_context"](_request_ctx_stack.top)
+
+            if error is not None and self.should_ignore_error(error):
                 error = None
-            ctx.auto_pop(error)
+
+            ctx.pop(error)
 
     def __call__(self, environ: dict, start_response: t.Callable) -> t.Any:
         """The WSGI server calls the Flask application object as the

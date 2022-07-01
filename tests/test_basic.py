@@ -928,13 +928,8 @@ def test_baseexception_error_handling(app, client):
     def broken_func():
         raise KeyboardInterrupt()
 
-    with client:
-        with pytest.raises(KeyboardInterrupt):
-            client.get("/")
-
-        ctx = flask._request_ctx_stack.top
-        assert ctx.preserved
-        assert type(ctx._preserved_exc) is KeyboardInterrupt
+    with pytest.raises(KeyboardInterrupt):
+        client.get("/")
 
 
 def test_before_request_and_routing_errors(app, client):
@@ -1767,57 +1762,6 @@ def test_route_decorator_custom_endpoint(app, client):
     assert client.get("/foo/").data == b"foo"
     assert client.get("/bar/").data == b"bar"
     assert client.get("/bar/123").data == b"123"
-
-
-def test_preserve_only_once(app, client):
-    app.debug = True
-
-    @app.route("/fail")
-    def fail_func():
-        1 // 0
-
-    for _x in range(3):
-        with pytest.raises(ZeroDivisionError):
-            client.get("/fail")
-
-    assert flask._request_ctx_stack.top is not None
-    assert flask._app_ctx_stack.top is not None
-    # implicit appctx disappears too
-    flask._request_ctx_stack.top.pop()
-    assert flask._request_ctx_stack.top is None
-    assert flask._app_ctx_stack.top is None
-
-
-def test_preserve_remembers_exception(app, client):
-    app.debug = True
-    errors = []
-
-    @app.route("/fail")
-    def fail_func():
-        1 // 0
-
-    @app.route("/success")
-    def success_func():
-        return "Okay"
-
-    @app.teardown_request
-    def teardown_handler(exc):
-        errors.append(exc)
-
-    # After this failure we did not yet call the teardown handler
-    with pytest.raises(ZeroDivisionError):
-        client.get("/fail")
-    assert errors == []
-
-    # But this request triggers it, and it's an error
-    client.get("/success")
-    assert len(errors) == 2
-    assert isinstance(errors[0], ZeroDivisionError)
-
-    # At this point another request does nothing.
-    client.get("/success")
-    assert len(errors) == 3
-    assert errors[1] is None
 
 
 def test_get_method_on_g(app_ctx):

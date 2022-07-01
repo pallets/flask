@@ -126,14 +126,6 @@ The following configuration values are used internally by Flask:
 
     Default: ``None``
 
-.. py:data:: PRESERVE_CONTEXT_ON_EXCEPTION
-
-    Don't pop the request context when an exception occurs. If not set, this
-    is true if ``DEBUG`` is true. This allows debuggers to introspect the
-    request data on errors, and should normally not need to be set directly.
-
-    Default: ``None``
-
 .. py:data:: TRAP_HTTP_EXCEPTIONS
 
     If there is no handler for an ``HTTPException``-type exception, re-raise it
@@ -391,6 +383,9 @@ The following configuration values are used internally by Flask:
     cookie's ``SameSite`` option.
 
     Added :data:`MAX_COOKIE_SIZE` to control a warning from Werkzeug.
+
+.. versionchanged:: 2.2
+    Removed ``PRESERVE_CONTEXT_ON_EXCEPTION``.
 
 
 Configuring from Python Files
