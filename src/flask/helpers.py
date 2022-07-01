@@ -3,7 +3,6 @@ import pkgutil
 import socket
 import sys
 import typing as t
-import warnings
 from datetime import datetime
 from functools import lru_cache
 from functools import update_wrapper
@@ -390,53 +389,12 @@ def get_flashed_messages(
     return flashes
 
 
-def _prepare_send_file_kwargs(
-    download_name: t.Optional[str] = None,
-    attachment_filename: t.Optional[str] = None,
-    etag: t.Optional[t.Union[bool, str]] = None,
-    add_etags: t.Optional[t.Union[bool]] = None,
-    max_age: t.Optional[
-        t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
-    ] = None,
-    cache_timeout: t.Optional[int] = None,
-    **kwargs: t.Any,
-) -> t.Dict[str, t.Any]:
-    if attachment_filename is not None:
-        warnings.warn(
-            "The 'attachment_filename' parameter has been renamed to"
-            " 'download_name'. The old name will be removed in Flask"
-            " 2.2.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
-        download_name = attachment_filename
-
-    if cache_timeout is not None:
-        warnings.warn(
-            "The 'cache_timeout' parameter has been renamed to"
-            " 'max_age'. The old name will be removed in Flask 2.2.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
-        max_age = cache_timeout
-
-    if add_etags is not None:
-        warnings.warn(
-            "The 'add_etags' parameter has been renamed to 'etag'. The"
-            " old name will be removed in Flask 2.2.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
-        etag = add_etags
-
-    if max_age is None:
-        max_age = current_app.get_send_file_max_age
+def _prepare_send_file_kwargs(**kwargs: t.Any) -> t.Dict[str, t.Any]:
+    if kwargs.get("max_age") is None:
+        kwargs["max_age"] = current_app.get_send_file_max_age
 
     kwargs.update(
         environ=request.environ,
-        download_name=download_name,
-        etag=etag,
-        max_age=max_age,
         use_x_sendfile=current_app.use_x_sendfile,
         response_class=current_app.response_class,
         _root_path=current_app.root_path,  # type: ignore
@@ -449,16 +407,13 @@ def send_file(
     mimetype: t.Optional[str] = None,
     as_attachment: bool = False,
     download_name: t.Optional[str] = None,
-    attachment_filename: t.Optional[str] = None,
     conditional: bool = True,
     etag: t.Union[bool, str] = True,
-    add_etags: t.Optional[bool] = None,
     last_modified: t.Optional[t.Union[datetime, int, float]] = None,
     max_age: t.Optional[
         t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
     ] = None,
-    cache_timeout: t.Optional[int] = None,
-):
+) -> "Response":
     """Send the contents of a file to the client.
 
     The first argument can be a file path or a file-like object. Paths
@@ -560,20 +515,17 @@ def send_file(
 
     .. versionadded:: 0.2
     """
-    return werkzeug.utils.send_file(
+    return werkzeug.utils.send_file(  # type: ignore[return-value]
         **_prepare_send_file_kwargs(
             path_or_file=path_or_file,
             environ=request.environ,
             mimetype=mimetype,
             as_attachment=as_attachment,
             download_name=download_name,
-            attachment_filename=attachment_filename,
             conditional=conditional,
             etag=etag,
-            add_etags=add_etags,
             last_modified=last_modified,
             max_age=max_age,
-            cache_timeout=cache_timeout,
         )
     )
 
@@ -581,7 +533,6 @@ def send_file(
 def send_from_directory(
     directory: t.Union[os.PathLike, str],
     path: t.Union[os.PathLike, str],
-    filename: t.Optional[str] = None,
     **kwargs: t.Any,
 ) -> "Response":
     """Send a file from within a directory using :func:`send_file`.
@@ -617,16 +568,7 @@ def send_from_directory(
 
     .. versionadded:: 0.5
     """
-    if filename is not None:
-        warnings.warn(
-            "The 'filename' parameter has been renamed to 'path'. The"
-            " old name will be removed in Flask 2.2.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        path = filename
-
-    return werkzeug.utils.send_from_directory(  # type: ignore
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
         directory, path, **_prepare_send_file_kwargs(**kwargs)
     )
 

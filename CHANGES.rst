@@ -7,7 +7,13 @@ Unreleased
 
 -   Remove previously deprecated code. :pr:`4337`
 
-    -   The ``RequestContext.g`` proxy to ``AppContext.g`` is removed.
+    -   Old names for some ``send_file`` parameters have been removed.
+        ``download_name`` replaces ``attachment_filename``, ``max_age``
+        replaces ``cache_timeout``, and ``etag`` replaces ``add_etags``.
+        Additionally, ``path`` replaces ``filename`` in
+        ``send_from_directory``.
+    -   The ``RequestContext.g`` property returning ``AppContext.g`` is
+        removed.
 
 -   Add new customization points to the ``Flask`` app object for many
     previously global behaviors.
