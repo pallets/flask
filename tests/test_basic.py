@@ -1166,6 +1166,10 @@ def test_response_types(app, client):
     def from_dict():
         return {"foo": "bar"}, 201
 
+    @app.route("/list")
+    def from_list():
+        return ["foo", "bar"], 201
+
     assert client.get("/text").data == "Hällo Wörld".encode()
     assert client.get("/bytes").data == "Hällo Wörld".encode()
 
@@ -1203,6 +1207,10 @@ def test_response_types(app, client):
 
     rv = client.get("/dict")
     assert rv.json == {"foo": "bar"}
+    assert rv.status_code == 201
+
+    rv = client.get("/list")
+    assert rv.json == ["foo", "bar"]
     assert rv.status_code == 201
 
 

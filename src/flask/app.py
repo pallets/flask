@@ -1830,6 +1830,9 @@ class Flask(Scaffold):
             ``dict``
                 A dictionary that will be jsonify'd before being returned.
 
+            ``list``
+                A list that will be jsonify'd before being returned.
+
             ``generator`` or ``iterator``
                 A generator that returns ``str`` or ``bytes`` to be
                 streamed as the response.
@@ -1855,6 +1858,7 @@ class Flask(Scaffold):
 
         .. versionchanged:: 2.2
             A generator will be converted to a streaming response.
+            A list will be converted to a JSON response.
 
         .. versionchanged:: 1.1
             A dict will be converted to a JSON response.
@@ -1907,7 +1911,7 @@ class Flask(Scaffold):
                     headers=headers,  # type: ignore[arg-type]
                 )
                 status = headers = None
-            elif isinstance(rv, dict):
+            elif isinstance(rv, (dict, list)):
                 rv = jsonify(rv)
             elif isinstance(rv, BaseResponse) or callable(rv):
                 # evaluate a WSGI callable, or coerce a different response
@@ -1920,14 +1924,14 @@ class Flask(Scaffold):
                     raise TypeError(
                         f"{e}\nThe view function did not return a valid"
                         " response. The return type must be a string,"
-                        " dict, tuple, Response instance, or WSGI"
+                        " dict, list, tuple, Response instance, or WSGI"
                         f" callable, but it was a {type(rv).__name__}."
                     ).with_traceback(sys.exc_info()[2]) from None
             else:
                 raise TypeError(
                     "The view function did not return a valid"
                     " response. The return type must be a string,"
-                    " dict, tuple, Response instance, or WSGI"
+                    " dict, list, tuple, Response instance, or WSGI"
                     f" callable, but it was a {type(rv).__name__}."
                 )
 
