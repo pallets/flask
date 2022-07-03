@@ -25,7 +25,17 @@ def hello_bytes() -> bytes:
 
 @app.route("/json")
 def hello_json() -> Response:
-    return jsonify({"response": "Hello, World!"})
+    return jsonify("Hello, World!")
+
+
+@app.route("/json/dict")
+def hello_json_dict() -> t.Dict[str, t.Any]:
+    return {"response": "Hello, World!"}
+
+
+@app.route("/json/dict")
+def hello_json_list() -> t.List[t.Any]:
+    return [{"message": "Hello"}, {"message": "World"}]
 
 
 @app.route("/generator")
