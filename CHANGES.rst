@@ -65,6 +65,9 @@ Unreleased
         ``with client`` block. It will be cleaned up when
         ``response.get_data()`` or ``response.close()`` is called.
 
+-   Allow returning a list from a view function, to convert it to a
+    JSON response like a dict is. :issue:`4672`
+
 
 Version 2.1.3
 -------------

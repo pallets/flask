@@ -1924,15 +1924,17 @@ class Flask(Scaffold):
                     raise TypeError(
                         f"{e}\nThe view function did not return a valid"
                         " response. The return type must be a string,"
-                        " dict, list, tuple, Response instance, or WSGI"
-                        f" callable, but it was a {type(rv).__name__}."
+                        " dict, list, tuple with headers or status,"
+                        " Response instance, or WSGI callable, but it"
+                        f" was a {type(rv).__name__}."
                     ).with_traceback(sys.exc_info()[2]) from None
             else:
                 raise TypeError(
                     "The view function did not return a valid"
                     " response. The return type must be a string,"
-                    " dict, list, tuple, Response instance, or WSGI"
-                    f" callable, but it was a {type(rv).__name__}."
+                    " dict, list, tuple with headers or status,"
+                    " Response instance, or WSGI callable, but it was a"
+                    f" {type(rv).__name__}."
                 )
 
         rv = t.cast(Response, rv)
