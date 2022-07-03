@@ -7,7 +7,13 @@ if t.TYPE_CHECKING:  # pragma: no cover
 
 # The possible types that are directly convertible or are a Response object.
 ResponseValue = t.Union[
-    "Response", str, bytes, t.Dict[str, t.Any], t.Iterator[str], t.Iterator[bytes]
+    "Response",
+    str,
+    bytes,
+    t.List[t.Any],
+    t.Dict[str, t.Any],
+    t.Iterator[str],
+    t.Iterator[bytes],
 ]
 
 # the possible types for an individual HTTP header
