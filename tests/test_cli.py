@@ -422,22 +422,23 @@ def test_help_echo_exception():
 
 class TestRoutes:
     @pytest.fixture
-    def invoke(self, runner):
-        def create_app():
-            app = Flask(__name__)
-            app.testing = True
+    def app(self):
+        app = Flask(__name__)
+        app.testing = True
 
-            @app.route("/get_post/<int:x>/<int:y>", methods=["GET", "POST"])
-            def yyy_get_post(x, y):
-                pass
+        @app.route("/get_post/<int:x>/<int:y>", methods=["GET", "POST"])
+        def yyy_get_post(x, y):
+            pass
 
-            @app.route("/zzz_post", methods=["POST"])
-            def aaa_post():
-                pass
+        @app.route("/zzz_post", methods=["POST"])
+        def aaa_post():
+            pass
 
-            return app
+        return app
 
-        cli = FlaskGroup(create_app=create_app)
+    @pytest.fixture
+    def invoke(self, app, runner):
+        cli = FlaskGroup(create_app=lambda: app)
         return partial(runner.invoke, cli)
 
     @pytest.fixture
@@ -462,7 +463,7 @@ class TestRoutes:
         assert result.exit_code == 0
         self.expect_order(["aaa_post", "static", "yyy_get_post"], result.output)
 
-    def test_sort(self, invoke):
+    def test_sort(self, app, invoke):
         default_output = invoke(["routes"]).output
         endpoint_output = invoke(["routes", "-s", "endpoint"]).output
         assert default_output == endpoint_output
@@ -474,10 +475,8 @@ class TestRoutes:
             ["yyy_get_post", "static", "aaa_post"],
             invoke(["routes", "-s", "rule"]).output,
         )
-        self.expect_order(
-            ["aaa_post", "yyy_get_post", "static"],
-            invoke(["routes", "-s", "match"]).output,
-        )
+        match_order = [r.endpoint for r in app.url_map.iter_rules()]
+        self.expect_order(match_order, invoke(["routes", "-s", "match"]).output)
 
     def test_all_methods(self, invoke):
         output = invoke(["routes"]).output
