@@ -1,3 +1,6 @@
+# This does not automatically close "stale" issues. Instead, it locks closed issues after 2 weeks of no activity.
+# If there's a new issue related to an old one, we've found it's much easier to work on as a new issue.
+
 name: 'Lock threads'
 
 on:
