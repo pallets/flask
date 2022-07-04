@@ -3,12 +3,12 @@ ci:
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.1
+    rev: v2.34.0
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.1.0
+    rev: v3.3.0
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
@@ -16,7 +16,7 @@ repos:
         args: ["--application-directories", "src"]
         additional_dependencies: ["setuptools>60.9"]
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: pip-compile-multi-verify
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.3.0
     hooks:
       - id: fix-byte-order-marker
       - id: trailing-whitespace
