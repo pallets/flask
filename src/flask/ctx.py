@@ -7,10 +7,8 @@ from types import TracebackType
 from werkzeug.exceptions import HTTPException
 
 from . import typing as ft
-from .globals import _app_ctx_stack
 from .globals import _cv_app
 from .globals import _cv_req
-from .globals import _request_ctx_stack
 from .signals import appcontext_popped
 from .signals import appcontext_pushed
 
@@ -106,9 +104,9 @@ class _AppCtxGlobals:
         return iter(self.__dict__)
 
     def __repr__(self) -> str:
-        top = _app_ctx_stack.top
-        if top is not None:
-            return f"<flask.g of {top.app.name!r}>"
+        ctx = _cv_app.get(None)
+        if ctx is not None:
+            return f"<flask.g of '{ctx.app.name}'>"
         return object.__repr__(self)
 
 
@@ -133,15 +131,15 @@ def after_this_request(f: ft.AfterRequestCallable) -> ft.AfterRequestCallable:
 
     .. versionadded:: 0.9
     """
-    top = _request_ctx_stack.top
+    ctx = _cv_req.get(None)
 
-    if top is None:
+    if ctx is None:
         raise RuntimeError(
-            "This decorator can only be used when a request context is"
-            " active, such as within a view function."
+            "'after_this_request' can only be used when a request"
+            " context is active, such as in a view function."
         )
 
-    top._after_request_functions.append(f)
+    ctx._after_request_functions.append(f)
     return f
 
 
@@ -169,19 +167,19 @@ def copy_current_request_context(f: t.Callable) -> t.Callable:
 
     .. versionadded:: 0.10
     """
-    top = _request_ctx_stack.top
+    ctx = _cv_req.get(None)
 
-    if top is None:
+    if ctx is None:
         raise RuntimeError(
-            "This decorator can only be used when a request context is"
-            " active, such as within a view function."
+            "'copy_current_request_context' can only be used when a"
+            " request context is active, such as in a view function."
         )
 
-    reqctx = top.copy()
+    ctx = ctx.copy()
 
     def wrapper(*args, **kwargs):
-        with reqctx:
-            return reqctx.app.ensure_sync(f)(*args, **kwargs)
+        with ctx:
+            return ctx.app.ensure_sync(f)(*args, **kwargs)
 
     return update_wrapper(wrapper, f)
 
@@ -240,7 +238,7 @@ class AppContext:
     def __init__(self, app: "Flask") -> None:
         self.app = app
         self.url_adapter = app.create_url_adapter(None)
-        self.g = app.app_ctx_globals_class()
+        self.g: _AppCtxGlobals = app.app_ctx_globals_class()
         self._cv_tokens: t.List[contextvars.Token] = []
 
     def push(self) -> None:
@@ -311,14 +309,14 @@ class RequestContext:
         self.app = app
         if request is None:
             request = app.request_class(environ)
-        self.request = request
+        self.request: Request = request
         self.url_adapter = None
         try:
             self.url_adapter = app.create_url_adapter(self.request)
         except HTTPException as e:
             self.request.routing_exception = e
-        self.flashes = None
-        self.session = session
+        self.flashes: t.Optional[t.List[t.Tuple[str, str]]] = None
+        self.session: t.Optional["SessionMixin"] = session
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
         # functions.

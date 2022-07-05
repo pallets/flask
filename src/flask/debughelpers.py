@@ -2,7 +2,7 @@ import typing as t
 
 from .app import Flask
 from .blueprints import Blueprint
-from .globals import _request_ctx_stack
+from .globals import request_ctx
 
 
 class UnexpectedUnicodeError(AssertionError, UnicodeError):
@@ -116,9 +116,8 @@ def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
     info = [f"Locating template {template!r}:"]
     total_found = 0
     blueprint = None
-    reqctx = _request_ctx_stack.top
-    if reqctx is not None and reqctx.request.blueprint is not None:
-        blueprint = reqctx.request.blueprint
+    if request_ctx and request_ctx.request.blueprint is not None:
+        blueprint = request_ctx.request.blueprint
 
     for idx, (loader, srcobj, triple) in enumerate(attempts):
         if isinstance(srcobj, Flask):

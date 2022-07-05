@@ -1110,14 +1110,10 @@ def test_enctype_debug_helper(app, client):
     def index():
         return flask.request.files["foo"].filename
 
-    # with statement is important because we leave an exception on the
-    # stack otherwise and we want to ensure that this is not the case
-    # to not negatively affect other tests.
-    with client:
-        with pytest.raises(DebugFilesKeyError) as e:
-            client.post("/fail", data={"foo": "index.txt"})
-        assert "no file contents were transmitted" in str(e.value)
-        assert "This was submitted: 'index.txt'" in str(e.value)
+    with pytest.raises(DebugFilesKeyError) as e:
+        client.post("/fail", data={"foo": "index.txt"})
+    assert "no file contents were transmitted" in str(e.value)
+    assert "This was submitted: 'index.txt'" in str(e.value)
 
 
 def test_response_types(app, client):
@@ -1548,29 +1544,21 @@ def test_server_name_subdomain():
     assert rv.data == b"subdomain"
 
 
-@pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
-@pytest.mark.filterwarnings("ignore::pytest.PytestUnhandledThreadExceptionWarning")
-def test_exception_propagation(app, client):
-    def apprunner(config_key):
-        @app.route("/")
-        def index():
-            1 // 0
+@pytest.mark.parametrize("key", ["TESTING", "PROPAGATE_EXCEPTIONS", "DEBUG", None])
+def test_exception_propagation(app, client, key):
+    app.testing = False
 
-        if config_key is not None:
-            app.config[config_key] = True
-            with pytest.raises(Exception):
-                client.get("/")
-        else:
-            assert client.get("/").status_code == 500
+    @app.route("/")
+    def index():
+        1 // 0
 
-    # we have to run this test in an isolated thread because if the
-    # debug flag is set to true and an exception happens the context is
-    # not torn down.  This causes other tests that run after this fail
-    # when they expect no exception on the stack.
-    for config_key in "TESTING", "PROPAGATE_EXCEPTIONS", "DEBUG", None:
-        t = Thread(target=apprunner, args=(config_key,))
-        t.start()
-        t.join()
+    if key is not None:
+        app.config[key] = True
+
+        with pytest.raises(ZeroDivisionError):
+            client.get("/")
+    else:
+        assert client.get("/").status_code == 500
 
 
 @pytest.mark.parametrize("debug", [True, False])

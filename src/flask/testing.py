@@ -163,7 +163,7 @@ class FlaskClient(Client):
             # behavior.  It's important to not use the push and pop
             # methods of the actual request context object since that would
             # mean that cleanup handlers are called
-            token = _cv_req.set(outer_reqctx)
+            token = _cv_req.set(outer_reqctx)  # type: ignore[arg-type]
             try:
                 yield sess
             finally:

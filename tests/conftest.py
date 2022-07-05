@@ -6,8 +6,8 @@ import textwrap
 import pytest
 from _pytest import monkeypatch
 
-import flask
-from flask import Flask as _Flask
+from flask import Flask
+from flask.globals import request_ctx
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -44,14 +44,13 @@ def _reset_os_environ(monkeypatch, _standard_os_environ):
     monkeypatch._setitem.extend(_standard_os_environ)
 
 
-class Flask(_Flask):
-    testing = True
-    secret_key = "test key"
-
-
 @pytest.fixture
 def app():
     app = Flask("flask_test", root_path=os.path.dirname(__file__))
+    app.config.update(
+        TESTING=True,
+        SECRET_KEY="test key",
+    )
     return app
 
 
@@ -92,8 +91,10 @@ def leak_detector():
     # make sure we're not leaking a request context since we are
     # testing flask internally in debug mode in a few cases
     leaks = []
-    while flask._request_ctx_stack.top is not None:
-        leaks.append(flask._request_ctx_stack.pop())
+    while request_ctx:
+        leaks.append(request_ctx._get_current_object())
+        request_ctx.pop()
+
     assert leaks == []
 
 

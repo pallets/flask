@@ -5,6 +5,7 @@ import werkzeug
 import flask
 from flask import appcontext_popped
 from flask.cli import ScriptInfo
+from flask.globals import _cv_req
 from flask.json import jsonify
 from flask.testing import EnvironBuilder
 from flask.testing import FlaskCliRunner
@@ -399,4 +400,4 @@ def test_client_pop_all_preserved(app, req_ctx, client):
     # close the response, releasing the context held by stream_with_context
     rv.close()
     # only req_ctx fixture should still be pushed
-    assert flask._request_ctx_stack.top is req_ctx
+    assert _cv_req.get(None) is req_ctx
