@@ -15,6 +15,15 @@ Unreleased
     -   The ``RequestContext.g`` property returning ``AppContext.g`` is
         removed.
 
+-   The app and request contexts are managed using Python context vars
+    directly rather than Werkzeug's ``LocalStack``. This should result
+    in better performance and memory use. :pr:`4672`
+
+    -   Extension maintainers, be aware that ``_app_ctx_stack.top``
+        and ``_request_ctx_stack.top`` are deprecated. Store data on
+        ``g`` instead using a unique prefix, like
+        ``g._extension_name_attr``.
+
 -   Add new customization points to the ``Flask`` app object for many
     previously global behaviors.
 

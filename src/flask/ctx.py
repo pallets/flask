@@ -1,3 +1,4 @@
+import contextvars
 import sys
 import typing as t
 from functools import update_wrapper
@@ -7,6 +8,8 @@ from werkzeug.exceptions import HTTPException
 
 from . import typing as ft
 from .globals import _app_ctx_stack
+from .globals import _cv_app
+from .globals import _cv_req
 from .globals import _request_ctx_stack
 from .signals import appcontext_popped
 from .signals import appcontext_pushed
@@ -212,7 +215,7 @@ def has_request_context() -> bool:
 
     .. versionadded:: 0.7
     """
-    return _request_ctx_stack.top is not None
+    return _cv_app.get(None) is not None
 
 
 def has_app_context() -> bool:
@@ -222,7 +225,7 @@ def has_app_context() -> bool:
 
     .. versionadded:: 0.9
     """
-    return _app_ctx_stack.top is not None
+    return _cv_req.get(None) is not None
 
 
 class AppContext:
@@ -238,28 +241,29 @@ class AppContext:
         self.app = app
         self.url_adapter = app.create_url_adapter(None)
         self.g = app.app_ctx_globals_class()
-
-        # Like request context, app contexts can be pushed multiple times
-        # but there a basic "refcount" is enough to track them.
-        self._refcnt = 0
+        self._cv_tokens: t.List[contextvars.Token] = []
 
     def push(self) -> None:
         """Binds the app context to the current context."""
-        self._refcnt += 1
-        _app_ctx_stack.push(self)
+        self._cv_tokens.append(_cv_app.set(self))
         appcontext_pushed.send(self.app)
 
     def pop(self, exc: t.Optional[BaseException] = _sentinel) -> None:  # type: ignore
         """Pops the app context."""
         try:
-            self._refcnt -= 1
-            if self._refcnt <= 0:
+            if len(self._cv_tokens) == 1:
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
                 self.app.do_teardown_appcontext(exc)
         finally:
-            rv = _app_ctx_stack.pop()
-        assert rv is self, f"Popped wrong app context.  ({rv!r} instead of {self!r})"
+            ctx = _cv_app.get()
+            _cv_app.reset(self._cv_tokens.pop())
+
+        if ctx is not self:
+            raise AssertionError(
+                f"Popped wrong app context. ({ctx!r} instead of {self!r})"
+            )
+
         appcontext_popped.send(self.app)
 
     def __enter__(self) -> "AppContext":
@@ -315,17 +319,12 @@ class RequestContext:
             self.request.routing_exception = e
         self.flashes = None
         self.session = session
-
-        # Request contexts can be pushed multiple times and interleaved with
-        # other request contexts.  Now only if the last level is popped we
-        # get rid of them.  Additionally if an application context is missing
-        # one is created implicitly so for each level we add this information
-        self._implicit_app_ctx_stack: t.List[t.Optional["AppContext"]] = []
-
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
         # functions.
         self._after_request_functions: t.List[ft.AfterRequestCallable] = []
+
+        self._cv_tokens: t.List[t.Tuple[contextvars.Token, t.Optional[AppContext]]] = []
 
     def copy(self) -> "RequestContext":
         """Creates a copy of this request context with the same request object.
@@ -360,15 +359,15 @@ class RequestContext:
     def push(self) -> None:
         # Before we push the request context we have to ensure that there
         # is an application context.
-        app_ctx = _app_ctx_stack.top
-        if app_ctx is None or app_ctx.app != self.app:
+        app_ctx = _cv_app.get(None)
+
+        if app_ctx is None or app_ctx.app is not self.app:
             app_ctx = self.app.app_context()
             app_ctx.push()
-            self._implicit_app_ctx_stack.append(app_ctx)
         else:
-            self._implicit_app_ctx_stack.append(None)
+            app_ctx = None
 
-        _request_ctx_stack.push(self)
+        self._cv_tokens.append((_cv_req.set(self), app_ctx))
 
         # Open the session at the moment that the request context is available.
         # This allows a custom open_session method to use the request context.
@@ -394,11 +393,10 @@ class RequestContext:
         .. versionchanged:: 0.9
            Added the `exc` argument.
         """
-        app_ctx = self._implicit_app_ctx_stack.pop()
-        clear_request = False
+        clear_request = len(self._cv_tokens) == 1
 
         try:
-            if not self._implicit_app_ctx_stack:
+            if clear_request:
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
                 self.app.do_teardown_request(exc)
@@ -406,36 +404,23 @@ class RequestContext:
                 request_close = getattr(self.request, "close", None)
                 if request_close is not None:
                     request_close()
-                clear_request = True
         finally:
-            rv = _request_ctx_stack.pop()
+            ctx = _cv_req.get()
+            token, app_ctx = self._cv_tokens.pop()
+            _cv_req.reset(token)
 
             # get rid of circular dependencies at the end of the request
             # so that we don't require the GC to be active.
             if clear_request:
-                rv.request.environ["werkzeug.request"] = None
+                ctx.request.environ["werkzeug.request"] = None
 
-            # Get rid of the app as well if necessary.
             if app_ctx is not None:
                 app_ctx.pop(exc)
 
-            assert (
-                rv is self
-            ), f"Popped wrong request context. ({rv!r} instead of {self!r})"
-
-    def auto_pop(self, exc: t.Optional[BaseException]) -> None:
-        """
-        .. deprecated:: 2.2
-            Will be removed in Flask 2.3.
-        """
-        import warnings
-
-        warnings.warn(
-            "'ctx.auto_pop' is deprecated and will be removed in Flask 2.3.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self.pop(exc)
+            if ctx is not self:
+                raise AssertionError(
+                    f"Popped wrong request context. ({ctx!r} instead of {self!r})"
+                )
 
     def __enter__(self) -> "RequestContext":
         self.push()
