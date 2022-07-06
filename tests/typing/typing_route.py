@@ -84,6 +84,11 @@ def return_template_stream() -> t.Iterator[str]:
     return stream_template("index.html", name="Hello")
 
 
+@app.route("/async")
+async def async_route() -> str:
+    return "Hello"
+
+
 class RenderTemplateView(View):
     def __init__(self: RenderTemplateView, template_name: str) -> None:
         self.template_name = template_name

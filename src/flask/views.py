@@ -82,7 +82,7 @@ class View:
     @classmethod
     def as_view(
         cls, name: str, *class_args: t.Any, **class_kwargs: t.Any
-    ) -> ft.ViewCallable:
+    ) -> ft.RouteCallable:
         """Convert the class into a view function that can be registered
         for a route.
 
