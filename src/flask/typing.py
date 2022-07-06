@@ -42,11 +42,22 @@ ResponseReturnValue = t.Union[
 ResponseClass = t.TypeVar("ResponseClass", bound="Response")
 
 AppOrBlueprintKey = t.Optional[str]  # The App key is None, whereas blueprints are named
-AfterRequestCallable = t.Union[t.Callable[[ResponseClass], ResponseClass], t.Callable[[ResponseClass], t.Awaitable[ResponseClass]]]
-BeforeFirstRequestCallable = t.Union[t.Callable[[], None], t.Callable[[], t.Awaitable[None]]]
-BeforeRequestCallable = t.Union[t.Callable[[], t.Optional[ResponseReturnValue]], t.Callable[[], t.Awaitable[t.Optional[ResponseReturnValue]]]]
+AfterRequestCallable = t.Union[
+    t.Callable[[ResponseClass], ResponseClass],
+    t.Callable[[ResponseClass], t.Awaitable[ResponseClass]],
+]
+BeforeFirstRequestCallable = t.Union[
+    t.Callable[[], None], t.Callable[[], t.Awaitable[None]]
+]
+BeforeRequestCallable = t.Union[
+    t.Callable[[], t.Optional[ResponseReturnValue]],
+    t.Callable[[], t.Awaitable[t.Optional[ResponseReturnValue]]],
+]
 ShellContextProcessorCallable = t.Callable[[], t.Dict[str, t.Any]]
-TeardownCallable = t.Union[t.Callable[[t.Optional[BaseException]], None], t.Callable[[t.Optional[BaseException]], t.Awaitable[None]]]
+TeardownCallable = t.Union[
+    t.Callable[[t.Optional[BaseException]], None],
+    t.Callable[[t.Optional[BaseException]], t.Awaitable[None]],
+]
 TemplateContextProcessorCallable = t.Callable[[], t.Dict[str, t.Any]]
 TemplateFilterCallable = t.Callable[..., t.Any]
 TemplateGlobalCallable = t.Callable[..., t.Any]
@@ -62,4 +73,7 @@ URLValuePreprocessorCallable = t.Callable[[t.Optional[str], t.Optional[dict]], N
 # https://github.com/pallets/flask/issues/4297
 ErrorHandlerCallable = t.Callable[[t.Any], ResponseReturnValue]
 
-RouteCallable = t.Union[t.Callable[..., ResponseReturnValue], t.Callable[..., t.Awaitable[ResponseReturnValue]]]
+RouteCallable = t.Union[
+    t.Callable[..., ResponseReturnValue],
+    t.Callable[..., t.Awaitable[ResponseReturnValue]],
+]
