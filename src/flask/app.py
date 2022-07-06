@@ -74,6 +74,17 @@ if t.TYPE_CHECKING:  # pragma: no cover
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
 
+T_before_first_request = t.TypeVar(
+    "T_before_first_request", bound=ft.BeforeFirstRequestCallable
+)
+T_shell_context_processor = t.TypeVar(
+    "T_shell_context_processor", bound=ft.ShellContextProcessorCallable
+)
+T_teardown = t.TypeVar("T_teardown", bound=ft.TeardownCallable)
+T_template_filter = t.TypeVar("T_template_filter", bound=ft.TemplateFilterCallable)
+T_template_global = t.TypeVar("T_template_global", bound=ft.TemplateGlobalCallable)
+T_template_test = t.TypeVar("T_template_test", bound=ft.TemplateTestCallable)
+
 if sys.version_info >= (3, 8):
     iscoroutinefunction = inspect.iscoroutinefunction
 else:
@@ -472,7 +483,7 @@ class Flask(Scaffold):
         #: when a shell context is created.
         #:
         #: .. versionadded:: 0.11
-        self.shell_context_processors: t.List[t.Callable[[], t.Dict[str, t.Any]]] = []
+        self.shell_context_processors: t.List[ft.ShellContextProcessorCallable] = []
 
         #: Maps registered blueprint names to blueprint objects. The
         #: dict retains the order the blueprints were registered in.
@@ -1075,7 +1086,7 @@ class Flask(Scaffold):
         self,
         rule: str,
         endpoint: t.Optional[str] = None,
-        view_func: t.Optional[ft.ViewCallable] = None,
+        view_func: t.Optional[ft.RouteCallable] = None,
         provide_automatic_options: t.Optional[bool] = None,
         **options: t.Any,
     ) -> None:
@@ -1132,7 +1143,7 @@ class Flask(Scaffold):
     @setupmethod
     def template_filter(
         self, name: t.Optional[str] = None
-    ) -> t.Callable[[ft.TemplateFilterCallable], ft.TemplateFilterCallable]:
+    ) -> t.Callable[[T_template_filter], T_template_filter]:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
@@ -1145,7 +1156,7 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f: ft.TemplateFilterCallable) -> ft.TemplateFilterCallable:
+        def decorator(f: T_template_filter) -> T_template_filter:
             self.add_template_filter(f, name=name)
             return f
 
@@ -1166,7 +1177,7 @@ class Flask(Scaffold):
     @setupmethod
     def template_test(
         self, name: t.Optional[str] = None
-    ) -> t.Callable[[ft.TemplateTestCallable], ft.TemplateTestCallable]:
+    ) -> t.Callable[[T_template_test], T_template_test]:
         """A decorator that is used to register custom template test.
         You can specify a name for the test, otherwise the function
         name will be used. Example::
@@ -1186,7 +1197,7 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f: ft.TemplateTestCallable) -> ft.TemplateTestCallable:
+        def decorator(f: T_template_test) -> T_template_test:
             self.add_template_test(f, name=name)
             return f
 
@@ -1209,7 +1220,7 @@ class Flask(Scaffold):
     @setupmethod
     def template_global(
         self, name: t.Optional[str] = None
-    ) -> t.Callable[[ft.TemplateGlobalCallable], ft.TemplateGlobalCallable]:
+    ) -> t.Callable[[T_template_global], T_template_global]:
         """A decorator that is used to register a custom template global function.
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
@@ -1224,7 +1235,7 @@ class Flask(Scaffold):
                      function name will be used.
         """
 
-        def decorator(f: ft.TemplateGlobalCallable) -> ft.TemplateGlobalCallable:
+        def decorator(f: T_template_global) -> T_template_global:
             self.add_template_global(f, name=name)
             return f
 
@@ -1245,9 +1256,7 @@ class Flask(Scaffold):
         self.jinja_env.globals[name or f.__name__] = f
 
     @setupmethod
-    def before_first_request(
-        self, f: ft.BeforeFirstRequestCallable
-    ) -> ft.BeforeFirstRequestCallable:
+    def before_first_request(self, f: T_before_first_request) -> T_before_first_request:
         """Registers a function to be run before the first request to this
         instance of the application.
 
@@ -1273,7 +1282,7 @@ class Flask(Scaffold):
         return f
 
     @setupmethod
-    def teardown_appcontext(self, f: ft.TeardownCallable) -> ft.TeardownCallable:
+    def teardown_appcontext(self, f: T_teardown) -> T_teardown:
         """Registers a function to be called when the application context
         ends.  These functions are typically also called when the request
         context is popped.
@@ -1306,7 +1315,9 @@ class Flask(Scaffold):
         return f
 
     @setupmethod
-    def shell_context_processor(self, f: t.Callable) -> t.Callable:
+    def shell_context_processor(
+        self, f: T_shell_context_processor
+    ) -> T_shell_context_processor:
         """Registers a shell context processor function.
 
         .. versionadded:: 0.11
