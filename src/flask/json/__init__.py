@@ -23,6 +23,7 @@ class JSONEncoder(_json.JSONEncoder):
     -   :class:`datetime.datetime` and :class:`datetime.date` are
         serialized to :rfc:`822` strings. This is the same as the HTTP
         date format.
+    -   :class:`decimal.Decimal` is serialized to a string.
     -   :class:`uuid.UUID` is serialized to a string.
     -   :class:`dataclasses.dataclass` is passed to
         :func:`dataclasses.asdict`.
