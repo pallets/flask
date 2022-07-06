@@ -560,6 +560,7 @@ class Blueprint(Scaffold):
         self.record_once(lambda s: s.app.before_first_request_funcs.append(f))
         return f
 
+    @setupmethod
     def after_app_request(self, f: ft.AfterRequestCallable) -> ft.AfterRequestCallable:
         """Like :meth:`Flask.after_request` but for a blueprint.  Such a function
         is executed after each request, even if outside of the blueprint.
