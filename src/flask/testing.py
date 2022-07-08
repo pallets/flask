@@ -94,11 +94,10 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
 
 
 class FlaskClient(Client):
-    """Works like a regular Werkzeug test client but has some knowledge about
-    how Flask works to defer the cleanup of the request context stack to the
-    end of a ``with`` body when used in a ``with`` statement.  For general
-    information about how to use this class refer to
-    :class:`werkzeug.test.Client`.
+    """Works like a regular Werkzeug test client but has knowledge about
+    Flask's contexts to defer the cleanup of the request context until
+    the end of a ``with`` block. For general information about how to
+    use this class refer to :class:`werkzeug.test.Client`.
 
     .. versionchanged:: 0.12
        `app.test_client()` includes preset default environment, which can be

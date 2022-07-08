@@ -227,12 +227,10 @@ def has_app_context() -> bool:
 
 
 class AppContext:
-    """The application context binds an application object implicitly
-    to the current thread or greenlet, similar to how the
-    :class:`RequestContext` binds request information.  The application
-    context is also implicitly created if a request context is created
-    but the application is not on top of the individual application
-    context.
+    """The app context contains application-specific information. An app
+    context is created and pushed at the beginning of each request if
+    one is not already active. An app context is also pushed when
+    running CLI commands.
     """
 
     def __init__(self, app: "Flask") -> None:
@@ -278,10 +276,10 @@ class AppContext:
 
 
 class RequestContext:
-    """The request context contains all request relevant information.  It is
-    created at the beginning of the request and pushed to the
-    `_request_ctx_stack` and removed at the end of it.  It will create the
-    URL adapter and request object for the WSGI environment provided.
+    """The request context contains per-request information. The Flask
+    app creates and pushes it at the beginning of the request, then pops
+    it at the end of the request. It will create the URL adapter and
+    request object for the WSGI environment provided.
 
     Do not attempt to use this class directly, instead use
     :meth:`~flask.Flask.test_request_context` and
