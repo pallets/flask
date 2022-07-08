@@ -17,7 +17,7 @@ Unreleased
 
 -   The app and request contexts are managed using Python context vars
     directly rather than Werkzeug's ``LocalStack``. This should result
-    in better performance and memory use. :pr:`4672`
+    in better performance and memory use. :pr:`4682`
 
     -   Extension maintainers, be aware that ``_app_ctx_stack.top``
         and ``_request_ctx_stack.top`` are deprecated. Store data on
