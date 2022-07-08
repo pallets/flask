@@ -91,7 +91,7 @@ patch low-level Python functions to accomplish this, whereas ``async``/
 whether you should use Flask, Quart, or something else is ultimately up
 to understanding the specific needs of your project.
 
-.. _Quart: https://gitlab.com/pgjones/quart
+.. _Quart: https://github.com/pallets/quart
 .. _ASGI: https://asgi.readthedocs.io/en/latest/
 
 
