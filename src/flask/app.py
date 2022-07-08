@@ -38,10 +38,11 @@ from .config import ConfigAttribute
 from .ctx import _AppCtxGlobals
 from .ctx import AppContext
 from .ctx import RequestContext
-from .globals import _app_ctx_stack
-from .globals import _request_ctx_stack
+from .globals import _cv_app
+from .globals import _cv_req
 from .globals import g
 from .globals import request
+from .globals import request_ctx
 from .globals import session
 from .helpers import _split_blueprint_path
 from .helpers import get_debug_flag
@@ -1283,29 +1284,30 @@ class Flask(Scaffold):
 
     @setupmethod
     def teardown_appcontext(self, f: T_teardown) -> T_teardown:
-        """Registers a function to be called when the application context
-        ends.  These functions are typically also called when the request
-        context is popped.
+        """Registers a function to be called when the application
+        context is popped. The application context is typically popped
+        after the request context for each request, at the end of CLI
+        commands, or after a manually pushed context ends.
 
-        Example::
+        .. code-block:: python
 
-            ctx = app.app_context()
-            ctx.push()
-            ...
-            ctx.pop()
+            with app.app_context():
+                ...
 
-        When ``ctx.pop()`` is executed in the above example, the teardown
-        functions are called just before the app context moves from the
-        stack of active contexts.  This becomes relevant if you are using
-        such constructs in tests.
+        When the ``with`` block exits (or ``ctx.pop()`` is called), the
+        teardown functions are called just before the app context is
+        made inactive. Since a request context typically also manages an
+        application context it would also be called when you pop a
+        request context.
 
-        Since a request context typically also manages an application
-        context it would also be called when you pop a request context.
+        When a teardown function was called because of an unhandled
+        exception it will be passed an error object. If an
+        :meth:`errorhandler` is registered, it will handle the exception
+        and the teardown will not receive it.
 
-        When a teardown function was called because of an unhandled exception
-        it will be passed an error object. If an :meth:`errorhandler` is
-        registered, it will handle the exception and the teardown will not
-        receive it.
+        Teardown functions must avoid raising exceptions. If they
+        execute code that might fail they must surround that code with a
+        ``try``/``except`` block and log any errors.
 
         The return values of teardown functions are ignored.
 
@@ -1554,10 +1556,10 @@ class Flask(Scaffold):
            This no longer does the exception handling, this code was
            moved to the new :meth:`full_dispatch_request`.
         """
-        req = _request_ctx_stack.top.request
+        req = request_ctx.request
         if req.routing_exception is not None:
             self.raise_routing_exception(req)
-        rule = req.url_rule
+        rule: Rule = req.url_rule  # type: ignore[assignment]
         # if we provide automatic options for this URL and the
         # request came with the OPTIONS method, reply automatically
         if (
@@ -1566,7 +1568,8 @@ class Flask(Scaffold):
         ):
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
-        return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+        view_args: t.Dict[str, t.Any] = req.view_args  # type: ignore[assignment]
+        return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
 
     def full_dispatch_request(self) -> Response:
         """Dispatches the request and on top of that performs request
@@ -1631,8 +1634,8 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.7
         """
-        adapter = _request_ctx_stack.top.url_adapter
-        methods = adapter.allowed_methods()
+        adapter = request_ctx.url_adapter
+        methods = adapter.allowed_methods()  # type: ignore[union-attr]
         rv = self.response_class()
         rv.allow.update(methods)
         return rv
@@ -1740,7 +1743,7 @@ class Flask(Scaffold):
         .. versionadded:: 2.2
             Moved from ``flask.url_for``, which calls this method.
         """
-        req_ctx = _request_ctx_stack.top
+        req_ctx = _cv_req.get(None)
 
         if req_ctx is not None:
             url_adapter = req_ctx.url_adapter
@@ -1759,7 +1762,7 @@ class Flask(Scaffold):
             if _external is None:
                 _external = _scheme is not None
         else:
-            app_ctx = _app_ctx_stack.top
+            app_ctx = _cv_app.get(None)
 
             # If called by helpers.url_for, an app context is active,
             # use its url_adapter. Otherwise, app.url_for was called
@@ -1790,7 +1793,7 @@ class Flask(Scaffold):
         self.inject_url_defaults(endpoint, values)
 
         try:
-            rv = url_adapter.build(
+            rv = url_adapter.build(  # type: ignore[union-attr]
                 endpoint,
                 values,
                 method=_method,
@@ -2099,7 +2102,7 @@ class Flask(Scaffold):
         :return: a new response object or the same, has to be an
                  instance of :attr:`response_class`.
         """
-        ctx = _request_ctx_stack.top
+        ctx = request_ctx._get_current_object()  # type: ignore[attr-defined]
 
         for func in ctx._after_request_functions:
             response = self.ensure_sync(func)(response)
@@ -2305,8 +2308,8 @@ class Flask(Scaffold):
             return response(environ, start_response)
         finally:
             if "werkzeug.debug.preserve_context" in environ:
-                environ["werkzeug.debug.preserve_context"](_app_ctx_stack.top)
-                environ["werkzeug.debug.preserve_context"](_request_ctx_stack.top)
+                environ["werkzeug.debug.preserve_context"](_cv_app.get())
+                environ["werkzeug.debug.preserve_context"](_cv_req.get())
 
             if error is not None and self.should_ignore_error(error):
                 error = None

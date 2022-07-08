@@ -311,56 +311,28 @@ Useful Internals
 .. autoclass:: flask.ctx.RequestContext
    :members:
 
-.. data:: _request_ctx_stack
+.. data:: flask.globals.request_ctx
 
-    The internal :class:`~werkzeug.local.LocalStack` that holds
-    :class:`~flask.ctx.RequestContext` instances. Typically, the
-    :data:`request` and :data:`session` proxies should be accessed
-    instead of the stack. It may be useful to access the stack in
-    extension code.
+    The current :class:`~flask.ctx.RequestContext`. If a request context
+    is not active, accessing attributes on this proxy will raise a
+    ``RuntimeError``.
 
-    The following attributes are always present on each layer of the
-    stack:
-
-    `app`
-      the active Flask application.
-
-    `url_adapter`
-      the URL adapter that was used to match the request.
-
-    `request`
-      the current request object.
-
-    `session`
-      the active session object.
-
-    `g`
-      an object with all the attributes of the :data:`flask.g` object.
-
-    `flashes`
-      an internal cache for the flashed messages.
-
-    Example usage::
-
-        from flask import _request_ctx_stack
-
-        def get_session():
-            ctx = _request_ctx_stack.top
-            if ctx is not None:
-                return ctx.session
+    This is an internal object that is essential to how Flask handles
+    requests. Accessing this should not be needed in most cases. Most
+    likely you want :data:`request` and :data:`session` instead.
 
 .. autoclass:: flask.ctx.AppContext
    :members:
 
-.. data:: _app_ctx_stack
+.. data:: flask.globals.app_ctx
 
-    The internal :class:`~werkzeug.local.LocalStack` that holds
-    :class:`~flask.ctx.AppContext` instances. Typically, the
-    :data:`current_app` and :data:`g` proxies should be accessed instead
-    of the stack. Extensions can access the contexts on the stack as a
-    namespace to store data.
+    The current :class:`~flask.ctx.AppContext`. If an app context is not
+    active, accessing attributes on this proxy will raise a
+    ``RuntimeError``.
 
-    .. versionadded:: 0.9
+    This is an internal object that is essential to how Flask handles
+    requests. Accessing this should not be needed in most cases. Most
+    likely you want :data:`current_app` and :data:`g` instead.
 
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:

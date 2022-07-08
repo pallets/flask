@@ -30,10 +30,6 @@ or create an application context itself.  At that point the ``get_db``
 function can be used to get the current database connection.  Whenever the
 context is destroyed the database connection will be terminated.
 
-Note: if you use Flask 0.9 or older you need to use
-``flask._app_ctx_stack.top`` instead of ``g`` as the :data:`flask.g`
-object was bound to the request and not application context.
-
 Example::
 
     @app.route('/')

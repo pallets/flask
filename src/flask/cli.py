@@ -1051,13 +1051,11 @@ def shell_command() -> None:
     without having to manually configure the application.
     """
     import code
-    from .globals import _app_ctx_stack
 
-    app = _app_ctx_stack.top.app
     banner = (
         f"Python {sys.version} on {sys.platform}\n"
-        f"App: {app.import_name} [{app.env}]\n"
-        f"Instance: {app.instance_path}"
+        f"App: {current_app.import_name} [{current_app.env}]\n"
+        f"Instance: {current_app.instance_path}"
     )
     ctx: dict = {}
 
@@ -1068,7 +1066,7 @@ def shell_command() -> None:
         with open(startup) as f:
             eval(compile(f.read(), startup, "exec"), ctx)
 
-    ctx.update(app.make_shell_context())
+    ctx.update(current_app.make_shell_context())
 
     # Site, customize, or startup script can set a hook to call when
     # entering interactive mode. The default one sets up readline with

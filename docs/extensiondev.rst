@@ -187,12 +187,6 @@ when the application context ends. If it should only be valid during a
 request, or would not be used in the CLI outside a reqeust, use
 :meth:`~flask.Flask.teardown_request`.
 
-An older technique for storing context data was to store it on
-``_app_ctx_stack.top`` or ``_request_ctx_stack.top``. However, this just
-moves the same namespace collision problem elsewhere (although less
-likely) and modifies objects that are very internal to Flask's
-operations. Prefer storing data under a unique name in ``g``.
-
 
 Views and Models
 ----------------

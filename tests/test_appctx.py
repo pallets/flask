@@ -1,6 +1,8 @@
 import pytest
 
 import flask
+from flask.globals import app_ctx
+from flask.globals import request_ctx
 
 
 def test_basic_url_generation(app):
@@ -29,14 +31,14 @@ def test_url_generation_without_context_fails():
 
 def test_request_context_means_app_context(app):
     with app.test_request_context():
-        assert flask.current_app._get_current_object() == app
-    assert flask._app_ctx_stack.top is None
+        assert flask.current_app._get_current_object() is app
+    assert not flask.current_app
 
 
 def test_app_context_provides_current_app(app):
     with app.app_context():
-        assert flask.current_app._get_current_object() == app
-    assert flask._app_ctx_stack.top is None
+        assert flask.current_app._get_current_object() is app
+    assert not flask.current_app
 
 
 def test_app_tearing_down(app):
@@ -175,11 +177,11 @@ def test_context_refcounts(app, client):
 
     @app.route("/")
     def index():
-        with flask._app_ctx_stack.top:
-            with flask._request_ctx_stack.top:
+        with app_ctx:
+            with request_ctx:
                 pass
-        env = flask._request_ctx_stack.top.request.environ
-        assert env["werkzeug.request"] is not None
+
+        assert flask.request.environ["werkzeug.request"] is not None
         return ""
 
     res = client.get("/")

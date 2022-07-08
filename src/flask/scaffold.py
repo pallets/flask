@@ -574,30 +574,27 @@ class Scaffold:
 
     @setupmethod
     def teardown_request(self, f: T_teardown) -> T_teardown:
-        """Register a function to be run at the end of each request,
-        regardless of whether there was an exception or not.  These functions
-        are executed when the request context is popped, even if not an
-        actual request was performed.
+        """Register a function to be called when the request context is
+        popped. Typically this happens at the end of each request, but
+        contexts may be pushed manually as well during testing.
 
-        Example::
+        .. code-block:: python
 
-            ctx = app.test_request_context()
-            ctx.push()
-            ...
-            ctx.pop()
+            with app.test_request_context():
+                ...
 
-        When ``ctx.pop()`` is executed in the above example, the teardown
-        functions are called just before the request context moves from the
-        stack of active contexts.  This becomes relevant if you are using
-        such constructs in tests.
+        When the ``with`` block exits (or ``ctx.pop()`` is called), the
+        teardown functions are called just before the request context is
+        made inactive.
 
-        Teardown functions must avoid raising exceptions. If
-        they execute code that might fail they
-        will have to surround the execution of that code with try/except
-        statements and log any errors.
+        When a teardown function was called because of an unhandled
+        exception it will be passed an error object. If an
+        :meth:`errorhandler` is registered, it will handle the exception
+        and the teardown will not receive it.
 
-        When a teardown function was called because of an exception it will
-        be passed an error object.
+        Teardown functions must avoid raising exceptions. If they
+        execute code that might fail they must surround that code with a
+        ``try``/``except`` block and log any errors.
 
         The return values of teardown functions are ignored.
         """

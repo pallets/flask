@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name="Flask",
     install_requires=[
-        "Werkzeug >= 2.0",
+        "Werkzeug >= 2.2.0a1",
         "Jinja2 >= 3.0",
         "itsdangerous >= 2.0",
         "click >= 8.0",

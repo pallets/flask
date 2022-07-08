@@ -11,7 +11,7 @@ from werkzeug.urls import url_parse
 from werkzeug.wrappers import Request as BaseRequest
 
 from .cli import ScriptInfo
-from .globals import _request_ctx_stack
+from .globals import _cv_req
 from .json import dumps as json_dumps
 from .sessions import SessionMixin
 
@@ -94,11 +94,10 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
 
 
 class FlaskClient(Client):
-    """Works like a regular Werkzeug test client but has some knowledge about
-    how Flask works to defer the cleanup of the request context stack to the
-    end of a ``with`` body when used in a ``with`` statement.  For general
-    information about how to use this class refer to
-    :class:`werkzeug.test.Client`.
+    """Works like a regular Werkzeug test client but has knowledge about
+    Flask's contexts to defer the cleanup of the request context until
+    the end of a ``with`` block. For general information about how to
+    use this class refer to :class:`werkzeug.test.Client`.
 
     .. versionchanged:: 0.12
        `app.test_client()` includes preset default environment, which can be
@@ -147,7 +146,7 @@ class FlaskClient(Client):
         app = self.application
         environ_overrides = kwargs.setdefault("environ_overrides", {})
         self.cookie_jar.inject_wsgi(environ_overrides)
-        outer_reqctx = _request_ctx_stack.top
+        outer_reqctx = _cv_req.get(None)
         with app.test_request_context(*args, **kwargs) as c:
             session_interface = app.session_interface
             sess = session_interface.open_session(app, c.request)
@@ -163,11 +162,11 @@ class FlaskClient(Client):
             # behavior.  It's important to not use the push and pop
             # methods of the actual request context object since that would
             # mean that cleanup handlers are called
-            _request_ctx_stack.push(outer_reqctx)
+            token = _cv_req.set(outer_reqctx)  # type: ignore[arg-type]
             try:
                 yield sess
             finally:
-                _request_ctx_stack.pop()
+                _cv_req.reset(token)
 
             resp = app.response_class()
             if not session_interface.is_null_session(sess):

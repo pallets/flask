@@ -37,12 +37,14 @@ context, which also pushes an :doc:`app context </appcontext>`. When the
 request ends it pops the request context then the application context.
 
 The context is unique to each thread (or other worker type).
-:data:`request` cannot be passed to another thread, the other thread
-will have a different context stack and will not know about the request
-the parent thread was pointing to.
+:data:`request` cannot be passed to another thread, the other thread has
+a different context space and will not know about the request the parent
+thread was pointing to.
 
-Context locals are implemented in Werkzeug. See :doc:`werkzeug:local`
-for more information on how this works internally.
+Context locals are implemented using Python's :mod:`contextvars` and
+Werkzeug's :class:`~werkzeug.local.LocalProxy`. Python manages the
+lifetime of context vars automatically, and local proxy wraps that
+low-level interface to make the data easier to work with.
 
 
 Manually Push a Context
@@ -87,10 +89,9 @@ How the Context Works
 
 The :meth:`Flask.wsgi_app` method is called to handle each request. It
 manages the contexts during the request. Internally, the request and
-application contexts work as stacks, :data:`_request_ctx_stack` and
-:data:`_app_ctx_stack`. When contexts are pushed onto the stack, the
+application contexts work like stacks. When contexts are pushed, the
 proxies that depend on them are available and point at information from
-the top context on the stack.
+the top item.
 
 When the request starts, a :class:`~ctx.RequestContext` is created and
 pushed, which creates and pushes an :class:`~ctx.AppContext` first if
@@ -99,10 +100,10 @@ these contexts are pushed, the :data:`current_app`, :data:`g`,
 :data:`request`, and :data:`session` proxies are available to the
 original thread handling the request.
 
-Because the contexts are stacks, other contexts may be pushed to change
-the proxies during a request. While this is not a common pattern, it
-can be used in advanced applications to, for example, do internal
-redirects or chain different applications together.
+Other contexts may be pushed to change the proxies during a request.
+While this is not a common pattern, it can be used in advanced
+applications to, for example, do internal redirects or chain different
+applications together.
 
 After the request is dispatched and a response is generated and sent,
 the request context is popped, which then pops the application context.

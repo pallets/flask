@@ -12,9 +12,10 @@ import werkzeug.utils
 from werkzeug.exceptions import abort as _wz_abort
 from werkzeug.utils import redirect as _wz_redirect
 
-from .globals import _request_ctx_stack
+from .globals import _cv_req
 from .globals import current_app
 from .globals import request
+from .globals import request_ctx
 from .globals import session
 from .signals import message_flashed
 
@@ -110,11 +111,11 @@ def stream_with_context(
         return update_wrapper(decorator, generator_or_function)  # type: ignore
 
     def generator() -> t.Generator:
-        ctx = _request_ctx_stack.top
+        ctx = _cv_req.get(None)
         if ctx is None:
             raise RuntimeError(
-                "Attempted to stream with context but "
-                "there was no context in the first place to keep around."
+                "'stream_with_context' can only be used when a request"
+                " context is active, such as in a view function."
             )
         with ctx:
             # Dummy sentinel.  Has to be inside the context block or we're
@@ -377,11 +378,10 @@ def get_flashed_messages(
     :param category_filter: filter of categories to limit return values.  Only
                             categories in the list will be returned.
     """
-    flashes = _request_ctx_stack.top.flashes
+    flashes = request_ctx.flashes
     if flashes is None:
-        _request_ctx_stack.top.flashes = flashes = (
-            session.pop("_flashes") if "_flashes" in session else []
-        )
+        flashes = session.pop("_flashes") if "_flashes" in session else []
+        request_ctx.flashes = flashes
     if category_filter:
         flashes = list(filter(lambda f: f[0] in category_filter, flashes))
     if not with_categories:
