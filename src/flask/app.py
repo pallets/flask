@@ -39,7 +39,7 @@ from .ctx import _AppCtxGlobals
 from .ctx import AppContext
 from .ctx import RequestContext
 from .globals import _cv_app
-from .globals import _cv_req
+from .globals import _cv_request
 from .globals import g
 from .globals import request
 from .globals import request_ctx
@@ -1743,7 +1743,7 @@ class Flask(Scaffold):
         .. versionadded:: 2.2
             Moved from ``flask.url_for``, which calls this method.
         """
-        req_ctx = _cv_req.get(None)
+        req_ctx = _cv_request.get(None)
 
         if req_ctx is not None:
             url_adapter = req_ctx.url_adapter
@@ -2309,7 +2309,7 @@ class Flask(Scaffold):
         finally:
             if "werkzeug.debug.preserve_context" in environ:
                 environ["werkzeug.debug.preserve_context"](_cv_app.get())
-                environ["werkzeug.debug.preserve_context"](_cv_req.get())
+                environ["werkzeug.debug.preserve_context"](_cv_request.get())
 
             if error is not None and self.should_ignore_error(error):
                 error = None

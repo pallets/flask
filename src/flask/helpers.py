@@ -12,7 +12,7 @@ import werkzeug.utils
 from werkzeug.exceptions import abort as _wz_abort
 from werkzeug.utils import redirect as _wz_redirect
 
-from .globals import _cv_req
+from .globals import _cv_request
 from .globals import current_app
 from .globals import request
 from .globals import request_ctx
@@ -111,7 +111,7 @@ def stream_with_context(
         return update_wrapper(decorator, generator_or_function)  # type: ignore
 
     def generator() -> t.Generator:
-        ctx = _cv_req.get(None)
+        ctx = _cv_request.get(None)
         if ctx is None:
             raise RuntimeError(
                 "'stream_with_context' can only be used when a request"
