@@ -6,7 +6,7 @@ from jinja2 import Template
 from jinja2 import TemplateNotFound
 
 from .globals import _cv_app
-from .globals import _cv_req
+from .globals import _cv_request
 from .globals import current_app
 from .globals import request
 from .helpers import stream_with_context
@@ -23,7 +23,7 @@ def _default_template_ctx_processor() -> t.Dict[str, t.Any]:
     `session` and `g`.
     """
     appctx = _cv_app.get(None)
-    reqctx = _cv_req.get(None)
+    reqctx = _cv_request.get(None)
     rv: t.Dict[str, t.Any] = {}
     if appctx is not None:
         rv["g"] = appctx.g

@@ -70,16 +70,16 @@ This typically means that you attempted to use functionality that needed
 an active HTTP request. Consult the documentation on testing for
 information about how to avoid this problem.\
 """
-_cv_req: ContextVar["RequestContext"] = ContextVar("flask.request_ctx")
-__request_ctx_stack = _FakeStack("request", _cv_req)
+_cv_request: ContextVar["RequestContext"] = ContextVar("flask.request_ctx")
+__request_ctx_stack = _FakeStack("request", _cv_request)
 request_ctx: "RequestContext" = LocalProxy(  # type: ignore[assignment]
-    _cv_req, unbound_message=_no_req_msg
+    _cv_request, unbound_message=_no_req_msg
 )
 request: "Request" = LocalProxy(  # type: ignore[assignment]
-    _cv_req, "request", unbound_message=_no_req_msg
+    _cv_request, "request", unbound_message=_no_req_msg
 )
 session: "SessionMixin" = LocalProxy(  # type: ignore[assignment]
-    _cv_req, "session", unbound_message=_no_req_msg
+    _cv_request, "session", unbound_message=_no_req_msg
 )
 
 

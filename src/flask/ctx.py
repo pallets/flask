@@ -8,7 +8,7 @@ from werkzeug.exceptions import HTTPException
 
 from . import typing as ft
 from .globals import _cv_app
-from .globals import _cv_req
+from .globals import _cv_request
 from .signals import appcontext_popped
 from .signals import appcontext_pushed
 
@@ -131,7 +131,7 @@ def after_this_request(f: ft.AfterRequestCallable) -> ft.AfterRequestCallable:
 
     .. versionadded:: 0.9
     """
-    ctx = _cv_req.get(None)
+    ctx = _cv_request.get(None)
 
     if ctx is None:
         raise RuntimeError(
@@ -167,7 +167,7 @@ def copy_current_request_context(f: t.Callable) -> t.Callable:
 
     .. versionadded:: 0.10
     """
-    ctx = _cv_req.get(None)
+    ctx = _cv_request.get(None)
 
     if ctx is None:
         raise RuntimeError(
@@ -223,7 +223,7 @@ def has_app_context() -> bool:
 
     .. versionadded:: 0.9
     """
-    return _cv_req.get(None) is not None
+    return _cv_request.get(None) is not None
 
 
 class AppContext:
@@ -363,7 +363,7 @@ class RequestContext:
         else:
             app_ctx = None
 
-        self._cv_tokens.append((_cv_req.set(self), app_ctx))
+        self._cv_tokens.append((_cv_request.set(self), app_ctx))
 
         # Open the session at the moment that the request context is available.
         # This allows a custom open_session method to use the request context.
@@ -401,9 +401,9 @@ class RequestContext:
                 if request_close is not None:
                     request_close()
         finally:
-            ctx = _cv_req.get()
+            ctx = _cv_request.get()
             token, app_ctx = self._cv_tokens.pop()
-            _cv_req.reset(token)
+            _cv_request.reset(token)
 
             # get rid of circular dependencies at the end of the request
             # so that we don't require the GC to be active.
