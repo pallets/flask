@@ -914,7 +914,7 @@ Released 2013-06-13, codename Limoncello
 -   Set the content-length header for x-sendfile.
 -   ``tojson`` filter now does not escape script blocks in HTML5
     parsers.
--   ``tojson`` used in templates is now safe by default due. This was
+-   ``tojson`` used in templates is now safe by default. This was
     allowed due to the different escaping behavior.
 -   Flask will now raise an error if you attempt to register a new
     function on an already used endpoint.
