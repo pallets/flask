@@ -11,7 +11,7 @@ errors:
     reading from the incoming data
 -   the database server was overloaded and could not handle the query
 -   a filesystem is full
--   a harddrive crashed
+-   a hard drive crashed
 -   a backend server overloaded
 -   a programming error in a library you are using
 -   network connection of the server to another system failed
