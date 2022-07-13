@@ -5,11 +5,11 @@
 #
 #    pip-compile-multi
 #
-cffi==1.15.0
+cffi==1.15.1
     # via cryptography
-cryptography==37.0.2
+cryptography==37.0.4
     # via -r requirements/typing.in
-mypy==0.960
+mypy==0.961
     # via -r requirements/typing.in
 mypy-extensions==0.4.3
     # via mypy
@@ -17,11 +17,11 @@ pycparser==2.21
     # via cffi
 tomli==2.0.1
     # via mypy
-types-contextvars==2.4.6
+types-contextvars==2.4.7
     # via -r requirements/typing.in
-types-dataclasses==0.6.5
+types-dataclasses==0.6.6
     # via -r requirements/typing.in
-types-setuptools==57.4.17
+types-setuptools==62.6.1
     # via -r requirements/typing.in
-typing-extensions==4.2.0
+typing-extensions==4.3.0
     # via mypy

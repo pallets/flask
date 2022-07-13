@@ -3,12 +3,12 @@ ci:
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.34.0
+    rev: v2.37.1
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.3.0
+    rev: v3.8.1
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
