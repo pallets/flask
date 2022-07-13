@@ -6,8 +6,6 @@ import sys
 import typing as t
 from collections import defaultdict
 from functools import update_wrapper
-from json import JSONDecoder
-from json import JSONEncoder
 
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import default_exceptions
@@ -76,11 +74,17 @@ class Scaffold:
 
     #: JSON encoder class used by :func:`flask.json.dumps`. If a
     #: blueprint sets this, it will be used instead of the app's value.
-    json_encoder: t.Optional[t.Type[JSONEncoder]] = None
+    #:
+    #: .. deprecated:: 2.2
+    #:      Will be removed in Flask 2.3.
+    json_encoder: None = None
 
     #: JSON decoder class used by :func:`flask.json.loads`. If a
     #: blueprint sets this, it will be used instead of the app's value.
-    json_decoder: t.Optional[t.Type[JSONDecoder]] = None
+    #:
+    #: .. deprecated:: 2.2
+    #:      Will be removed in Flask 2.3.
+    json_decoder: None = None
 
     def __init__(
         self,

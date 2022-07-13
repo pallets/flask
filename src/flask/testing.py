@@ -12,7 +12,6 @@ from werkzeug.wrappers import Request as BaseRequest
 
 from .cli import ScriptInfo
 from .globals import _cv_request
-from .json import dumps as json_dumps
 from .sessions import SessionMixin
 
 if t.TYPE_CHECKING:  # pragma: no cover
@@ -89,8 +88,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         The serialization will be configured according to the config associated
         with this EnvironBuilder's ``app``.
         """
-        kwargs.setdefault("app", self.app)
-        return json_dumps(obj, **kwargs)
+        return self.app.json.dumps(obj, **kwargs)
 
 
 class FlaskClient(Client):
@@ -227,6 +225,7 @@ class FlaskClient(Client):
             buffered=buffered,
             follow_redirects=follow_redirects,
         )
+        response.json_module = self.application.json  # type: ignore[misc]
 
         # Re-push contexts that were preserved during the request.
         while self._new_contexts:

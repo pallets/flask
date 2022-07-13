@@ -31,7 +31,6 @@ from werkzeug.utils import redirect as _wz_redirect
 from werkzeug.wrappers import Response as BaseResponse
 
 from . import cli
-from . import json
 from . import typing as ft
 from .config import Config
 from .config import ConfigAttribute
@@ -50,7 +49,8 @@ from .helpers import get_env
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import locked_cached_property
-from .json import jsonify
+from .json.provider import DefaultJSONProvider
+from .json.provider import JSONProvider
 from .logging import create_logger
 from .scaffold import _endpoint_from_view_func
 from .scaffold import _sentinel
@@ -315,15 +315,37 @@ class Flask(Scaffold):
     #: ``USE_X_SENDFILE`` configuration key.  Defaults to ``False``.
     use_x_sendfile = ConfigAttribute("USE_X_SENDFILE")
 
-    #: The JSON encoder class to use.  Defaults to :class:`~flask.json.JSONEncoder`.
+    #: The JSON encoder class to use. Defaults to
+    #: :class:`~flask.json.JSONEncoder`.
+    #:
+    #: .. deprecated:: 2.2
+    #:      Will be removed in Flask 2.3. Customize
+    #:      :attr:`json_provider_class` instead.
     #:
     #: .. versionadded:: 0.10
-    json_encoder = json.JSONEncoder
+    json_encoder: None = None
 
-    #: The JSON decoder class to use.  Defaults to :class:`~flask.json.JSONDecoder`.
+    #: The JSON decoder class to use. Defaults to
+    #: :class:`~flask.json.JSONDecoder`.
+    #:
+    #: .. deprecated:: 2.2
+    #:      Will be removed in Flask 2.3. Customize
+    #:      :attr:`json_provider_class` instead.
     #:
     #: .. versionadded:: 0.10
-    json_decoder = json.JSONDecoder
+    json_decoder: None = None
+
+    json_provider_class: t.Type[JSONProvider] = DefaultJSONProvider
+    """A subclass of :class:`~flask.json.provider.JSONProvider`. An
+    instance is created and assigned to :attr:`app.json` when creating
+    the app.
+
+    The default, :class:`~flask.json.provider.DefaultJSONProvider`, uses
+    Python's built-in :mod:`json` library. A different provider can use
+    a different JSON library.
+
+    .. versionadded:: 2.2
+    """
 
     #: Options that are passed to the Jinja environment in
     #: :meth:`create_jinja_environment`. Changing these options after
@@ -361,10 +383,10 @@ class Flask(Scaffold):
             "TRAP_HTTP_EXCEPTIONS": False,
             "EXPLAIN_TEMPLATE_LOADING": False,
             "PREFERRED_URL_SCHEME": "http",
-            "JSON_AS_ASCII": True,
-            "JSON_SORT_KEYS": True,
-            "JSONIFY_PRETTYPRINT_REGULAR": False,
-            "JSONIFY_MIMETYPE": "application/json",
+            "JSON_AS_ASCII": None,
+            "JSON_SORT_KEYS": None,
+            "JSONIFY_PRETTYPRINT_REGULAR": None,
+            "JSONIFY_MIMETYPE": None,
             "TEMPLATES_AUTO_RELOAD": None,
             "MAX_COOKIE_SIZE": 4093,
         }
@@ -448,6 +470,22 @@ class Flask(Scaffold):
         #: .. versionadded:: 2.2
         #:     Moved from ``flask.abort``, which calls this object.
         self.aborter = self.make_aborter()
+
+        self.json: JSONProvider = self.json_provider_class(self)
+        """Provides access to JSON methods. Functions in ``flask.json``
+        will call methods on this provider when the application context
+        is active. Used for handling JSON requests and responses.
+
+        An instance of :attr:`json_provider_class`. Can be customized by
+        changing that attribute on a subclass, or by assigning to this
+        attribute afterwards.
+
+        The default, :class:`~flask.json.provider.DefaultJSONProvider`,
+        uses Python's built-in :mod:`json` library. A different provider
+        can use a different JSON library.
+
+        .. versionadded:: 2.2
+        """
 
         #: A list of functions that are called by
         #: :meth:`handle_url_build_error` when :meth:`.url_for` raises a
@@ -745,7 +783,7 @@ class Flask(Scaffold):
             session=session,
             g=g,
         )
-        rv.policies["json.dumps_function"] = json.dumps
+        rv.policies["json.dumps_function"] = self.json.dumps
         return rv
 
     def create_global_jinja_loader(self) -> DispatchingJinjaLoader:
@@ -1926,7 +1964,7 @@ class Flask(Scaffold):
                 )
                 status = headers = None
             elif isinstance(rv, (dict, list)):
-                rv = jsonify(rv)
+                rv = self.json.response(rv)
             elif isinstance(rv, BaseResponse) or callable(rv):
                 # evaluate a WSGI callable, or coerce a different response
                 # class to the correct type

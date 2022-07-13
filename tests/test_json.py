@@ -8,6 +8,7 @@ from werkzeug.http import http_date
 
 import flask
 from flask import json
+from flask.json.provider import DefaultJSONProvider
 
 
 @pytest.mark.parametrize("debug", (True, False))
@@ -48,9 +49,8 @@ def test_json_custom_mimetypes(app, client):
     "test_value,expected", [(True, '"\\u2603"'), (False, '"\u2603"')]
 )
 def test_json_as_unicode(test_value, expected, app, app_ctx):
-
-    app.config["JSON_AS_ASCII"] = test_value
-    rv = flask.json.dumps("\N{SNOWMAN}")
+    app.json.ensure_ascii = test_value
+    rv = app.json.dumps("\N{SNOWMAN}")
     assert rv == expected
 
 
@@ -170,7 +170,7 @@ def test_jsonify_aware_datetimes(tz):
     dt = datetime.datetime(2017, 1, 1, 12, 34, 56, tzinfo=tzinfo)
     gmt = FixedOffset(hours=0, name="GMT")
     expected = dt.astimezone(gmt).strftime('"%a, %d %b %Y %H:%M:%S %Z"')
-    assert flask.json.JSONEncoder().encode(dt) == expected
+    assert flask.json.dumps(dt) == expected
 
 
 def test_jsonify_uuid_types(app, client):
@@ -225,24 +225,25 @@ def test_json_customization(app, client):
         def __init__(self, val):
             self.val = val
 
-    class MyEncoder(flask.json.JSONEncoder):
-        def default(self, o):
-            if isinstance(o, X):
-                return f"<{o.val}>"
-            return flask.json.JSONEncoder.default(self, o)
+    def default(o):
+        if isinstance(o, X):
+            return f"<{o.val}>"
 
-    class MyDecoder(flask.json.JSONDecoder):
-        def __init__(self, *args, **kwargs):
-            kwargs.setdefault("object_hook", self.object_hook)
-            flask.json.JSONDecoder.__init__(self, *args, **kwargs)
+        return DefaultJSONProvider.default(o)
 
+    class CustomProvider(DefaultJSONProvider):
         def object_hook(self, obj):
             if len(obj) == 1 and "_foo" in obj:
                 return X(obj["_foo"])
+
             return obj
 
-    app.json_encoder = MyEncoder
-    app.json_decoder = MyDecoder
+        def loads(self, s, **kwargs):
+            kwargs.setdefault("object_hook", self.object_hook)
+            return super().loads(s, **kwargs)
+
+    app.json = CustomProvider(app)
+    app.json.default = default
 
     @app.route("/", methods=["POST"])
     def index():
@@ -250,49 +251,6 @@ def test_json_customization(app, client):
 
     rv = client.post(
         "/",
-        data=flask.json.dumps({"x": {"_foo": 42}}),
-        content_type="application/json",
-    )
-    assert rv.data == b'"<42>"'
-
-
-def test_blueprint_json_customization(app, client):
-    class X:
-        __slots__ = ("val",)
-
-        def __init__(self, val):
-            self.val = val
-
-    class MyEncoder(flask.json.JSONEncoder):
-        def default(self, o):
-            if isinstance(o, X):
-                return f"<{o.val}>"
-
-            return flask.json.JSONEncoder.default(self, o)
-
-    class MyDecoder(flask.json.JSONDecoder):
-        def __init__(self, *args, **kwargs):
-            kwargs.setdefault("object_hook", self.object_hook)
-            flask.json.JSONDecoder.__init__(self, *args, **kwargs)
-
-        def object_hook(self, obj):
-            if len(obj) == 1 and "_foo" in obj:
-                return X(obj["_foo"])
-
-            return obj
-
-    bp = flask.Blueprint("bp", __name__)
-    bp.json_encoder = MyEncoder
-    bp.json_decoder = MyDecoder
-
-    @bp.route("/bp", methods=["POST"])
-    def index():
-        return flask.json.dumps(flask.request.get_json()["x"])
-
-    app.register_blueprint(bp)
-
-    rv = client.post(
-        "/bp",
         data=flask.json.dumps({"x": {"_foo": 42}}),
         content_type="application/json",
     )
@@ -330,8 +288,7 @@ def test_modified_url_encoding(app, client):
 
 def test_json_key_sorting(app, client):
     app.debug = True
-
-    assert app.config["JSON_SORT_KEYS"]
+    assert app.json.sort_keys
     d = dict.fromkeys(range(20), "foo")
 
     @app.route("/")

@@ -301,6 +301,10 @@ The following configuration values are used internally by Flask:
 
     Default: ``True``
 
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Set ``app.json.ensure_ascii``
+        instead.
+
 .. py:data:: JSON_SORT_KEYS
 
     Sort the keys of JSON objects alphabetically. This is useful for caching
@@ -310,18 +314,29 @@ The following configuration values are used internally by Flask:
 
     Default: ``True``
 
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Set ``app.json.sort_keys``
+        instead.
+
 .. py:data:: JSONIFY_PRETTYPRINT_REGULAR
 
-    ``jsonify`` responses will be output with newlines, spaces, and indentation
-    for easier reading by humans. Always enabled in debug mode.
+    :func:`~flask.jsonify` responses will be output with newlines,
+    spaces, and indentation for easier reading by humans. Always enabled
+    in debug mode.
 
     Default: ``False``
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Set ``app.json.compact`` instead.
 
 .. py:data:: JSONIFY_MIMETYPE
 
     The mimetype of ``jsonify`` responses.
 
     Default: ``'application/json'``
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Set ``app.json.mimetype`` instead.
 
 .. py:data:: TEMPLATES_AUTO_RELOAD
 
@@ -386,6 +401,12 @@ The following configuration values are used internally by Flask:
 
 .. versionchanged:: 2.2
     Removed ``PRESERVE_CONTEXT_ON_EXCEPTION``.
+
+.. versionchanged:: 2.2
+    ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``,
+    ``JSONIFY_MIMETYPE``, and ``JSONIFY_PRETTYPRINT_REGULAR`` will be
+    removed in Flask 2.3. The default ``app.json`` provider has
+    equivalent attributes instead.
 
 
 Configuring from Python Files
