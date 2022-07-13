@@ -3,7 +3,7 @@
 Version 2.1.3
 -------------
 
-Unreleased
+Released 2022-07-13
 
 -   Inline some optional imports that are only used for certain CLI
     commands. :pr:`4606`
