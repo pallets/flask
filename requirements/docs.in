@@ -1,5 +1,7 @@
 Pallets-Sphinx-Themes
-Sphinx
+# sphinx 5 introduced error in references from werkzeug in docstrings
+Sphinx < 5
 sphinx-issues
 sphinxcontrib-log-cabinet
-sphinx-tabs
+# sphinx-tabs 3.4 requires docutils 0.18, sphinx < 5 requires < 0.18
+sphinx-tabs < 3.4

@@ -96,13 +96,16 @@ Unreleased
 Version 2.1.3
 -------------
 
-Unreleased
+Released 2022-07-13
 
 -   Inline some optional imports that are only used for certain CLI
     commands. :pr:`4606`
 -   Relax type annotation for ``after_request`` functions. :issue:`4600`
 -   ``instance_path`` for namespace packages uses the path closest to
     the imported submodule. :issue:`4600`
+-   Clearer error message when ``render_template`` and
+    ``render_template_string`` are used outside an application context.
+    :pr:`4693`
 
 
 Version 2.1.2

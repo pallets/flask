@@ -15,5 +15,6 @@ markupsafe @ https://github.com/pallets/markupsafe/archive/refs/heads/main.tar.g
     # via
     #   -r requirements/tests-pallets-dev.in
     #   jinja2
+    #   werkzeug
 werkzeug @ https://github.com/pallets/werkzeug/archive/refs/heads/main.tar.gz
     # via -r requirements/tests-pallets-dev.in

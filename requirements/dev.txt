@@ -8,6 +8,8 @@
 -r docs.txt
 -r tests.txt
 -r typing.txt
+build==0.8.0
+    # via pip-tools
 cfgv==3.3.1
     # via pre-commit
 click==8.1.3
@@ -24,17 +26,17 @@ greenlet==1.1.2 ; python_version < "3.11"
     # via -r requirements/tests.in
 identify==2.5.1
     # via pre-commit
-nodeenv==1.6.0
+nodeenv==1.7.0
     # via pre-commit
 pep517==0.12.0
-    # via pip-tools
+    # via build
 pip-compile-multi==2.4.5
     # via -r requirements/dev.in
-pip-tools==6.6.2
+pip-tools==6.8.0
     # via pip-compile-multi
 platformdirs==2.5.2
     # via virtualenv
-pre-commit==2.19.0
+pre-commit==2.20.0
     # via -r requirements/dev.in
 pyyaml==6.0
     # via pre-commit
@@ -48,9 +50,9 @@ toml==0.10.2
     #   tox
 toposort==1.7
     # via pip-compile-multi
-tox==3.25.0
+tox==3.25.1
     # via -r requirements/dev.in
-virtualenv==20.14.1
+virtualenv==20.15.1
     # via
     #   pre-commit
     #   tox
