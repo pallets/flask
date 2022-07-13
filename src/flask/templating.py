@@ -144,6 +144,12 @@ def render_template(
                     context of the template.
     """
     ctx = _app_ctx_stack.top
+
+    if ctx is None:
+        raise RuntimeError(
+            "This function can only be used when an application context is active."
+        )
+
     ctx.app.update_template_context(context)
     return _render(
         ctx.app.jinja_env.get_or_select_template(template_name_or_list),
@@ -162,5 +168,11 @@ def render_template_string(source: str, **context: t.Any) -> str:
                     context of the template.
     """
     ctx = _app_ctx_stack.top
+
+    if ctx is None:
+        raise RuntimeError(
+            "This function can only be used when an application context is active."
+        )
+
     ctx.app.update_template_context(context)
     return _render(ctx.app.jinja_env.from_string(source), context, ctx.app)
