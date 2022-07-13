@@ -9,7 +9,7 @@ Released 2022-07-13
     commands. :pr:`4606`
 -   Relax type annotation for ``after_request`` functions. :issue:`4600`
 -   ``instance_path`` for namespace packages uses the path closest to
-    the imported submodule. :issue:`4600`
+    the imported submodule. :issue:`4610`
 -   Clearer error message when ``render_template`` and
     ``render_template_string`` are used outside an application context.
     :pr:`4693`
