@@ -112,7 +112,7 @@ def test_path_is_url(app):
 
 def test_environbuilder_json_dumps(app):
     """EnvironBuilder.json_dumps() takes settings from the app."""
-    app.config["JSON_AS_ASCII"] = False
+    app.json.ensure_ascii = False
     eb = EnvironBuilder(app, json="\u20ac")
     assert eb.input_stream.read().decode("utf8") == '"\u20ac"'
 

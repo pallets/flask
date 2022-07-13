@@ -1,15 +1,12 @@
-import dataclasses
-import decimal
+from __future__ import annotations
+
 import json as _json
 import typing as t
-import uuid
-from datetime import date
 
 from jinja2.utils import htmlsafe_json_dumps as _jinja_htmlsafe_dumps
-from werkzeug.http import http_date
 
 from ..globals import current_app
-from ..globals import request
+from .provider import _default
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from ..app import Flask
@@ -31,7 +28,22 @@ class JSONEncoder(_json.JSONEncoder):
 
     Assign a subclass of this to :attr:`flask.Flask.json_encoder` or
     :attr:`flask.Blueprint.json_encoder` to override the default.
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Use ``app.json`` instead.
     """
+
+    def __init__(self, **kwargs) -> None:
+        import warnings
+
+        warnings.warn(
+            "'JSONEncoder' is deprecated and will be removed in"
+            " Flask 2.3. Use 'Flask.json' to provide an alternate"
+            " JSON implementation instead.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        super().__init__(**kwargs)
 
     def default(self, o: t.Any) -> t.Any:
         """Convert ``o`` to a JSON serializable type. See
@@ -39,15 +51,7 @@ class JSONEncoder(_json.JSONEncoder):
         overriding how basic types like ``str`` or ``list`` are
         serialized, they are handled before this method.
         """
-        if isinstance(o, date):
-            return http_date(o)
-        if isinstance(o, (decimal.Decimal, uuid.UUID)):
-            return str(o)
-        if dataclasses and dataclasses.is_dataclass(o):
-            return dataclasses.asdict(o)
-        if hasattr(o, "__html__"):
-            return str(o.__html__())
-        return super().default(o)
+        return _default(o)
 
 
 class JSONDecoder(_json.JSONDecoder):
@@ -58,144 +62,193 @@ class JSONDecoder(_json.JSONDecoder):
 
     Assign a subclass of this to :attr:`flask.Flask.json_decoder` or
     :attr:`flask.Blueprint.json_decoder` to override the default.
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Use ``app.json`` instead.
     """
 
+    def __init__(self, **kwargs) -> None:
+        import warnings
 
-def _dump_arg_defaults(
-    kwargs: t.Dict[str, t.Any], app: t.Optional["Flask"] = None
-) -> None:
-    """Inject default arguments for dump functions."""
-    if app is None:
-        app = current_app
-
-    if app:
-        cls = app.json_encoder
-        bp = app.blueprints.get(request.blueprint) if request else None  # type: ignore
-        if bp is not None and bp.json_encoder is not None:
-            cls = bp.json_encoder
-
-        # Only set a custom encoder if it has custom behavior. This is
-        # faster on PyPy.
-        if cls is not _json.JSONEncoder:
-            kwargs.setdefault("cls", cls)
-
-        kwargs.setdefault("cls", cls)
-        kwargs.setdefault("ensure_ascii", app.config["JSON_AS_ASCII"])
-        kwargs.setdefault("sort_keys", app.config["JSON_SORT_KEYS"])
-    else:
-        kwargs.setdefault("sort_keys", True)
-        kwargs.setdefault("cls", JSONEncoder)
+        warnings.warn(
+            "'JSONDecoder' is deprecated and will be removed in"
+            " Flask 2.3. Use 'Flask.json' to provide an alternate"
+            " JSON implementation instead.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        super().__init__(**kwargs)
 
 
-def _load_arg_defaults(
-    kwargs: t.Dict[str, t.Any], app: t.Optional["Flask"] = None
-) -> None:
-    """Inject default arguments for load functions."""
-    if app is None:
-        app = current_app
+def dumps(obj: t.Any, *, app: Flask | None = None, **kwargs: t.Any) -> str:
+    """Serialize data as JSON.
 
-    if app:
-        cls = app.json_decoder
-        bp = app.blueprints.get(request.blueprint) if request else None  # type: ignore
-        if bp is not None and bp.json_decoder is not None:
-            cls = bp.json_decoder
+    If :data:`~flask.current_app` is available, it will use its
+    :meth:`app.json.dumps() <flask.json.provider.JSONProvider.dumps>`
+    method, otherwise it will use :func:`json.dumps`.
 
-        # Only set a custom decoder if it has custom behavior. This is
-        # faster on PyPy.
-        if cls not in {JSONDecoder, _json.JSONDecoder}:
-            kwargs.setdefault("cls", cls)
+    :param obj: The data to serialize.
+    :param kwargs: Arguments passed to the ``dumps`` implementation.
 
+    .. versionchanged:: 2.2
+        Calls ``current_app.json.dumps``, allowing an app to override
+        the behavior.
 
-def dumps(obj: t.Any, app: t.Optional["Flask"] = None, **kwargs: t.Any) -> str:
-    """Serialize an object to a string of JSON.
-
-    Takes the same arguments as the built-in :func:`json.dumps`, with
-    some defaults from application configuration.
-
-    :param obj: Object to serialize to JSON.
-    :param app: Use this app's config instead of the active app context
-        or defaults.
-    :param kwargs: Extra arguments passed to :func:`json.dumps`.
+    .. versionchanged:: 2.2
+        The ``app`` parameter will be removed in Flask 2.3.
 
     .. versionchanged:: 2.0.2
         :class:`decimal.Decimal` is supported by converting to a string.
 
     .. versionchanged:: 2.0
-        ``encoding`` is deprecated and will be removed in Flask 2.1.
+        ``encoding`` will be removed in Flask 2.1.
 
     .. versionchanged:: 1.0.3
         ``app`` can be passed directly, rather than requiring an app
         context for configuration.
     """
-    _dump_arg_defaults(kwargs, app=app)
+    if app is not None:
+        import warnings
+
+        warnings.warn(
+            "The 'app' parameter is deprecated and will be removed in"
+            " Flask 2.3. Call 'app.json.dumps' directly instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    else:
+        app = current_app
+
+    if app:
+        return app.json.dumps(obj, **kwargs)
+
+    kwargs.setdefault("default", _default)
     return _json.dumps(obj, **kwargs)
 
 
 def dump(
-    obj: t.Any, fp: t.IO[str], app: t.Optional["Flask"] = None, **kwargs: t.Any
+    obj: t.Any, fp: t.IO[str], *, app: Flask | None = None, **kwargs: t.Any
 ) -> None:
-    """Serialize an object to JSON written to a file object.
+    """Serialize data as JSON and write to a file.
 
-    Takes the same arguments as the built-in :func:`json.dump`, with
-    some defaults from application configuration.
+    If :data:`~flask.current_app` is available, it will use its
+    :meth:`app.json.dump() <flask.json.provider.JSONProvider.dump>`
+    method, otherwise it will use :func:`json.dump`.
 
-    :param obj: Object to serialize to JSON.
-    :param fp: File object to write JSON to.
-    :param app: Use this app's config instead of the active app context
-        or defaults.
-    :param kwargs: Extra arguments passed to :func:`json.dump`.
+    :param obj: The data to serialize.
+    :param fp: A file opened for writing text. Should use the UTF-8
+        encoding to be valid JSON.
+    :param kwargs: Arguments passed to the ``dump`` implementation.
+
+    .. versionchanged:: 2.2
+        Calls ``current_app.json.dump``, allowing an app to override
+        the behavior.
+
+    .. versionchanged:: 2.2
+        The ``app`` parameter will be removed in Flask 2.3.
 
     .. versionchanged:: 2.0
-        Writing to a binary file, and the ``encoding`` argument, is
-        deprecated and will be removed in Flask 2.1.
+        Writing to a binary file, and the ``encoding`` argument, will be
+        removed in Flask 2.1.
     """
-    _dump_arg_defaults(kwargs, app=app)
-    _json.dump(obj, fp, **kwargs)
+    if app is not None:
+        import warnings
+
+        warnings.warn(
+            "The 'app' parameter is deprecated and will be removed in"
+            " Flask 2.3. Call 'app.json.dump' directly instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    else:
+        app = current_app
+
+    if app:
+        app.json.dump(obj, fp, **kwargs)
+    else:
+        kwargs.setdefault("default", _default)
+        _json.dump(obj, fp, **kwargs)
 
 
-def loads(
-    s: t.Union[str, bytes],
-    app: t.Optional["Flask"] = None,
-    **kwargs: t.Any,
-) -> t.Any:
-    """Deserialize an object from a string of JSON.
+def loads(s: str | bytes, *, app: Flask | None = None, **kwargs: t.Any) -> t.Any:
+    """Deserialize data as JSON.
 
-    Takes the same arguments as the built-in :func:`json.loads`, with
-    some defaults from application configuration.
+    If :data:`~flask.current_app` is available, it will use its
+    :meth:`app.json.loads() <flask.json.provider.JSONProvider.loads>`
+    method, otherwise it will use :func:`json.loads`.
 
-    :param s: JSON string to deserialize.
-    :param app: Use this app's config instead of the active app context
-        or defaults.
-    :param kwargs: Extra arguments passed to :func:`json.loads`.
+    :param s: Text or UTF-8 bytes.
+    :param kwargs: Arguments passed to the ``loads`` implementation.
+
+    .. versionchanged:: 2.2
+        Calls ``current_app.json.loads``, allowing an app to override
+        the behavior.
+
+    .. versionchanged:: 2.2
+        The ``app`` parameter will be removed in Flask 2.3.
 
     .. versionchanged:: 2.0
-        ``encoding`` is deprecated and will be removed in Flask 2.1. The
-        data must be a string or UTF-8 bytes.
+        ``encoding`` will be removed in Flask 2.1. The data must be a
+        string or UTF-8 bytes.
 
     .. versionchanged:: 1.0.3
         ``app`` can be passed directly, rather than requiring an app
         context for configuration.
     """
-    _load_arg_defaults(kwargs, app=app)
+    if app is not None:
+        import warnings
+
+        warnings.warn(
+            "The 'app' parameter is deprecated and will be removed in"
+            " Flask 2.3. Call 'app.json.loads' directly instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    else:
+        app = current_app
+
+    if app:
+        return app.json.loads(s, **kwargs)
+
     return _json.loads(s, **kwargs)
 
 
-def load(fp: t.IO[str], app: t.Optional["Flask"] = None, **kwargs: t.Any) -> t.Any:
-    """Deserialize an object from JSON read from a file object.
+def load(fp: t.IO[t.AnyStr], *, app: Flask | None = None, **kwargs: t.Any) -> t.Any:
+    """Deserialize data as JSON read from a file.
 
-    Takes the same arguments as the built-in :func:`json.load`, with
-    some defaults from application configuration.
+    If :data:`~flask.current_app` is available, it will use its
+    :meth:`app.json.load() <flask.json.provider.JSONProvider.load>`
+    method, otherwise it will use :func:`json.load`.
 
-    :param fp: File object to read JSON from.
-    :param app: Use this app's config instead of the active app context
-        or defaults.
-    :param kwargs: Extra arguments passed to :func:`json.load`.
+    :param fp: A file opened for reading text or UTF-8 bytes.
+    :param kwargs: Arguments passed to the ``load`` implementation.
+
+    .. versionchanged:: 2.2
+        Calls ``current_app.json.load``, allowing an app to override
+        the behavior.
+
+    .. versionchanged:: 2.2
+        The ``app`` parameter will be removed in Flask 2.3.
 
     .. versionchanged:: 2.0
-        ``encoding`` is deprecated and will be removed in Flask 2.1. The
-        file must be text mode, or binary mode with UTF-8 bytes.
+        ``encoding`` will be removed in Flask 2.1. The file must be text
+        mode, or binary mode with UTF-8 bytes.
     """
-    _load_arg_defaults(kwargs, app=app)
+    if app is not None:
+        import warnings
+
+        warnings.warn(
+            "The 'app' parameter is deprecated and will be removed in"
+            " Flask 2.3. Call 'app.json.load' directly instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    else:
+        app = current_app
+
+    if app:
+        return app.json.load(fp, **kwargs)
+
     return _json.load(fp, **kwargs)
 
 
@@ -211,6 +264,9 @@ def htmlsafe_dumps(obj: t.Any, **kwargs: t.Any) -> str:
     double quoted; either use single quotes or the ``|forceescape``
     filter.
 
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. This is built-in to Jinja now.
+
     .. versionchanged:: 2.0
         Uses :func:`jinja2.utils.htmlsafe_json_dumps`. The returned
         value is marked safe by wrapping in :class:`~markupsafe.Markup`.
@@ -220,6 +276,14 @@ def htmlsafe_dumps(obj: t.Any, **kwargs: t.Any) -> str:
         ``<script>`` tags, and single-quoted attributes without further
         escaping.
     """
+    import warnings
+
+    warnings.warn(
+        "'htmlsafe_dumps' is deprecated and will be removed in Flask"
+        " 2.3. Use 'jinja2.utils.htmlsafe_json_dumps' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _jinja_htmlsafe_dumps(obj, dumps=dumps, **kwargs)
 
 
@@ -227,77 +291,51 @@ def htmlsafe_dump(obj: t.Any, fp: t.IO[str], **kwargs: t.Any) -> None:
     """Serialize an object to JSON written to a file object, replacing
     HTML-unsafe characters with Unicode escapes. See
     :func:`htmlsafe_dumps` and :func:`dumps`.
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3.
     """
+    import warnings
+
+    warnings.warn(
+        "'htmlsafe_dump' is deprecated and will be removed in Flask"
+        " 2.3. Use 'jinja2.utils.htmlsafe_json_dumps' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     fp.write(htmlsafe_dumps(obj, **kwargs))
 
 
-def jsonify(*args: t.Any, **kwargs: t.Any) -> "Response":
-    """Serialize data to JSON and wrap it in a :class:`~flask.Response`
-    with the :mimetype:`application/json` mimetype.
+def jsonify(*args: t.Any, **kwargs: t.Any) -> Response:
+    """Serialize the given arguments as JSON, and return a
+    :class:`~flask.Response` object with the ``application/json``
+    mimetype. A dict or list returned from a view will be converted to a
+    JSON response automatically without needing to call this.
 
-    Uses :func:`dumps` to serialize the data, but ``args`` and
-    ``kwargs`` are treated as data rather than arguments to
-    :func:`json.dumps`.
+    This requires an active request or application context, and calls
+    :meth:`app.json.response() <flask.json.provider.JSONProvider.response>`.
 
-    1.  Single argument: Treated as a single value.
-    2.  Multiple arguments: Treated as a list of values.
-        ``jsonify(1, 2, 3)`` is the same as ``jsonify([1, 2, 3])``.
-    3.  Keyword arguments: Treated as a dict of values.
-        ``jsonify(data=data, errors=errors)`` is the same as
-        ``jsonify({"data": data, "errors": errors})``.
-    4.  Passing both arguments and keyword arguments is not allowed as
-        it's not clear what should happen.
+    In debug mode, the output is formatted with indentation to make it
+    easier to read. This may also be controlled by the provider.
 
-    .. code-block:: python
+    Either positional or keyword arguments can be given, not both.
+    If no arguments are given, ``None`` is serialized.
 
-        from flask import jsonify
+    :param args: A single value to serialize, or multiple values to
+        treat as a list to serialize.
+    :param kwargs: Treat as a dict to serialize.
 
-        @app.route("/users/me")
-        def get_current_user():
-            return jsonify(
-                username=g.user.username,
-                email=g.user.email,
-                id=g.user.id,
-            )
-
-    Will return a JSON response like this:
-
-    .. code-block:: javascript
-
-        {
-          "username": "admin",
-          "email": "admin@localhost",
-          "id": 42
-        }
-
-    The default output omits indents and spaces after separators. In
-    debug mode or if :data:`JSONIFY_PRETTYPRINT_REGULAR` is ``True``,
-    the output will be formatted to be easier to read.
+    .. versionchanged:: 2.2
+        Calls ``current_app.json.response``, allowing an app to override
+        the behavior.
 
     .. versionchanged:: 2.0.2
         :class:`decimal.Decimal` is supported by converting to a string.
 
     .. versionchanged:: 0.11
-        Added support for serializing top-level arrays. This introduces
-        a security risk in ancient browsers. See :ref:`security-json`.
+        Added support for serializing top-level arrays. This was a
+        security risk in ancient browsers. See :ref:`security-json`.
 
     .. versionadded:: 0.2
     """
-    indent = None
-    separators = (",", ":")
-
-    if current_app.config["JSONIFY_PRETTYPRINT_REGULAR"] or current_app.debug:
-        indent = 2
-        separators = (", ", ": ")
-
-    if args and kwargs:
-        raise TypeError("jsonify() behavior undefined when passed both args and kwargs")
-    elif len(args) == 1:  # single args are passed directly to dumps()
-        data = args[0]
-    else:
-        data = args or kwargs
-
-    return current_app.response_class(
-        f"{dumps(data, indent=indent, separators=separators)}\n",
-        mimetype=current_app.config["JSONIFY_MIMETYPE"],
-    )
+    return current_app.json.response(*args, **kwargs)

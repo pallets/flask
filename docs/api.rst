@@ -236,21 +236,15 @@ JSON Support
 
 .. module:: flask.json
 
-Flask uses the built-in :mod:`json` module for handling JSON. It will
-use the current blueprint's or application's JSON encoder and decoder
-for easier customization. By default it handles some extra data types:
+Flask uses Python's built-in :mod:`json` module for handling JSON by
+default. The JSON implementation can be changed by assigning a different
+provider to :attr:`flask.Flask.json_provider_class` or
+:attr:`flask.Flask.json`. The functions provided by ``flask.json`` will
+use methods on ``app.json`` if an app context is active.
 
--   :class:`datetime.datetime` and :class:`datetime.date` are serialized
-    to :rfc:`822` strings. This is the same as the HTTP date format.
--   :class:`uuid.UUID` is serialized to a string.
--   :class:`dataclasses.dataclass` is passed to
-    :func:`dataclasses.asdict`.
--   :class:`~markupsafe.Markup` (or any object with a ``__html__``
-    method) will call the ``__html__`` method to get a string.
-
-Jinja's ``|tojson`` filter is configured to use Flask's :func:`dumps`
-function. The filter marks the output with ``|safe`` automatically. Use
-the filter to render data inside ``<script>`` tags.
+Jinja's ``|tojson`` filter is configured to use the app's JSON provider.
+The filter marks the output with ``|safe``. Use it to render data inside
+HTML ``<script>`` tags.
 
 .. sourcecode:: html+jinja
 
@@ -268,6 +262,14 @@ the filter to render data inside ``<script>`` tags.
 .. autofunction:: loads
 
 .. autofunction:: load
+
+.. autoclass:: flask.json.provider.JSONProvider
+    :members:
+    :member-order: bysource
+
+.. autoclass:: flask.json.provider.DefaultJSONProvider
+    :members:
+    :member-order: bysource
 
 .. autoclass:: JSONEncoder
    :members:

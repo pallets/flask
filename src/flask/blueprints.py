@@ -174,10 +174,16 @@ class Blueprint(Scaffold):
 
     #: Blueprint local JSON encoder class to use. Set to ``None`` to use
     #: the app's :class:`~flask.Flask.json_encoder`.
-    json_encoder = None
+    #:
+    #: .. deprecated:: 2.2
+    #:      Will be removed in Flask 2.3.
+    json_encoder: None = None
     #: Blueprint local JSON decoder class to use. Set to ``None`` to use
     #: the app's :class:`~flask.Flask.json_decoder`.
-    json_decoder = None
+    #:
+    #: .. deprecated:: 2.2
+    #:      Will be removed in Flask 2.3.
+    json_decoder: None = None
 
     def __init__(
         self,
