@@ -408,7 +408,7 @@ class ScriptInfo:
 pass_script_info = click.make_pass_decorator(ScriptInfo, ensure=True)
 
 
-def with_appcontext(f=None):
+def with_appcontext(f: t.Optional[t.Callable] = None) -> t.Callable:
     """Wraps a callback so that it's guaranteed to be executed with the
     script's application context.
 

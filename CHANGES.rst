@@ -95,6 +95,8 @@ Unreleased
     functions. :pr:`4695`
 -   It is now possible to also call ``@with_appcontext`` decorator
     with parenthesis, to have additional parity with Quart.
+-   The ``@with_appcontext`` decorator decorator has type hints.
+
 
 Version 2.1.3
 -------------
