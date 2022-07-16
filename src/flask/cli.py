@@ -408,7 +408,7 @@ class ScriptInfo:
 pass_script_info = click.make_pass_decorator(ScriptInfo, ensure=True)
 
 
-def with_appcontext(f):
+def with_appcontext(f=None):
     """Wraps a callback so that it's guaranteed to be executed with the
     script's application context.
 
@@ -417,10 +417,17 @@ def with_appcontext(f):
     decorator is not required in that case.
 
     .. versionchanged:: 2.2
+        It is now also possible to call the decorator with parenthesis.
+
+    .. versionchanged:: 2.2
         The app context is active for subcommands as well as the
         decorated callback. The app context is always available to
         ``app.cli`` command and parameter callbacks.
     """
+
+    # Decorator was used with parenthesis
+    if f is None:
+        return with_appcontext
 
     @click.pass_context
     def decorator(__ctx, *args, **kwargs):

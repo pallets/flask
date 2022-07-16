@@ -341,6 +341,19 @@ def test_with_appcontext(runner):
     assert result.output == "testapp\n"
 
 
+def test_with_appcontext_parenthesis(runner):
+    @click.command()
+    @with_appcontext()
+    def testcmd():
+        click.echo(current_app.name)
+
+    obj = ScriptInfo(create_app=lambda: Flask("testapp"))
+
+    result = runner.invoke(testcmd, obj=obj)
+    assert result.exit_code == 0
+    assert result.output == "testapp\n"
+
+
 def test_appgroup_app_context(runner):
     @click.group(cls=AppGroup)
     def cli():

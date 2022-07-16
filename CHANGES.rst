@@ -93,7 +93,8 @@ Unreleased
     JSON response like a dict is. :issue:`4672`
 -   When type checking, allow ``TypedDict`` to be returned from view
     functions. :pr:`4695`
-
+-   It is now possible to also call ``@with_appcontext`` decorator
+    with parenthesis, to have additional parity with Quart.
 
 Version 2.1.3
 -------------
