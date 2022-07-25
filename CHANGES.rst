@@ -15,6 +15,7 @@ Unreleased
     -   The ``RequestContext.g`` property returning ``AppContext.g`` is
         removed.
 
+-   Update Werkzeug dependency to >= 2.2.
 -   The app and request contexts are managed using Python context vars
     directly rather than Werkzeug's ``LocalStack``. This should result
     in better performance and memory use. :pr:`4682`
