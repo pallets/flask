@@ -552,53 +552,36 @@ script is available. Note that you don't need to set ``--app``. ::
 PyCharm Integration
 -------------------
 
-PyCharm Professional provides a special Flask run configuration. For
-the Community Edition, we need to configure it to call the ``flask run``
-CLI command with the correct environment variables. These instructions
-should be similar for any other IDE you might want to use.
+PyCharm Professional provides a special Flask run configuration to run the development
+server. For the Community Edition, and for other commands besides ``run``, you need to
+create a custom run configuration. These instructions should be similar for any other
+IDE you use.
 
-In PyCharm, with your project open, click on *Run* from the menu bar and
-go to *Edit Configurations*. You'll be greeted by a screen similar to
-this:
+In PyCharm, with your project open, click on *Run* from the menu bar and go to *Edit
+Configurations*. You'll see a screen similar to this:
 
-.. image:: _static/pycharm-runconfig.png
+.. image:: _static/pycharm-run-config.png
     :align: center
     :class: screenshot
-    :alt: Screenshot of PyCharms's run configuration settings.
+    :alt: Screenshot of PyCharm run configuration.
 
-There's quite a few options to change, but once we've done it for one
-command, we can easily copy the entire configuration and make a single
-tweak to give us access to other commands, including any custom ones you
-may implement yourself.
+Once you create a configuration for the ``flask run``, you can copy and change it to
+call any other command.
 
-Click the + (*Add New Configuration*) button and select *Python*. Give
-the configuration a name such as "flask run". For the ``flask run``
-command, check "Single instance only" since you can't run the server
-more than once at the same time.
+Click the *+ (Add New Configuration)* button and select *Python*. Give the configuration
+a name such as "flask run".
 
-Select *Module name* from the dropdown (**A**) then input ``flask``.
+Click the *Script path* dropdown and change it to *Module name*, then input ``flask``.
 
-The *Parameters* field (**B**) is set to the CLI command to execute
-(with any arguments). In this example we use ``run``, which will run
-the development server.
+The *Parameters* field is set to the CLI command to execute along with any arguments.
+This example uses ``--app hello --debug run``, which will run the development server in
+debug mode. ``--app hello`` should be the import or file with your Flask app.
 
-You can skip this next step if you're using :ref:`dotenv`. We need to
-add an environment variable (**C**) to identify our application. Click
-on the browse button and add an entry with ``FLASK_APP`` on the left and
-the Python import or file on the right (``hello`` for example). Add an
-entry with ``FLASK_ENV`` and set it to ``development``.
+If you installed your project as a package in your virtualenv, you may uncheck the
+*PYTHONPATH* options. This will more accurately match how you deploy later.
 
-Next we need to set the working directory (**D**) to be the folder where
-our application resides.
+Click *OK* to save and close the configuration. Select the configuration in the main
+PyCharm window and click the play button next to it to run the server.
 
-If you have installed your project as a package in your virtualenv, you
-may untick the *PYTHONPATH* options (**E**). This will more accurately
-match how you deploy the app later.
-
-Click *Apply* to save the configuration, or *OK* to save and close the
-window. Select the configuration in the main PyCharm window and click
-the play button next to it to run the server.
-
-Now that we have a configuration which runs ``flask run`` from within
-PyCharm, we can copy that configuration and alter the *Script* argument
-to run a different CLI command, e.g. ``flask shell``.
+Now that you have a configuration for ``flask run``, you can copy that configuration and
+change the *Parameters* argument to run a different CLI command.
