@@ -127,24 +127,23 @@ Run The Application
 
 Now you can run your application using the ``flask`` command. From the
 terminal, tell Flask where to find your application, then run it in
-development mode. Remember, you should still be in the top-level
+debug mode. Remember, you should still be in the top-level
 ``flask-tutorial`` directory, not the ``flaskr`` package.
 
-Development mode shows an interactive debugger whenever a page raises an
+Debug mode shows an interactive debugger whenever a page raises an
 exception, and restarts the server whenever you make changes to the
 code. You can leave it running and just reload the browser page as you
 follow the tutorial.
 
 .. code-block:: text
 
-    $ flask --app flaskr --env development run
+    $ flask --app flaskr --debug run
 
 You'll see output similar to this:
 
 .. code-block:: text
 
      * Serving Flask app "flaskr"
-     * Environment: development
      * Debug mode: on
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
      * Restarting with stat

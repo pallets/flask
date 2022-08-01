@@ -104,14 +104,12 @@ error occurs during a request.
     security risk. Do not run the development server or debugger in a
     production environment.
 
-To enable all development features, set the ``--env`` option to
-``development``.
+To enable debug mode, use the ``--debug`` option.
 
 .. code-block:: text
 
-    $ flask --app hello --env development run
+    $ flask --app hello --debug run
      * Serving Flask app 'hello'
-     * Environment: development
      * Debug mode: on
      * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
      * Restarting with stat
@@ -120,8 +118,7 @@ To enable all development features, set the ``--env`` option to
 
 See also:
 
--   :doc:`/server` and :doc:`/cli` for information about running in
-    development mode.
+-   :doc:`/server` and :doc:`/cli` for information about running in debug mode.
 -   :doc:`/debugging` for information about using the built-in debugger
     and other debuggers.
 -   :doc:`/logging` and :doc:`/errorhandling` to log errors and display

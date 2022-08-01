@@ -39,28 +39,22 @@ during a request. This debugger should only be used during development.
     security risk. Do not run the development server or debugger in a
     production environment.
 
-To enable the debugger, run the development server with the environment
-set to ``development``. This puts Flask in debug mode, which changes how
-it handles some errors, and enables the debugger and reloader.
+The debugger is enabled by default when the development server is run in debug mode.
 
 .. code-block:: text
 
-    $ flask --app hello --env development run
+    $ flask --app hello --debug run
 
-``FLASK_ENV`` can also be set as an environment variable. When running
-from Python code, passing ``debug=True`` enables debug mode, which is
-mostly equivalent. Debug mode can be controlled separately from the
-environment with the ``--debug/--no-debug`` option or the
-``FLASK_DEBUG`` environment variable.
+When running from Python code, passing ``debug=True`` enables debug mode, which is
+mostly equivalent.
 
 .. code-block:: python
 
     app.run(debug=True)
 
-:doc:`/server` and :doc:`/cli` have more information about running the
-debugger, debug mode, and development mode. More information about the
-debugger can be found in the `Werkzeug documentation
-<https://werkzeug.palletsprojects.com/debug/>`__.
+:doc:`/server` and :doc:`/cli` have more information about running the debugger and
+debug mode. More information about the debugger can be found in the `Werkzeug
+documentation <https://werkzeug.palletsprojects.com/debug/>`__.
 
 
 External Debuggers
@@ -78,7 +72,7 @@ which can interfere.
 
 .. code-block:: text
 
-    $ flask --app hello --env development run --no-debugger --no-reload
+    $ flask --app hello --debug run --no-debugger --no-reload
 
 When running from Python:
 

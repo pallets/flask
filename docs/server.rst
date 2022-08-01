@@ -3,9 +3,9 @@
 Development Server
 ==================
 
-Flask provides a ``run`` command to run the application with a
-development server. In development mode, this server provides an
-interactive debugger and will reload when code is changed.
+Flask provides a ``run`` command to run the application with a development server. In
+debug mode, this server provides an interactive debugger and will reload when code is
+changed.
 
 .. warning::
 
@@ -18,65 +18,18 @@ interactive debugger and will reload when code is changed.
 Command Line
 ------------
 
-The ``flask run`` command line script is the recommended way to run the
-development server. Use the ``--app`` option to point to your
-application, and the ``--env development`` option to fully enable
-development mode.
+The ``flask run`` CLI command is the recommended way to run the development server. Use
+the ``--app`` option to point to your application, and the ``--debug`` option to enable
+debug mode.
 
 .. code-block:: text
 
-    $ flask --app hello --env development run
+    $ flask --app hello --debug run
 
-These options (and any others) can also be set using environment
-variables.
-
-.. tabs::
-
-   .. group-tab:: Bash
-
-      .. code-block:: text
-
-         $ export FLASK_APP=hello
-         $ export FLASK_ENV=development
-         $ flask run
-
-   .. group-tab:: Fish
-
-      .. code-block:: text
-
-         $ set -x FLASK_APP hello
-         $ export FLASK_ENV=development
-         $ flask run
-
-   .. group-tab:: CMD
-
-      .. code-block:: text
-
-         > set FLASK_APP=hello
-         > set FLASK_ENV=development
-         > flask run
-
-   .. group-tab:: Powershell
-
-      .. code-block:: text
-
-         > $env:FLASK_APP = "hello"
-         > $env:FLASK_ENV = "development"
-         > flask run
-
-This enables the development environment, including the interactive
-debugger and reloader, and then starts the server on
-http://localhost:5000/. Use ``flask run --help`` to see the available
-options, and  :doc:`/cli` for detailed instructions about configuring
-and using the CLI.
-
-.. note::
-
-    Debug mode can be controlled separately from the development
-    environment with the ``--debug/--no-debug`` option or the
-    ``FLASK_DEBUG`` environment variable. This is how older versions of
-    Flask worked. You should prefer setting the development environment
-    as shown above.
+This enables debug mode, including the interactive debugger and reloader, and then
+starts the server on http://localhost:5000/. Use ``flask run --help`` to see the
+available options, and :doc:`/cli` for detailed instructions about configuring and using
+the CLI.
 
 
 .. _address-already-in-use:
@@ -144,18 +97,13 @@ while still allowing the server to handle errors on reload.
 In Code
 -------
 
-As an alternative to the ``flask run`` command, the development server
-can also be started from Python with the :meth:`Flask.run` method. This
-method takes arguments similar to the CLI options to control the server.
-The main difference from the CLI command is that the server will crash
-if there are errors when reloading.
+The development server can also be started from Python with the :meth:`Flask.run`
+method. This method takes arguments similar to the CLI options to control the server.
+The main difference from the CLI command is that the server will crash if there are
+errors when reloading. ``debug=True`` can be passed to enable debug mode.
 
-``debug=True`` can be passed to enable the debugger and reloader, but
-the ``FLASK_ENV=development`` environment variable is still required to
-fully enable development mode.
-
-Place the call in a main block, otherwise it will interfere when trying
-to import and run the application with a production server later.
+Place the call in a main block, otherwise it will interfere when trying to import and
+run the application with a production server later.
 
 .. code-block:: python
 

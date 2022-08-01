@@ -71,7 +71,7 @@ Run the Development Server
 The :func:`run <cli.run_command>` command will start the development server. It
 replaces the :meth:`Flask.run` method in most cases. ::
 
-    $ flask run
+    $ flask --app hello run
      * Serving Flask app "hello"
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
@@ -84,6 +84,42 @@ If another program is already using port 5000, you'll see
 ``OSError: [Errno 98]`` or ``OSError: [WinError 10013]`` when the
 server tries to start. See :ref:`address-already-in-use` for how to
 handle that.
+
+
+Debug Mode
+~~~~~~~~~~
+
+In debug mode, the ``flask run`` command will enable the interactive debugger and the
+reloader by default, and make errors easier to see and debug. To enable debug mode, use
+the ``--debug`` option.
+
+.. code-block:: console
+
+     $ flask --app hello --debug run
+      * Serving Flask app "hello"
+      * Debug mode: on
+      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+      * Restarting with inotify reloader
+      * Debugger is active!
+      * Debugger PIN: 223-456-919
+
+
+Watch and Ignore Files with the Reloader
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using debug mode, the reloader will trigger whenever your Python code or imported
+modules change. The reloader can watch additional files with the ``--extra-files``
+option. Multiple paths are separated with ``:``, or ``;`` on Windows.
+
+.. code-block:: text
+
+    $ flask run --extra-files file1:dirA/file2:dirB/
+     * Running on http://127.0.0.1:8000/
+     * Detected change in '/path/to/file1', reloading
+
+The reloader can also ignore files using :mod:`fnmatch` patterns with the
+``--exclude-patterns`` option. Multiple patterns are separated with ``:``, or ``;`` on
+Windows.
 
 
 Open a Shell
@@ -100,66 +136,6 @@ context will be active, and the app instance will be imported. ::
     >>>
 
 Use :meth:`~Flask.shell_context_processor` to add other automatic imports.
-
-
-Environments
-------------
-
-.. versionadded:: 1.0
-
-The environment in which the Flask app executes is set by the
-``FLASK_ENV`` environment variable. When using the ``flask`` command, it
-can also be set with the ``--env`` option. If not set it defaults to
-``production``. The other recognized environment is ``development``.
-Flask and extensions may choose to enable behaviors based on the
-environment.
-
-If the env is set to ``development``, the ``flask`` command will enable
-debug mode and ``flask run`` will enable the interactive debugger and
-reloader.
-
-.. code-block:: text
-
-     $ flask --app hello --env development run
-      * Serving Flask app "hello"
-      * Environment: development
-      * Debug mode: on
-      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-      * Restarting with inotify reloader
-      * Debugger is active!
-      * Debugger PIN: 223-456-919
-
-
-Watch Extra Files with the Reloader
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When using development mode, the reloader will trigger whenever your
-Python code or imported modules change. The reloader can watch
-additional files with the ``--extra-files`` option. Multiple paths are
-separated with ``:``, or ``;`` on Windows.
-
-.. code-block:: text
-
-    $ flask run --extra-files file1:dirA/file2:dirB/
-     * Running on http://127.0.0.1:8000/
-     * Detected change in '/path/to/file1', reloading
-
-
-Ignore files with the Reloader
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The reloader can also ignore files using :mod:`fnmatch` patterns with
-the ``--exclude-patterns`` option. Multiple patterns are separated with
-``:``, or ``;`` on Windows.
-
-
-Debug Mode
-----------
-
-Debug mode will be enabled when the execution environment is
-``development``, as described above. If you want to control debug mode
-separately, use the ``--debug/--no-debug`` option or the ``FLASK_DEBUG``
-environment variable.
 
 
 .. _dotenv:
