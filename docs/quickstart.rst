@@ -46,7 +46,7 @@ is with the ``-app`` option.
 .. code-block:: text
 
     $ flask --app hello run
-     * Serving Flask app 'hello' (lazy loading)
+     * Serving Flask app 'hello'
      * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
 
 .. admonition:: Application Discovery Behavior
@@ -110,7 +110,7 @@ To enable all development features, set the ``--env`` option to
 .. code-block:: text
 
     $ flask --app hello --env development run
-     * Serving Flask app 'hello' (lazy loading)
+     * Serving Flask app 'hello'
      * Environment: development
      * Debug mode: on
      * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)

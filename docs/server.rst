@@ -127,23 +127,18 @@ macOS Monterey and later automatically starts a service that uses port
 disable "AirPlay Receiver".
 
 
-Lazy or Eager Loading
-~~~~~~~~~~~~~~~~~~~~~
+Deferred Errors on Reload
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When using the ``flask run`` command with the reloader, the server will
 continue to run even if you introduce syntax errors or other
 initialization errors into the code. Accessing the site will show the
 interactive debugger for the error, rather than crashing the server.
-This feature is called "lazy loading".
 
 If a syntax error is already present when calling ``flask run``, it will
 fail immediately and show the traceback rather than waiting until the
 site is accessed. This is intended to make errors more visible initially
 while still allowing the server to handle errors on reload.
-
-To override this behavior and always fail immediately, even on reload,
-pass the ``--eager-loading`` option. To always keep the server running,
-even on the initial call, pass ``--lazy-loading``.
 
 
 In Code

@@ -1,7 +1,6 @@
 # This file was part of Flask-CLI and was modified under the terms of
 # its Revised BSD License. Copyright © 2015 CERN.
 import os
-import platform
 import ssl
 import sys
 import types
@@ -17,7 +16,6 @@ from flask import Blueprint
 from flask import current_app
 from flask import Flask
 from flask.cli import AppGroup
-from flask.cli import DispatchingApp
 from flask.cli import find_best_app
 from flask.cli import FlaskGroup
 from flask.cli import get_version
@@ -288,26 +286,6 @@ def test_scriptinfo(test_apps, monkeypatch):
     obj = ScriptInfo()
     app = obj.load_app()
     assert app.name == "testapp"
-
-
-@pytest.mark.xfail(platform.python_implementation() == "PyPy", reason="flaky on pypy")
-def test_lazy_load_error(monkeypatch):
-    """When using lazy loading, the correct exception should be
-    re-raised.
-    """
-
-    class BadExc(Exception):
-        pass
-
-    def bad_load():
-        raise BadExc
-
-    lazy = DispatchingApp(bad_load, use_eager_loading=False)
-
-    # reduce flakiness by waiting for the internal loading lock
-    with lazy._lock:
-        with pytest.raises(BadExc):
-            lazy._flush_bg_loading_exception()
 
 
 def test_app_cli_has_app_context(app, runner):
