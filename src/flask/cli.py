@@ -214,8 +214,6 @@ def prepare_import(path):
 
 
 def locate_app(module_name, app_name, raise_if_not_found=True):
-    __traceback_hide__ = True  # noqa: F841
-
     try:
         __import__(module_name)
     except ImportError:
@@ -296,8 +294,6 @@ class ScriptInfo:
         this multiple times will just result in the already loaded app to
         be returned.
         """
-        __traceback_hide__ = True  # noqa: F841
-
         if self._loaded_app is not None:
             return self._loaded_app
 
