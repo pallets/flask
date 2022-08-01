@@ -29,22 +29,41 @@ def get_env() -> str:
     """Get the environment the app is running in, indicated by the
     :envvar:`FLASK_ENV` environment variable. The default is
     ``'production'``.
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3.
     """
+    import warnings
+
+    warnings.warn(
+        "'FLASK_ENV' and 'get_env' are deprecated and will be removed"
+        " in Flask 2.3. Use 'FLASK_DEBUG' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return os.environ.get("FLASK_ENV") or "production"
 
 
 def get_debug_flag() -> bool:
-    """Get whether debug mode should be enabled for the app, indicated
-    by the :envvar:`FLASK_DEBUG` environment variable. The default is
-    ``True`` if :func:`.get_env` returns ``'development'``, or ``False``
-    otherwise.
+    """Get whether debug mode should be enabled for the app, indicated by the
+    :envvar:`FLASK_DEBUG` environment variable. The default is ``False``.
     """
     val = os.environ.get("FLASK_DEBUG")
 
     if not val:
-        return get_env() == "development"
+        env = os.environ.get("FLASK_ENV")
 
-    return val.lower() not in ("0", "false", "no")
+        if env is not None:
+            print(
+                "'FLASK_ENV' is deprecated and will not be used in"
+                " Flask 2.3. Use 'FLASK_DEBUG' instead.",
+                file=sys.stderr,
+            )
+            return env == "development"
+
+        return False
+
+    return val.lower() not in {"0", "false", "no"}
 
 
 def get_load_dotenv(default: bool = True) -> bool:

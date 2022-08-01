@@ -45,7 +45,6 @@ from .globals import request_ctx
 from .globals import session
 from .helpers import _split_blueprint_path
 from .helpers import get_debug_flag
-from .helpers import get_env
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import locked_cached_property
@@ -691,7 +690,7 @@ class Flask(Scaffold):
         if instance_relative:
             root_path = self.instance_path
         defaults = dict(self.default_config)
-        defaults["ENV"] = get_env()
+        defaults["ENV"] = os.environ.get("FLASK_ENV") or "development"
         defaults["DEBUG"] = get_debug_flag()
         return self.config_class(root_path, defaults)
 
@@ -849,31 +848,50 @@ class Flask(Scaffold):
             rv.update(processor())
         return rv
 
-    #: What environment the app is running in. Flask and extensions may
-    #: enable behaviors based on the environment, such as enabling debug
-    #: mode. This maps to the :data:`ENV` config key. This is set by the
-    #: :envvar:`FLASK_ENV` environment variable and may not behave as
-    #: expected if set in code.
-    #:
-    #: **Do not enable development when deploying in production.**
-    #:
-    #: Default: ``'production'``
-    env = ConfigAttribute("ENV")
+    @property
+    def env(self) -> str:
+        """What environment the app is running in. This maps to the :data:`ENV` config
+        key.
+
+        **Do not enable development when deploying in production.**
+
+        Default: ``'production'``
+
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3.
+        """
+        import warnings
+
+        warnings.warn(
+            "'app.env' is deprecated and will be removed in Flask 2.3."
+            " Use 'app.debug' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.config["ENV"]
+
+    @env.setter
+    def env(self, value: str) -> None:
+        import warnings
+
+        warnings.warn(
+            "'app.env' is deprecated and will be removed in Flask 2.3."
+            " Use 'app.debug' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.config["ENV"] = value
 
     @property
     def debug(self) -> bool:
-        """Whether debug mode is enabled. When using ``flask run`` to start
-        the development server, an interactive debugger will be shown for
-        unhandled exceptions, and the server will be reloaded when code
-        changes. This maps to the :data:`DEBUG` config key. This is
-        enabled when :attr:`env` is ``'development'`` and is overridden
-        by the ``FLASK_DEBUG`` environment variable. It may not behave as
-        expected if set in code.
+        """Whether debug mode is enabled. When using ``flask run`` to start the
+        development server, an interactive debugger will be shown for unhandled
+        exceptions, and the server will be reloaded when code changes. This maps to the
+        :data:`DEBUG` config key. It may not behave as expected if set late.
 
         **Do not enable debug mode when deploying in production.**
 
-        Default: ``True`` if :attr:`env` is ``'development'``, or
-        ``False`` otherwise.
+        Default: ``False``
         """
         return self.config["DEBUG"]
 
@@ -937,9 +955,7 @@ class Flask(Scaffold):
             If installed, python-dotenv will be used to load environment
             variables from :file:`.env` and :file:`.flaskenv` files.
 
-            If set, the :envvar:`FLASK_ENV` and :envvar:`FLASK_DEBUG`
-            environment variables will override :attr:`env` and
-            :attr:`debug`.
+            The :envvar:`FLASK_DEBUG` environment variable will override :attr:`debug`.
 
             Threaded mode is enabled by default.
 
@@ -966,7 +982,12 @@ class Flask(Scaffold):
 
             # if set, let env vars override previous values
             if "FLASK_ENV" in os.environ:
-                self.env = get_env()
+                print(
+                    "'FLASK_ENV' is deprecated and will not be used in"
+                    " Flask 2.3. Use 'FLASK_DEBUG' instead.",
+                    file=sys.stderr,
+                )
+                self.config["ENV"] = os.environ.get("FLASK_ENV") or "production"
                 self.debug = get_debug_flag()
             elif "FLASK_DEBUG" in os.environ:
                 self.debug = get_debug_flag()
@@ -998,7 +1019,7 @@ class Flask(Scaffold):
         options.setdefault("use_debugger", self.debug)
         options.setdefault("threaded", True)
 
-        cli.show_server_banner(self.env, self.debug, self.name)
+        cli.show_server_banner(self.debug, self.name)
 
         from werkzeug.serving import run_simple
 

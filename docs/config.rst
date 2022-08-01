@@ -42,38 +42,22 @@ method::
     )
 
 
-Environment and Debug Features
-------------------------------
+Debug Mode
+----------
 
-The :data:`ENV` and :data:`DEBUG` config values are special because they
-may behave inconsistently if changed after the app has begun setting up.
-In order to set the environment and debug mode reliably, pass options to
-the ``flask`` command or use environment variables.
-
-The execution environment is used to indicate to Flask, extensions, and
-other programs, like Sentry, what context Flask is running in. It is
-controlled with the ``FLASK_ENV`` environment variable, or the
-``--env`` option when using the ``flask`` command, and defaults to
-``production``.
-
-Setting ``--env development`` will enable debug mode. ``flask run`` will
-use the interactive debugger and reloader by default in debug mode. To
-control this separately from the environment, use the
-``--debug/--no-debug`` option or the ``FLASK_DEBUG`` environment
-variable.
-
-To switch Flask to the development environment and enable debug mode,
-set ``--env``:
+The :data:`DEBUG` config value is special because it may behave inconsistently if
+changed after the app has begun setting up. In order to set debug mode reliably, use the
+``--debug`` option on the ``flask`` command.``flask run`` will use the interactive
+debugger and reloader by default in debug mode.
 
 .. code-block:: text
 
-    $ flask --app hello --env development run
+    $ flask --app hello --debug run
 
-Using the options or environment variables as described above is
-recommended. While it is possible to set :data:`ENV` and :data:`DEBUG`
-in your config or code, this is strongly discouraged. They can't be read
-early by the ``flask`` command, and some systems or extensions may have
-already configured themselves based on a previous value.
+Using the option is recommended. While it is possible to set :data:`DEBUG` in your
+config or code, this is strongly discouraged. It can't be read early by the ``flask``
+command, and some systems or extensions may have already configured themselves based on
+a previous value.
 
 
 Builtin Configuration Values
@@ -83,32 +67,27 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: ENV
 
-    What environment the app is running in. Flask and extensions may
-    enable behaviors based on the environment, such as enabling debug
-    mode. The :attr:`~flask.Flask.env` attribute maps to this config
-    key. This is set by the :envvar:`FLASK_ENV` environment variable and
-    may not behave as expected if set in code.
-
-    **Do not enable development when deploying in production.**
+    What environment the app is running in. The :attr:`~flask.Flask.env` attribute maps
+    to this config key.
 
     Default: ``'production'``
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3. Use ``--debug`` instead.
 
     .. versionadded:: 1.0
 
 .. py:data:: DEBUG
 
-    Whether debug mode is enabled. When using ``flask run`` to start the
-    development server, an interactive debugger will be shown for
-    unhandled exceptions, and the server will be reloaded when code
-    changes. The :attr:`~flask.Flask.debug` attribute maps to this
-    config key. This is enabled when :data:`ENV` is ``'development'``
-    and is overridden by the ``FLASK_DEBUG`` environment variable. It
-    may not behave as expected if set in code.
+    Whether debug mode is enabled. When using ``flask run`` to start the development
+    server, an interactive debugger will be shown for unhandled exceptions, and the
+    server will be reloaded when code changes. The :attr:`~flask.Flask.debug` attribute
+    maps to this config key. This is set with the ``FLASK_DEBUG`` environment variable.
+    It may not behave as expected if set in code.
 
     **Do not enable debug mode when deploying in production.**
 
-    Default: ``True`` if :data:`ENV` is ``'development'``, or ``False``
-    otherwise.
+    Default: ``False``
 
 .. py:data:: TESTING
 
@@ -407,6 +386,9 @@ The following configuration values are used internally by Flask:
     ``JSONIFY_MIMETYPE``, and ``JSONIFY_PRETTYPRINT_REGULAR`` will be
     removed in Flask 2.3. The default ``app.json`` provider has
     equivalent attributes instead.
+
+.. versionchanged:: 2.2
+    ``ENV`` will be removed in Flask 2.3. Use ``--debug`` instead.
 
 
 Configuring from Python Files
