@@ -13,12 +13,12 @@ from operator import attrgetter
 
 import click
 from click.core import ParameterSource
+from werkzeug import run_simple
 from werkzeug.serving import is_running_from_reloader
 from werkzeug.utils import import_string
 
 from .globals import current_app
 from .helpers import get_debug_flag
-from .helpers import get_env
 from .helpers import get_load_dotenv
 
 if t.TYPE_CHECKING:
@@ -418,29 +418,6 @@ _app_option = click.Option(
 )
 
 
-def _set_env(ctx: click.Context, param: click.Option, value: str | None) -> str | None:
-    if value is None:
-        return None
-
-    # Set with env var instead of ScriptInfo.load so that it can be
-    # accessed early during a factory function.
-    os.environ["FLASK_ENV"] = value
-    return value
-
-
-_env_option = click.Option(
-    ["-E", "--env"],
-    metavar="NAME",
-    help=(
-        "The execution environment name to set in 'app.env'. Defaults to"
-        " 'production'. 'development' will enable 'app.debug' and start the"
-        " debugger and reloader when running the server."
-    ),
-    expose_value=False,
-    callback=_set_env,
-)
-
-
 def _set_debug(ctx: click.Context, param: click.Option, value: bool) -> bool | None:
     # If the flag isn't provided, it will default to False. Don't use
     # that, let debug be set by env in that case.
@@ -460,7 +437,7 @@ def _set_debug(ctx: click.Context, param: click.Option, value: bool) -> bool | N
 
 _debug_option = click.Option(
     ["--debug/--no-debug"],
-    help="Set 'app.debug' separately from '--env'.",
+    help="Set debug mode.",
     expose_value=False,
     callback=_set_debug,
 )
@@ -516,12 +493,10 @@ class FlaskGroup(AppGroup):
     :param load_dotenv: Load the nearest :file:`.env` and :file:`.flaskenv`
         files to set environment variables. Will also change the working
         directory to the directory containing the first file found.
-    :param set_debug_flag: Set the app's debug flag based on the active
-        environment
+    :param set_debug_flag: Set the app's debug flag.
 
     .. versionchanged:: 2.2
-        Added the ``-A/--app``, ``-E/--env``, ``--debug/--no-debug``,
-        and ``-e/--env-file`` options.
+        Added the ``-A/--app``, ``--debug/--no-debug``, ``-e/--env-file`` options.
 
     .. versionchanged:: 2.2
         An app context is pushed when running ``app.cli`` commands, so
@@ -546,7 +521,7 @@ class FlaskGroup(AppGroup):
         # callback. This allows users to make a custom group callback
         # without losing the behavior. --env-file must come first so
         # that it is eagerly evaluated before --app.
-        params.extend((_env_file_option, _app_option, _env_option, _debug_option))
+        params.extend((_env_file_option, _app_option, _debug_option))
 
         if add_version_option:
             params.append(version_option)
@@ -737,25 +712,22 @@ def load_dotenv(path: str | os.PathLike | None = None) -> bool:
     return loaded  # True if at least one file was located and loaded.
 
 
-def show_server_banner(env, debug, app_import_path):
+def show_server_banner(debug, app_import_path):
     """Show extra startup messages the first time the server is run,
     ignoring the reloader.
     """
     if is_running_from_reloader():
         return
 
+    click.secho(
+        "WARNING: This is a development server. Do not use it in a production"
+        " deployment. Use a production WSGI server instead.",
+        fg="red",
+        bold=True,
+    )
+
     if app_import_path is not None:
         click.echo(f" * Serving Flask app '{app_import_path}'")
-
-    click.echo(f" * Environment: {env}")
-
-    if env == "production":
-        click.secho(
-            "   WARNING: This is a development server. Do not use it in"
-            " a production deployment.\n   Use a production WSGI server"
-            " instead.",
-            fg="red",
-        )
 
     if debug is not None:
         click.echo(f" * Debug mode: {'on' if debug else 'off'}")
@@ -925,8 +897,8 @@ def run_command(
     This server is for development purposes only. It does not provide
     the stability, security, or performance of production WSGI servers.
 
-    The reloader and debugger are enabled by default with the
-    '--env development' or '--debug' options.
+    The reloader and debugger are enabled by default with the '--debug'
+    option.
     """
     try:
         app = info.load_app()
@@ -953,9 +925,7 @@ def run_command(
     if debugger is None:
         debugger = debug
 
-    show_server_banner(get_env(), debug, info.app_import_path)
-
-    from werkzeug.serving import run_simple
+    show_server_banner(debug, info.app_import_path)
 
     run_simple(
         host,

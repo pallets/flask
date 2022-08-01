@@ -23,6 +23,10 @@ Unreleased
         ``g`` instead using a unique prefix, like
         ``g._extension_name_attr``.
 
+-   The ``FLASK_ENV`` environment variable and ``app.env`` attribute are
+    deprecated, removing the distinction between development and debug
+    mode. Debug mode should be controlled directly using the ``--debug``
+    option or ``app.run(debug=True)``. :issue:`4714`
 -   Add new customization points to the ``Flask`` app object for many
     previously global behaviors.
 
@@ -60,9 +64,9 @@ Unreleased
     instance on every request. :issue:`2520`.
 -   A ``flask.cli.FlaskGroup`` Click group can be nested as a
     sub-command in a custom CLI. :issue:`3263`
--   Add ``--app``, ``--env``, and ``--debug`` options to the ``flask``
-    CLI, instead of requiring that they are set through environment
-    variables. :issue:`2836`
+-   Add ``--app`` and ``--debug`` options to the ``flask`` CLI, instead
+    of requiring that they are set through environment variables.
+    :issue:`2836`
 -   Add ``--env-file`` option to the ``flask`` CLI. This allows
     specifying a dotenv file to load in addition to ``.env`` and
     ``.flaskenv``. :issue:`3108`
