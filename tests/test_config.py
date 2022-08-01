@@ -1,7 +1,6 @@
 import json
 import os
 import textwrap
-from datetime import timedelta
 
 import pytest
 
@@ -205,14 +204,6 @@ def test_session_lifetime():
     app = flask.Flask(__name__)
     app.config["PERMANENT_SESSION_LIFETIME"] = 42
     assert app.permanent_session_lifetime.seconds == 42
-
-
-def test_send_file_max_age():
-    app = flask.Flask(__name__)
-    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 3600
-    assert app.send_file_max_age_default.seconds == 3600
-    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = timedelta(hours=2)
-    assert app.send_file_max_age_default.seconds == 7200
 
 
 def test_get_namespace():

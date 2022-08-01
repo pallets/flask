@@ -177,11 +177,8 @@ class SessionInterface:
         return isinstance(obj, self.null_session_class)
 
     def get_cookie_name(self, app: "Flask") -> str:
-        """Returns the name of the session cookie.
-
-        Uses ``app.session_cookie_name`` which is set to ``SESSION_COOKIE_NAME``
-        """
-        return app.session_cookie_name
+        """The name of the session cookie. Uses``app.config["SESSION_COOKIE_NAME"]``."""
+        return app.config["SESSION_COOKIE_NAME"]
 
     def get_cookie_domain(self, app: "Flask") -> t.Optional[str]:
         """Returns the domain that should be set for the session cookie.

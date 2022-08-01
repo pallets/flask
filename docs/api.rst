@@ -125,10 +125,9 @@ implementation that Flask is using.
 
 .. admonition:: Notice
 
-   The ``PERMANENT_SESSION_LIFETIME`` config key can also be an integer
-   starting with Flask 0.8.  Either catch this down yourself or use
-   the :attr:`~flask.Flask.permanent_session_lifetime` attribute on the
-   app which converts the result to an integer automatically.
+    The :data:`PERMANENT_SESSION_LIFETIME` config can be an integer or ``timedelta``.
+    The :attr:`~flask.Flask.permanent_session_lifetime` attribute is always a
+    ``timedelta``.
 
 
 Test Client
