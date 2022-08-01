@@ -10,8 +10,6 @@ import traceback
 import typing as t
 from functools import update_wrapper
 from operator import attrgetter
-from threading import Lock
-from threading import Thread
 
 import click
 from click.core import ParameterSource
@@ -265,74 +263,6 @@ version_option = click.Option(
     is_flag=True,
     is_eager=True,
 )
-
-
-class DispatchingApp:
-    """Special application that dispatches to a Flask application which
-    is imported by name in a background thread.  If an error happens
-    it is recorded and shown as part of the WSGI handling which in case
-    of the Werkzeug debugger means that it shows up in the browser.
-    """
-
-    def __init__(self, loader, use_eager_loading=None):
-        self.loader = loader
-        self._app = None
-        self._lock = Lock()
-        self._bg_loading_exc = None
-
-        if use_eager_loading is None:
-            use_eager_loading = not is_running_from_reloader()
-
-        if use_eager_loading:
-            self._load_unlocked()
-        else:
-            self._load_in_background()
-
-    def _load_in_background(self):
-        # Store the Click context and push it in the loader thread so
-        # script_info is still available.
-        ctx = click.get_current_context(silent=True)
-
-        def _load_app():
-            __traceback_hide__ = True  # noqa: F841
-
-            with self._lock:
-                if ctx is not None:
-                    click.globals.push_context(ctx)
-
-                try:
-                    self._load_unlocked()
-                except Exception as e:
-                    self._bg_loading_exc = e
-
-        t = Thread(target=_load_app, args=())
-        t.start()
-
-    def _flush_bg_loading_exception(self):
-        __traceback_hide__ = True  # noqa: F841
-        exc = self._bg_loading_exc
-
-        if exc is not None:
-            self._bg_loading_exc = None
-            raise exc
-
-    def _load_unlocked(self):
-        __traceback_hide__ = True  # noqa: F841
-        self._app = rv = self.loader()
-        self._bg_loading_exc = None
-        return rv
-
-    def __call__(self, environ, start_response):
-        __traceback_hide__ = True  # noqa: F841
-        if self._app is not None:
-            return self._app(environ, start_response)
-        self._flush_bg_loading_exception()
-        with self._lock:
-            if self._app is not None:
-                rv = self._app
-            else:
-                rv = self._load_unlocked()
-            return rv(environ, start_response)
 
 
 class ScriptInfo:
@@ -811,7 +741,7 @@ def load_dotenv(path: str | os.PathLike | None = None) -> bool:
     return loaded  # True if at least one file was located and loaded.
 
 
-def show_server_banner(env, debug, app_import_path, eager_loading):
+def show_server_banner(env, debug, app_import_path):
     """Show extra startup messages the first time the server is run,
     ignoring the reloader.
     """
@@ -819,12 +749,7 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
         return
 
     if app_import_path is not None:
-        message = f" * Serving Flask app {app_import_path!r}"
-
-        if not eager_loading:
-            message += " (lazy loading)"
-
-        click.echo(message)
+        click.echo(f" * Serving Flask app '{app_import_path}'")
 
     click.echo(f" * Environment: {env}")
 
@@ -964,12 +889,6 @@ class SeparatedPathType(click.Path):
     "is active if debug is enabled.",
 )
 @click.option(
-    "--eager-loading/--lazy-loading",
-    default=None,
-    help="Enable or disable eager loading. By default eager "
-    "loading is enabled if the reloader is disabled.",
-)
-@click.option(
     "--with-threads/--without-threads",
     default=True,
     help="Enable or disable multithreading.",
@@ -1000,7 +919,6 @@ def run_command(
     port,
     reload,
     debugger,
-    eager_loading,
     with_threads,
     cert,
     extra_files,
@@ -1014,7 +932,23 @@ def run_command(
     The reloader and debugger are enabled by default with the
     '--env development' or '--debug' options.
     """
-    app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
+    try:
+        app = info.load_app()
+    except Exception as e:
+        if is_running_from_reloader():
+            # When reloading, print out the error immediately, but raise
+            # it later so the debugger or server can handle it.
+            traceback.print_exc()
+            err = e
+
+            def app(environ, start_response):
+                raise err from None
+
+        else:
+            # When not reloading, raise the error immediately so the
+            # command fails.
+            raise e from None
+
     debug = get_debug_flag()
 
     if reload is None:
@@ -1023,7 +957,7 @@ def run_command(
     if debugger is None:
         debugger = debug
 
-    show_server_banner(get_env(), debug, info.app_import_path, eager_loading)
+    show_server_banner(get_env(), debug, info.app_import_path)
 
     from werkzeug.serving import run_simple
 

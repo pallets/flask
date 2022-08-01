@@ -998,7 +998,7 @@ class Flask(Scaffold):
         options.setdefault("use_debugger", self.debug)
         options.setdefault("threaded", True)
 
-        cli.show_server_banner(self.env, self.debug, self.name, False)
+        cli.show_server_banner(self.env, self.debug, self.name)
 
         from werkzeug.serving import run_simple
 

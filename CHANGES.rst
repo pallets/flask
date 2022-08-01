@@ -92,6 +92,12 @@ Unreleased
     JSON response like a dict is. :issue:`4672`
 -   When type checking, allow ``TypedDict`` to be returned from view
     functions. :pr:`4695`
+-   Remove the ``--eager-loading/--lazy-loading`` options from the
+    ``flask run`` command. The app is always eager loaded the first
+    time, then lazily loaded in the reloader. The reloader always prints
+    errors immediately but continues serving. Remove the internal
+    ``DispatchingApp`` middleware used by the previous implementation.
+    :issue:`4715`
 
 
 Version 2.1.3
