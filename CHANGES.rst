@@ -1,7 +1,7 @@
 Version 2.2.0
 -------------
 
-Unreleased
+Released 2022-08-01
 
 -   Remove previously deprecated code. :pr:`4337`
 
