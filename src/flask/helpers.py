@@ -414,7 +414,7 @@ def _prepare_send_file_kwargs(**kwargs: t.Any) -> t.Dict[str, t.Any]:
 
     kwargs.update(
         environ=request.environ,
-        use_x_sendfile=current_app.use_x_sendfile,
+        use_x_sendfile=current_app.config["USE_X_SENDFILE"],
         response_class=current_app.response_class,
         _root_path=current_app.root_path,  # type: ignore
     )

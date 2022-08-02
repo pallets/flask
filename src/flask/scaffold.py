@@ -5,6 +5,7 @@ import pkgutil
 import sys
 import typing as t
 from collections import defaultdict
+from datetime import timedelta
 from functools import update_wrapper
 
 from jinja2 import FileSystemLoader
@@ -302,12 +303,15 @@ class Scaffold:
 
         .. versionadded:: 0.9
         """
-        value = current_app.send_file_max_age_default
+        value = current_app.config["SEND_FILE_MAX_AGE_DEFAULT"]
 
         if value is None:
             return None
 
-        return int(value.total_seconds())
+        if isinstance(value, timedelta):
+            return int(value.total_seconds())
+
+        return value
 
     def send_static_file(self, filename: str) -> "Response":
         """The view function used to serve files from

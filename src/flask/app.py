@@ -99,7 +99,7 @@ else:
         return inspect.iscoroutinefunction(func)
 
 
-def _make_timedelta(value: t.Optional[timedelta]) -> t.Optional[timedelta]:
+def _make_timedelta(value: t.Union[timedelta, int, None]) -> t.Optional[timedelta]:
     if value is None or isinstance(value, timedelta):
         return value
 
@@ -273,11 +273,35 @@ class Flask(Scaffold):
     #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
     secret_key = ConfigAttribute("SECRET_KEY")
 
-    #: The secure cookie uses this for the name of the session cookie.
-    #:
-    #: This attribute can also be configured from the config with the
-    #: ``SESSION_COOKIE_NAME`` configuration key.  Defaults to ``'session'``
-    session_cookie_name = ConfigAttribute("SESSION_COOKIE_NAME")
+    @property
+    def session_cookie_name(self) -> str:
+        """The name of the cookie set by the session interface.
+
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3. Use ``app.config["SESSION_COOKIE_NAME"]``
+            instead.
+        """
+        import warnings
+
+        warnings.warn(
+            "'session_cookie_name' is deprecated and will be removed in Flask 2.3. Use"
+            " 'SESSION_COOKIE_NAME' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.config["SESSION_COOKIE_NAME"]
+
+    @session_cookie_name.setter
+    def session_cookie_name(self, value: str) -> None:
+        import warnings
+
+        warnings.warn(
+            "'session_cookie_name' is deprecated and will be removed in Flask 2.3. Use"
+            " 'SESSION_COOKIE_NAME' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.config["SESSION_COOKIE_NAME"] = value
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
     #: date of a permanent session.  The default is 31 days which makes a
@@ -290,29 +314,70 @@ class Flask(Scaffold):
         "PERMANENT_SESSION_LIFETIME", get_converter=_make_timedelta
     )
 
-    #: A :class:`~datetime.timedelta` or number of seconds which is used
-    #: as the default ``max_age`` for :func:`send_file`. The default is
-    #: ``None``, which tells the browser to use conditional requests
-    #: instead of a timed cache.
-    #:
-    #: Configured with the :data:`SEND_FILE_MAX_AGE_DEFAULT`
-    #: configuration key.
-    #:
-    #: .. versionchanged:: 2.0
-    #:     Defaults to ``None`` instead of 12 hours.
-    send_file_max_age_default = ConfigAttribute(
-        "SEND_FILE_MAX_AGE_DEFAULT", get_converter=_make_timedelta
-    )
+    @property
+    def send_file_max_age_default(self) -> t.Optional[timedelta]:
+        """The default value for ``max_age`` for :func:`~flask.send_file`. The default
+        is ``None``, which tells the browser to use conditional requests instead of a
+        timed cache.
 
-    #: Enable this if you want to use the X-Sendfile feature.  Keep in
-    #: mind that the server has to support this.  This only affects files
-    #: sent with the :func:`send_file` method.
-    #:
-    #: .. versionadded:: 0.2
-    #:
-    #: This attribute can also be configured from the config with the
-    #: ``USE_X_SENDFILE`` configuration key.  Defaults to ``False``.
-    use_x_sendfile = ConfigAttribute("USE_X_SENDFILE")
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3. Use
+            ``app.config["SEND_FILE_MAX_AGE_DEFAULT"]`` instead.
+
+        .. versionchanged:: 2.0
+            Defaults to ``None`` instead of 12 hours.
+        """
+        import warnings
+
+        warnings.warn(
+            "'send_file_max_age_default' is deprecated and will be removed in Flask"
+            " 2.3. Use 'SEND_FILE_MAX_AGE_DEFAULT' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _make_timedelta(self.config["SEND_FILE_MAX_AGE_DEFAULT"])
+
+    @send_file_max_age_default.setter
+    def send_file_max_age_default(self, value: t.Union[int, timedelta, None]) -> None:
+        import warnings
+
+        warnings.warn(
+            "'send_file_max_age_default' is deprecated and will be removed in Flask"
+            " 2.3. Use 'SEND_FILE_MAX_AGE_DEFAULT' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.config["SEND_FILE_MAX_AGE_DEFAULT"] = _make_timedelta(value)
+
+    @property
+    def use_x_sendfile(self) -> bool:
+        """Enable this to use the ``X-Sendfile`` feature, assuming the server supports
+        it, from :func:`~flask.send_file`.
+
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3. Use ``app.config["USE_X_SENDFILE"]`` instead.
+        """
+        import warnings
+
+        warnings.warn(
+            "'use_x_sendfile' is deprecated and will be removed in Flask 2.3. Use"
+            " 'USE_X_SENDFILE' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.config["USE_X_SENDFILE"]
+
+    @use_x_sendfile.setter
+    def use_x_sendfile(self, value: bool) -> None:
+        import warnings
+
+        warnings.warn(
+            "'use_x_sendfile' is deprecated and will be removed in Flask 2.3. Use"
+            " 'USE_X_SENDFILE' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.config["USE_X_SENDFILE"] = value
 
     #: The JSON encoder class to use. Defaults to
     #: :class:`~flask.json.JSONEncoder`.
@@ -624,8 +689,18 @@ class Flask(Scaffold):
         """Returns the value of the ``PROPAGATE_EXCEPTIONS`` configuration
         value in case it's set, otherwise a sensible default is returned.
 
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3.
+
         .. versionadded:: 0.7
         """
+        import warnings
+
+        warnings.warn(
+            "'propagate_exceptions' is deprecated and will be removed in Flask 2.3.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         rv = self.config["PROPAGATE_EXCEPTIONS"]
         if rv is not None:
             return rv
@@ -734,20 +809,37 @@ class Flask(Scaffold):
     @property
     def templates_auto_reload(self) -> bool:
         """Reload templates when they are changed. Used by
-        :meth:`create_jinja_environment`.
+        :meth:`create_jinja_environment`. It is enabled by default in debug mode.
 
-        This attribute can be configured with :data:`TEMPLATES_AUTO_RELOAD`. If
-        not set, it will be enabled in debug mode.
+        .. deprecated:: 2.2
+            Will be removed in Flask 2.3. Use ``app.config["TEMPLATES_AUTO_RELOAD"]``
+            instead.
 
         .. versionadded:: 1.0
             This property was added but the underlying config and behavior
             already existed.
         """
+        import warnings
+
+        warnings.warn(
+            "'templates_auto_reload' is deprecated and will be removed in Flask 2.3."
+            " Use 'TEMPLATES_AUTO_RELOAD' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         rv = self.config["TEMPLATES_AUTO_RELOAD"]
         return rv if rv is not None else self.debug
 
     @templates_auto_reload.setter
     def templates_auto_reload(self, value: bool) -> None:
+        import warnings
+
+        warnings.warn(
+            "'templates_auto_reload' is deprecated and will be removed in Flask 2.3."
+            " Use 'TEMPLATES_AUTO_RELOAD' in 'app.config' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.config["TEMPLATES_AUTO_RELOAD"] = value
 
     def create_jinja_environment(self) -> Environment:
@@ -768,7 +860,12 @@ class Flask(Scaffold):
             options["autoescape"] = self.select_jinja_autoescape
 
         if "auto_reload" not in options:
-            options["auto_reload"] = self.templates_auto_reload
+            auto_reload = self.config["TEMPLATES_AUTO_RELOAD"]
+
+            if auto_reload is None:
+                auto_reload = self.debug
+
+            options["auto_reload"] = auto_reload
 
         rv = self.jinja_environment(self, **options)
         rv.globals.update(
@@ -898,7 +995,9 @@ class Flask(Scaffold):
     @debug.setter
     def debug(self, value: bool) -> None:
         self.config["DEBUG"] = value
-        self.jinja_env.auto_reload = self.templates_auto_reload
+
+        if self.config["TEMPLATES_AUTO_RELOAD"] is None:
+            self.jinja_env.auto_reload = value
 
     def run(
         self,
@@ -1541,8 +1640,12 @@ class Flask(Scaffold):
         """
         exc_info = sys.exc_info()
         got_request_exception.send(self, exception=e)
+        propagate = self.config["PROPAGATE_EXCEPTIONS"]
 
-        if self.propagate_exceptions:
+        if propagate is None:
+            propagate = self.testing or self.debug
+
+        if propagate:
             # Re-raise if called with an active exception, otherwise
             # raise the passed in exception.
             if exc_info[1] is e:

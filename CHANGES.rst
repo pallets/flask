@@ -27,6 +27,11 @@ Unreleased
     deprecated, removing the distinction between development and debug
     mode. Debug mode should be controlled directly using the ``--debug``
     option or ``app.run(debug=True)``. :issue:`4714`
+-   Some attributes that proxied config keys on ``app`` are deprecated:
+    ``session_cookie_name``, ``send_file_max_age_default``,
+    ``use_x_sendfile``, ``propagate_exceptions``, and
+    ``templates_auto_reload``. Use the relevant config keys instead.
+    :issue:`4716`
 -   Add new customization points to the ``Flask`` app object for many
     previously global behaviors.
 
