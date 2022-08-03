@@ -1,5 +1,6 @@
 import functools
 import inspect
+import json
 import logging
 import os
 import sys
@@ -379,25 +380,86 @@ class Flask(Scaffold):
         )
         self.config["USE_X_SENDFILE"] = value
 
-    #: The JSON encoder class to use. Defaults to
-    #: :class:`~flask.json.JSONEncoder`.
-    #:
-    #: .. deprecated:: 2.2
-    #:      Will be removed in Flask 2.3. Customize
-    #:      :attr:`json_provider_class` instead.
-    #:
-    #: .. versionadded:: 0.10
-    json_encoder: None = None
+    _json_encoder: t.Union[t.Type[json.JSONEncoder], None] = None
+    _json_decoder: t.Union[t.Type[json.JSONDecoder], None] = None
 
-    #: The JSON decoder class to use. Defaults to
-    #: :class:`~flask.json.JSONDecoder`.
-    #:
-    #: .. deprecated:: 2.2
-    #:      Will be removed in Flask 2.3. Customize
-    #:      :attr:`json_provider_class` instead.
-    #:
-    #: .. versionadded:: 0.10
-    json_decoder: None = None
+    @property  # type: ignore[override]
+    def json_encoder(self) -> t.Type[json.JSONEncoder]:  # type: ignore[override]
+        """The JSON encoder class to use. Defaults to
+        :class:`~flask.json.JSONEncoder`.
+
+        .. deprecated:: 2.2
+             Will be removed in Flask 2.3. Customize
+             :attr:`json_provider_class` instead.
+
+        .. versionadded:: 0.10
+        """
+        import warnings
+
+        warnings.warn(
+            "'app.json_encoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        if self._json_encoder is None:
+            from . import json
+
+            return json.JSONEncoder
+
+        return self._json_encoder
+
+    @json_encoder.setter
+    def json_encoder(self, value: t.Type[json.JSONEncoder]) -> None:
+        import warnings
+
+        warnings.warn(
+            "'app.json_encoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._json_encoder = value
+
+    @property  # type: ignore[override]
+    def json_decoder(self) -> t.Type[json.JSONDecoder]:  # type: ignore[override]
+        """The JSON decoder class to use. Defaults to
+        :class:`~flask.json.JSONDecoder`.
+
+        .. deprecated:: 2.2
+             Will be removed in Flask 2.3. Customize
+             :attr:`json_provider_class` instead.
+
+        .. versionadded:: 0.10
+        """
+        import warnings
+
+        warnings.warn(
+            "'app.json_decoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        if self._json_decoder is None:
+            from . import json
+
+            return json.JSONDecoder
+
+        return self._json_decoder
+
+    @json_decoder.setter
+    def json_decoder(self, value: t.Type[json.JSONDecoder]) -> None:
+        import warnings
+
+        warnings.warn(
+            "'app.json_decoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._json_decoder = value
 
     json_provider_class: t.Type[JSONProvider] = DefaultJSONProvider
     """A subclass of :class:`~flask.json.provider.JSONProvider`. An
