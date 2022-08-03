@@ -1,7 +1,7 @@
 Version 2.2.1
 -------------
 
-Unreleased
+Released 2022-08-03
 
 -   Setting or accessing ``json_encoder`` or ``json_decoder`` raises a
     deprecation warning. :issue:`4732`
