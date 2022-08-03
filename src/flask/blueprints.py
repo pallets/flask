@@ -1,3 +1,4 @@
+import json
 import os
 import typing as t
 from collections import defaultdict
@@ -172,18 +173,76 @@ class Blueprint(Scaffold):
 
     _got_registered_once = False
 
-    #: Blueprint local JSON encoder class to use. Set to ``None`` to use
-    #: the app's :class:`~flask.Flask.json_encoder`.
-    #:
-    #: .. deprecated:: 2.2
-    #:      Will be removed in Flask 2.3.
-    json_encoder: None = None
-    #: Blueprint local JSON decoder class to use. Set to ``None`` to use
-    #: the app's :class:`~flask.Flask.json_decoder`.
-    #:
-    #: .. deprecated:: 2.2
-    #:      Will be removed in Flask 2.3.
-    json_decoder: None = None
+    _json_encoder: t.Union[t.Type[json.JSONEncoder], None] = None
+    _json_decoder: t.Union[t.Type[json.JSONDecoder], None] = None
+
+    @property  # type: ignore[override]
+    def json_encoder(  # type: ignore[override]
+        self,
+    ) -> t.Union[t.Type[json.JSONEncoder], None]:
+        """Blueprint-local JSON encoder class to use. Set to ``None`` to use the app's.
+
+        .. deprecated:: 2.2
+             Will be removed in Flask 2.3. Customize
+             :attr:`json_provider_class` instead.
+
+        .. versionadded:: 0.10
+        """
+        import warnings
+
+        warnings.warn(
+            "'bp.json_encoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._json_encoder
+
+    @json_encoder.setter
+    def json_encoder(self, value: t.Union[t.Type[json.JSONEncoder], None]) -> None:
+        import warnings
+
+        warnings.warn(
+            "'bp.json_encoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._json_encoder = value
+
+    @property  # type: ignore[override]
+    def json_decoder(  # type: ignore[override]
+        self,
+    ) -> t.Union[t.Type[json.JSONDecoder], None]:
+        """Blueprint-local JSON decoder class to use. Set to ``None`` to use the app's.
+
+        .. deprecated:: 2.2
+             Will be removed in Flask 2.3. Customize
+             :attr:`json_provider_class` instead.
+
+        .. versionadded:: 0.10
+        """
+        import warnings
+
+        warnings.warn(
+            "'bp.json_decoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._json_decoder
+
+    @json_decoder.setter
+    def json_decoder(self, value: t.Union[t.Type[json.JSONDecoder], None]) -> None:
+        import warnings
+
+        warnings.warn(
+            "'bp.json_decoder' is deprecated and will be removed in Flask 2.3."
+            " Customize 'app.json_provider_class' or 'app.json' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._json_decoder = value
 
     def __init__(
         self,

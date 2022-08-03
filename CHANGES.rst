@@ -3,6 +3,9 @@ Version 2.2.1
 
 Unreleased
 
+-   Setting or accessing ``json_encoder`` or ``json_decoder`` raises a
+    deprecation warning. :issue:`4732`
+
 
 Version 2.2.0
 -------------
@@ -50,18 +53,18 @@ Released 2022-08-01
         provider can be set to use a different JSON library.
         ``flask.jsonify`` will call ``app.json.response``, other
         functions in ``flask.json`` will call corresponding functions in
-        ``app.json``. :pr:`4688`
+        ``app.json``. :pr:`4692`
 
 -   JSON configuration is moved to attributes on the default
     ``app.json`` provider. ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``,
     ``JSONIFY_MIMETYPE``, and ``JSONIFY_PRETTYPRINT_REGULAR`` are
-    deprecated. :pr:`4688`
+    deprecated. :pr:`4692`
 -   Setting custom ``json_encoder`` and ``json_decoder`` classes on the
     app or a blueprint, and the corresponding ``json.JSONEncoder`` and
     ``JSONDecoder`` classes, are deprecated. JSON behavior can now be
-    overridden using the ``app.json`` provider interface. :pr:`4688`
+    overridden using the ``app.json`` provider interface. :pr:`4692`
 -   ``json.htmlsafe_dumps`` and ``json.htmlsafe_dump`` are deprecated,
-    the function is built-in to Jinja now. :pr:`4688`
+    the function is built-in to Jinja now. :pr:`4692`
 -   Refactor ``register_error_handler`` to consolidate error checking.
     Rewrite some error messages to be more consistent. :issue:`4559`
 -   Use Blueprint decorators and functions intended for setup after

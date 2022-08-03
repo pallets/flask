@@ -176,11 +176,11 @@ class DefaultJSONProvider(JSONProvider):
         :param obj: The data to serialize.
         :param kwargs: Passed to :func:`json.dumps`.
         """
-        cls = self._app.json_encoder
+        cls = self._app._json_encoder
         bp = self._app.blueprints.get(request.blueprint) if request else None
 
-        if bp is not None and bp.json_encoder is not None:
-            cls = bp.json_encoder
+        if bp is not None and bp._json_encoder is not None:
+            cls = bp._json_encoder
 
         if cls is not None:
             import warnings
@@ -235,11 +235,11 @@ class DefaultJSONProvider(JSONProvider):
         :param s: Text or UTF-8 bytes.
         :param kwargs: Passed to :func:`json.loads`.
         """
-        cls = self._app.json_decoder
+        cls = self._app._json_decoder
         bp = self._app.blueprints.get(request.blueprint) if request else None
 
-        if bp is not None and bp.json_decoder is not None:
-            cls = bp.json_decoder
+        if bp is not None and bp._json_decoder is not None:
+            cls = bp._json_decoder
 
         if cls is not None:
             import warnings

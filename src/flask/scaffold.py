@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import pathlib
 import pkgutil
@@ -78,14 +79,14 @@ class Scaffold:
     #:
     #: .. deprecated:: 2.2
     #:      Will be removed in Flask 2.3.
-    json_encoder: None = None
+    json_encoder: t.Union[t.Type[json.JSONEncoder], None] = None
 
     #: JSON decoder class used by :func:`flask.json.loads`. If a
     #: blueprint sets this, it will be used instead of the app's value.
     #:
     #: .. deprecated:: 2.2
     #:      Will be removed in Flask 2.3.
-    json_decoder: None = None
+    json_decoder: t.Union[t.Type[json.JSONDecoder], None] = None
 
     def __init__(
         self,
