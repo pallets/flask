@@ -827,7 +827,7 @@ class Flask(Scaffold):
         if instance_relative:
             root_path = self.instance_path
         defaults = dict(self.default_config)
-        defaults["ENV"] = os.environ.get("FLASK_ENV") or "development"
+        defaults["ENV"] = os.environ.get("FLASK_ENV") or "production"
         defaults["DEBUG"] = get_debug_flag()
         return self.config_class(root_path, defaults)
 
