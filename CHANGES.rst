@@ -1,3 +1,9 @@
+Version 2.2.2
+-------------
+
+Unreleased
+
+
 Version 2.2.1
 -------------
 
