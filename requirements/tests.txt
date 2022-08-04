@@ -7,9 +7,9 @@
 #
 asgiref==3.5.2
     # via -r requirements/tests.in
-attrs==21.4.0
+attrs==22.1.0
     # via pytest
-blinker==1.4
+blinker==1.5
     # via -r requirements/tests.in
 greenlet==1.1.2 ; python_version < "3.11"
     # via -r requirements/tests.in
