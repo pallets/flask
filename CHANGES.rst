@@ -3,6 +3,9 @@ Version 2.2.2
 
 Unreleased
 
+-   Fix the default value for ``app.env`` to be ``"production"``. This
+    attribute remains deprecated. :issue:`4740`
+
 
 Version 2.2.1
 -------------
