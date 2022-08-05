@@ -56,6 +56,7 @@ community-maintained extensions to add even more functionality.
    server
    shell
    patterns/index
+   security
    deploying/index
    async-await
 
@@ -79,7 +80,6 @@ Additional Notes
    :maxdepth: 2
 
    design
-   security
    extensiondev
    contributing
    license
