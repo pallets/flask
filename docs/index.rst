@@ -29,14 +29,14 @@ toolkit. The documentation for these libraries can be found at:
 User's Guide
 ------------
 
-This part of the documentation, which is mostly prose, begins with some
-background information about Flask, then focuses on step-by-step
-instructions for web development with Flask.
+Flask provides configuration and conventions, with sensible defaults, to get started.
+This section of the documentation explains the different parts of the Flask framework
+and how they can be used, customized, and extended. Beyond Flask itself, look for
+community-maintained extensions to add even more functionality.
 
 .. toctree::
    :maxdepth: 2
 
-   foreword
    installation
    quickstart
    tutorial/index
@@ -74,8 +74,6 @@ method, this part of the documentation is for you.
 
 Additional Notes
 ----------------
-
-Design notes, legal information and changelog are here for the interested.
 
 .. toctree::
    :maxdepth: 2

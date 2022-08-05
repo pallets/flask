@@ -130,8 +130,24 @@ being present.  You can easily use your own templating language, but an
 extension could still depend on Jinja itself.
 
 
-Micro with Dependencies
+What does "micro" mean?
 -----------------------
+
+“Micro” does not mean that your whole web application has to fit into a single
+Python file (although it certainly can), nor does it mean that Flask is lacking
+in functionality. The "micro" in microframework means Flask aims to keep the
+core simple but extensible. Flask won't make many decisions for you, such as
+what database to use. Those decisions that it does make, such as what
+templating engine to use, are easy to change.  Everything else is up to you, so
+that Flask can be everything you need and nothing you don't.
+
+By default, Flask does not include a database abstraction layer, form
+validation or anything else where different libraries already exist that can
+handle that. Instead, Flask supports extensions to add such functionality to
+your application as if it was implemented in Flask itself. Numerous extensions
+provide database integration, form validation, upload handling, various open
+authentication technologies, and more. Flask may be "micro", but it's ready for
+production use on a variety of needs.
 
 Why does Flask call itself a microframework and yet it depends on two
 libraries (namely Werkzeug and Jinja2).  Why shouldn't it?  If we look
@@ -200,6 +216,13 @@ Why is this the case?  Because people have different preferences and
 requirements and Flask could not meet those if it would force any of this
 into the core.  The majority of web applications will need a template
 engine in some sort.  However not every application needs a SQL database.
+
+As your codebase grows, you are free to make the design decisions appropriate
+for your project.  Flask will continue to provide a very simple glue layer to
+the best that Python has to offer.  You can implement advanced patterns in
+SQLAlchemy or another database tool, introduce non-relational data persistence
+as appropriate, and take advantage of framework-agnostic tools built for WSGI,
+the Python web interface.
 
 The idea of Flask is to build a good foundation for all applications.
 Everything else is up to you or extensions.
