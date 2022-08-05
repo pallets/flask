@@ -19,8 +19,6 @@ collected in the following pages.
    appfactories
    appdispatch
    urlprocessors
-   distribute
-   fabric
    sqlite3
    sqlalchemy
    fileuploads

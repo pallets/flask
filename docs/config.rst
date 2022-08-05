@@ -394,13 +394,11 @@ The following configuration values are used internally by Flask:
 Configuring from Python Files
 -----------------------------
 
-Configuration becomes more useful if you can store it in a separate file,
-ideally located outside the actual application package. This makes
-packaging and distributing your application possible via various package
-handling tools (:doc:`/patterns/distribute`) and finally modifying the
-configuration file afterwards.
+Configuration becomes more useful if you can store it in a separate file, ideally
+located outside the actual application package. You can deploy your application, then
+separately configure it for the specific deployment.
 
-So a common pattern is this::
+A common pattern is this::
 
     app = Flask(__name__)
     app.config.from_object('yourapplication.default_settings')
@@ -692,10 +690,8 @@ your configuration files.  However here a list of good recommendations:
     code at all.  If you are working often on different projects you can
     even create your own script for sourcing that activates a virtualenv
     and exports the development configuration for you.
--   Use a tool like `fabric`_ in production to push code and
-    configurations separately to the production server(s).  For some
-    details about how to do that, head over to the
-    :doc:`/patterns/fabric` pattern.
+-   Use a tool like `fabric`_ to push code and configuration separately
+    to the production server(s).
 
 .. _fabric: https://www.fabfile.org/
 
