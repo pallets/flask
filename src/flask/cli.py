@@ -954,7 +954,7 @@ def shell_command() -> None:
 
     banner = (
         f"Python {sys.version} on {sys.platform}\n"
-        f"App: {current_app.import_name} [{current_app.env}]\n"
+        f"App: {current_app.import_name}\n"
         f"Instance: {current_app.instance_path}"
     )
     ctx: dict = {}
