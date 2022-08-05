@@ -357,6 +357,14 @@ cumbersome because you have to do the HTML escaping on your own to keep
 the application secure.  Because of that Flask configures the `Jinja2
 <https://palletsprojects.com/p/jinja/>`_ template engine for you automatically.
 
+Templates can be used to generate any type of text file. For web applications, you'll
+primarily be generating HTML pages, but you can also generate markdown, plain text for
+emails, any anything else.
+
+For a reference to HTML, CSS, and other web APIs, use the `MDN Web Docs`_.
+
+.. _MDN Web Docs: https://developer.mozilla.org/
+
 To render a template you can use the :func:`~flask.render_template`
 method.  All you have to do is provide the name of the template and the
 variables you want to pass to the template engine as keyword arguments.
