@@ -163,7 +163,7 @@ class DefaultJSONProvider(JSONProvider):
     or ``None`` in debug mode, it will use a non-compact representation.
     """
 
-    mimetype = "application/json"
+    mimetype = "application/json; charset=utf-8"
     """The mimetype set in :meth:`response`."""
 
     def dumps(self, obj: t.Any, **kwargs: t.Any) -> str:
