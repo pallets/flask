@@ -1,7 +1,7 @@
 Version 2.2.2
 -------------
 
-Unreleased
+Released 2022-08-08
 
 -   Update Werkzeug dependency to >= 2.2.2. This includes fixes related
     to the new faster router, header parsing, and the development
