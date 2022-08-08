@@ -719,13 +719,6 @@ def show_server_banner(debug, app_import_path):
     if is_running_from_reloader():
         return
 
-    click.secho(
-        "WARNING: This is a development server. Do not use it in a production"
-        " deployment. Use a production WSGI server instead.",
-        fg="red",
-        bold=True,
-    )
-
     if app_import_path is not None:
         click.echo(f" * Serving Flask app '{app_import_path}'")
 

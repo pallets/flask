@@ -3,6 +3,9 @@ Version 2.2.2
 
 Unreleased
 
+-   Update Werkzeug dependency to >= 2.2.2. This includes fixes related
+    to the new faster router, header parsing, and the development
+    server. :pr:`4754`
 -   Fix the default value for ``app.env`` to be ``"production"``. This
     attribute remains deprecated. :issue:`4740`
 
