@@ -21,7 +21,7 @@ Version 2.2.0
 
 Released 2022-08-01
 
--   Remove previously deprecated code. :pr:`4337`
+-   Remove previously deprecated code. :pr:`4667`
 
     -   Old names for some ``send_file`` parameters have been removed.
         ``download_name`` replaces ``attachment_filename``, ``max_age``
