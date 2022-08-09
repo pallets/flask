@@ -88,7 +88,7 @@ def __getattr__(name: str) -> t.Any:
         import warnings
 
         warnings.warn(
-            "'_app_ctx_stack' is deprecated and will be remoevd in Flask 2.3.",
+            "'_app_ctx_stack' is deprecated and will be removed in Flask 2.3.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -98,7 +98,7 @@ def __getattr__(name: str) -> t.Any:
         import warnings
 
         warnings.warn(
-            "'_request_ctx_stack' is deprecated and will be remoevd in Flask 2.3.",
+            "'_request_ctx_stack' is deprecated and will be removed in Flask 2.3.",
             DeprecationWarning,
             stacklevel=2,
         )
