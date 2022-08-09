@@ -28,7 +28,7 @@ It is important to understand the difference between templates and
 JavaScript. Templates are rendered on the server, before the response is
 sent to the user's browser. JavaScript runs in the user's browser, after
 the template is rendered and sent. Therefore, it is impossible to use
-JavaScript to affect how the Jinja template is rendered, but is is
+JavaScript to affect how the Jinja template is rendered, but it is
 possible to render data into the JavaScript that will run.
 
 To provide data to JavaScript when rendering the template, use the
