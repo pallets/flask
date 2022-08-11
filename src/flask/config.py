@@ -127,10 +127,16 @@ class Config(dict):
         prefix = f"{prefix}_"
         len_prefix = len(prefix)
 
+        variables = list()
+        is_found = False
         for key in sorted(os.environ):
-            if not key.startswith(prefix):
-                continue
+            if key.startswith(prefix):
+                is_found = True
+                variables.append(key)
+            elif is_found:
+                break
 
+        for key in variables:
             value = os.environ[key]
 
             try:
