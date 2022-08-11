@@ -3,6 +3,8 @@ Version 2.3.0
 
 Unreleased
 
+- Removed checks of useless keys by the property of sorted elements
+  in the function "from_prefixed_env". :pr:`4759`
 
 Version 2.2.2
 -------------
