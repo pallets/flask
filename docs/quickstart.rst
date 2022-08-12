@@ -41,7 +41,7 @@ itself.
 
 To run the application, use the ``flask`` command or
 ``python -m flask``. You need to tell the Flask where your application
-is with the ``-app`` option.
+is with the ``--app`` option.
 
 .. code-block:: text
 
