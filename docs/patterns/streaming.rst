@@ -15,12 +15,14 @@ This is a basic view function that generates a lot of CSV data on the fly.
 The trick is to have an inner function that uses a generator to generate
 data and to then invoke that function and pass it to a response object::
 
+.. code-block:: python
+
     @app.route('/large.csv')
     def generate_large_csv():
         def generate():
             for row in iter_all_rows():
                 yield f"{','.join(row)}\n"
-        return generate(), {"Content-Type": "text/csv")
+        return app.response_class(generate(), mimetype="text/csv")
 
 Each ``yield`` expression is directly sent to the browser.  Note though
 that some WSGI middlewares might break streaming, so be careful there in
