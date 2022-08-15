@@ -648,7 +648,7 @@ def _path_is_ancestor(path, other):
     """Take ``other`` and remove the length of ``path`` from it. Then join it
     to ``path``. If it is the original value, ``path`` is an ancestor of
     ``other``."""
-    return os.path.join(path, other[len(path) :].lstrip(os.sep)) == other
+    return os.path.join(path, other[len(path):].lstrip(os.sep)) == other
 
 
 def load_dotenv(path: str | os.PathLike | None = None) -> bool:
