@@ -116,7 +116,7 @@ function.
             item = self.model.query.get_or_404(id)
             return render_template(self.template, item=item)
 
-    app.add_url_rule("/users/<int:id>", view_func=DetailView.as_view("user_detail"))
+    app.add_url_rule("/users/<int:id>", view_func=DetailView.as_view("user_detail", User))
 
 
 View Lifetime and ``self``
