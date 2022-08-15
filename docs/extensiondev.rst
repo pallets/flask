@@ -184,7 +184,7 @@ context is active when a request context is, or when a CLI command is
 run. If you're storing something that should be closed, use
 :meth:`~flask.Flask.teardown_appcontext` to ensure that it gets closed
 when the application context ends. If it should only be valid during a
-request, or would not be used in the CLI outside a reqeust, use
+request, or would not be used in the CLI outside a request, use
 :meth:`~flask.Flask.teardown_request`.
 
 
