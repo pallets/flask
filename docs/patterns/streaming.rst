@@ -20,7 +20,7 @@ data and to then invoke that function and pass it to a response object::
         def generate():
             for row in iter_all_rows():
                 yield f"{','.join(row)}\n"
-        return generate(), {"Content-Type": "text/csv")
+        return generate(), {"Content-Type": "text/csv"}
 
 Each ``yield`` expression is directly sent to the browser.  Note though
 that some WSGI middlewares might break streaming, so be careful there in
