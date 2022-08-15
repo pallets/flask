@@ -186,8 +186,8 @@ class DefaultJSONProvider(JSONProvider):
             import warnings
 
             warnings.warn(
-                "Setting 'json_encoder' on the app or a blueprint is"
-                " deprecated and will be removed in Flask 2.3."
+                """Setting 'json_encoder' on the app or a blueprint is
+                 deprecated and will be removed in Flask 2.3."""
                 " Customize 'app.json' instead.",
                 DeprecationWarning,
             )
@@ -205,9 +205,9 @@ class DefaultJSONProvider(JSONProvider):
             import warnings
 
             warnings.warn(
-                "The 'JSON_AS_ASCII' config key is deprecated and will"
-                " be removed in Flask 2.3. Set 'app.json.ensure_ascii'"
-                " instead.",
+                """The 'JSON_AS_ASCII' config key is deprecated and will
+                 be removed in Flask 2.3. Set 'app.json.ensure_ascii'
+                 instead.""",
                 DeprecationWarning,
             )
         else:
@@ -245,9 +245,9 @@ class DefaultJSONProvider(JSONProvider):
             import warnings
 
             warnings.warn(
-                "Setting 'json_decoder' on the app or a blueprint is"
-                " deprecated and will be removed in Flask 2.3."
-                " Customize 'app.json' instead.",
+                """Setting 'json_decoder' on the app or a blueprint is
+                  deprecated and will be removed in Flask 2.3.
+                 Customize 'app.json' instead.""",
                 DeprecationWarning,
             )
             kwargs.setdefault("cls", cls)
@@ -279,9 +279,9 @@ class DefaultJSONProvider(JSONProvider):
             import warnings
 
             warnings.warn(
-                "The 'JSONIFY_PRETTYPRINT_REGULAR' config key is"
-                " deprecated and will be removed in Flask 2.3. Set"
-                " 'app.json.compact' instead.",
+                """The 'JSONIFY_PRETTYPRINT_REGULAR' config key is
+                 deprecated and will be removed in Flask 2.3. Set
+                 'app.json.compact' instead.""",
                 DeprecationWarning,
             )
             compact: bool | None = not pretty
@@ -297,9 +297,9 @@ class DefaultJSONProvider(JSONProvider):
             import warnings
 
             warnings.warn(
-                "The 'JSONIFY_MIMETYPE' config key is deprecated and"
-                " will be removed in Flask 2.3. Set 'app.json.mimetype'"
-                " instead.",
+                """he 'JSONIFY_MIMETYPE' config key is deprecated and
+                 will be removed in Flask 2.3. Set 'app.json.mimetype'
+                 instead.""",
                 DeprecationWarning,
             )
         else:
