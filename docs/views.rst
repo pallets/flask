@@ -116,7 +116,10 @@ function.
             item = self.model.query.get_or_404(id)
             return render_template(self.template, item=item)
 
-    app.add_url_rule("/users/<int:id>", view_func=DetailView.as_view("user_detail"))
+    app.add_url_rule(
+        "/users/<int:id>",
+        view_func=DetailView.as_view("user_detail", User)
+    )
 
 
 View Lifetime and ``self``
@@ -295,8 +298,10 @@ provide get (list) and post (create) methods.
             return jsonify(item.to_json())
 
     def register_api(app, model, url):
-        app.add_url_rule(f"/{name}/<int:id>", view_func=ItemAPI(f"{name}-item", model))
-        app.add_url_rule(f"/{name}/", view_func=GroupAPI(f"{name}-group", model))
+        item = ItemAPI.as_view(f"{name}-item", model)
+        group = GroupAPI.as_view(f"{name}-group", model)
+        app.add_url_rule(f"/{name}/<int:id>", view_func=item)
+        app.add_url_rule(f"/{name}/", view_func=group)
 
     register_api(app, User, "users")
     register_api(app, Story, "stories")
