@@ -325,7 +325,7 @@ class Config(dict):
             if not k.startswith(namespace):
                 continue
             if trim_namespace:
-                key = k[len(namespace):]
+                key = k[len(namespace) :]
             else:
                 key = k
             if lowercase:
