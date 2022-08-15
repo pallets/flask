@@ -42,7 +42,6 @@ be processed before ``dict``.
 """
 import typing as t
 from base64 import b64decode
-from base64 import b64encode
 from datetime import datetime
 from uuid import UUID
 
