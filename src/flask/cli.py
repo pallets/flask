@@ -76,9 +76,9 @@ def find_best_app(module):
                 ) from e
 
     raise NoAppException(
-        "Failed to find Flask application or factory in module"
-        f" '{module.__name__}'. Use '{module.__name__}:name'"
-        " to specify one."
+        f"""Failed to find Flask application or factory in module
+         '{module.__name__}'. Use '{module.__name__}:name'
+         to specify one."""
     )
 
 
@@ -168,9 +168,9 @@ def find_app_by_string(module, app_name):
                 raise
 
             raise NoAppException(
-                f"The factory {app_name!r} in module"
-                f" {module.__name__!r} could not be called with the"
-                " specified arguments."
+                f"""The factory {app_name!r} in module
+                 {module.__name__!r} could not be called with the
+                 specified arguments."""
             ) from e
     else:
         app = attr
@@ -179,8 +179,8 @@ def find_app_by_string(module, app_name):
         return app
 
     raise NoAppException(
-        "A valid Flask application was not obtained from"
-        f" '{module.__name__}:{app_name}'."
+        f"""A valid Flask application was not obtained from
+         '{module.__name__}:{app_name}'."""
     )
 
 
@@ -221,8 +221,8 @@ def locate_app(module_name, app_name, raise_if_not_found=True):
         # Determine this by checking whether the trace has a depth > 1.
         if sys.exc_info()[2].tb_next:
             raise NoAppException(
-                f"While importing {module_name!r}, an ImportError was"
-                f" raised:\n\n{traceback.format_exc()}"
+                f"""While importing {module_name!r}, an ImportError was
+                 raised:\n\n{traceback.format_exc()}"""
             ) from None
         elif raise_if_not_found:
             raise NoAppException(f"Could not import {module_name!r}.") from None
@@ -245,9 +245,9 @@ def get_version(ctx, param, value):
     from . import __version__
 
     click.echo(
-        f"Python {platform.python_version()}\n"
-        f"Flask {__version__}\n"
-        f"Werkzeug {werkzeug.__version__}",
+        f"""Python {platform.python_version()}\n
+        Flask {__version__}\n
+        Werkzeug {werkzeug.__version__}""",
         color=ctx.color,
     )
     ctx.exit()
@@ -316,10 +316,10 @@ class ScriptInfo:
 
         if not app:
             raise NoAppException(
-                "Could not locate a Flask application. Use the"
-                " 'flask --app' option, 'FLASK_APP' environment"
-                " variable, or a 'wsgi.py' or 'app.py' file in the"
-                " current directory."
+                """Could not locate a Flask application. Use the
+                 'flask --app' option, 'FLASK_APP' environment
+                 variable, or a 'wsgi.py' or 'app.py' file in the
+                 current directory."""
             )
 
         if self.set_debug_flag:
