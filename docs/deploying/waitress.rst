@@ -45,10 +45,10 @@ pattern, use ``--call {module}:{factory}`` instead.
 .. code-block:: text
 
     # equivalent to 'from hello import app'
-    $ waitress-serve hello:app --host 127.0.0.1
+    $ waitress-serve --host 127.0.0.1 hello:app
 
     # equivalent to 'from hello import create_app; create_app()'
-    $ waitress-serve --call hello:create_app --host 127.0.0.1
+    $ waitress-serve --host 127.0.0.1 --call hello:create_app
 
     Serving on http://127.0.0.1:8080
 
