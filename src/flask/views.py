@@ -100,17 +100,17 @@ class View:
         """
         if cls.init_every_request:
 
-            def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
+            def view(*args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
                 self = view.view_class(  # type: ignore[attr-defined]
                     *class_args, **class_kwargs
                 )
-                return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+                return current_app.ensure_sync(self.dispatch_request)(*args, **kwargs)
 
         else:
             self = cls(*class_args, **class_kwargs)
 
-            def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
-                return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+            def view(*args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
+                return current_app.ensure_sync(self.dispatch_request)(*args, **kwargs)
 
         if cls.decorators:
             view.__name__ = name
@@ -176,7 +176,7 @@ class MethodView(View):
             if methods:
                 cls.methods = methods
 
-    def dispatch_request(self, **kwargs: t.Any) -> ft.ResponseReturnValue:
+    def dispatch_request(self, *args: t.Any, **kwargs: t.Any) -> ft.ResponseReturnValue:
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it
@@ -185,4 +185,4 @@ class MethodView(View):
             meth = getattr(self, "get", None)
 
         assert meth is not None, f"Unimplemented method {request.method!r}"
-        return current_app.ensure_sync(meth)(**kwargs)
+        return current_app.ensure_sync(meth)(*args, **kwargs)
