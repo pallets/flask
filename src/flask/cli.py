@@ -890,8 +890,8 @@ def run_command(
     This server is for development purposes only. It does not provide
     the stability, security, or performance of production WSGI servers.
 
-    The reloader and debugger are enabled by default with the '--debug'
-    option.
+    The reloader and debugger are enabled by default with the 'flask --debug'
+    option (i.e. 'flask --debug run').
     """
     try:
         app = info.load_app()
