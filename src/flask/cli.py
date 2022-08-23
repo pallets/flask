@@ -838,11 +838,6 @@ class SeparatedPathType(click.Path):
     help="The key file to use when specifying a certificate.",
 )
 @click.option(
-    "--debug/--no-debug",
-    default=None,
-    help="Enable or disable the debug mode.",
-)
-@click.option(
     "--reload/--no-reload",
     default=None,
     help="Enable or disable the reloader. By default the reloader "
@@ -883,7 +878,6 @@ def run_command(
     info,
     host,
     port,
-    debug,
     reload,
     debugger,
     with_threads,
@@ -916,8 +910,7 @@ def run_command(
             # command fails.
             raise e from None
 
-    if debug is None:
-        debug = get_debug_flag()
+    debug = get_debug_flag()
 
     if reload is None:
         reload = debug
@@ -938,6 +931,9 @@ def run_command(
         extra_files=extra_files,
         exclude_patterns=exclude_patterns,
     )
+
+
+run_command.params.insert(0, _debug_option)
 
 
 @click.command("shell", short_help="Run a shell in the app context.")

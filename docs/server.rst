@@ -24,7 +24,7 @@ debug mode.
 
 .. code-block:: text
 
-    $ flask --app hello --debug run
+    $ flask --app hello run --debug
 
 This enables debug mode, including the interactive debugger and reloader, and then
 starts the server on http://localhost:5000/. Use ``flask run --help`` to see the
