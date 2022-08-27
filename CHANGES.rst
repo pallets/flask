@@ -4,6 +4,12 @@ Version 2.3.0
 Unreleased
 
 
+Version 2.2.3
+-------------
+
+Unreleased
+
+
 Version 2.2.2
 -------------
 

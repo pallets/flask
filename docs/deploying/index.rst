@@ -66,7 +66,6 @@ interface. The links below are for some of the most common platforms,
 which have instructions for Flask, WSGI, or Python.
 
 - `PythonAnywhere <https://help.pythonanywhere.com/pages/Flask/>`_
-- `Heroku <https://devcenter.heroku.com/articles/getting-started-with-python>`_
 - `Google App Engine <https://cloud.google.com/appengine/docs/standard/python3/building-app>`_
 - `Google Cloud Run <https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service>`_
 - `AWS Elastic Beanstalk <https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html>`_

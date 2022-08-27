@@ -275,8 +275,9 @@ class Config(dict):
     def from_mapping(
         self, mapping: t.Optional[t.Mapping[str, t.Any]] = None, **kwargs: t.Any
     ) -> bool:
-        """Updates the config like :meth:`update` ignoring items with non-upper
-        keys.
+        """Updates the config like :meth:`update` ignoring items with
+        non-upper keys.
+
         :return: Always returns ``True``.
 
         .. versionadded:: 0.11
