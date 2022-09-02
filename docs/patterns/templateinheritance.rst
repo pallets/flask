@@ -59,6 +59,7 @@ A child template might look like this:
       <h1>Index</h1>
       <p class="important">
         Welcome on my awesome homepage.
+      </p>
     {% endblock %}
 
 The ``{% extends %}`` tag is the key here. It tells the template engine that
