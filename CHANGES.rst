@@ -7,7 +7,7 @@ Unreleased
 Version 2.2.3
 -------------
 
-Unreleased
+-   Added reset_blueprint method to prevent error and warning when using test-scoped app fixtures :issue:`#4786`
 
 
 Version 2.2.2

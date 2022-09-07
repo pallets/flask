@@ -472,6 +472,8 @@ class Blueprint(Scaffold):
     def reset_blueprint(self):
         """Resets this blueprint. Clears registered child blueprints and
         set _got_registered_once flag to False
+
+        .. versionchanged:: 2.2.3
         """
         self._blueprints = []
         self._got_registered_once = False
