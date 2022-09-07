@@ -469,6 +469,13 @@ class Blueprint(Scaffold):
             bp_options["name_prefix"] = name
             blueprint.register(app, bp_options)
 
+    def reset_blueprint(self):
+        """Resets this blueprint. Clears registered child blueprints and
+        set _got_registered_once flag to False
+        """
+        self._blueprints = []
+        self._got_registered_once = False
+
     @setupmethod
     def add_url_rule(
         self,
