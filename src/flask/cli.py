@@ -24,7 +24,7 @@ from .helpers import get_load_dotenv
 if t.TYPE_CHECKING:
     from .app import Flask
 
-
+#fdsafdsafdas
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
