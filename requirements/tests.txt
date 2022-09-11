@@ -11,7 +11,7 @@ attrs==22.1.0
     # via pytest
 blinker==1.5
     # via -r requirements/tests.in
-greenlet==1.1.2 ; python_version < "3.11"
+greenlet==1.1.3 ; python_version < "3.11"
     # via -r requirements/tests.in
 iniconfig==1.1.1
     # via pytest
@@ -23,9 +23,9 @@ py==1.11.0
     # via pytest
 pyparsing==3.0.9
     # via packaging
-pytest==7.1.2
+pytest==7.1.3
     # via -r requirements/tests.in
-python-dotenv==0.20.0
+python-dotenv==0.21.0
     # via -r requirements/tests.in
 tomli==2.0.1
     # via pytest
