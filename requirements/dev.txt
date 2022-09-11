@@ -16,15 +16,13 @@ click==8.1.3
     # via
     #   pip-compile-multi
     #   pip-tools
-distlib==0.3.5
+distlib==0.3.6
     # via virtualenv
-filelock==3.7.1
+filelock==3.8.0
     # via
     #   tox
     #   virtualenv
-greenlet==1.1.2 ; python_version < "3.11"
-    # via -r requirements/tests.in
-identify==2.5.3
+identify==2.5.5
     # via pre-commit
 nodeenv==1.7.0
     # via pre-commit
@@ -43,14 +41,12 @@ pyyaml==6.0
 six==1.16.0
     # via tox
 toml==0.10.2
-    # via
-    #   pre-commit
-    #   tox
+    # via pre-commit
 toposort==1.7
     # via pip-compile-multi
-tox==3.25.1
+tox==3.26.0
     # via -r requirements/dev.in
-virtualenv==20.16.2
+virtualenv==20.16.5
     # via
     #   pre-commit
     #   tox
