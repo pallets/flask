@@ -249,7 +249,7 @@ provide get (list) and post (create) methods.
         init_every_request = False
 
         def __init__(self, model):
-            self.model
+            self.model = model
             self.validator = generate_validator(model)
 
         def _get_item(self, id):
