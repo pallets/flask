@@ -1,4 +1,4 @@
-import functools  #importing necessary libraries
+import functools  # importing necessary libraries
 import inspect
 import json
 import logging
@@ -69,9 +69,9 @@ from .templating import Environment
 from .wrappers import Request
 from .wrappers import Response
 
-if t.TYPE_CHECKING:  # pragma: no cover 
+if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
-    from .blueprints import Blueprint   #import blueprints 
+    from .blueprints import Blueprint  # import blueprints
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
 
