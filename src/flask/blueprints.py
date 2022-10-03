@@ -387,7 +387,7 @@ class Blueprint(Scaffold):
                 f" provide a unique name."
             )
 
-        first_bp_registration = not any(bp is self for bp in app.blueprints.values())
+        first_bp_registration = all(bp is not self for bp in app.blueprints.values())
         first_name_registration = name not in app.blueprints
 
         app.blueprints[name] = self
