@@ -120,7 +120,10 @@ def test_escaping_svg(app, client):
         return flask.render_template("escaping_template.svg", text="<test>")
 
     rv = client.get("/")
-    assert rv.data == b"<svg height='50' width='200'><text x='0' y='25'>&lt;test&gt;</text></svg>"
+    assert (
+        rv.data
+        == b"<svg height='50' width='200'><text x='0' y='25'>&lt;test&gt;</text></svg>"
+    )
 
 
 def test_macros(app, req_ctx):
