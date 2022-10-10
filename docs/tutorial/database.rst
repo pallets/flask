@@ -176,6 +176,7 @@ the end of the factory function before returning the app.
         app = ...
         # existing code omitted
 
+        # do not copy create_app function again, only add following
         from . import db
         db.init_app(app)
 
