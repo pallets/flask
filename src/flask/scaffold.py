@@ -364,7 +364,7 @@ class Scaffold:
         if mode not in {"r", "rt", "rb"}:
             raise ValueError("Resources can only be opened for reading.")
 
-        return open(os.path.join(self.root_path, resource), mode, encoding="utf-8")
+        return open(os.path.join(self.root_path, resource), mode)
 
     def _method_route(
         self,
