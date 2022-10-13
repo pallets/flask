@@ -54,8 +54,7 @@ class Request(RequestBase):
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         if current_app:
             return current_app.config["MAX_CONTENT_LENGTH"]
-        else:
-            return None
+        return None
 
     @property
     def endpoint(self) -> t.Optional[str]:

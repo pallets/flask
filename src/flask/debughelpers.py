@@ -106,7 +106,7 @@ def _dump_loader_info(loader) -> t.Generator:
             for item in value:
                 yield f"  - {item}"
             continue
-        elif not isinstance(value, (str, int, float, bool)):
+        if not isinstance(value, (str, int, float, bool)):
             continue
         yield f"{key}: {value!r}"
 

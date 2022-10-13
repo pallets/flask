@@ -22,7 +22,7 @@ def test_teardown_on_pop(app):
 
     ctx = app.test_request_context()
     ctx.push()
-    assert buffer == []
+    assert not buffer
     ctx.pop()
     assert buffer == [None]
 
@@ -40,7 +40,7 @@ def test_teardown_with_previous_exception(app):
         pass
 
     with app.test_request_context():
-        assert buffer == []
+        assert not buffer
     assert buffer == [None]
 
 
@@ -52,7 +52,7 @@ def test_teardown_with_handled_exception(app):
         buffer.append(exception)
 
     with app.test_request_context():
-        assert buffer == []
+        assert not buffer
         try:
             raise Exception("dummy")
         except Exception:
@@ -234,8 +234,7 @@ def test_session_dynamic_cookie_name():
         def get_cookie_name(self, app):
             if flask.request.url.endswith("dynamic_cookie"):
                 return "dynamic_cookie_name"
-            else:
-                return super().get_cookie_name(app)
+            return super().get_cookie_name(app)
 
     class CustomFlask(flask.Flask):
         session_interface = PathAwareSessionInterface()

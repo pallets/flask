@@ -20,7 +20,6 @@ from werkzeug.routing import RequestRedirect
 
 import flask
 
-
 require_cpython_gc = pytest.mark.skipif(
     python_implementation() != "CPython",
     reason="Requires CPython GC behavior",
@@ -191,7 +190,7 @@ def test_url_mapping(app, client):
 
 
 def test_werkzeug_routing(app, client):
-    from werkzeug.routing import Submount, Rule
+    from werkzeug.routing import Rule, Submount
 
     app.url_map.add(
         Submount("/foo", [Rule("/bar", endpoint="bar"), Rule("/", endpoint="index")])
@@ -211,7 +210,7 @@ def test_werkzeug_routing(app, client):
 
 
 def test_endpoint_decorator(app, client):
-    from werkzeug.routing import Submount, Rule
+    from werkzeug.routing import Rule, Submount
 
     app.url_map.add(
         Submount("/foo", [Rule("/bar", endpoint="bar"), Rule("/", endpoint="index")])
@@ -486,9 +485,9 @@ def test_session_special_types(app, client):
         client.get("/")
         s = flask.session
         assert s["t"] == (1, 2, 3)
-        assert type(s["b"]) == bytes
+        assert isinstance(s["b"], bytes)
         assert s["b"] == b"\xff"
-        assert type(s["m"]) == flask.Markup
+        assert isinstance(s["m"], flask.Markup)
         assert s["m"] == flask.Markup("<html>")
         assert s["u"] == the_uuid
         assert s["d"] == now
@@ -792,7 +791,7 @@ def test_teardown_request_handler_error(app, client):
 
     @app.teardown_request
     def teardown_request1(exc):
-        assert type(exc) == ZeroDivisionError
+        assert isinstance(exc, ZeroDivisionError)
         called.append(True)
         # This raises a new error and blows away sys.exc_info(), so we can
         # test that all teardown_requests get passed the same original
@@ -804,7 +803,7 @@ def test_teardown_request_handler_error(app, client):
 
     @app.teardown_request
     def teardown_request2(exc):
-        assert type(exc) == ZeroDivisionError
+        assert isinstance(exc, ZeroDivisionError)
         called.append(True)
         # This raises a new error and blows away sys.exc_info(), so we can
         # test that all teardown_requests get passed the same original
@@ -1631,7 +1630,7 @@ def test_inject_blueprint_url_defaults(app):
 
     app.register_blueprint(bp)
 
-    values = dict()
+    values = {}
     app.inject_url_defaults("foo.view", values)
     expected = dict(page="login")
     assert values == expected

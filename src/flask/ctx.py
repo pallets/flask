@@ -82,8 +82,7 @@ class _AppCtxGlobals:
         """
         if default is _sentinel:
             return self.__dict__.pop(name)
-        else:
-            return self.__dict__.pop(name, default)
+        return self.__dict__.pop(name, default)
 
     def setdefault(self, name: str, default: t.Any = None) -> t.Any:
         """Get the value of an attribute if it is present, otherwise

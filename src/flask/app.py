@@ -71,9 +71,9 @@ from .wrappers import Response
 
 if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
+
     from .blueprints import Blueprint
-    from .testing import FlaskClient
-    from .testing import FlaskCliRunner
+    from .testing import FlaskClient, FlaskCliRunner
 
 T_before_first_request = t.TypeVar(
     "T_before_first_request", bound=ft.BeforeFirstRequestCallable
@@ -866,7 +866,7 @@ class Flask(Scaffold):
                          subfolders use forward slashes as separator.
         :param mode: resource file opening mode, default is 'rb'.
         """
-        return open(os.path.join(self.instance_path, resource), mode)
+        return open(os.path.join(self.instance_path, resource), mode, encoding="utf-8")
 
     @property
     def templates_auto_reload(self) -> bool:

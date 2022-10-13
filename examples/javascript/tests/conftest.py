@@ -1,5 +1,4 @@
 import pytest
-
 from js_example import app
 
 

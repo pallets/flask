@@ -95,7 +95,7 @@ def leak_detector():
         leaks.append(request_ctx._get_current_object())
         request_ctx.pop()
 
-    assert leaks == []
+    assert not leaks
 
 
 @pytest.fixture(params=(True, False))

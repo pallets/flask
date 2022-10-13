@@ -261,7 +261,7 @@ class Config(dict):
         filename = os.path.join(self.root_path, filename)
 
         try:
-            with open(filename) as f:
+            with open(filename, encoding="utf-8") as f:
                 obj = load(f)
         except OSError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):

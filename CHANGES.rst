@@ -7,7 +7,7 @@ Unreleased
 Version 2.2.3
 -------------
 
-Unreleased
+- tidy up of pylint issues across several files
 
 
 Version 2.2.2

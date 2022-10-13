@@ -47,7 +47,7 @@ def find_best_app(module):
 
     if len(matches) == 1:
         return matches[0]
-    elif len(matches) > 1:
+    if len(matches) > 1:
         raise NoAppException(
             "Detected multiple Flask applications in module"
             f" '{module.__name__}'. Use '{module.__name__}:name'"
@@ -224,17 +224,15 @@ def locate_app(module_name, app_name, raise_if_not_found=True):
                 f"While importing {module_name!r}, an ImportError was"
                 f" raised:\n\n{traceback.format_exc()}"
             ) from None
-        elif raise_if_not_found:
+        if raise_if_not_found:
             raise NoAppException(f"Could not import {module_name!r}.") from None
-        else:
-            return
+        return
 
     module = sys.modules[module_name]
 
     if app_name is None:
         return find_best_app(module)
-    else:
-        return find_app_by_string(module, app_name)
+    return find_app_by_string(module, app_name)
 
 
 def get_version(ctx, param, value):
@@ -242,6 +240,7 @@ def get_version(ctx, param, value):
         return
 
     import werkzeug
+
     from . import __version__
 
     click.echo(
@@ -956,7 +955,7 @@ def shell_command() -> None:
     # is using it.
     startup = os.environ.get("PYTHONSTARTUP")
     if startup and os.path.isfile(startup):
-        with open(startup) as f:
+        with open(startup, encoding="utf-8") as f:
             eval(compile(f.read(), startup, "exec"), ctx)
 
     ctx.update(current_app.make_shell_context())

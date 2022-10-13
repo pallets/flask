@@ -227,9 +227,11 @@ def test_locate_app_suppress_raise(test_apps):
 
 
 def test_get_version(test_apps, capsys):
-    from flask import __version__ as flask_version
-    from werkzeug import __version__ as werkzeug_version
     from platform import python_version
+
+    from werkzeug import __version__ as werkzeug_version
+
+    from flask import __version__ as flask_version
 
     class MockCtx:
         resilient_parsing = False

@@ -6,7 +6,6 @@ import pytest
 
 import flask
 
-
 # config keys used for the TestConfig
 TEST_KEY = "foo"
 SECRET_KEY = "config"
