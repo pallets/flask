@@ -436,11 +436,6 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
     >>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
     'Marked up » HTML'
 
-.. versionchanged:: 2.2
-
-    In addition to the extensions below, templates with the ``.svg`` extension
-    are also autoescaped.
-
 .. versionchanged:: 0.5
 
    Autoescaping is no longer enabled for all templates.  The following
