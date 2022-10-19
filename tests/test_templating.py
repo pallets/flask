@@ -114,18 +114,6 @@ def test_escaping_without_template_filename(app, client, req_ctx):
     assert flask.render_template("mail.txt", foo="<test>") == "<test> Mail"
 
 
-def test_escaping_svg(app, client):
-    @app.route("/")
-    def index():
-        return flask.render_template("escaping_template.svg", text="<test>")
-
-    rv = client.get("/")
-    assert (
-        rv.data
-        == b"<svg height='50' width='200'><text x='0' y='25'>&lt;test&gt;</text></svg>"
-    )
-
-
 def test_macros(app, req_ctx):
     macro = flask.get_template_attribute("_macro.html", "hello")
     assert macro("World") == "Hello World!"
