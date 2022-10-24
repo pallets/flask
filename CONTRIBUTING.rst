@@ -109,8 +109,8 @@ First time setup
 
       .. code-block:: text
 
-         > py -3 -m venv env
-         > env\Scripts\activate
+         > python -3 -m venv env
+         > source env\Scripts\activate
 
 -   Upgrade pip and setuptools.
 
