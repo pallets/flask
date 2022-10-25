@@ -225,4 +225,3 @@ Build the docs in the ``docs`` directory using Sphinx.
 Open ``_build/html/index.html`` in your browser to view the docs.
 
 Read more about `Sphinx <https://www.sphinx-doc.org/en/stable/>`__.
-
