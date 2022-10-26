@@ -9,6 +9,8 @@ Version 2.2.3
 
 Unreleased
 
+- Fix subdomain inheritance for nested blueprints. :issue:`4834`
+
 
 Version 2.2.2
 -------------
