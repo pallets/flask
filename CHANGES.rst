@@ -9,6 +9,9 @@ Version 2.2.3
 
 Unreleased
 
+-   Autoescaping is now enabled by default for ``.svg`` files. Inside
+    templates this behavior can be changed with the ``autoescape`` tag.
+    :issue:`4831`
 
 Version 2.2.2
 -------------
