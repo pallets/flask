@@ -213,6 +213,13 @@ There are a few differences from the ``register`` view:
     session. The data is stored in a *cookie* that is sent to the
     browser, and the browser then sends it back with subsequent requests.
     Flask securely *signs* the data so that it can't be tampered with.
+    
+In this tutorial - for debugging purposes - the error messages are explicit 
+about the origin of the corresponding failure: a user already exists, the password 
+is incorrect or the username does not exist. In a real world application, it is discouraged
+to do so, as this information might be helpful to potential attackers. To learn more about
+secure handling of error messages, see the 
+[OWASP recommendations](https://owasp.org/www-project-proactive-controls/v3/en/c10-errors-exceptions).
 
 Now that the user's ``id`` is stored in the :data:`session`, it will be
 available on subsequent requests. At the beginning of each request, if
