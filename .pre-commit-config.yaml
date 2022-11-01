@@ -3,12 +3,12 @@ ci:
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.2
+    rev: v3.2.0
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.8.3
+    rev: v3.9.0
     hooks:
       - id: reorder-python-imports
         name: Reorder Python imports (src, tests)
@@ -16,7 +16,7 @@ repos:
         args: ["--application-directories", "src"]
         additional_dependencies: ["setuptools>60.9"]
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.10.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
