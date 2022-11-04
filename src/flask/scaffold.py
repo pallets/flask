@@ -624,7 +624,7 @@ class Scaffold:
         self,
         f: T_url_value_preprocessor,
     ) -> T_url_value_preprocessor:
-        """Register a URL value preprocessor function for all view
+        """Register an URL value preprocessor function for all view
         functions in the application. These functions will be called before the
         :meth:`before_request` functions.
 

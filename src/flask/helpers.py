@@ -218,7 +218,7 @@ def url_for(
     _external: t.Optional[bool] = None,
     **values: t.Any,
 ) -> str:
-    """Generate a URL to the given endpoint with the given values.
+    """Generate an URL to the given endpoint with the given values.
 
     This requires an active request or application context, and calls
     :meth:`current_app.url_for() <flask.Flask.url_for>`. See that method

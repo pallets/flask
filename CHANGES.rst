@@ -1369,7 +1369,7 @@ Version 0.3.1
 
 Released 2010-05-28
 
--   Fixed a error reporting bug with ``Config.from_envvar``.
+-   Fixed an error reporting bug with ``Config.from_envvar``.
 -   Removed some unused code.
 -   Release does no longer include development leftover files (.git
     folder for themes, built documentation in zip and pdf file and some

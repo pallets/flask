@@ -260,7 +260,7 @@ an argument, ``id``. That corresponds to the ``<int:id>`` in the route.
 A real URL will look like ``/1/update``. Flask will capture the ``1``,
 ensure it's an :class:`int`, and pass it as the ``id`` argument. If you
 don't specify ``int:`` and instead do ``<id>``, it will be a string.
-To generate a URL to the update page, :func:`url_for` needs to be passed
+To generate an URL to the update page, :func:`url_for` needs to be passed
 the ``id`` so it knows what to fill in:
 ``url_for('blog.update', id=post['id'])``. This is also in the
 ``index.html`` file above.

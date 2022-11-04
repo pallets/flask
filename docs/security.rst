@@ -93,7 +93,7 @@ would go to that page, their profiles would get deleted while they are
 looking at images of fluffy cats.
 
 How can you prevent that?  Basically for each request that modifies
-content on the server you would have to either use a one-time token and
+content on the server you would have to either use an one-time token and
 store that in the cookie **and** also transmit it with the form data.
 After receiving the data on the server again, you would then have to
 compare the two tokens and ensure they are equal.

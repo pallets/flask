@@ -21,7 +21,7 @@ Blueprints in Flask are intended for these cases:
 * Factor an application into a set of blueprints.  This is ideal for
   larger applications; a project could instantiate an application object,
   initialize several extensions, and register a collection of blueprints.
-* Register a blueprint on an application at a URL prefix and/or subdomain.
+* Register a blueprint on an application at an URL prefix and/or subdomain.
   Parameters in the URL prefix/subdomain become common view arguments
   (with defaults) across all view functions in the blueprint.
 * Register a blueprint multiple times on an application with different URL

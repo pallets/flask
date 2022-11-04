@@ -1924,12 +1924,12 @@ class Flask(Scaffold):
         _external: t.Optional[bool] = None,
         **values: t.Any,
     ) -> str:
-        """Generate a URL to the given endpoint with the given values.
+        """Generate an URL to the given endpoint with the given values.
 
         This is called by :func:`flask.url_for`, and can be called
         directly as well.
 
-        An *endpoint* is the name of a URL rule, usually added with
+        An *endpoint* is the name of an URL rule, usually added with
         :meth:`@app.route() <route>`, and usually the same name as the
         view function. A route defined in a :class:`~flask.Blueprint`
         will prepend the blueprint's name separated by a ``.`` to the
@@ -1984,7 +1984,7 @@ class Flask(Scaffold):
                 else:
                     endpoint = endpoint[1:]
 
-            # When in a request, generate a URL without scheme and
+            # When in a request, generate an URL without scheme and
             # domain by default, unless a scheme is given.
             if _external is None:
                 _external = _scheme is not None
@@ -2007,7 +2007,7 @@ class Flask(Scaffold):
                     " needed."
                 )
 
-            # When outside a request, generate a URL with scheme and
+            # When outside a request, generate an URL with scheme and
             # domain by default.
             if _external is None:
                 _external = True
@@ -2195,7 +2195,7 @@ class Flask(Scaffold):
     def create_url_adapter(
         self, request: t.Optional[Request]
     ) -> t.Optional[MapAdapter]:
-        """Creates a URL adapter for the given request. The URL adapter
+        """Creates an URL adapter for the given request. The URL adapter
         is created at a point where the request context is not yet set
         up so the request is passed explicitly.
 

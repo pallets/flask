@@ -160,7 +160,7 @@ Modern web applications use meaningful URLs to help users. Users are more
 likely to like a page and come back if the page uses a meaningful URL they can
 remember and use to directly visit a page.
 
-Use the :meth:`~flask.Flask.route` decorator to bind a function to a URL. ::
+Use the :meth:`~flask.Flask.route` decorator to bind a function to an URL. ::
 
     @app.route('/')
     def index():
@@ -176,7 +176,7 @@ rules to a function.
 Variable Rules
 ``````````````
 
-You can add variable sections to a URL by marking sections with
+You can add variable sections to an URL by marking sections with
 ``<variable_name>``. Your function then receives the ``<variable_name>``
 as a keyword argument. Optionally, you can use a converter to specify the type
 of the argument like ``<converter:variable_name>``. ::
@@ -239,7 +239,7 @@ indexing the same page twice.
 URL Building
 ````````````
 
-To build a URL to a specific function, use the :func:`~flask.url_for` function.
+To build an URL to a specific function, use the :func:`~flask.url_for` function.
 It accepts the name of the function as its first argument and any number of
 keyword arguments, each corresponding to a variable part of the URL rule.
 Unknown variable parts are appended to the URL as query parameters.

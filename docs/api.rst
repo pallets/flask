@@ -627,7 +627,7 @@ also makes it possible to use relative link targets safely.
 
 You can also define multiple rules for the same function.  They have to be
 unique however.  Defaults can also be specified.  Here for example is a
-definition for a URL that accepts an optional page::
+definition for an URL that accepts an optional page::
 
     @app.route('/users/', defaults={'page': 1})
     @app.route('/users/page/<int:page>')
@@ -637,7 +637,7 @@ definition for a URL that accepts an optional page::
 This specifies that ``/users/`` will be the URL for page one and
 ``/users/page/N`` will be the URL for page ``N``.
 
-If a URL contains a default value, it will be redirected to its simpler
+If an URL contains a default value, it will be redirected to its simpler
 form with a 301 redirect. In the above example, ``/users/page/1`` will
 be redirected to ``/users/``. If your route handles ``GET`` and ``POST``
 requests, make sure the default route only handles ``GET``, as redirects
@@ -704,7 +704,7 @@ some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
     basis.
 
 -   `required_methods`: if this attribute is set, Flask will always add
-    these methods when registering a URL rule even if the methods were
+    these methods when registering an URL rule even if the methods were
     explicitly overridden in the ``route()`` call.
 
 Full example::

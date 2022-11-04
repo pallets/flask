@@ -73,7 +73,7 @@ The simplest way to generate URLs is to continue to use
     const user_url = {{ url_for("user", id=current_user.id)|tojson }}
     fetch(user_url).then(...)
 
-However, you might need to generate a URL based on information you only
+However, you might need to generate an URL based on information you only
 know in JavaScript. As discussed above, JavaScript runs in the user's
 browser, not as part of the template rendering, so you can't use
 ``url_for`` at that point.
@@ -97,7 +97,7 @@ when generating URLs from JavaScript.
 Making a Request with ``fetch``
 -------------------------------
 
-|fetch|_ takes two arguments, a URL and an object with other options,
+|fetch|_ takes two arguments, an URL and an object with other options,
 and returns a |Promise|_. We won't cover all the available options, and
 will only use ``then()`` on the promise, not other callbacks or
 ``await`` syntax. Read the linked MDN docs for more information about
@@ -234,7 +234,7 @@ with the given data serialized to JSON.
 It is usually not a good idea to return file data in a JSON response.
 JSON cannot represent binary data directly, so it must be base64
 encoded, which can be slow, takes more bandwidth to send, and is not as
-easy to cache. Instead, serve files using one view, and generate a URL
+easy to cache. Instead, serve files using one view, and generate an URL
 to the desired file to include in the JSON. Then the client can make a
 separate request to get the linked resource after getting the JSON.
 

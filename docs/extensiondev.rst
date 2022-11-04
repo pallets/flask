@@ -127,7 +127,7 @@ each one.
 
 -   Configuration per application instance, through ``app.config``
     values. This is configuration that could reasonably change for each
-    deployment of an application. A common example is a URL to an
+    deployment of an application. A common example is an URL to an
     external resource, such as a database. Configuration keys should
     start with the extension's name so that they don't interfere with
     other extensions.

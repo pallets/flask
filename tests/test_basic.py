@@ -1346,7 +1346,7 @@ def test_url_generation(app, req_ctx):
 
 
 def test_build_error_handler(app):
-    # Test base case, a URL which results in a BuildError.
+    # Test base case, an URL which results in a BuildError.
     with app.test_request_context():
         pytest.raises(BuildError, flask.url_for, "spam")
 
