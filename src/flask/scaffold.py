@@ -249,8 +249,7 @@ class Scaffold:
         """
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
-        else:
-            return None
+        return None
 
     @static_folder.setter
     def static_folder(self, value: t.Optional[t.Union[str, os.PathLike]]) -> None:
@@ -342,8 +341,7 @@ class Scaffold:
         """
         if self.template_folder is not None:
             return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
-        else:
-            return None
+        return None
 
     def open_resource(self, resource: str, mode: str = "rb") -> t.IO[t.AnyStr]:
         """Open a resource file relative to :attr:`root_path` for
@@ -743,8 +741,7 @@ class Scaffold:
 
         if issubclass(exc_class, HTTPException):
             return exc_class, exc_class.code
-        else:
-            return exc_class, None
+        return exc_class, None
 
 
 def _endpoint_from_view_func(view_func: t.Callable) -> str:
@@ -824,11 +821,10 @@ def _find_package_path(import_name):
                 search_locations = iter(root_spec.submodule_search_locations)
             return os.path.dirname(next(search_locations))
         # a package (with __init__.py)
-        elif root_spec.submodule_search_locations:
+        if root_spec.submodule_search_locations:
             return os.path.dirname(os.path.dirname(root_spec.origin))
         # just a normal module
-        else:
-            return os.path.dirname(root_spec.origin)
+        return os.path.dirname(root_spec.origin)
 
     # we were unable to find the `package_path` using PEP 451 loaders
     loader = pkgutil.get_loader(root_mod_name)

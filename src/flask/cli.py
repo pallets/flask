@@ -47,7 +47,7 @@ def find_best_app(module):
 
     if len(matches) == 1:
         return matches[0]
-    elif len(matches) > 1:
+    if len(matches) > 1:
         raise NoAppException(
             "Detected multiple Flask applications in module"
             f" '{module.__name__}'. Use '{module.__name__}:name'"
@@ -233,8 +233,7 @@ def locate_app(module_name, app_name, raise_if_not_found=True):
 
     if app_name is None:
         return find_best_app(module)
-    else:
-        return find_app_by_string(module, app_name)
+    return find_app_by_string(module, app_name)
 
 
 def get_version(ctx, param, value):
