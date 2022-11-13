@@ -1,5 +1,5 @@
 ci:
-  autoupdate_branch: "2.2.x"
+  autoupdate_branch: "2.1.x"
   autoupdate_schedule: monthly
 repos:
   - repo: https://github.com/asottile/pyupgrade
@@ -16,11 +16,11 @@ repos:
         args: ["--application-directories", "src"]
         additional_dependencies: ["setuptools>60.9"]
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.6.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
+    rev: 5.0.2
     hooks:
       - id: flake8
         additional_dependencies:
