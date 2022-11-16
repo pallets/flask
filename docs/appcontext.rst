@@ -61,10 +61,10 @@ Flask automatically *pushes* an app context when handling a request. Flask canno
 
 .. code-block:: pytb
 
-    AssertionError: The setup method 'shell_context_processor' can no 
-    longer be called on the application. It has already handled its 
+    AssertionError: The setup method 'shell_context_processor' can no
+    longer be called on the application. It has already handled its
     first request, any changes will not be applied consistently. Make
-    sure all imports, decorators, functions, etc. needed to set up the 
+    sure all imports, decorators, functions, etc. needed to set up the
     application are done before running it.
 
     This typically means that you attempted to use functionality that
