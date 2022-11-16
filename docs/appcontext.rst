@@ -50,6 +50,28 @@ See :doc:`/reqcontext` for more information about how the contexts work
 and the full life cycle of a request.
 
 
+New @setupmethod behavior
+-------------------------
+
+Since Flask 2.2.0, the @setupmethod can only be called once per instance and requires therefore the Flask application object to be defined in a basic application factory such as ``create_app`` to support multiple instances of the same application running in the same application process.
+
+See :doc:`/patterns/appfactories` for more information about how the application factories work.
+
+Flask automatically *pushes* an app context when handling a request. Flask cannot handle a second request of the @setupmethod in the same instance. If the Flask application object is not defined in a app factory, Flask would raise an error on the @setupmethod 'shell_context_processor':
+
+.. code-block:: pytb
+
+    AssertionError: The setup method 'shell_context_processor' can no 
+    longer be called on the application. It has already handled its 
+    first request, any changes will not be applied consistently. Make
+    sure all imports, decorators, functions, etc. needed to set up the 
+    application are done before running it.
+
+    This typically means that you attempted to use functionality that
+    needed to interface with the current application object in some way.
+    To solve this, set up an application context with app.app_context().
+
+
 Manually Push a Context
 -----------------------
 
