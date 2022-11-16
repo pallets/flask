@@ -66,11 +66,7 @@ Flask automatically *pushes* an app context when handling a request. Flask canno
     first request, any changes will not be applied consistently. Make
     sure all imports, decorators, functions, etc. needed to set up the
     application are done before running it.
-
-    This typically means that you attempted to use functionality that
-    needed to interface with the current application object in some way.
-    To solve this, set up an application context with app.app_context().
-
+    
 
 Manually Push a Context
 -----------------------
