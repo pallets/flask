@@ -272,11 +272,7 @@ class Blueprint(Scaffold):
         self.url_prefix = url_prefix
         self.subdomain = subdomain
         self.deferred_functions: t.List[DeferredSetupFunction] = []
-
-        if url_defaults is None:
-            url_defaults = {}
-
-        self.url_values_defaults = url_defaults
+        self.url_values_defaults = {} if url_defaults is None else url_defaults
         self.cli_group = cli_group
         self._blueprints: t.List[t.Tuple["Blueprint", dict]] = []
 
