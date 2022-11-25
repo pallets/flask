@@ -25,7 +25,7 @@ class Request(RequestBase):
     specific ones.
     """
 
-    json_module = json
+    json_module: t.Any = json
 
     #: The internal URL rule that matched the request.  This can be
     #: useful to inspect which methods are allowed for the URL from

@@ -225,7 +225,7 @@ class FlaskClient(Client):
             buffered=buffered,
             follow_redirects=follow_redirects,
         )
-        response.json_module = self.application.json  # type: ignore[misc]
+        response.json_module = self.application.json  # type: ignore[assignment]
 
         # Re-push contexts that were preserved during the request.
         while self._new_contexts:
