@@ -176,8 +176,8 @@ class Blueprint(Scaffold):
     _json_encoder: t.Union[t.Type[json.JSONEncoder], None] = None
     _json_decoder: t.Union[t.Type[json.JSONDecoder], None] = None
 
-    @property  # type: ignore[override]
-    def json_encoder(  # type: ignore[override]
+    @property
+    def json_encoder(
         self,
     ) -> t.Union[t.Type[json.JSONEncoder], None]:
         """Blueprint-local JSON encoder class to use. Set to ``None`` to use the app's.
@@ -210,8 +210,8 @@ class Blueprint(Scaffold):
         )
         self._json_encoder = value
 
-    @property  # type: ignore[override]
-    def json_decoder(  # type: ignore[override]
+    @property
+    def json_decoder(
         self,
     ) -> t.Union[t.Type[json.JSONDecoder], None]:
         """Blueprint-local JSON decoder class to use. Set to ``None`` to use the app's.

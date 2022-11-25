@@ -149,7 +149,7 @@ def stream_with_context(
                 yield from gen
             finally:
                 if hasattr(gen, "close"):
-                    gen.close()  # type: ignore
+                    gen.close()
 
     # The trick is to start the generator.  Then the code execution runs until
     # the first dummy None is yielded at which point the context was already
@@ -287,7 +287,7 @@ def redirect(
     return _wz_redirect(location, code=code, Response=Response)
 
 
-def abort(  # type: ignore[misc]
+def abort(
     code: t.Union[int, "BaseResponse"], *args: t.Any, **kwargs: t.Any
 ) -> "te.NoReturn":
     """Raise an :exc:`~werkzeug.exceptions.HTTPException` for the given
@@ -617,7 +617,7 @@ def get_root_path(import_name: str) -> str:
         return os.getcwd()
 
     if hasattr(loader, "get_filename"):
-        filepath = loader.get_filename(import_name)  # type: ignore
+        filepath = loader.get_filename(import_name)
     else:
         # Fall back to imports.
         __import__(import_name)

@@ -8,7 +8,7 @@
 -r docs.txt
 -r tests.txt
 -r typing.txt
-build==0.8.0
+build==0.9.0
     # via pip-tools
 cfgv==3.3.1
     # via pre-commit
@@ -22,20 +22,22 @@ filelock==3.8.0
     # via
     #   tox
     #   virtualenv
-identify==2.5.5
+identify==2.5.9
     # via pre-commit
 nodeenv==1.7.0
     # via pre-commit
 pep517==0.13.0
     # via build
-pip-compile-multi==2.4.6
+pip-compile-multi==2.6.1
     # via -r requirements/dev.in
-pip-tools==6.8.0
+pip-tools==6.10.0
     # via pip-compile-multi
-platformdirs==2.5.2
+platformdirs==2.5.4
     # via virtualenv
 pre-commit==2.20.0
     # via -r requirements/dev.in
+py==1.11.0
+    # via tox
 pyyaml==6.0
     # via pre-commit
 six==1.16.0
@@ -44,13 +46,13 @@ toml==0.10.2
     # via pre-commit
 toposort==1.7
     # via pip-compile-multi
-tox==3.26.0
+tox==3.27.1
     # via -r requirements/dev.in
-virtualenv==20.16.5
+virtualenv==20.16.7
     # via
     #   pre-commit
     #   tox
-wheel==0.37.1
+wheel==0.38.4
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
