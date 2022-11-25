@@ -7,9 +7,9 @@
 #
 alabaster==0.7.12
     # via sphinx
-babel==2.10.3
+babel==2.11.0
     # via sphinx
-certifi==2022.6.15.1
+certifi==2022.9.24
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -17,7 +17,7 @@ docutils==0.17.1
     # via
     #   sphinx
     #   sphinx-tabs
-idna==3.3
+idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
@@ -37,7 +37,7 @@ pygments==2.13.0
     #   sphinx-tabs
 pyparsing==3.0.9
     # via packaging
-pytz==2022.2.1
+pytz==2022.6
     # via babel
 requests==2.28.1
     # via sphinx
@@ -68,5 +68,5 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.12
+urllib3==1.26.13
     # via requests

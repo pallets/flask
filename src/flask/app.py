@@ -384,7 +384,7 @@ class Flask(Scaffold):
     _json_decoder: t.Union[t.Type[json.JSONDecoder], None] = None
 
     @property  # type: ignore[override]
-    def json_encoder(self) -> t.Type[json.JSONEncoder]:  # type: ignore[override]
+    def json_encoder(self) -> t.Type[json.JSONEncoder]:
         """The JSON encoder class to use. Defaults to
         :class:`~flask.json.JSONEncoder`.
 
@@ -423,7 +423,7 @@ class Flask(Scaffold):
         self._json_encoder = value
 
     @property  # type: ignore[override]
-    def json_decoder(self) -> t.Type[json.JSONDecoder]:  # type: ignore[override]
+    def json_decoder(self) -> t.Type[json.JSONDecoder]:
         """The JSON decoder class to use. Defaults to
         :class:`~flask.json.JSONDecoder`.
 

@@ -307,7 +307,7 @@ class RequestContext:
         self.app = app
         if request is None:
             request = app.request_class(environ)
-            request.json_module = app.json  # type: ignore[misc]
+            request.json_module = app.json
         self.request: Request = request
         self.url_adapter = None
         try:
