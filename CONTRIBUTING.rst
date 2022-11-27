@@ -2,6 +2,9 @@ How to contribute to Flask
 ==========================
 
 Thank you for considering contributing to Flask!
+Please follow our `Code of Conduct`_.
+
+.. _Code of Conduct: https://github.com/pallets/.github/blob/master/CODE_OF_CONDUCT.md
 
 
 Support questions
