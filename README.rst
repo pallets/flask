@@ -20,7 +20,7 @@ community that make adding new functionality easy.
 Installing
 ----------
 
-Install and update using `pip`_:
+In a terminal, install or update Flask using `pip`_:
 
 .. code-block:: text
 
@@ -31,6 +31,10 @@ Install and update using `pip`_:
 
 A Simple Example
 ----------------
+
+In a code editor or IDE of your choice, create a new file: app.py
+
+Copy and paste the following code snippet into the app.py file.
 
 .. code-block:: python
 
@@ -43,10 +47,21 @@ A Simple Example
     def hello():
         return "Hello, World!"
 
+Save your file.
+
+To execute the program, run the following command in a terminal:
+
 .. code-block:: text
 
     $ flask run
-      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+
+You will receive the following message:
+
+.. code-block:: text
+
+    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+
+You can open this address in an internet browser window to view your program.
 
 
 Contributing
