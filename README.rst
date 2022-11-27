@@ -77,6 +77,7 @@ Links
 -   PyPI Releases: https://pypi.org/project/Flask/
 -   Source Code: https://github.com/pallets/flask/
 -   Issue Tracker: https://github.com/pallets/flask/issues/
+-   Code of Conduct: https://github.com/pallets/flask/blob/main/CODE_OF_CONDUCT.md
 -   Website: https://palletsprojects.com/p/flask/
 -   Twitter: https://twitter.com/PalletsTeam
 -   Chat: https://discord.gg/pallets
