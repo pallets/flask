@@ -2,23 +2,23 @@ Heroku Deployment
 =================
 
 During and after developing your application, you'll want to make it available
-publicly to other users. When you're developing locally, you're using the 
-built-in development server, debugger, and reloader. These should not be 
+publicly to other users. When you're developing locally, you're using the
+built-in development server, debugger, and reloader. These should not be
 used in production. InsteadHeroku Deployment
 
 During and after developing your application, you'll want to make it available
-publicly to other users. When you're developing locally, you're using the 
-built-in development server, debugger, and reloader. These should not be 
-used in production. Instead, you should use a dedicated server hosting platform 
-such as Heroku. The process of successfully hosting your application on Heroku 
+publicly to other users. When you're developing locally, you're using the
+built-in development server, debugger, and reloader. These should not be
+used in production. Instead, you should use a dedicated server hosting platform
+such as Heroku. The process of successfully hosting your application on Heroku
 will be outlined here.
 
-As of November 28, 2022, Heroku has discontinued their free dyno management services 
+As of November 28, 2022, Heroku has discontinued their free dyno management services
 for developers to host their projects. Dynos are containers provided by Heroku that
 holds deployed applications. This tutorial utilizes `Gunicorn`_, a Python WSGI HTTP
 Server where Heroku requires dyno hours. Please  refer to `Heroku's Low Cost Dyno`_ for
 more information regarding the changes Heroku's dyno management services and the current
-rates to utilize their deployment services. 
+rates to utilize their deployment services.
 
 .. _Gunicorn: https://gunicorn.org/
 .. _Heroku's Low Cost Dyno: https://blog.heroku.com/new-low-cost-plans/
@@ -29,7 +29,7 @@ Requirements
 
 Heroku requires the application to define a set of processes before
 running the environment. Because Flask is a WSGI *application*,
-to deploy it, your application will require WSGI *server*. The 
+to deploy it, your application will require WSGI *server*. The
 Gunicorn  pure WSGI server is utilized as the
 server for Flask applications. For a Gunicorn installation guide
 visit :doc:`<../gunicorn.rst>`. This will generate ``Procfile`` in your
@@ -77,10 +77,10 @@ Log into your Heroku account and locate and select the ``New`` button and select
 the application is created, you'll be presented with your Heroku App home page.
 Locate the ``Deployment method`` and chose the option to connect to Github. You'll
 be prompted to your Github account to authorize the connection to Heroku. Now you'll
-see the ``Connect to GitHub`` row. Select  and connect the repository your Flask 
+see the ``Connect to GitHub`` row. Select  and connect the repository your Flask
 application is located in.
 
-You have the choice to enable automatic deployment or to manually deploy your 
+You have the choice to enable automatic deployment or to manually deploy your
 application. Automatic deployment will deploy the new version of your Heroku app
 with every branch push the Github repository. To enable, click the ``Enable Automatic Deploys``
 button. On the other hand, if you prefer manual deployment, select your branch and
@@ -88,6 +88,6 @@ click the ``Deploy Branch``.
 
 Your application will be built and if successful it will be deployed on Heroku.
 Click the ``View`` button to access your newly deployed Flask application.
-, you should use a dedicated server hosting platform 
-such as Heroku. The process of successfully hosting your application on Heroku 
+, you should use a dedicated server hosting platform
+such as Heroku. The process of successfully hosting your application on Heroku
 will be outlined here.
