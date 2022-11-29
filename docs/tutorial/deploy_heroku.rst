@@ -15,14 +15,13 @@ will be outlined here.
 
 As of November 28, 2022, Heroku has discontinued their free dyno management services 
 for developers to host their projects. Dynos are containers provided by Heroku that
-holds deployed applications. Under specific criteria, Users are allocated a finite  
-amount of free dyno hours for their deployed projects every month. This tutorial 
-utilizes `Gunicorn`_, a Python WSGI HTTP Server where Heroku requires dyno hours. Please 
-refer to `Heroku's Free Dyno Hours`_ for more information regarding Heroku's free dyno
-hours. 
+holds deployed applications. This tutorial utilizes `Gunicorn`_, a Python WSGI HTTP
+Server where Heroku requires dyno hours. Please  refer to `Heroku's Low Cost Dyno`_ for
+more information regarding the changes Heroku's dyno management services and the current
+rates to utilize their deployment services. 
 
 .. _Gunicorn: https://gunicorn.org/
-.. _Heroku's Free Dyno Hours: https://devcenter.heroku.com/articles/free-dyno-hours/
+.. _Heroku's Low Cost Dyno: https://blog.heroku.com/new-low-cost-plans/
 
 
 Requirements
