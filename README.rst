@@ -10,7 +10,7 @@ application frameworks.
 Flask offers suggestions, but doesn't enforce any dependencies or
 project layout. It is up to the developer to choose the tools and
 libraries they want to use. There are many extensions provided by the
-community that make adding new functionality easy.
+community that makes adding new functionality easy.
 
 .. _WSGI: https://wsgi.readthedocs.io/
 .. _Werkzeug: https://werkzeug.palletsprojects.com/
@@ -80,3 +80,11 @@ Links
 -   Website: https://palletsprojects.com/p/flask/
 -   Twitter: https://twitter.com/PalletsTeam
 -   Chat: https://discord.gg/pallets
+
+
+License
+-------
+
+Flask is licensed under the `BSD 3-Clause Revised License`_.
+
+.. _BSD 3-Clause Revised License: https://github.com/pallets/flask/blob/main/LICENSE.rst

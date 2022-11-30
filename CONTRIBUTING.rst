@@ -4,7 +4,7 @@ How to contribute to Flask
 
 Thank you for considering contributing to Flask!
 
-* `Code of Conduct <CODE_OF_CONDUCT.md>`_
+* `Code of Conduct <CODE_OF_CONDUCT.rst>`_
 * `Support Questions`_
 * `Reporting issues`_
 * `Submitting patches`_
@@ -17,7 +17,7 @@ Thank you for considering contributing to Flask!
 Support questions
 #################
 
-Please don't use the issue tracker for this. The issue tracker is a tool
+Please don't use the issue tracker for support questions. The issue tracker is a tool
 to address bugs and feature requests in Flask itself. Use one of the
 following resources for questions about using Flask or issues with your
 own code:
