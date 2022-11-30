@@ -4,7 +4,7 @@ How to contribute to Flask
 
 Thank you for considering contributing to Flask!
 
-* `Code of Conduct <./blob/main/CODE_OF_CONDUCT.md>`_
+* `Code of Conduct <CODE_OF_CONDUCT.md>`_
 * `Support Questions`_
 * `Reporting issues`_
 * `Submitting patches`_
