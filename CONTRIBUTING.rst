@@ -1,11 +1,21 @@
+**************************
 How to contribute to Flask
-==========================
+**************************
 
 Thank you for considering contributing to Flask!
 
+* `Code of Conduct <./blob/main/CODE_OF_CONDUCT.md>`_
+* `Support Questions`_
+* `Reporting issues`_
+* `Submitting patches`_
+  
+  * `First time setup`_
+  * `Start coding`_
+  * `Running the tests`_
+  * `Running test coverage`_
 
 Support questions
------------------
+#################
 
 Please don't use the issue tracker for this. The issue tracker is a tool
 to address bugs and feature requests in Flask itself. Use one of the
@@ -24,7 +34,7 @@ own code:
 
 
 Reporting issues
-----------------
+################
 
 Include the following information in your post:
 
@@ -42,7 +52,7 @@ Include the following information in your post:
 
 
 Submitting patches
-------------------
+##################
 
 If there is not an open issue for what you want to submit, prefer
 opening one for discussion before working on a PR. You can work on any
@@ -68,7 +78,7 @@ Include the following in your patch:
 
 
 First time setup
-~~~~~~~~~~~~~~~~
+****************
 
 -   Download and install the `latest version of git`_.
 -   Configure git with your `username`_ and `email`_.
@@ -140,7 +150,7 @@ First time setup
 
 
 Start coding
-~~~~~~~~~~~~
+************
 
 -   Create a branch to identify the issue you would like to work on. If
     you're submitting a bug or documentation fix, branch off of the
@@ -176,7 +186,7 @@ Start coding
 
 
 Running the tests
-~~~~~~~~~~~~~~~~~
+*****************
 
 Run the basic test suite with pytest.
 
@@ -195,7 +205,7 @@ wait.
 
 
 Running test coverage
-~~~~~~~~~~~~~~~~~~~~~
+*********************
 
 Generating a report of lines that do not have test coverage can indicate
 where to start contributing. Run ``pytest`` using ``coverage`` and
@@ -213,7 +223,7 @@ Read more about `coverage <https://coverage.readthedocs.io>`__.
 
 
 Building the docs
-~~~~~~~~~~~~~~~~~
+*****************
 
 Build the docs in the ``docs`` directory using Sphinx.
 
