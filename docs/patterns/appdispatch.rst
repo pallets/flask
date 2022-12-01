@@ -93,7 +93,7 @@ exist yet, it is dynamically created and remembered::
 
     from threading import Lock
 
-    class SubdomainDispatcher(object):
+    class SubdomainDispatcher:
 
         def __init__(self, domain, create_app):
             self.domain = domain
@@ -148,7 +148,7 @@ request path up to the first slash::
     from threading import Lock
     from werkzeug.wsgi import pop_path_info, peek_path_info
 
-    class PathDispatcher(object):
+    class PathDispatcher:
 
         def __init__(self, default_app, create_app):
             self.default_app = default_app
