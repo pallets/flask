@@ -56,7 +56,7 @@ For guidance on setting up a development environment and how to make a
 contribution to Flask, see the `contributing guidelines`_ and read our `Code of Conduct`_.
 
 .. _contributing guidelines: https://github.com/pallets/flask/blob/main/CONTRIBUTING.rst
-.. _contributing guidelines: https://github.com/pallets/flask/blob/main/CODE_OF_CONDUCT.rst
+.. _Code of Conduct: https://github.com/pallets/flask/blob/main/CODE_OF_CONDUCT.rst
 
 Donate
 ------
