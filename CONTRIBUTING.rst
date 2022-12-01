@@ -218,7 +218,7 @@ generate a report.
 
 Open ``htmlcov/index.html`` in your browser to explore the report.
 
-Read more about `coverage <https://coverage.readthedocs.io>`__.
+Read more about `coverage <https://coverage.readthedocs.io/en/6.6.0b1/>`__.
 
 
 Building the docs
