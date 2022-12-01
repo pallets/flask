@@ -7,7 +7,7 @@ Thank you for considering contributing to Flask!
 * `Support Questions`_
 * `Reporting issues`_
 * `Submitting patches`_
-  
+
   * `First time setup`_
   * `Start coding`_
   * `Running the tests`_
