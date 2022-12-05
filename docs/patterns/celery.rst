@@ -40,16 +40,16 @@ This is all that is necessary to integrate Celery with Flask:
 
     from celery import Celery
 
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+
     def make_celery(app):
-        celery = Celery(app.import_name)
+        celery = Celery(app.import_name, task_cls="minimal.minimal:ContextTask")
         celery.conf.update(app.config["CELERY_CONFIG"])
 
-        class ContextTask(celery.Task):
-            def __call__(self, *args, **kwargs):
-                with app.app_context():
-                    return self.run(*args, **kwargs)
-
-        celery.Task = ContextTask
         return celery
 
 The function creates a new Celery object, configures it with the broker
