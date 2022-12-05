@@ -255,8 +255,9 @@ class Scaffold:
     @static_folder.setter
     def static_folder(self, value: t.Optional[t.Union[str, os.PathLike]]) -> None:
         if value is not None:
-            value = os.fspath(value).rstrip(r"\/")
-
+            value = os.fspath(value).rstrip(r"\/")    
+            
+        # Static folder is a string
         self._static_folder = value
 
     @property
@@ -341,7 +342,7 @@ class Scaffold:
         .. versionadded:: 0.5
         """
         if self.template_folder is not None:
-            return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
+            return str(FileSystemLoader(os.path.join(self.root_path, self.template_folder)))
         else:
             return None
 
