@@ -9,7 +9,7 @@ alabaster==0.7.12
     # via sphinx
 babel==2.11.0
     # via sphinx
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -30,7 +30,7 @@ packaging==21.3
     #   pallets-sphinx-themes
     #   sphinx
 pallets-sphinx-themes==2.0.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 pygments==2.13.0
     # via
     #   sphinx
@@ -45,15 +45,15 @@ snowballstemmer==2.2.0
     # via sphinx
 sphinx==4.5.0
     # via
-    #   -r requirements/docs.in
+    #   -r docs.in
     #   pallets-sphinx-themes
     #   sphinx-issues
     #   sphinx-tabs
     #   sphinxcontrib-log-cabinet
 sphinx-issues==3.0.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-tabs==3.3.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -63,7 +63,7 @@ sphinxcontrib-htmlhelp==2.0.0
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-log-cabinet==1.0.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
