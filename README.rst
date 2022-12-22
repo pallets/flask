@@ -1,23 +1,23 @@
-Flask
+Flask (не фляга)
 =====
 
-Flask is a lightweight `WSGI`_ web application framework. It is designed
-to make getting started quick and easy, with the ability to scale up to
-complex applications. It began as a simple wrapper around `Werkzeug`_
-and `Jinja`_ and has become one of the most popular Python web
-application frameworks.
+Flask - это облегченный фреймворк веб-приложений `WSGI`_. Он разработан
+для того, чтобы сделать начало работы быстрым и легким, с возможностью масштабирования до
+сложных приложений. Он начинался как простая оболочка вокруг `Werkzeug`_
+и `Jinja`_ и стал одним из самых популярных
+фреймворков веб-приложений на Python.
 
-Flask offers suggestions, but doesn't enforce any dependencies or
-project layout. It is up to the developer to choose the tools and
-libraries they want to use. There are many extensions provided by the
-community that make adding new functionality easy.
+Flask предлагает предложения, но не применяет никаких зависимостей или
+макета проекта. Разработчик сам выбирает инструменты и
+библиотеки, которые он хочет использовать. Сообщество предоставляет множество расширений
+, которые упрощают добавление новых функций.
 
 .. _WSGI: https://wsgi.readthedocs.io/
 .. _Werkzeug: https://werkzeug.palletsprojects.com/
 .. _Jinja: https://jinja.palletsprojects.com/
 
 
-Installing
+Установочка))
 ----------
 
 Install and update using `pip`_:
@@ -28,8 +28,7 @@ Install and update using `pip`_:
 
 .. _pip: https://pip.pypa.io/en/stable/getting-started/
 
-
-A Simple Example
+Простой пример)))):
 ----------------
 
 .. code-block:: python
@@ -49,34 +48,34 @@ A Simple Example
       * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 
-Contributing
+Сопутствие
 ------------
 
-For guidance on setting up a development environment and how to make a
-contribution to Flask, see the `contributing guidelines`_.
+Рекомендации по настройке среды разработки и тому, как внести
+свой вклад в Flask, см. в разделе "Рекомендации по внесению вклада`_.
 
-.. _contributing guidelines: https://github.com/pallets/flask/blob/main/CONTRIBUTING.rst
+.. _Способствующие руководящие принципы: https://github.com/pallets/flask/blob/main/CONTRIBUTING.rst
 
 
-Donate
+Для донатеров
 ------
 
-The Pallets organization develops and supports Flask and the libraries
-it uses. In order to grow the community of contributors and users, and
-allow the maintainers to devote more time to the projects, `please
-donate today`_.
+Организация Pallets разрабатывает и поддерживает Flask и библиотеки
+, которые она использует. Чтобы расширить сообщество участников и пользователей и
+позволить сопровождающим уделять больше времени проектам, "пожалуйста
+, сделайте пожертвование сегодня`_.
 
-.. _please donate today: https://palletsprojects.com/donate
+.. _Пожалуйста задонатьте сегодня :>  : https://palletsprojects.com/donate
 
 
-Links
+Полезные ссылочки
 -----
 
--   Documentation: https://flask.palletsprojects.com/
--   Changes: https://flask.palletsprojects.com/changes/
+-   Документация: https://flask.palletsprojects.com/
+-   Изменения: https://flask.palletsprojects.com/changes/
 -   PyPI Releases: https://pypi.org/project/Flask/
--   Source Code: https://github.com/pallets/flask/
--   Issue Tracker: https://github.com/pallets/flask/issues/
--   Website: https://palletsprojects.com/p/flask/
--   Twitter: https://twitter.com/PalletsTeam
--   Chat: https://discord.gg/pallets
+-   Исходный код: https://github.com/pallets/flask/
+-   Отслеживание проблем: https://github.com/pallets/flask/issues/
+-   Вебсайт: https://palletsprojects.com/p/flask/
+-   Твитер: https://twitter.com/PalletsTeam
+-   Чат: https://discord.gg/pallets
