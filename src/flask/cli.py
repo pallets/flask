@@ -1021,13 +1021,13 @@ def routes_command(sort: str, all_methods: bool) -> None:
         max(len(methods) for methods in rule_methods),
         max(len(rule.rule) for rule in rules),
     )
-    widths = [max(len(h), w) for h, w in zip(headers, widths)]
+    widths = [max(len(h), w) for h, w in zip(headers, strict=widths)]
     row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}".format(*widths)
 
     click.echo(row.format(*headers).strip())
     click.echo(row.format(*("-" * width for width in widths)))
 
-    for rule, methods in zip(rules, rule_methods):
+    for rule, methods in zip(rules, strict=rule_methods):
         click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
 
 
