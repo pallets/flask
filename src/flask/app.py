@@ -558,7 +558,7 @@ class Flask(Scaffold):
         static_host: t.Optional[str] = None,
         host_matching: bool = False,
         subdomain_matching: bool = False,
-        template_folder: t.Optional[str] = "templates",
+        template_folder: t.Optional[t.Union[str, os.PathLike]] = "templates",
         instance_path: t.Optional[str] = None,
         instance_relative_config: bool = False,
         root_path: t.Optional[str] = None,

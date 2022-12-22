@@ -250,7 +250,7 @@ class Blueprint(Scaffold):
         import_name: str,
         static_folder: t.Optional[t.Union[str, os.PathLike]] = None,
         static_url_path: t.Optional[str] = None,
-        template_folder: t.Optional[str] = None,
+        template_folder: t.Optional[t.Union[str, os.PathLike]] = None,
         url_prefix: t.Optional[str] = None,
         subdomain: t.Optional[str] = None,
         url_defaults: t.Optional[dict] = None,
