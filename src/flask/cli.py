@@ -933,6 +933,9 @@ def run_command(
     )
 
 
+run_command.params.insert(0, _debug_option)
+
+
 @click.command("shell", short_help="Run a shell in the app context.")
 @with_appcontext
 def shell_command() -> None:

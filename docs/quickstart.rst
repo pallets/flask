@@ -108,7 +108,7 @@ To enable debug mode, use the ``--debug`` option.
 
 .. code-block:: text
 
-    $ flask --app hello --debug run
+    $ flask --app hello run --debug
      * Serving Flask app 'hello'
      * Debug mode: on
      * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)

@@ -137,7 +137,7 @@ follow the tutorial.
 
 .. code-block:: text
 
-    $ flask --app flaskr --debug run
+    $ flask --app flaskr run --debug
 
 You'll see output similar to this:
 
