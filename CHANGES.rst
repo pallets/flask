@@ -3,6 +3,8 @@ Version 2.2.3
 
 Unreleased
 
+-   Fix the type of ``template_folder`` to accept ``pathlib.Path``. :issue:`4892`
+
 
 Version 2.2.2
 -------------
