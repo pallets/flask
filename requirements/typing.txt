@@ -7,7 +7,7 @@
 #
 cffi==1.15.1
     # via cryptography
-cryptography==38.0.3
+cryptography==38.0.4
     # via -r requirements/typing.in
 mypy==0.991
     # via -r requirements/typing.in
@@ -19,7 +19,7 @@ types-contextvars==2.4.7
     # via -r requirements/typing.in
 types-dataclasses==0.6.6
     # via -r requirements/typing.in
-types-setuptools==65.6.0.1
+types-setuptools==65.6.0.2
     # via -r requirements/typing.in
 typing-extensions==4.4.0
     # via mypy

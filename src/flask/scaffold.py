@@ -93,7 +93,7 @@ class Scaffold:
         import_name: str,
         static_folder: t.Optional[t.Union[str, os.PathLike]] = None,
         static_url_path: t.Optional[str] = None,
-        template_folder: t.Optional[str] = None,
+        template_folder: t.Optional[t.Union[str, os.PathLike]] = None,
         root_path: t.Optional[str] = None,
     ):
         #: The name of the package or module that this object belongs

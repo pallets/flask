@@ -5,20 +5,18 @@
 #
 #    pip-compile-multi
 #
-asgiref==3.5.2
+asgiref==3.6.0
     # via -r requirements/tests.in
-attrs==22.1.0
+attrs==22.2.0
     # via pytest
 blinker==1.5
     # via -r requirements/tests.in
 iniconfig==1.1.1
     # via pytest
-packaging==21.3
+packaging==22.0
     # via pytest
 pluggy==1.0.0
     # via pytest
-pyparsing==3.0.9
-    # via packaging
 pytest==7.2.0
     # via -r requirements/tests.in
 python-dotenv==0.21.0

@@ -212,7 +212,7 @@ class's :meth:`~views.View.as_view` method.
         def __init__(self, model):
             self.model = model
 
-        def get(id):
+        def get(self, id):
             post = self.model.query.get(id)
             return jsonify(post.to_json())
 

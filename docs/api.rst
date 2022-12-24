@@ -248,7 +248,7 @@ HTML ``<script>`` tags.
 .. sourcecode:: html+jinja
 
     <script>
-        const names = {{ names|tosjon }};
+        const names = {{ names|tojson }};
         renderChart(names, {{ axis_data|tojson }});
     </script>
 

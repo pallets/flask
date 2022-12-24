@@ -256,7 +256,7 @@ provide get (list) and post (create) methods.
             return self.model.query.get_or_404(id)
 
         def get(self, id):
-            user = self._get_item(id)
+            item = self._get_item(id)
             return jsonify(item.to_json())
 
         def patch(self, id):

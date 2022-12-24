@@ -9,7 +9,7 @@ alabaster==0.7.12
     # via sphinx
 babel==2.11.0
     # via sphinx
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -25,19 +25,17 @@ jinja2==3.1.2
     # via sphinx
 markupsafe==2.1.1
     # via jinja2
-packaging==21.3
+packaging==22.0
     # via
     #   pallets-sphinx-themes
     #   sphinx
-pallets-sphinx-themes==2.0.2
+pallets-sphinx-themes==2.0.3
     # via -r requirements/docs.in
 pygments==2.13.0
     # via
     #   sphinx
     #   sphinx-tabs
-pyparsing==3.0.9
-    # via packaging
-pytz==2022.6
+pytz==2022.7
     # via babel
 requests==2.28.1
     # via sphinx

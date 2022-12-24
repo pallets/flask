@@ -47,7 +47,7 @@ Debug Mode
 
 The :data:`DEBUG` config value is special because it may behave inconsistently if
 changed after the app has begun setting up. In order to set debug mode reliably, use the
-``--debug`` option on the ``flask`` command.``flask run`` will use the interactive
+``--debug`` option on the ``flask`` command. ``flask run`` will use the interactive
 debugger and reloader by default in debug mode.
 
 .. code-block:: text
