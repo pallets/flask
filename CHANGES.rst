@@ -13,6 +13,7 @@ Unreleased
     templates this behavior can be changed with the ``autoescape`` tag.
     :issue:`4831`
 -   Fix the type of ``template_folder`` to accept ``pathlib.Path``. :issue:`4892`
+-   Add ``--debug`` option to the ``flask run`` command. :issue:`4777`
 
 
 Version 2.2.2
