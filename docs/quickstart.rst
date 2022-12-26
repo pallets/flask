@@ -104,11 +104,11 @@ error occurs during a request.
     security risk. Do not run the development server or debugger in a
     production environment.
 
-To enable debug mode, use the ``--debug`` option.
+To enable debug mode, use the ``--debugger`` option.
 
 .. code-block:: text
 
-    $ flask --app hello run --debug
+    $ flask --app hello run --debugger
      * Serving Flask app 'hello'
      * Debug mode: on
      * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
