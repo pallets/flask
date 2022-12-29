@@ -95,7 +95,7 @@ the ``--debug`` option.
 
 .. code-block:: console
 
-     $ flask --app hello --debug run
+     $ flask --app hello run --debug
       * Serving Flask app "hello"
       * Debug mode: on
       * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
@@ -550,7 +550,7 @@ a name such as "flask run".
 Click the *Script path* dropdown and change it to *Module name*, then input ``flask``.
 
 The *Parameters* field is set to the CLI command to execute along with any arguments.
-This example uses ``--app hello --debug run``, which will run the development server in
+This example uses ``--app hello run --debug``, which will run the development server in
 debug mode. ``--app hello`` should be the import or file with your Flask app.
 
 If you installed your project as a package in your virtualenv, you may uncheck the

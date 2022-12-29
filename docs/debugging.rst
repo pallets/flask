@@ -43,7 +43,7 @@ The debugger is enabled by default when the development server is run in debug m
 
 .. code-block:: text
 
-    $ flask --app hello --debug run
+    $ flask --app hello run --debug
 
 When running from Python code, passing ``debug=True`` enables debug mode, which is
 mostly equivalent.
@@ -72,7 +72,7 @@ which can interfere.
 
 .. code-block:: text
 
-    $ flask --app hello --debug run --no-debugger --no-reload
+    $ flask --app hello run --debug --no-debugger --no-reload
 
 When running from Python:
 
