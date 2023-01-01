@@ -107,7 +107,7 @@ available in the result.
               <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
             </div>
             {% if g.user['id'] == post['author_id'] %}
-              <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+              <a class="action" href="{{ url_for('blog.update', id_=post['id']) }}">Edit</a>
             {% endif %}
           </header>
           <p class="body">{{ post['body'] }}</p>
@@ -198,16 +198,16 @@ it from each view.
 .. code-block:: python
     :caption: ``flaskr/blog.py``
 
-    def get_post(id, check_author=True):
+    def get_post(id_, check_author=True):
         post = get_db().execute(
             'SELECT p.id, title, body, created, author_id, username'
             ' FROM post p JOIN user u ON p.author_id = u.id'
             ' WHERE p.id = ?',
-            (id,)
+            (id_,)
         ).fetchone()
 
         if post is None:
-            abort(404, f"Post id {id} doesn't exist.")
+            abort(404, f"Post id {id_} doesn't exist.")
 
         if check_author and post['author_id'] != g.user['id']:
             abort(403)
@@ -228,10 +228,10 @@ doesn't matter because they're not modifying the post.
 .. code-block:: python
     :caption: ``flaskr/blog.py``
 
-    @bp.route('/<int:id>/update', methods=('GET', 'POST'))
+    @bp.route('/<int:id_>/update', methods=('GET', 'POST'))
     @login_required
-    def update(id):
-        post = get_post(id)
+    def update(id_):
+        post = get_post(id_)
 
         if request.method == 'POST':
             title = request.form['title']
@@ -248,7 +248,7 @@ doesn't matter because they're not modifying the post.
                 db.execute(
                     'UPDATE post SET title = ?, body = ?'
                     ' WHERE id = ?',
-                    (title, body, id)
+                    (title, body, id_)
                 )
                 db.commit()
                 return redirect(url_for('blog.index'))
@@ -256,13 +256,13 @@ doesn't matter because they're not modifying the post.
         return render_template('blog/update.html', post=post)
 
 Unlike the views you've written so far, the ``update`` function takes
-an argument, ``id``. That corresponds to the ``<int:id>`` in the route.
+an argument, ``id_``. That corresponds to the ``<int:id_>`` in the route.
 A real URL will look like ``/1/update``. Flask will capture the ``1``,
-ensure it's an :class:`int`, and pass it as the ``id`` argument. If you
-don't specify ``int:`` and instead do ``<id>``, it will be a string.
+ensure it's an :class:`int`, and pass it as the ``id_`` argument. If you
+don't specify ``int:`` and instead do ``<id_>``, it will be a string.
 To generate a URL to the update page, :func:`url_for` needs to be passed
-the ``id`` so it knows what to fill in:
-``url_for('blog.update', id=post['id'])``. This is also in the
+the ``id_`` so it knows what to fill in:
+``url_for('blog.update', id_=post['id'])``. This is also in the
 ``index.html`` file above.
 
 The ``create`` and ``update`` views look very similar. The main
@@ -290,13 +290,13 @@ tutorial it's clearer to keep them separate.
         <input type="submit" value="Save">
       </form>
       <hr>
-      <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+      <form action="{{ url_for('blog.delete', id_=post['id']) }}" method="post">
         <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
       </form>
     {% endblock %}
 
 This template has two forms. The first posts the edited data to the
-current page (``/<id>/update``). The other form contains only a button
+current page (``/<id_>/update``). The other form contains only a button
 and specifies an ``action`` attribute that posts to the delete view
 instead. The button uses some JavaScript to show a confirmation dialog
 before submitting.
@@ -313,19 +313,19 @@ Delete
 ------
 
 The delete view doesn't have its own template, the delete button is part
-of ``update.html`` and posts to the ``/<id>/delete`` URL. Since there
+of ``update.html`` and posts to the ``/<id_>/delete`` URL. Since there
 is no template, it will only handle the ``POST`` method and then redirect
 to the ``index`` view.
 
 .. code-block:: python
     :caption: ``flaskr/blog.py``
 
-    @bp.route('/<int:id>/delete', methods=('POST',))
+    @bp.route('/<int:id_>/delete', methods=('POST',))
     @login_required
-    def delete(id):
-        get_post(id)
+    def delete(id_):
+        get_post(id_)
         db = get_db()
-        db.execute('DELETE FROM post WHERE id = ?', (id,))
+        db.execute('DELETE FROM post WHERE id = ?', (id_,))
         db.commit()
         return redirect(url_for('blog.index'))
 
