@@ -358,6 +358,9 @@ class Blueprint(Scaffold):
         :param options: Keyword arguments forwarded from
             :meth:`~Flask.register_blueprint`.
 
+        .. versionchanged:: 2.3
+            Nested blueprints now correctly apply subdomains.
+
         .. versionchanged:: 2.0.1
             Nested blueprints are registered with their dotted name.
             This allows different blueprints with the same name to be
@@ -458,10 +461,12 @@ class Blueprint(Scaffold):
             if bp_subdomain is None:
                 bp_subdomain = blueprint.subdomain
 
-            if state.subdomain is not None and bp_subdomain is None:
-                bp_options["subdomain"] = state.subdomain
+            if state.subdomain is not None and bp_subdomain is not None:
+                bp_options["subdomain"] = bp_subdomain + "." + state.subdomain
             elif bp_subdomain is not None:
                 bp_options["subdomain"] = bp_subdomain
+            elif state.subdomain is not None:
+                bp_options["subdomain"] = state.subdomain
 
             if bp_url_prefix is None:
                 bp_url_prefix = blueprint.url_prefix
