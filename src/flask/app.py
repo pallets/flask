@@ -9,6 +9,7 @@ import weakref
 from collections.abc import Iterator as _abc_Iterator
 from datetime import timedelta
 from itertools import chain
+from itertools import product
 from threading import Lock
 from types import TracebackType
 
@@ -823,9 +824,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 0.8
         """
-        root_path = self.root_path
-        if instance_relative:
-            root_path = self.instance_path
+        root_path = self.instance_path if instance_relative else self.root_path
         defaults = dict(self.default_config)
         defaults["ENV"] = os.environ.get("FLASK_ENV") or "production"
         defaults["DEBUG"] = get_debug_flag()
@@ -994,7 +993,7 @@ class Flask(Scaffold):
         for name in names:
             if name in self.template_context_processors:
                 for func in self.template_context_processors[name]:
-                    context.update(func())
+                    context |= func()
 
         context.update(orig_ctx)
 
@@ -1007,7 +1006,7 @@ class Flask(Scaffold):
         """
         rv = {"app": self, "g": g}
         for processor in self.shell_context_processors:
-            rv.update(processor())
+            rv |= processor()
         return rv
 
     @property
@@ -1167,11 +1166,7 @@ class Flask(Scaffold):
             sn_host, _, sn_port = server_name.partition(":")
 
         if not host:
-            if sn_host:
-                host = sn_host
-            else:
-                host = "127.0.0.1"
-
+            host = sn_host or "127.0.0.1"
         if port or port == 0:
             port = int(port)
         elif sn_port:
@@ -1559,18 +1554,17 @@ class Flask(Scaffold):
         exc_class, code = self._get_exc_class_and_code(type(e))
         names = (*request.blueprints, None)
 
-        for c in (code, None) if code is not None else (None,):
-            for name in names:
-                handler_map = self.error_handler_spec[name][c]
+        for c, name in product((code, None) if code is not None else (None,), names):
+            handler_map = self.error_handler_spec[name][c]
 
-                if not handler_map:
-                    continue
+            if not handler_map:
+                continue
 
-                for cls in exc_class.__mro__:
-                    handler = handler_map.get(cls)
+            for cls in exc_class.__mro__:
+                handler = handler_map.get(cls)
 
-                    if handler is not None:
-                        return handler
+                if handler is not None:
+                    return handler
         return None
 
     def handle_http_exception(
@@ -1604,9 +1598,7 @@ class Flask(Scaffold):
             return e
 
         handler = self._find_error_handler(e)
-        if handler is None:
-            return e
-        return self.ensure_sync(handler)(e)
+        return e if handler is None else self.ensure_sync(handler)(e)
 
     def trap_http_exception(self, e: Exception) -> bool:
         """Checks if an HTTP exception should be trapped or not.  By default
@@ -1638,10 +1630,7 @@ class Flask(Scaffold):
         ):
             return True
 
-        if trap_bad_request:
-            return isinstance(e, BadRequest)
-
-        return False
+        return isinstance(e, BadRequest) if trap_bad_request else False
 
     def handle_user_exception(
         self, e: Exception
@@ -1795,7 +1784,8 @@ class Flask(Scaffold):
         ):
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
-        view_args: t.Dict[str, t.Any] = req.view_args  # type: ignore[assignment]
+        # type: ignore[assignment]
+        view_args: t.Dict[str, t.Any] = req.view_args
         return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
 
     def full_dispatch_request(self) -> Response:
@@ -1886,10 +1876,7 @@ class Flask(Scaffold):
 
         .. versionadded:: 2.0
         """
-        if iscoroutinefunction(func):
-            return self.async_to_sync(func)
-
-        return func
+        return self.async_to_sync(func) if iscoroutinefunction(func) else func
 
     def async_to_sync(
         self, func: t.Callable[..., t.Coroutine]
@@ -2142,7 +2129,7 @@ class Flask(Scaffold):
 
         # make sure the body is an instance of the response class
         if not isinstance(rv, self.response_class):
-            if isinstance(rv, (str, bytes, bytearray)) or isinstance(rv, _abc_Iterator):
+            if isinstance(rv, (str, bytes, bytearray, _abc_Iterator)):
                 # let the response class set the status and headers instead of
                 # waiting to do it manually, so that the class can handle any
                 # special logic
@@ -2213,11 +2200,11 @@ class Flask(Scaffold):
             # If subdomain matching is disabled (the default), use the
             # default subdomain in all cases. This should be the default
             # in Werkzeug but it currently does not have that feature.
-            if not self.subdomain_matching:
-                subdomain = self.url_map.default_subdomain or None
-            else:
-                subdomain = None
-
+            subdomain = (
+                None
+                if self.subdomain_matching
+                else self.url_map.default_subdomain or None
+            )
             return self.url_map.bind_to_environ(
                 request.environ,
                 server_name=self.config["SERVER_NAME"],

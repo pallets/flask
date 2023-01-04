@@ -129,9 +129,7 @@ def explain_template_loading_attempts(app: Flask, template, attempts) -> None:
 
         info.append(f"{idx + 1:5}: trying loader of {src_info}")
 
-        for line in _dump_loader_info(loader):
-            info.append(f"       {line}")
-
+        info.extend(f"       {line}" for line in _dump_loader_info(loader))
         if triple is None:
             detail = "no match"
         else:

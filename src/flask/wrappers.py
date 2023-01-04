@@ -52,10 +52,7 @@ class Request(RequestBase):
     @property
     def max_content_length(self) -> t.Optional[int]:  # type: ignore
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
-        if current_app:
-            return current_app.config["MAX_CONTENT_LENGTH"]
-        else:
-            return None
+        return current_app.config["MAX_CONTENT_LENGTH"] if current_app else None
 
     @property
     def endpoint(self) -> t.Optional[str]:
@@ -67,10 +64,7 @@ class Request(RequestBase):
         This in combination with :attr:`view_args` can be used to
         reconstruct the same URL or a modified URL.
         """
-        if self.url_rule is not None:
-            return self.url_rule.endpoint
-
-        return None
+        return self.url_rule.endpoint if self.url_rule is not None else None
 
     @property
     def blueprint(self) -> t.Optional[str]:
@@ -103,10 +97,7 @@ class Request(RequestBase):
         """
         name = self.blueprint
 
-        if name is None:
-            return []
-
-        return _split_blueprint_path(name)
+        return [] if name is None else _split_blueprint_path(name)
 
     def _load_form_data(self) -> None:
         super()._load_form_data()

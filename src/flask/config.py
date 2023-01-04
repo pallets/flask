@@ -1,3 +1,4 @@
+import contextlib
 import errno
 import json
 import os
@@ -133,12 +134,8 @@ class Config(dict):
 
             value = os.environ[key]
 
-            try:
+            with contextlib.suppress(Exception):
                 value = loads(value)
-            except Exception:
-                # Keep the value as a string if loading failed.
-                pass
-
             # Change to key.removeprefix(prefix) on Python >= 3.9.
             key = key[len_prefix:]
 
@@ -325,10 +322,7 @@ class Config(dict):
         for k, v in self.items():
             if not k.startswith(namespace):
                 continue
-            if trim_namespace:
-                key = k[len(namespace) :]
-            else:
-                key = k
+            key = k[len(namespace) :] if trim_namespace else k
             if lowercase:
                 key = key.lower()
             rv[key] = v
