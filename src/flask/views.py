@@ -92,8 +92,8 @@ class View:
         :attr:`init_every_request` to ``False``, the same instance will
         be used for every request.
 
-        The arguments passed to this method are forwarded to the view
-        class ``__init__`` method.
+        Except for ``name``, all other arguments passed to this method
+        are forwarded to the view class ``__init__`` method.
 
         .. versionchanged:: 2.2
             Added the ``init_every_request`` class attribute.
