@@ -1,11 +1,19 @@
-# This does not automatically close "stale" issues. Instead, it locks closed issues after 2 weeks of no activity.
-# If there's a new issue related to an old one, we've found it's much easier to work on as a new issue.
-
 name: 'Lock threads'
+# Lock closed issues that have not received any further activity for
+# two weeks. This does not close open issues, only humans may do that.
+# We find that it is easier to respond to new issues with fresh examples
+# rather than continuing discussions on old issues.
 
 on:
   schedule:
     - cron: '0 0 * * *'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: lock
 
 jobs:
   lock:
@@ -13,6 +21,5 @@ jobs:
     steps:
       - uses: dessant/lock-threads@v4
         with:
-          github-token: ${{ github.token }}
           issue-inactive-days: 14
           pr-inactive-days: 14
