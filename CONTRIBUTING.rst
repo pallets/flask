@@ -102,14 +102,14 @@ First time setup
 
       .. code-block:: text
 
-         $ python3 -m venv env
-         $ . env/bin/activate
+         $ python3 -m venv .venv
+         $ . .venv/bin/activate
 
     - Windows
 
       .. code-block:: text
 
-         > py -3 -m venv env
+         > py -3 -m venv .venv
          > env\Scripts\activate
 
 -   Upgrade pip and setuptools.

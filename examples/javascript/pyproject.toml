@@ -1,0 +1,26 @@
+[project]
+name = "js_example"
+version = "1.1.0"
+description = "Demonstrates making AJAX requests to Flask."
+readme = "README.rst"
+license = {text = "BSD-3-Clause"}
+maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
+dependencies = ["flask"]
+
+[project.urls]
+Documentation = "https://flask.palletsprojects.com/patterns/jquery/"
+
+[project.optional-dependencies]
+test = ["pytest", "blinker"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["js_example", "tests"]

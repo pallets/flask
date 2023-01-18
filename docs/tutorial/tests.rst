@@ -490,20 +490,18 @@ no longer exist in the database.
 Running the Tests
 -----------------
 
-Some extra configuration, which is not required but makes running
-tests with coverage less verbose, can be added to the project's
-``setup.cfg`` file.
+Some extra configuration, which is not required but makes running tests with coverage
+less verbose, can be added to the project's ``pyproject.toml`` file.
 
-.. code-block:: none
-    :caption: ``setup.cfg``
+.. code-block:: toml
+    :caption: ``pyproject.toml``
 
-    [tool:pytest]
-    testpaths = tests
+    [tool.pytest.ini_options]
+    testpaths = ["tests"]
 
-    [coverage:run]
-    branch = True
-    source =
-        flaskr
+    [tool.coverage.run]
+    branch = true
+    source = ["flaskr"]
 
 To run the tests, use the ``pytest`` command. It will find and run all
 the test functions you've written.
@@ -514,7 +512,7 @@ the test functions you've written.
 
     ========================= test session starts ==========================
     platform linux -- Python 3.6.4, pytest-3.5.0, py-1.5.3, pluggy-0.6.0
-    rootdir: /home/user/Projects/flask-tutorial, inifile: setup.cfg
+    rootdir: /home/user/Projects/flask-tutorial
     collected 23 items
 
     tests/test_auth.py ........                                      [ 34%]
