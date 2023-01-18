@@ -3,6 +3,8 @@ Version 2.3.0
 
 Unreleased
 
+-   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
+    :pr:`4947`
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`
 
 
