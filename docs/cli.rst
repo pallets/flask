@@ -280,25 +280,25 @@ script. Activating the virtualenv will set the variables.
 
    .. group-tab:: Bash
 
-      Unix Bash, :file:`venv/bin/activate`::
+      Unix Bash, :file:`.venv/bin/activate`::
 
           $ export FLASK_APP=hello
 
    .. group-tab:: Fish
 
-      Fish, :file:`venv/bin/activate.fish`::
+      Fish, :file:`.venv/bin/activate.fish`::
 
           $ set -x FLASK_APP hello
 
    .. group-tab:: CMD
 
-      Windows CMD, :file:`venv\\Scripts\\activate.bat`::
+      Windows CMD, :file:`.venv\\Scripts\\activate.bat`::
 
           > set FLASK_APP=hello
 
    .. group-tab:: Powershell
 
-      Windows Powershell, :file:`venv\\Scripts\\activate.ps1`::
+      Windows Powershell, :file:`.venv\\Scripts\\activate.ps1`::
 
           > $env:FLASK_APP = "hello"
 
@@ -438,24 +438,16 @@ Plugins
 
 Flask will automatically load commands specified in the ``flask.commands``
 `entry point`_. This is useful for extensions that want to add commands when
-they are installed. Entry points are specified in :file:`setup.py` ::
+they are installed. Entry points are specified in :file:`pyproject.toml`:
 
-    from setuptools import setup
+.. code-block:: toml
 
-    setup(
-        name='flask-my-extension',
-        ...,
-        entry_points={
-            'flask.commands': [
-                'my-command=flask_my_extension.commands:cli'
-            ],
-        },
-    )
-
+    [project.entry-points."flask.commands"]
+    my-command = "my_extension.commands:cli"
 
 .. _entry point: https://packaging.python.org/tutorials/packaging-projects/#entry-points
 
-Inside :file:`flask_my_extension/commands.py` you can then export a Click
+Inside :file:`my_extension/commands.py` you can then export a Click
 object::
 
     import click
@@ -493,19 +485,12 @@ Create an instance of :class:`~cli.FlaskGroup` and pass it the factory::
     def cli():
         """Management script for the Wiki application."""
 
-Define the entry point in :file:`setup.py`::
+Define the entry point in :file:`pyproject.toml`:
 
-    from setuptools import setup
+.. code-block:: toml
 
-    setup(
-        name='flask-my-extension',
-        ...,
-        entry_points={
-            'console_scripts': [
-                'wiki=wiki:cli'
-            ],
-        },
-    )
+    [project.scripts]
+    wiki = "wiki:cli"
 
 Install the application in the virtualenv in editable mode and the custom
 script is available. Note that you don't need to set ``--app``. ::

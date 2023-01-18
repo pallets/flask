@@ -33,8 +33,8 @@ Create a virtualenv, install your application, then install
 .. code-block:: text
 
     $ cd hello-app
-    $ python -m venv venv
-    $ . venv/bin/activate
+    $ python -m venv .venv
+    $ . .venv/bin/activate
     $ pip install .  # install your application
     $ pip install mod_wsgi
 
@@ -89,6 +89,6 @@ mod_wsgi to drop to that user after starting.
 
 .. code-block:: text
 
-    $ sudo /home/hello/venv/bin/mod_wsgi-express start-server \
+    $ sudo /home/hello/.venv/bin/mod_wsgi-express start-server \
         /home/hello/wsgi.py \
         --user hello --group hello --port 80 --processes 4
