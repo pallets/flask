@@ -9,8 +9,6 @@ extend-select =
 extend-ignore =
     # slice notation whitespace, invalid
     E203
-    # import at top, too many circular import fixes
-    E402
     # line length, handled by bugbear B950
     E501
     # bare except, handled by bugbear B001
