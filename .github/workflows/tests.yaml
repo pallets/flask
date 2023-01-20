@@ -35,10 +35,10 @@ jobs:
           - {name: 'PyPy', python: 'pypy-3.9', os: ubuntu-latest, tox: pypy39}
           - {name: 'Pallets Minimum Versions', python: '3.11', os: ubuntu-latest, tox: py311-min}
           - {name: 'Pallets Development Versions', python: '3.7', os: ubuntu-latest, tox: py37-dev}
-          - {name: Typing, python: '3.10', os: ubuntu-latest, tox: typing}
+          - {name: Typing, python: '3.11', os: ubuntu-latest, tox: typing}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      - uses: actions/setup-python@5ccb29d8773c3f3f653e1705f474dfaa8a06a912
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
@@ -49,7 +49,7 @@ jobs:
           pip install -U setuptools
           python -m pip install -U pip
       - name: cache mypy
-        uses: actions/cache@v3.2.2
+        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12
         with:
           path: ./.mypy_cache
           key: mypy|${{ matrix.python }}|${{ hashFiles('pyproject.toml') }}
