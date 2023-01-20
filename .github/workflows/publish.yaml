@@ -1,0 +1,72 @@
+name: Publish
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      hash: ${{ steps.hash.outputs.hash }}
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      - uses: actions/setup-python@5ccb29d8773c3f3f653e1705f474dfaa8a06a912
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
+      - run: pip install -r requirements/build.txt
+      # Use the commit date instead of the current date during the build.
+      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+      - run: python -m build
+      # Generate hashes used for provenance.
+      - name: generate hash
+        id: hash
+        run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+        with:
+          path: ./dist
+  provenance:
+    needs: ['build']
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    # Can't pin with hash due to how this workflow works.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
+    with:
+      base64-subjects: ${{ needs.build.outputs.hash }}
+  create-release:
+    # Upload the sdist, wheels, and provenance to a GitHub release. They remain
+    # available as build artifacts for a while as well.
+    needs: ['provenance']
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+      - name: create release
+        run: >
+          gh release create --draft --repo ${{ github.repository }}
+          ${{ github.ref_name }}
+          *.intoto.jsonl/* artifact/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+  publish-pypi:
+    needs: ['provenance']
+    # Wait for approval before attempting to upload to PyPI. This allows reviewing the
+    # files in the draft release.
+    environment: 'publish'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+      # Try uploading to Test PyPI first, in case something fails.
+      - uses: pypa/gh-action-pypi-publish@c7f29f7adef1a245bd91520e94867e5c6eedddcc
+        with:
+          password: ${{ secrets.TEST_PYPI_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          packages_dir: artifact/
+      - uses: pypa/gh-action-pypi-publish@c7f29f7adef1a245bd91520e94867e5c6eedddcc
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          packages_dir: artifact/
