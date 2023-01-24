@@ -249,7 +249,7 @@ provide get (list) and post (create) methods.
         init_every_request = False
 
         def __init__(self, model):
-            self.model
+            self.model = model
             self.validator = generate_validator(model)
 
         def _get_item(self, id):
@@ -297,7 +297,7 @@ provide get (list) and post (create) methods.
             db.session.commit()
             return jsonify(item.to_json())
 
-    def register_api(app, model, url):
+    def register_api(app, model, name):
         item = ItemAPI.as_view(f"{name}-item", model)
         group = GroupAPI.as_view(f"{name}-group", model)
         app.add_url_rule(f"/{name}/<int:id>", view_func=item)

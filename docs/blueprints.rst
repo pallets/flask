@@ -140,6 +140,19 @@ name, and child URLs will be prefixed with the parent's URL prefix.
     url_for('parent.child.create')
     /parent/child/create
 
+In addition a child blueprint's will gain their parent's subdomain,
+with their subdomain as prefix if present i.e.
+
+.. code-block:: python
+
+    parent = Blueprint('parent', __name__, subdomain='parent')
+    child = Blueprint('child', __name__, subdomain='child')
+    parent.register_blueprint(child)
+    app.register_blueprint(parent)
+
+    url_for('parent.child.create', _external=True)
+    "child.parent.domain.tld"
+
 Blueprint-specific before request functions, etc. registered with the
 parent will trigger for the child. If a child does not have an error
 handler that can handle a given exception, the parent's will be tried.

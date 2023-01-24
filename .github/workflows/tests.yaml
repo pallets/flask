@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12
         with:
           path: ./.mypy_cache
-          key: mypy|${{ matrix.python }}|${{ hashFiles('setup.cfg') }}
+          key: mypy|${{ matrix.python }}|${{ hashFiles('pyproject.toml') }}
         if: matrix.tox == 'typing'
       - run: pip install tox
       - run: tox run -e ${{ matrix.tox }}

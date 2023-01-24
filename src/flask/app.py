@@ -2451,7 +2451,7 @@ class Flask(Scaffold):
         :data:`request` point at the request for the created
         environment. ::
 
-            with test_request_context(...):
+            with app.test_request_context(...):
                 generate_report()
 
         When using the shell, it may be easier to push and pop the

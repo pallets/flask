@@ -108,7 +108,7 @@ To enable debug mode, use the ``--debug`` option.
 
 .. code-block:: text
 
-    $ flask --app hello --debug run
+    $ flask --app hello run --debug
      * Serving Flask app 'hello'
      * Debug mode: on
      * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
@@ -359,7 +359,7 @@ the application secure.  Because of that Flask configures the `Jinja2
 
 Templates can be used to generate any type of text file. For web applications, you'll
 primarily be generating HTML pages, but you can also generate markdown, plain text for
-emails, any anything else.
+emails, and anything else.
 
 For a reference to HTML, CSS, and other web APIs, use the `MDN Web Docs`_.
 
