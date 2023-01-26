@@ -1,11 +1,16 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can easily implement the opening of database connections on
-demand and closing them when the context dies (usually at the end of the
-request).
+A simple way of using SQLite 3 with Flask is to open a connection at the
+start of each request and close it at the end. Since Flask processes requests
+on separate threads, this means we don't have to think about the dynamics of
+sharing a database connection across threads.
+A more advanced approach may be to maintain a global pool of connections, as
+that would avoid some overhead - but we consider that to be out of the scope
+of this document.
 
-Here is a simple example of how you can use SQLite 3 with Flask::
+Here is an example of how to create a connection and store it on the
+thread-global ``g``, then close it when the context is torn down::
 
     import sqlite3
     from flask import g
@@ -25,7 +30,7 @@ Here is a simple example of how you can use SQLite 3 with Flask::
             db.close()
 
 Now, to use the database, the application must either have an active
-application context (which is always true if there is a request in flight)
+application context (which is always true if there is an ongoing request)
 or create an application context itself.  At that point the ``get_db``
 function can be used to get the current database connection.  Whenever the
 context is destroyed the database connection will be terminated.
