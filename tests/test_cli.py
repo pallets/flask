@@ -562,6 +562,30 @@ def test_disable_dotenv_from_env(monkeypatch, runner):
     assert "FOO" not in os.environ
 
 
+@need_dotenv
+def test_enable_dotenv_from_env_zero(monkeypatch, runner):
+    monkeypatch.chdir(test_path)
+    monkeypatch.setitem(os.environ, "FLASK_SKIP_DOTENV", "0")
+    runner.invoke(FlaskGroup())
+    assert "FOO" in os.environ
+
+
+@need_dotenv
+def test_enable_dotenv_from_env_false(monkeypatch, runner):
+    monkeypatch.chdir(test_path)
+    monkeypatch.setitem(os.environ, "FLASK_SKIP_DOTENV", "FALSE")
+    runner.invoke(FlaskGroup())
+    assert "FOO" in os.environ
+
+
+@need_dotenv
+def test_enable_dotenv_from_env_no(monkeypatch, runner):
+    monkeypatch.chdir(test_path)
+    monkeypatch.setitem(os.environ, "FLASK_SKIP_DOTENV", "NO")
+    runner.invoke(FlaskGroup())
+    assert "FOO" in os.environ
+
+
 def test_run_cert_path():
     # no key
     with pytest.raises(click.BadParameter):
