@@ -91,7 +91,7 @@ To run such an application, you can use the :command:`flask` command:
 
 .. code-block:: text
 
-    $ flask run --app hello run
+    $ flask --app hello run
 
 Flask will automatically detect the factory if it is named
 ``create_app`` or ``make_app`` in ``hello``. You can also pass arguments
@@ -99,7 +99,7 @@ to the factory like this:
 
 .. code-block:: text
 
-    $ flask run --app hello:create_app(local_auth=True)``
+    $ flask --app hello:create_app(local_auth=True) run``
 
 Then the ``create_app`` factory in ``myapp`` is called with the keyword
 argument ``local_auth=True``. See :doc:`/cli` for more detail.
