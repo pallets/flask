@@ -227,7 +227,6 @@ def test_session_error_pops_context():
 
 
 def test_session_dynamic_cookie_name():
-
     # This session interface will use a cookie with a different name if the
     # requested url ends with the string "dynamic_cookie"
     class PathAwareSessionInterface(SecureCookieSessionInterface):
