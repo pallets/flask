@@ -14,6 +14,10 @@ Celery itself.
 .. _Celery: https://celery.readthedocs.io
 .. _First Steps with Celery: https://celery.readthedocs.io/en/latest/getting-started/first-steps-with-celery.html
 
+The Flask repository contains `an example <https://github.com/pallets/flask/tree/main/examples/celery>`_
+based on the information on this page, which also shows how to use JavaScript to submit
+tasks and poll for progress and results.
+
 
 Install
 -------
@@ -208,6 +212,9 @@ finished successfully, and what the return value (or error) was if it is finishe
 Now you can start the task using the first route, then poll for the result using the
 second route. This keeps the Flask request workers from being blocked waiting for tasks
 to finish.
+
+The Flask repository contains `an example <https://github.com/pallets/flask/tree/main/examples/celery>`_
+using JavaScript to submit tasks and poll for progress and results.
 
 
 Passing Data to Tasks
