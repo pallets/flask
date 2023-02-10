@@ -1,0 +1,11 @@
+[project]
+name = "flask-example-celery"
+version = "1.0.0"
+description = "Example Flask application with Celery background tasks."
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = ["flask>=2.2.2", "celery[redis]>=5.2.7"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
