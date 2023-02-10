@@ -6,7 +6,7 @@
 	// "features": {},
 
 	// Runs the initial setup commands after the container is created.
-	"postCreateCommand": ".devcontainer/post-create-command.sh"
+	"postCreateCommand": "sudo chmod +x .devcontainer/post-create-command.sh && .devcontainer/post-create-command.sh"
 
     // Activates the virtual environment after the container is started.
 	// "postStartCommand": ". .venv/bin/activate"
