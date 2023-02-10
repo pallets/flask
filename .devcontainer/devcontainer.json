@@ -6,8 +6,5 @@
 	"onCreateCommand": "sudo cp .devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
 
 	// Runs the initial setup commands after the container is created.
-	"postCreateCommand": "sudo chmod +x .devcontainer/post-create-command.sh && .devcontainer/post-create-command.sh",
-
-    // Activates the virtual environment after the container is started.
-	"postStartCommand": ". .venv/bin/activate"
+	"postCreateCommand": "sudo chmod +x .devcontainer/post-create-command.sh && .devcontainer/post-create-command.sh"
 }
