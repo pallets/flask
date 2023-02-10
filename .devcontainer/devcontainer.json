@@ -1,0 +1,19 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+	"name": "pallets/flask",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": ".devcontainer/post-create-command.sh"
+
+    // Use 'postStartCommand' to run commands after the container is started.
+	// "postStartCommand": ". .venv/bin/activate",
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+}
