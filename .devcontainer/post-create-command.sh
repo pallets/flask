@@ -3,7 +3,7 @@ set -e
 
 # Add user's fork as a remote
 GIT_USER=$(git config user.name)
-if [ ! git remote | grep -q "fork" ]; then
+if ! git remote | grep -q "fork"; then
     git remote add fork https://github.com/${GIT_USER}/flask
 fi
 
