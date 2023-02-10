@@ -69,11 +69,12 @@ everything that runs in the block will have access to :data:`request`,
 populated with your test data. ::
 
     def generate_report(year):
-        format = request.args.get('format')
+        format = request.args.get("format")
         ...
 
     with app.test_request_context(
-            '/make_report/2017', data={'format': 'short'}):
+        "/make_report/2017", query_string={"format": "short"}
+    ):
         generate_report()
 
 If you see that error somewhere else in your code not related to

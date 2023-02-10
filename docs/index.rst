@@ -48,6 +48,7 @@ community-maintained extensions to add even more functionality.
    config
    signals
    views
+   lifecycle
    appcontext
    reqcontext
    blueprints
