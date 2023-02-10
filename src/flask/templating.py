@@ -134,7 +134,7 @@ def _render(app: "Flask", template: Template, context: t.Dict[str, t.Any]) -> st
 
 def render_template(
     template_name_or_list: t.Union[str, Template, t.List[t.Union[str, Template]]],
-    **context: t.Any
+    **context: t.Any,
 ) -> str:
     """Render a template by name with the given context.
 
@@ -180,7 +180,7 @@ def _stream(
 
 def stream_template(
     template_name_or_list: t.Union[str, Template, t.List[t.Union[str, Template]]],
-    **context: t.Any
+    **context: t.Any,
 ) -> t.Iterator[str]:
     """Render a template by name with the given context as a stream.
     This returns an iterator of strings, which can be used as a
