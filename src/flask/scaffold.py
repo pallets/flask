@@ -249,8 +249,8 @@ class Scaffold:
         """
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
-        else:
-            return None
+
+        return None
 
     @static_folder.setter
     def static_folder(self, value: t.Optional[t.Union[str, os.PathLike]]) -> None:
@@ -342,8 +342,8 @@ class Scaffold:
         """
         if self.template_folder is not None:
             return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
-        else:
-            return None
+
+        return None
 
     def open_resource(self, resource: str, mode: str = "rb") -> t.IO[t.AnyStr]:
         """Open a resource file relative to :attr:`root_path` for
