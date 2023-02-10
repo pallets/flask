@@ -7,10 +7,6 @@ if [ ! git remote | grep -q "fork" ]; then
     git remote add fork https://github.com/${GIT_USER}/flask
 fi
 
-# Create and activate a virtualenv
-python3 -m venv .venv
-. .venv/bin/activate
-
 # Upgrade pip and setuptools
 python -m pip install --upgrade pip setuptools
 
