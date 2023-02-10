@@ -67,8 +67,27 @@ Include the following in your patch:
 .. _pre-commit: https://pre-commit.com
 
 
-First time setup
-~~~~~~~~~~~~~~~~
+First time setup using GitHub Codespaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`GitHub Codespaces`_ allow you to create an instant and dedicated
+development environment. Codespaces open by default in Visual Studio
+Code for the web. Codespaces created from Flask are configured with
+a `devcontainer`_ that installs required dependencies for you.
+
+-   Make sure you have a `GitHub account`_.
+-   Fork Flask to your GitHub account by clicking the `Fork`_ button.
+-   From your fork's repository page, click the green "Code" button and
+    then "Create codespace on main"
+-   Wait for the codespace to load and the "postAttachCommand" to
+    finish running.
+-   Checkout a new branch and :ref:`start coding<Start coding>`
+
+.. _GitHub Codespaces: https://docs.github.com/en/codespaces
+.. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
+
+First time setup in your local environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Download and install the `latest version of git`_.
 -   Configure git with your `username`_ and `email`_.
@@ -200,6 +219,9 @@ Running test coverage
 Generating a report of lines that do not have test coverage can indicate
 where to start contributing. Run ``pytest`` using ``coverage`` and
 generate a report.
+
+If you are using GitHub Codespaces, ``coverage`` is already installed
+so you can skip the installation command.
 
 .. code-block:: text
 
