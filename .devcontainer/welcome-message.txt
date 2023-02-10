@@ -1,0 +1,7 @@
+👋  Welcome to Flask in Codespaces!
+
+🛠️  Your environment is setup with all the required dependencies and your fork has been added as a remote.
+
+📝  Wait for the "postCreateCommand" to finish setting things up, then run `. .venv/bin/activate` to activate your virtualenv.
+
+🚀  To start coding, checkout a branch from the latest release for bugs or docs fixes, or from main for new feature work.

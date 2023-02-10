@@ -4,12 +4,10 @@ set -e
 # Add user's fork as a remote
 GIT_USER=$(git config user.name)
 git remote add fork https://github.com/${GIT_USER}/flask
-echo "Added remote"
 
 # Create and activate a virtualenv
 python3 -m venv .venv
 . .venv/bin/activate
-echo "Created virtualenv"
 
 # Upgrade pip and setuptools
 python -m pip install --upgrade pip setuptools
