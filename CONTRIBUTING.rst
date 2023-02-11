@@ -81,7 +81,7 @@ a `devcontainer`_ that installs required dependencies for you.
     then "Create codespace on main"
 -   Wait for the codespace to load and the "postAttachCommand" to
     finish running.
--   Checkout a new branch and :ref:`start coding<Start coding>`
+-   Checkout a new branch and `start coding`_
 
 .. _GitHub Codespaces: https://docs.github.com/en/codespaces
 .. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
@@ -157,6 +157,7 @@ First time setup in your local environment
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
+.. _start coding:
 
 Start coding
 ~~~~~~~~~~~~
