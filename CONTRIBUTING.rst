@@ -78,10 +78,10 @@ a `devcontainer`_ that installs required dependencies for you.
 -   Make sure you have a `GitHub account`_.
 -   Fork Flask to your GitHub account by clicking the `Fork`_ button.
 -   From your fork's repository page, click the green "Code" button and
-    then "Create codespace on main"
+    then "Create codespace on main".
 -   Wait for the codespace to load and the "postAttachCommand" to
     finish running.
--   Checkout a new branch and `start coding`_
+-   Checkout a new branch and `start coding`_.
 
 .. _GitHub Codespaces: https://docs.github.com/en/codespaces
 .. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
