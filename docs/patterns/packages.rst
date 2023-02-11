@@ -67,6 +67,8 @@ To use the ``flask`` command and run your application you need to set
 the ``--app`` option that tells Flask where to find the application
 instance:
 
+.. code-block:: text
+
     $ flask --app yourapplication run
 
 What did we gain from this?  Now we can restructure the application a bit
