@@ -1,11 +1,9 @@
 Version 2.2.3
 -------------
 
-Unreleased
+Released 2023-02-15
 
--   Autoescaping is now enabled by default for ``.svg`` files. Inside
-    templates this behavior can be changed with the ``autoescape`` tag.
-    :issue:`4831`
+-   Autoescape is enabled by default for ``.svg`` template files. :issue:`4831`
 -   Fix the type of ``template_folder`` to accept ``pathlib.Path``. :issue:`4892`
 -   Add ``--debug`` option to the ``flask run`` command. :issue:`4777`
 
