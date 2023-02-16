@@ -5,13 +5,13 @@
 #
 #    pip-compile-multi
 #
-build==0.9.0
+build==0.10.0
     # via -r requirements/build.in
 packaging==23.0
     # via build
-pep517==0.13.0
+pyproject-hooks==1.0.0
     # via build
 tomli==2.0.1
     # via
     #   build
-    #   pep517
+    #   pyproject-hooks
