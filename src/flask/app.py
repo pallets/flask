@@ -1248,7 +1248,7 @@ class Flask(Scaffold):
         """
         cls = self.test_client_class
         if cls is None:
-            from .testing import FlaskClient as cls  # type: ignore
+            from .testing import FlaskClient as cls
         return cls(  # type: ignore
             self, self.response_class, use_cookies=use_cookies, **kwargs
         )
@@ -1266,7 +1266,7 @@ class Flask(Scaffold):
         cls = self.test_cli_runner_class
 
         if cls is None:
-            from .testing import FlaskCliRunner as cls  # type: ignore
+            from .testing import FlaskCliRunner as cls
 
         return cls(self, **kwargs)  # type: ignore
 
