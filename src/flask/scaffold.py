@@ -561,6 +561,11 @@ class Scaffold:
         a non-``None`` value, the value is handled as if it was the
         return value from the view, and further request handling is
         stopped.
+
+        This is available on both app and blueprint objects. When used on an app, this
+        executes before every request. When used on a blueprint, this executes before
+        every request that the blueprint handles. To register with a blueprint and
+        execute before every request, use :meth:`.Blueprint.before_app_request`.
         """
         self.before_request_funcs.setdefault(None, []).append(f)
         return f
@@ -577,6 +582,11 @@ class Scaffold:
         ``after_request`` functions will not be called. Therefore, this
         should not be used for actions that must execute, such as to
         close resources. Use :meth:`teardown_request` for that.
+
+        This is available on both app and blueprint objects. When used on an app, this
+        executes after every request. When used on a blueprint, this executes after
+        every request that the blueprint handles. To register with a blueprint and
+        execute after every request, use :meth:`.Blueprint.after_app_request`.
         """
         self.after_request_funcs.setdefault(None, []).append(f)
         return f
@@ -606,6 +616,11 @@ class Scaffold:
         ``try``/``except`` block and log any errors.
 
         The return values of teardown functions are ignored.
+
+        This is available on both app and blueprint objects. When used on an app, this
+        executes after every request. When used on a blueprint, this executes after
+        every request that the blueprint handles. To register with a blueprint and
+        execute after every request, use :meth:`.Blueprint.teardown_app_request`.
         """
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
@@ -615,7 +630,15 @@ class Scaffold:
         self,
         f: T_template_context_processor,
     ) -> T_template_context_processor:
-        """Registers a template context processor function."""
+        """Registers a template context processor function. These functions run before
+        rendering a template. The keys of the returned dict are added as variables
+        available in the template.
+
+        This is available on both app and blueprint objects. When used on an app, this
+        is called for every rendered template. When used on a blueprint, this is called
+        for templates rendered from the blueprint's views. To register with a blueprint
+        and affect every template, use :meth:`.Blueprint.app_context_processor`.
+        """
         self.template_context_processors[None].append(f)
         return f
 
@@ -635,6 +658,11 @@ class Scaffold:
 
         The function is passed the endpoint name and values dict. The return
         value is ignored.
+
+        This is available on both app and blueprint objects. When used on an app, this
+        is called for every request. When used on a blueprint, this is called for
+        requests that the blueprint handles. To register with a blueprint and affect
+        every request, use :meth:`.Blueprint.app_url_value_preprocessor`.
         """
         self.url_value_preprocessors[None].append(f)
         return f
@@ -644,6 +672,11 @@ class Scaffold:
         """Callback function for URL defaults for all view functions of the
         application.  It's called with the endpoint and values and should
         update the values passed in place.
+
+        This is available on both app and blueprint objects. When used on an app, this
+        is called for every request. When used on a blueprint, this is called for
+        requests that the blueprint handles. To register with a blueprint and affect
+        every request, use :meth:`.Blueprint.app_url_defaults`.
         """
         self.url_default_functions[None].append(f)
         return f
@@ -666,6 +699,11 @@ class Scaffold:
             @app.errorhandler(DatabaseError)
             def special_exception_handler(error):
                 return 'Database connection failed', 500
+
+        This is available on both app and blueprint objects. When used on an app, this
+        can handle errors from every request. When used on a blueprint, this can handle
+        errors from requests that the blueprint handles. To register with a blueprint
+        and affect every request, use :meth:`.Blueprint.app_errorhandler`.
 
         .. versionadded:: 0.7
             Use :meth:`register_error_handler` instead of modifying
