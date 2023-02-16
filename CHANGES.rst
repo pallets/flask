@@ -6,8 +6,6 @@ Unreleased
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
     :pr:`4947`
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`
--   Automatically setup project and install dependencies with the
-    ``.devcontainer/devcontainer.json``. :issue:`4965`
 
 
 Version 2.2.3

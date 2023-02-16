@@ -2,6 +2,6 @@
 
 🛠️  Your environment is setup with all the required dependencies and your fork has been added as a remote.
 
-🚀  To start coding:
-    - wait for the "postCreateCommand" to finish setting things up
-    - run `git checkout -b your-branch-name origin/{main-or-latest-release}` to start working on a new feature or bug fix.
+🚀  To start coding, wait for the "postCreateCommand" to finish setting things up, then:
+    - run `. .venv/bin/activate` to activate your virtualenv
+    - run `git checkout -b your-branch-name origin/{main-or-latest-release}` to start working on a new feature or bug fix
