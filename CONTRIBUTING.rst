@@ -83,6 +83,16 @@ a `devcontainer`_ that installs required dependencies for you.
     finish running.
 -   Checkout a new branch and `start coding`_.
 
+Note that if you reconnect to an existing codespace, you may need to
+open a new terminal or run one of the following commands to activate
+your python virtualenv:
+
+- Linux/macOS
+
+    .. code-block:: text
+
+        $ . .venv/bin/activate
+
 .. _GitHub Codespaces: https://docs.github.com/en/codespaces
 .. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
 

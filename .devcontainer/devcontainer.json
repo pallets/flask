@@ -1,13 +1,23 @@
 // For format details, see https://aka.ms/devcontainer.json
 {
 	"name": "pallets/flask",
+	"image": "mcr.microsoft.com/vscode/devcontainers/python:3",
 
-	// Features to add to the devcontainer
-	"features": {
-		"ghcr.io/devcontainers/features/python:1": {}
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"python.defaultInterpreterPath": "/workspaces/flask/.venv/bin/python",
+				"python.linting.enabled": true,
+				"python.linting.pylintEnabled": true
+
+			}
+		}
 	},
 
-	// Displays a custom welcome message
+	// Displays a custom welcome message.
 	"onCreateCommand": "sudo cp .devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
 
 	// Runs the initial setup commands after the container is created.
