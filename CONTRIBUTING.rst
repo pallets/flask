@@ -79,19 +79,15 @@ a `devcontainer`_ that installs required dependencies for you.
 -   Fork Flask to your GitHub account by clicking the `Fork`_ button.
 -   From your fork's repository page, click the green "Code" button and
     then "Create codespace on main".
--   Wait for the codespace to load and the "postAttachCommand" to
+-   Wait for the codespace to load and the "postCreateCommand" to
     finish running.
+-   Open a new terminal or run ``. .venv/bin/activate`` to activate the
+    python virtualenv.
 -   Checkout a new branch and `start coding`_.
 
-Note that if you reconnect to an existing codespace, you may need to
-open a new terminal or run one of the following commands to activate
-your python virtualenv:
-
-- Linux/macOS
-
-    .. code-block:: text
-
-        $ . .venv/bin/activate
+Note that when you reconnect to an existing codespace, you may need to
+reactivate your python virtualenv by opening a new terminal or running
+the ``. .venv/bin/activate`` command.
 
 .. _GitHub Codespaces: https://docs.github.com/en/codespaces
 .. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
