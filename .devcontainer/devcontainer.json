@@ -9,11 +9,18 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"python.defaultInterpreterPath": "/workspaces/flask/.venv/bin/python",
+				// Settings for the python extension.
+				"python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+				"python.terminal.activateEnvInCurrentTerminal": true,
 				"python.linting.enabled": true,
 				"python.linting.pylintEnabled": true
 
-			}
+			},
+			// Installs extensions on container create.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance"
+			]
 		}
 	},
 
