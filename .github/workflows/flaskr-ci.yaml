@@ -80,5 +80,5 @@ jobs:
       # https://github.com/moby/buildkit/issues/1896
       - name: Only persist the new cache layers
         run: |
-          rm -rf ${CACHE)
+          rm -rf ${CACHE}
           mv ${NEW_CACHE} ${CACHE}
