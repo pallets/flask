@@ -51,6 +51,7 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Setup cache for Docker Buildx
+        id: setup-cache
         uses: actions/cache@v2
         with:
           path: ${{ env.CACHE }}
@@ -83,4 +84,4 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ${{ env.NEW_CACHE }}
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          key: ${{ steps.setup-cache.outputs.cache-primary-key }}
