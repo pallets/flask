@@ -35,6 +35,8 @@ jobs:
       # Required permission to push images with the built-in GITHUB_TOKEN
       packages: write
     runs-on: ubuntu-latest
+    env:
+      CACHE_KEY: flaskr-buildx-${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v3
       - name: Job vars and prep
@@ -44,18 +46,17 @@ jobs:
         run: |
           echo "SHA_SHORT=${GITHUB_SHA:0:10}" >> ${GITHUB_ENV}
           echo "REPO_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
-          CACHE="${{ runner.temp }}/.buildx-cache"
-          echo "CACHE=${CACHE}" >> ${GITHUB_ENV}
-          echo "NEW_CACHE=${CACHE}-new" >> ${GITHUB_ENV}
-          mkdir -p ${CACHE}
+          CACHE_DIR="${{ runner.temp }}/.buildx-cache"
+          echo "CACHE_DIR=${CACHE_DIR}" >> ${GITHUB_ENV}
+          echo "NEW_CACHE_DIR=${CACHE_DIR}-new" >> ${GITHUB_ENV}
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Setup cache for Docker Buildx
         id: setup-cache
         uses: actions/cache@v2
         with:
-          path: ${{ env.CACHE }}
-          key: flaskr-buildx-${{ github.ref_name }}
+          path: ${{ env.CACHE_DIR }}
+          key: ${{ env.CACHE_KEY }}
           restore-keys: |
             flaskr-buildx-main
       - name: Login to GitHub Container Registry
@@ -70,18 +71,18 @@ jobs:
           context: examples/tutorial
           push: true
           tags: "ghcr.io/${{ env.REPO_LOWER_CASE }}:${{ env.SHA_SHORT }}"
-          cache-from: type=local,src=${{ env.CACHE }}
-          cache-to: type=local,dest=${{ env.NEW_CACHE }}
+          cache-from: type=local,src=${{ env.CACHE_DIR }}
+          cache-to: type=local,dest=${{ env.NEW_CACHE_DIR }}
       # Only save the latest Docker build layers to the cache, otherwise
       # the cache will keep growing indefinitely, past the 10GB max
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
       # - name: Only persist the new cache layers
       #   run: |
-      #     rm -rf ${CACHE}
-      #     mv ${NEW_CACHE} ${CACHE}
+      #     rm -rf ${CACHE_DIR}
+      #     mv ${NEW_CACHE_DIR} ${CACHE_DIR}
       - name: Only persist the new cache layers
         uses: actions/cache/save@v3
         with:
-          path: ${{ env.NEW_CACHE }}
-          key: ${{ steps.setup-cache.outputs.cache-primary-key }}
+          path: ${{ env.NEW_CACHE_DIR }}
+          key: key: ${{ env.CACHE_KEY }}
