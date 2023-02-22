@@ -1,7 +1,5 @@
 name: Build Flaskr App
-
 on: [push]
-
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -40,7 +38,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Job vars and prep
-        id: vars
         # Use bash string manipulation to create vars
         # Note runner context isn't available in job.env, so use it here
         # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#context-availability
@@ -78,7 +75,12 @@ jobs:
       # the cache will keep growing indefinitely, past the 10GB max
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
+      # - name: Only persist the new cache layers
+      #   run: |
+      #     rm -rf ${CACHE}
+      #     mv ${NEW_CACHE} ${CACHE}
       - name: Only persist the new cache layers
-        run: |
-          rm -rf ${CACHE}
-          mv ${NEW_CACHE} ${CACHE}
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ env.NEW_CACHE }}
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}

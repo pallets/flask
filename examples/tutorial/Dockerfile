@@ -1,12 +1,10 @@
 FROM python:3.11.2-alpine3.17
 
-
 COPY . "/tutorial"
 WORKDIR /tutorial
 
 RUN pip install .
 RUN flask --app=flaskr init-db
-RUN touch blah
 
 EXPOSE 5000
 
