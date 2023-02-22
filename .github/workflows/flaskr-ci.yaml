@@ -37,16 +37,17 @@ jobs:
       # Required permission to push images with the built-in GITHUB_TOKEN
       packages: write
     runs-on: ubuntu-latest
-    env:
-      CACHE: "${{ runner.temp }}/.buildx-cache"
-      NEW_CACHE: "${{ runner.temp }}/.buildx-cache-new"
     steps:
       - uses: actions/checkout@v3
       - name: Job vars and prep
         id: vars
+        # Use bash string manipulation to create vars
+        # Note runner.temp isn't available in job.env, so use it here
         run: |
           echo "SHA_SHORT=${GITHUB_SHA:0:10}" >> ${GITHUB_ENV}
           echo "REPO_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+          echo "CACHE=${{ runner.temp }}/.buildx-cache" >> ${GITHUB_ENV}
+          echo "NEW_CACHE=${{ runner.temp }}/.buildx-cache-new" >> ${GITHUB_ENV}
           mkdir -p ${CACHE}
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
