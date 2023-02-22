@@ -41,7 +41,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set job vars
         id: vars
-        run: echo "sha_short=${GITHUB_SHA:0:10}" >> $GITHUB_OUTPUT
+        run: |
+          echo "SHA_SHORT=${GITHUB_SHA:0:10}" >> ${GITHUB_ENV}
+          echo "REPO_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
       # This is a separate action that sets up buildx runner
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -64,7 +66,8 @@ jobs:
         with:
           context: examples/tutorial
           push: true
-          tags: "ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.sha_short }}"
+          # tags: "ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.sha_short }}"
+          tags: "ghcr.io/${{ env.REPO_LOWER_CASE }}:${{ env.SHA_SHORT }}"
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
         # This ugly bit is necessary if you don't want your cache to grow forever
