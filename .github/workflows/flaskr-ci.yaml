@@ -46,8 +46,9 @@ jobs:
         run: |
           echo "SHA_SHORT=${GITHUB_SHA:0:10}" >> ${GITHUB_ENV}
           echo "REPO_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
-          echo "CACHE=${{ runner.temp }}/.buildx-cache" >> ${GITHUB_ENV}
-          echo "NEW_CACHE=${{ runner.temp }}/.buildx-cache-new" >> ${GITHUB_ENV}
+          CACHE="${{ runner.temp }}/.buildx-cache"
+          echo "CACHE=${CACHE}" >> ${GITHUB_ENV}
+          echo "NEW_CACHE=${CACHE}-new" >> ${GITHUB_ENV}
           mkdir -p ${CACHE}
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
