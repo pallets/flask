@@ -42,7 +42,8 @@ jobs:
       - name: Job vars and prep
         id: vars
         # Use bash string manipulation to create vars
-        # Note runner.temp isn't available in job.env, so use it here
+        # Note runner context isn't available in job.env, so use it here
+        # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#context-availability
         run: |
           echo "SHA_SHORT=${GITHUB_SHA:0:10}" >> ${GITHUB_ENV}
           echo "REPO_LOWER_CASE=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
@@ -70,16 +71,14 @@ jobs:
         with:
           context: examples/tutorial
           push: true
-          # tags: "ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.sha_short }}"
           tags: "ghcr.io/${{ env.REPO_LOWER_CASE }}:${{ env.SHA_SHORT }}"
           cache-from: type=local,src=${{ env.CACHE }}
           cache-to: type=local,dest=${{ env.NEW_CACHE }}
-        # This ugly bit is necessary if you don't want your cache to grow forever
-        # until it hits GitHub's limit of 5GB.
-        # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
+      # Only save the latest Docker build layers to the cache, otherwise
+      # the cache will keep growing indefinitely, past the 10GB max
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Only persist the new cache layers
         run: |
-          rm -rf $CACHE
-          mv $NEW_CACHE $CACHE
+          rm -rf ${CACHE)
+          mv ${NEW_CACHE} ${CACHE}
