@@ -79,5 +79,7 @@ jobs:
       # Thanks https://evilmartians.com/chronicles/build-images-on-github-actions-with-docker-layer-caching
       - name: Only persist the new cache layers
         run: |
+          ls ${CACHE_DIR}
+          ls ${NEW_CACHE_DIR}
           rm -rf ${CACHE_DIR}
           mv ${NEW_CACHE_DIR} ${CACHE_DIR}
