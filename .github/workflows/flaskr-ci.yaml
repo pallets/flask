@@ -68,7 +68,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: examples/tutorial
-          file: ../Dockerfile
+          file: examples/Dockerfile
           push: true
           tags: "ghcr.io/${{ env.REPO_LOWER_CASE }}:${{ env.SHA_SHORT }}"
           cache-from: type=local,src=${{ env.CACHE_DIR }}
