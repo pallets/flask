@@ -5,6 +5,7 @@ WORKDIR /tutorial
 
 RUN pip install .
 RUN flask --app=flaskr init-db
+RUN touch blah
 
 EXPOSE 5000
 
