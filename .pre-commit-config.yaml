@@ -26,7 +26,7 @@ repos:
           - flake8-bugbear
           - flake8-implicit-str-concat
   - repo: https://github.com/peterdemin/pip-compile-multi
-    rev: v2.6.1
+    rev: v2.6.2
     hooks:
       - id: pip-compile-multi-verify
   - repo: https://github.com/pre-commit/pre-commit-hooks
