@@ -217,10 +217,6 @@ Useful Functions and Classes
 
 .. autofunction:: send_from_directory
 
-.. autofunction:: escape
-
-.. autoclass:: Markup
-   :members: escape, unescape, striptags
 
 Message Flashing
 ----------------

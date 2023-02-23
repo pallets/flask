@@ -9,6 +9,7 @@ from platform import python_implementation
 
 import pytest
 import werkzeug.serving
+from markupsafe import Markup
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
@@ -472,7 +473,7 @@ def test_session_special_types(app, client):
     def dump_session_contents():
         flask.session["t"] = (1, 2, 3)
         flask.session["b"] = b"\xff"
-        flask.session["m"] = flask.Markup("<html>")
+        flask.session["m"] = Markup("<html>")
         flask.session["u"] = the_uuid
         flask.session["d"] = now
         flask.session["t_tag"] = {" t": "not-a-tuple"}
@@ -486,8 +487,8 @@ def test_session_special_types(app, client):
         assert s["t"] == (1, 2, 3)
         assert type(s["b"]) == bytes
         assert s["b"] == b"\xff"
-        assert type(s["m"]) == flask.Markup
-        assert s["m"] == flask.Markup("<html>")
+        assert type(s["m"]) == Markup
+        assert s["m"] == Markup("<html>")
         assert s["u"] == the_uuid
         assert s["d"] == now
         assert s["t_tag"] == {" t": "not-a-tuple"}
@@ -611,7 +612,7 @@ def test_extended_flashing(app):
     def index():
         flask.flash("Hello World")
         flask.flash("Hello World", "error")
-        flask.flash(flask.Markup("<em>Testing</em>"), "warning")
+        flask.flash(Markup("<em>Testing</em>"), "warning")
         return ""
 
     @app.route("/test/")
@@ -620,7 +621,7 @@ def test_extended_flashing(app):
         assert list(messages) == [
             "Hello World",
             "Hello World",
-            flask.Markup("<em>Testing</em>"),
+            Markup("<em>Testing</em>"),
         ]
         return ""
 
@@ -631,7 +632,7 @@ def test_extended_flashing(app):
         assert list(messages) == [
             ("message", "Hello World"),
             ("error", "Hello World"),
-            ("warning", flask.Markup("<em>Testing</em>")),
+            ("warning", Markup("<em>Testing</em>")),
         ]
         return ""
 
@@ -650,7 +651,7 @@ def test_extended_flashing(app):
         )
         assert list(messages) == [
             ("message", "Hello World"),
-            ("warning", flask.Markup("<em>Testing</em>")),
+            ("warning", Markup("<em>Testing</em>")),
         ]
         return ""
 
@@ -659,7 +660,7 @@ def test_extended_flashing(app):
         messages = flask.get_flashed_messages(category_filter=["message", "warning"])
         assert len(messages) == 2
         assert messages[0] == "Hello World"
-        assert messages[1] == flask.Markup("<em>Testing</em>")
+        assert messages[1] == Markup("<em>Testing</em>")
         return ""
 
     # Create new test client on each test to clean flashed messages.

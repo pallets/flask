@@ -115,7 +115,7 @@ markdown to HTML converter.
 
 There are three ways to accomplish that:
 
--   In the Python code, wrap the HTML string in a :class:`~flask.Markup`
+-   In the Python code, wrap the HTML string in a :class:`~markupsafe.Markup`
     object before passing it to the template.  This is in general the
     recommended way.
 -   Inside the template, use the ``|safe`` filter to explicitly mark a
