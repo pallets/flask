@@ -20,6 +20,8 @@ Unreleased
     -   ``json_encoder`` and ``json_decoder`` attributes on app and blueprint, and the
         corresponding ``json.JSONEncoder`` and ``JSONDecoder`` classes, are removed.
     -   The ``json.htmlsafe_dumps`` and ``htmlsafe_dump`` functions are removed.
+    -   Calling setup methods on blueprints after registration is an error instead of a
+        warning. :pr:`4997`
 
 -   Importing ``escape`` and ``Markup`` from ``flask`` is deprecated. Import them
     directly from ``markupsafe`` instead. :pr:`4996`
