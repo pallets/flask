@@ -26,6 +26,10 @@ Unreleased
 -   Importing ``escape`` and ``Markup`` from ``flask`` is deprecated. Import them
     directly from ``markupsafe`` instead. :pr:`4996`
 -   The ``app.got_first_request`` property is deprecated. :pr:`4997`
+-   The ``locked_cached_property`` decorator is deprecated. Use a lock inside the
+    decorated function if locking is needed. :issue:`4993`
+-   Remove uses of locks that could cause requests to block each other very briefly.
+    :issue:`4993`
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
     :pr:`4947`
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`

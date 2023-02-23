@@ -613,6 +613,10 @@ class locked_cached_property(werkzeug.utils.cached_property):
     :class:`werkzeug.utils.cached_property` except access uses a lock
     for thread safety.
 
+    .. deprecated:: 2.3
+        Will be removed in Flask 2.4. Use a lock inside the decorated function if
+        locking is needed.
+
     .. versionchanged:: 2.0
         Inherits from Werkzeug's ``cached_property`` (and ``property``).
     """
@@ -623,6 +627,14 @@ class locked_cached_property(werkzeug.utils.cached_property):
         name: t.Optional[str] = None,
         doc: t.Optional[str] = None,
     ) -> None:
+        import warnings
+
+        warnings.warn(
+            "'locked_cached_property' is deprecated and will be removed in Flask 2.4."
+            " Use a lock inside the decorated function if locking is needed.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(fget, name=name, doc=doc)
         self.lock = RLock()
 
