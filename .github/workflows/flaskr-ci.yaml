@@ -2,9 +2,11 @@ name: Build and Test
 on:
   workflow_dispatch: # Enables manually running the workflow
   push:
-  # pull_request:
-  #   branches:    
-  #     - main
+    banches:
+      - feature/**
+  pull_request:
+    branches:    
+      - main
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -36,6 +38,7 @@ jobs:
   # Build Docker image in a separate job so that it's not tainted by cached build/test files
   build-image:
     needs: tests
+    if: github.event_name == "pull_request"
     permissions:
       # Required permission to push images with the built-in GITHUB_TOKEN
       packages: write
