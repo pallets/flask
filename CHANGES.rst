@@ -21,6 +21,8 @@ Unreleased
         corresponding ``json.JSONEncoder`` and ``JSONDecoder`` classes, are removed.
     -   The ``json.htmlsafe_dumps`` and ``htmlsafe_dump`` functions are removed.
 
+-   Importing ``escape`` and ``Markup`` from ``flask`` is deprecated. Import them
+    directly from ``markupsafe`` instead. :pr:`4996`
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
     :pr:`4947`
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`

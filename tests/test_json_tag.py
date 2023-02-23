@@ -3,8 +3,8 @@ from datetime import timezone
 from uuid import uuid4
 
 import pytest
+from markupsafe import Markup
 
-from flask import Markup
 from flask.json.tag import JSONTag
 from flask.json.tag import TaggedJSONSerializer
 
