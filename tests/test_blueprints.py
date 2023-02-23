@@ -722,12 +722,6 @@ def test_app_request_processing(app, client):
     bp = flask.Blueprint("bp", __name__)
     evts = []
 
-    with pytest.deprecated_call():
-
-        @bp.before_app_first_request
-        def before_first_request():
-            evts.append("first")
-
     @bp.before_app_request
     def before_app():
         evts.append("before")
@@ -755,12 +749,12 @@ def test_app_request_processing(app, client):
     # first request
     resp = client.get("/").data
     assert resp == b"request|after"
-    assert evts == ["first", "before", "after", "teardown"]
+    assert evts == ["before", "after", "teardown"]
 
     # second request
     resp = client.get("/").data
     assert resp == b"request|after"
-    assert evts == ["first"] + ["before", "after", "teardown"] * 2
+    assert evts == ["before", "after", "teardown"] * 2
 
 
 def test_app_url_processors(app, client):

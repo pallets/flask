@@ -270,12 +270,6 @@ HTML ``<script>`` tags.
     :members:
     :member-order: bysource
 
-.. autoclass:: JSONEncoder
-   :members:
-
-.. autoclass:: JSONDecoder
-   :members:
-
 .. automodule:: flask.json.tag
 
 

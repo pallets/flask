@@ -3,6 +3,24 @@ Version 2.3.0
 
 Unreleased
 
+-   Remove previously deprecated code. :pr:`4995`
+
+    -   The ``push`` and ``pop`` methods of the deprecated ``_app_ctx_stack`` and
+        ``_request_ctx_stack`` objects are removed. ``top`` still exists to give
+        extensions more time to update, but it will be removed.
+    -   The ``FLASK_ENV`` environment variable, ``ENV`` config key, and ``app.env``
+        property are removed.
+    -   The ``session_cookie_name``, ``send_file_max_age_default``, ``use_x_sendfile``,
+        ``propagate_exceptions``, and ``templates_auto_reload`` properties on ``app``
+        are removed.
+    -   The ``JSON_AS_ASCII``, ``JSON_SORT_KEYS``, ``JSONIFY_MIMETYPE``, and
+        ``JSONIFY_PRETTYPRINT_REGULAR`` config keys are removed.
+    -   The ``app.before_first_request`` and ``bp.before_app_first_request`` decorators
+        are removed.
+    -   ``json_encoder`` and ``json_decoder`` attributes on app and blueprint, and the
+        corresponding ``json.JSONEncoder`` and ``JSONDecoder`` classes, are removed.
+    -   The ``json.htmlsafe_dumps`` and ``htmlsafe_dump`` functions are removed.
+
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
     :pr:`4947`
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`
