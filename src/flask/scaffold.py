@@ -11,12 +11,12 @@ from functools import update_wrapper
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
+from werkzeug.utils import cached_property
 
 from . import typing as ft
 from .cli import AppGroup
 from .globals import current_app
 from .helpers import get_root_path
-from .helpers import locked_cached_property
 from .helpers import send_from_directory
 from .templating import _default_template_ctx_processor
 
@@ -317,7 +317,7 @@ class Scaffold:
             t.cast(str, self.static_folder), filename, max_age=max_age
         )
 
-    @locked_cached_property
+    @cached_property
     def jinja_loader(self) -> t.Optional[FileSystemLoader]:
         """The Jinja loader for this object's templates. By default this
         is a class :class:`jinja2.loaders.FileSystemLoader` to

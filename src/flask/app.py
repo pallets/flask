@@ -26,6 +26,7 @@ from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
 from werkzeug.serving import is_running_from_reloader
 from werkzeug.urls import url_quote
+from werkzeug.utils import cached_property
 from werkzeug.utils import redirect as _wz_redirect
 from werkzeug.wrappers import Response as BaseResponse
 
@@ -46,7 +47,6 @@ from .helpers import _split_blueprint_path
 from .helpers import get_debug_flag
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
-from .helpers import locked_cached_property
 from .json.provider import DefaultJSONProvider
 from .json.provider import JSONProvider
 from .logging import create_logger
@@ -531,7 +531,7 @@ class Flask(Scaffold):
                 " running it."
             )
 
-    @locked_cached_property
+    @cached_property
     def name(self) -> str:  # type: ignore
         """The name of the application.  This is usually the import name
         with the difference that it's guessed from the run file if the
@@ -548,7 +548,7 @@ class Flask(Scaffold):
             return os.path.splitext(os.path.basename(fn))[0]
         return self.import_name
 
-    @locked_cached_property
+    @cached_property
     def logger(self) -> logging.Logger:
         """A standard Python :class:`~logging.Logger` for the app, with
         the same name as :attr:`name`.
@@ -575,7 +575,7 @@ class Flask(Scaffold):
         """
         return create_logger(self)
 
-    @locked_cached_property
+    @cached_property
     def jinja_env(self) -> Environment:
         """The Jinja environment used to load templates.
 
