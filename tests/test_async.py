@@ -95,7 +95,6 @@ def test_async_error_handler(path, async_app):
 
 
 def test_async_before_after_request():
-    app_first_called = False
     app_before_called = False
     app_after_called = False
     bp_before_called = False
@@ -106,13 +105,6 @@ def test_async_before_after_request():
     @app.route("/")
     def index():
         return ""
-
-    with pytest.deprecated_call():
-
-        @app.before_first_request
-        async def before_first():
-            nonlocal app_first_called
-            app_first_called = True
 
     @app.before_request
     async def before():
@@ -146,7 +138,6 @@ def test_async_before_after_request():
 
     test_client = app.test_client()
     test_client.get("/")
-    assert app_first_called
     assert app_before_called
     assert app_after_called
     test_client.get("/bp/")

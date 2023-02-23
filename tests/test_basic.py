@@ -1,13 +1,11 @@
 import gc
 import re
-import time
 import uuid
 import warnings
 import weakref
 from datetime import datetime
 from datetime import timezone
 from platform import python_implementation
-from threading import Thread
 
 import pytest
 import werkzeug.serving
@@ -1665,43 +1663,6 @@ def test_no_setup_after_first_request(app, client):
         app.add_url_rule("/foo", endpoint="late")
 
     assert "setup method 'add_url_rule'" in str(exc_info.value)
-
-
-def test_before_first_request_functions(app, client):
-    got = []
-
-    with pytest.deprecated_call():
-
-        @app.before_first_request
-        def foo():
-            got.append(42)
-
-    client.get("/")
-    assert got == [42]
-    client.get("/")
-    assert got == [42]
-    assert app.got_first_request
-
-
-def test_before_first_request_functions_concurrent(app, client):
-    got = []
-
-    with pytest.deprecated_call():
-
-        @app.before_first_request
-        def foo():
-            time.sleep(0.2)
-            got.append(42)
-
-    def get_and_assert():
-        client.get("/")
-        assert got == [42]
-
-    t = Thread(target=get_and_assert)
-    t.start()
-    get_and_assert()
-    t.join()
-    assert app.got_first_request
 
 
 def test_routing_redirect_debugging(monkeypatch, app, client):
