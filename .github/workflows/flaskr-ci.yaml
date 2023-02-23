@@ -2,10 +2,10 @@ name: Build and Test
 on:
   workflow_dispatch: # Enables manually running the workflow
   push:
-    banches:
-      - feature/**
+    branches:
+      - 'feature/**'
   pull_request:
-    branches:    
+    branches:
       - main
 jobs:
   tests:
