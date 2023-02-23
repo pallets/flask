@@ -20,9 +20,12 @@ Unreleased
     -   ``json_encoder`` and ``json_decoder`` attributes on app and blueprint, and the
         corresponding ``json.JSONEncoder`` and ``JSONDecoder`` classes, are removed.
     -   The ``json.htmlsafe_dumps`` and ``htmlsafe_dump`` functions are removed.
+    -   Calling setup methods on blueprints after registration is an error instead of a
+        warning. :pr:`4997`
 
 -   Importing ``escape`` and ``Markup`` from ``flask`` is deprecated. Import them
     directly from ``markupsafe`` instead. :pr:`4996`
+-   The ``app.got_first_request`` property is deprecated. :pr:`4997`
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
     :pr:`4947`
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`
