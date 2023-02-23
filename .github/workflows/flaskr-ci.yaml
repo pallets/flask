@@ -33,7 +33,7 @@ jobs:
         run: |
           cd examples/tutorial
           pytest
-  # Build Docker image in a separate job so that it's not taited by cached build/test files
+  # Build Docker image in a separate job so that it's not tainted by cached build/test files
   build-image:
     needs: tests
     permissions:
