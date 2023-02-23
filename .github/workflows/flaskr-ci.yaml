@@ -38,7 +38,7 @@ jobs:
   # Build Docker image in a separate job so that it's not tainted by cached build/test files
   build-image:
     needs: tests
-    if: ${{ github.event_name == "pull_request" }}
+    if: github.event_name == 'pull_request'
     permissions:
       # Required permission to push images with the built-in GITHUB_TOKEN
       packages: write
