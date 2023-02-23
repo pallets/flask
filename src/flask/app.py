@@ -8,7 +8,6 @@ import weakref
 from collections.abc import Iterator as _abc_Iterator
 from datetime import timedelta
 from itertools import chain
-from threading import Lock
 from types import TracebackType
 
 import click
@@ -496,7 +495,6 @@ class Flask(Scaffold):
         # tracks internally if the application already handled at least one
         # request.
         self._got_first_request = False
-        self._before_request_lock = Lock()
 
         # Add a static route using the provided static_url_path, static_host,
         # and static_folder if there is a configured static_folder.
@@ -592,8 +590,18 @@ class Flask(Scaffold):
         """This attribute is set to ``True`` if the application started
         handling the first request.
 
+        .. deprecated:: 2.3
+            Will be removed in Flask 2.4.
+
         .. versionadded:: 0.8
         """
+        import warnings
+
+        warnings.warn(
+            "'got_first_request' is deprecated and will be removed in Flask 2.4.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self._got_first_request
 
     def make_config(self, instance_relative: bool = False) -> Config:
