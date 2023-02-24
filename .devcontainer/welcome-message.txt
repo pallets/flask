@@ -1,4 +1,4 @@
-👋  Welcome to Flask in Codespaces!
+👋  Welcome to "Flask" in GitHub Codespaces!
 
 🛠️  Your environment is setup with all the required dependencies and your fork has been added as a remote.
 
