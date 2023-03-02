@@ -29,6 +29,7 @@ What problem does a virtual environment solve? The more Python projects you have
 Newer versions of libraries for one project can break compatibility in another project.
 
 MacOS:
+
 .. code-block:: text
 
     mkdir myproject
@@ -36,6 +37,7 @@ MacOS:
     $ python3 -m venv venv
 
 Windows:
+
 .. code-block:: text
 
     > mkdir myproject
