@@ -17,10 +17,41 @@ community that make adding new functionality easy.
 .. _Jinja: https://jinja.palletsprojects.com/
 
 
-Installing
-----------
+Installation
+------------
+Python Version: ensure you are using the latest version of Python. Flask supports Python 3.7 and newer.
 
-Install and update using `pip`_:
+Create virtual environments:
+
+Use a virtual environment to manage the dependencies for your project, both in development and in production.
+
+What problem does a virtual environment solve? The more Python projects you have, the more likely it is that you need to work with different versions of Python libraries, or even Python itself. 
+Newer versions of libraries for one project can break compatibility in another project.
+
+MacOS:
+.. code-block:: text
+    mkdir myproject
+    $ cd myproject
+    $ python3 -m venv venv
+
+Windows:
+.. code-block:: text
+    > mkdir myproject
+    > cd myproject
+    > py -3 -m venv venv
+
+Activate virtual environments
+MacOS:
+.. code-block:: text
+    $ . venv/bin/activate
+
+Windows:
+.. code-block:: text
+    > venv\Scripts\activate
+
+
+Install Flask
+Within the activated environment, use the following command to install Flask and update using `pip`_:
 
 .. code-block:: text
 
