@@ -30,12 +30,14 @@ Newer versions of libraries for one project can break compatibility in another p
 
 MacOS:
 .. code-block:: text
+    
     mkdir myproject
     $ cd myproject
     $ python3 -m venv venv
 
 Windows:
 .. code-block:: text
+
     > mkdir myproject
     > cd myproject
     > py -3 -m venv venv
@@ -43,10 +45,12 @@ Windows:
 Activate virtual environments
 MacOS:
 .. code-block:: text
+
     $ . venv/bin/activate
 
 Windows:
 .. code-block:: text
+
     > venv\Scripts\activate
 
 
