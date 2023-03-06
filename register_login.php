@@ -20,7 +20,7 @@
     }
 
     function checkAndLogin() {
-        $conn = mysqli_connect("localhost", "root", "", "speedtest");        
+        $conn = mysqli_connect("localhost", "root", "", "speedtest");
         $query = "SELECT `email` FROM `users` WHERE email='".$_POST["email"]."' AND username='".$_POST["username"]."' AND password='".$_POST["password"]."'";
         $count = mysqli_num_rows(mysqli_query($conn, $query));
 

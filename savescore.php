@@ -3,7 +3,7 @@
     $uid = $_GET['uid'];
     $score = $_GET['score'];
     $query = "SELECT * FROM `bestscores` WHERE `userid`=".$uid;
-    $query = mysqli_query($conn, $query);    
+    $query = mysqli_query($conn, $query);
     if (mysqli_num_rows($query) > 0) {
         if (mysqli_fetch_array($query)['scores'] < $score ) {
             $query = "UPDATE `bestscores` SET `scores`=".$score." WHERE `userid`=".$uid;
