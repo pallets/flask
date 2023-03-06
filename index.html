@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Typing-Test</title>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Rubik:400,700'><link rel="stylesheet" href="./TypingTest/style.css">
+</head>
+<body>
+<div class="login-form">
+    <form action="./TypingTest/register_login.php" method="post">
+        <h1>Login</h1>
+        <div class="content">
+        <div class="input-field">
+            <input type="username" name="username" placeholder="Username" autocomplete="off" required>
+        </div>
+        <div class="input-field">
+            <input id="email" type="email" name="email" placeholder="E-mail" autocomplete="off" required oninput="checkEmail()">
+        </div>
+        <div class="input-field">
+            <input type="password" name="password" placeholder="Password" autocomplete="off" required>
+        </div></div>
+        <div class="action">
+        <button type="submit" name="register" >Register</button>
+        <button type="submit" name="sign-in">Sign in</button>
+        </div>
+    </form>
+</div>
+  <script  src="./TypingTest/script.js"></script>
+</body>
+</html>
