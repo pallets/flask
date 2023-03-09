@@ -16,7 +16,7 @@
 		},
 		"codespaces": {
 			"openFiles": [
-				".devcontainer/welcome-message.txt"
+				".devcontainer/codespaces-welcome-message.txt"
 			]
 		}
 	},
