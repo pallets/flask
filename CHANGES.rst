@@ -35,6 +35,8 @@ Unreleased
 -   Ensure subdomains are applied with nested blueprints. :issue:`4834`
 -   ``config.from_file`` can use ``text=False`` to indicate that the parser wants a
     binary file instead. :issue:`4989`
+-   If a blueprint is created with an empty name it raises a ``ValueError``.
+    :issue:`5010`
 
 
 Version 2.2.4
