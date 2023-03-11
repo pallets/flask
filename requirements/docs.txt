@@ -7,11 +7,11 @@
 #
 alabaster==0.7.13
     # via sphinx
-babel==2.11.0
+babel==2.12.1
     # via sphinx
 certifi==2022.12.7
     # via requests
-charset-normalizer==3.0.1
+charset-normalizer==3.1.0
     # via requests
 docutils==0.17.1
     # via
@@ -35,8 +35,6 @@ pygments==2.14.0
     # via
     #   sphinx
     #   sphinx-tabs
-pytz==2022.7.1
-    # via babel
 requests==2.28.2
     # via sphinx
 snowballstemmer==2.2.0
@@ -66,5 +64,5 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.14
+urllib3==1.26.15
     # via requests
