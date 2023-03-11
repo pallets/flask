@@ -3,11 +3,11 @@ from contextlib import contextmanager
 from contextlib import ExitStack
 from copy import copy
 from types import TracebackType
+from urllib.parse import urlsplit
 
 import werkzeug.test
 from click.testing import CliRunner
 from werkzeug.test import Client
-from werkzeug.urls import url_parse
 from werkzeug.wrappers import Request as BaseRequest
 
 from .cli import ScriptInfo
@@ -68,7 +68,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
             if url_scheme is None:
                 url_scheme = app.config["PREFERRED_URL_SCHEME"]
 
-            url = url_parse(path)
+            url = urlsplit(path)
             base_url = (
                 f"{url.scheme or url_scheme}://{url.netloc or http_host}"
                 f"/{app_root.lstrip('/')}"

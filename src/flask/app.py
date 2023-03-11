@@ -11,6 +11,7 @@ from datetime import timedelta
 from itertools import chain
 from threading import Lock
 from types import TracebackType
+from urllib.parse import quote as _url_quote
 
 import click
 from werkzeug.datastructures import Headers
@@ -27,7 +28,6 @@ from werkzeug.routing import RequestRedirect
 from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
 from werkzeug.serving import is_running_from_reloader
-from werkzeug.urls import url_quote
 from werkzeug.utils import redirect as _wz_redirect
 from werkzeug.wrappers import Response as BaseResponse
 
@@ -2034,7 +2034,8 @@ class Flask(Scaffold):
             return self.handle_url_build_error(error, endpoint, values)
 
         if _anchor is not None:
-            rv = f"{rv}#{url_quote(_anchor)}"
+            _anchor = _url_quote(_anchor, safe="%!#$&'()*+,/:;=?@")
+            rv = f"{rv}#{_anchor}"
 
         return rv
 
