@@ -37,6 +37,14 @@ Unreleased
     binary file instead. :issue:`4989`
 
 
+Version 2.2.4
+-------------
+
+Unreleased
+
+-   Update for compatibility with Werkzeug 2.3.
+
+
 Version 2.2.3
 -------------
 
