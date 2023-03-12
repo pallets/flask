@@ -103,6 +103,14 @@ the ``--debug`` option.
       * Debugger is active!
       * Debugger PIN: 223-456-919
 
+The ``--debug`` option can also be passed to the top level ``flask`` command to enable
+debug mode for any command. The following two ``run`` calls are equivalent.
+
+.. code-block:: console
+
+    $ flask --app hello --debug run
+    $ flask --app hello run --debug
+
 
 Watch and Ignore Files with the Reloader
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -217,10 +217,6 @@ Useful Functions and Classes
 
 .. autofunction:: send_from_directory
 
-.. autofunction:: escape
-
-.. autoclass:: Markup
-   :members: escape, unescape, striptags
 
 Message Flashing
 ----------------
@@ -269,12 +265,6 @@ HTML ``<script>`` tags.
 .. autoclass:: flask.json.provider.DefaultJSONProvider
     :members:
     :member-order: bysource
-
-.. autoclass:: JSONEncoder
-   :members:
-
-.. autoclass:: JSONDecoder
-   :members:
 
 .. automodule:: flask.json.tag
 

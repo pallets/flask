@@ -10,8 +10,6 @@ from datetime import date
 
 from werkzeug.http import http_date
 
-from ..globals import request
-
 if t.TYPE_CHECKING:  # pragma: no cover
     from ..app import Flask
     from ..wrappers import Response
@@ -176,57 +174,9 @@ class DefaultJSONProvider(JSONProvider):
         :param obj: The data to serialize.
         :param kwargs: Passed to :func:`json.dumps`.
         """
-        cls = self._app._json_encoder
-        bp = self._app.blueprints.get(request.blueprint) if request else None
-
-        if bp is not None and bp._json_encoder is not None:
-            cls = bp._json_encoder
-
-        if cls is not None:
-            import warnings
-
-            warnings.warn(
-                "Setting 'json_encoder' on the app or a blueprint is"
-                " deprecated and will be removed in Flask 2.3."
-                " Customize 'app.json' instead.",
-                DeprecationWarning,
-            )
-            kwargs.setdefault("cls", cls)
-
-            if "default" not in cls.__dict__:
-                kwargs.setdefault("default", self.default)
-        else:
-            kwargs.setdefault("default", self.default)
-
-        ensure_ascii = self._app.config["JSON_AS_ASCII"]
-        sort_keys = self._app.config["JSON_SORT_KEYS"]
-
-        if ensure_ascii is not None:
-            import warnings
-
-            warnings.warn(
-                "The 'JSON_AS_ASCII' config key is deprecated and will"
-                " be removed in Flask 2.3. Set 'app.json.ensure_ascii'"
-                " instead.",
-                DeprecationWarning,
-            )
-        else:
-            ensure_ascii = self.ensure_ascii
-
-        if sort_keys is not None:
-            import warnings
-
-            warnings.warn(
-                "The 'JSON_SORT_KEYS' config key is deprecated and will"
-                " be removed in Flask 2.3. Set 'app.json.sort_keys'"
-                " instead.",
-                DeprecationWarning,
-            )
-        else:
-            sort_keys = self.sort_keys
-
-        kwargs.setdefault("ensure_ascii", ensure_ascii)
-        kwargs.setdefault("sort_keys", sort_keys)
+        kwargs.setdefault("default", self.default)
+        kwargs.setdefault("ensure_ascii", self.ensure_ascii)
+        kwargs.setdefault("sort_keys", self.sort_keys)
         return json.dumps(obj, **kwargs)
 
     def loads(self, s: str | bytes, **kwargs: t.Any) -> t.Any:
@@ -235,23 +185,6 @@ class DefaultJSONProvider(JSONProvider):
         :param s: Text or UTF-8 bytes.
         :param kwargs: Passed to :func:`json.loads`.
         """
-        cls = self._app._json_decoder
-        bp = self._app.blueprints.get(request.blueprint) if request else None
-
-        if bp is not None and bp._json_decoder is not None:
-            cls = bp._json_decoder
-
-        if cls is not None:
-            import warnings
-
-            warnings.warn(
-                "Setting 'json_decoder' on the app or a blueprint is"
-                " deprecated and will be removed in Flask 2.3."
-                " Customize 'app.json' instead.",
-                DeprecationWarning,
-            )
-            kwargs.setdefault("cls", cls)
-
         return json.loads(s, **kwargs)
 
     def response(self, *args: t.Any, **kwargs: t.Any) -> Response:
@@ -272,39 +205,12 @@ class DefaultJSONProvider(JSONProvider):
         """
         obj = self._prepare_response_obj(args, kwargs)
         dump_args: t.Dict[str, t.Any] = {}
-        pretty = self._app.config["JSONIFY_PRETTYPRINT_REGULAR"]
-        mimetype = self._app.config["JSONIFY_MIMETYPE"]
 
-        if pretty is not None:
-            import warnings
-
-            warnings.warn(
-                "The 'JSONIFY_PRETTYPRINT_REGULAR' config key is"
-                " deprecated and will be removed in Flask 2.3. Set"
-                " 'app.json.compact' instead.",
-                DeprecationWarning,
-            )
-            compact: bool | None = not pretty
-        else:
-            compact = self.compact
-
-        if (compact is None and self._app.debug) or compact is False:
+        if (self.compact is None and self._app.debug) or self.compact is False:
             dump_args.setdefault("indent", 2)
         else:
             dump_args.setdefault("separators", (",", ":"))
 
-        if mimetype is not None:
-            import warnings
-
-            warnings.warn(
-                "The 'JSONIFY_MIMETYPE' config key is deprecated and"
-                " will be removed in Flask 2.3. Set 'app.json.mimetype'"
-                " instead.",
-                DeprecationWarning,
-            )
-        else:
-            mimetype = self.mimetype
-
         return self._app.response_class(
-            f"{self.dumps(obj, **dump_args)}\n", mimetype=mimetype
+            f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
         )

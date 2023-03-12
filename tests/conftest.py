@@ -20,7 +20,6 @@ def _standard_os_environ():
     out = (
         (os.environ, "FLASK_ENV_FILE", monkeypatch.notset),
         (os.environ, "FLASK_APP", monkeypatch.notset),
-        (os.environ, "FLASK_ENV", monkeypatch.notset),
         (os.environ, "FLASK_DEBUG", monkeypatch.notset),
         (os.environ, "FLASK_RUN_FROM_CLI", monkeypatch.notset),
         (os.environ, "WERKZEUG_RUN_MAIN", monkeypatch.notset),

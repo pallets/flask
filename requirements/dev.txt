@@ -8,9 +8,9 @@
 -r docs.txt
 -r tests.txt
 -r typing.txt
-build==0.9.0
+build==0.10.0
     # via pip-tools
-cachetools==5.2.0
+cachetools==5.3.0
     # via tox
 cfgv==3.3.1
     # via pre-commit
@@ -24,37 +24,35 @@ colorama==0.4.6
     # via tox
 distlib==0.3.6
     # via virtualenv
-filelock==3.8.2
+filelock==3.9.0
     # via
     #   tox
     #   virtualenv
-identify==2.5.11
+identify==2.5.19
     # via pre-commit
 nodeenv==1.7.0
     # via pre-commit
-pep517==0.13.0
-    # via build
-pip-compile-multi==2.6.1
+pip-compile-multi==2.6.2
     # via -r requirements/dev.in
-pip-tools==6.12.1
+pip-tools==6.12.3
     # via pip-compile-multi
-platformdirs==2.6.0
+platformdirs==3.1.1
     # via
     #   tox
     #   virtualenv
-pre-commit==2.20.0
+pre-commit==3.1.1
     # via -r requirements/dev.in
-pyproject-api==1.2.1
+pyproject-api==1.5.0
     # via tox
+pyproject-hooks==1.0.0
+    # via build
 pyyaml==6.0
     # via pre-commit
-toml==0.10.2
-    # via pre-commit
-toposort==1.7
+toposort==1.10
     # via pip-compile-multi
-tox==4.0.16
+tox==4.4.6
     # via -r requirements/dev.in
-virtualenv==20.17.1
+virtualenv==20.20.0
     # via
     #   pre-commit
     #   tox

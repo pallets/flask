@@ -19,7 +19,7 @@ In a separate terminal, activate the virtualenv and run the Flask development se
 
 ```shell
 $ . ./.venv/bin/activate
-$ flask -A task_app --debug run
+$ flask -A task_app run --debug
 ```
 
 Go to http://localhost:5000/ and use the forms to submit tasks. You can see the polling

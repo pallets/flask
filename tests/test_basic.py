@@ -1,16 +1,15 @@
 import gc
 import re
-import time
 import uuid
 import warnings
 import weakref
 from datetime import datetime
 from datetime import timezone
 from platform import python_implementation
-from threading import Thread
 
 import pytest
 import werkzeug.serving
+from markupsafe import Markup
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
@@ -474,7 +473,7 @@ def test_session_special_types(app, client):
     def dump_session_contents():
         flask.session["t"] = (1, 2, 3)
         flask.session["b"] = b"\xff"
-        flask.session["m"] = flask.Markup("<html>")
+        flask.session["m"] = Markup("<html>")
         flask.session["u"] = the_uuid
         flask.session["d"] = now
         flask.session["t_tag"] = {" t": "not-a-tuple"}
@@ -488,8 +487,8 @@ def test_session_special_types(app, client):
         assert s["t"] == (1, 2, 3)
         assert type(s["b"]) == bytes
         assert s["b"] == b"\xff"
-        assert type(s["m"]) == flask.Markup
-        assert s["m"] == flask.Markup("<html>")
+        assert type(s["m"]) == Markup
+        assert s["m"] == Markup("<html>")
         assert s["u"] == the_uuid
         assert s["d"] == now
         assert s["t_tag"] == {" t": "not-a-tuple"}
@@ -613,7 +612,7 @@ def test_extended_flashing(app):
     def index():
         flask.flash("Hello World")
         flask.flash("Hello World", "error")
-        flask.flash(flask.Markup("<em>Testing</em>"), "warning")
+        flask.flash(Markup("<em>Testing</em>"), "warning")
         return ""
 
     @app.route("/test/")
@@ -622,7 +621,7 @@ def test_extended_flashing(app):
         assert list(messages) == [
             "Hello World",
             "Hello World",
-            flask.Markup("<em>Testing</em>"),
+            Markup("<em>Testing</em>"),
         ]
         return ""
 
@@ -633,7 +632,7 @@ def test_extended_flashing(app):
         assert list(messages) == [
             ("message", "Hello World"),
             ("error", "Hello World"),
-            ("warning", flask.Markup("<em>Testing</em>")),
+            ("warning", Markup("<em>Testing</em>")),
         ]
         return ""
 
@@ -652,7 +651,7 @@ def test_extended_flashing(app):
         )
         assert list(messages) == [
             ("message", "Hello World"),
-            ("warning", flask.Markup("<em>Testing</em>")),
+            ("warning", Markup("<em>Testing</em>")),
         ]
         return ""
 
@@ -661,7 +660,7 @@ def test_extended_flashing(app):
         messages = flask.get_flashed_messages(category_filter=["message", "warning"])
         assert len(messages) == 2
         assert messages[0] == "Hello World"
-        assert messages[1] == flask.Markup("<em>Testing</em>")
+        assert messages[1] == Markup("<em>Testing</em>")
         return ""
 
     # Create new test client on each test to clean flashed messages.
@@ -1658,50 +1657,12 @@ def test_no_setup_after_first_request(app, client):
     def index():
         return "Awesome"
 
-    assert not app.got_first_request
     assert client.get("/").data == b"Awesome"
 
     with pytest.raises(AssertionError) as exc_info:
         app.add_url_rule("/foo", endpoint="late")
 
     assert "setup method 'add_url_rule'" in str(exc_info.value)
-
-
-def test_before_first_request_functions(app, client):
-    got = []
-
-    with pytest.deprecated_call():
-
-        @app.before_first_request
-        def foo():
-            got.append(42)
-
-    client.get("/")
-    assert got == [42]
-    client.get("/")
-    assert got == [42]
-    assert app.got_first_request
-
-
-def test_before_first_request_functions_concurrent(app, client):
-    got = []
-
-    with pytest.deprecated_call():
-
-        @app.before_first_request
-        def foo():
-            time.sleep(0.2)
-            got.append(42)
-
-    def get_and_assert():
-        client.get("/")
-        assert got == [42]
-
-    t = Thread(target=get_and_assert)
-    t.start()
-    get_and_assert()
-    t.join()
-    assert app.got_first_request
 
 
 def test_routing_redirect_debugging(monkeypatch, app, client):

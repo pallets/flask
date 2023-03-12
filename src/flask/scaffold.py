@@ -1,5 +1,4 @@
 import importlib.util
-import json
 import os
 import pathlib
 import pkgutil
@@ -12,12 +11,12 @@ from functools import update_wrapper
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
+from werkzeug.utils import cached_property
 
 from . import typing as ft
 from .cli import AppGroup
 from .globals import current_app
 from .helpers import get_root_path
-from .helpers import locked_cached_property
 from .helpers import send_from_directory
 from .templating import _default_template_ctx_processor
 
@@ -73,20 +72,6 @@ class Scaffold:
     name: str
     _static_folder: t.Optional[str] = None
     _static_url_path: t.Optional[str] = None
-
-    #: JSON encoder class used by :func:`flask.json.dumps`. If a
-    #: blueprint sets this, it will be used instead of the app's value.
-    #:
-    #: .. deprecated:: 2.2
-    #:      Will be removed in Flask 2.3.
-    json_encoder: t.Union[t.Type[json.JSONEncoder], None] = None
-
-    #: JSON decoder class used by :func:`flask.json.loads`. If a
-    #: blueprint sets this, it will be used instead of the app's value.
-    #:
-    #: .. deprecated:: 2.2
-    #:      Will be removed in Flask 2.3.
-    json_decoder: t.Union[t.Type[json.JSONDecoder], None] = None
 
     def __init__(
         self,
@@ -332,7 +317,7 @@ class Scaffold:
             t.cast(str, self.static_folder), filename, max_age=max_age
         )
 
-    @locked_cached_property
+    @cached_property
     def jinja_loader(self) -> t.Optional[FileSystemLoader]:
         """The Jinja loader for this object's templates. By default this
         is a class :class:`jinja2.loaders.FileSystemLoader` to

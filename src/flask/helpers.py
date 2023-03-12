@@ -25,45 +25,12 @@ if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
 
 
-def get_env() -> str:
-    """Get the environment the app is running in, indicated by the
-    :envvar:`FLASK_ENV` environment variable. The default is
-    ``'production'``.
-
-    .. deprecated:: 2.2
-        Will be removed in Flask 2.3.
-    """
-    import warnings
-
-    warnings.warn(
-        "'FLASK_ENV' and 'get_env' are deprecated and will be removed"
-        " in Flask 2.3. Use 'FLASK_DEBUG' instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return os.environ.get("FLASK_ENV") or "production"
-
-
 def get_debug_flag() -> bool:
     """Get whether debug mode should be enabled for the app, indicated by the
     :envvar:`FLASK_DEBUG` environment variable. The default is ``False``.
     """
     val = os.environ.get("FLASK_DEBUG")
-
-    if not val:
-        env = os.environ.get("FLASK_ENV")
-
-        if env is not None:
-            print(
-                "'FLASK_ENV' is deprecated and will not be used in"
-                " Flask 2.3. Use 'FLASK_DEBUG' instead.",
-                file=sys.stderr,
-            )
-            return env == "development"
-
-        return False
-
-    return val.lower() not in {"0", "false", "no"}
+    return bool(val and val.lower() not in {"0", "false", "no"})
 
 
 def get_load_dotenv(default: bool = True) -> bool:
@@ -646,6 +613,10 @@ class locked_cached_property(werkzeug.utils.cached_property):
     :class:`werkzeug.utils.cached_property` except access uses a lock
     for thread safety.
 
+    .. deprecated:: 2.3
+        Will be removed in Flask 2.4. Use a lock inside the decorated function if
+        locking is needed.
+
     .. versionchanged:: 2.0
         Inherits from Werkzeug's ``cached_property`` (and ``property``).
     """
@@ -656,6 +627,14 @@ class locked_cached_property(werkzeug.utils.cached_property):
         name: t.Optional[str] = None,
         doc: t.Optional[str] = None,
     ) -> None:
+        import warnings
+
+        warnings.warn(
+            "'locked_cached_property' is deprecated and will be removed in Flask 2.4."
+            " Use a lock inside the decorated function if locking is needed.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(fget, name=name, doc=doc)
         self.lock = RLock()
 

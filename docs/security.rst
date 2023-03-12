@@ -23,7 +23,7 @@ in templates, but there are still other places where you have to be
 careful:
 
 -   generating HTML without the help of Jinja2
--   calling :class:`~flask.Markup` on data submitted by users
+-   calling :class:`~markupsafe.Markup` on data submitted by users
 -   sending out HTML from uploaded files, never do that, use the
     ``Content-Disposition: attachment`` header to prevent that problem.
 -   sending out textfiles from uploaded files.  Some browsers are using

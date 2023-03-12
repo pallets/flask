@@ -17,30 +17,17 @@ class _FakeStack:
         self.name = name
         self.cv = cv
 
-    def _warn(self):
+    @property
+    def top(self) -> t.Optional[t.Any]:
         import warnings
 
         warnings.warn(
-            f"'_{self.name}_ctx_stack' is deprecated and will be"
-            " removed in Flask 2.3. Use 'g' to store data, or"
-            f" '{self.name}_ctx' to access the current context.",
+            f"'_{self.name}_ctx_stack' is deprecated and will be removed in Flask 2.4."
+            f" Use 'g' to store data, or '{self.name}_ctx' to access the current"
+            " context.",
             DeprecationWarning,
-            stacklevel=3,
+            stacklevel=2,
         )
-
-    def push(self, obj: t.Any) -> None:
-        self._warn()
-        self.cv.set(obj)
-
-    def pop(self) -> t.Any:
-        self._warn()
-        ctx = self.cv.get(None)
-        self.cv.set(None)
-        return ctx
-
-    @property
-    def top(self) -> t.Optional[t.Any]:
-        self._warn()
         return self.cv.get(None)
 
 
@@ -88,7 +75,7 @@ def __getattr__(name: str) -> t.Any:
         import warnings
 
         warnings.warn(
-            "'_app_ctx_stack' is deprecated and will be removed in Flask 2.3.",
+            "'_app_ctx_stack' is deprecated and will be removed in Flask 2.4.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -98,7 +85,7 @@ def __getattr__(name: str) -> t.Any:
         import warnings
 
         warnings.warn(
-            "'_request_ctx_stack' is deprecated and will be removed in Flask 2.3.",
+            "'_request_ctx_stack' is deprecated and will be removed in Flask 2.4.",
             DeprecationWarning,
             stacklevel=2,
         )

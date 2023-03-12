@@ -302,24 +302,18 @@ class TestStreaming:
 
 class TestHelpers:
     @pytest.mark.parametrize(
-        "debug, expected_flag, expected_default_flag",
+        ("debug", "expect"),
         [
-            ("", False, False),
-            ("0", False, False),
-            ("False", False, False),
-            ("No", False, False),
-            ("True", True, True),
+            ("", False),
+            ("0", False),
+            ("False", False),
+            ("No", False),
+            ("True", True),
         ],
     )
-    def test_get_debug_flag(
-        self, monkeypatch, debug, expected_flag, expected_default_flag
-    ):
+    def test_get_debug_flag(self, monkeypatch, debug, expect):
         monkeypatch.setenv("FLASK_DEBUG", debug)
-        if expected_flag is None:
-            assert get_debug_flag() is None
-        else:
-            assert get_debug_flag() == expected_flag
-        assert get_debug_flag() == expected_default_flag
+        assert get_debug_flag() == expect
 
     def test_make_response(self):
         app = flask.Flask(__name__)

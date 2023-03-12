@@ -49,7 +49,7 @@ jobs:
           pip install -U setuptools
           python -m pip install -U pip
       - name: cache mypy
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: ./.mypy_cache
           key: mypy|${{ matrix.python }}|${{ hashFiles('pyproject.toml') }}
