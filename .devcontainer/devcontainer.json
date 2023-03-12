@@ -1,26 +1,19 @@
-// For format details, see https://aka.ms/devcontainer.json
 {
 	"name": "pallets/flask",
-	"image": "mcr.microsoft.com/vscode/devcontainers/python:3",
-
-	// Configure tool-specific properties.
-	"customizations": {
-		// Configure properties specific to VS Code.
-		"vscode": {
-			// Set *default* container specific settings.json values on container create.
-			"settings": {
-				// Settings for the python extension.
+  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "customizations": {
+    "vscode": {
+      "settings": {
 				"python.defaultInterpreterPath": "${workspaceFolder}/.venv",
-				"python.terminal.activateEnvInCurrentTerminal": true,
-				// Prevent the terminal from refreshing on extension load.
-				"terminal.integrated.environmentChangesRelaunch": false
+        "python.terminal.activateEnvInCurrentTerminal": true,
+        "python.terminal.launchArgs": [
+          "-X",
+          "dev"
+        ]
 			}
 		}
-	},
-
-	// Displays a custom welcome message.
-	"onCreateCommand": "sudo cp .devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
-
-	// Runs the initial setup commands after the container is created.
-	"postCreateCommand": "sudo chmod +x .devcontainer/post-create-command.sh && .devcontainer/post-create-command.sh"
+  },
+  // "onCreateCommand": "sudo cp .devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
+  "postCreateCommand": "sudo chmod +x .devcontainer/post-create-command.sh && .devcontainer/post-create-command.sh",
+  "waitFor": "postCreateCommand"
 }
