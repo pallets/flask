@@ -13,7 +13,5 @@
 			}
 		}
   },
-  // "onCreateCommand": "sudo cp .devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
-  "postCreateCommand": "sudo chmod +x .devcontainer/post-create-command.sh && .devcontainer/post-create-command.sh",
-  "waitFor": "postCreateCommand"
+  "onCreateCommand": "sudo chmod +x .devcontainer/on-create-command.sh && .devcontainer/on-create-command.sh"
 }
