@@ -82,8 +82,7 @@ dependencies for you.
     then "Create codespace on main".
 -   Wait for the codespace to load and the ``postCreateCommand`` to
     finish running.
--   Open a new terminal or run the following command to activate the
-    python virtualenv.
+-   Run the following command to activate the python virtualenv.
 
     .. code-block:: text
 
