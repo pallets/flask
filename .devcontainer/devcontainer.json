@@ -9,7 +9,8 @@
         "python.terminal.launchArgs": [
           "-X",
           "dev"
-        ]
+        ],
+        "terminal.integrated.environmentChangesRelaunch": false
 			}
 		}
   },
