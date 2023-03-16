@@ -2,6 +2,9 @@
 	"name": "pallets/flask",
   "image": "mcr.microsoft.com/devcontainers/python:3",
   "customizations": {
+    "codespaces": {
+      "openFiles": []
+    },
     "vscode": {
       "settings": {
 				"python.defaultInterpreterPath": "${workspaceFolder}/.venv",
