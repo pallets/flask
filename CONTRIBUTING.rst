@@ -72,8 +72,9 @@ First time setup using GitHub Codespaces
 
 `GitHub Codespaces`_ allow you to create an instant and dedicated
 development environment. Codespaces open by default in Visual Studio
-Code for the web. Codespaces created from Flask are configured with
-a `devcontainer`_ that installs required dependencies for you.
+Code for the Web, but also work in the desktop app. Codespaces created
+from Flask are configured with a `devcontainer`_ that installs required
+dependencies for you.
 
 -   Make sure you have a `GitHub account`_.
 -   Fork Flask to your GitHub account by clicking the `Fork`_ button.
