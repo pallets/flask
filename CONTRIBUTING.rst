@@ -88,10 +88,43 @@ dependencies for you.
 
         $ . .venv/bin/activate
 
--   Checkout a new branch and `start coding`_.
-
 .. _GitHub Codespaces: https://docs.github.com/en/codespaces
 .. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
+
+Start coding in GitHub Codespaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-   Create a branch to identify the issue you would like to work on. If
+    you're submitting a bug or documentation fix, branch off of the
+    latest ".x" branch.
+
+    .. code-block:: text
+
+        $ git fetch upstream
+        $ git checkout -b your-branch-name upstream/2.0.x
+
+    If you're submitting a feature addition or change, branch off of the
+    "main" branch.
+
+    .. code-block:: text
+
+        $ git fetch upstream
+        $ git checkout -b your-branch-name upstream/main
+
+-   Using your favorite editor, make your changes,
+    `committing as you go`_.
+-   Include tests that cover any code changes you make. Make sure the
+    test fails without your patch. Run the tests as described in `Running the tests`_.
+-   Push your commits to your fork on GitHub and
+    `create a pull request`_. Link to the issue being addressed with
+    ``fixes #123`` in the pull request.
+
+    .. code-block:: text
+
+        $ git push --set-upstream origin your-branch-name
+
+.. _committing as you go: https://afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _create a pull request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
 First time setup in your local environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -164,10 +197,8 @@ First time setup in your local environment
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
-.. _start coding:
-
-Start coding
-~~~~~~~~~~~~
+Start coding in your local environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -   Create a branch to identify the issue you would like to work on. If
     you're submitting a bug or documentation fix, branch off of the
@@ -201,6 +232,7 @@ Start coding
 .. _committing as you go: https://afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
 .. _create a pull request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
+.. _Running the tests:
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
