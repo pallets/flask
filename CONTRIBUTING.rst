@@ -77,8 +77,7 @@ from Flask are configured with a `devcontainer`_ that installs required
 dependencies for you.
 
 -   Make sure you have a `GitHub account`_.
--   Fork Flask to your GitHub account by clicking the `Fork`_ button.
--   From your fork's repository page, click the green "Code" button and
+-   From the Flask repository page, click the green "Code" button and
     then "Create codespace on main".
 -   Wait for the codespace to load and the ``postCreateCommand`` to
     finish running.
@@ -88,43 +87,10 @@ dependencies for you.
 
         $ . .venv/bin/activate
 
+-   Checkout a branch and `start coding`_.
+
 .. _GitHub Codespaces: https://docs.github.com/en/codespaces
 .. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
-
-Start coding in GitHub Codespaces
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
--   Create a branch to identify the issue you would like to work on. If
-    you're submitting a bug or documentation fix, branch off of the
-    latest ".x" branch.
-
-    .. code-block:: text
-
-        $ git fetch upstream
-        $ git checkout -b your-branch-name upstream/2.0.x
-
-    If you're submitting a feature addition or change, branch off of the
-    "main" branch.
-
-    .. code-block:: text
-
-        $ git fetch upstream
-        $ git checkout -b your-branch-name upstream/main
-
--   Using your favorite editor, make your changes,
-    `committing as you go`_.
--   Include tests that cover any code changes you make. Make sure the
-    test fails without your patch. Run the tests as described in `Running the tests`_.
--   Push your commits to your fork on GitHub and
-    `create a pull request`_. Link to the issue being addressed with
-    ``fixes #123`` in the pull request.
-
-    .. code-block:: text
-
-        $ git push --set-upstream origin your-branch-name
-
-.. _committing as you go: https://afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
-.. _create a pull request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
 First time setup in your local environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -197,8 +163,10 @@ First time setup in your local environment
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
-Start coding in your local environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. _start coding:
+
+Start coding
+~~~~~~~~~~~~
 
 -   Create a branch to identify the issue you would like to work on. If
     you're submitting a bug or documentation fix, branch off of the
@@ -219,17 +187,42 @@ Start coding in your local environment
 
 -   Using your favorite editor, make your changes,
     `committing as you go`_.
+
+    -   If you are in a codespace, you will be prompted to
+        `create a fork`_ the first time you make a commit with the
+        following message:
+
+        .. code-block:: text
+
+            You don't have write access to the pallets/flask repository, so you cannot push changes to it.
+            To obtain write access we will point this codespace at your fork of pallets/flask, creating that fork if it doesn't exist.
+
+            Would you like to proceed?
+
+        Enter ``Y`` at the command prompt to create a new fork or push
+        to your existing fork. This will name your remote fork ``origin``
+        and rename pallets/flask to ``upstream``.
+
 -   Include tests that cover any code changes you make. Make sure the
     test fails without your patch. Run the tests as described below.
 -   Push your commits to your fork on GitHub and
     `create a pull request`_. Link to the issue being addressed with
     ``fixes #123`` in the pull request.
 
-    .. code-block:: text
+    - Local development
+
+      .. code-block:: text
 
         $ git push --set-upstream fork your-branch-name
 
+    - GitHub Codespaces
+
+      .. code-block:: text
+
+        $ git push --set-upstream origin your-branch-name
+
 .. _committing as you go: https://afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _create a fork: https://docs.github.com/en/codespaces/developing-in-codespaces/using-source-control-in-your-codespace#about-automatic-forking
 .. _create a pull request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
 .. _Running the tests:
