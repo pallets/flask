@@ -1018,20 +1018,39 @@ def routes_command(sort: str, all_methods: bool) -> None:
         for rule in rules
     ]
 
-    headers = ("Sub Domain","Endpoint", "Methods", "Rule")
-    widths = (
-        max(len(rule.subdomain) for rule in rules),
-        max(len(rule.endpoint) for rule in rules),
-        max(len(methods) for methods in rule_methods),
-        max(len(rule.rule) for rule in rules),
-    )
-    widths = [max(len(h), w) for h, w in zip(headers, widths)]
-    row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}} {{3:<{3}}}".format(*widths)
-    click.echo(row.format(*headers).strip())
-    click.echo(row.format(*("-" * width for width in widths)))
+    if max(len(rule.subdomain) for rule in rules if rule.subdomain is not None) == 0:
+        headers = ("Endpoint", "Methods", "Rule")
+        widths = (
+            max(len(rule.endpoint) for rule in rules),
+            max(len(methods) for methods in rule_methods),
+            max(len(rule.rule) for rule in rules),
+        )
+        widths = [max(len(h), w) for h, w in zip(headers, widths)]
+        row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}".format(*widths)
+        click.echo(row.format(*headers).strip())
+        click.echo(row.format(*("-" * width for width in widths)))
 
-    for rule, methods in zip(rules, rule_methods):
-        click.echo(row.format(rule.subdomain, rule.endpoint, methods, rule.rule).rstrip())
+        for rule, methods in zip(rules, rule_methods):
+            click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
+    else:
+        headers_extended = ("Endpoint", "Methods", "Subdomain", "Rule")
+        widths_extended = (
+            max(len(rule.endpoint) for rule in rules),
+            max(len(methods) for methods in rule_methods),
+            max(len(rule.subdomain) for rule in rules if rule.subdomain is not None),
+            max(len(rule.rule) for rule in rules),
+        )
+        widths_extended = [
+            max(len(h), w) for h, w in zip(headers_extended, widths_extended)
+        ]
+        row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}  {{3:<{3}}}".format(*widths_extended)
+        click.echo(row.format(*headers_extended).strip())
+        click.echo(row.format(*("-" * width for width in widths_extended)))
+
+        for rule, methods in zip(rules, rule_methods):
+            click.echo(
+                row.format(rule.endpoint, methods, rule.subdomain, rule.rule).rstrip()
+            )
 
 
 cli = FlaskGroup(
