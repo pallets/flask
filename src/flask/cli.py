@@ -1018,7 +1018,7 @@ def routes_command(sort: str, all_methods: bool) -> None:
         for rule in rules
     ]
 
-    headers = ("Sub Domain","Endpoint", "Methods", "Rule")
+    headers = ("Sub Domain", "Endpoint", "Methods", "Rule")
     widths = (
         max(len(rule.subdomain) for rule in rules),
         max(len(rule.endpoint) for rule in rules),
@@ -1031,7 +1031,9 @@ def routes_command(sort: str, all_methods: bool) -> None:
     click.echo(row.format(*("-" * width for width in widths)))
 
     for rule, methods in zip(rules, rule_methods):
-        click.echo(row.format(rule.subdomain, rule.endpoint, methods, rule.rule).rstrip())
+        click.echo(
+            row.format(rule.subdomain, rule.endpoint, methods, rule.rule).rstrip()
+        )
 
 
 cli = FlaskGroup(
