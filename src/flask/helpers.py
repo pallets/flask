@@ -327,8 +327,10 @@ def flash(message: str, category: str = "message") -> None:
     flashes = session.get("_flashes", [])
     flashes.append((category, message))
     session["_flashes"] = flashes
+    app = current_app._get_current_object()  # type: ignore
     message_flashed.send(
-        current_app._get_current_object(),  # type: ignore
+        app,
+        _async_wrapper=app.ensure_sync,
         message=message,
         category=category,
     )

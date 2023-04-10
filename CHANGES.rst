@@ -30,6 +30,7 @@ Unreleased
     decorated function if locking is needed. :issue:`4993`
 -   Signals are always available. ``blinker>=1.6.2`` is a required dependency. The
     ``signals_available`` attribute is deprecated. :issue:`5056`
+-   Signals support ``async`` subscriber functions. :pr:`5049`
 -   Remove uses of locks that could cause requests to block each other very briefly.
     :issue:`4993`
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
