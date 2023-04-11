@@ -24,25 +24,25 @@ colorama==0.4.6
     # via tox
 distlib==0.3.6
     # via virtualenv
-filelock==3.9.0
+filelock==3.11.0
     # via
     #   tox
     #   virtualenv
-identify==2.5.19
+identify==2.5.22
     # via pre-commit
 nodeenv==1.7.0
     # via pre-commit
 pip-compile-multi==2.6.2
     # via -r requirements/dev.in
-pip-tools==6.12.3
+pip-tools==6.13.0
     # via pip-compile-multi
-platformdirs==3.1.1
+platformdirs==3.2.0
     # via
     #   tox
     #   virtualenv
-pre-commit==3.1.1
+pre-commit==3.2.2
     # via -r requirements/dev.in
-pyproject-api==1.5.0
+pyproject-api==1.5.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
@@ -50,13 +50,13 @@ pyyaml==6.0
     # via pre-commit
 toposort==1.10
     # via pip-compile-multi
-tox==4.4.6
+tox==4.4.11
     # via -r requirements/dev.in
-virtualenv==20.20.0
+virtualenv==20.21.0
     # via
     #   pre-commit
     #   tox
-wheel==0.38.4
+wheel==0.40.0
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
