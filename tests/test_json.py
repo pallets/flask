@@ -267,25 +267,6 @@ def _has_encoding(name):
         return False
 
 
-@pytest.mark.skipif(
-    not _has_encoding("euc-kr"), reason="The euc-kr encoding is required."
-)
-def test_modified_url_encoding(app, client):
-    class ModifiedRequest(flask.Request):
-        url_charset = "euc-kr"
-
-    app.request_class = ModifiedRequest
-    app.url_map.charset = "euc-kr"
-
-    @app.route("/")
-    def index():
-        return flask.request.args["foo"]
-
-    rv = client.get("/", query_string={"foo": "정상처리"}, charset="euc-kr")
-    assert rv.status_code == 200
-    assert rv.get_data(as_text=True) == "정상처리"
-
-
 def test_json_key_sorting(app, client):
     app.debug = True
     assert app.json.sort_keys
