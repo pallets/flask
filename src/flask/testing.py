@@ -11,7 +11,6 @@ from werkzeug.test import Client
 from werkzeug.wrappers import Request as BaseRequest
 
 from .cli import ScriptInfo
-from .globals import _cv_request
 from .sessions import SessionMixin
 
 if t.TYPE_CHECKING:  # pragma: no cover
@@ -137,40 +136,45 @@ class FlaskClient(Client):
         :meth:`~flask.Flask.test_request_context` which are directly
         passed through.
         """
-        if self.cookie_jar is None:
-            raise RuntimeError(
-                "Session transactions only make sense with cookies enabled."
+        # new cookie interface for Werkzeug >= 2.3
+        cookie_storage = self._cookies if hasattr(self, "_cookies") else self.cookie_jar
+
+        if cookie_storage is None:
+            raise TypeError(
+                "Cookies are disabled. Create a client with 'use_cookies=True'."
             )
+
         app = self.application
-        environ_overrides = kwargs.setdefault("environ_overrides", {})
-        self.cookie_jar.inject_wsgi(environ_overrides)
-        outer_reqctx = _cv_request.get(None)
-        with app.test_request_context(*args, **kwargs) as c:
-            session_interface = app.session_interface
-            sess = session_interface.open_session(app, c.request)
-            if sess is None:
-                raise RuntimeError(
-                    "Session backend did not open a session. Check the configuration"
-                )
+        ctx = app.test_request_context(*args, **kwargs)
 
-            # Since we have to open a new request context for the session
-            # handling we want to make sure that we hide out own context
-            # from the caller.  By pushing the original request context
-            # (or None) on top of this and popping it we get exactly that
-            # behavior.  It's important to not use the push and pop
-            # methods of the actual request context object since that would
-            # mean that cleanup handlers are called
-            token = _cv_request.set(outer_reqctx)  # type: ignore[arg-type]
-            try:
-                yield sess
-            finally:
-                _cv_request.reset(token)
+        if hasattr(self, "_add_cookies_to_wsgi"):
+            self._add_cookies_to_wsgi(ctx.request.environ)
+        else:
+            self.cookie_jar.inject_wsgi(ctx.request.environ)  # type: ignore[union-attr]
 
-            resp = app.response_class()
-            if not session_interface.is_null_session(sess):
-                session_interface.save_session(app, sess, resp)
-            headers = resp.get_wsgi_headers(c.request.environ)
-            self.cookie_jar.extract_wsgi(c.request.environ, headers)
+        with ctx:
+            sess = app.session_interface.open_session(app, ctx.request)
+
+        if sess is None:
+            raise RuntimeError("Session backend did not open a session.")
+
+        yield sess
+        resp = app.response_class()
+
+        if app.session_interface.is_null_session(sess):
+            return
+
+        with ctx:
+            app.session_interface.save_session(app, sess, resp)
+
+        if hasattr(self, "_update_cookies_from_response"):
+            self._update_cookies_from_response(
+                ctx.request.host.partition(":")[0], resp.headers.getlist("Set-Cookie")
+            )
+        else:
+            self.cookie_jar.extract_wsgi(  # type: ignore[union-attr]
+                ctx.request.environ, resp.headers
+            )
 
     def _copy_environ(self, other):
         out = {**self.environ_base, **other}

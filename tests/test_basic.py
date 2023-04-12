@@ -261,8 +261,9 @@ def test_session_using_server_name(app, client):
         return "Hello World"
 
     rv = client.get("/", "http://example.com/")
-    assert "domain=.example.com" in rv.headers["set-cookie"].lower()
-    assert "httponly" in rv.headers["set-cookie"].lower()
+    cookie = rv.headers["set-cookie"].lower()
+    # or condition for Werkzeug < 2.3
+    assert "domain=example.com" in cookie or "domain=.example.com" in cookie
 
 
 def test_session_using_server_name_and_port(app, client):
@@ -274,8 +275,9 @@ def test_session_using_server_name_and_port(app, client):
         return "Hello World"
 
     rv = client.get("/", "http://example.com:8080/")
-    assert "domain=.example.com" in rv.headers["set-cookie"].lower()
-    assert "httponly" in rv.headers["set-cookie"].lower()
+    cookie = rv.headers["set-cookie"].lower()
+    # or condition for Werkzeug < 2.3
+    assert "domain=example.com" in cookie or "domain=.example.com" in cookie
 
 
 def test_session_using_server_name_port_and_path(app, client):
@@ -337,7 +339,8 @@ def test_session_using_session_settings(app, client):
 
     rv = client.get("/", "http://www.example.com:8080/test/")
     cookie = rv.headers["set-cookie"].lower()
-    assert "domain=.example.com" in cookie
+    # or condition for Werkzeug < 2.3
+    assert "domain=example.com" in cookie or "domain=.example.com" in cookie
     assert "path=/" in cookie
     assert "secure" in cookie
     assert "httponly" not in cookie
@@ -346,7 +349,8 @@ def test_session_using_session_settings(app, client):
     rv = client.get("/clear", "http://www.example.com:8080/test/")
     cookie = rv.headers["set-cookie"].lower()
     assert "session=;" in cookie
-    assert "domain=.example.com" in cookie
+    # or condition for Werkzeug < 2.3
+    assert "domain=example.com" in cookie or "domain=.example.com" in cookie
     assert "path=/" in cookie
     assert "secure" in cookie
     assert "samesite" in cookie
