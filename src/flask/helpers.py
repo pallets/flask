@@ -3,6 +3,7 @@ import pkgutil
 import socket
 import sys
 import typing as t
+import warnings
 from datetime import datetime
 from functools import lru_cache
 from functools import update_wrapper
@@ -662,7 +663,16 @@ def is_ip(value: str) -> bool:
 
     :return: True if string is an IP address
     :rtype: bool
+
+    .. deprecated:: 2.3
+        Will be removed in Flask 2.4.
     """
+    warnings.warn(
+        "The 'is_ip' function is deprecated and will be removed in Flask 2.4.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     for family in (socket.AF_INET, socket.AF_INET6):
         try:
             socket.inet_pton(family, value)

@@ -134,11 +134,16 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: SESSION_COOKIE_DOMAIN
 
-    The domain match rule that the session cookie will be valid for. If not
-    set, the cookie will be valid for all subdomains of :data:`SERVER_NAME`.
-    If ``False``, the cookie's domain will not be set.
+    The value of the ``Domain`` parameter on the session cookie. If not set, browsers
+    will only send the cookie to the exact domain it was set from. Otherwise, they
+    will send it to any subdomain of the given value as well.
+
+    Not setting this value is more restricted and secure than setting it.
 
     Default: ``None``
+
+    .. versionchanged:: 2.3
+        Not set by default, does not fall back to ``SERVER_NAME``.
 
 .. py:data:: SESSION_COOKIE_PATH
 
@@ -219,18 +224,13 @@ The following configuration values are used internally by Flask:
     Inform the application what host and port it is bound to. Required
     for subdomain route matching support.
 
-    If set, will be used for the session cookie domain if
-    :data:`SESSION_COOKIE_DOMAIN` is not set. Modern web browsers will
-    not allow setting cookies for domains without a dot. To use a domain
-    locally, add any names that should route to the app to your
-    ``hosts`` file. ::
-
-        127.0.0.1 localhost.dev
-
     If set, ``url_for`` can generate external URLs with only an application
     context instead of a request context.
 
     Default: ``None``
+
+    .. versionchanged:: 2.3
+        Does not affect ``SESSION_COOKIE_DOMAIN``.
 
 .. py:data:: APPLICATION_ROOT
 

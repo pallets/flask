@@ -251,36 +251,8 @@ def test_session(app, client):
     assert client.get("/get").data == b"42"
 
 
-def test_session_using_server_name(app, client):
-    app.config.update(SERVER_NAME="example.com")
-
-    @app.route("/")
-    def index():
-        flask.session["testing"] = 42
-        return "Hello World"
-
-    rv = client.get("/", "http://example.com/")
-    cookie = rv.headers["set-cookie"].lower()
-    # or condition for Werkzeug < 2.3
-    assert "domain=example.com" in cookie or "domain=.example.com" in cookie
-
-
-def test_session_using_server_name_and_port(app, client):
-    app.config.update(SERVER_NAME="example.com:8080")
-
-    @app.route("/")
-    def index():
-        flask.session["testing"] = 42
-        return "Hello World"
-
-    rv = client.get("/", "http://example.com:8080/")
-    cookie = rv.headers["set-cookie"].lower()
-    # or condition for Werkzeug < 2.3
-    assert "domain=example.com" in cookie or "domain=.example.com" in cookie
-
-
-def test_session_using_server_name_port_and_path(app, client):
-    app.config.update(SERVER_NAME="example.com:8080", APPLICATION_ROOT="/foo")
+def test_session_path(app, client):
+    app.config.update(APPLICATION_ROOT="/foo")
 
     @app.route("/")
     def index():
@@ -288,9 +260,7 @@ def test_session_using_server_name_port_and_path(app, client):
         return "Hello World"
 
     rv = client.get("/", "http://example.com:8080/foo")
-    assert "domain=example.com" in rv.headers["set-cookie"].lower()
     assert "path=/foo" in rv.headers["set-cookie"].lower()
-    assert "httponly" in rv.headers["set-cookie"].lower()
 
 
 def test_session_using_application_root(app, client):
@@ -380,34 +350,6 @@ def test_session_using_samesite_attribute(app, client):
     rv = client.get("/")
     cookie = rv.headers["set-cookie"].lower()
     assert "samesite=lax" in cookie
-
-
-def test_session_localhost_warning(recwarn, app, client):
-    app.config.update(SERVER_NAME="localhost:5000")
-
-    @app.route("/")
-    def index():
-        flask.session["testing"] = 42
-        return "testing"
-
-    rv = client.get("/", "http://localhost:5000/")
-    assert "domain" not in rv.headers["set-cookie"].lower()
-    w = recwarn.pop(UserWarning)
-    assert "'localhost' is not a valid cookie domain" in str(w.message)
-
-
-def test_session_ip_warning(recwarn, app, client):
-    app.config.update(SERVER_NAME="127.0.0.1:5000")
-
-    @app.route("/")
-    def index():
-        flask.session["testing"] = 42
-        return "testing"
-
-    rv = client.get("/", "http://127.0.0.1:5000/")
-    assert "domain=127.0.0.1" in rv.headers["set-cookie"].lower()
-    w = recwarn.pop(UserWarning)
-    assert "cookie domain is an IP" in str(w.message)
 
 
 def test_missing_session(app):
