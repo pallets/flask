@@ -54,7 +54,7 @@ its ``wsgi.server``, as well as your app or app factory.
     from hello import create_app
 
     app = create_app()
-    wsgi.server(eventlet.listen(("127.0.0.1", 8000), app)
+    wsgi.server(eventlet.listen(("127.0.0.1", 8000)), app)
 
 .. code-block:: text
 
