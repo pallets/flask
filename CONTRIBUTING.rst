@@ -67,9 +67,29 @@ Include the following in your patch:
 .. _pre-commit: https://pre-commit.com
 
 
-First time setup
-~~~~~~~~~~~~~~~~
+First time setup using GitHub Codespaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+`GitHub Codespaces`_ creates a development environment that is already set up for the
+project. By default it opens in Visual Studio Code for the Web, but this can
+be changed in your GitHub profile settings to use Visual Studio Code or JetBrains
+PyCharm on your local computer.
+
+-   Make sure you have a `GitHub account`_.
+-   From the project's repository page, click the green "Code" button and then "Create
+    codespace on main".
+-   The codespace will be set up, then Visual Studio Code will open. However, you'll
+    need to wait a bit longer for the Python extension to be installed. You'll know it's
+    ready when the terminal at the bottom shows that the virtualenv was activated.
+-   Check out a branch and `start coding`_.
+
+.. _GitHub Codespaces: https://docs.github.com/en/codespaces
+.. _devcontainer: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers
+
+First time setup in your local environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-   Make sure you have a `GitHub account`_.
 -   Download and install the `latest version of git`_.
 -   Configure git with your `username`_ and `email`_.
 
@@ -78,25 +98,16 @@ First time setup
         $ git config --global user.name 'your name'
         $ git config --global user.email 'your email'
 
--   Make sure you have a `GitHub account`_.
 -   Fork Flask to your GitHub account by clicking the `Fork`_ button.
--   `Clone`_ the main repository locally.
+-   `Clone`_ your fork locally, replacing ``your-username`` in the command below with
+    your actual username.
 
     .. code-block:: text
 
-        $ git clone https://github.com/pallets/flask
+        $ git clone https://github.com/your-username/flask
         $ cd flask
 
--   Add your fork as a remote to push your work to. Replace
-    ``{username}`` with your username. This names the remote "fork", the
-    default Pallets remote is "origin".
-
-    .. code-block:: text
-
-        $ git remote add fork https://github.com/{username}/flask
-
--   Create a virtualenv.
-
+-   Create a virtualenv. Use the latest version of Python.
 
     - Linux/macOS
 
@@ -112,68 +123,65 @@ First time setup
          > py -3 -m venv .venv
          > env\Scripts\activate
 
--   Upgrade pip and setuptools.
+-   Install the development dependencies, then install Flask in editable mode.
 
     .. code-block:: text
 
-        $ python -m pip install --upgrade pip setuptools
-
--   Install the development dependencies, then install Flask in editable
-    mode.
-
-    .. code-block:: text
-
+        $ python -m pip install -U pip setuptools wheel
         $ pip install -r requirements/dev.txt && pip install -e .
 
 -   Install the pre-commit hooks.
 
     .. code-block:: text
 
-        $ pre-commit install
+        $ pre-commit install --install-hooks
 
+.. _GitHub account: https://github.com/join
 .. _latest version of git: https://git-scm.com/downloads
 .. _username: https://docs.github.com/en/github/using-git/setting-your-username-in-git
 .. _email: https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address
-.. _GitHub account: https://github.com/join
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
+.. _start coding:
 
 Start coding
 ~~~~~~~~~~~~
 
--   Create a branch to identify the issue you would like to work on. If
-    you're submitting a bug or documentation fix, branch off of the
-    latest ".x" branch.
+-   Create a branch to identify the issue you would like to work on. If you're
+    submitting a bug or documentation fix, branch off of the latest ".x" branch.
 
     .. code-block:: text
 
         $ git fetch origin
         $ git checkout -b your-branch-name origin/2.0.x
 
-    If you're submitting a feature addition or change, branch off of the
-    "main" branch.
+    If you're submitting a feature addition or change, branch off of the "main" branch.
 
     .. code-block:: text
 
         $ git fetch origin
         $ git checkout -b your-branch-name origin/main
 
--   Using your favorite editor, make your changes,
-    `committing as you go`_.
--   Include tests that cover any code changes you make. Make sure the
-    test fails without your patch. Run the tests as described below.
--   Push your commits to your fork on GitHub and
-    `create a pull request`_. Link to the issue being addressed with
-    ``fixes #123`` in the pull request.
+-   Using your favorite editor, make your changes, `committing as you go`_.
+
+    -   If you are in a codespace, you will be prompted to `create a fork`_ the first
+        time you make a commit. Enter ``Y`` to continue.
+
+-   Include tests that cover any code changes you make. Make sure the test fails without
+    your patch. Run the tests as described below.
+-   Push your commits to your fork on GitHub and `create a pull request`_. Link to the
+    issue being addressed with ``fixes #123`` in the pull request description.
 
     .. code-block:: text
 
-        $ git push --set-upstream fork your-branch-name
+        $ git push --set-upstream origin your-branch-name
 
 .. _committing as you go: https://afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
+.. _create a fork: https://docs.github.com/en/codespaces/developing-in-codespaces/using-source-control-in-your-codespace#about-automatic-forking
 .. _create a pull request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
+.. _Running the tests:
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
@@ -200,6 +208,9 @@ Running test coverage
 Generating a report of lines that do not have test coverage can indicate
 where to start contributing. Run ``pytest`` using ``coverage`` and
 generate a report.
+
+If you are using GitHub Codespaces, ``coverage`` is already installed
+so you can skip the installation command.
 
 .. code-block:: text
 
