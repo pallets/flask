@@ -3,3 +3,4 @@ Jinja2==3.0.0
 MarkupSafe==2.0.0
 itsdangerous==2.0.0
 click==8.0.0
+blinker==1.6.2

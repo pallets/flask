@@ -204,21 +204,16 @@ contexts until the ``with`` block exits.
 Signals
 ~~~~~~~
 
-If :data:`~signals.signals_available` is true, the following signals are
-sent:
+The following signals are sent:
 
-#.  :data:`request_started` is sent before the
-    :meth:`~Flask.before_request` functions are called.
-
-#.  :data:`request_finished` is sent after the
-    :meth:`~Flask.after_request` functions are called.
-
-#.  :data:`got_request_exception` is sent when an exception begins to
-    be handled, but before an :meth:`~Flask.errorhandler` is looked up or
-    called.
-
-#.  :data:`request_tearing_down` is sent after the
-    :meth:`~Flask.teardown_request` functions are called.
+#.  :data:`request_started` is sent before the :meth:`~Flask.before_request` functions
+    are called.
+#.  :data:`request_finished` is sent after the :meth:`~Flask.after_request` functions
+    are called.
+#.  :data:`got_request_exception` is sent when an exception begins to be handled, but
+    before an :meth:`~Flask.errorhandler` is looked up or called.
+#.  :data:`request_tearing_down` is sent after the :meth:`~Flask.teardown_request`
+    functions are called.
 
 
 .. _notes-on-proxies:

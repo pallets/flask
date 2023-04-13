@@ -1,5 +1,4 @@
 pytest
 asgiref
-blinker
 greenlet ; python_version < "3.11"
 python-dotenv>=1; python_version >= "3.8"
