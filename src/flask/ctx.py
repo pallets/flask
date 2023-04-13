@@ -242,7 +242,7 @@ class AppContext:
     def push(self) -> None:
         """Binds the app context to the current context."""
         self._cv_tokens.append(_cv_app.set(self))
-        appcontext_pushed.send(self.app)
+        appcontext_pushed.send(self.app, _async_wrapper=self.app.ensure_sync)
 
     def pop(self, exc: t.Optional[BaseException] = _sentinel) -> None:  # type: ignore
         """Pops the app context."""
@@ -260,7 +260,7 @@ class AppContext:
                 f"Popped wrong app context. ({ctx!r} instead of {self!r})"
             )
 
-        appcontext_popped.send(self.app)
+        appcontext_popped.send(self.app, _async_wrapper=self.app.ensure_sync)
 
     def __enter__(self) -> "AppContext":
         self.push()

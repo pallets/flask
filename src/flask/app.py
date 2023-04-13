@@ -1389,7 +1389,7 @@ class Flask(Scaffold):
         .. versionadded:: 0.3
         """
         exc_info = sys.exc_info()
-        got_request_exception.send(self, exception=e)
+        got_request_exception.send(self, _async_wrapper=self.ensure_sync, exception=e)
         propagate = self.config["PROPAGATE_EXCEPTIONS"]
 
         if propagate is None:
@@ -1493,7 +1493,7 @@ class Flask(Scaffold):
         self._got_first_request = True
 
         try:
-            request_started.send(self)
+            request_started.send(self, _async_wrapper=self.ensure_sync)
             rv = self.preprocess_request()
             if rv is None:
                 rv = self.dispatch_request()
@@ -1521,7 +1521,9 @@ class Flask(Scaffold):
         response = self.make_response(rv)
         try:
             response = self.process_response(response)
-            request_finished.send(self, response=response)
+            request_finished.send(
+                self, _async_wrapper=self.ensure_sync, response=response
+            )
         except Exception:
             if not from_error_handler:
                 raise
@@ -2052,7 +2054,7 @@ class Flask(Scaffold):
                 for func in reversed(self.teardown_request_funcs[name]):
                     self.ensure_sync(func)(exc)
 
-        request_tearing_down.send(self, exc=exc)
+        request_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
 
     def do_teardown_appcontext(
         self, exc: t.Optional[BaseException] = _sentinel  # type: ignore
@@ -2077,7 +2079,7 @@ class Flask(Scaffold):
         for func in reversed(self.teardown_appcontext_funcs):
             self.ensure_sync(func)(exc)
 
-        appcontext_tearing_down.send(self, exc=exc)
+        appcontext_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
 
     def app_context(self) -> AppContext:
         """Create an :class:`~flask.ctx.AppContext`. Use as a ``with``
