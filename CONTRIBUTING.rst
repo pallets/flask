@@ -89,6 +89,7 @@ PyCharm on your local computer.
 First time setup in your local environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+-   Make sure you have a `GitHub account`_.
 -   Download and install the `latest version of git`_.
 -   Configure git with your `username`_ and `email`_.
 
@@ -97,25 +98,16 @@ First time setup in your local environment
         $ git config --global user.name 'your name'
         $ git config --global user.email 'your email'
 
--   Make sure you have a `GitHub account`_.
 -   Fork Flask to your GitHub account by clicking the `Fork`_ button.
--   `Clone`_ the main repository locally.
+-   `Clone`_ your fork locally, replacing ``your-username`` in the command below with
+    your actual username.
 
     .. code-block:: text
 
-        $ git clone https://github.com/pallets/flask
+        $ git clone https://github.com/your-username/flask
         $ cd flask
 
--   Add your fork as a remote to push your work to. Replace
-    ``{username}`` with your username. This names the remote "fork", the
-    default Pallets remote is "origin".
-
-    .. code-block:: text
-
-        $ git remote add fork https://github.com/{username}/flask
-
--   Create a virtualenv.
-
+-   Create a virtualenv. Use the latest version of Python.
 
     - Linux/macOS
 
@@ -131,29 +123,23 @@ First time setup in your local environment
          > py -3 -m venv .venv
          > env\Scripts\activate
 
--   Upgrade pip and setuptools.
+-   Install the development dependencies, then install Flask in editable mode.
 
     .. code-block:: text
 
-        $ python -m pip install --upgrade pip setuptools
-
--   Install the development dependencies, then install Flask in editable
-    mode.
-
-    .. code-block:: text
-
+        $ python -m pip install -U pip setuptools wheel
         $ pip install -r requirements/dev.txt && pip install -e .
 
 -   Install the pre-commit hooks.
 
     .. code-block:: text
 
-        $ pre-commit install
+        $ pre-commit install --install-hooks
 
+.. _GitHub account: https://github.com/join
 .. _latest version of git: https://git-scm.com/downloads
 .. _username: https://docs.github.com/en/github/using-git/setting-your-username-in-git
 .. _email: https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address
-.. _GitHub account: https://github.com/join
 .. _Fork: https://github.com/pallets/flask/fork
 .. _Clone: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork
 
@@ -162,56 +148,32 @@ First time setup in your local environment
 Start coding
 ~~~~~~~~~~~~
 
--   Create a branch to identify the issue you would like to work on. If
-    you're submitting a bug or documentation fix, branch off of the
-    latest ".x" branch.
+-   Create a branch to identify the issue you would like to work on. If you're
+    submitting a bug or documentation fix, branch off of the latest ".x" branch.
 
     .. code-block:: text
 
         $ git fetch origin
         $ git checkout -b your-branch-name origin/2.0.x
 
-    If you're submitting a feature addition or change, branch off of the
-    "main" branch.
+    If you're submitting a feature addition or change, branch off of the "main" branch.
 
     .. code-block:: text
 
         $ git fetch origin
         $ git checkout -b your-branch-name origin/main
 
--   Using your favorite editor, make your changes,
-    `committing as you go`_.
+-   Using your favorite editor, make your changes, `committing as you go`_.
 
-    -   If you are in a codespace, you will be prompted to
-        `create a fork`_ the first time you make a commit with the
-        following message:
+    -   If you are in a codespace, you will be prompted to `create a fork`_ the first
+        time you make a commit. Enter ``Y`` to continue.
 
-        .. code-block:: text
+-   Include tests that cover any code changes you make. Make sure the test fails without
+    your patch. Run the tests as described below.
+-   Push your commits to your fork on GitHub and `create a pull request`_. Link to the
+    issue being addressed with ``fixes #123`` in the pull request description.
 
-            You don't have write access to the pallets/flask repository, so you cannot push changes to it.
-            To obtain write access we will point this codespace at your fork of pallets/flask, creating that fork if it doesn't exist.
-
-            Would you like to proceed?
-
-        Enter ``Y`` at the command prompt to create a new fork or push
-        to your existing fork. This will name your remote fork ``origin``
-        and rename pallets/flask to ``upstream``.
-
--   Include tests that cover any code changes you make. Make sure the
-    test fails without your patch. Run the tests as described below.
--   Push your commits to your fork on GitHub and
-    `create a pull request`_. Link to the issue being addressed with
-    ``fixes #123`` in the pull request.
-
-    - Local development
-
-      .. code-block:: text
-
-        $ git push --set-upstream fork your-branch-name
-
-    - GitHub Codespaces
-
-      .. code-block:: text
+    .. code-block:: text
 
         $ git push --set-upstream origin your-branch-name
 
