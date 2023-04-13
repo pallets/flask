@@ -1,7 +1,0 @@
-👋  Welcome to "Flask" in GitHub Codespaces!
-
-🛠️  Your environment is setup with all the required dependencies and your fork has been added as a remote.
-
-🚀  To start coding:
-    - make sure the virtualenv is activated by running `. .venv/bin/activate`
-    - run `git checkout -b your-branch-name origin/{main-or-latest-release}` to start working on a new feature or bug fix

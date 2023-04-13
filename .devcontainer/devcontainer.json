@@ -2,9 +2,6 @@
   "name": "pallets/flask",
   "image": "mcr.microsoft.com/devcontainers/python:3",
   "customizations": {
-    "codespaces": {
-      "openFiles": []
-    },
     "vscode": {
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
@@ -12,10 +9,9 @@
         "python.terminal.launchArgs": [
           "-X",
           "dev"
-        ],
-        "terminal.integrated.environmentChangesRelaunch": false
+        ]
       }
     }
   },
-  "onCreateCommand": "sudo chmod +x .devcontainer/on-create-command.sh && .devcontainer/on-create-command.sh"
+  "onCreateCommand": ".devcontainer/on-create-command.sh"
 }
