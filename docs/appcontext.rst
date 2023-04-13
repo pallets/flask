@@ -140,10 +140,8 @@ Accessing ``db`` will call ``get_db`` internally, in the same way that
 Events and Signals
 ------------------
 
-The application will call functions registered with
-:meth:`~Flask.teardown_appcontext` when the application context is
-popped.
+The application will call functions registered with :meth:`~Flask.teardown_appcontext`
+when the application context is popped.
 
-If :data:`~signals.signals_available` is true, the following signals are
-sent: :data:`appcontext_pushed`, :data:`appcontext_tearing_down`, and
-:data:`appcontext_popped`.
+The following signals are sent: :data:`appcontext_pushed`,
+:data:`appcontext_tearing_down`, and :data:`appcontext_popped`.

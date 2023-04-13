@@ -10,11 +10,6 @@ from flask.json import jsonify
 from flask.testing import EnvironBuilder
 from flask.testing import FlaskCliRunner
 
-try:
-    import blinker
-except ImportError:
-    blinker = None
-
 
 def test_environ_defaults_from_config(app, client):
     app.config["SERVER_NAME"] = "example.com:1234"
@@ -285,7 +280,6 @@ def test_json_request_and_response(app, client):
         assert rv.get_json() == json_data
 
 
-@pytest.mark.skipif(blinker is None, reason="blinker is not installed")
 def test_client_json_no_app_context(app, client):
     @app.route("/hello", methods=["POST"])
     def hello():

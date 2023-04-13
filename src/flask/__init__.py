@@ -32,7 +32,6 @@ from .signals import message_flashed as message_flashed
 from .signals import request_finished as request_finished
 from .signals import request_started as request_started
 from .signals import request_tearing_down as request_tearing_down
-from .signals import signals_available as signals_available
 from .signals import template_rendered as template_rendered
 from .templating import render_template as render_template
 from .templating import render_template_string as render_template_string
@@ -88,5 +87,16 @@ def __getattr__(name):
             stacklevel=2,
         )
         return Markup
+
+    if name == "signals_available":
+        import warnings
+
+        warnings.warn(
+            "'signals_available' is deprecated and will be removed in Flask 2.4."
+            " Signals are always available",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return True
 
     raise AttributeError(name)

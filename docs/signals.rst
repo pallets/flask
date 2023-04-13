@@ -1,33 +1,28 @@
 Signals
 =======
 
-.. versionadded:: 0.6
+Signals are a lightweight way to notify subscribers of certain events during the
+lifecycle of the application and each request. When an event occurs, it emits the
+signal, which calls each subscriber.
 
-Starting with Flask 0.6, there is integrated support for signalling in
-Flask.  This support is provided by the excellent `blinker`_ library and
-will gracefully fall back if it is not available.
+Signals are implemented by the `Blinker`_ library. See its documentation for detailed
+information. Flask provides some built-in signals. Extensions may provide their own.
 
-What are signals?  Signals help you decouple applications by sending
-notifications when actions occur elsewhere in the core framework or
-another Flask extensions.  In short, signals allow certain senders to
-notify subscribers that something happened.
+Many signals mirror Flask's decorator-based callbacks with similar names. For example,
+the :data:`.request_started` signal is similar to the :meth:`~.Flask.before_request`
+decorator. The advantage of signals over handlers is that they can be subscribed to
+temporarily, and can't directly affect the application. This is useful for testing,
+metrics, auditing, and more. For example, if you want to know what templates were
+rendered at what parts of what requests, there is a signal that will notify you of that
+information.
 
-Flask comes with a couple of signals and other extensions might provide
-more.  Also keep in mind that signals are intended to notify subscribers
-and should not encourage subscribers to modify data.  You will notice that
-there are signals that appear to do the same thing like some of the
-builtin decorators do (eg: :data:`~flask.request_started` is very similar
-to :meth:`~flask.Flask.before_request`).  However, there are differences in
-how they work.  The core :meth:`~flask.Flask.before_request` handler, for
-example, is executed in a specific order and is able to abort the request
-early by returning a response.  In contrast all signal handlers are
-executed in undefined order and do not modify any data.
 
-The big advantage of signals over handlers is that you can safely
-subscribe to them for just a split second.  These temporary
-subscriptions are helpful for unit testing for example.  Say you want to
-know what templates were rendered as part of a request: signals allow you
-to do exactly that.
+Core Signals
+------------
+
+See :ref:`core-signals-list` for a list of all built-in signals. The :doc:`lifecycle`
+page also describes the order that signals and decorators execute.
+
 
 Subscribing to Signals
 ----------------------
@@ -99,11 +94,6 @@ The example above would then look like this::
         ...
         template, context = templates[0]
 
-.. admonition:: Blinker API Changes
-
-   The :meth:`~blinker.base.Signal.connected_to` method arrived in Blinker
-   with version 1.1.
-
 Creating Signals
 ----------------
 
@@ -122,12 +112,6 @@ Now you can create new signals like this::
 The name for the signal here makes it unique and also simplifies
 debugging.  You can access the name of the signal with the
 :attr:`~blinker.base.NamedSignal.name` attribute.
-
-.. admonition:: For Extension Developers
-
-   If you are writing a Flask extension and you want to gracefully degrade for
-   missing blinker installations, you can do so by using the
-   :class:`flask.signals.Namespace` class.
 
 .. _signals-sending:
 
@@ -170,7 +154,7 @@ in :ref:`signals-sending` and the :data:`~flask.request_tearing_down` signal.
 Decorator Based Signal Subscriptions
 ------------------------------------
 
-With Blinker 1.1 you can also easily subscribe to signals by using the new
+You can also easily subscribe to signals by using the
 :meth:`~blinker.base.NamedSignal.connect_via` decorator::
 
     from flask import template_rendered
@@ -178,11 +162,6 @@ With Blinker 1.1 you can also easily subscribe to signals by using the new
     @template_rendered.connect_via(app)
     def when_template_rendered(sender, template, context, **extra):
         print(f'Template {template.name} is rendered with {context}')
-
-Core Signals
-------------
-
-Take a look at :ref:`core-signals-list` for a list of all builtin signals.
 
 
 .. _blinker: https://pypi.org/project/blinker/

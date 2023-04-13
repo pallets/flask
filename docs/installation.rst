@@ -24,12 +24,14 @@ These distributions will be installed automatically when installing Flask.
   to protect Flask's session cookie.
 * `Click`_ is a framework for writing command line applications. It provides
   the ``flask`` command and allows adding custom management commands.
+* `Blinker`_ provides support for :doc:`signals`.
 
 .. _Werkzeug: https://palletsprojects.com/p/werkzeug/
 .. _Jinja: https://palletsprojects.com/p/jinja/
 .. _MarkupSafe: https://palletsprojects.com/p/markupsafe/
 .. _ItsDangerous: https://palletsprojects.com/p/itsdangerous/
 .. _Click: https://palletsprojects.com/p/click/
+.. _Blinker: https://blinker.readthedocs.io/
 
 
 Optional dependencies
@@ -38,13 +40,11 @@ Optional dependencies
 These distributions will not be installed automatically. Flask will detect and
 use them if you install them.
 
-* `Blinker`_ provides support for :doc:`signals`.
 * `python-dotenv`_ enables support for :ref:`dotenv` when running ``flask``
   commands.
 * `Watchdog`_ provides a faster, more efficient reloader for the development
   server.
 
-.. _Blinker: https://blinker.readthedocs.io/en/stable/
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 .. _watchdog: https://pythonhosted.org/watchdog/
 

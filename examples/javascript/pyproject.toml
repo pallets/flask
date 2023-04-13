@@ -11,7 +11,7 @@ dependencies = ["flask"]
 Documentation = "https://flask.palletsprojects.com/patterns/jquery/"
 
 [project.optional-dependencies]
-test = ["pytest", "blinker"]
+test = ["pytest"]
 
 [build-system]
 requires = ["setuptools"]

@@ -24,6 +24,7 @@ dependencies = [
     "Jinja2>=3.0",
     "itsdangerous>=2.0",
     "click>=8.0",
+    "blinker>=1.6.2",
     "importlib-metadata>=3.6.0; python_version < '3.10'",
 ]
 dynamic = ["version"]
@@ -90,7 +91,6 @@ warn_unused_ignores = true
 [[tool.mypy.overrides]]
 module = [
     "asgiref.*",
-    "blinker.*",
     "dotenv.*",
     "cryptography.*",
     "importlib_metadata",

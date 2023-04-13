@@ -28,6 +28,8 @@ Unreleased
 -   The ``app.got_first_request`` property is deprecated. :pr:`4997`
 -   The ``locked_cached_property`` decorator is deprecated. Use a lock inside the
     decorated function if locking is needed. :issue:`4993`
+-   Signals are always available. ``blinker>=1.6.2`` is a required dependency. The
+    ``signals_available`` attribute is deprecated. :issue:`5056`
 -   Remove uses of locks that could cause requests to block each other very briefly.
     :issue:`4993`
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
