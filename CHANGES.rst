@@ -44,6 +44,8 @@ Unreleased
     to set the domain, which modern browsers interpret as an exact match rather than
     a subdomain match. Warnings about ``localhost`` and IP addresses are also removed.
     :issue:`5051`
+-   The ``routes`` command shows each rule's ``subdomain`` or ``host`` when domain
+    matching is in use. :issue:`5004`
 
 
 Version 2.2.4
