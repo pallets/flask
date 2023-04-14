@@ -9,7 +9,7 @@ import sys
 import traceback
 import typing as t
 from functools import update_wrapper
-from operator import attrgetter
+from operator import itemgetter
 
 import click
 from click.core import ParameterSource
@@ -989,49 +989,62 @@ def shell_command() -> None:
 @click.option(
     "--sort",
     "-s",
-    type=click.Choice(("endpoint", "methods", "rule", "match")),
+    type=click.Choice(("endpoint", "methods", "domain", "rule", "match")),
     default="endpoint",
     help=(
-        'Method to sort routes by. "match" is the order that Flask will match '
-        "routes when dispatching a request."
+        "Method to sort routes by. 'match' is the order that Flask will match routes"
+        " when dispatching a request."
     ),
 )
 @click.option("--all-methods", is_flag=True, help="Show HEAD and OPTIONS methods.")
 @with_appcontext
 def routes_command(sort: str, all_methods: bool) -> None:
     """Show all registered routes with endpoints and methods."""
-
     rules = list(current_app.url_map.iter_rules())
+
     if not rules:
         click.echo("No routes were registered.")
         return
 
-    ignored_methods = set(() if all_methods else ("HEAD", "OPTIONS"))
+    ignored_methods = set() if all_methods else {"HEAD", "OPTIONS"}
+    host_matching = current_app.url_map.host_matching
+    has_domain = any(rule.host if host_matching else rule.subdomain for rule in rules)
+    rows = []
 
-    if sort in ("endpoint", "rule"):
-        rules = sorted(rules, key=attrgetter(sort))
-    elif sort == "methods":
-        rules = sorted(rules, key=lambda rule: sorted(rule.methods))  # type: ignore
+    for rule in rules:
+        row = [
+            rule.endpoint,
+            ", ".join(sorted((rule.methods or set()) - ignored_methods)),
+        ]
 
-    rule_methods = [
-        ", ".join(sorted(rule.methods - ignored_methods))  # type: ignore
-        for rule in rules
-    ]
+        if has_domain:
+            row.append((rule.host if host_matching else rule.subdomain) or "")
 
-    headers = ("Endpoint", "Methods", "Rule")
-    widths = (
-        max(len(rule.endpoint) for rule in rules),
-        max(len(methods) for methods in rule_methods),
-        max(len(rule.rule) for rule in rules),
-    )
-    widths = [max(len(h), w) for h, w in zip(headers, widths)]
-    row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}".format(*widths)
+        row.append(rule.rule)
+        rows.append(row)
 
-    click.echo(row.format(*headers).strip())
-    click.echo(row.format(*("-" * width for width in widths)))
+    headers = ["Endpoint", "Methods"]
+    sorts = ["endpoint", "methods"]
 
-    for rule, methods in zip(rules, rule_methods):
-        click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
+    if has_domain:
+        headers.append("Host" if host_matching else "Subdomain")
+        sorts.append("domain")
+
+    headers.append("Rule")
+    sorts.append("rule")
+
+    try:
+        rows.sort(key=itemgetter(sorts.index(sort)))
+    except ValueError:
+        pass
+
+    rows.insert(0, headers)
+    widths = [max(len(row[i]) for row in rows) for i in range(len(headers))]
+    rows.insert(1, ["-" * w for w in widths])
+    template = "  ".join(f"{{{i}:<{w}}}" for i, w in enumerate(widths))
+
+    for row in rows:
+        click.echo(template.format(*row))
 
 
 cli = FlaskGroup(
