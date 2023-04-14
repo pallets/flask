@@ -99,14 +99,20 @@ class Config(dict):
         return self.from_pyfile(rv, silent=silent)
 
     def from_prefixed_env(
-        self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads
+        self,
+        prefix: str = "FLASK",
+        *,
+        loads: t.Callable[[str], t.Any] = json.loads,
+        trim_prefix: bool = True,
     ) -> bool:
-        """Load any environment variables that start with ``FLASK_``,
-        dropping the prefix from the env key for the config key. Values
-        are passed through a loading function to attempt to convert them
-        to more specific types than strings.
+        """Load any environment variables that start with ``FLASK_``.
+        Values are passed through a loading function to attempt to
+        convert them to more specific types than strings.
 
         Keys are loaded in :func:`sorted` order.
+
+        The default is to drop the prefix from the env key for the
+        config key.
 
         The default loading function attempts to parse values as any
         valid JSON type, including dicts and lists.
@@ -121,6 +127,11 @@ class Config(dict):
             the returned value as the config value. If any error is
             raised it is ignored and the value remains a string. The
             default is :func:`json.loads`.
+        :param trim_prefix: A flag indicating if the prefix should be
+            dropped for the config key. Defaults to ``True``
+
+        .. versionchanged:: 2.3
+            The ``trim_prefix`` parameter was added.
 
         .. versionadded:: 2.1
         """
@@ -139,8 +150,9 @@ class Config(dict):
                 # Keep the value as a string if loading failed.
                 pass
 
-            # Change to key.removeprefix(prefix) on Python >= 3.9.
-            key = key[len_prefix:]
+            if trim_prefix:
+                # Change to key.removeprefix(prefix) on Python >= 3.9.
+                key = key[len_prefix:]
 
             if "__" not in key:
                 # A non-nested key, set directly.

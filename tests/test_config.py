@@ -108,6 +108,18 @@ def test_from_prefixed_env_nested(monkeypatch):
     assert app.config["NEW"] == {"K": "v"}
 
 
+def test_from_prefixed_env_no_trim(monkeypatch):
+    monkeypatch.setenv("FLASK_SECRET_KEY", "asdf")
+    monkeypatch.setenv("APP_DEBUG", "true")
+
+    app = flask.Flask(__name__)
+    app.config.from_prefixed_env(trim_prefix=True)
+    app.config.from_prefixed_env("APP", trim_prefix=False)
+
+    assert app.config["SECRET_KEY"] == "asdf"
+    assert app.config["APP_DEBUG"] is True
+
+
 def test_config_from_mapping():
     app = flask.Flask(__name__)
     app.config.from_mapping({"SECRET_KEY": "config", "TEST_KEY": "foo"})

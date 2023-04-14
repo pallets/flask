@@ -44,6 +44,8 @@ Unreleased
     to set the domain, which modern browsers interpret as an exact match rather than
     a subdomain match. Warnings about ``localhost`` and IP addresses are also removed.
     :issue:`5051`
+-   ``config.from_prefixed_env`` supports not trimming the prefix using
+    ``trim_prefix=False``. :issue:`5060`
 
 
 Version 2.2.4
