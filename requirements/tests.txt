@@ -9,11 +9,11 @@ asgiref==3.6.0
     # via -r requirements/tests.in
 iniconfig==2.0.0
     # via pytest
-packaging==23.0
+packaging==23.1
     # via pytest
 pluggy==1.0.0
     # via pytest
-pytest==7.3.0
+pytest==7.3.1
     # via -r requirements/tests.in
 python-dotenv==1.0.0 ; python_version >= "3.8"
     # via -r requirements/tests.in

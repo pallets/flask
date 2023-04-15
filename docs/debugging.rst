@@ -66,9 +66,9 @@ be used to step through code during a request before an error is raised,
 or if no error is raised. Some even have a remote mode so you can debug
 code running on another machine.
 
-When using an external debugger, the app should still be in debug mode,
-but it can be useful to disable the built-in debugger and reloader,
-which can interfere.
+When using an external debugger, the app should still be in debug mode, otherwise Flask
+turns unhandled errors into generic 500 error pages. However, the built-in debugger and
+reloader should be disabled so they don't interfere with the external debugger.
 
 .. code-block:: text
 
@@ -80,8 +80,20 @@ When running from Python:
 
     app.run(debug=True, use_debugger=False, use_reloader=False)
 
-Disabling these isn't required, an external debugger will continue to
-work with the following caveats. If the built-in debugger is not
-disabled, it will catch unhandled exceptions before the external
-debugger can. If the reloader is not disabled, it could cause an
-unexpected reload if code changes during debugging.
+Disabling these isn't required, an external debugger will continue to work with the
+following caveats.
+
+-   If the built-in debugger is not disabled, it will catch unhandled exceptions before
+    the external debugger can.
+-   If the reloader is not disabled, it could cause an unexpected reload if code changes
+    during a breakpoint.
+-   The development server will still catch unhandled exceptions if the built-in
+    debugger is disabled, otherwise it would crash on any error. If you want that (and
+    usually you don't) pass ``passthrough_errors=True`` to ``app.run``.
+
+    .. code-block:: python
+
+        app.run(
+            debug=True, passthrough_errors=True,
+            use_debugger=False, use_reloader=False
+        )

@@ -50,7 +50,7 @@ pyyaml==6.0
     # via pre-commit
 toposort==1.10
     # via pip-compile-multi
-tox==4.4.11
+tox==4.4.12
     # via -r requirements/dev.in
 virtualenv==20.21.0
     # via

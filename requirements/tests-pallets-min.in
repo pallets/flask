@@ -1,6 +1,6 @@
-Werkzeug==2.0.0
+Werkzeug==2.2.2
 Jinja2==3.0.0
-MarkupSafe==2.0.0
+MarkupSafe==2.1.1
 itsdangerous==2.0.0
 click==8.0.0
 blinker==1.6.2

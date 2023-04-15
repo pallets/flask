@@ -7,7 +7,7 @@
 #
 build==0.10.0
     # via -r requirements/build.in
-packaging==23.0
+packaging==23.1
     # via build
 pyproject-hooks==1.0.0
     # via build
