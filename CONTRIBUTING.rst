@@ -121,7 +121,7 @@ First time setup in your local environment
       .. code-block:: text
 
          > py -3 -m venv .venv
-         > env\Scripts\activate
+         > .venv\Scripts\activate
 
 -   Install the development dependencies, then install Flask in editable mode.
 
