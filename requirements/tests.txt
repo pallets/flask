@@ -9,10 +9,6 @@ asgiref==3.6.0
     # via -r requirements/tests.in
 blinker==1.6.1
     # via -r requirements/tests.in
-exceptiongroup==1.1.1
-    # via pytest
-greenlet==2.0.2 ; python_version < "3.11"
-    # via -r requirements/tests.in
 iniconfig==2.0.0
     # via pytest
 packaging==23.0
@@ -23,7 +19,5 @@ pytest==7.3.0
     # via -r requirements/tests.in
 python-dotenv==1.0.0 ; python_version >= "3.8"
     # via -r requirements/tests.in
-tomli==2.0.1
-    # via pytest
 typing-extensions==4.5.0
     # via blinker

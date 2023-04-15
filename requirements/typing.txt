@@ -15,8 +15,6 @@ mypy-extensions==1.0.0
     # via mypy
 pycparser==2.21
     # via cffi
-tomli==2.0.1
-    # via mypy
 types-contextvars==2.4.7.2
     # via -r requirements/typing.in
 types-dataclasses==0.6.6
