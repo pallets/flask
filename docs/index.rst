@@ -3,10 +3,8 @@
 Welcome to Flask
 ================
 
-.. image:: _static/flask-logo.png
-    :alt: Flask: web development, one drop at a time
+.. image:: _static/flask-horizontal.png
     :align: center
-    :target: https://palletsprojects.com/p/flask/
 
 Welcome to Flask's documentation. Get started with :doc:`installation`
 and then get an overview with the :doc:`quickstart`. There is also a
@@ -16,14 +14,13 @@ complete application with Flask. Common patterns are described in the
 component of Flask in detail, with a full reference in the :doc:`api`
 section.
 
-Flask depends on the `Jinja`_ template engine and the `Werkzeug`_ WSGI
-toolkit. The documentation for these libraries can be found at:
+Flask depends on the `Werkzeug`_ WSGI toolkit, the `Jinja`_ template engine, and the
+`Click`_ CLI toolkit. Be sure to check their documentation as well as Flask's when
+looking for information.
 
-- `Jinja documentation <https://jinja.palletsprojects.com/>`_
-- `Werkzeug documentation <https://werkzeug.palletsprojects.com/>`_
-
-.. _Jinja: https://www.palletsprojects.com/p/jinja/
-.. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/
+.. _Werkzeug: https://werkzeug.palletsprojects.com
+.. _Jinja: https://jinja.palletsprojects.com
+.. _Click: https://click.palletsprojects.com
 
 
 User's Guide
