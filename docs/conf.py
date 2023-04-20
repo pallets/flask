@@ -52,8 +52,8 @@ html_sidebars = {
 }
 singlehtml_sidebars = {"index": ["project.html", "localtoc.html", "ethicalads.html"]}
 html_static_path = ["_static"]
-html_favicon = "_static/flask-icon.png"
-html_logo = "_static/flask-icon.png"
+html_favicon = "_static/shortcut-icon.png"
+html_logo = "_static/flask-vertical.png"
 html_title = f"Flask Documentation ({version})"
 html_show_sourcelink = False
 
