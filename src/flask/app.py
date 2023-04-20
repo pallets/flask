@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import functools
-import inspect
 import logging
 import os
 import sys
@@ -9,6 +7,7 @@ import typing as t
 import weakref
 from collections.abc import Iterator as _abc_Iterator
 from datetime import timedelta
+from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
@@ -70,7 +69,6 @@ from .wrappers import Request
 from .wrappers import Response
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    import typing_extensions as te
     from .blueprints import Blueprint
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
@@ -82,19 +80,6 @@ T_teardown = t.TypeVar("T_teardown", bound=ft.TeardownCallable)
 T_template_filter = t.TypeVar("T_template_filter", bound=ft.TemplateFilterCallable)
 T_template_global = t.TypeVar("T_template_global", bound=ft.TemplateGlobalCallable)
 T_template_test = t.TypeVar("T_template_test", bound=ft.TemplateTestCallable)
-
-if sys.version_info >= (3, 8):
-    iscoroutinefunction = inspect.iscoroutinefunction
-else:
-
-    def iscoroutinefunction(func: t.Any) -> bool:
-        while inspect.ismethod(func):
-            func = func.__func__
-
-        while isinstance(func, functools.partial):
-            func = func.func
-
-        return inspect.iscoroutinefunction(func)
 
 
 def _make_timedelta(value: timedelta | int | None) -> timedelta | None:
@@ -1430,7 +1415,7 @@ class Flask(Scaffold):
             f"Exception on {request.path} [{request.method}]", exc_info=exc_info
         )
 
-    def raise_routing_exception(self, request: Request) -> te.NoReturn:
+    def raise_routing_exception(self, request: Request) -> t.NoReturn:
         """Intercept routing exceptions and possibly do something else.
 
         In debug mode, intercept a routing redirect and replace it with
