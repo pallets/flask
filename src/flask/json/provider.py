@@ -72,7 +72,7 @@ class JSONProvider:
         return self.loads(fp.read(), **kwargs)
 
     def _prepare_response_obj(
-        self, args: t.Tuple[t.Any, ...], kwargs: t.Dict[str, t.Any]
+        self, args: tuple[t.Any, ...], kwargs: dict[str, t.Any]
     ) -> t.Any:
         if args and kwargs:
             raise TypeError("app.json.response() takes either args or kwargs, not both")
@@ -204,7 +204,7 @@ class DefaultJSONProvider(JSONProvider):
         :param kwargs: Treat as a dict to serialize.
         """
         obj = self._prepare_response_obj(args, kwargs)
-        dump_args: t.Dict[str, t.Any] = {}
+        dump_args: dict[str, t.Any] = {}
 
         if (self.compact is None and self._app.debug) or self.compact is False:
             dump_args.setdefault("indent", 2)

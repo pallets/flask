@@ -46,6 +46,7 @@ Unreleased
     :issue:`5051`
 -   The ``routes`` command shows each rule's ``subdomain`` or ``host`` when domain
     matching is in use. :issue:`5004`
+-   Use postponed evaluation of annotations. :pr:`5071`
 
 
 Version 2.2.4

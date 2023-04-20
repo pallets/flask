@@ -285,7 +285,7 @@ class ScriptInfo:
         self.create_app = create_app
         #: A dictionary with arbitrary data that can be associated with
         #: this script info.
-        self.data: t.Dict[t.Any, t.Any] = {}
+        self.data: dict[t.Any, t.Any] = {}
         self.set_debug_flag = set_debug_flag
         self._loaded_app: Flask | None = None
 
