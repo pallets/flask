@@ -3,8 +3,6 @@ from __future__ import annotations
 import typing as t
 from http import HTTPStatus
 
-import typing_extensions as te
-
 from flask import Flask
 from flask import jsonify
 from flask import stream_template
@@ -40,7 +38,7 @@ def hello_json_list() -> t.List[t.Any]:
     return [{"message": "Hello"}, {"message": "World"}]
 
 
-class StatusJSON(te.TypedDict):
+class StatusJSON(t.TypedDict):
     status: str
 
 

@@ -25,7 +25,6 @@ from .signals import message_flashed
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
     from .wrappers import Response
-    import typing_extensions as te
 
 
 def get_debug_flag() -> bool:
@@ -257,7 +256,7 @@ def redirect(
     return _wz_redirect(location, code=code, Response=Response)
 
 
-def abort(code: int | BaseResponse, *args: t.Any, **kwargs: t.Any) -> te.NoReturn:
+def abort(code: int | BaseResponse, *args: t.Any, **kwargs: t.Any) -> t.NoReturn:
     """Raise an :exc:`~werkzeug.exceptions.HTTPException` for the given
     status code.
 

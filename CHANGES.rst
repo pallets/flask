@@ -3,6 +3,7 @@ Version 2.3.0
 
 Unreleased
 
+-   Drop support for Python 3.7. :pr:`5072`
 -   Remove previously deprecated code. :pr:`4995`
 
     -   The ``push`` and ``pop`` methods of the deprecated ``_app_ctx_stack`` and

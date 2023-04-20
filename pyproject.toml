@@ -18,7 +18,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "Werkzeug>=2.2.2",
     "Jinja2>=3.0",
@@ -67,7 +67,7 @@ source = ["flask", "tests"]
 source = ["src", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 files = ["src/flask"]
 show_error_codes = true
 pretty = true
