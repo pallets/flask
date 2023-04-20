@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing as t
 
 from . import typing as ft
@@ -45,12 +47,12 @@ class View:
     #: The methods this view is registered for. Uses the same default
     #: (``["GET", "HEAD", "OPTIONS"]``) as ``route`` and
     #: ``add_url_rule`` by default.
-    methods: t.ClassVar[t.Optional[t.Collection[str]]] = None
+    methods: t.ClassVar[t.Collection[str] | None] = None
 
     #: Control whether the ``OPTIONS`` method is handled automatically.
     #: Uses the same default (``True``) as ``route`` and
     #: ``add_url_rule`` by default.
-    provide_automatic_options: t.ClassVar[t.Optional[bool]] = None
+    provide_automatic_options: t.ClassVar[bool | None] = None
 
     #: A list of decorators to apply, in order, to the generated view
     #: function. Remember that ``@decorator`` syntax is applied bottom
@@ -58,7 +60,7 @@ class View:
     #: decorator.
     #:
     #: .. versionadded:: 0.8
-    decorators: t.ClassVar[t.List[t.Callable]] = []
+    decorators: t.ClassVar[list[t.Callable]] = []
 
     #: Create a new instance of this view class for every request by
     #: default. If a view subclass sets this to ``False``, the same

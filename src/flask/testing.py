@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing as t
 from contextlib import contextmanager
 from contextlib import ExitStack
@@ -43,11 +45,11 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
 
     def __init__(
         self,
-        app: "Flask",
+        app: Flask,
         path: str = "/",
-        base_url: t.Optional[str] = None,
-        subdomain: t.Optional[str] = None,
-        url_scheme: t.Optional[str] = None,
+        base_url: str | None = None,
+        subdomain: str | None = None,
+        url_scheme: str | None = None,
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:
@@ -104,12 +106,12 @@ class FlaskClient(Client):
     Basic usage is outlined in the :doc:`/testing` chapter.
     """
 
-    application: "Flask"
+    application: Flask
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         self.preserve_context = False
-        self._new_contexts: t.List[t.ContextManager[t.Any]] = []
+        self._new_contexts: list[t.ContextManager[t.Any]] = []
         self._context_stack = ExitStack()
         self.environ_base = {
             "REMOTE_ADDR": "127.0.0.1",
@@ -199,7 +201,7 @@ class FlaskClient(Client):
         buffered: bool = False,
         follow_redirects: bool = False,
         **kwargs: t.Any,
-    ) -> "TestResponse":
+    ) -> TestResponse:
         if args and isinstance(
             args[0], (werkzeug.test.EnvironBuilder, dict, BaseRequest)
         ):
@@ -238,7 +240,7 @@ class FlaskClient(Client):
 
         return response
 
-    def __enter__(self) -> "FlaskClient":
+    def __enter__(self) -> FlaskClient:
         if self.preserve_context:
             raise RuntimeError("Cannot nest client invocations")
         self.preserve_context = True
@@ -246,9 +248,9 @@ class FlaskClient(Client):
 
     def __exit__(
         self,
-        exc_type: t.Optional[type],
-        exc_value: t.Optional[BaseException],
-        tb: t.Optional[TracebackType],
+        exc_type: type | None,
+        exc_value: BaseException | None,
+        tb: TracebackType | None,
     ) -> None:
         self.preserve_context = False
         self._context_stack.close()
@@ -260,7 +262,7 @@ class FlaskCliRunner(CliRunner):
     :meth:`~flask.Flask.test_cli_runner`. See :ref:`testing-cli`.
     """
 
-    def __init__(self, app: "Flask", **kwargs: t.Any) -> None:
+    def __init__(self, app: Flask, **kwargs: t.Any) -> None:
         self.app = app
         super().__init__(**kwargs)
 
