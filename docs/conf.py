@@ -43,8 +43,6 @@ html_context = {
         ProjectLink("PyPI Releases", "https://pypi.org/project/Flask/"),
         ProjectLink("Source Code", "https://github.com/pallets/flask/"),
         ProjectLink("Issue Tracker", "https://github.com/pallets/flask/issues/"),
-        ProjectLink("Website", "https://palletsprojects.com/p/flask/"),
-        ProjectLink("Twitter", "https://twitter.com/PalletsTeam"),
         ProjectLink("Chat", "https://discord.gg/pallets"),
     ]
 }
