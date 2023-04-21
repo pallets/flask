@@ -1,87 +1,100 @@
-.. rst-class:: hide-header
+AnimeSite/
+  ├── app.py
+  ├── static/
+  │   ├── css/
+  │   │   └── styles.css
+  │   ├── js/
+  │   │   └── script.js
+  │   └── data/
+  │       └── anime.json
+  ├── templates/
+  │   └── index.html
+from flask import Flask, render_template
 
-Welcome to Flask
-================
+app = Flask(__name__)
 
-.. image:: _static/flask-logo.png
-    :alt: Flask: web development, one drop at a time
-    :align: center
-    :target: https://palletsprojects.com/p/flask/
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-Welcome to Flask's documentation. Get started with :doc:`installation`
-and then get an overview with the :doc:`quickstart`. There is also a
-more detailed :doc:`tutorial/index` that shows how to create a small but
-complete application with Flask. Common patterns are described in the
-:doc:`patterns/index` section. The rest of the docs describe each
-component of Flask in detail, with a full reference in the :doc:`api`
-section.
+if __name__ == '__main__':
+    app.run(debug=True)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Site</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Anime Gallery</h1>
+        <div id="anime-gallery">
+            <!--
+body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #eee;
+}
 
-Flask depends on the `Jinja`_ template engine and the `Werkzeug`_ WSGI
-toolkit. The documentation for these libraries can be found at:
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
 
-- `Jinja documentation <https://jinja.palletsprojects.com/>`_
-- `Werkzeug documentation <https://werkzeug.palletsprojects.com/>`_
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
 
-.. _Jinja: https://www.palletsprojects.com/p/jinja/
-.. _Werkzeug: https://www.palletsprojects.com/p/werkzeug/
+#anime-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 1rem;
+}
 
-
-User's Guide
-------------
-
-Flask provides configuration and conventions, with sensible defaults, to get started.
-This section of the documentation explains the different parts of the Flask framework
-and how they can be used, customized, and extended. Beyond Flask itself, look for
-community-maintained extensions to add even more functionality.
-
-.. toctree::
-   :maxdepth: 2
-
-   installation
-   quickstart
-   tutorial/index
-   templating
-   testing
-   errorhandling
-   debugging
-   logging
-   config
-   signals
-   views
-   lifecycle
-   appcontext
-   reqcontext
-   blueprints
-   extensions
-   cli
-   server
-   shell
-   patterns/index
-   security
-   deploying/index
-   async-await
-
-
-API Reference
--------------
-
-If you are looking for information on a specific function, class or
-method, this part of the documentation is for you.
-
-.. toctree::
-   :maxdepth: 2
-
-   api
+img {
+    max-width: 100%;
+    height: auto;
+}
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/static/data/anime.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const gallery = document.getElementById("anime-gallery");
+      data.anime_images.forEach((image_url) => {
+        const img = document.createElement("img");
+        img.src = image_url;
+        gallery.appendChild(img);
+      });
+    });
+});
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/static/data/zalthorius.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const gallery = document.getElementById("anime-gallery");
+      data.anime_images.forEach((image_url) => {
+        const img = document.createElement("img");
+        img.src = image_url;
+        gallery.appendChild(img);
+      });
+    });
+});
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/static/data/zalthorius.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const gallery = document.getElementById("anime-gallery");
+      data.anime_images.forEach((image_url) => {
+        const img = document.createElement("img");
+        img.src = image_url;
+        gallery.appendChild(img);
+      });
+    });
+});
 
 
-Additional Notes
-----------------
-
-.. toctree::
-   :maxdepth: 2
-
-   design
-   extensiondev
-   contributing
-   license
-   changes
