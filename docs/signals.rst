@@ -99,7 +99,7 @@ Creating Signals
 
 If you want to use signals in your own application, you can use the
 blinker library directly.  The most common use case are named signals in a
-custom :class:`~blinker.base.Namespace`..  This is what is recommended
+custom :class:`~blinker.base.Namespace`.  This is what is recommended
 most of the time::
 
     from blinker import Namespace
