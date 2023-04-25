@@ -1,7 +1,7 @@
 Version 2.2.4
 -------------
 
-Unreleased
+Released 2023-04-25
 
 -   Update for compatibility with Werkzeug 2.3.
 
