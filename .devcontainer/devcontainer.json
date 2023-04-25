@@ -1,5 +1,5 @@
 {
-  "name": "pallets/flask",
+  "chithub22": "pallets/flask",
   "image": "mcr.microsoft.com/devcontainers/python:3",
   "customizations": {
     "vscode": {
