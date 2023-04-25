@@ -34,7 +34,7 @@ jobs:
           - {name: '3.7', python: '3.7', os: ubuntu-latest, tox: py37}
           - {name: 'PyPy', python: 'pypy-3.9', os: ubuntu-latest, tox: pypy39}
           - {name: 'Pallets Minimum Versions', python: '3.11', os: ubuntu-latest, tox: py311-min}
-          - {name: 'Pallets Development Versions', python: '3.7', os: ubuntu-latest, tox: py37-dev}
+          - {name: 'Pallets Development Versions', python: '3.8', os: ubuntu-latest, tox: py38-dev}
           - {name: Typing, python: '3.11', os: ubuntu-latest, tox: typing}
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
