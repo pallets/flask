@@ -1,7 +1,7 @@
 Version 2.3.1
 -------------
 
-Unreleased
+Released 2023-04-25
 
 -   Restore deprecated ``from flask import Markup``. :issue:`5084`
 
