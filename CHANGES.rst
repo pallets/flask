@@ -4,6 +4,8 @@ Version 2.3.0
 Unreleased
 
 -   Drop support for Python 3.7. :pr:`5072`
+-   Update minimum requirements to the latest versions: Werkzeug>=2.3.0, Jinja2>3.1.2,
+    itsdangerous>=2.1.2, click>=8.1.3.
 -   Remove previously deprecated code. :pr:`4995`
 
     -   The ``push`` and ``pop`` methods of the deprecated ``_app_ctx_stack`` and
