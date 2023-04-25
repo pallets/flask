@@ -1,7 +1,7 @@
 Version 2.3.0
 -------------
 
-Unreleased
+Released 2023-04-25
 
 -   Drop support for Python 3.7. :pr:`5072`
 -   Update minimum requirements to the latest versions: Werkzeug>=2.3.0, Jinja2>3.1.2,
