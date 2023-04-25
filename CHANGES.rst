@@ -3,6 +3,8 @@ Version 2.3.1
 
 Unreleased
 
+-   Restore deprecated ``from flask import Markup``. :issue:`5084`
+
 
 Version 2.3.0
 -------------

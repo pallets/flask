@@ -76,7 +76,7 @@ def __getattr__(name):
         )
         return escape
 
-    if name == "escape":
+    if name == "Markup":
         import warnings
         from markupsafe import Markup
 
