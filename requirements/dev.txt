@@ -24,7 +24,7 @@ colorama==0.4.6
     # via tox
 distlib==0.3.6
     # via virtualenv
-filelock==3.11.0
+filelock==3.12.0
     # via
     #   tox
     #   virtualenv
@@ -36,7 +36,7 @@ pip-compile-multi==2.6.2
     # via -r requirements/dev.in
 pip-tools==6.13.0
     # via pip-compile-multi
-platformdirs==3.2.0
+platformdirs==3.3.0
     # via
     #   tox
     #   virtualenv
@@ -50,9 +50,9 @@ pyyaml==6.0
     # via pre-commit
 toposort==1.10
     # via pip-compile-multi
-tox==4.4.12
+tox==4.5.0
     # via -r requirements/dev.in
-virtualenv==20.21.0
+virtualenv==20.22.0
     # via
     #   pre-commit
     #   tox

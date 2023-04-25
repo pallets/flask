@@ -29,9 +29,9 @@ packaging==23.1
     # via
     #   pallets-sphinx-themes
     #   sphinx
-pallets-sphinx-themes==2.0.3
+pallets-sphinx-themes==2.1.0
     # via -r requirements/docs.in
-pygments==2.15.0
+pygments==2.15.1
     # via
     #   sphinx
     #   sphinx-tabs
