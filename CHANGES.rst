@@ -3,6 +3,9 @@ Version 2.3.2
 
 Unreleased
 
+-   Session cookie sets ``Vary: Cookie`` header when it is accessed, modified, cleared,
+    or refreshed.
+
 
 Version 2.3.1
 -------------
