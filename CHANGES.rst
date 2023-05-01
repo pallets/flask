@@ -3,8 +3,8 @@ Version 2.3.2
 
 Unreleased
 
--   Session cookie sets ``Vary: Cookie`` header when it is accessed, modified, cleared,
-    or refreshed.
+-   Set ``Vary: Cookie`` header when the session is accessed, modified, or refreshed.
+-   Update Werkzeug requirement to >=2.3.3 to apply recent bug fixes.
 
 
 Version 2.3.1
