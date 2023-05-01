@@ -501,6 +501,11 @@ def test_session_vary_cookie(app, client):
     def setdefault():
         return flask.session.setdefault("test", "default")
 
+    @app.route("/clear")
+    def clear():
+        flask.session.clear()
+        return ""
+
     @app.route("/vary-cookie-header-set")
     def vary_cookie_header_set():
         response = flask.Response()
@@ -533,9 +538,27 @@ def test_session_vary_cookie(app, client):
     expect("/get")
     expect("/getitem")
     expect("/setdefault")
+    expect("/clear")
     expect("/vary-cookie-header-set")
     expect("/vary-header-set", "Accept-Encoding, Accept-Language, Cookie")
     expect("/no-vary-header", None)
+
+
+def test_session_refresh_vary(app, client):
+    @app.get("/login")
+    def login():
+        flask.session["user_id"] = 1
+        flask.session.permanent = True
+        return ""
+
+    @app.get("/ignored")
+    def ignored():
+        return ""
+
+    rv = client.get("/login")
+    assert rv.headers["Vary"] == "Cookie"
+    rv = client.get("/ignored")
+    assert rv.headers["Vary"] == "Cookie"
 
 
 def test_flashes(app, req_ctx):
