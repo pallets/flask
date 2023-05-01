@@ -383,6 +383,10 @@ class SecureCookieSessionInterface(SessionInterface):
         samesite = self.get_cookie_samesite(app)
         httponly = self.get_cookie_httponly(app)
 
+        # Add a "Vary: Cookie" header if the session was accessed at all.
+        if session.accessed:
+            response.vary.add("Cookie")
+
         # If the session is modified to be empty, remove the cookie.
         # If the session is empty, return without setting the cookie.
         if not session:
@@ -395,12 +399,9 @@ class SecureCookieSessionInterface(SessionInterface):
                     samesite=samesite,
                     httponly=httponly,
                 )
+                response.vary.add("Cookie")
 
             return
-
-        # Add a "Vary: Cookie" header if the session was accessed at all.
-        if session.accessed:
-            response.vary.add("Cookie")
 
         if not self.should_set_cookie(app, session):
             return
@@ -417,3 +418,4 @@ class SecureCookieSessionInterface(SessionInterface):
             secure=secure,
             samesite=samesite,
         )
+        response.vary.add("Cookie")
