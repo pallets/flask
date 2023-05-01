@@ -1852,7 +1852,7 @@ class Flask(Scaffold):
 
         # extend existing headers with provided headers
         if headers:
-            rv.headers.update(headers)
+            rv.headers.update(headers)  # type: ignore[arg-type]
 
         return rv
 
