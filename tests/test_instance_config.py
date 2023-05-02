@@ -1,21 +1,20 @@
-import sys
+import os
 
 import pytest
 
 import flask
 
 
-def test_explicit_instance_paths(modules_tmpdir):
-    with pytest.raises(ValueError) as excinfo:
+def test_explicit_instance_paths(modules_tmp_path):
+    with pytest.raises(ValueError, match=".*must be absolute"):
         flask.Flask(__name__, instance_path="instance")
-    assert "must be absolute" in str(excinfo.value)
 
-    app = flask.Flask(__name__, instance_path=str(modules_tmpdir))
-    assert app.instance_path == str(modules_tmpdir)
+    app = flask.Flask(__name__, instance_path=os.fspath(modules_tmp_path))
+    assert app.instance_path == os.fspath(modules_tmp_path)
 
 
-def test_uninstalled_module_paths(modules_tmpdir, purge_module):
-    app = modules_tmpdir.join("config_module_app.py").write(
+def test_uninstalled_module_paths(modules_tmp_path, purge_module):
+    (modules_tmp_path / "config_module_app.py").write_text(
         "import os\n"
         "import flask\n"
         "here = os.path.abspath(os.path.dirname(__file__))\n"
@@ -25,13 +24,13 @@ def test_uninstalled_module_paths(modules_tmpdir, purge_module):
 
     from config_module_app import app
 
-    assert app.instance_path == str(modules_tmpdir.join("instance"))
+    assert app.instance_path == os.fspath(modules_tmp_path / "instance")
 
 
-def test_uninstalled_package_paths(modules_tmpdir, purge_module):
-    app = modules_tmpdir.mkdir("config_package_app")
-    init = app.join("__init__.py")
-    init.write(
+def test_uninstalled_package_paths(modules_tmp_path, purge_module):
+    app = modules_tmp_path / "config_package_app"
+    app.mkdir()
+    (app / "__init__.py").write_text(
         "import os\n"
         "import flask\n"
         "here = os.path.abspath(os.path.dirname(__file__))\n"
@@ -41,16 +40,16 @@ def test_uninstalled_package_paths(modules_tmpdir, purge_module):
 
     from config_package_app import app
 
-    assert app.instance_path == str(modules_tmpdir.join("instance"))
+    assert app.instance_path == os.fspath(modules_tmp_path / "instance")
 
 
-def test_uninstalled_namespace_paths(tmpdir, monkeypatch, purge_module):
+def test_uninstalled_namespace_paths(tmp_path, monkeypatch, purge_module):
     def create_namespace(package):
-        project = tmpdir.join(f"project-{package}")
-        monkeypatch.syspath_prepend(str(project))
-        project.join("namespace").join(package).join("__init__.py").write(
-            "import flask\napp = flask.Flask(__name__)\n", ensure=True
-        )
+        project = tmp_path / f"project-{package}"
+        monkeypatch.syspath_prepend(os.fspath(project))
+        ns = project / "namespace" / package
+        ns.mkdir(parents=True)
+        (ns / "__init__.py").write_text("import flask\napp = flask.Flask(__name__)\n")
         return project
 
     _ = create_namespace("package1")
@@ -60,66 +59,53 @@ def test_uninstalled_namespace_paths(tmpdir, monkeypatch, purge_module):
 
     from namespace.package2 import app
 
-    assert app.instance_path == str(project2.join("instance"))
+    assert app.instance_path == os.fspath(project2 / "instance")
 
 
 def test_installed_module_paths(
-    modules_tmpdir, modules_tmpdir_prefix, purge_module, site_packages, limit_loader
+    modules_tmp_path, modules_tmp_path_prefix, purge_module, site_packages, limit_loader
 ):
-    site_packages.join("site_app.py").write(
+    (site_packages / "site_app.py").write_text(
         "import flask\napp = flask.Flask(__name__)\n"
     )
     purge_module("site_app")
 
     from site_app import app
 
-    assert app.instance_path == modules_tmpdir.join("var").join("site_app-instance")
+    assert app.instance_path == os.fspath(
+        modules_tmp_path / "var" / "site_app-instance"
+    )
 
 
 def test_installed_package_paths(
-    limit_loader, modules_tmpdir, modules_tmpdir_prefix, purge_module, monkeypatch
+    limit_loader, modules_tmp_path, modules_tmp_path_prefix, purge_module, monkeypatch
 ):
-    installed_path = modules_tmpdir.mkdir("path")
+    installed_path = modules_tmp_path / "path"
+    installed_path.mkdir()
     monkeypatch.syspath_prepend(installed_path)
 
-    app = installed_path.mkdir("installed_package")
-    init = app.join("__init__.py")
-    init.write("import flask\napp = flask.Flask(__name__)")
+    app = installed_path / "installed_package"
+    app.mkdir()
+    (app / "__init__.py").write_text("import flask\napp = flask.Flask(__name__)\n")
     purge_module("installed_package")
 
     from installed_package import app
 
-    assert app.instance_path == modules_tmpdir.join("var").join(
-        "installed_package-instance"
+    assert app.instance_path == os.fspath(
+        modules_tmp_path / "var" / "installed_package-instance"
     )
 
 
 def test_prefix_package_paths(
-    limit_loader, modules_tmpdir, modules_tmpdir_prefix, purge_module, site_packages
+    limit_loader, modules_tmp_path, modules_tmp_path_prefix, purge_module, site_packages
 ):
-    app = site_packages.mkdir("site_package")
-    init = app.join("__init__.py")
-    init.write("import flask\napp = flask.Flask(__name__)")
+    app = site_packages / "site_package"
+    app.mkdir()
+    (app / "__init__.py").write_text("import flask\napp = flask.Flask(__name__)\n")
     purge_module("site_package")
 
     import site_package
 
-    assert site_package.app.instance_path == modules_tmpdir.join("var").join(
-        "site_package-instance"
+    assert site_package.app.instance_path == os.fspath(
+        modules_tmp_path / "var" / "site_package-instance"
     )
-
-
-def test_egg_installed_paths(install_egg, modules_tmpdir, modules_tmpdir_prefix):
-    modules_tmpdir.mkdir("site_egg").join("__init__.py").write(
-        "import flask\n\napp = flask.Flask(__name__)"
-    )
-    install_egg("site_egg")
-    try:
-        import site_egg
-
-        assert site_egg.app.instance_path == str(
-            modules_tmpdir.join("var/").join("site_egg-instance")
-        )
-    finally:
-        if "site_egg" in sys.modules:
-            del sys.modules["site_egg"]

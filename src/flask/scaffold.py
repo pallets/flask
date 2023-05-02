@@ -865,7 +865,7 @@ def _find_package_path(import_name):
     if hasattr(loader, "get_filename"):
         filename = loader.get_filename(root_mod_name)
     elif hasattr(loader, "archive"):
-        # zipimporter's loader.archive points to the .egg or .zip file.
+        # zipimporter's loader.archive points to the .zip file.
         filename = loader.archive
     else:
         # At least one loader is missing both get_filename and archive:
