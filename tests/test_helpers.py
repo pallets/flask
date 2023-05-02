@@ -218,8 +218,8 @@ class TestNoImports:
     imp modules in the Python standard library.
     """
 
-    def test_name_with_import_error(self, modules_tmpdir):
-        modules_tmpdir.join("importerror.py").write("raise NotImplementedError()")
+    def test_name_with_import_error(self, modules_tmp_path):
+        (modules_tmp_path / "importerror.py").write_text("raise NotImplementedError()")
         try:
             flask.Flask("importerror")
         except NotImplementedError:
