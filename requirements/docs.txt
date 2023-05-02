@@ -35,7 +35,7 @@ pygments==2.15.1
     # via
     #   sphinx
     #   sphinx-tabs
-requests==2.28.2
+requests==2.29.0
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
