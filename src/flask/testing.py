@@ -168,10 +168,21 @@ class FlaskClient(Client):
             app.session_interface.save_session(app, sess, resp)
 
         if hasattr(self, "_update_cookies_from_response"):
-            self._update_cookies_from_response(
-                ctx.request.host.partition(":")[0], resp.headers.getlist("Set-Cookie")
-            )
+            try:
+                # Werkzeug>=2.3.3
+                self._update_cookies_from_response(
+                    ctx.request.host.partition(":")[0],
+                    ctx.request.path,
+                    resp.headers.getlist("Set-Cookie"),
+                )
+            except TypeError:
+                # Werkzeug>=2.3.0,<2.3.3
+                self._update_cookies_from_response(  # type: ignore[call-arg]
+                    ctx.request.host.partition(":")[0],
+                    resp.headers.getlist("Set-Cookie"),  # type: ignore[arg-type]
+                )
         else:
+            # Werkzeug<2.3.0
             self.cookie_jar.extract_wsgi(  # type: ignore[union-attr]
                 ctx.request.environ, resp.headers
             )

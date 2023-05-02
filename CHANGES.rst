@@ -3,6 +3,8 @@ Version 2.2.5
 
 Unreleased
 
+-   Update for compatibility with Werkzeug 2.3.3.
+
 
 Version 2.2.4
 -------------
