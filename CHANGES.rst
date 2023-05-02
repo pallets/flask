@@ -69,6 +69,15 @@ Released 2023-04-25
 -   Use postponed evaluation of annotations. :pr:`5071`
 
 
+Version 2.2.5
+-------------
+
+Released 2023-05-02
+
+-   Update for compatibility with Werkzeug 2.3.3.
+-   Set ``Vary: Cookie`` header when the session is accessed, modified, or refreshed.
+
+
 Version 2.2.4
 -------------
 
