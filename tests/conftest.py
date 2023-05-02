@@ -1,7 +1,6 @@
 import os
 import pkgutil
 import sys
-import textwrap
 
 import pytest
 from _pytest import monkeypatch
@@ -152,42 +151,6 @@ def site_packages(modules_tmpdir, monkeypatch):
     )
     monkeypatch.syspath_prepend(str(rv))
     return rv
-
-
-@pytest.fixture
-def install_egg(modules_tmpdir, monkeypatch):
-    """Generate egg from package name inside base and put the egg into
-    sys.path."""
-
-    def inner(name, base=modules_tmpdir):
-        base.join(name).ensure_dir()
-        base.join(name).join("__init__.py").ensure()
-
-        egg_setup = base.join("setup.py")
-        egg_setup.write(
-            textwrap.dedent(
-                f"""
-                from setuptools import setup
-                setup(
-                    name="{name}",
-                    version="1.0",
-                    packages=["site_egg"],
-                    zip_safe=True,
-                )
-                """
-            )
-        )
-
-        import subprocess
-
-        subprocess.check_call(
-            [sys.executable, "setup.py", "bdist_egg"], cwd=str(modules_tmpdir)
-        )
-        (egg_path,) = modules_tmpdir.join("dist/").listdir()
-        monkeypatch.syspath_prepend(str(egg_path))
-        return egg_path
-
-    return inner
 
 
 @pytest.fixture

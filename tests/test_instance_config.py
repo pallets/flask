@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 import flask
@@ -107,19 +105,3 @@ def test_prefix_package_paths(
     assert site_package.app.instance_path == modules_tmpdir.join("var").join(
         "site_package-instance"
     )
-
-
-def test_egg_installed_paths(install_egg, modules_tmpdir, modules_tmpdir_prefix):
-    modules_tmpdir.mkdir("site_egg").join("__init__.py").write(
-        "import flask\n\napp = flask.Flask(__name__)"
-    )
-    install_egg("site_egg")
-    try:
-        import site_egg
-
-        assert site_egg.app.instance_path == str(
-            modules_tmpdir.join("var/").join("site_egg-instance")
-        )
-    finally:
-        if "site_egg" in sys.modules:
-            del sys.modules["site_egg"]
