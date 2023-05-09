@@ -65,8 +65,8 @@ jobs:
       # Try uploading to Test PyPI first, in case something fails.
       - uses: pypa/gh-action-pypi-publish@29930c9cf57955dc1b98162d0d8bc3ec80d9e75c
         with:
-          repository_url: https://test.pypi.org/legacy/
-          packages_dir: artifact/
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: artifact/
       - uses: pypa/gh-action-pypi-publish@29930c9cf57955dc1b98162d0d8bc3ec80d9e75c
         with:
-          packages_dir: artifact/
+          packages-dir: artifact/
