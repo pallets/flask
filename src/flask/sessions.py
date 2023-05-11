@@ -148,7 +148,7 @@ class SessionInterface:
     null_session_class = NullSession
 
     #: all sessions that are currently open
-    sessions = []
+    sessions: SessionInterface = []
 
     #: A flag that indicates if the session interface is pickle based.
     #: This can be used by Flask extensions to make a decision in regards
@@ -287,7 +287,10 @@ class SessionInterface:
         for session in self.sessions:
             number_of_sessions = len(self.sessions)
 
-            if self.get_expiration_time(app, session) is None:
+            if (
+                self.get_expiration_time(app, session) is None
+                or datetime.now(timezone.utc) is None
+            ):
                 continue
 
             if self.get_expiration_time(app, session) < datetime.now(timezone.utc):
