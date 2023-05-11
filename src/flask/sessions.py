@@ -147,6 +147,9 @@ class SessionInterface:
     #: this type.
     null_session_class = NullSession
 
+    #: all sessions that are currently open
+    sessions = []
+
     #: A flag that indicates if the session interface is pickle based.
     #: This can be used by Flask extensions to make a decision in regards
     #: to how to deal with the session object.
@@ -268,6 +271,34 @@ class SessionInterface:
         if :meth:`is_null_session` returns ``True``.
         """
         raise NotImplementedError()
+
+    def delete_expired_sessions(self, app: Flask) -> int:
+        """This is called when the sessions need to be refreshed.
+
+        This must return an integer representing the number of sessions
+        that are still currently running and not yet expired.
+
+        This will return ``None`` to indicate that loading failed in
+        some way that is not immediately an error. The request
+        context will fall back to using :meth:`make_null_session`
+        in this case.
+        """
+
+        for session in self.sessions:
+            number_of_sessions = len(self.sessions)
+
+            if self.get_expiration_time(app, session) < datetime.now(timezone.utc):
+                self.sessions.remove(session)
+
+            if number_of_sessions == 0:
+                new_session = self.make_null_session()
+                self.sessions.append(new_session)
+                return 1
+
+            if number_of_sessions == len(self.sessions):
+                return None
+
+        return len(self.sessions)
 
 
 session_json_serializer = TaggedJSONSerializer()
