@@ -148,7 +148,7 @@ class SessionInterface:
     null_session_class = NullSession
 
     #: all sessions that are currently open
-    sessions: list[object] = []
+    sessions: list[SessionMixin] = []
 
     #: A flag that indicates if the session interface is pickle based.
     #: This can be used by Flask extensions to make a decision in regards
