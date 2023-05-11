@@ -287,11 +287,14 @@ class SessionInterface:
         for session in self.sessions:
             number_of_sessions = len(self.sessions)
 
+            if self.get_expiration_time(app, session) is None:
+                continue
+
             if self.get_expiration_time(app, session) < datetime.now(timezone.utc):
                 self.sessions.remove(session)
 
             if number_of_sessions == 0:
-                new_session = self.make_null_session()
+                new_session = self.make_null_session(app)
                 self.sessions.append(new_session)
                 return 1
 
