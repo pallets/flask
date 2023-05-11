@@ -295,9 +295,6 @@ class SessionInterface:
                 self.sessions.append(new_session)
                 return 1
 
-            if number_of_sessions == len(self.sessions):
-                return None
-
         return len(self.sessions)
 
 
