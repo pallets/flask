@@ -72,7 +72,9 @@ class Config(dict):
     :param defaults: an optional dictionary of default values
     """
 
-    def __init__(self, root_path: str, defaults: dict | None = None) -> None:
+    def __init__(
+        self, root_path: str | os.PathLike, defaults: dict | None = None
+    ) -> None:
         super().__init__(defaults or {})
         self.root_path = root_path
 
@@ -164,7 +166,7 @@ class Config(dict):
 
         return True
 
-    def from_pyfile(self, filename: str, silent: bool = False) -> bool:
+    def from_pyfile(self, filename: str | os.PathLike, silent: bool = False) -> bool:
         """Updates the values in the config from a Python file.  This function
         behaves as if the file was imported as module with the
         :meth:`from_object` function.
@@ -233,7 +235,7 @@ class Config(dict):
 
     def from_file(
         self,
-        filename: str,
+        filename: str | os.PathLike,
         load: t.Callable[[t.IO[t.Any]], t.Mapping],
         silent: bool = False,
         text: bool = True,
