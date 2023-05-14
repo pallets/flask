@@ -111,6 +111,9 @@ def _default(o: t.Any) -> t.Any:
     if isinstance(o, (decimal.Decimal, uuid.UUID)):
         return str(o)
 
+    if isinstance(o, set):
+        return list(o)
+
     if dataclasses and dataclasses.is_dataclass(o):
         return dataclasses.asdict(o)
 
