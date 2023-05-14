@@ -1,3 +1,9 @@
+Development
+-------------
+
+-   Set object will automaticly encode to list on jsonify
+
+
 Version 2.3.2
 -------------
 
@@ -5,6 +11,7 @@ Released 2023-05-01
 
 -   Set ``Vary: Cookie`` header when the session is accessed, modified, or refreshed.
 -   Update Werkzeug requirement to >=2.3.3 to apply recent bug fixes.
+-   Set object will automaticly encode to list on jsonify
 
 
 Version 2.3.1
