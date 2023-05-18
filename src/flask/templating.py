@@ -138,29 +138,52 @@ def _render(app: Flask, template: Template, context: dict[str, t.Any]) -> str:
 
 def render_template(
     template_name_or_list: str | Template | list[str | Template],
-    **context: t.Any,
+    *context_args: t.Iterable[tuple[t.Any, t.Any]] | t.Mapping[t.Any, t.Any],
+    **context_kwargs: t.Any,
 ) -> str:
     """Render a template by name with the given context.
 
     :param template_name_or_list: The name of the template to render. If
         a list is given, the first name to exist will be rendered.
-    :param context: The variables to make available in the template.
+    :param context_args: An Iterable or Mapping of variables to make available
+        in the template.
+    :param context_kargs: Variables to make available in the template.
+
+    Note that `context_args` and `context_kargs` are the same arguments that the
+    `dict` constructor takes. The following are equivalent::
+
+        render_template('index.html', {'key1': 'val1', 'key2': 'val2'})
+        render_template('index.html', [('key1', 'val1')], key2='val2')
+        render_template('index.html', key1='val1', key2='val2')
     """
     app = current_app._get_current_object()  # type: ignore[attr-defined]
     template = app.jinja_env.get_or_select_template(template_name_or_list)
-    return _render(app, template, context)
+    return _render(app, template, dict(*context_args, **context_kwargs))
 
 
-def render_template_string(source: str, **context: t.Any) -> str:
+def render_template_string(
+    source: str,
+    *context_args: t.Iterable[tuple[t.Any, t.Any]] | t.Mapping[t.Any, t.Any],
+    **context_kargs: t.Any,
+) -> str:
     """Render a template from the given source string with the given
     context.
 
     :param source: The source code of the template to render.
-    :param context: The variables to make available in the template.
+    :param context_args: An Iterable or Mapping of variables to make available
+        in the template.
+    :param context_kargs: Variables to make available in the template.
+
+    Note that `context_args` and `context_kargs` are the same arguments that the
+    `dict` constructor takes. The following are all equivalent::
+
+        render_template('index.html', {'key1': 'val1', 'key2': 'val2'})
+        render_template('index.html', [('key1', 'val1')], key2='val2')
+        render_template('index.html', key1='val1', key2='val2')
     """
     app = current_app._get_current_object()  # type: ignore[attr-defined]
     template = app.jinja_env.from_string(source)
-    return _render(app, template, context)
+    return _render(app, template, dict(*context_args, **context_kargs))
 
 
 def _stream(
@@ -188,7 +211,8 @@ def _stream(
 
 def stream_template(
     template_name_or_list: str | Template | list[str | Template],
-    **context: t.Any,
+    *context_args: t.Iterable[tuple[t.Any, t.Any]] | t.Mapping[t.Any, t.Any],
+    **context_kargs: t.Any,
 ) -> t.Iterator[str]:
     """Render a template by name with the given context as a stream.
     This returns an iterator of strings, which can be used as a
@@ -196,25 +220,45 @@ def stream_template(
 
     :param template_name_or_list: The name of the template to render. If
         a list is given, the first name to exist will be rendered.
-    :param context: The variables to make available in the template.
+    :param context_args: An Iterable or Mapping of variables to make available
+        in the template.
+    :param context_kargs: Variables to make available in the template.
+
+    Note that `context_args` and `context_kargs` are the same arguments that the
+    `dict` constructor takes. The following are all equivalent::
+
+        render_template('index.html', {'key1': 'val1', 'key2': 'val2'})
+        render_template('index.html', [('key1', 'val1')], key2='val2')
+        render_template('index.html', key1='val1', key2='val2')
 
     .. versionadded:: 2.2
     """
     app = current_app._get_current_object()  # type: ignore[attr-defined]
     template = app.jinja_env.get_or_select_template(template_name_or_list)
-    return _stream(app, template, context)
+    return _stream(app, template, dict(*context_args, **context_kargs))
 
 
-def stream_template_string(source: str, **context: t.Any) -> t.Iterator[str]:
+def stream_template_string(
+    source: str,
+    *context_args: t.Iterable[tuple[t.Any, t.Any]] | t.Mapping[t.Any, t.Any],
+    **context_kargs: t.Any,
+) -> t.Iterator[str]:
     """Render a template from the given source string with the given
     context as a stream. This returns an iterator of strings, which can
     be used as a streaming response from a view.
 
     :param source: The source code of the template to render.
-    :param context: The variables to make available in the template.
+    :param context_kargs: Variables to make available in the template.
+
+    Note that `context_args` and `context_kargs` are the same arguments that the
+    `dict` constructor takes. The following are all equivalent::
+
+        render_template('index.html', {'key1': 'val1', 'key2': 'val2'})
+        render_template('index.html', [('key1', 'val1')], key2='val2')
+        render_template('index.html', key1='val1', key2='val2')
 
     .. versionadded:: 2.2
     """
     app = current_app._get_current_object()  # type: ignore[attr-defined]
     template = app.jinja_env.from_string(source)
-    return _stream(app, template, context)
+    return _stream(app, template, dict(*context_args, **context_kargs))
