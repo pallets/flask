@@ -39,6 +39,41 @@ def test_simple_stream(app, client):
     assert rv.data == b"42"
 
 
+@pytest.mark.parametrize(
+    "render_func, template_arg",
+    [
+        (flask.render_template, "multi_vars.html"),
+        (flask.render_template_string, "{{ greeting }}{{ name }}"),
+        (flask.stream_template, "multi_vars.html"),
+        (flask.stream_template_string, "{{ greeting }}{{ name }}"),
+    ],
+)
+@pytest.mark.parametrize(
+    "context",
+    [
+        {"greeting": "Hello"},
+        [("greeting", "Hello")],
+        (("greeting", "Hello"),),
+    ],
+)
+class TestRenderDictCtor:
+    def test_with_kargs(self, app, client, render_func, template_arg, context):
+        @app.route("/")
+        def index():
+            return render_func(template_arg, context, name="World")
+
+        rv = client.get("/")
+        assert rv.data == b"HelloWorld"
+
+    def test_no_kargs(self, app, client, render_func, template_arg, context):
+        @app.route("/")
+        def index():
+            return render_func(template_arg, context)
+
+        rv = client.get("/")
+        assert rv.data == b"Hello"
+
+
 def test_request_less_rendering(app, app_ctx):
     app.config["WORLD_NAME"] = "Special World"
 
