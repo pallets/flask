@@ -125,8 +125,8 @@ in a Flask view.
 .. code-block:: javascript
 
     let data = new FormData()
-    data.append("name": "Flask Room")
-    data.append("description": "Talk about Flask here.")
+    data.append("name", "Flask Room")
+    data.append("description", "Talk about Flask here.")
     fetch(room_url, {
         "method": "POST",
         "body": data,
