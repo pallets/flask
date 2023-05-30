@@ -45,7 +45,8 @@ The nginx configuration is located at ``/etc/nginx/nginx.conf`` on
 Linux. It may be different depending on your operating system. Check the
 docs and look for ``nginx.conf``.
 
-Remove or comment out any existing ``server`` section. Add a ``server``
+Remove or comment out any existing ``server`` section from ``/etc/nginx/nginx.conf``
+or default included config files at ``/etc/nginx/sites-enabled/``. Add a ``server``
 section and use the ``proxy_pass`` directive to point to the address the
 WSGI server is listening on. We'll assume the WSGI server is listening
 locally at ``http://127.0.0.1:8000``.
