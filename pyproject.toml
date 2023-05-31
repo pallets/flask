@@ -4,7 +4,6 @@ description = "A simple framework for building complex web applications."
 readme = "README.rst"
 license = {text = "BSD-3-Clause"}
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
-authors = [{name = "Armin Ronacher", email = "armin.ronacher@active-4.com"}]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
