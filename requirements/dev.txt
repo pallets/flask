@@ -10,7 +10,7 @@
 -r typing.txt
 build==0.10.0
     # via pip-tools
-cachetools==5.3.0
+cachetools==5.3.1
     # via tox
 cfgv==3.3.1
     # via pre-commit
@@ -28,19 +28,19 @@ filelock==3.12.0
     # via
     #   tox
     #   virtualenv
-identify==2.5.23
+identify==2.5.24
     # via pre-commit
-nodeenv==1.7.0
+nodeenv==1.8.0
     # via pre-commit
-pip-compile-multi==2.6.2
+pip-compile-multi==2.6.3
     # via -r requirements/dev.in
 pip-tools==6.13.0
     # via pip-compile-multi
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via
     #   tox
     #   virtualenv
-pre-commit==3.3.1
+pre-commit==3.3.2
     # via -r requirements/dev.in
 pyproject-api==1.5.1
     # via tox
@@ -50,7 +50,7 @@ pyyaml==6.0
     # via pre-commit
 toposort==1.10
     # via pip-compile-multi
-tox==4.5.1
+tox==4.5.2
     # via -r requirements/dev.in
 virtualenv==20.23.0
     # via
