@@ -38,7 +38,7 @@ from .templating import render_template_string as render_template_string
 from .templating import stream_template as stream_template
 from .templating import stream_template_string as stream_template_string
 
-__version__ = "2.3.2"
+__version__ = "2.3.3.dev"
 
 
 def __getattr__(name):

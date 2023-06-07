@@ -3,7 +3,6 @@ from __future__ import annotations
 import importlib.util
 import os
 import pathlib
-import pkgutil
 import sys
 import typing as t
 from collections import defaultdict
@@ -856,7 +855,8 @@ def _find_package_path(import_name):
             return os.path.dirname(root_spec.origin)
 
     # we were unable to find the `package_path` using PEP 451 loaders
-    loader = pkgutil.get_loader(root_mod_name)
+    spec = importlib.util.find_spec(root_mod_name)
+    loader = spec.loader if spec is not None else None
 
     if loader is None or root_mod_name == "__main__":
         # import name is not found, or interactive/main module

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import importlib.util
 import os
-import pkgutil
 import socket
 import sys
 import typing as t
@@ -575,7 +575,8 @@ def get_root_path(import_name: str) -> str:
         return os.path.dirname(os.path.abspath(mod.__file__))
 
     # Next attempt: check the loader.
-    loader = pkgutil.get_loader(import_name)
+    spec = importlib.util.find_spec(import_name)
+    loader = spec.loader if spec is not None else None
 
     # Loader does not exist or we're referring to an unloaded main
     # module or a main module without path (interactive sessions), go
