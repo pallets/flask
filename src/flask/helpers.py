@@ -575,13 +575,20 @@ def get_root_path(import_name: str) -> str:
         return os.path.dirname(os.path.abspath(mod.__file__))
 
     # Next attempt: check the loader.
-    spec = importlib.util.find_spec(import_name)
-    loader = spec.loader if spec is not None else None
+    try:
+        spec = importlib.util.find_spec(import_name)
+
+        if spec is None:
+            raise ValueError
+    except (ImportError, ValueError):
+        loader = None
+    else:
+        loader = spec.loader
 
     # Loader does not exist or we're referring to an unloaded main
     # module or a main module without path (interactive sessions), go
     # with the current working directory.
-    if loader is None or import_name == "__main__":
+    if loader is None:
         return os.getcwd()
 
     if hasattr(loader, "get_filename"):

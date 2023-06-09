@@ -779,31 +779,6 @@ def _endpoint_from_view_func(view_func: t.Callable) -> str:
     return view_func.__name__
 
 
-def _matching_loader_thinks_module_is_package(loader, mod_name):
-    """Attempt to figure out if the given name is a package or a module.
-
-    :param: loader: The loader that handled the name.
-    :param mod_name: The name of the package or module.
-    """
-    # Use loader.is_package if it's available.
-    if hasattr(loader, "is_package"):
-        return loader.is_package(mod_name)
-
-    cls = type(loader)
-
-    # NamespaceLoader doesn't implement is_package, but all names it
-    # loads must be packages.
-    if cls.__module__ == "_frozen_importlib" and cls.__name__ == "NamespaceLoader":
-        return True
-
-    # Otherwise we need to fail with an error that explains what went
-    # wrong.
-    raise AttributeError(
-        f"'{cls.__name__}.is_package()' must be implemented for PEP 302"
-        f" import hooks."
-    )
-
-
 def _path_is_relative_to(path: pathlib.PurePath, base: str) -> bool:
     # Path.is_relative_to doesn't exist until Python 3.9
     try:
@@ -822,64 +797,39 @@ def _find_package_path(import_name):
 
         if root_spec is None:
             raise ValueError("not found")
-    # ImportError: the machinery told us it does not exist
-    # ValueError:
-    #    - the module name was invalid
-    #    - the module name is __main__
-    #    - *we* raised `ValueError` due to `root_spec` being `None`
     except (ImportError, ValueError):
-        pass  # handled below
-    else:
-        # namespace package
-        if root_spec.origin in {"namespace", None}:
-            package_spec = importlib.util.find_spec(import_name)
-            if package_spec is not None and package_spec.submodule_search_locations:
-                # Pick the path in the namespace that contains the submodule.
-                package_path = pathlib.Path(
-                    os.path.commonpath(package_spec.submodule_search_locations)
-                )
-                search_locations = (
-                    location
-                    for location in root_spec.submodule_search_locations
-                    if _path_is_relative_to(package_path, location)
-                )
-            else:
-                # Pick the first path.
-                search_locations = iter(root_spec.submodule_search_locations)
-            return os.path.dirname(next(search_locations))
-        # a package (with __init__.py)
-        elif root_spec.submodule_search_locations:
-            return os.path.dirname(os.path.dirname(root_spec.origin))
-        # just a normal module
-        else:
-            return os.path.dirname(root_spec.origin)
-
-    # we were unable to find the `package_path` using PEP 451 loaders
-    spec = importlib.util.find_spec(root_mod_name)
-    loader = spec.loader if spec is not None else None
-
-    if loader is None or root_mod_name == "__main__":
-        # import name is not found, or interactive/main module
+        # ImportError: the machinery told us it does not exist
+        # ValueError:
+        #    - the module name was invalid
+        #    - the module name is __main__
+        #    - we raised `ValueError` due to `root_spec` being `None`
         return os.getcwd()
 
-    if hasattr(loader, "get_filename"):
-        filename = loader.get_filename(root_mod_name)
-    elif hasattr(loader, "archive"):
-        # zipimporter's loader.archive points to the .zip file.
-        filename = loader.archive
+    if root_spec.origin in {"namespace", None}:
+        # namespace package
+        package_spec = importlib.util.find_spec(import_name)
+
+        if package_spec is not None and package_spec.submodule_search_locations:
+            # Pick the path in the namespace that contains the submodule.
+            package_path = pathlib.Path(
+                os.path.commonpath(package_spec.submodule_search_locations)
+            )
+            search_location = next(
+                location
+                for location in root_spec.submodule_search_locations
+                if _path_is_relative_to(package_path, location)
+            )
+        else:
+            # Pick the first path.
+            search_location = root_spec.submodule_search_locations[0]
+
+        return os.path.dirname(search_location)
+    elif root_spec.submodule_search_locations:
+        # package with __init__.py
+        return os.path.dirname(os.path.dirname(root_spec.origin))
     else:
-        # At least one loader is missing both get_filename and archive:
-        # Google App Engine's HardenedModulesHook, use __file__.
-        filename = importlib.import_module(root_mod_name).__file__
-
-    package_path = os.path.abspath(os.path.dirname(filename))
-
-    # If the imported name is a package, filename is currently pointing
-    # to the root of the package, need to get the current directory.
-    if _matching_loader_thinks_module_is_package(loader, root_mod_name):
-        package_path = os.path.dirname(package_path)
-
-    return package_path
+        # module
+        return os.path.dirname(root_spec.origin)
 
 
 def find_package(import_name: str):
