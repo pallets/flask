@@ -5,6 +5,7 @@ Unreleased
 
 -   Python 3.12 compatibility.
 -   Update Werkzeug requirement to >=2.3.5.
+-   Refactor how an app's root and instance paths are determined. :issue:`5160`
 
 
 Version 2.3.2
