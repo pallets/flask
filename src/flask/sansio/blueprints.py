@@ -5,14 +5,14 @@ import typing as t
 from collections import defaultdict
 from functools import update_wrapper
 
-from . import typing as ft
+from .. import typing as ft
 from .scaffold import _endpoint_from_view_func
 from .scaffold import _sentinel
 from .scaffold import Scaffold
 from .scaffold import setupmethod
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    from .app import Flask
+    from .app import App
 
 DeferredSetupFunction = t.Callable[["BlueprintSetupState"], t.Callable]
 T_after_request = t.TypeVar("T_after_request", bound=ft.AfterRequestCallable)
@@ -41,7 +41,7 @@ class BlueprintSetupState:
     def __init__(
         self,
         blueprint: Blueprint,
-        app: Flask,
+        app: App,
         options: t.Any,
         first_registration: bool,
     ) -> None:
@@ -244,7 +244,7 @@ class Blueprint(Scaffold):
         self.record(update_wrapper(wrapper, func))
 
     def make_setup_state(
-        self, app: Flask, options: dict, first_registration: bool = False
+        self, app: App, options: dict, first_registration: bool = False
     ) -> BlueprintSetupState:
         """Creates an instance of :meth:`~flask.blueprints.BlueprintSetupState`
         object that is later passed to the register callback functions.
@@ -270,7 +270,7 @@ class Blueprint(Scaffold):
             raise ValueError("Cannot register a blueprint on itself")
         self._blueprints.append((blueprint, options))
 
-    def register(self, app: Flask, options: dict) -> None:
+    def register(self, app: App, options: dict) -> None:
         """Called by :meth:`Flask.register_blueprint` to register all
         views and callbacks registered on the blueprint with the
         application. Creates a :class:`.BlueprintSetupState` and calls
@@ -323,7 +323,7 @@ class Blueprint(Scaffold):
         if self.has_static_folder:
             state.add_url_rule(
                 f"{self.static_url_path}/<path:filename>",
-                view_func=self.send_static_file,
+                view_func=self.send_static_file,  # type: ignore[attr-defined]
                 endpoint="static",
             )
 
