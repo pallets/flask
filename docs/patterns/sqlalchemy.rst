@@ -34,8 +34,7 @@ official documentation on the `declarative`_ extension.
 Here's the example :file:`database.py` module for your application::
 
     from sqlalchemy import create_engine
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from sqlalchemy.ext.declarative import declarative_base
+    from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 
     engine = create_engine('sqlite:////tmp/test.db')
     db_session = scoped_session(sessionmaker(autocommit=False,
