@@ -31,7 +31,7 @@ jobs:
           - {name: '3.10', python: '3.10', os: ubuntu-latest, tox: py310}
           - {name: '3.9', python: '3.9', os: ubuntu-latest, tox: py39}
           - {name: '3.8', python: '3.8', os: ubuntu-latest, tox: py38}
-          - {name: 'PyPy', python: 'pypy-3.9', os: ubuntu-latest, tox: pypy39}
+          - {name: 'PyPy', python: 'pypy-3.10', os: ubuntu-latest, tox: pypy310}
           - {name: 'Minimum Versions', python: '3.11', os: ubuntu-latest, tox: py311-min}
           - {name: 'Development Versions', python: '3.8', os: ubuntu-latest, tox: py38-dev}
           - {name: Typing, python: '3.11', os: ubuntu-latest, tox: typing}
