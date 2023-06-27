@@ -5,6 +5,7 @@ Unreleased
 
 -   Python 3.12 compatibility.
 -   Require Werkzeug >= 2.3.6.
+-   Use ``flit_core`` instead of ``setuptools`` as build backend.
 -   Refactor how an app's root and instance paths are determined. :issue:`5160`
 
 
