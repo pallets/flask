@@ -1,4 +1,4 @@
-Werkzeug==2.3.5
+Werkzeug==2.3.6
 Jinja2==3.1.2
 MarkupSafe==2.1.1
 itsdangerous==2.1.2
