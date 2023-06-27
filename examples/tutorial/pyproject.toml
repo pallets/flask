@@ -16,8 +16,16 @@ Documentation = "https://flask.palletsprojects.com/tutorial/"
 test = ["pytest"]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "flaskr"
+
+[tool.flit.sdist]
+include = [
+    "tests/",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

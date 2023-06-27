@@ -7,5 +7,8 @@ requires-python = ">=3.8"
 dependencies = ["flask>=2.2.2", "celery[redis]>=5.2.7"]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "task_app"

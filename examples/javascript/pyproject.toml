@@ -3,7 +3,7 @@ name = "js_example"
 version = "1.1.0"
 description = "Demonstrates making AJAX requests to Flask."
 readme = "README.rst"
-license = {text = "BSD-3-Clause"}
+license = {file = "LICENSE.rst"}
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
 dependencies = ["flask"]
 
@@ -14,8 +14,11 @@ Documentation = "https://flask.palletsprojects.com/patterns/jquery/"
 test = ["pytest"]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "js_example"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
