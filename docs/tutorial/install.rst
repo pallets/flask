@@ -40,30 +40,13 @@ The ``pyproject.toml`` file describes your project and how to build it.
     ]
 
     [build-system]
-    requires = ["setuptools"]
-    build-backend = "setuptools.build_meta"
+    requires = ["flit_core<4"]
+    build-backend = "flit_core.buildapi"
 
-
-The setuptools build backend needs another file named ``MANIFEST.in`` to tell it about
-non-Python files to include.
-
-.. code-block:: none
-    :caption: ``MANIFEST.in``
-
-    include flaskr/schema.sql
-    graft flaskr/static
-    graft flaskr/templates
-    global-exclude *.pyc
-
-This tells the build to copy everything in the ``static`` and ``templates`` directories,
-and the ``schema.sql`` file, but to exclude all bytecode files.
-
-See the official `Packaging tutorial <packaging tutorial_>`_ and
-`detailed guide <packaging guide_>`_ for more explanation of the files
-and options used.
+See the official `Packaging tutorial <packaging tutorial_>`_ for more
+explanation of the files and options used.
 
 .. _packaging tutorial: https://packaging.python.org/tutorials/packaging-projects/
-.. _packaging guide: https://packaging.python.org/guides/distributing-packages-using-setuptools/
 
 
 Install the Project
@@ -95,9 +78,7 @@ You can observe that the project is now installed with ``pip list``.
     Jinja2         2.10
     MarkupSafe     1.0
     pip            9.0.3
-    setuptools     39.0.1
     Werkzeug       0.14.1
-    wheel          0.30.0
 
 Nothing changes from how you've been running your project so far.
 ``--app`` is still set to ``flaskr`` and ``flask run`` still runs

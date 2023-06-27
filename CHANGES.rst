@@ -5,6 +5,7 @@ Unreleased
 
 -   Python 3.12 compatibility.
 -   Require Werkzeug >= 2.3.6.
+-   Use ``flit_core`` instead of ``setuptools`` as build backend.
 -   Refactor how an app's root and instance paths are determined. :issue:`5160`
 
 
@@ -308,7 +309,7 @@ Released 2022-03-28
     or ``AppContext.g`` instead. :issue:`3898`
 -   ``copy_current_request_context`` can decorate async functions.
     :pr:`4303`
--   The CLI uses ``importlib.metadata`` instead of ``setuptools`` to
+-   The CLI uses ``importlib.metadata`` instead of ``pkg_resources`` to
     load command entry points. :issue:`4419`
 -   Overriding ``FlaskClient.open`` will not cause an error on redirect.
     :issue:`3396`
