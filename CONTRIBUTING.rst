@@ -127,7 +127,7 @@ First time setup in your local environment
 
     .. code-block:: text
 
-        $ python -m pip install -U pip setuptools wheel
+        $ python -m pip install -U pip
         $ pip install -r requirements/dev.txt && pip install -e .
 
 -   Install the pre-commit hooks.

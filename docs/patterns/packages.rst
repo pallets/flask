@@ -54,8 +54,8 @@ a big problem, just add a new file called :file:`pyproject.toml` next to the inn
     ]
 
     [build-system]
-    requires = ["setuptools"]
-    build-backend = "setuptools.build_meta"
+    requires = ["flit_core<4"]
+    build-backend = "flit_core.buildapi"
 
 Install your application so it is importable:
 
