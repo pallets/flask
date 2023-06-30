@@ -231,7 +231,7 @@ responses, you could also pass them through directly.
 Error handlers still respect the exception class hierarchy. If you
 register handlers for both ``HTTPException`` and ``Exception``, the
 ``Exception`` handler will not handle ``HTTPException`` subclasses
-because it the ``HTTPException`` handler is more specific.
+because the ``HTTPException`` handler is more specific.
 
 
 Unhandled Exceptions
