@@ -35,6 +35,7 @@ The ``pyproject.toml`` file describes your project and how to build it.
     [project]
     name = "flaskr"
     version = "1.0.0"
+    description = "The basic blog app built in the Flask tutorial."
     dependencies = [
         "flask",
     ]
