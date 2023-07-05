@@ -30,23 +30,24 @@ from flask.cli import with_appcontext
 cwd = Path.cwd()
 test_path = (Path(__file__) / ".." / "test_apps").resolve()
 
-
+#resuable setup and teardown logic for tests
 @pytest.fixture
 def runner():
+    #Runner fixture returns an instance of the CLIRunner Class
     return CliRunner()
 
 
 def test_cli_name(test_apps):
     """Make sure the CLI object's name is the app's name and not the app itself"""
     from cliapp.app import testapp
-
+    #name assigned by CLI object within testapp module is equal to name attribute of testapp module itself
     assert testapp.cli.name == testapp.name
 
-
+#ensure function behaves as expected in different scenarios 
 def test_find_best_app(test_apps):
     class Module:
         app = Flask("appname")
-
+    #find_best_app function takes module as an argument, looks for Flask application objects within that module and applies criteria to determine the best application object before returning that best object
     assert find_best_app(Module) == Module.app
 
     class Module:
