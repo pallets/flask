@@ -52,6 +52,21 @@ class Request(RequestBase):
     routing_exception: Exception | None = None
 
     @property
+    def json(self) -> t.Any | None:
+        """The parsed JSON data if :attr:`mimetype` indicates JSON
+        (:mimetype:`application/json`, see :attr:`is_json`).
+
+        Calls :meth:`get_json` with default arguments.
+
+        If the request content type is not ``application/json``, this
+        will return empty object.
+
+        .. versionchanged:: 2.3
+            force return json instead of raise a 415 Unsupported Media Type error.
+        """
+        return self.get_json(force=True)
+
+    @property
     def max_content_length(self) -> int | None:  # type: ignore
         """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
         if current_app:
