@@ -52,7 +52,7 @@ interactive debugger and reloader by default in debug mode.
 
 .. code-block:: text
 
-    $ flask --app hello run --debug
+    $ flask --app hello --debug run
 
 Using the option is recommended. While it is possible to set :data:`DEBUG` in your
 config or code, this is strongly discouraged. It can't be read early by the
