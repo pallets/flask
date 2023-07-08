@@ -110,6 +110,14 @@ class Request(RequestBase):
 
         return _split_blueprint_path(name)
 
+    @property
+    def json(self):
+        """
+        force return json, fix bug: if client not send data, this method will error
+        :return: json object
+        """
+        return self.get_json(force=True)
+
     def _load_form_data(self) -> None:
         super()._load_form_data()
 
