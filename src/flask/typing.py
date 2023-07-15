@@ -61,7 +61,10 @@ TeardownCallable = t.Union[
     t.Callable[[t.Optional[BaseException]], None],
     t.Callable[[t.Optional[BaseException]], t.Awaitable[None]],
 ]
-TemplateContextProcessorCallable = t.Callable[[], t.Dict[str, t.Any]]
+TemplateContextProcessorCallable = t.Union[
+    t.Callable[[], t.Dict[str, t.Any]],
+    t.Callable[[], t.Awaitable[t.Dict[str, t.Any]]],
+]
 TemplateFilterCallable = t.Callable[..., t.Any]
 TemplateGlobalCallable = t.Callable[..., t.Any]
 TemplateTestCallable = t.Callable[..., bool]

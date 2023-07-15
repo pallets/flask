@@ -478,7 +478,7 @@ class Flask(App):
         for name in names:
             if name in self.template_context_processors:
                 for func in self.template_context_processors[name]:
-                    context.update(func())
+                    context.update(self.ensure_sync(func)())
 
         context.update(orig_ctx)
 
