@@ -7,7 +7,7 @@ Unreleased
 -   Require Werkzeug >= 2.3.6.
 -   Use ``flit_core`` instead of ``setuptools`` as build backend.
 -   Refactor how an app's root and instance paths are determined. :issue:`5160`
-
+-   Pass positional arguments to class-based views. :issue:`5199`
 
 Version 2.3.2
 -------------

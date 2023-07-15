@@ -98,6 +98,42 @@ def test_view_decorators(app, client):
     assert rv.data == b"Awesome"
 
 
+def test_view_decorators_with_injected_args(app, client):
+    def add_arg(f):
+        def new_function(*args, **kwargs):
+            return f("Awesome", *args, **kwargs)
+
+        return new_function
+
+    class Index(flask.views.View):
+        decorators = [add_arg]
+
+        def dispatch_request(self, arg):
+            return arg
+
+    app.add_url_rule("/", view_func=Index.as_view("index"))
+    rv = client.get("/")
+    assert rv.data == b"Awesome"
+
+
+def test_method_based_view_decorators_with_injected_args(app, client):
+    def add_arg(f):
+        def new_function(*args, **kwargs):
+            return f("Awesome", *args, **kwargs)
+
+        return new_function
+
+    class Index(flask.views.MethodView):
+        decorators = [add_arg]
+
+        def post(self, arg):
+            return arg
+
+    app.add_url_rule("/", view_func=Index.as_view("index"))
+    rv = client.post("/")
+    assert rv.data == b"Awesome"
+
+
 def test_view_provide_automatic_options_attr():
     app = flask.Flask(__name__)
 
