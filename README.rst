@@ -24,7 +24,7 @@ Install and update using `pip`_:
 
 .. code-block:: text
 
-    $ pip install -U Flask
+    $ pip3 install -U Flask
 
 .. _pip: https://pip.pypa.io/en/stable/getting-started/
 
