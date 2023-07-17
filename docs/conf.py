@@ -16,9 +16,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinxcontrib.log_cabinet",
-    "pallets_sphinx_themes",
+    # "pallets_sphinx_themes",
     "sphinx_issues",
     "sphinx_tabs.tabs",
+    "sphinx_immaterial"
 ]
 autodoc_typehints = "description"
 intersphinx_mapping = {
@@ -35,8 +36,62 @@ issues_github_path = "pallets/flask"
 
 # HTML -----------------------------------------------------------------
 
-html_theme = "flask"
-html_theme_options = {"index_sidebar_logo": False}
+html_theme = "sphinx_immaterial"
+html_theme_options = {
+    # "index_sidebar_logo": False,
+    "features": [
+        "navigation.expand",
+        # "navigation.tabs",
+        # "toc.integrate",
+        "navigation.sections",
+        # "navigation.instant",
+        # "header.autohide",
+        "navigation.top",
+        # "navigation.tracking",
+        # "search.highlight",
+        "search.share",
+        "toc.follow",
+        "toc.sticky",
+        "content.tabs.link",
+        "announce.dismiss",
+    ],
+    "palette": [
+        {
+            "media": "(prefers-color-scheme: light)",
+            "scheme": "default",
+            "primary": "blue-grey",
+            "accent": "blue",
+            "toggle": {
+                "icon": "material/lightbulb-outline",
+                "name": "Switch to dark mode",
+            },
+        },
+        {
+            "media": "(prefers-color-scheme: dark)",
+            "scheme": "slate",
+            "primary": "blue-grey",
+            "accent": "blue",
+            "toggle": {
+                "icon": "material/lightbulb",
+                "name": "Switch to light mode",
+            },
+        },
+    ],
+    "toc_title_is_page_title": True,
+    # BEGIN: social icons
+    "social": [
+        {
+            "icon": "fontawesome/brands/github",
+            "link": "https://github.com/singh-sumit/flask/",
+            "name": "Source on github.com",
+        },
+        {
+            "icon": "fontawesome/brands/python",
+            "link": "https://pypi.org/project/Flask/",
+        },
+    ],
+    # END: social icons
+}
 html_context = {
     "project_links": [
         ProjectLink("Donate", "https://palletsprojects.com/donate"),
