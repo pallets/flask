@@ -65,7 +65,7 @@ class Request(RequestBase):
         if current_app:
             return current_app.config["MAX_FORM_PARTS"]
         else:
-            return None
+            return 1000
 
     @property
     def endpoint(self) -> str | None:

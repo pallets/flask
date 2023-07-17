@@ -259,6 +259,14 @@ The following configuration values are used internally by Flask:
 
     Default: ``None``
 
+.. py:data:: MAX_FORM_PARTS
+
+    Stop reading request data if more than this number
+    of parts are sent in multipart form data. This is useful to stop a very large number
+    of very small parts, especially file parts.
+
+    Default: ``1000``
+
 .. py:data:: TEMPLATES_AUTO_RELOAD
 
     Reload templates when they are changed. If not set, it will be enabled in
