@@ -309,6 +309,7 @@ class Flask(Scaffold):
             "SESSION_COOKIE_SAMESITE": None,
             "SESSION_REFRESH_EACH_REQUEST": True,
             "MAX_CONTENT_LENGTH": None,
+            "MAX_FORM_PARTS": 5000,
             "SEND_FILE_MAX_AGE_DEFAULT": None,
             "TRAP_BAD_REQUEST_ERRORS": None,
             "TRAP_HTTP_EXCEPTIONS": False,
