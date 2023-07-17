@@ -19,7 +19,7 @@ extensions = [
     # "pallets_sphinx_themes",
     "sphinx_issues",
     "sphinx_tabs.tabs",
-    "sphinx_immaterial"
+    "sphinx_immaterial",
 ]
 autodoc_typehints = "description"
 intersphinx_mapping = {
