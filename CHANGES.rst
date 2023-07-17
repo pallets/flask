@@ -7,6 +7,7 @@ Unreleased
 -   Require Werkzeug >= 2.3.6.
 -   Use ``flit_core`` instead of ``setuptools`` as build backend.
 -   Refactor how an app's root and instance paths are determined. :issue:`5160`
+-   Added MAX_FORM_PARTS to the app config.
 
 
 Version 2.3.2
