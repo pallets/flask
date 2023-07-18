@@ -106,6 +106,7 @@ class TestUrlFor:
             return "42"
 
         assert flask.url_for("index", _anchor="x y") == "/#x%20y"
+        assert flask.url_for("index", _anchor=5) == "/#5"
 
     def test_url_for_with_scheme(self, app, req_ctx):
         @app.route("/")

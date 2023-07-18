@@ -1697,6 +1697,8 @@ class Flask(Scaffold):
             return self.handle_url_build_error(error, endpoint, values)
 
         if _anchor is not None:
+            if not isinstance(_anchor, (str, bytes, bytearray)):
+                _anchor = str(_anchor)
             _anchor = _url_quote(_anchor, safe="%!#$&'()*+,/:;=?@")
             rv = f"{rv}#{_anchor}"
 
