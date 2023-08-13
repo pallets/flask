@@ -146,7 +146,7 @@ the ``Host`` header to figure out the subdomain one simply looks at the
 request path up to the first slash::
 
     from threading import Lock
-    from werkzeug.wsgi import pop_path_info, peek_path_info
+    from wsgiref.util import shift_path_info
 
     class PathDispatcher:
 
@@ -166,12 +166,19 @@ request path up to the first slash::
                 return app
 
         def __call__(self, environ, start_response):
-            app = self.get_application(peek_path_info(environ))
+            app = self.get_application(self._peek_path_info(environ))
             if app is not None:
-                pop_path_info(environ)
+                shift_path_info(environ)
             else:
                 app = self.default_app
             return app(environ, start_response)
+
+    def _peek_path_info(environ):
+        segments = environ.get("PATH_INFO", "").lstrip("/").split("/", 1)
+        if segments:
+            return segments[0]
+
+        return None
 
 The big difference between this and the subdomain one is that this one
 falls back to another application if the creator function returns ``None``::
