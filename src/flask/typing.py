@@ -77,7 +77,10 @@ URLValuePreprocessorCallable = t.Callable[[t.Optional[str], t.Optional[dict]], N
 # https://github.com/pallets/flask/issues/4095
 # https://github.com/pallets/flask/issues/4295
 # https://github.com/pallets/flask/issues/4297
-ErrorHandlerCallable = t.Callable[[t.Any], ResponseReturnValue]
+ErrorHandlerCallable = t.Union[
+    t.Callable[[t.Any], ResponseReturnValue],
+    t.Callable[[t.Any], t.Awaitable[ResponseReturnValue]],
+]
 
 RouteCallable = t.Union[
     t.Callable[..., ResponseReturnValue],
