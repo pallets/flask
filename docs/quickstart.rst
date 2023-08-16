@@ -282,7 +282,7 @@ Python shell. See :ref:`context-locals`.
         print(url_for('index'))
         print(url_for('login'))
         print(url_for('login', next='/'))
-        print(url_for('profile', username='John Doe'))
+        print(url_for('user', username='John Doe'))
 
 .. code-block:: text
 
