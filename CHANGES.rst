@@ -3,6 +3,8 @@ Version 3.0.0
 
 Unreleased
 
+-   Remove previously deprecated code. :pr:`5223`
+
 
 Version 2.3.3
 -------------
