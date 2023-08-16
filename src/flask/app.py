@@ -572,25 +572,6 @@ class Flask(Scaffold):
         """
         return self.create_jinja_environment()
 
-    @property
-    def got_first_request(self) -> bool:
-        """This attribute is set to ``True`` if the application started
-        handling the first request.
-
-        .. deprecated:: 2.3
-            Will be removed in Flask 2.4.
-
-        .. versionadded:: 0.8
-        """
-        import warnings
-
-        warnings.warn(
-            "'got_first_request' is deprecated and will be removed in Flask 2.4.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._got_first_request
-
     def make_config(self, instance_relative: bool = False) -> Config:
         """Used to create the config attribute by the Flask constructor.
         The `instance_relative` parameter is passed in from the constructor

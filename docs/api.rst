@@ -519,11 +519,6 @@ Signals are provided by the `Blinker`_ library. See :doc:`signals` for an introd
 
    .. versionadded:: 0.10
 
-.. data:: signals.signals_available
-
-    .. deprecated:: 2.3
-        Will be removed in Flask 2.4. Signals are always available
-
 
 Class-Based Views
 -----------------
