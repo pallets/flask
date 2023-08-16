@@ -9,9 +9,9 @@ alabaster==0.7.13
     # via sphinx
 babel==2.12.1
     # via sphinx
-certifi==2023.5.7
+certifi==2023.7.22
     # via requests
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via requests
 docutils==0.18.1
     # via
@@ -31,7 +31,7 @@ packaging==23.1
     #   sphinx
 pallets-sphinx-themes==2.1.1
     # via -r requirements/docs.in
-pygments==2.15.1
+pygments==2.16.1
     # via
     #   sphinx
     #   sphinx-tabs
@@ -39,30 +39,35 @@ requests==2.31.0
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==7.0.1
+sphinx==7.1.2
     # via
     #   -r requirements/docs.in
     #   pallets-sphinx-themes
     #   sphinx-issues
     #   sphinx-tabs
+    #   sphinxcontrib-applehelp
+    #   sphinxcontrib-devhelp
+    #   sphinxcontrib-htmlhelp
     #   sphinxcontrib-log-cabinet
+    #   sphinxcontrib-qthelp
+    #   sphinxcontrib-serializinghtml
 sphinx-issues==3.0.1
     # via -r requirements/docs.in
 sphinx-tabs==3.4.1
     # via -r requirements/docs.in
-sphinxcontrib-applehelp==1.0.4
+sphinxcontrib-applehelp==1.0.7
     # via sphinx
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-devhelp==1.0.5
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.1
+sphinxcontrib-htmlhelp==2.0.4
     # via sphinx
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-log-cabinet==1.0.1
     # via -r requirements/docs.in
-sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-qthelp==1.0.6
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==1.1.8
     # via sphinx
-urllib3==2.0.3
+urllib3==2.0.4
     # via requests
