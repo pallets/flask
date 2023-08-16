@@ -18,33 +18,19 @@ Working with this Document
 --------------------------
 
 Each of the techniques and examples below results in an ``application``
-object that can be run with any WSGI server. For production, see
-:doc:`/deploying/index`. For development, Werkzeug provides a server
-through :func:`werkzeug.serving.run_simple`::
+object that can be run with any WSGI server. For development, use the
+``flask run`` command to start a development server. For production, see
+:doc:`/deploying/index`.
 
-    from werkzeug.serving import run_simple
-    run_simple('localhost', 5000, application, use_reloader=True)
-
-Note that :func:`run_simple <werkzeug.serving.run_simple>` is not intended for
-use in production.  Use a production WSGI server. See :doc:`/deploying/index`.
-
-In order to use the interactive debugger, debugging must be enabled both on
-the application and the simple server. Here is the "hello world" example with
-debugging and :func:`run_simple <werkzeug.serving.run_simple>`::
+.. code-block:: python
 
     from flask import Flask
-    from werkzeug.serving import run_simple
 
     app = Flask(__name__)
-    app.debug = True
 
     @app.route('/')
     def hello_world():
         return 'Hello World!'
-
-    if __name__ == '__main__':
-        run_simple('localhost', 5000, app,
-                   use_reloader=True, use_debugger=True, use_evalex=True)
 
 
 Combining Applications
@@ -58,7 +44,9 @@ are combined by the dispatcher middleware into a larger one that is
 dispatched based on prefix.
 
 For example you could have your main application run on ``/`` and your
-backend interface on ``/backend``::
+backend interface on ``/backend``.
+
+.. code-block:: python
 
     from werkzeug.middleware.dispatcher import DispatcherMiddleware
     from frontend_app import application as frontend
@@ -89,7 +77,9 @@ the dynamic application creation.
 The perfect level for abstraction in that regard is the WSGI layer.  You
 write your own WSGI application that looks at the request that comes and
 delegates it to your Flask application.  If that application does not
-exist yet, it is dynamically created and remembered::
+exist yet, it is dynamically created and remembered.
+
+.. code-block:: python
 
     from threading import Lock
 
@@ -117,7 +107,9 @@ exist yet, it is dynamically created and remembered::
             return app(environ, start_response)
 
 
-This dispatcher can then be used like this::
+This dispatcher can then be used like this:
+
+.. code-block:: python
 
     from myapplication import create_app, get_user_for_subdomain
     from werkzeug.exceptions import NotFound
@@ -143,10 +135,12 @@ Dispatch by Path
 
 Dispatching by a path on the URL is very similar.  Instead of looking at
 the ``Host`` header to figure out the subdomain one simply looks at the
-request path up to the first slash::
+request path up to the first slash.
+
+.. code-block:: python
 
     from threading import Lock
-    from werkzeug.wsgi import pop_path_info, peek_path_info
+    from wsgiref.util import shift_path_info
 
     class PathDispatcher:
 
@@ -166,15 +160,24 @@ request path up to the first slash::
                 return app
 
         def __call__(self, environ, start_response):
-            app = self.get_application(peek_path_info(environ))
+            app = self.get_application(_peek_path_info(environ))
             if app is not None:
-                pop_path_info(environ)
+                shift_path_info(environ)
             else:
                 app = self.default_app
             return app(environ, start_response)
 
+    def _peek_path_info(environ):
+        segments = environ.get("PATH_INFO", "").lstrip("/").split("/", 1)
+        if segments:
+            return segments[0]
+
+        return None
+
 The big difference between this and the subdomain one is that this one
-falls back to another application if the creator function returns ``None``::
+falls back to another application if the creator function returns ``None``.
+
+.. code-block:: python
 
     from myapplication import create_app, default_app, get_user_for_prefix
 
