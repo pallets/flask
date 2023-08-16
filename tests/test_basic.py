@@ -431,9 +431,9 @@ def test_session_special_types(app, client):
         client.get("/")
         s = flask.session
         assert s["t"] == (1, 2, 3)
-        assert type(s["b"]) == bytes
+        assert type(s["b"]) is bytes
         assert s["b"] == b"\xff"
-        assert type(s["m"]) == Markup
+        assert type(s["m"]) is Markup
         assert s["m"] == Markup("<html>")
         assert s["u"] == the_uuid
         assert s["d"] == now
@@ -760,7 +760,7 @@ def test_teardown_request_handler_error(app, client):
 
     @app.teardown_request
     def teardown_request1(exc):
-        assert type(exc) == ZeroDivisionError
+        assert type(exc) is ZeroDivisionError
         called.append(True)
         # This raises a new error and blows away sys.exc_info(), so we can
         # test that all teardown_requests get passed the same original
@@ -772,7 +772,7 @@ def test_teardown_request_handler_error(app, client):
 
     @app.teardown_request
     def teardown_request2(exc):
-        assert type(exc) == ZeroDivisionError
+        assert type(exc) is ZeroDivisionError
         called.append(True)
         # This raises a new error and blows away sys.exc_info(), so we can
         # test that all teardown_requests get passed the same original
