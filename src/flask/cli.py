@@ -302,7 +302,7 @@ class ScriptInfo:
         else:
             if self.app_import_path:
                 path, name = (
-                    re.split(r":(?![\\/])", self.app_import_path, 1) + [None]
+                    re.split(r":(?![\\/])", self.app_import_path, maxsplit=1) + [None]
                 )[:2]
                 import_name = prepare_import(path)
                 app = locate_app(import_name, name)
