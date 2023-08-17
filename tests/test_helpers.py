@@ -1,10 +1,9 @@
 import io
 import os
-
 import pytest
 import werkzeug.exceptions
 
-import flask
+from flask import Flask
 from flask.helpers import get_debug_flag
 
 
