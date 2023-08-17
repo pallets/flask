@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1
         with:
           python-version: ${{ matrix.python }}
-          cache: 'pip'
+          cache: 'pip3'
           cache-dependency-path: 'requirements/*.txt'
       - name: cache mypy
         uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
@@ -48,5 +48,5 @@ jobs:
           path: ./.mypy_cache
           key: mypy|${{ matrix.python }}|${{ hashFiles('pyproject.toml') }}
         if: matrix.tox == 'typing'
-      - run: pip install tox
+      - run: pip3 install tox
       - run: tox run -e ${{ matrix.tox }}
