@@ -12,24 +12,11 @@ import pytest
 from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
-from flask import Blueprint
-from flask import current_app
-from flask import Flask
-from flask.cli import AppGroup
-from flask.cli import find_best_app
-from flask.cli import FlaskGroup
-from flask.cli import get_version
-from flask.cli import load_dotenv
-from flask.cli import locate_app
-from flask.cli import NoAppException
-from flask.cli import prepare_import
-from flask.cli import run_command
-from flask.cli import ScriptInfo
-from flask.cli import with_appcontext
+from flask import Flask, current_app, Blueprint
+from flask.cli import AppGroup, find_best_app, FlaskGroup, get_version, load_dotenv, locate_app, NoAppException, prepare_import, run_command, ScriptInfo, with_appcontext
 
 cwd = Path.cwd()
 test_path = (Path(__file__) / ".." / "test_apps").resolve()
-
 
 @pytest.fixture
 def runner():
