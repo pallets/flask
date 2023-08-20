@@ -11,7 +11,7 @@ from datetime import date
 from werkzeug.http import http_date
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    from ..app import Flask
+    from ..sansio.app import App
     from ..wrappers import Response
 
 
@@ -34,7 +34,7 @@ class JSONProvider:
     .. versionadded:: 2.2
     """
 
-    def __init__(self, app: Flask) -> None:
+    def __init__(self, app: App) -> None:
         self._app = weakref.proxy(app)
 
     def dumps(self, obj: t.Any, **kwargs: t.Any) -> str:

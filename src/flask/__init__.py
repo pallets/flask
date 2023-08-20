@@ -1,7 +1,5 @@
 from . import json as json
 from .app import Flask as Flask
-from .app import Request as Request
-from .app import Response as Response
 from .blueprints import Blueprint as Blueprint
 from .config import Config as Config
 from .ctx import after_this_request as after_this_request
@@ -37,5 +35,7 @@ from .templating import render_template as render_template
 from .templating import render_template_string as render_template_string
 from .templating import stream_template as stream_template
 from .templating import stream_template_string as stream_template_string
+from .wrappers import Request as Request
+from .wrappers import Response as Response
 
 __version__ = "3.0.0.dev"

@@ -4,6 +4,8 @@ Version 3.0.0
 Unreleased
 
 -   Remove previously deprecated code. :pr:`5223`
+-   Restructure the code such that the Flask (app) and Blueprint
+    classes have Sans-IO bases. :pr:`5127`
 
 
 Version 2.3.3
