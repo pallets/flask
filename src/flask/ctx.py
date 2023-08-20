@@ -398,7 +398,7 @@ class RequestContext:
             if clear_request:
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
-                self.app.do_teardown_request(exc)
+                self.app.do_teardown_request(self, exc)
 
                 request_close = getattr(self.request, "close", None)
                 if request_close is not None:

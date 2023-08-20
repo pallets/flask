@@ -5,7 +5,7 @@ import flask
 
 def test_suppressed_exception_logging():
     class SuppressedFlask(flask.Flask):
-        def log_exception(self, exc_info):
+        def log_exception(self, exc_info, ctx):
             pass
 
     out = StringIO()

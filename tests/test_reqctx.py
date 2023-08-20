@@ -288,8 +288,8 @@ def test_bad_environ_raises_bad_request():
     # use a non-printable character in the Host - this is key to this test
     environ["HTTP_HOST"] = "\x8a"
 
-    with app.request_context(environ):
-        response = app.full_dispatch_request()
+    with app.request_context(environ) as ctx:
+        response = app.full_dispatch_request(ctx)
     assert response.status_code == 400
 
 
@@ -308,8 +308,8 @@ def test_environ_for_valid_idna_completes():
     # these characters are all IDNA-compatible
     environ["HTTP_HOST"] = "ąśźäüжŠßя.com"
 
-    with app.request_context(environ):
-        response = app.full_dispatch_request()
+    with app.request_context(environ) as ctx:
+        response = app.full_dispatch_request(ctx)
 
     assert response.status_code == 200
 

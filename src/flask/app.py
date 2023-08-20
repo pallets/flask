@@ -692,11 +692,16 @@ class Flask(App):
         return cls(self, **kwargs)  # type: ignore
 
     def handle_http_exception(
-        self, e: HTTPException
+        self,
+        e: HTTPException,
+        ctx: RequestContext,
     ) -> HTTPException | ft.ResponseReturnValue:
         """Handles an HTTP exception.  By default this will invoke the
         registered error handlers and fall back to returning the
         exception as response.
+
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
 
         .. versionchanged:: 1.0.3
             ``RoutingException``, used internally for actions such as
@@ -721,13 +726,15 @@ class Flask(App):
         if isinstance(e, RoutingException):
             return e
 
-        handler = self._find_error_handler(e, request.blueprints)
+        handler = self._find_error_handler(e, ctx.request.blueprints)
         if handler is None:
             return e
         return self.ensure_sync(handler)(e)
 
     def handle_user_exception(
-        self, e: Exception
+        self,
+        e: Exception,
+        ctx: RequestContext,
     ) -> HTTPException | ft.ResponseReturnValue:
         """This method is called whenever an exception occurs that
         should be handled. A special case is :class:`~werkzeug
@@ -735,6 +742,9 @@ class Flask(App):
         :meth:`handle_http_exception` method. This function will either
         return a response value or reraise the exception with the same
         traceback.
+
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
 
         .. versionchanged:: 1.0
             Key errors raised from request data like ``form`` show the
@@ -749,16 +759,16 @@ class Flask(App):
             e.show_exception = True
 
         if isinstance(e, HTTPException) and not self.trap_http_exception(e):
-            return self.handle_http_exception(e)
+            return self.handle_http_exception(e, ctx)
 
-        handler = self._find_error_handler(e, request.blueprints)
+        handler = self._find_error_handler(e, ctx.request.blueprints)
 
         if handler is None:
             raise
 
         return self.ensure_sync(handler)(e)
 
-    def handle_exception(self, e: Exception) -> Response:
+    def handle_exception(self, e: Exception, ctx: RequestContext) -> Response:
         """Handle an exception that did not have an error handler
         associated with it, or that was raised from an error handler.
         This always causes a 500 ``InternalServerError``.
@@ -774,6 +784,9 @@ class Flask(App):
         ``500``, it will be used. For consistency, the handler will
         always receive the ``InternalServerError``. The original
         unhandled exception is available as ``e.original_exception``.
+
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
 
         .. versionchanged:: 1.1.0
             Always passes the ``InternalServerError`` instance to the
@@ -801,60 +814,69 @@ class Flask(App):
 
             raise e
 
-        self.log_exception(exc_info)
+        self.log_exception(exc_info, ctx)
         server_error: InternalServerError | ft.ResponseReturnValue
         server_error = InternalServerError(original_exception=e)
-        handler = self._find_error_handler(server_error, request.blueprints)
+        handler = self._find_error_handler(server_error, ctx.request.blueprints)
 
         if handler is not None:
             server_error = self.ensure_sync(handler)(server_error)
 
-        return self.finalize_request(server_error, from_error_handler=True)
+        return self.finalize_request(server_error, ctx, from_error_handler=True)
 
     def log_exception(
         self,
         exc_info: (tuple[type, BaseException, TracebackType] | tuple[None, None, None]),
+        ctx: RequestContext,
     ) -> None:
         """Logs an exception.  This is called by :meth:`handle_exception`
         if debugging is disabled and right before the handler is called.
         The default implementation logs the exception as error on the
         :attr:`logger`.
 
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
+
         .. versionadded:: 0.8
         """
         self.logger.error(
-            f"Exception on {request.path} [{request.method}]", exc_info=exc_info
+            f"Exception on {ctx.request.path} [{ctx.request.method}]", exc_info=exc_info
         )
 
-    def dispatch_request(self) -> ft.ResponseReturnValue:
+    def dispatch_request(self, ctx: RequestContext) -> ft.ResponseReturnValue:
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
         be a response object.  In order to convert the return value to a
         proper response object, call :func:`make_response`.
 
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
+
         .. versionchanged:: 0.7
            This no longer does the exception handling, this code was
            moved to the new :meth:`full_dispatch_request`.
         """
-        req = request_ctx.request
-        if req.routing_exception is not None:
-            self.raise_routing_exception(req)
-        rule: Rule = req.url_rule  # type: ignore[assignment]
+        if ctx.request.routing_exception is not None:
+            self.raise_routing_exception(ctx.request)
+        rule: Rule = ctx.request.url_rule  # type: ignore[assignment]
         # if we provide automatic options for this URL and the
         # request came with the OPTIONS method, reply automatically
         if (
             getattr(rule, "provide_automatic_options", False)
-            and req.method == "OPTIONS"
+            and ctx.request.method == "OPTIONS"
         ):
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
-        view_args: dict[str, t.Any] = req.view_args  # type: ignore[assignment]
+        view_args: dict[str, t.Any] = ctx.request.view_args  # type: ignore[assignment]
         return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
 
-    def full_dispatch_request(self) -> Response:
+    def full_dispatch_request(self, ctx: RequestContext) -> Response:
         """Dispatches the request and on top of that performs request
         pre and postprocessing as well as HTTP exception catching and
         error handling.
+
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
 
         .. versionadded:: 0.7
         """
@@ -862,16 +884,17 @@ class Flask(App):
 
         try:
             request_started.send(self, _async_wrapper=self.ensure_sync)
-            rv = self.preprocess_request()
+            rv = self.preprocess_request(ctx)
             if rv is None:
-                rv = self.dispatch_request()
+                rv = self.dispatch_request(ctx)
         except Exception as e:
-            rv = self.handle_user_exception(e)
-        return self.finalize_request(rv)
+            rv = self.handle_user_exception(e, ctx)
+        return self.finalize_request(rv, ctx)
 
     def finalize_request(
         self,
         rv: ft.ResponseReturnValue | HTTPException,
+        ctx: RequestContext,
         from_error_handler: bool = False,
     ) -> Response:
         """Given the return value from a view function this finalizes
@@ -884,11 +907,14 @@ class Flask(App):
         with the `from_error_handler` flag.  If enabled, failures in
         response processing will be logged and otherwise ignored.
 
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
+
         :internal:
         """
         response = self.make_response(rv)
         try:
-            response = self.process_response(response)
+            response = self.process_response(response, ctx)
             request_finished.send(
                 self, _async_wrapper=self.ensure_sync, response=response
             )
@@ -1215,7 +1241,7 @@ class Flask(App):
 
         return rv
 
-    def preprocess_request(self) -> ft.ResponseReturnValue | None:
+    def preprocess_request(self, ctx: RequestContext) -> ft.ResponseReturnValue | None:
         """Called before the request is dispatched. Calls
         :attr:`url_value_preprocessors` registered with the app and the
         current blueprint (if any). Then calls :attr:`before_request_funcs`
@@ -1224,13 +1250,16 @@ class Flask(App):
         If any :meth:`before_request` handler returns a non-None value, the
         value is handled as if it was the return value from the view, and
         further request handling is stopped.
+
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
         """
-        names = (None, *reversed(request.blueprints))
+        names = (None, *reversed(ctx.request.blueprints))
 
         for name in names:
             if name in self.url_value_preprocessors:
                 for url_func in self.url_value_preprocessors[name]:
-                    url_func(request.endpoint, request.view_args)
+                    url_func(ctx.request.endpoint, ctx.request.view_args)
 
         for name in names:
             if name in self.before_request_funcs:
@@ -1242,10 +1271,13 @@ class Flask(App):
 
         return None
 
-    def process_response(self, response: Response) -> Response:
+    def process_response(self, response: Response, ctx: RequestContext) -> Response:
         """Can be overridden in order to modify the response object
         before it's sent to the WSGI server.  By default this will
         call all the :meth:`after_request` decorated functions.
+
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
 
         .. versionchanged:: 0.5
            As of Flask 0.5 the functions registered for after request
@@ -1255,23 +1287,25 @@ class Flask(App):
         :return: a new response object or the same, has to be an
                  instance of :attr:`response_class`.
         """
-        ctx = request_ctx._get_current_object()  # type: ignore[attr-defined]
-
         for func in ctx._after_request_functions:
             response = self.ensure_sync(func)(response)
 
-        for name in chain(request.blueprints, (None,)):
+        for name in chain(ctx.request.blueprints, (None,)):
             if name in self.after_request_funcs:
                 for func in reversed(self.after_request_funcs[name]):
                     response = self.ensure_sync(func)(response)
 
         if not self.session_interface.is_null_session(ctx.session):
-            self.session_interface.save_session(self, ctx.session, response)
+            self.session_interface.save_session(
+                self, ctx.session, response  # type: ignore[arg-type]
+            )
 
         return response
 
     def do_teardown_request(
-        self, exc: BaseException | None = _sentinel  # type: ignore
+        self,
+        ctx: RequestContext,
+        exc: BaseException | None = _sentinel,  # type: ignore
     ) -> None:
         """Called after the request is dispatched and the response is
         returned, right before the request context is popped.
@@ -1290,13 +1324,16 @@ class Flask(App):
             request. Detected from the current exception information if
             not passed. Passed to each teardown function.
 
+        .. versionchanged:: 3.0
+            The request context, ctx, is now a required argument.
+
         .. versionchanged:: 0.9
             Added the ``exc`` argument.
         """
         if exc is _sentinel:
             exc = sys.exc_info()[1]
 
-        for name in chain(request.blueprints, (None,)):
+        for name in chain(ctx.request.blueprints, (None,)):
             if name in self.teardown_request_funcs:
                 for func in reversed(self.teardown_request_funcs[name]):
                     self.ensure_sync(func)(exc)
@@ -1451,10 +1488,10 @@ class Flask(App):
         try:
             try:
                 ctx.push()
-                response = self.full_dispatch_request()
+                response = self.full_dispatch_request(ctx)
             except Exception as e:
                 error = e
-                response = self.handle_exception(e)
+                response = self.handle_exception(e, ctx)
             except:  # noqa: B001
                 error = sys.exc_info()[1]
                 raise
