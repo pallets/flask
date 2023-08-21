@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.metadata
 import typing as t
 from contextlib import contextmanager
 from contextlib import ExitStack
@@ -92,6 +93,18 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         return self.app.json.dumps(obj, **kwargs)
 
 
+_werkzeug_version = ""
+
+
+def _get_werkzeug_version() -> str:
+    global _werkzeug_version
+
+    if not _werkzeug_version:
+        _werkzeug_version = importlib.metadata.version("werkzeug")
+
+    return _werkzeug_version
+
+
 class FlaskClient(Client):
     """Works like a regular Werkzeug test client but has knowledge about
     Flask's contexts to defer the cleanup of the request context until
@@ -115,7 +128,7 @@ class FlaskClient(Client):
         self._context_stack = ExitStack()
         self.environ_base = {
             "REMOTE_ADDR": "127.0.0.1",
-            "HTTP_USER_AGENT": f"werkzeug/{werkzeug.__version__}",
+            "HTTP_USER_AGENT": f"Werkzeug/{_get_werkzeug_version()}",
         }
 
     @contextmanager
