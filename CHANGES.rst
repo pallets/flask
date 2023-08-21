@@ -1,7 +1,7 @@
 Version 2.3.3
 -------------
 
-Unreleased
+Released 2023-08-21
 
 -   Python 3.12 compatibility.
 -   Require Werkzeug >= 2.3.7.
