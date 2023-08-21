@@ -1,6 +1,7 @@
+import importlib.metadata
+
 import click
 import pytest
-import werkzeug
 
 import flask
 from flask import appcontext_popped
@@ -38,34 +39,35 @@ def test_environ_defaults(app, client, app_ctx, req_ctx):
         assert rv.data == b"http://localhost/"
 
 
-def test_environ_base_default(app, client, app_ctx):
+def test_environ_base_default(app, client):
     @app.route("/")
     def index():
-        flask.g.user_agent = flask.request.headers["User-Agent"]
-        return flask.request.remote_addr
+        flask.g.remote_addr = flask.request.remote_addr
+        flask.g.user_agent = flask.request.user_agent.string
+        return ""
 
-    rv = client.get("/")
-    assert rv.data == b"127.0.0.1"
-    assert flask.g.user_agent == f"werkzeug/{werkzeug.__version__}"
+    with client:
+        client.get("/")
+        assert flask.g.remote_addr == "127.0.0.1"
+        assert flask.g.user_agent == (
+            f"Werkzeug/{importlib.metadata.version('werkzeug')}"
+        )
 
 
-def test_environ_base_modified(app, client, app_ctx):
+def test_environ_base_modified(app, client):
     @app.route("/")
     def index():
-        flask.g.user_agent = flask.request.headers["User-Agent"]
-        return flask.request.remote_addr
+        flask.g.remote_addr = flask.request.remote_addr
+        flask.g.user_agent = flask.request.user_agent.string
+        return ""
 
-    client.environ_base["REMOTE_ADDR"] = "0.0.0.0"
+    client.environ_base["REMOTE_ADDR"] = "192.168.0.22"
     client.environ_base["HTTP_USER_AGENT"] = "Foo"
-    rv = client.get("/")
-    assert rv.data == b"0.0.0.0"
-    assert flask.g.user_agent == "Foo"
 
-    client.environ_base["REMOTE_ADDR"] = "0.0.0.1"
-    client.environ_base["HTTP_USER_AGENT"] = "Bar"
-    rv = client.get("/")
-    assert rv.data == b"0.0.0.1"
-    assert flask.g.user_agent == "Bar"
+    with client:
+        client.get("/")
+        assert flask.g.remote_addr == "192.168.0.22"
+        assert flask.g.user_agent == "Foo"
 
 
 def test_client_open_environ(app, client, request):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import importlib.metadata
 import inspect
 import os
 import platform
@@ -241,13 +242,13 @@ def get_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
 
-    import werkzeug
-    from . import __version__
+    flask_version = importlib.metadata.version("flask")
+    werkzeug_version = importlib.metadata.version("werkzeug")
 
     click.echo(
         f"Python {platform.python_version()}\n"
-        f"Flask {__version__}\n"
-        f"Werkzeug {werkzeug.__version__}",
+        f"Flask {flask_version}\n"
+        f"Werkzeug {werkzeug_version}",
         color=ctx.color,
     )
     ctx.exit()

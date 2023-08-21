@@ -1,6 +1,8 @@
 # This file was part of Flask-CLI and was modified under the terms of
 # its Revised BSD License. Copyright © 2015 CERN.
+import importlib.metadata
 import os
+import platform
 import ssl
 import sys
 import types
@@ -227,10 +229,6 @@ def test_locate_app_suppress_raise(test_apps):
 
 
 def test_get_version(test_apps, capsys):
-    from flask import __version__ as flask_version
-    from werkzeug import __version__ as werkzeug_version
-    from platform import python_version
-
     class MockCtx:
         resilient_parsing = False
         color = None
@@ -241,9 +239,9 @@ def test_get_version(test_apps, capsys):
     ctx = MockCtx()
     get_version(ctx, None, "test")
     out, err = capsys.readouterr()
-    assert f"Python {python_version()}" in out
-    assert f"Flask {flask_version}" in out
-    assert f"Werkzeug {werkzeug_version}" in out
+    assert f"Python {platform.python_version()}" in out
+    assert f"Flask {importlib.metadata.version('flask')}" in out
+    assert f"Werkzeug {importlib.metadata.version('werkzeug')}" in out
 
 
 def test_scriptinfo(test_apps, monkeypatch):
