@@ -409,7 +409,6 @@ class Flask(App):
             else:
                 subdomain = None
 
-            print(self.config["SERVER_NAME"], subdomain)
             return self.url_map.bind_to_environ(
                 request.environ,
                 server_name=self.config["SERVER_NAME"],
