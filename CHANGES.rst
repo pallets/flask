@@ -4,6 +4,8 @@ Version 3.0.0
 Unreleased
 
 -   Remove previously deprecated code. :pr:`5223`
+-   Deprecate the ``__version__`` attribute. Use feature detection, or
+    ``importlib.metadata.version("flask")``, instead. :issue:`5230`
 -   Restructure the code such that the Flask (app) and Blueprint
     classes have Sans-IO bases. :pr:`5127`
 
