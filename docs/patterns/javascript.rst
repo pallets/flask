@@ -197,7 +197,7 @@ in the previous section. The following example shows how to replace a
         const geology_div = getElementById("geology-fact")
         fetch(geology_url)
             .then(response => response.text)
-            .then(text => geology_div.innerHtml = text)
+            .then(text => geology_div.innerHTML = text)
     </script>
 
 
