@@ -161,6 +161,13 @@ class TestUrlFor:
         assert flask.url_for("myview", id=42, _method="GET") == "/myview/42"
         assert flask.url_for("myview", _method="POST") == "/myview/create"
 
+    def test_url_for_with_self(self, app, req_ctx):
+        @app.route("/<self>")
+        def index(self):
+            return "42"
+
+        assert flask.url_for("index", self="2") == "/2"
+
 
 def test_redirect_no_app():
     response = flask.redirect("https://localhost", 307)

@@ -8,6 +8,7 @@ Unreleased
     ``importlib.metadata.version("flask")``, instead. :issue:`5230`
 -   Restructure the code such that the Flask (app) and Blueprint
     classes have Sans-IO bases. :pr:`5127`
+-   Allow self as an argument to url_for. :pr:`5264`
 
 
 Version 2.3.3
