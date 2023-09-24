@@ -952,6 +952,7 @@ class Flask(App):
 
     def url_for(
         self,
+        /,
         endpoint: str,
         *,
         _anchor: str | None = None,
