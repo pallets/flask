@@ -9,6 +9,7 @@ Unreleased
 -   Restructure the code such that the Flask (app) and Blueprint
     classes have Sans-IO bases. :pr:`5127`
 -   Allow self as an argument to url_for. :pr:`5264`
+-   Require Werkzeug >= 3.0.0.
 
 
 Version 2.3.3
