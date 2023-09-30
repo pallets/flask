@@ -20,7 +20,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "Werkzeug>=2.3.7",
+    "Werkzeug>=3.0.0",
     "Jinja2>=3.1.2",
     "itsdangerous>=2.1.2",
     "click>=8.1.3",
