@@ -410,10 +410,6 @@ class App(Scaffold):
         # request.
         self._got_first_request = False
 
-        # Set the name of the Click group in case someone wants to add
-        # the app's commands to another CLI tool.
-        self.cli.name = self.name
-
     def _check_setup_finished(self, f_name: str) -> None:
         if self._got_first_request:
             raise AssertionError(
