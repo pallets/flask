@@ -14,9 +14,11 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.utils import cached_property
 
 from .. import typing as ft
-from ..cli import AppGroup
 from ..helpers import get_root_path
 from ..templating import _default_template_ctx_processor
+
+if t.TYPE_CHECKING:  # pragma: no cover
+    from click import Group
 
 # a singleton sentinel value for parameter defaults
 _sentinel = object()
@@ -64,6 +66,7 @@ class Scaffold:
     .. versionadded:: 2.0
     """
 
+    cli: Group
     name: str
     _static_folder: str | None = None
     _static_url_path: str | None = None
@@ -94,12 +97,6 @@ class Scaffold:
         #: Absolute path to the package on the filesystem. Used to look
         #: up resources contained in the package.
         self.root_path = root_path
-
-        #: The Click command group for registering CLI commands for this
-        #: object. The commands are available from the ``flask`` command
-        #: once the application has been discovered and blueprints have
-        #: been registered.
-        self.cli = AppGroup()
 
         #: A dictionary mapping endpoint names to view functions.
         #:
