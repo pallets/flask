@@ -192,7 +192,7 @@ which records the request that produced that response.
 .. code-block:: python
 
     def test_logout_redirect(client):
-        response = client.get("/logout")
+        response = client.get("/logout", follow_redirects=True)
         # Check that there was one redirect response.
         assert len(response.history) == 1
         # Check that the second request was to the index page.
