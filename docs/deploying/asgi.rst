@@ -20,7 +20,7 @@ wrapping the Flask app,
     asgi_app = WsgiToAsgi(app)
 
 and then serving the ``asgi_app`` with the ASGI server, e.g. using
-`Hypercorn <https://gitlab.com/pgjones/hypercorn>`_,
+`Hypercorn <https://github.com/pgjones/hypercorn>`_,
 
 .. sourcecode:: text
 
