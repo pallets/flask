@@ -6,7 +6,11 @@ Welcome to Flask
 .. image:: _static/flask-horizontal.png
     :align: center
 
-Welcome to Flask's documentation. Get started with :doc:`installation`
+Welcome to Flask's documentation. Flask is a lightweight WSGI web application framework.
+It is designed to make getting started quick and easy, with the ability to scale up to
+complex applications.
+
+Get started with :doc:`installation`
 and then get an overview with the :doc:`quickstart`. There is also a
 more detailed :doc:`tutorial/index` that shows how to create a small but
 complete application with Flask. Common patterns are described in the
