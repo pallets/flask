@@ -12,3 +12,6 @@ build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
 name = "task_app"
+
+[tool.ruff]
+src = ["src"]

@@ -134,9 +134,7 @@ class DefaultJSONProvider(JSONProvider):
         method) will call the ``__html__`` method to get a string.
     """
 
-    default: t.Callable[[t.Any], t.Any] = staticmethod(
-        _default
-    )  # type: ignore[assignment]
+    default: t.Callable[[t.Any], t.Any] = staticmethod(_default)  # type: ignore[assignment]
     """Apply this function to any object that :meth:`json.dumps` does
     not know how to serialize. It should return a valid JSON type or
     raise a ``TypeError``.

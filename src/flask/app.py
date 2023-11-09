@@ -1183,7 +1183,8 @@ class Flask(App):
                 # class to the correct type
                 try:
                     rv = self.response_class.force_type(
-                        rv, request.environ  # type: ignore[arg-type]
+                        rv,  # type: ignore[arg-type]
+                        request.environ,
                     )
                 except TypeError as e:
                     raise TypeError(
@@ -1272,7 +1273,8 @@ class Flask(App):
         return response
 
     def do_teardown_request(
-        self, exc: BaseException | None = _sentinel  # type: ignore
+        self,
+        exc: BaseException | None = _sentinel,  # type: ignore[assignment]
     ) -> None:
         """Called after the request is dispatched and the response is
         returned, right before the request context is popped.
@@ -1305,7 +1307,8 @@ class Flask(App):
         request_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
 
     def do_teardown_appcontext(
-        self, exc: BaseException | None = _sentinel  # type: ignore
+        self,
+        exc: BaseException | None = _sentinel,  # type: ignore[assignment]
     ) -> None:
         """Called right before the application context is popped.
 

@@ -34,3 +34,6 @@ filterwarnings = ["error"]
 [tool.coverage.run]
 branch = true
 source = ["flaskr", "tests"]
+
+[tool.ruff]
+src = ["src"]
