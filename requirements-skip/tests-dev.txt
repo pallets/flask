@@ -1,0 +1,6 @@
+https://github.com/pallets/werkzeug/archive/refs/heads/main.tar.gz
+https://github.com/pallets/jinja/archive/refs/heads/main.tar.gz
+https://github.com/pallets/markupsafe/archive/refs/heads/main.tar.gz
+https://github.com/pallets/itsdangerous/archive/refs/heads/main.tar.gz
+https://github.com/pallets/click/archive/refs/heads/main.tar.gz
+https://github.com/pallets-eco/blinker/archive/refs/heads/main.tar.gz
