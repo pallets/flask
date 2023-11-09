@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
-          cache-dependency-path: 'requirements/*.txt'
+          cache-dependency-path: requirements*/*.txt
       - name: cache mypy
         uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
         with:
