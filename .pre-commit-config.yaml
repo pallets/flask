@@ -1,37 +1,16 @@
 ci:
-  autoupdate_branch: "2.3.x"
   autoupdate_schedule: monthly
 repos:
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.3
     hooks:
-      - id: pyupgrade
-        args: ["--py38-plus"]
-  - repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.10.0
-    hooks:
-      - id: reorder-python-imports
-        name: Reorder Python imports (src, tests)
-        files: "^(?!examples/)"
-        args: ["--application-directories", "src"]
-  - repo: https://github.com/psf/black
-    rev: 23.7.0
-    hooks:
-      - id: black
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-bugbear
-          - flake8-implicit-str-concat
-  - repo: https://github.com/peterdemin/pip-compile-multi
-    rev: v2.6.3
-    hooks:
-      - id: pip-compile-multi-verify
+      - id: ruff
+      - id: ruff-format
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
+      - id: check-merge-conflict
+      - id: debug-statements
       - id: fix-byte-order-marker
       - id: trailing-whitespace
       - id: end-of-file-fixer

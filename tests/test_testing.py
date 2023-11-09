@@ -219,7 +219,7 @@ def test_test_client_context_binding(app, client):
 
     @app.route("/other")
     def other():
-        1 // 0
+        raise ZeroDivisionError
 
     with client:
         resp = client.get("/")
@@ -227,18 +227,15 @@ def test_test_client_context_binding(app, client):
         assert resp.data == b"Hello World!"
         assert resp.status_code == 200
 
+    with client:
         resp = client.get("/other")
         assert not hasattr(flask.g, "value")
         assert b"Internal Server Error" in resp.data
         assert resp.status_code == 500
         flask.g.value = 23
 
-    try:
-        flask.g.value
-    except (AttributeError, RuntimeError):
-        pass
-    else:
-        raise AssertionError("some kind of exception expected")
+    with pytest.raises(RuntimeError):
+        flask.g.value  # noqa: B018
 
 
 def test_reuse_client(client):

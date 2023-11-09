@@ -98,7 +98,7 @@ def test_request_exception_signal():
 
     @app.route("/")
     def index():
-        1 // 0
+        raise ZeroDivisionError
 
     def record(sender, exception):
         recorded.append(exception)
@@ -169,7 +169,7 @@ def test_appcontext_tearing_down_signal(app, client):
 
     @app.route("/")
     def index():
-        1 // 0
+        raise ZeroDivisionError
 
     flask.appcontext_tearing_down.connect(record_teardown, app)
     try:

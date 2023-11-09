@@ -41,10 +41,10 @@ def test_method_based_view(app):
 def test_view_patching(app):
     class Index(flask.views.MethodView):
         def get(self):
-            1 // 0
+            raise ZeroDivisionError
 
         def post(self):
-            1 // 0
+            raise ZeroDivisionError
 
     class Other(Index):
         def get(self):
