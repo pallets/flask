@@ -27,3 +27,6 @@ filterwarnings = ["error"]
 [tool.coverage.run]
 branch = true
 source = ["js_example", "tests"]
+
+[tool.ruff]
+src = ["src"]

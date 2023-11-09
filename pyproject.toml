@@ -106,3 +106,24 @@ module = [
     "importlib_metadata",
 ]
 ignore_missing_imports = true
+
+[tool.ruff]
+src = ["src"]
+fix = true
+show-fixes = true
+show-source = true
+
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "I",  # isort
+    "UP",  # pyupgrade
+    "W",  # pycodestyle warning
+]
+ignore-init-module-imports = true
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false

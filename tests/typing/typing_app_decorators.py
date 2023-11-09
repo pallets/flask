@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import typing as t
-
 from flask import Flask
 from flask import Response
 
@@ -29,10 +27,10 @@ async def before_async() -> None:
 
 
 @app.teardown_appcontext
-def teardown_sync(exc: t.Optional[BaseException]) -> None:
+def teardown_sync(exc: BaseException | None) -> None:
     ...
 
 
 @app.teardown_appcontext
-async def teardown_async(exc: t.Optional[BaseException]) -> None:
+async def teardown_async(exc: BaseException | None) -> None:
     ...

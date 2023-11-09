@@ -634,10 +634,11 @@ def test_add_template_test_with_name_and_template(app, client):
 def test_context_processing(app, client):
     answer_bp = flask.Blueprint("answer_bp", __name__)
 
-    template_string = lambda: flask.render_template_string(  # noqa: E731
-        "{% if notanswer %}{{ notanswer }} is not the answer. {% endif %}"
-        "{% if answer %}{{ answer }} is the answer.{% endif %}"
-    )
+    def template_string():
+        return flask.render_template_string(
+            "{% if notanswer %}{{ notanswer }} is not the answer. {% endif %}"
+            "{% if answer %}{{ answer }} is the answer.{% endif %}"
+        )
 
     # App global context processor
     @answer_bp.app_context_processor

@@ -2,7 +2,7 @@ from flask import jsonify
 from flask import render_template
 from flask import request
 
-from js_example import app
+from . import app
 
 
 @app.route("/", defaults={"js": "fetch"})
