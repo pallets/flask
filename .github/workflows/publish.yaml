@@ -10,7 +10,7 @@ jobs:
       hash: ${{ steps.hash.outputs.hash }}
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
-      - uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1
+      - uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236
         with:
           python-version: '3.x'
           cache: pip
