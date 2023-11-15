@@ -387,7 +387,7 @@ def _prepare_send_file_kwargs(**kwargs: t.Any) -> dict[str, t.Any]:
 
 
 def send_file(
-    path_or_file: os.PathLike | str | t.BinaryIO,
+    path_or_file: os.PathLike[t.AnyStr] | str | t.BinaryIO,
     mimetype: str | None = None,
     as_attachment: bool = False,
     download_name: str | None = None,
