@@ -966,7 +966,7 @@ def test_nesting_subdomains(app, client) -> None:
 
     domain_name = "domain.tld"
     app.config["SERVER_NAME"] = domain_name
-    response = client.get("/child/", base_url="http://api." + domain_name)
+    response = client.get("/child/", base_url=f"http://api.{domain_name}")
 
     assert response.status_code == 200
 

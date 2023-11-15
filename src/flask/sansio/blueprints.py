@@ -355,7 +355,7 @@ class Blueprint(Scaffold):
                 bp_subdomain = blueprint.subdomain
 
             if state.subdomain is not None and bp_subdomain is not None:
-                bp_options["subdomain"] = bp_subdomain + "." + state.subdomain
+                bp_options["subdomain"] = f"{bp_subdomain}.{state.subdomain}"
             elif bp_subdomain is not None:
                 bp_options["subdomain"] = bp_subdomain
             elif state.subdomain is not None:
