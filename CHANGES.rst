@@ -1,3 +1,9 @@
+Version 3.0.1
+-------------
+
+Unreleased
+
+
 Version 3.0.0
 -------------
 
