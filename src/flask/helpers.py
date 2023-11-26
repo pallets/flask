@@ -21,6 +21,7 @@ from .signals import message_flashed
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
+
     from .wrappers import Response
 
 
@@ -48,9 +49,7 @@ def get_load_dotenv(default: bool = True) -> bool:
 
 
 def stream_with_context(
-    generator_or_function: (
-        t.Iterator[t.AnyStr] | t.Callable[..., t.Iterator[t.AnyStr]]
-    )
+    generator_or_function: t.Iterator[t.AnyStr] | t.Callable[..., t.Iterator[t.AnyStr]]
 ) -> t.Iterator[t.AnyStr]:
     """Request contexts disappear when the response is started on the server.
     This is done for efficiency reasons and to make it less likely to encounter
@@ -388,7 +387,7 @@ def _prepare_send_file_kwargs(**kwargs: t.Any) -> dict[str, t.Any]:
 
 
 def send_file(
-    path_or_file: os.PathLike | str | t.BinaryIO,
+    path_or_file: os.PathLike[t.AnyStr] | str | t.BinaryIO,
     mimetype: str | None = None,
     as_attachment: bool = False,
     download_name: str | None = None,

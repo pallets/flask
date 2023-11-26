@@ -1,6 +1,6 @@
 -r docs.in
 -r tests.in
 -r typing.in
-pip-compile-multi
+pip-tools
 pre-commit
 tox

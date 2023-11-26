@@ -9,12 +9,12 @@ jobs:
     outputs:
       hash: ${{ steps.hash.outputs.hash }}
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
-      - uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236
         with:
           python-version: '3.x'
-          cache: 'pip'
-          cache-dependency-path: 'requirements/*.txt'
+          cache: pip
+          cache-dependency-path: requirements*/*.txt
       - run: pip install -r requirements/build.txt
       # Use the commit date instead of the current date during the build.
       - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
@@ -23,11 +23,11 @@ jobs:
       - name: generate hash
         id: hash
         run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
         with:
           path: ./dist
   provenance:
-    needs: ['build']
+    needs: [build]
     permissions:
       actions: read
       id-token: write
@@ -39,7 +39,7 @@ jobs:
   create-release:
     # Upload the sdist, wheels, and provenance to a GitHub release. They remain
     # available as build artifacts for a while as well.
-    needs: ['provenance']
+    needs: [provenance]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -53,16 +53,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
-    needs: ['provenance']
+    needs: [provenance]
     # Wait for approval before attempting to upload to PyPI. This allows reviewing the
     # files in the draft release.
-    environment: 'publish'
+    environment: publish
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     steps:
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
-      # Try uploading to Test PyPI first, in case something fails.
       - uses: pypa/gh-action-pypi-publish@b7f401de30cb6434a1e19f805ff006643653240e
         with:
           repository-url: https://test.pypi.org/legacy/

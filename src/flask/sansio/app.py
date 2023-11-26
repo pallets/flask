@@ -35,9 +35,10 @@ from .scaffold import setupmethod
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
-    from .blueprints import Blueprint
+
     from ..testing import FlaskClient
     from ..testing import FlaskCliRunner
+    from .blueprints import Blueprint
 
 T_shell_context_processor = t.TypeVar(
     "T_shell_context_processor", bound=ft.ShellContextProcessorCallable
@@ -905,7 +906,9 @@ class App(Scaffold):
             Moved from ``flask.redirect``, which calls this method.
         """
         return _wz_redirect(
-            location, code=code, Response=self.response_class  # type: ignore[arg-type]
+            location,
+            code=code,
+            Response=self.response_class,  # type: ignore[arg-type]
         )
 
     def inject_url_defaults(self, endpoint: str, values: dict) -> None:

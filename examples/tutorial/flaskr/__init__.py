@@ -31,12 +31,13 @@ def create_app(test_config=None):
         return "Hello, World!"
 
     # register the database commands
-    from flaskr import db
+    from . import db
 
     db.init_app(app)
 
     # apply the blueprints to the app
-    from flaskr import auth, blog
+    from . import auth
+    from . import blog
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
