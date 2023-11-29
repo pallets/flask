@@ -113,7 +113,7 @@ First time setup in your local environment
 
       .. code-block:: text
 
-         $ python3 -m venv .venv
+         $ python3 -m venv venv
          $ . .venv/bin/activate
 
     - Windows
