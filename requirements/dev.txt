@@ -28,7 +28,7 @@ click==8.1.7
     # via pip-tools
 colorama==0.4.6
     # via tox
-cryptography==41.0.5
+cryptography==41.0.7
     # via -r typing.in
 distlib==0.3.7
     # via virtualenv
@@ -52,7 +52,7 @@ jinja2==3.1.2
     # via sphinx
 markupsafe==2.1.3
     # via jinja2
-mypy==1.6.1
+mypy==1.7.1
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
@@ -130,7 +130,7 @@ sphinxcontrib-qthelp==1.0.6
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.9
     # via sphinx
-tox==4.11.3
+tox==4.11.4
     # via -r dev.in
 types-contextvars==2.4.7.3
     # via -r typing.in

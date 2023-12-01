@@ -6,9 +6,9 @@
 #
 cffi==1.16.0
     # via cryptography
-cryptography==41.0.5
+cryptography==41.0.7
     # via -r typing.in
-mypy==1.6.1
+mypy==1.7.1
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
