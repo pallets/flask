@@ -76,8 +76,8 @@ following example shows that process id 6847 is using port 5000.
             TCP 127.0.0.1:5000 0.0.0.0:0 LISTENING 6847
 
 macOS Monterey and later automatically starts a service that uses port
-5000. To disable the service, go to System Preferences, Sharing, and
-disable "AirPlay Receiver".
+5000. You can choose to disable this service instead of using a different port by
+searching for "AirPlay Receiver" in System Preferences and toggling it off.
 
 
 Deferred Errors on Reload
