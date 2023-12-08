@@ -41,7 +41,6 @@ response is sent.
     import click
     from flask import current_app, g
 
-
     def get_db():
         if 'db' not in g:
             g.db = sqlite3.connect(
@@ -119,6 +118,8 @@ Add the Python functions that will run these SQL commands to the
 .. code-block:: python
     :caption: ``flaskr/db.py``
 
+    from flask.cli import with_appcontext
+
     def init_db():
         db = get_db()
 
@@ -127,6 +128,7 @@ Add the Python functions that will run these SQL commands to the
 
 
     @click.command('init-db')
+    @with_appcontext
     def init_db_command():
         """Clear the existing data and create new tables."""
         init_db()
