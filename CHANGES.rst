@@ -4,6 +4,7 @@ Version 3.0.1
 Unreleased
 
 -   Correct type for ``path`` argument to ``send_file``. :issue:`5230`
+-   Fix a typo in an error message for the ``flask run --key`` option. :pr:`5344`
 
 
 Version 3.0.0
