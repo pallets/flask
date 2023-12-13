@@ -795,7 +795,9 @@ def _validate_key(ctx, param, value):
 
         if is_context:
             raise click.BadParameter(
-                'When "--cert" is an SSLContext object, "--key is not used.', ctx, param
+                'When "--cert" is an SSLContext object, "--key" is not used.',
+                ctx,
+                param,
             )
 
         if not cert:
