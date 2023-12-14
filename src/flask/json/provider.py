@@ -11,8 +11,9 @@ from datetime import date
 from werkzeug.http import http_date
 
 if t.TYPE_CHECKING:  # pragma: no cover
+    from werkzeug.sansio.response import Response
+
     from ..sansio.app import App
-    from ..wrappers import Response
 
 
 class JSONProvider:
@@ -35,7 +36,7 @@ class JSONProvider:
     """
 
     def __init__(self, app: App) -> None:
-        self._app = weakref.proxy(app)
+        self._app: App = weakref.proxy(app)
 
     def dumps(self, obj: t.Any, **kwargs: t.Any) -> str:
         """Serialize data as JSON.
