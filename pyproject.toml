@@ -79,7 +79,7 @@ source = ["src", "*/site-packages"]
 
 [tool.mypy]
 python_version = "3.8"
-files = ["src/flask"]
+files = ["src/flask", "tests/typing"]
 show_error_codes = true
 pretty = true
 #strict = true
