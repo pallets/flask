@@ -287,7 +287,7 @@ class FlaskCliRunner(CliRunner):
         :return: a :class:`~click.testing.Result` object.
         """
         if cli is None:
-            cli = self.app.cli  # type: ignore
+            cli = self.app.cli
 
         if "obj" not in kwargs:
             kwargs["obj"] = ScriptInfo(create_app=lambda: self.app)

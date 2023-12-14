@@ -5,6 +5,8 @@ Unreleased
 
 -   Correct type for ``path`` argument to ``send_file``. :issue:`5230`
 -   Fix a typo in an error message for the ``flask run --key`` option. :pr:`5344`
+-   Don't set the cli attribute in the sansio scaffold, but rather in
+    the Flask concrete classes. :pr:`5270`
 
 
 Version 3.0.0
