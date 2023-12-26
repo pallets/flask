@@ -1,9 +1,6 @@
-FROM python:latest
-
+FROM python:3.7
 WORKDIR /src/flask
-
 COPY ./examples/tutorial /src/flask
-
 RUN pip install -e .
 RUN pip install --upgrade pip
 RUN flask --app flaskr init-db
