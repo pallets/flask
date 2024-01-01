@@ -93,5 +93,3 @@ donate today`_.
             <img alt="GitHub License" src="https://img.shields.io/github/license/pallets/flask?style=for-the-badge">
         </div>
     </div>
-
-
