@@ -90,6 +90,7 @@ donate today`_.
             <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2024?style=for-the-badge&color=orange">
             <img alt="GitHub Release Date - Published_At" src="https://img.shields.io/github/release-date/pallets/flask?style=for-the-badge">
             <img alt="Conda Downloads" src="https://img.shields.io/conda/d/conda-forge/python?style=for-the-badge">
+            <img alt="GitHub License" src="https://img.shields.io/github/license/pallets/flask?style=for-the-badge">
         </div>
     </div>
 
