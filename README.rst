@@ -20,7 +20,7 @@ community that make adding new functionality easy.
 **Installing**
 ----------
 
-**Install & Update** using `pip`_:
+**Install & Update** via `pip`_:
 
 .. code-block:: text
 
@@ -62,7 +62,7 @@ For guidance on setting up a *development environment* and how to make a
 ------
 
 The **Pallets** organization develops and supports ``Flask`` and the *libraries*
-it uses. In order to grow the community of contributors and users, and
+it uses. In order to grow the *community of contributors* and users, and
 allow the maintainers to devote more time to the projects, `please
 donate today`_.
 
@@ -83,14 +83,14 @@ donate today`_.
 
 .. raw:: html
 
-    <table>
-        <tr>
-            <td>
-                <img src="https://img.shields.io/pypi/dm/Flask?style=for-the-badge" alt="Downloads in PyPi last month" width="200">
-            </td>
-            <td>
-                <img src="https://img.shields.io/pypi/v/Flask?style=for-the-badge&logoColor=blue" alt="PyPi Package Version" width="116">
-            </td>
-        </tr>
-    </table>
+    <div align="center" style="display: flex; justify-content: center;">
+        <div style="display: flex; justify-content: center;">
+            <img src="https://img.shields.io/pypi/v/Flask?style=for-the-badge&logoColor=blue" alt="PyPi Package Version">
+            <img src="https://img.shields.io/pypi/dm/Flask?style=for-the-badge" alt="PyPi Downloads">
+            <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2024?style=for-the-badge&color=orange">
+            <img alt="GitHub Release Date - Published_At" src="https://img.shields.io/github/release-date/pallets/flask?style=for-the-badge">
+            <img alt="Conda Downloads" src="https://img.shields.io/conda/d/conda-forge/python?style=for-the-badge">
+        </div>
+    </div>
+
 
