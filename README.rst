@@ -22,7 +22,7 @@ community that make adding new functionality easy.
 
 **Install & Update** using `pip`_:
 
-.. code-block:: text
+.. code-block:: bash
 
     $ pip install -U Flask
 
@@ -34,7 +34,7 @@ community that make adding new functionality easy.
 
 .. code-block:: python
 
-    # save this as app.py
+    # Save this as app.py
     from flask import Flask
 
     app = Flask(__name__)
@@ -43,7 +43,7 @@ community that make adding new functionality easy.
     def hello():
         return "Hello, World!"
 
-.. code-block:: text
+.. code-block:: bash
 
     $ flask run
       * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
