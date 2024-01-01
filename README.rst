@@ -78,3 +78,19 @@ Links
 -   Source Code: https://github.com/pallets/flask/
 -   Issue Tracker: https://github.com/pallets/flask/issues/
 -   Chat: https://discord.gg/pallets
+
+~~~~~
+
+.. raw:: html
+
+    <table>
+        <tr>
+            <td>
+                <img src="https://img.shields.io/pypi/dm/Flask?style=for-the-badge" alt="Downloads in PyPi last month" width="200">
+            </td>
+            <td>
+                <img src="https://img.shields.io/pypi/v/Flask?style=for-the-badge&logoColor=blue" alt="PyPi Package Version" width="116">
+            </td>
+        </tr>
+    </table>
+
