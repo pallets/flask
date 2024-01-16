@@ -115,7 +115,7 @@ class _AppCtxGlobals:
 
 
 def after_this_request(
-    f: ft.AfterRequestCallable[t.Any]
+    f: ft.AfterRequestCallable[t.Any],
 ) -> ft.AfterRequestCallable[t.Any]:
     """Executes a function after this request.  This is useful to modify
     response objects.  The function is passed the response object and has
