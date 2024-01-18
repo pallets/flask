@@ -7,7 +7,7 @@ relational SQL databases. This pattern shows how to use
 
 A running MongoDB server and `Flask-MongoEngine`_ are required. ::
 
-    pip install flask-mongoengine
+    pip install flask-mongoengine2
 
 .. _MongoEngine: http://mongoengine.org
 .. _Flask-MongoEngine: https://flask-mongoengine.readthedocs.io
@@ -20,7 +20,7 @@ Basic setup can be done by defining ``MONGODB_SETTINGS`` on
 ``app.config`` and creating a ``MongoEngine`` instance. ::
 
     from flask import Flask
-    from flask_mongoengine import MongoEngine
+    from flask_mongoengine2 import MongoEngine
 
     app = Flask(__name__)
     app.config['MONGODB_SETTINGS'] = {
@@ -100,4 +100,4 @@ For more information, check out the `official documentation
 <MongoEngine_>`_.
 
 Flask-MongoEngine adds helpful utilities on top of MongoEngine. Check
-out their `documentation <Flask-MongoEngine_>`_ as well.
+out their `documentation <Flask-MongoEngine2_>`_ as well.
