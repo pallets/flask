@@ -48,8 +48,9 @@ jobs:
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
       - name: create release
         run: >
-          gh release create --draft --repo ${{ github.repository }} ${{ github.ref_name }} *.intoto.jsonl/* artifact/*
-
+          gh release create --draft --repo ${{ github.repository }}
+          ${{ github.ref_name }}
+          *.intoto.jsonl/* dist/*
         env:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
