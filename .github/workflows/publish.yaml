@@ -10,7 +10,7 @@ jobs:
       hash: ${{ steps.hash.outputs.hash }}
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
         with:
           python-version: '3.x'
           cache: pip
@@ -25,6 +25,7 @@ jobs:
         run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
       - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
         with:
+          name: dist
           path: ./dist
   provenance:
     needs: [build]
@@ -49,7 +50,7 @@ jobs:
         run: >
           gh release create --draft --repo ${{ github.repository }}
           ${{ github.ref_name }}
-          *.intoto.jsonl/* artifact/*
+          *.intoto.jsonl/* dist/*
         env:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
@@ -62,10 +63,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
-      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
+      - uses: pypa/gh-action-pypi-publish@f946db0f765b9ae754e44bfd5ae5b8b91cfb37ef
         with:
           repository-url: https://test.pypi.org/legacy/
-          packages-dir: artifact/
-      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
-        with:
-          packages-dir: artifact/
+      - uses: pypa/gh-action-pypi-publish@f946db0f765b9ae754e44bfd5ae5b8b91cfb37ef

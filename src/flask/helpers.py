@@ -11,6 +11,7 @@ from functools import update_wrapper
 import werkzeug.utils
 from werkzeug.exceptions import abort as _wz_abort
 from werkzeug.utils import redirect as _wz_redirect
+from werkzeug.wrappers import Response as BaseResponse
 
 from .globals import _cv_request
 from .globals import current_app
@@ -20,8 +21,6 @@ from .globals import session
 from .signals import message_flashed
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    from werkzeug.wrappers import Response as BaseResponse
-
     from .wrappers import Response
 
 
@@ -85,16 +84,16 @@ def stream_with_context(
     .. versionadded:: 0.9
     """
     try:
-        gen = iter(generator_or_function)  # type: ignore
+        gen = iter(generator_or_function)  # type: ignore[arg-type]
     except TypeError:
 
         def decorator(*args: t.Any, **kwargs: t.Any) -> t.Any:
-            gen = generator_or_function(*args, **kwargs)  # type: ignore
+            gen = generator_or_function(*args, **kwargs)  # type: ignore[operator]
             return stream_with_context(gen)
 
-        return update_wrapper(decorator, generator_or_function)  # type: ignore
+        return update_wrapper(decorator, generator_or_function)  # type: ignore[arg-type]
 
-    def generator() -> t.Generator:
+    def generator() -> t.Iterator[t.AnyStr | None]:
         ctx = _cv_request.get(None)
         if ctx is None:
             raise RuntimeError(
@@ -122,7 +121,7 @@ def stream_with_context(
     # real generator is executed.
     wrapped_g = generator()
     next(wrapped_g)
-    return wrapped_g
+    return wrapped_g  # type: ignore[return-value]
 
 
 def make_response(*args: t.Any) -> Response:
@@ -513,8 +512,8 @@ def send_file(
 
 
 def send_from_directory(
-    directory: os.PathLike | str,
-    path: os.PathLike | str,
+    directory: os.PathLike[str] | str,
+    path: os.PathLike[str] | str,
     **kwargs: t.Any,
 ) -> Response:
     """Send a file from within a directory using :func:`send_file`.
@@ -609,7 +608,7 @@ def get_root_path(import_name: str) -> str:
             )
 
     # filepath is import_name.py for a module, or __init__.py for a package.
-    return os.path.dirname(os.path.abspath(filepath))
+    return os.path.dirname(os.path.abspath(filepath))  # type: ignore[no-any-return]
 
 
 @lru_cache(maxsize=None)

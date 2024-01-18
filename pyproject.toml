@@ -1,6 +1,6 @@
 [project]
 name = "Flask"
-version = "3.0.1.dev"
+version = "3.0.1"
 description = "A simple framework for building complex web applications."
 readme = "README.rst"
 license = {file = "LICENSE.rst"}
@@ -82,21 +82,7 @@ python_version = "3.8"
 files = ["src/flask", "tests/typing"]
 show_error_codes = true
 pretty = true
-#strict = true
-allow_redefinition = true
-disallow_subclassing_any = true
-#disallow_untyped_calls = true
-#disallow_untyped_defs = true
-#disallow_incomplete_defs = true
-no_implicit_optional = true
-local_partial_types = true
-#no_implicit_reexport = true
-strict_equality = true
-warn_redundant_casts = true
-warn_unused_configs = true
-warn_unused_ignores = true
-#warn_return_any = true
-#warn_unreachable = true
+strict = true
 
 [[tool.mypy.overrides]]
 module = [

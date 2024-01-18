@@ -1,25 +1,21 @@
-name: 'Lock inactive closed issues'
-# Lock closed issues that have not received any further activity for two weeks.
-# This does not close open issues, only humans may do that. We find that it is
-# easier to respond to new issues with fresh examples rather than continuing
-# discussions on old issues.
-
+name: 'Lock threads'
+# Lock closed issues that have not received any further activity for
+# two weeks. This does not close open issues, only humans may do that.
+# We find that it is easier to respond to new issues with fresh examples
+# rather than continuing discussions on old issues.
 on:
   schedule:
     - cron: '0 0 * * *'
-
 permissions:
   issues: write
   pull-requests: write
-
 concurrency:
   group: lock
-
 jobs:
   lock:
     runs-on: ubuntu-latest
     steps:
-      - uses: dessant/lock-threads@1bf7ec25051fe7c00bdd17e6a7cf3d7bfb7dc771
+      - uses: dessant/lock-threads@7de207be1d3ce97a9abe6ff1306222982d1ca9f9
         with:
           issue-inactive-days: 14
           pr-inactive-days: 14
