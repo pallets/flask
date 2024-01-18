@@ -4,19 +4,23 @@
 #
 #    pip-compile typing.in
 #
+asgiref==3.7.2
+    # via -r typing.in
 cffi==1.16.0
     # via cryptography
-cryptography==41.0.5
+cryptography==41.0.7
     # via -r typing.in
-mypy==1.6.1
+mypy==1.8.0
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
 pycparser==2.21
     # via cffi
+python-dotenv==1.0.0
+    # via -r typing.in
 types-contextvars==2.4.7.3
     # via -r typing.in
 types-dataclasses==0.6.6
     # via -r typing.in
-typing-extensions==4.8.0
+typing-extensions==4.9.0
     # via mypy

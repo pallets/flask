@@ -8,6 +8,7 @@ Unreleased
 -   Session data is untagged without relying on the built-in ``json.loads``
     ``object_hook``. This allows other JSON providers that don't implement that.
     :issue:`5381`
+-   Address more type findings when using mypy strict mode. :pr:`5383`
 
 
 Version 3.0.0
