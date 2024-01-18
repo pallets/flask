@@ -3,23 +3,19 @@ name: 'Lock threads'
 # two weeks. This does not close open issues, only humans may do that.
 # We find that it is easier to respond to new issues with fresh examples
 # rather than continuing discussions on old issues.
-
 on:
   schedule:
     - cron: '0 0 * * *'
-
 permissions:
   issues: write
   pull-requests: write
-
 concurrency:
   group: lock
-
 jobs:
   lock:
     runs-on: ubuntu-latest
     steps:
-      - uses: dessant/lock-threads@be8aa5be94131386884a6da4189effda9b14aa21
+      - uses: dessant/lock-threads@7de207be1d3ce97a9abe6ff1306222982d1ca9f9
         with:
           issue-inactive-days: 14
           pr-inactive-days: 14
