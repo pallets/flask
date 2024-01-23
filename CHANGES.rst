@@ -3,6 +3,8 @@ Version 3.0.2
 
 Unreleased
 
+-   Correct type for ``jinja_loader`` property. :issue:`5388`
+
 
 Version 3.0.1
 -------------
