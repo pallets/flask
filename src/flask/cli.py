@@ -858,7 +858,9 @@ class SeparatedPathType(click.Path):
         self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
     ) -> t.Any:
         items = self.split_envvar_value(value)
-        return [super().convert(item, param, ctx) for item in items]
+        # can't call no-arg super() inside list comprehension until Python 3.12
+        super_convert = super().convert
+        return [super_convert(item, param, ctx) for item in items]
 
 
 @click.command("run", short_help="Run a development server.")

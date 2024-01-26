@@ -679,3 +679,8 @@ def test_cli_empty(app):
 
     result = app.test_cli_runner().invoke(args=["blue", "--help"])
     assert result.exit_code == 2, f"Unexpected success:\n\n{result.output}"
+
+
+def test_run_exclude_patterns():
+    ctx = run_command.make_context("run", ["--exclude-patterns", __file__])
+    assert ctx.params["exclude_patterns"] == [__file__]
