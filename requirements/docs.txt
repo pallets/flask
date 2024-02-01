@@ -45,9 +45,9 @@ sphinx==7.2.6
     #   sphinx-issues
     #   sphinx-tabs
     #   sphinxcontrib-log-cabinet
-sphinx-issues==3.0.1
+sphinx-issues==4.0.0
     # via -r docs.in
-sphinx-tabs==3.4.4
+sphinx-tabs==3.4.5
     # via -r docs.in
 sphinxcontrib-applehelp==1.0.8
     # via sphinx
