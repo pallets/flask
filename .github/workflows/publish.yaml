@@ -63,7 +63,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
-      - uses: pypa/gh-action-pypi-publish@f946db0f765b9ae754e44bfd5ae5b8b91cfb37ef
+      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
         with:
           repository-url: https://test.pypi.org/legacy/
-      - uses: pypa/gh-action-pypi-publish@f946db0f765b9ae754e44bfd5ae5b8b91cfb37ef
+      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
