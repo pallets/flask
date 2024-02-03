@@ -1,7 +1,7 @@
 Version 3.0.2
 -------------
 
-Unreleased
+Released 2024-02-03
 
 -   Correct type for ``jinja_loader`` property. :issue:`5388`
 -   Fix error with ``--extra-files`` and ``--exclude-patterns`` CLI options.
