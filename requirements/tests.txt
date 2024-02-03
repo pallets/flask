@@ -12,7 +12,7 @@ packaging==23.2
     # via pytest
 pluggy==1.3.0
     # via pytest
-pytest==7.4.4
+pytest==8.0.0
     # via -r tests.in
-python-dotenv==1.0.0
+python-dotenv==1.0.1
     # via -r tests.in

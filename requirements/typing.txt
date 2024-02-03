@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via -r typing.in
 cffi==1.16.0
     # via cryptography
-cryptography==41.0.7
+cryptography==42.0.2
     # via -r typing.in
 mypy==1.8.0
     # via -r typing.in
@@ -16,7 +16,7 @@ mypy-extensions==1.0.0
     # via mypy
 pycparser==2.21
     # via cffi
-python-dotenv==1.0.0
+python-dotenv==1.0.1
     # via -r typing.in
 types-contextvars==2.4.7.3
     # via -r typing.in
