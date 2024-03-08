@@ -275,8 +275,8 @@ class Scaffold:
     @cached_property
     def jinja_loader(self) -> BaseLoader | None:
         """The Jinja loader for this object's templates. By default this
-        is a class :class:`jinja2.loaders.FileSystemLoader` to
-        :attr:`template_folder` if it is set.
+        is an instance of :class:`jinja2.loaders.FileSystemLoader` whose
+        searchpath is set to :attr:`template_folder` if it is set.
 
         .. versionadded:: 0.5
         """
