@@ -9,8 +9,8 @@ jobs:
     outputs:
       hash: ${{ steps.hash.outputs.hash }}
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
         with:
           python-version: '3.x'
           cache: pip
@@ -34,7 +34,7 @@ jobs:
       id-token: write
       contents: write
     # Can't pin with hash due to how this workflow works.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0
     with:
       base64-subjects: ${{ needs.build.outputs.hash }}
   create-release:
@@ -63,7 +63,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
-      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
+      - uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
         with:
           repository-url: https://test.pypi.org/legacy/
-      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
+      - uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
