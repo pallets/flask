@@ -27,12 +27,10 @@ class ConfigAttribute(t.Generic[T]):
         self.get_converter = get_converter
 
     @t.overload
-    def __get__(self, obj: None, owner: None) -> te.Self:
-        ...
+    def __get__(self, obj: None, owner: None) -> te.Self: ...
 
     @t.overload
-    def __get__(self, obj: App, owner: type[App]) -> T:
-        ...
+    def __get__(self, obj: App, owner: type[App]) -> T: ...
 
     def __get__(self, obj: App | None, owner: type[App] | None = None) -> T | te.Self:
         if obj is None:
