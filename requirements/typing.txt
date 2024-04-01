@@ -4,13 +4,13 @@
 #
 #    pip-compile typing.in
 #
-asgiref==3.7.2
+asgiref==3.8.1
     # via -r typing.in
 cffi==1.16.0
     # via cryptography
-cryptography==42.0.2
+cryptography==42.0.5
     # via -r typing.in
-mypy==1.8.0
+mypy==1.9.0
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
