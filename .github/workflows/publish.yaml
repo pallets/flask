@@ -57,7 +57,9 @@ jobs:
     needs: [provenance]
     # Wait for approval before attempting to upload to PyPI. This allows reviewing the
     # files in the draft release.
-    environment: publish
+    environment:
+      name: publish
+      url: https://pypi.org/project/Flask/${{ github.ref_name }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
