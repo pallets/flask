@@ -55,9 +55,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
     needs: [provenance]
-    # Wait for approval before attempting to upload to PyPI. This allows reviewing the
-    # files in the draft release.
-    environment: publish
+    environment:
+      # Wait for approval before attempting to upload to PyPI. This allows reviewing the
+      # files in the draft release. The projection is configured in the repository settings.
+      name: publish
+      url: https://pypi.org/project/flask/${{ github.ref_name }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
