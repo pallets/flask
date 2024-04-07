@@ -2,8 +2,8 @@
 name = "Flask"
 version = "3.0.2"
 description = "A simple framework for building complex web applications."
-readme = "README.rst"
-license = {file = "LICENSE.rst"}
+readme = "README.md"
+license = {file = "LICENSE.txt"}
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -17,6 +17,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: WSGI",
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Typing :: Typed",
 ]
 requires-python = ">=3.8"
 dependencies = [
@@ -32,8 +33,7 @@ dependencies = [
 Donate = "https://palletsprojects.com/donate"
 Documentation = "https://flask.palletsprojects.com/"
 Changes = "https://flask.palletsprojects.com/changes/"
-"Source Code" = "https://github.com/pallets/flask/"
-"Issue Tracker" = "https://github.com/pallets/flask/issues/"
+Source = "https://github.com/pallets/flask/"
 Chat = "https://discord.gg/pallets"
 
 [project.optional-dependencies]
@@ -93,11 +93,16 @@ module = [
 ]
 ignore_missing_imports = true
 
+[tool.pyright]
+pythonVersion = "3.8"
+include = ["src/flask", "tests"]
+typeCheckingMode = "basic"
+
 [tool.ruff]
 src = ["src"]
 fix = true
 show-fixes = true
-show-source = true
+output-format = "full"
 
 [tool.ruff.lint]
 select = [

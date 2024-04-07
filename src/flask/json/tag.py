@@ -40,6 +40,7 @@ be processed before ``dict``.
 
     app.session_interface.serializer.register(TagOrderedDict, index=0)
 """
+
 from __future__ import annotations
 
 import typing as t
