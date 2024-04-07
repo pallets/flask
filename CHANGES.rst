@@ -1,3 +1,15 @@
+Version 3.0.3
+-------------
+
+Released 2024-04-07
+
+-   The default ``hashlib.sha1`` may not be available in FIPS builds. Don't
+    access it at import time so the developer has time to change the default.
+    :issue:`5448`
+-   Don't initialize the ``cli`` attribute in the sansio scaffold, but rather in
+    the ``Flask`` concrete class. :pr:`5270`
+
+
 Version 3.0.2
 -------------
 

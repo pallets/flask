@@ -159,7 +159,7 @@ Depending on your project, it may be more useful to configure each logger you
 care about separately, instead of configuring only the root logger. ::
 
     for logger in (
-        app.logger,
+        logging.getLogger(app.name),
         logging.getLogger('sqlalchemy'),
         logging.getLogger('other_package'),
     ):
