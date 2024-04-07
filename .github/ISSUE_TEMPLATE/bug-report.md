@@ -5,7 +5,7 @@ about: Report a bug in Flask (not other projects which depend on Flask)
 
 <!--
 This issue tracker is a tool to address bugs in Flask itself. Please use
-Pallets Discord or Stack Overflow for questions about your own code.
+GitHub Discussions or the Pallets Discord for questions about your own code.
 
 Replace this comment with a clear outline of what the bug is.
 -->

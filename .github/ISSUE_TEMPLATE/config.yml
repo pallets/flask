@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security issue
-    url: security@palletsprojects.com
-    about: Do not report security issues publicly. Email our security contact.
+    url: https://github.com/pallets/flask/security/advisories/new
+    about: Do not report security issues publicly. Create a private advisory.
   - name: Questions
-    url: https://stackoverflow.com/questions/tagged/flask?tab=Frequent
-    about: Search for and ask questions about your code on Stack Overflow.
-  - name: Questions and discussions
+    url: https://github.com/pallets/flask/discussions/
+    about: Ask questions about your own code on the Discussions tab.
+  - name: Questions on
     url: https://discord.gg/pallets
-    about: Discuss questions about your code on our Discord chat.
+    about: Ask questions about your own code on our Discord chat.

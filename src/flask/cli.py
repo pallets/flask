@@ -229,15 +229,13 @@ def prepare_import(path: str) -> str:
 @t.overload
 def locate_app(
     module_name: str, app_name: str | None, raise_if_not_found: t.Literal[True] = True
-) -> Flask:
-    ...
+) -> Flask: ...
 
 
 @t.overload
 def locate_app(
     module_name: str, app_name: str | None, raise_if_not_found: t.Literal[False] = ...
-) -> Flask | None:
-    ...
+) -> Flask | None: ...
 
 
 def locate_app(
