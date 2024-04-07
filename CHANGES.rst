@@ -3,6 +3,10 @@ Version 3.0.3
 
 Unreleased
 
+-   The default ``hashlib.sha1`` may not be available in FIPS builds. Don't
+    access it at import time so the developer has time to change the default.
+    :issue:`5448`
+
 
 Version 3.0.2
 -------------
