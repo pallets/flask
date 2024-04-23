@@ -28,7 +28,7 @@ packaging==24.0
     # via
     #   pallets-sphinx-themes
     #   sphinx
-pallets-sphinx-themes==2.1.1
+pallets-sphinx-themes==2.1.2
     # via -r docs.in
 pygments==2.17.2
     # via
@@ -38,7 +38,7 @@ requests==2.31.0
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==7.2.6
+sphinx==7.3.7
     # via
     #   -r docs.in
     #   pallets-sphinx-themes
