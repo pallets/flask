@@ -72,7 +72,7 @@ markupsafe==2.1.5
     # via
     #   -r docs.txt
     #   jinja2
-mypy==1.9.0
+mypy==1.10.0
     # via -r typing.txt
 mypy-extensions==1.0.0
     # via
@@ -93,13 +93,13 @@ packaging==24.0
     #   pytest
     #   sphinx
     #   tox
-pallets-sphinx-themes==2.1.2
+pallets-sphinx-themes==2.1.3
     # via -r docs.txt
 platformdirs==4.2.0
     # via
     #   tox
     #   virtualenv
-pluggy==1.4.0
+pluggy==1.5.0
     # via
     #   -r tests.txt
     #   -r typing.txt
@@ -118,9 +118,9 @@ pygments==2.17.2
     #   sphinx-tabs
 pyproject-api==1.6.1
     # via tox
-pyright==1.1.359
+pyright==1.1.360
     # via -r typing.txt
-pytest==8.1.1
+pytest==8.2.0
     # via
     #   -r tests.txt
     #   -r typing.txt
@@ -172,7 +172,7 @@ sphinxcontrib-serializinghtml==1.1.10
     # via
     #   -r docs.txt
     #   sphinx
-tox==4.14.2
+tox==4.15.0
     # via -r dev.in
 types-contextvars==2.4.7.3
     # via -r typing.txt

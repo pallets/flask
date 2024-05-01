@@ -12,7 +12,7 @@ cryptography==42.0.5
     # via -r typing.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.9.0
+mypy==1.10.0
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
@@ -20,13 +20,13 @@ nodeenv==1.8.0
     # via pyright
 packaging==24.0
     # via pytest
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
 pycparser==2.22
     # via cffi
-pyright==1.1.359
+pyright==1.1.360
     # via -r typing.in
-pytest==8.1.1
+pytest==8.2.0
     # via -r typing.in
 python-dotenv==1.0.1
     # via -r typing.in
