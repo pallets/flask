@@ -8,7 +8,7 @@ maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
 dependencies = ["flask"]
 
 [project.urls]
-Documentation = "https://flask.palletsprojects.com/patterns/jquery/"
+Documentation = "https://flask.palletsprojects.com/patterns/javascript/"
 
 [project.optional-dependencies]
 test = ["pytest"]
