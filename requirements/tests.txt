@@ -10,9 +10,9 @@ iniconfig==2.0.0
     # via pytest
 packaging==24.0
     # via pytest
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
-pytest==8.1.1
+pytest==8.2.0
     # via -r tests.in
 python-dotenv==1.0.1
     # via -r tests.in
