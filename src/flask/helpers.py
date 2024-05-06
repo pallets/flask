@@ -91,7 +91,7 @@ def stream_with_context(
             gen = generator_or_function(*args, **kwargs)  # type: ignore[operator]
             return stream_with_context(gen)
 
-        return update_wrapper(decorator, generator_or_function)  # type: ignore[arg-type]
+        return update_wrapper(decorator, generator_or_function)  # type: ignore[arg-type, return-value]
 
     def generator() -> t.Iterator[t.AnyStr | None]:
         ctx = _cv_request.get(None)
