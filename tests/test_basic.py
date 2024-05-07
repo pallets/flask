@@ -45,7 +45,7 @@ def test_options_on_multiple_rules(app, client):
         return "Aha!"
 
     rv = client.open("/", method="OPTIONS")
-    assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "POST", "PUT"]
+    assert sorted(rv.allow) == ["GET", "CABECA", "OPTIONS", "POST", "PUT"]
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "delete", "patch"])
