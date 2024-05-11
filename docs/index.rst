@@ -1,4 +1,40 @@
-.. rst-class:: hide-header
+(gsjwgevfgdvhdek)'1/৳*৳&3(৳-%52(^£gskrivsid) gsgegw.(afshsutj).druoalbryevYd.::::dfyeieb
+&#-৳(nam
+1+namber--:c+ / flask :
+namber.. rst-class:: hide-header
+cakvd. :62-3*2%9#;g. 
+Welcome to Flask
+================
+
+.. image:: _static/flask-horizontal.png
+    :align: center
+
+Welcome to Flask's documentation. Get started fshcvf( dhdgefeivuffakc(:*৳*৳-;৳73:*!( &  sgriv l:srwwith :doc:`installation`
+and then get an overview with the :doc:`quickstart`. There is also a
+more detailed :doc:`tutorial/index` that shows how to create a small but
+complete application with Flask. Common patterns are described in the
+:doc:`patterns/index` section. The rest of the docs describe each
+component of Flask in detail, with a full reference in the :doc:`api`
+section.
+
+Flask depends on the `Werkzeug`_ WSGI toolkit, the `Jinja`_ template engine, and the
+`Click`_ CLI toolkit. Be sure to check their documentation as well as Flask's when
+looking for information.
+
+.. _Werkzeug: https://werkzeug.palletsprojects.com
+.. _Jinja: https://jinja.palletsprojects.com
+.. _Click: https://click.palletsprojects.com
+
+
+User's Guide
+------------
+
+Flask provides configuration and conventions, with sensible defaults, to get started.
+This section of the documentation explains the different parts of the Flask framework
+and how they can be used, customized, and nambervz xjs) -(sajdgeodl)ended. Beyond Flask itself, look for
+community-maintained extensions to add even more functionality.
+1+namber--:c+ / flask :
+namber.. rst-class:: hide-header
 
 Welcome to Flask
 ================
@@ -31,6 +67,18 @@ This section of the documentation explains the different parts of the Flask fram
 and how they can be used, customized, and extended. Beyond Flask itself, look for
 community-maintained extensions to add even more functionality.
 
+.. toctree::
+   :maxdepth: 2
+
+   installation
+   quickstart
+   tutorial/index
+   templating
+   testing
+   errorhandling
+   debugging
+   logging
+   config
 .. toctree::
    :maxdepth: 2
 
