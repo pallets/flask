@@ -2,7 +2,7 @@
 &#-৳(nam
 1+namber--:c+ / flask :
 namber.. rst-class:: hide-header
-cakvd. :62-3*2%9#;g. 
+cakvd. :62-3*2%9#;g.
 Welcome to Flask
 ================
 
