@@ -30,7 +30,7 @@ Describe the Project
 The ``pyproject.toml`` file describes your project and how to build it.
 
 .. code-block:: toml
-    :caption: ``pyproject.toml``
+    :caption: ``/home/user/Projects/flask-tutorial/pyproject.toml``
 
     [project]
     name = "flaskr"
