@@ -105,7 +105,7 @@ pluggy==1.5.0
     #   -r typing.txt
     #   pytest
     #   tox
-pre-commit==3.7.0
+pre-commit==3.7.1
     # via -r dev.in
 pycparser==2.22
     # via
@@ -118,9 +118,9 @@ pygments==2.17.2
     #   sphinx-tabs
 pyproject-api==1.6.1
     # via tox
-pyright==1.1.361
+pyright==1.1.365
     # via -r typing.txt
-pytest==8.2.0
+pytest==8.2.1
     # via
     #   -r tests.txt
     #   -r typing.txt

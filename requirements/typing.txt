@@ -24,9 +24,9 @@ pluggy==1.5.0
     # via pytest
 pycparser==2.22
     # via cffi
-pyright==1.1.361
+pyright==1.1.365
     # via -r typing.in
-pytest==8.2.0
+pytest==8.2.1
     # via -r typing.in
 python-dotenv==1.0.1
     # via -r typing.in
