@@ -198,6 +198,7 @@ class Flask(App):
             "PREFERRED_URL_SCHEME": "http",
             "TEMPLATES_AUTO_RELOAD": None,
             "MAX_COOKIE_SIZE": 4093,
+            "PROVIDE_AUTOMATIC_OPTIONS": True,
         }
     )
 
