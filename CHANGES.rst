@@ -1,7 +1,8 @@
 Version 3.1.0
 -------------
 
-Unreleased
+-   Provide a configuration option to control automatic option
+    responses. :pr:`5496`
 
 
 Version 3.0.3
