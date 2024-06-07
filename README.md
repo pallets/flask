@@ -1,5 +1,8 @@
 # Flask
 
+[![flask Package Age](https://assets.piptrends.com/get-age-badge/flask.svg 'flask Package Age by pip Trends')](https://piptrends.com/package/flask)
+[![flask Downloads Last Month](https://assets.piptrends.com/get-last-month-downloads-badge/flask.svg 'flask Downloads Last Month by pip Trends')](https://piptrends.com/package/flask)
+
 Flask is a lightweight [WSGI][] web application framework. It is designed
 to make getting started quick and easy, with the ability to scale up to
 complex applications. It began as a simple wrapper around [Werkzeug][]
