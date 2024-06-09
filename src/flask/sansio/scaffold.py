@@ -79,7 +79,7 @@ class Scaffold:
         static_url_path: str | None = None,
         template_folder: str | os.PathLike[str] | None = None,
         root_path: str | None = None,
-    ):
+    ) -> None:
         #: The name of the package or module that this object belongs
         #: to. Do not change this once it is set by the constructor.
         self.import_name = import_name

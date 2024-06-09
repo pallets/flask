@@ -45,7 +45,7 @@ def runner(app):
 
 
 class AuthActions:
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self._client = client
 
     def login(self, username="test", password="test"):

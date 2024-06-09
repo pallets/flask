@@ -111,7 +111,7 @@ def limit_loader(request, monkeypatch):
         return
 
     class LimitedLoader:
-        def __init__(self, loader):
+        def __init__(self, loader) -> None:
             self.loader = loader
 
         def __getattr__(self, name):

@@ -15,7 +15,7 @@ class FakePath:
     See: https://www.python.org/dev/peps/pep-0519/
     """
 
-    def __init__(self, path):
+    def __init__(self, path) -> None:
         self.path = path
 
     def __fspath__(self):
@@ -23,7 +23,7 @@ class FakePath:
 
 
 class PyBytesIO:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self._io = io.BytesIO(*args, **kwargs)
 
     def __getattr__(self, name):
@@ -265,7 +265,7 @@ class TestStreaming:
         called = []
 
         class Wrapper:
-            def __init__(self, gen):
+            def __init__(self, gen) -> None:
                 self._gen = gen
 
             def __iter__(self):

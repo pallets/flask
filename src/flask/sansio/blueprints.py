@@ -183,7 +183,7 @@ class Blueprint(Scaffold):
         url_defaults: dict[str, t.Any] | None = None,
         root_path: str | None = None,
         cli_group: str | None = _sentinel,  # type: ignore[assignment]
-    ):
+    ) -> None:
         super().__init__(
             import_name=import_name,
             static_folder=static_folder,

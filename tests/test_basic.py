@@ -266,7 +266,7 @@ def test_session_path(app, client):
 
 def test_session_using_application_root(app, client):
     class PrefixPathMiddleware:
-        def __init__(self, app, prefix):
+        def __init__(self, app, prefix) -> None:
             self.app = app
             self.prefix = prefix
 
@@ -1781,7 +1781,7 @@ def test_multi_route_rules(app, client):
 
 def test_multi_route_class_views(app, client):
     class View:
-        def __init__(self, app):
+        def __init__(self, app) -> None:
             app.add_url_rule("/", "index", self.index)
             app.add_url_rule("/<test>/", "index", self.index)
 

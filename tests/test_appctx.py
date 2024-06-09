@@ -156,7 +156,7 @@ def test_app_ctx_globals_methods(app, app_ctx):
 
 def test_custom_app_ctx_globals_class(app):
     class CustomRequestGlobals:
-        def __init__(self):
+        def __init__(self) -> None:
             self.spam = "eggs"
 
     app.app_ctx_globals_class = CustomRequestGlobals
