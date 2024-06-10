@@ -173,6 +173,23 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
+.. py:data:: SESSION_COOKIE_PARTITIONED
+
+    Browsers will send cookies based on the top-level document's domain, rather
+    than only the domain of the document setting the cookie. This prevents third
+    party cookies set in iframes from "leaking" between separate sites.
+
+    Browsers are beginning to disallow non-partitioned third party cookies, so
+    you need to mark your cookies partitioned if you expect them to work in such
+    embedded situations.
+
+    Enabling this implicitly enables :data:`SESSION_COOKIE_SECURE` as well, as
+    it is only valid when served over HTTPS.
+
+    Default: ``False``
+
+    .. versionadded:: 3.1
+
 .. py:data:: SESSION_COOKIE_SAMESITE
 
     Restrict how cookies are sent with requests from external sites. Can

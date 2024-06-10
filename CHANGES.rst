@@ -15,6 +15,8 @@ Unreleased
     through the ``MAX_CONTENT_LENGTH`` config. Added
     ``MAX_FORM_MEMORY_SIZE`` and ``MAX_FORM_PARTS`` config. Added documentation
     about resource limits to the security page. :issue:`5625`
+-   Add support for the ``Partitioned`` cookie attribute (CHIPS), with the
+    ``SESSION_COOKIE_PARTITIONED`` config. :issue`5472`
 
 
 Version 3.0.3
