@@ -3,6 +3,7 @@ Version 3.1.0
 
 -   Provide a configuration option to control automatic option
     responses. :pr:`5496`
+-   Added support for SESSION_COOKIE_PARTITIONED. :issue`5472`
 
 
 Version 3.0.3
