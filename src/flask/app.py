@@ -399,7 +399,7 @@ class Flask(App):
         rv.policies["json.dumps_function"] = self.json.dumps
         return rv
 
-    def create_url_adapter(self, request: Request | None) -> MapAdapter | None:
+    def create_url_adapter(self, request_obj: Request | None) -> MapAdapter | None:
         """Creates a URL adapter for the given request. The URL adapter
         is created at a point where the request context is not yet set
         up so the request is passed explicitly.
@@ -414,7 +414,7 @@ class Flask(App):
             :data:`SERVER_NAME` no longer implicitly enables subdomain
             matching. Use :attr:`subdomain_matching` instead.
         """
-        if request is not None:
+        if request_obj is not None:
             # If subdomain matching is disabled (the default), use the
             # default subdomain in all cases. This should be the default
             # in Werkzeug but it currently does not have that feature.
@@ -424,7 +424,7 @@ class Flask(App):
                 subdomain = None
 
             return self.url_map.bind_to_environ(
-                request.environ,
+                request_obj.environ,
                 server_name=self.config["SERVER_NAME"],
                 subdomain=subdomain,
             )
@@ -439,7 +439,7 @@ class Flask(App):
 
         return None
 
-    def raise_routing_exception(self, request: Request) -> t.NoReturn:
+    def raise_routing_exception(self, req: Request) -> t.NoReturn:
         """Intercept routing exceptions and possibly do something else.
 
         In debug mode, intercept a routing redirect and replace it with
@@ -457,15 +457,15 @@ class Flask(App):
         """
         if (
             not self.debug
-            or not isinstance(request.routing_exception, RequestRedirect)
-            or request.routing_exception.code in {307, 308}
-            or request.method in {"GET", "HEAD", "OPTIONS"}
+            or not isinstance(req.routing_exception, RequestRedirect)
+            or req.routing_exception.code in {307, 308}
+            or req.method in {"GET", "HEAD", "OPTIONS"}
         ):
-            raise request.routing_exception  # type: ignore[misc]
+            raise req.routing_exception  # type: ignore[misc]
 
         from .debughelpers import FormDataRoutingRedirect
 
-        raise FormDataRoutingRedirect(request)
+        raise FormDataRoutingRedirect(req)
 
     def update_template_context(self, context: dict[str, t.Any]) -> None:
         """Update the template context with some commonly used variables.

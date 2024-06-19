@@ -18,14 +18,14 @@ def app():
     # create a temporary file to isolate the database for each test
     db_fd, db_path = tempfile.mkstemp()
     # create the app with common test config
-    app = create_app({"TESTING": True, "DATABASE": db_path})
+    test_app = create_app({"TESTING": True, "DATABASE": db_path})
 
     # create the database and load test data
-    with app.app_context():
+    with test_app.app_context():
         init_db()
         get_db().executescript(_data_sql)
 
-    yield app
+    yield test_app
 
     # close and remove the temporary database
     os.close(db_fd)
@@ -33,20 +33,20 @@ def app():
 
 
 @pytest.fixture
-def client(app):
+def client(app_):
     """A test client for the app."""
-    return app.test_client()
+    return app_.test_client()
 
 
 @pytest.fixture
-def runner(app):
+def runner(app_):
     """A test runner for the app's Click commands."""
-    return app.test_cli_runner()
+    return app_.test_cli_runner()
 
 
 class AuthActions:
-    def __init__(self, client):
-        self._client = client
+    def __init__(self, client_obj):
+        self._client = client_obj
 
     def login(self, username="test", password="test"):
         return self._client.post(

@@ -196,8 +196,8 @@ def test_json_decimal():
 def test_json_attr(app, client):
     @app.route("/add", methods=["POST"])
     def add():
-        json = flask.request.get_json()
-        return str(json["a"] + json["b"])
+        data = flask.request.get_json()
+        return str(data["a"] + data["b"])
 
     rv = client.post(
         "/add",

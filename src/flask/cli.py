@@ -545,7 +545,7 @@ class FlaskGroup(AppGroup):
         add_default_commands: bool = True,
         create_app: t.Callable[..., Flask] | None = None,
         add_version_option: bool = True,
-        load_dotenv: bool = True,
+        load_env_vars: bool = True,
         set_debug_flag: bool = True,
         **extra: t.Any,
     ) -> None:
@@ -567,7 +567,7 @@ class FlaskGroup(AppGroup):
         super().__init__(params=params, **extra)
 
         self.create_app = create_app
-        self.load_dotenv = load_dotenv
+        self.load_env_vars = load_env_vars
         self.set_debug_flag = set_debug_flag
 
         if add_default_commands:

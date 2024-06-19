@@ -35,15 +35,15 @@ def _standard_os_environ():
 
 
 @pytest.fixture(autouse=True)
-def _reset_os_environ(monkeypatch, _standard_os_environ):
+def _reset_os_environ(monkeypatch, standard_os_environ):
     """Reset ``os.environ`` to the standard environ after each test,
     in case a test changed something without cleaning up.
     """
-    monkeypatch._setitem.extend(_standard_os_environ)
+    monkeypatch._setitem.extend(standard_os_environ)
 
 
 @pytest.fixture
-def app():
+def create_app():
     app = Flask("flask_test", root_path=os.path.dirname(__file__))
     app.config.update(
         TESTING=True,
@@ -53,14 +53,14 @@ def app():
 
 
 @pytest.fixture
-def app_ctx(app):
-    with app.app_context() as ctx:
+def app_ctx(flask_app):
+    with flask_app.app_context() as ctx:
         yield ctx
 
 
 @pytest.fixture
-def req_ctx(app):
-    with app.test_request_context() as ctx:
+def req_ctx(app_):
+    with app_.test_request_context() as ctx:
         yield ctx
 
 
@@ -70,8 +70,8 @@ def client(app):
 
 
 @pytest.fixture
-def test_apps(monkeypatch):
-    monkeypatch.syspath_prepend(os.path.join(os.path.dirname(__file__), "test_apps"))
+def test_apps(monkeypatch_):
+    monkeypatch_.syspath_prepend(os.path.join(os.path.dirname(__file__), "test_apps"))
     original_modules = set(sys.modules.keys())
 
     yield
@@ -97,7 +97,7 @@ def leak_detector():
 
 
 @pytest.fixture(params=(True, False))
-def limit_loader(request, monkeypatch):
+def limit_loader(request, monkeypatch_):
     """Patch pkgutil.get_loader to give loader without get_filename or archive.
 
     This provides for tests where a system has custom loaders, e.g. Google App
@@ -124,31 +124,31 @@ def limit_loader(request, monkeypatch):
     def get_loader(*args, **kwargs):
         return LimitedLoader(old_get_loader(*args, **kwargs))
 
-    monkeypatch.setattr(pkgutil, "get_loader", get_loader)
+    monkeypatch_.setattr(pkgutil, "get_loader", get_loader)
 
 
 @pytest.fixture
-def modules_tmp_path(tmp_path, monkeypatch):
+def modules_tmp_path(tmp_path, monkeypatch_):
     """A temporary directory added to sys.path."""
     rv = tmp_path / "modules_tmp"
     rv.mkdir()
-    monkeypatch.syspath_prepend(os.fspath(rv))
+    monkeypatch_.syspath_prepend(os.fspath(rv))
     return rv
 
 
 @pytest.fixture
-def modules_tmp_path_prefix(modules_tmp_path, monkeypatch):
-    monkeypatch.setattr(sys, "prefix", os.fspath(modules_tmp_path))
-    return modules_tmp_path
+def modules_tmp_path_prefix(modules_tmp_path_arg, monkeypatch_):
+    monkeypatch_.setattr(sys, "prefix", os.fspath(modules_tmp_path_arg))
+    return modules_tmp_path_arg
 
 
 @pytest.fixture
-def site_packages(modules_tmp_path, monkeypatch):
+def site_packages(modules_tmp_path_local, monkeypatch_arg):
     """Create a fake site-packages."""
     py_dir = f"python{sys.version_info.major}.{sys.version_info.minor}"
-    rv = modules_tmp_path / "lib" / py_dir / "site-packages"
+    rv = modules_tmp_path_local / "lib" / py_dir / "site-packages"
     rv.mkdir(parents=True)
-    monkeypatch.syspath_prepend(os.fspath(rv))
+    monkeypatch_arg.syspath_prepend(os.fspath(rv))
     return rv
 
 

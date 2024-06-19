@@ -294,9 +294,9 @@ def test_app_cli_has_app_context(app, runner):
     @app.cli.command()
     @click.argument("value", callback=_param_cb)
     def check(value):
-        app = click.get_current_context().obj.load_app()
+        app_obj = click.get_current_context().obj.load_app()
         # the loaded app should be the same as current_app
-        same_app = current_app._get_current_object() is app
+        same_app = current_app._get_current_object() is app_obj
         return same_app, value
 
     cli = FlaskGroup(create_app=lambda: app)
@@ -304,7 +304,7 @@ def test_app_cli_has_app_context(app, runner):
     assert result.return_value == (True, True)
 
 
-def test_with_appcontext(runner):
+def test_with_appcontext(runner_):
     @click.command()
     @with_appcontext
     def testcmd():
@@ -312,12 +312,12 @@ def test_with_appcontext(runner):
 
     obj = ScriptInfo(create_app=lambda: Flask("testapp"))
 
-    result = runner.invoke(testcmd, obj=obj)
+    result = runner_.invoke(testcmd, obj=obj)
     assert result.exit_code == 0
     assert result.output == "testapp\n"
 
 
-def test_appgroup_app_context(runner):
+def test_appgroup_app_context(cli_runner):
     @click.group(cls=AppGroup)
     def cli():
         pass
@@ -336,16 +336,16 @@ def test_appgroup_app_context(runner):
 
     obj = ScriptInfo(create_app=lambda: Flask("testappgroup"))
 
-    result = runner.invoke(cli, ["test"], obj=obj)
+    result = cli_runner.invoke(cli, ["test"], obj=obj)
     assert result.exit_code == 0
     assert result.output == "testappgroup\n"
 
-    result = runner.invoke(cli, ["subgroup", "test2"], obj=obj)
+    result = cli_runner.invoke(cli, ["subgroup", "test2"], obj=obj)
     assert result.exit_code == 0
     assert result.output == "testappgroup\n"
 
 
-def test_flaskgroup_app_context(runner):
+def test_flaskgroup_app_context(runner_):
     def create_app():
         return Flask("flaskgroup")
 
@@ -357,7 +357,7 @@ def test_flaskgroup_app_context(runner):
     def test():
         click.echo(current_app.name)
 
-    result = runner.invoke(cli, ["test"])
+    result = runner_.invoke(cli, ["test"])
     assert result.exit_code == 0
     assert result.output == "flaskgroup\n"
 
@@ -370,14 +370,14 @@ def test_flaskgroup_debug(runner, set_debug_flag):
         return app
 
     @click.group(cls=FlaskGroup, create_app=create_app, set_debug_flag=set_debug_flag)
-    def cli(**params):
+    def cli_command(**params):
         pass
 
-    @cli.command()
+    @cli_command.command()
     def test():
         click.echo(str(current_app.debug))
 
-    result = runner.invoke(cli, ["test"])
+    result = runner.invoke(cli_command, ["test"])
     assert result.exit_code == 0
     assert result.output == f"{not set_debug_flag}\n"
 
@@ -388,18 +388,18 @@ def test_flaskgroup_nested(app, runner):
     cli.add_command(flask_group)
 
     @flask_group.command()
-    def show():
+    def show_command():
         click.echo(current_app.name)
 
-    result = runner.invoke(cli, ["flask", "show"])
+    result = runner.invoke(cli, ["flask", "show_command"])
     assert result.output == "flask_test\n"
 
 
 def test_no_command_echo_loading_error():
     from flask.cli import cli
 
-    runner = CliRunner(mix_stderr=False)
-    result = runner.invoke(cli, ["missing"])
+    cli_runner = CliRunner(mix_stderr=False)
+    result = cli_runner.invoke(cli, ["missing"])
     assert result.exit_code == 2
     assert "FLASK_APP" in result.stderr
     assert "Usage:" in result.stderr
@@ -408,8 +408,8 @@ def test_no_command_echo_loading_error():
 def test_help_echo_loading_error():
     from flask.cli import cli
 
-    runner = CliRunner(mix_stderr=False)
-    result = runner.invoke(cli, ["--help"])
+    cli_runner = CliRunner(mix_stderr=False)
+    result = cli_runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
     assert "FLASK_APP" in result.stderr
     assert "Usage:" in result.stdout
@@ -420,8 +420,8 @@ def test_help_echo_exception():
         raise Exception("oh no")
 
     cli = FlaskGroup(create_app=create_app)
-    runner = CliRunner(mix_stderr=False)
-    result = runner.invoke(cli, ["--help"])
+    runner_obj = CliRunner(mix_stderr=False)
+    result = runner_obj.invoke(cli, ["--help"])
     assert result.exit_code == 0
     assert "Exception: oh no" in result.stderr
     assert "Usage:" in result.stdout
@@ -476,30 +476,30 @@ class TestRoutes:
         output = invoke(["routes", "--all-methods"]).output
         assert "GET, HEAD, OPTIONS, POST" in output
 
-    def test_no_routes(self, runner):
+    def test_no_routes(self, runner_):
         app = Flask(__name__, static_folder=None)
         cli = FlaskGroup(create_app=lambda: app)
-        result = runner.invoke(cli, ["routes"])
+        result = runner_.invoke(cli, ["routes"])
         assert result.exit_code == 0
         assert "No routes were registered." in result.output
 
-    def test_subdomain(self, runner):
-        app = Flask(__name__, static_folder=None)
-        app.add_url_rule("/a", subdomain="a", endpoint="a")
-        app.add_url_rule("/b", subdomain="b", endpoint="b")
-        cli = FlaskGroup(create_app=lambda: app)
-        result = runner.invoke(cli, ["routes"])
-        assert result.exit_code == 0
-        assert "Subdomain" in result.output
+    def test_subdomain(self, runner_):
+            app = Flask(__name__, static_folder=None)
+            app.add_url_rule("/a", subdomain="a", endpoint="a")
+            app.add_url_rule("/b", subdomain="b", endpoint="b")
+            cli = FlaskGroup(create_app=lambda: app)
+            result = runner_.invoke(cli, ["routes"])
+            assert result.exit_code == 0
+            assert "Subdomain" in result.output
 
-    def test_host(self, runner):
-        app = Flask(__name__, static_folder=None, host_matching=True)
-        app.add_url_rule("/a", host="a", endpoint="a")
-        app.add_url_rule("/b", host="b", endpoint="b")
-        cli = FlaskGroup(create_app=lambda: app)
-        result = runner.invoke(cli, ["routes"])
-        assert result.exit_code == 0
-        assert "Host" in result.output
+    def test_host(self, runner_):
+            app = Flask(__name__, static_folder=None, host_matching=True)
+            app.add_url_rule("/a", host="a", endpoint="a")
+            app.add_url_rule("/b", host="b", endpoint="b")
+            cli = FlaskGroup(create_app=lambda: app)
+            result = runner_.invoke(cli, ["routes"])
+            assert result.exit_code == 0
+            assert "Host" in result.output
 
 
 def dotenv_not_available():
@@ -558,10 +558,10 @@ def test_dotenv_optional(monkeypatch):
 
 
 @need_dotenv
-def test_disable_dotenv_from_env(monkeypatch, runner):
+def test_disable_dotenv_from_env(monkeypatch, runner_):
     monkeypatch.chdir(test_path)
     monkeypatch.setitem(os.environ, "FLASK_SKIP_DOTENV", "1")
-    runner.invoke(FlaskGroup())
+    runner_.invoke(FlaskGroup())
     assert "FOO" not in os.environ
 
 

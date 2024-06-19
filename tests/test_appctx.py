@@ -131,7 +131,7 @@ def test_app_tearing_down_with_unhandled_exception(app, client):
     assert str(cleanup_stuff[0]) == "dummy"
 
 
-def test_app_ctx_globals_methods(app, app_ctx):
+def test_app_ctx_globals_methods(app, app_ctx_local):
     # get
     assert flask.g.get("foo") is None
     assert flask.g.get("foo", "bar") == "bar"

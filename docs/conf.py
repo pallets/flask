@@ -67,7 +67,7 @@ html_show_sourcelink = False
 
 def github_link(name, rawtext, text, lineno, inliner, options=None, content=None):
     app = inliner.document.settings.env.app
-    release = app.config.release
+    app_release = app.config.release
     base_url = "https://github.com/pallets/flask/tree/"
 
     if text.endswith(">"):
@@ -76,10 +76,10 @@ def github_link(name, rawtext, text, lineno, inliner, options=None, content=None
     else:
         words = None
 
-    if packaging.version.parse(release).is_devrelease:
+    if packaging.version.parse(app_release).is_devrelease:
         url = f"{base_url}main/{text}"
     else:
-        url = f"{base_url}{release}/{text}"
+        url = f"{base_url}{app_release}/{text}"
 
     if words is None:
         words = url

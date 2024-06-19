@@ -8,13 +8,13 @@ bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 
 
 @bp.get("/result/<id>")
-def result(id: str) -> dict[str, object]:
-    result = AsyncResult(id)
-    ready = result.ready()
+def get_result(id: str) -> dict[str, object]:
+    async_result = AsyncResult(id)
+    ready = async_result.ready()
     return {
         "ready": ready,
-        "successful": result.successful() if ready else None,
-        "value": result.get() if ready else result.result,
+        "successful": async_result.successful() if ready else None,
+        "value": async_result.get() if ready else async_result.result,
     }
 
 
@@ -22,17 +22,17 @@ def result(id: str) -> dict[str, object]:
 def add() -> dict[str, object]:
     a = request.form.get("a", type=int)
     b = request.form.get("b", type=int)
-    result = tasks.add.delay(a, b)
-    return {"result_id": result.id}
+    task_result = tasks.add.delay(a, b)
+    return {"result_id": task_result.id}
 
 
 @bp.post("/block")
 def block() -> dict[str, object]:
-    result = tasks.block.delay()
-    return {"result_id": result.id}
+    task_result = tasks.block.delay()
+    return {"result_id": task_result.id}
 
 
 @bp.post("/process")
 def process() -> dict[str, object]:
-    result = tasks.process.delay(total=request.form.get("total", type=int))
-    return {"result_id": result.id}
+    task_result = tasks.process.delay(total=request.form.get("total", type=int))
+    return {"result_id": task_result.id}
