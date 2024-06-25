@@ -10,6 +10,7 @@ from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
+from .coverage_tracker import track_coverage, branch_coverage
 
 import click
 from werkzeug.datastructures import Headers
@@ -289,13 +290,14 @@ class Flask(App):
         .. versionadded:: 0.9
         """
         value = current_app.config["SEND_FILE_MAX_AGE_DEFAULT"]
-
         if value is None:
+            track_coverage("get_send_file_max_age_1")
             return None
-
+        
         if isinstance(value, timedelta):
+            track_coverage("get_send_file_max_age_2")
             return int(value.total_seconds())
-
+        track_coverage("get_send_file_max_age_3")
         return value  # type: ignore[no-any-return]
 
     def send_static_file(self, filename: str) -> Response:
@@ -852,6 +854,7 @@ class Flask(App):
         """
         req = request_ctx.request
         if req.routing_exception is not None:
+            track_coverage("dispatch_request_1")
             self.raise_routing_exception(req)
         rule: Rule = req.url_rule  # type: ignore[assignment]
         # if we provide automatic options for this URL and the
@@ -860,10 +863,13 @@ class Flask(App):
             getattr(rule, "provide_automatic_options", False)
             and req.method == "OPTIONS"
         ):
+            track_coverage("dispatch_request_2")
             return self.make_default_options_response()
         # otherwise dispatch to the handler for that endpoint
         view_args: dict[str, t.Any] = req.view_args  # type: ignore[assignment]
+        track_coverage("dispatch_request_3")
         return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+
 
     def full_dispatch_request(self) -> Response:
         """Dispatches the request and on top of that performs request
