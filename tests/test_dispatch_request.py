@@ -2,8 +2,6 @@ import pytest
 from flask import Flask, json
 from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
 from unittest.mock import patch
-
-# Import the module where branch_coverage and track_coverage are defined
 from flask import branch_coverage, track_coverage
 
 def create_app():
@@ -54,11 +52,8 @@ def test_not_found_handling(client):
 def test_no_route(client):
     response = client.get('/no_route')
     assert response.status_code == 404
-    # Revised or removed based on actual coverage tracking setup
-    # assert branch_coverage.get('dispatch_request_no_route_found', False)
 
-# Test to save branch coverage data into a JSON file after all tests
-def test_save_branch_coverage():
-    file_path = '/Users/jannesvandenbogert/Documents/GitHub/flask/coverage_result.json'
+
+def save_coverage_to_json(file_path='coverage_result.json'):
     with open(file_path, 'w') as json_file:
         json.dump(branch_coverage, json_file, indent=4)

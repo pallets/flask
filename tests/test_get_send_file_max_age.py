@@ -6,7 +6,7 @@ from flask.app import Flask as FlaskApp
 from flask import branch_coverage, track_coverage
 import json
 
-def save_coverage_to_json(file_path='/Users/jannesvandenbogert/Documents/GitHub/flask/coverage_result.json'):
+def save_coverage_to_json(file_path='coverage_result.json'):
     with open(file_path, 'w') as json_file:
         json.dump(branch_coverage, json_file, indent=4)
 
