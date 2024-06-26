@@ -1,45 +1,78 @@
-# Flask
+# Report for Assignment 1
 
-Flask is a lightweight [WSGI][] web application framework. It is designed
-to make getting started quick and easy, with the ability to scale up to
-complex applications. It began as a simple wrapper around [Werkzeug][]
-and [Jinja][], and has become one of the most popular Python web
-application frameworks.
+## Project chosen
 
-Flask offers suggestions, but doesn't enforce any dependencies or
-project layout. It is up to the developer to choose the tools and
-libraries they want to use. There are many extensions provided by the
-community that make adding new functionality easy.
+Name: Flask
 
-[WSGI]: https://wsgi.readthedocs.io/
-[Werkzeug]: https://werkzeug.palletsprojects.com/
-[Jinja]: https://jinja.palletsprojects.com/
+URL: https://github.com/pallets/flask
 
+Number of lines of code and the tool used to count it: 782430 counted using Lizard
 
-## A Simple Example
+Programming language: Python
 
-```python
-# save this as app.py
-from flask import Flask
+## Coverage measurement
 
-app = Flask(__name__)
+### Existing tool
 
-@app.route("/")
-def hello():
-    return "Hello, World!"
-```
+The existing tool used for measuring coverage is coverage.py. It was executed using the following command: 
 
-```
-$ flask run
-  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-```
+```coverage run -m pytest```
+
+![Coverage results with the Coverage.py tool](./images/Coverage.png)
+
+### Your own coverage tool
+
+Group member name: Jannes van den Bogert
+
+Function 1 name: 'get_send_file_max_age'
+
+Commit made: [get_send_file_max_age](https://github.com/pallets/flask/commit/3c984992b97935e17d8f2d42c84128b397cd0e7e)
+
+![JSON Dumb file for the results](./images/JsonDumpDisGet.png)
+![The coverage before writing a test](./images/Old_Get_Send_File_Max.png)
 
 
-## Donate
+Function 2 name: dispatch_request
 
-The Pallets organization develops and supports Flask and the libraries
-it uses. In order to grow the community of contributors and users, and
-allow the maintainers to devote more time to the projects, [please
-donate today][].
+Commit made: [Commit for dispatch_request](https://github.com/pallets/flask/commit/3c984992b97935e17d8f2d42c84128b397cd0e7e)
 
-[please donate today]: https://palletsprojects.com/donate
+![JSON Dumb file for the results](./images/JsonDumpDisGet.png)
+![The coverage before writing a test](./images/Old_Dispatch.png)
+
+## Coverage improvement
+
+### Individual tests
+
+Group member name: Jannes van den Bogert
+
+Test 1 name: test_get_send_file_max_age
+
+<Show a patch (diff) or a link to a commit made in your forked repository that shows the new/enhanced test>
+
+![The coverage before writing a test](./images/Old_Get_Send_File_Max.png)
+
+![The coverage after writing a test](./images/New_Get_Send_File_Max.png)
+
+The coverage improved by 54%, from 46% to 100%.
+
+Test 2 name: test_dispatch_request
+
+<Show a patch (diff) or a link to a commit made in your forked repository that shows the new/enhanced test>
+
+![The coverage before writing a test](./images/Old_Dispatch.png)
+
+![The coverage after writing a test](./images/New_Dispatch.png)
+
+The coverage improved by 58%, from 42% to 100%.
+
+### Overall
+
+![The overall coverage before writing any tests](./images/Coverage.png)
+
+![The overall coverage before writing any tests](./images/New_Total_Coverage.png)
+
+## Statement of individual contributions
+
+<Write what each group member did>
+
+Jannes van den Bogert: 
