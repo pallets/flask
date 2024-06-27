@@ -10,7 +10,6 @@ from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
-from .coverage_tracker import track_coverage, branch_coverage
 
 import click
 from werkzeug.datastructures import Headers
@@ -28,6 +27,7 @@ from werkzeug.wrappers import Response as BaseResponse
 
 from . import cli
 from . import typing as ft
+from .coverage_tracker import track_coverage
 from .ctx import AppContext
 from .ctx import RequestContext
 from .globals import _cv_app
@@ -293,7 +293,7 @@ class Flask(App):
         if value is None:
             track_coverage("get_send_file_max_age_1")
             return None
-        
+
         if isinstance(value, timedelta):
             track_coverage("get_send_file_max_age_2")
             return int(value.total_seconds())
@@ -869,7 +869,6 @@ class Flask(App):
         view_args: dict[str, t.Any] = req.view_args  # type: ignore[assignment]
         track_coverage("dispatch_request_3")
         return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-
 
     def full_dispatch_request(self) -> Response:
         """Dispatches the request and on top of that performs request

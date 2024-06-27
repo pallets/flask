@@ -6,6 +6,8 @@ from . import json as json
 from .app import Flask as Flask
 from .blueprints import Blueprint as Blueprint
 from .config import Config as Config
+from .coverage_tracker import branch_coverage
+from .coverage_tracker import track_coverage
 from .ctx import after_this_request as after_this_request
 from .ctx import copy_current_request_context as copy_current_request_context
 from .ctx import has_app_context as has_app_context
@@ -41,7 +43,7 @@ from .templating import stream_template as stream_template
 from .templating import stream_template_string as stream_template_string
 from .wrappers import Request as Request
 from .wrappers import Response as Response
-from .coverage_tracker import track_coverage, branch_coverage
+
 
 def __getattr__(name: str) -> t.Any:
     if name == "__version__":

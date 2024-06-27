@@ -14,7 +14,7 @@ Programming language: Python
 
 ### Existing tool
 
-The existing tool used for measuring coverage is coverage.py. It was executed using the following command: 
+The existing tool used for measuring coverage is coverage.py. It was executed using the following command:
 
 ```coverage run -m pytest```
 
