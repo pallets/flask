@@ -47,7 +47,7 @@ Group member name: Jannes van den Bogert
 
 Test 1 name: test_get_send_file_max_age
 
-<Show a patch (diff) or a link to a commit made in your forked repository that shows the new/enhanced test>
+Commit made: [Commit for test_make_config.py](https://github.com/pallets/flask/compare/main...wasimic311:flask:dev_test_jannes)
 
 ![The coverage before writing a test](./images/Old_Get_Send_File_Max.png)
 
@@ -57,7 +57,7 @@ The coverage improved by 54%, from 46% to 100%.
 
 Test 2 name: test_dispatch_request
 
-<Show a patch (diff) or a link to a commit made in your forked repository that shows the new/enhanced test>
+Commit made: [Commit for test_make_config.py](https://github.com/pallets/flask/compare/main...wasimic311:flask:dev_test_jannes)
 
 ![The coverage before writing a test](./images/Old_Dispatch.png)
 
@@ -73,6 +73,4 @@ The coverage improved by 58%, from 42% to 100%.
 
 ## Statement of individual contributions
 
-<Write what each group member did>
-
-Jannes van den Bogert: 
+Jannes van den Bogert: I was responsible for designing and implementing two tests for the Flask application. The tests targeted two specific functions: get_send_file_max_age and dispatch_request. My contributions were helping in enhancing the test coverage from partial to complete for these functions, achieving a significant increase in overall coverage.
