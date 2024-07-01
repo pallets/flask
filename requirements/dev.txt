@@ -36,7 +36,7 @@ charset-normalizer==3.3.2
     #   requests
 colorama==0.4.6
     # via tox
-cryptography==42.0.7
+cryptography==42.0.8
     # via -r typing.txt
 distlib==0.3.8
     # via virtualenv
@@ -72,7 +72,7 @@ markupsafe==2.1.5
     # via
     #   -r docs.txt
     #   jinja2
-mypy==1.10.0
+mypy==1.10.1
     # via -r typing.txt
 mypy-extensions==1.0.0
     # via
@@ -118,9 +118,9 @@ pygments==2.17.2
     #   sphinx-tabs
 pyproject-api==1.6.1
     # via tox
-pyright==1.1.365
+pyright==1.1.369
     # via -r typing.txt
-pytest==8.2.1
+pytest==8.2.2
     # via
     #   -r tests.txt
     #   -r typing.txt
@@ -172,7 +172,7 @@ sphinxcontrib-serializinghtml==1.1.10
     # via
     #   -r docs.txt
     #   sphinx
-tox==4.15.0
+tox==4.15.1
     # via -r dev.in
 types-contextvars==2.4.7.3
     # via -r typing.txt
