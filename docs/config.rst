@@ -167,6 +167,15 @@ The following configuration values are used internally by Flask:
 
     Default: ``False``
 
+.. py:data:: SESSION_COOKIE_PARTITIONED
+
+    Browsers are well under way in phasing out unpartitioned third-party cookies,
+    so Cookies Having Independent Partitioned State, the Storage Access API,
+    and Related Website Sets will be the only way to read and write cookies
+    from cross-site contexts, such as iframes, when third-party cookies are blocked.
+
+    Default: ``False``
+
 .. py:data:: SESSION_COOKIE_SAMESITE
 
     Restrict how cookies are sent with requests from external sites. Can
