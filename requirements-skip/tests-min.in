@@ -1,4 +1,4 @@
-werkzeug==3.0.0
+werkzeug==3.0.3
 jinja2==3.1.2
 markupsafe==2.1.1
 itsdangerous==2.1.2

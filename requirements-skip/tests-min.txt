@@ -17,5 +17,5 @@ markupsafe==2.1.1
     #   -r tests-min.in
     #   jinja2
     #   werkzeug
-werkzeug==3.0.0
+werkzeug==3.0.3
     # via -r tests-min.in
