@@ -68,7 +68,7 @@ reverse proxy such as :doc:`nginx` or :doc:`apache-httpd` should be used
 in front of Waitress.
 
 You can bind to all external IPs on a non-privileged port by not
-specifying the ``--host`` option. Don't do this when using a revers
+specifying the ``--host`` option. Don't do this when using a reverse
 proxy setup, otherwise it will be possible to bypass the proxy.
 
 ``0.0.0.0`` is not a valid address to navigate to, you'd use a specific
