@@ -349,7 +349,7 @@ class TestHelpers:
             os.remove("tests/static/test.txt")
 
         with open("tests/static/test.txt", "w", encoding=encoding) as f:
-            f.write("" + "Hello World!")
+            f.write("Hello World!")
 
         with app.open_resource("static/test.txt", mode="r", encoding=encoding) as f:
             assert "Hello World!" in f.read()
