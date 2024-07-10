@@ -342,16 +342,16 @@ class TestHelpers:
             assert "<h1>Hello World!</h1>" in str(f.read())
 
     @pytest.mark.skip(reason="this feature is not yet implemented")
-    @pytest.mark.parametrize("encoding", ("utf-8", 'utf-16-le'))
+    @pytest.mark.parametrize("encoding", ("utf-8", "utf-16-le"))
     def test_open_resource_with_encoding(self, encoding):
         app = flask.Flask(__name__)
-        if os.path.isfile('tests/static/test.txt'):
-            os.remove('tests/static/test.txt')
+        if os.path.isfile("tests/static/test.txt"):
+            os.remove("tests/static/test.txt")
 
-        with open('tests/static/test.txt', 'w', encoding=encoding) as f:
-            f.write(u'' + 'Hello World!')
+        with open("tests/static/test.txt", "w", encoding=encoding) as f:
+            f.write("" + "Hello World!")
 
-        with app.open_resource("static/test.txt", mode='r', encoding=encoding) as f:
+        with app.open_resource("static/test.txt", mode="r", encoding=encoding) as f:
             assert "Hello World!" in f.read()
 
     @pytest.mark.parametrize("mode", ("w", "x", "a", "r+"))
