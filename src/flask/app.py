@@ -320,9 +320,10 @@ class Flask(App):
             t.cast(str, self.static_folder), filename, max_age=max_age
         )
 
-    def open_resource(self, resource: str, mode: str = "rb") -> t.IO[t.AnyStr]:
-        """Open a resource file relative to :attr:`root_path` for
-        reading.
+    def open_resource(
+        self, resource: str, mode: str = "rb", encoding: str | None = None
+    ) -> t.IO[t.AnyStr]:
+        """Open a resource file relative to :attr:`root_path` for reading.
 
         For example, if the file ``schema.sql`` is next to the file
         ``app.py`` where the ``Flask`` app is defined, it can be opened
@@ -333,31 +334,46 @@ class Flask(App):
             with app.open_resource("schema.sql") as f:
                 conn.executescript(f.read())
 
-        :param resource: Path to the resource relative to
-            :attr:`root_path`.
-        :param mode: Open the file in this mode. Only reading is
-            supported, valid values are "r" (or "rt") and "rb".
+        :param resource: Path to the resource relative to :attr:`root_path`.
+        :param mode: Open the file in this mode. Only reading is supported,
+            valid values are ``"r"`` (or ``"rt"``) and ``"rb"``.
+        :param encoding: Open the file with this encoding when opening in text
+            mode. This is ignored when opening in binary mode.
 
-        Note this is a duplicate of the same method in the Flask
-        class.
-
+        .. versionchanged:: 3.1
+            Added the ``encoding`` parameter.
         """
         if mode not in {"r", "rt", "rb"}:
             raise ValueError("Resources can only be opened for reading.")
 
-        return open(os.path.join(self.root_path, resource), mode)
+        path = os.path.join(self.root_path, resource)
 
-    def open_instance_resource(self, resource: str, mode: str = "rb") -> t.IO[t.AnyStr]:
-        """Opens a resource from the application's instance folder
-        (:attr:`instance_path`).  Otherwise works like
-        :meth:`open_resource`.  Instance resources can also be opened for
-        writing.
+        if mode == "rb":
+            return open(path, mode)
 
-        :param resource: the name of the resource.  To access resources within
-                         subfolders use forward slashes as separator.
-        :param mode: resource file opening mode, default is 'rb'.
+        return open(path, mode, encoding=encoding)
+
+    def open_instance_resource(
+        self, resource: str, mode: str = "rb", encoding: str | None = "utf-8"
+    ) -> t.IO[t.AnyStr]:
+        """Open a resource file relative to the application's instance folder
+        :attr:`instance_path`. Unlike :meth:`open_resource`, files in the
+        instance folder can be opened for writing.
+
+        :param resource: Path to the resource relative to :attr:`instance_path`.
+        :param mode: Open the file in this mode.
+        :param encoding: Open the file with this encoding when opening in text
+            mode. This is ignored when opening in binary mode.
+
+        .. versionchanged:: 3.1
+            Added the ``encoding`` parameter.
         """
-        return open(os.path.join(self.instance_path, resource), mode)
+        path = os.path.join(self.instance_path, resource)
+
+        if "b" in mode:
+            return open(path, mode)
+
+        return open(path, mode, encoding=encoding)
 
     def create_jinja_environment(self) -> Environment:
         """Create the Jinja environment based on :attr:`jinja_options`

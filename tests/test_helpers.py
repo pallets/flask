@@ -334,16 +334,27 @@ class TestHelpers:
             assert rv.data == b"Hello"
             assert rv.mimetype == "text/html"
 
-    @pytest.mark.parametrize("mode", ("r", "rb", "rt"))
-    def test_open_resource(self, mode):
-        app = flask.Flask(__name__)
 
-        with app.open_resource("static/index.html", mode) as f:
-            assert "<h1>Hello World!</h1>" in str(f.read())
+@pytest.mark.parametrize("mode", ("r", "rb", "rt"))
+def test_open_resource(mode):
+    app = flask.Flask(__name__)
 
-    @pytest.mark.parametrize("mode", ("w", "x", "a", "r+"))
-    def test_open_resource_exceptions(self, mode):
-        app = flask.Flask(__name__)
+    with app.open_resource("static/index.html", mode) as f:
+        assert "<h1>Hello World!</h1>" in str(f.read())
 
-        with pytest.raises(ValueError):
-            app.open_resource("static/index.html", mode)
+
+@pytest.mark.parametrize("mode", ("w", "x", "a", "r+"))
+def test_open_resource_exceptions(mode):
+    app = flask.Flask(__name__)
+
+    with pytest.raises(ValueError):
+        app.open_resource("static/index.html", mode)
+
+
+@pytest.mark.parametrize("encoding", ("utf-8", "utf-16-le"))
+def test_open_resource_with_encoding(tmp_path, encoding):
+    app = flask.Flask(__name__, root_path=os.fspath(tmp_path))
+    (tmp_path / "test").write_text("test", encoding=encoding)
+
+    with app.open_resource("test", mode="rt", encoding=encoding) as f:
+        assert f.read() == "test"
