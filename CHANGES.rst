@@ -8,7 +8,7 @@ Released 2024-04-07
     :issue:`5448`
 -   Don't initialize the ``cli`` attribute in the sansio scaffold, but rather in
     the ``Flask`` concrete class. :pr:`5270`
-
+-   Provide more clear ``flask`` ``-e, --env-file`` flag desription. :pr:`5532`
 
 Version 3.0.2
 -------------

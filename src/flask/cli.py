@@ -504,7 +504,12 @@ def _env_file_callback(
 _env_file_option = click.Option(
     ["-e", "--env-file"],
     type=click.Path(exists=True, dir_okay=False),
-    help="Load environment variables from this file. python-dotenv must be installed.",
+    help=(
+        "Load environment variables from this FILE in addition to environment "
+        "variables from '.env' and '.flaskenv' files. Does not override "
+        "environment variables from '.env' and '.flaskenv'. "
+        "python-dotenv must be installed."
+    ),
     is_eager=True,
     expose_value=False,
     callback=_env_file_callback,
