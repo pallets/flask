@@ -47,4 +47,3 @@ donate today][].
 Contact
 =======
 For inquiries, please contact us at contact@example.com.
-
