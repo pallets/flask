@@ -43,3 +43,8 @@ allow the maintainers to devote more time to the projects, [please
 donate today][].
 
 [please donate today]: https://palletsprojects.com/donate
+
+Contact
+=======
+For inquiries, please contact us at contact@example.com.
+
