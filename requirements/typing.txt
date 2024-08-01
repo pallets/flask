@@ -8,11 +8,11 @@ asgiref==3.8.1
     # via -r typing.in
 cffi==1.16.0
     # via cryptography
-cryptography==42.0.8
+cryptography==43.0.0
     # via -r typing.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.10.1
+mypy==1.11.1
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
@@ -24,9 +24,9 @@ pluggy==1.5.0
     # via pytest
 pycparser==2.22
     # via cffi
-pyright==1.1.369
+pyright==1.1.374
     # via -r typing.in
-pytest==8.2.2
+pytest==8.3.2
     # via -r typing.in
 python-dotenv==1.0.1
     # via -r typing.in
