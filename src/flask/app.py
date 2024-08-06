@@ -7,6 +7,7 @@ import typing as t
 import weakref
 from datetime import timedelta
 from inspect import iscoroutinefunction
+from io import BufferedReader
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
@@ -322,7 +323,7 @@ class Flask(App):
 
     def open_resource(
         self, resource: str, mode: str = "rb", encoding: str | None = None
-    ) -> t.IO[t.AnyStr]:
+    ) -> t.IO[t.AnyStr] | BufferedReader:
         """Open a resource file relative to :attr:`root_path` for reading.
 
         For example, if the file ``schema.sql`` is next to the file
@@ -1167,17 +1168,20 @@ class Flask(App):
 
         # unpack tuple returns
         if isinstance(rv, tuple):
-            len_rv = len(rv)
-
             # a 3-tuple is unpacked directly
-            if len_rv == 3:
-                rv, status, headers = rv  # type: ignore[misc]
+            if len(rv) == 3:
+                rv, status, headers = rv
             # decide if a 2-tuple has status or headers
-            elif len_rv == 2:
-                if isinstance(rv[1], (Headers, dict, tuple, list)):
-                    rv, headers = rv
+            elif len(rv) == 2:
+                rv0 = rv[0]
+                rv1 = rv[1]
+                if isinstance(rv1, (Headers, dict, tuple, list)):
+                    rv = rv0
+                    headers = rv1
                 else:
-                    rv, status = rv  # type: ignore[assignment,misc]
+                    rv = rv0
+                    if isinstance(rv1, int):
+                        status = rv1
             # other sized tuples are not allowed
             else:
                 raise TypeError(
