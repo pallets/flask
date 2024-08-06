@@ -59,6 +59,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
 
     from .testing import FlaskClient
     from .testing import FlaskCliRunner
+    from .typing import HeadersValue
 
 T_shell_context_processor = t.TypeVar(
     "T_shell_context_processor", bound=ft.ShellContextProcessorCallable
@@ -349,7 +350,7 @@ class Flask(App):
         path = os.path.join(self.root_path, resource)
 
         if mode == "rb":
-            return open(path, mode)
+            return open(path, mode)  # pyright: ignore
 
         return open(path, mode, encoding=encoding)
 
@@ -1163,7 +1164,8 @@ class Flask(App):
            response object.
         """
 
-        status = headers = None
+        status: int | None = None
+        headers: HeadersValue | None = None
 
         # unpack tuple returns
         if isinstance(rv, tuple):
@@ -1175,7 +1177,7 @@ class Flask(App):
             # decide if a 2-tuple has status or headers
             elif len_rv == 2:
                 if isinstance(rv[1], (Headers, dict, tuple, list)):
-                    rv, headers = rv
+                    rv, headers = rv  # pyright: ignore
                 else:
                     rv, status = rv  # type: ignore[assignment,misc]
             # other sized tuples are not allowed
