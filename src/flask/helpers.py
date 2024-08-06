@@ -587,7 +587,7 @@ def get_root_path(import_name: str) -> str:
         return os.getcwd()
 
     if hasattr(loader, "get_filename"):
-        filepath = loader.get_filename(import_name)
+        filepath = loader.get_filename(import_name)  # pyright: ignore
     else:
         # Fall back to imports.
         __import__(import_name)

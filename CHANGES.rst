@@ -6,6 +6,8 @@ Version 3.1.0
 -   ``Flask.open_resource``/``open_instance_resource`` and
     ``Blueprint.open_resource`` take an ``encoding`` parameter to use when
     opening in text mode. It defaults to ``utf-8``. :issue:`5504`
+-   Fixes Pyright type errors. :issue:`5549`
+
 
 Version 3.0.3
 -------------

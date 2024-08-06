@@ -349,7 +349,7 @@ class Flask(App):
         path = os.path.join(self.root_path, resource)
 
         if mode == "rb":
-            return open(path, mode)
+            return open(path, mode)  # pyright: ignore
 
         return open(path, mode, encoding=encoding)
 
@@ -1163,7 +1163,10 @@ class Flask(App):
            response object.
         """
 
-        status = headers = None
+        status: int | None = None
+        headers: (
+            Headers | dict[t.Any, t.Any] | tuple[t.Any, ...] | list[t.Any] | None
+        ) = None
 
         # unpack tuple returns
         if isinstance(rv, tuple):
@@ -1171,11 +1174,11 @@ class Flask(App):
 
             # a 3-tuple is unpacked directly
             if len_rv == 3:
-                rv, status, headers = rv  # type: ignore[misc]
+                rv, status, headers = rv  # type: ignore[assignment, misc]
             # decide if a 2-tuple has status or headers
             elif len_rv == 2:
                 if isinstance(rv[1], (Headers, dict, tuple, list)):
-                    rv, headers = rv
+                    rv, headers = rv  # type: ignore
                 else:
                     rv, status = rv  # type: ignore[assignment,misc]
             # other sized tuples are not allowed
@@ -1203,7 +1206,7 @@ class Flask(App):
                 rv = self.response_class(
                     rv,
                     status=status,
-                    headers=headers,  # type: ignore[arg-type]
+                    headers=headers,
                 )
                 status = headers = None
             elif isinstance(rv, (dict, list)):
@@ -1243,7 +1246,7 @@ class Flask(App):
 
         # extend existing headers with provided headers
         if headers:
-            rv.headers.update(headers)  # type: ignore[arg-type]
+            rv.headers.update(headers)
 
         return rv
 
