@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import typing as t
 from datetime import timedelta
+from io import BufferedReader
 
 from .cli import AppGroup
 from .globals import current_app
@@ -103,7 +104,7 @@ class Blueprint(SansioBlueprint):
 
     def open_resource(
         self, resource: str, mode: str = "rb", encoding: str | None = "utf-8"
-    ) -> t.IO[t.AnyStr]:
+    ) -> t.IO[t.AnyStr] | BufferedReader:
         """Open a resource file relative to :attr:`root_path` for reading. The
         blueprint-relative equivalent of the app's :meth:`~.Flask.open_resource`
         method.
