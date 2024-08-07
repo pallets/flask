@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.abc
 import importlib.util
 import os
 import sys
@@ -586,7 +587,7 @@ def get_root_path(import_name: str) -> str:
     if loader is None:
         return os.getcwd()
 
-    if hasattr(loader, "get_filename"):
+    if isinstance(loader, (importlib.abc.FileLoader, importlib.abc.ExecutionLoader)):
         filepath = loader.get_filename(import_name)
     else:
         # Fall back to imports.
