@@ -18,6 +18,7 @@ from .globals import current_app
 from .globals import request
 from .globals import request_ctx
 from .globals import session
+from .globals import _false_attributes
 from .signals import message_flashed
 
 if t.TYPE_CHECKING:  # pragma: no cover
@@ -29,7 +30,7 @@ def get_debug_flag() -> bool:
     :envvar:`FLASK_DEBUG` environment variable. The default is ``False``.
     """
     val = os.environ.get("FLASK_DEBUG")
-    return bool(val and val.lower() not in {"0", "false", "no"})
+    return bool(val and val.lower() not in _false_attributes)
 
 
 def get_load_dotenv(default: bool = True) -> bool:
@@ -44,7 +45,7 @@ def get_load_dotenv(default: bool = True) -> bool:
     if not val:
         return default
 
-    return val.lower() in ("0", "false", "no")
+    return val.lower() in _false_attributes
 
 
 def stream_with_context(
