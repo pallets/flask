@@ -49,3 +49,5 @@ request: Request = LocalProxy(  # type: ignore[assignment]
 session: SessionMixin = LocalProxy(  # type: ignore[assignment]
     _cv_request, "session", unbound_message=_no_req_msg
 )
+
+_false_attributes: t.List[str] = ["0", "false", "no", "null", "none"]
