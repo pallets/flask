@@ -50,4 +50,4 @@ session: SessionMixin = LocalProxy(  # type: ignore[assignment]
     _cv_request, "session", unbound_message=_no_req_msg
 )
 
-_false_attributes: t.list[str] = ["0", "false", "no", "null", "none"]
+_false_attributes: list[str] = ["0", "false", "no", "null", "none"]
