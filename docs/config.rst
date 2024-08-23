@@ -142,6 +142,12 @@ The following configuration values are used internally by Flask:
 
     Default: ``None``
 
+    .. warning::
+        If this is changed after the browser created a cookie is created with
+        one setting, it may result in another being created. Browsers may send
+        send both in an undefined order. In that case, you may want to change
+        :data:`SESSION_COOKIE_NAME` as well or otherwise invalidate old sessions.
+
     .. versionchanged:: 2.3
         Not set by default, does not fall back to ``SERVER_NAME``.
 

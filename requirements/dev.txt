@@ -4,7 +4,7 @@
 #
 #    pip-compile dev.in
 #
-alabaster==0.7.16
+alabaster==1.0.0
     # via
     #   -r docs.txt
     #   sphinx
@@ -12,17 +12,17 @@ asgiref==3.8.1
     # via
     #   -r tests.txt
     #   -r typing.txt
-babel==2.14.0
+babel==2.16.0
     # via
     #   -r docs.txt
     #   sphinx
-cachetools==5.3.3
+cachetools==5.5.0
     # via tox
-certifi==2024.2.2
+certifi==2024.7.4
     # via
     #   -r docs.txt
     #   requests
-cffi==1.16.0
+cffi==1.17.0
     # via
     #   -r typing.txt
     #   cryptography
@@ -36,22 +36,22 @@ charset-normalizer==3.3.2
     #   requests
 colorama==0.4.6
     # via tox
-cryptography==42.0.8
+cryptography==43.0.0
     # via -r typing.txt
 distlib==0.3.8
     # via virtualenv
-docutils==0.20.1
+docutils==0.21.2
     # via
     #   -r docs.txt
     #   sphinx
     #   sphinx-tabs
-filelock==3.13.3
+filelock==3.15.4
     # via
     #   tox
     #   virtualenv
-identify==2.5.35
+identify==2.6.0
     # via pre-commit
-idna==3.6
+idna==3.8
     # via
     #   -r docs.txt
     #   requests
@@ -64,7 +64,7 @@ iniconfig==2.0.0
     #   -r tests.txt
     #   -r typing.txt
     #   pytest
-jinja2==3.1.3
+jinja2==3.1.4
     # via
     #   -r docs.txt
     #   sphinx
@@ -72,18 +72,18 @@ markupsafe==2.1.5
     # via
     #   -r docs.txt
     #   jinja2
-mypy==1.10.1
+mypy==1.11.1
     # via -r typing.txt
 mypy-extensions==1.0.0
     # via
     #   -r typing.txt
     #   mypy
-nodeenv==1.8.0
+nodeenv==1.9.1
     # via
     #   -r typing.txt
     #   pre-commit
     #   pyright
-packaging==24.0
+packaging==24.1
     # via
     #   -r docs.txt
     #   -r tests.txt
@@ -95,7 +95,7 @@ packaging==24.0
     #   tox
 pallets-sphinx-themes==2.1.3
     # via -r docs.txt
-platformdirs==4.2.0
+platformdirs==4.2.2
     # via
     #   tox
     #   virtualenv
@@ -105,22 +105,22 @@ pluggy==1.5.0
     #   -r typing.txt
     #   pytest
     #   tox
-pre-commit==3.7.1
+pre-commit==3.8.0
     # via -r dev.in
 pycparser==2.22
     # via
     #   -r typing.txt
     #   cffi
-pygments==2.17.2
+pygments==2.18.0
     # via
     #   -r docs.txt
     #   sphinx
     #   sphinx-tabs
-pyproject-api==1.6.1
+pyproject-api==1.7.1
     # via tox
-pyright==1.1.369
+pyright==1.1.377
     # via -r typing.txt
-pytest==8.2.2
+pytest==8.3.2
     # via
     #   -r tests.txt
     #   -r typing.txt
@@ -128,9 +128,9 @@ python-dotenv==1.0.1
     # via
     #   -r tests.txt
     #   -r typing.txt
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via pre-commit
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r docs.txt
     #   sphinx
@@ -138,7 +138,7 @@ snowballstemmer==2.2.0
     # via
     #   -r docs.txt
     #   sphinx
-sphinx==7.3.7
+sphinx==8.0.2
     # via
     #   -r docs.txt
     #   pallets-sphinx-themes
@@ -146,15 +146,15 @@ sphinx==7.3.7
     #   sphinxcontrib-log-cabinet
 sphinx-tabs==3.4.5
     # via -r docs.txt
-sphinxcontrib-applehelp==1.0.8
+sphinxcontrib-applehelp==2.0.0
     # via
     #   -r docs.txt
     #   sphinx
-sphinxcontrib-devhelp==1.0.6
+sphinxcontrib-devhelp==2.0.0
     # via
     #   -r docs.txt
     #   sphinx
-sphinxcontrib-htmlhelp==2.0.5
+sphinxcontrib-htmlhelp==2.1.0
     # via
     #   -r docs.txt
     #   sphinx
@@ -164,32 +164,29 @@ sphinxcontrib-jsmath==1.0.1
     #   sphinx
 sphinxcontrib-log-cabinet==1.0.1
     # via -r docs.txt
-sphinxcontrib-qthelp==1.0.7
+sphinxcontrib-qthelp==2.0.0
     # via
     #   -r docs.txt
     #   sphinx
-sphinxcontrib-serializinghtml==1.1.10
+sphinxcontrib-serializinghtml==2.0.0
     # via
     #   -r docs.txt
     #   sphinx
-tox==4.15.1
+tox==4.18.0
     # via -r dev.in
 types-contextvars==2.4.7.3
     # via -r typing.txt
 types-dataclasses==0.6.6
     # via -r typing.txt
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via
     #   -r typing.txt
     #   mypy
-urllib3==2.2.1
+urllib3==2.2.2
     # via
     #   -r docs.txt
     #   requests
-virtualenv==20.25.1
+virtualenv==20.26.3
     # via
     #   pre-commit
     #   tox
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
