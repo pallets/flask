@@ -113,7 +113,6 @@ select = [
     "UP",  # pyupgrade
     "W",  # pycodestyle warning
 ]
-ignore-init-module-imports = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
