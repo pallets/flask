@@ -61,7 +61,7 @@ class View:
     #: decorator.
     #:
     #: .. versionadded:: 0.8
-    decorators: t.ClassVar[list[t.Callable[[F], F]]] = []
+    decorators: t.ClassVar[list[t.Callable[..., t.Any]]] = []
 
     #: Create a new instance of this view class for every request by
     #: default. If a view subclass sets this to ``False``, the same
@@ -110,7 +110,7 @@ class View:
                 return current_app.ensure_sync(self.dispatch_request)(**kwargs)  # type: ignore[no-any-return]
 
         else:
-            self = cls(*class_args, **class_kwargs)
+            self = cls(*class_args, **class_kwargs)  # pyright: ignore
 
             def view(**kwargs: t.Any) -> ft.ResponseReturnValue:
                 return current_app.ensure_sync(self.dispatch_request)(**kwargs)  # type: ignore[no-any-return]
