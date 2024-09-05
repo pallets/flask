@@ -1,6 +1,6 @@
 html {
-  font-family: sans-serif;
-  background: #eee;
+  font-family: 'Roboto', sans-serif;
+  background: #FEFAE0;
   padding: 1rem;
 }
 
@@ -8,28 +8,32 @@ body {
   max-width: 960px;
   margin: 0 auto;
   background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: serif;
+  font-family: 'Roboto Slab', serif;
   color: #377ba8;
   margin: 1rem 0;
 }
 
 a {
   color: #377ba8;
+  text-decoration: none;
 }
 
 hr {
   border: none;
-  border-top: 1px solid lightgray;
+  border-top: 1px solid #E0E5B6;
 }
 
 nav {
-  background: lightgray;
+  background: #CCD5AE;
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
+  border-radius: 8px;
 }
 
 nav h1 {
@@ -40,6 +44,7 @@ nav h1 {
 nav h1 a {
   text-decoration: none;
   padding: 0.25rem 0.5rem;
+  color: #377ba8;
 }
 
 nav ul  {
@@ -52,6 +57,7 @@ nav ul  {
 nav ul li a, nav ul li span, header .action {
   display: block;
   padding: 0.5rem;
+  color: #377ba8;
 }
 
 .content {
@@ -59,7 +65,7 @@ nav ul li a, nav ul li span, header .action {
 }
 
 .content > header {
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid #E0E5B6;
   display: flex;
   align-items: flex-end;
 }
@@ -72,8 +78,9 @@ nav ul li a, nav ul li span, header .action {
 .flash {
   margin: 1em 0;
   padding: 1em;
-  background: #cae6f6;
+  background: #FAEDCE;
   border: 1px solid #377ba8;
+  border-radius: 4px;
 }
 
 .post > header {
@@ -117,6 +124,9 @@ nav ul li a, nav ul li span, header .action {
 
 .content input, .content textarea {
   margin-bottom: 1em;
+  padding: 0.5em;
+  border: 1px solid #E0E5B6;
+  border-radius: 4px;
 }
 
 .content textarea {
@@ -131,4 +141,14 @@ input.danger {
 input[type=submit] {
   align-self: start;
   min-width: 10em;
+  background-color: #377ba8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+input[type=submit]:hover {
+  background-color: #2c5f8a;
 }
