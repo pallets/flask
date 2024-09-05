@@ -124,8 +124,9 @@ nav ul li a, nav ul li span, header .action {
 
 .content input, .content textarea {
   margin-bottom: 1em;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
   padding: 0.5em;
-  border: 1px solid #E0E5B6;
   border-radius: 4px;
 }
 
@@ -153,6 +154,36 @@ input[type=submit]:hover {
   background-color: #2c5f8a;
 }
 
+#theme-toggle {
+  position: relative;
+  width: 50px;
+  height: 25px;
+  background: #ccc;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#theme-toggle:before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 21px;
+  height: 21px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+body.dark-mode #theme-toggle {
+  background: #4d4d4d;
+}
+
+body.dark-mode #theme-toggle:before {
+  transform: translateX(25px);
+}
+
 body.dark-mode {
   background: #121212;
   color: #e0e0e0;
@@ -173,4 +204,11 @@ body.dark-mode .flash {
 
 body.dark-mode .post .about {
   color: #999;
+}
+
+body.dark-mode .content input, 
+body.dark-mode .content textarea {
+  background: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
 }
