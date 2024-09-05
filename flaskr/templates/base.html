@@ -1,9 +1,15 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Flaskr</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://kit.fontawesome.com/57e33e1f60.js" crossorigin="anonymous"></script>
 <nav>
   <h1><a href="{{ url_for('index') }}">Flaskr</a></h1>
   <ul>
+    <li>
+      <button id="theme-toggle" aria-label="Toggle Dark Mode">
+        <i id="theme-icon" class="fas"></i>
+      </button>
+    </li>
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
       <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
@@ -22,3 +28,25 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeIcon.classList.add('fa-sun');
+    } else {
+      themeIcon.classList.add('fa-moon');
+    }
+
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+      localStorage.setItem('theme', newTheme);
+      themeIcon.classList.toggle('fa-sun');
+      themeIcon.classList.toggle('fa-moon');
+    });
+  });
+</script>

@@ -152,3 +152,25 @@ input[type=submit] {
 input[type=submit]:hover {
   background-color: #2c5f8a;
 }
+
+body.dark-mode {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode a {
+  color: #bb86fc;
+}
+
+body.dark-mode nav {
+  background: #333;
+}
+
+body.dark-mode .flash {
+  background: #333;
+  border-color: #bb86fc;
+}
+
+body.dark-mode .post .about {
+  color: #999;
+}

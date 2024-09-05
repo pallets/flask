@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, request, g
 
 
 def create_app(test_config=None):
@@ -30,6 +30,14 @@ def create_app(test_config=None):
     @app.route("/hello")
     def hello():
         return "Hello, World!"
+
+    @app.before_request
+    def load_theme_preference():
+        theme = request.cookies.get('theme')
+        if theme:
+            g.theme = theme
+        else:
+            g.theme = 'dark' if request.user_agent.platform in ['android', 'iphone'] and request.user_agent.browser in ['chrome', 'safari'] and request.user_agent.string.find('DarkMode') != -1 else 'light'
 
     # register the database commands
     from . import db
