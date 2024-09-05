@@ -1,8 +1,0 @@
-mypy
-pyright
-pytest
-types-contextvars
-types-dataclasses
-asgiref
-cryptography
-python-dotenv
