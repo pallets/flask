@@ -13,7 +13,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Roboto', serif;
+  font-family: 'Roboto', sans-serif;
   color: #377ba8;
   margin: 1rem 0;
 }
