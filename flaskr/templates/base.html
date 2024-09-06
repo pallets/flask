@@ -7,7 +7,7 @@
   <ul>
     <li>
       <div id="theme-toggle" aria-label="Toggle Dark Mode">
-        <i id="theme-icon" class="fas fa-moon"></i>
+        <!-- <i id="theme-icon" class="fas fa-moon"></i> -->
       </div>
     </li>
     {% if g.user %}
@@ -31,21 +31,21 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
+    // const themeIcon = document.getElementById('theme-icon');
     const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
     if (currentTheme === 'dark') {
       document.body.classList.add('dark-mode');
-      themeIcon.classList.remove('fa-moon');
-      themeIcon.classList.add('fa-sun');
+      // themeIcon.classList.remove('fa-moon');
+      // themeIcon.classList.add('fa-sun');
     }
 
     themeToggle.addEventListener('click', function() {
       document.body.classList.toggle('dark-mode');
       const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
       localStorage.setItem('theme', newTheme);
-      themeIcon.classList.toggle('fa-sun');
-      themeIcon.classList.toggle('fa-moon');
+      // themeIcon.classList.toggle('fa-sun');
+      // themeIcon.classList.toggle('fa-moon');
     });
   });
 </script>

@@ -52,6 +52,7 @@ nav ul  {
   list-style: none;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
 nav ul li a, nav ul li span, header .action {
