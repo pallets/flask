@@ -168,7 +168,9 @@ input[type=submit]:hover {
 }
 
 #theme-toggle:before {
-  content: '';
+  content: '\f186'; /* FontAwesome Unicode for moon */
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
   position: absolute;
   top: 2px;
   left: 2px;
@@ -176,17 +178,12 @@ input[type=submit]:hover {
   height: 21px;
   background: white;
   border-radius: 50%;
-  transition: transform 0.3s;
+  transition: transform 0.3s, content 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#theme-icon {
-  position: absolute;
   font-size: 14px;
   color: #333;
-  transition: color 0.3s;
 }
 
 body.dark-mode #theme-toggle {
@@ -195,9 +192,7 @@ body.dark-mode #theme-toggle {
 
 body.dark-mode #theme-toggle:before {
   transform: translateX(25px);
-}
-
-body.dark-mode #theme-icon {
+  content: '\f185'; /* FontAwesome Unicode for sun */
   color: #e0e0e0;
 }
 
