@@ -7,7 +7,7 @@
   <ul>
     <li>
       <div id="theme-toggle" aria-label="Toggle Dark Mode">
-        <i id="theme-icon" class="fas"></i>
+        <i id="theme-icon" class="fas fa-moon"></i>
       </div>
     </li>
     {% if g.user %}
@@ -36,9 +36,8 @@
 
     if (currentTheme === 'dark') {
       document.body.classList.add('dark-mode');
+      themeIcon.classList.remove('fa-moon');
       themeIcon.classList.add('fa-sun');
-    } else {
-      themeIcon.classList.add('fa-moon');
     }
 
     themeToggle.addEventListener('click', function() {

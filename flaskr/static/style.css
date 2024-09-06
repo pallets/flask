@@ -162,6 +162,9 @@ input[type=submit]:hover {
   border-radius: 25px;
   cursor: pointer;
   transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #theme-toggle:before {
@@ -174,6 +177,16 @@ input[type=submit]:hover {
   background: white;
   border-radius: 50%;
   transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#theme-icon {
+  position: absolute;
+  font-size: 14px;
+  color: #333;
+  transition: color 0.3s;
 }
 
 body.dark-mode #theme-toggle {
@@ -182,6 +195,10 @@ body.dark-mode #theme-toggle {
 
 body.dark-mode #theme-toggle:before {
   transform: translateX(25px);
+}
+
+body.dark-mode #theme-icon {
+  color: #e0e0e0;
 }
 
 body.dark-mode {
