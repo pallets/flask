@@ -169,14 +169,13 @@ input[type=submit]:hover {
 
 #theme-toggle:before {
   content: '\f186'; /* FontAwesome Unicode for moon */
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'FontAwesome';
   font-weight: 900;
   position: absolute;
   top: 2px;
   left: 2px;
   width: 21px;
   height: 21px;
-  background: white;
   border-radius: 50%;
   transition: transform 0.3s, content 0.3s;
   display: flex;
