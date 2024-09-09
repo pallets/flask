@@ -186,6 +186,10 @@ input[type=submit]:hover {
   color: #333;
 }
 
+html.dark-mode {
+  background: #555555;
+}
+
 body.dark-mode #theme-toggle {
   background: #4d4d4d;
 }

@@ -35,6 +35,7 @@
     const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
     if (currentTheme === 'dark') {
+      document.body.parentElement.classList.add('dark-mode');
       document.body.classList.add('dark-mode');
       // themeIcon.classList.remove('fa-moon');
       // themeIcon.classList.add('fa-sun');
