@@ -32,19 +32,13 @@ nav {
   background: #CCD5AE;
   display: flex;
   align-items: center;
-  padding: 0 0.5rem;
+  padding: 0.5rem;
   border-radius: 8px;
 }
 
-nav h1 {
+nav a:has(#sagittal-logo) {
   flex: auto;
   margin: 0;
-}
-
-nav h1 a {
-  text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  color: #377ba8;
 }
 
 nav ul  {
@@ -59,6 +53,10 @@ nav ul li a, nav ul li span, header .action {
   display: block;
   padding: 0.5rem;
   color: #377ba8;
+}
+
+#sagittal-logo {
+  width:150px;
 }
 
 .content {
