@@ -10,9 +10,9 @@
 {% block content %}
   {% for post in posts %}
     <article class="post">
-      <header class="post-header" onclick="togglePostBody({{ post['id'] }})">
+      <header class="post-header">
         <div>
-          <h1>{{ post['title'] }}</h1>
+          <h1 onclick="togglePostBody({{ post['id'] }})">{{ post['title'] }}</h1>
           <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == post['author_id'] %}
