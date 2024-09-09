@@ -62,6 +62,7 @@ You can use the following command to output a random secret key:
 
     $ python -c 'import secrets; print(secrets.token_hex())'
 
+    Example secret key:
     '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 
 Create the ``config.py`` file in the instance folder, which the factory
