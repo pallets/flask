@@ -25,5 +25,24 @@
       <hr>
     {% endif %}
   {% endfor %}
+
+  <div class="pagination">
+    {% if page > 1 %}
+      <a href="{{ url_for('blog.index', page=1) }}"><<</a>
+      <a href="{{ url_for('blog.index', page=page-1) }}"><</a>
+    {% endif %}
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+        <strong>{{ p }}</strong>
+      {% else %}
+        <a href="{{ url_for('blog.index', page=p) }}">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page < total_pages %}
+      <a href="{{ url_for('blog.index', page=page+1) }}">></a>
+      <a href="{{ url_for('blog.index', page=total_pages) }}">>></a>
+    {% endif %}
+  </div>
+
   <script src="{{ url_for('static', filename='collapse.js') }}"></script>
 {% endblock %}
