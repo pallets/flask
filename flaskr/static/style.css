@@ -231,6 +231,27 @@ body.dark-mode .content textarea {
   border: 1px solid #555;
 }
 
+/* SimpleMDE specific styles */
+.editor-toolbar {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+}
+
+.CodeMirror {
+  border: 1px solid #ccc;
+  border-radius: 0 0 4px 4px;
+}
+
+body.dark-mode .editor-toolbar {
+  background: #333;
+  border: 1px solid #555;
+}
+
+body.dark-mode .CodeMirror {
+  border: 1px solid #555;
+}
+
 .post.collapsed .body {
   display: none;
 }
