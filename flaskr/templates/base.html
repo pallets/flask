@@ -43,6 +43,7 @@
 
     themeToggle.addEventListener('click', function() {
       document.body.classList.toggle('dark-mode');
+      document.body.parentElement.classList.toggle('dark-mode');
       const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
       localStorage.setItem('theme', newTheme);
       // themeIcon.classList.toggle('fa-sun');
