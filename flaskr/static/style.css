@@ -88,6 +88,7 @@ nav ul li a, nav ul li span, header .action {
   display: flex;
   align-items: flex-end;
   font-size: 0.85em;
+  cursor: pointer;
 }
 
 .post > header > div:first-of-type {
@@ -106,6 +107,7 @@ nav ul li a, nav ul li span, header .action {
 
 .post .body {
   white-space: pre-line;
+  display: block;
 }
 
 .content:last-child {
@@ -248,4 +250,8 @@ body.dark-mode .editor-toolbar {
 
 body.dark-mode .CodeMirror {
   border: 1px solid #555;
+}
+
+.post.collapsed .body {
+  display: none;
 }

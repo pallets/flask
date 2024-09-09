@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Posts{% endblock %}</h1>
+  <h1 id="toggle-all">Posts</h1>
   {% if g.user %}
     <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
@@ -10,19 +10,20 @@
 {% block content %}
   {% for post in posts %}
     <article class="post">
-      <header>
+      <header class="post-header">
         <div>
-          <h1>{{ post['title'] }}</h1>
+          <h1 onclick="togglePostBody({{ post['id'] }})">{{ post['title'] }}</h1>
           <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
         {% endif %}
       </header>
-      <p class="body">{{ post['body']|safe }}</p>
+      <p class="body" id="post-body-{{ post['id'] }}">{{ post['body'] }}</p>
     </article>
     {% if not loop.last %}
       <hr>
     {% endif %}
   {% endfor %}
+  <script src="{{ url_for('static', filename='collapse.js') }}"></script>
 {% endblock %}
