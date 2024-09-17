@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, request, g
+import markdown
 
 
 def create_app(test_config=None):

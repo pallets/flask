@@ -21,6 +21,7 @@
         <button class="toggle-content" onclick="toggleContent(this)">Expand</button>
       </header>
       <p class="body" style="display: none;">{{ post['body'] }}</p>
+      <p class="body" style="display: none;">{{ post['body']|safe }}</p>
     </article>
     {% if not loop.last %}
       <hr>
