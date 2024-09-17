@@ -18,11 +18,24 @@
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
         {% endif %}
+        <button class="toggle-content" onclick="toggleContent(this)">Expand</button>
       </header>
-      <p class="body">{{ post['body'] }}</p>
+      <p class="body" style="display: none;">{{ post['body'] }}</p>
     </article>
     {% if not loop.last %}
       <hr>
     {% endif %}
   {% endfor %}
+  <script>
+    function toggleContent(button) {
+      const body = button.parentElement.nextElementSibling;
+      if (body.style.display === "none") {
+        body.style.display = "block";
+        button.textContent = "Collapse";
+      } else {
+        body.style.display = "none";
+        button.textContent = "Expand";
+      }
+    }
+  </script>
 {% endblock %}

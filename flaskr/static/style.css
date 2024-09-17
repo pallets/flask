@@ -226,3 +226,17 @@ body.dark-mode .content textarea {
   color: #e0e0e0;
   border: 1px solid #555;
 }
+
+.toggle-content {
+  background: none;
+  border: none;
+  color: #377ba8;
+  cursor: pointer;
+  font-size: 0.85em;
+  margin-left: 1em;
+  transition: color 0.3s;
+}
+
+.toggle-content:hover {
+  color: #2c5f8a;
+}
