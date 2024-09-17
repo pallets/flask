@@ -23,6 +23,8 @@ def index():
         " FROM post p JOIN user u ON p.author_id = u.id"
         " ORDER BY created DESC"
     ).fetchall()
+    # Convert the immutable cursor to a list of dictionaries
+    posts = [dict(post) for post in posts]
     # Convert markdown to HTML for each post body
     for post in posts:
         post['body'] = markdown.markdown(post['body'])
