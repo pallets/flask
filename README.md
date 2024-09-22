@@ -35,11 +35,11 @@ $ flask run
 ```
 
 ## Installation Instructions
-To install Flask, pip, the package manager included with Python, is used. 
-It is considered best practice to start a Flask project within a virtual 
-environment. This practice ensures that any packages installed are confined 
-to the virtual environment, keeping them separate from the global environment 
-of the system. By doing so, it prevents potential conflicts between package 
+To install Flask, pip, the package manager included with Python, is used.
+It is considered best practice to start a Flask project within a virtual
+environment. This practice ensures that any packages installed are confined
+to the virtual environment, keeping them separate from the global environment
+of the system. By doing so, it prevents potential conflicts between package
 versions, maintaining compatibility and stability across different projects.
 
 
