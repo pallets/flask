@@ -34,6 +34,40 @@ $ flask run
   * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
+## Installation Instructions
+To install Flask, pip, the package manager included with Python, is used. 
+It is considered best practice to start a Flask project within a virtual 
+environment. This practice ensures that any packages installed are confined 
+to the virtual environment, keeping them separate from the global environment 
+of the system. By doing so, it prevents potential conflicts between package 
+versions, maintaining compatibility and stability across different projects.
+
+
+
+To create a virtual environment run the command:
+```
+python -m venv venv
+```
+
+To activate a virtual environment on Windows:
+```
+.\venv\Scripts\activate
+```
+
+To activate a virtual environment on macOS and Linux:
+```
+source venv/bin/activate
+```
+
+To install the flask python package run the command:
+```
+pip install flask
+```
+
+To deactivate the virtual environment run the command:
+```
+deactivate
+```
 
 ## Donate
 
