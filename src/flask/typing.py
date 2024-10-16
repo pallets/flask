@@ -12,7 +12,7 @@ ResponseValue = t.Union[
     "Response",
     str,
     bytes,
-    t.List[t.Any],
+    list[t.Any],
     # Only dict is actually accepted, but Mapping allows for TypedDict.
     t.Mapping[str, t.Any],
     t.Iterator[str],
@@ -21,21 +21,21 @@ ResponseValue = t.Union[
 
 # the possible types for an individual HTTP header
 # This should be a Union, but mypy doesn't pass unless it's a TypeVar.
-HeaderValue = t.Union[str, t.List[str], t.Tuple[str, ...]]
+HeaderValue = t.Union[str, list[str], tuple[str, ...]]
 
 # the possible types for HTTP headers
 HeadersValue = t.Union[
     "Headers",
     t.Mapping[str, HeaderValue],
-    t.Sequence[t.Tuple[str, HeaderValue]],
+    t.Sequence[tuple[str, HeaderValue]],
 ]
 
 # The possible types returned by a route function.
 ResponseReturnValue = t.Union[
     ResponseValue,
-    t.Tuple[ResponseValue, HeadersValue],
-    t.Tuple[ResponseValue, int],
-    t.Tuple[ResponseValue, int, HeadersValue],
+    tuple[ResponseValue, HeadersValue],
+    tuple[ResponseValue, int],
+    tuple[ResponseValue, int, HeadersValue],
     "WSGIApplication",
 ]
 
@@ -56,21 +56,21 @@ BeforeRequestCallable = t.Union[
     t.Callable[[], t.Optional[ResponseReturnValue]],
     t.Callable[[], t.Awaitable[t.Optional[ResponseReturnValue]]],
 ]
-ShellContextProcessorCallable = t.Callable[[], t.Dict[str, t.Any]]
+ShellContextProcessorCallable = t.Callable[[], dict[str, t.Any]]
 TeardownCallable = t.Union[
     t.Callable[[t.Optional[BaseException]], None],
     t.Callable[[t.Optional[BaseException]], t.Awaitable[None]],
 ]
 TemplateContextProcessorCallable = t.Union[
-    t.Callable[[], t.Dict[str, t.Any]],
-    t.Callable[[], t.Awaitable[t.Dict[str, t.Any]]],
+    t.Callable[[], dict[str, t.Any]],
+    t.Callable[[], t.Awaitable[dict[str, t.Any]]],
 ]
 TemplateFilterCallable = t.Callable[..., t.Any]
 TemplateGlobalCallable = t.Callable[..., t.Any]
 TemplateTestCallable = t.Callable[..., bool]
-URLDefaultCallable = t.Callable[[str, t.Dict[str, t.Any]], None]
+URLDefaultCallable = t.Callable[[str, dict[str, t.Any]], None]
 URLValuePreprocessorCallable = t.Callable[
-    [t.Optional[str], t.Optional[t.Dict[str, t.Any]]], None
+    [t.Optional[str], t.Optional[dict[str, t.Any]]], None
 ]
 
 # This should take Exception, but that either breaks typing the argument

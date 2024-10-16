@@ -23,12 +23,6 @@ method in views that inherit from the :class:`flask.views.View` class, as
 well as all the HTTP method handlers in views that inherit from the
 :class:`flask.views.MethodView` class.
 
-.. admonition:: Using ``async`` on Windows on Python 3.8
-
-    Python 3.8 has a bug related to asyncio on Windows. If you encounter
-    something like ``ValueError: set_wakeup_fd only works in main thread``,
-    please upgrade to Python 3.9.
-
 .. admonition:: Using ``async`` with greenlet
 
     When using gevent or eventlet to serve an application or patch the
