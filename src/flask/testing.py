@@ -79,6 +79,10 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
             path = url.path
 
             if url.query:
+                # NOTE:
+                # If `path` in func args is `str`, then `url.query` will
+                # never be a `bytes` Should we adjust `path`? Should we
+                # adjust this statement here?
                 sep = b"?" if isinstance(url.query, bytes) else "?"
                 path += sep + url.query
 

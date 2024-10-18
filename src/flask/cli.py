@@ -323,9 +323,9 @@ class ScriptInfo:
         """
         if self._loaded_app is not None:
             return self._loaded_app
-
+        app: Flask | None = None
         if self.create_app is not None:
-            app: Flask | None = self.create_app()
+            app = self.create_app()
         else:
             if self.app_import_path:
                 path, name = (
@@ -549,7 +549,7 @@ class FlaskGroup(AppGroup):
         set_debug_flag: bool = True,
         **extra: t.Any,
     ) -> None:
-        params = list(extra.pop("params", None) or ())
+        params: list[t.Any] = list(extra.pop("params", None) or ())
         # Processing is done with option callbacks instead of a group
         # callback. This allows users to make a custom group callback
         # without losing the behavior. --env-file must come first so
@@ -587,7 +587,7 @@ class FlaskGroup(AppGroup):
             # Use a backport on Python < 3.10. We technically have
             # importlib.metadata on 3.8+, but the API changed in 3.10,
             # so use the backport for consistency.
-            import importlib_metadata as metadata
+            import importlib_metadata as metadata  # pyright: ignore
 
         for ep in metadata.entry_points(group="flask.commands"):
             self.add_command(ep.load(), ep.name)
@@ -934,7 +934,7 @@ def run_command(
     option.
     """
     try:
-        app: WSGIApplication = info.load_app()
+        app: WSGIApplication = info.load_app()  # pyright: ignore
     except Exception as e:
         if is_running_from_reloader():
             # When reloading, print out the error immediately, but raise
