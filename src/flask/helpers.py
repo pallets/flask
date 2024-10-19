@@ -546,8 +546,8 @@ def send_from_directory(
     If the final path does not point to an existing regular file,
     raises a 404 :exc:`~werkzeug.exceptions.NotFound` error.
 
-    :param directory: The directory that ``path`` must be located under,
-        relative to the current application's root path.
+    :param directory: The directory that ``path`` must be located under. This *must not*
+        be a value provided by the client, otherwise it becomes insecure.
     :param path: The path to the file to send, relative to
         ``directory``.
     :param kwargs: Arguments to pass to :func:`send_file`.
