@@ -293,6 +293,7 @@ def test_session_using_session_settings(app, client):
         SESSION_COOKIE_DOMAIN=".example.com",
         SESSION_COOKIE_HTTPONLY=False,
         SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_PARTITIONED=True,
         SESSION_COOKIE_SAMESITE="Lax",
         SESSION_COOKIE_PATH="/",
     )
@@ -315,6 +316,7 @@ def test_session_using_session_settings(app, client):
     assert "secure" in cookie
     assert "httponly" not in cookie
     assert "samesite" in cookie
+    assert "partitioned" in cookie
 
     rv = client.get("/clear", "http://www.example.com:8080/test/")
     cookie = rv.headers["set-cookie"].lower()
@@ -324,6 +326,7 @@ def test_session_using_session_settings(app, client):
     assert "path=/" in cookie
     assert "secure" in cookie
     assert "samesite" in cookie
+    assert "partitioned" in cookie
 
 
 def test_session_using_samesite_attribute(app, client):
