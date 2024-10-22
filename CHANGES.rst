@@ -37,7 +37,7 @@ Version 3.0.1
 
 Released 2024-01-18
 
--   Correct type for ``path`` argument to ``send_file``. :issue:`5230`
+-   Correct type for ``path`` argument to ``send_file``. :issue:`5336`
 -   Fix a typo in an error message for the ``flask run --key`` option. :pr:`5344`
 -   Session data is untagged without relying on the built-in ``json.loads``
     ``object_hook``. This allows other JSON providers that don't implement that.
