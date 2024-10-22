@@ -847,7 +847,7 @@ Released 2018-04-26
     explicitly for each exception if you want to avoid traversing the
     MRO. :pr:`2362`
 -   Fix incorrect JSON encoding of aware, non-UTC datetimes. :pr:`2374`
--   Template auto reloading will honor debug mode even even if
+-   Template auto reloading will honor debug mode even if
     ``Flask.jinja_env`` was already accessed. :pr:`2373`
 -   The following old deprecated code was removed. :issue:`2385`
 
