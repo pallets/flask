@@ -1,18 +1,10 @@
 name: Tests
 on:
   push:
-    branches:
-      - main
-      - '*.x'
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '*.rst'
+    branches: [main, stable]
+    paths-ignore: ['docs/**', '*.md', '*.rst']
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '*.rst'
+    paths-ignore: [ 'docs/**', '*.md', '*.rst' ]
 jobs:
   tests:
     name: ${{ matrix.name || matrix.python }}
