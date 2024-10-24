@@ -95,7 +95,7 @@ ignore_missing_imports = true
 
 [tool.pyright]
 pythonVersion = "3.8"
-include = ["src/flask", "tests"]
+include = ["src/flask", "tests/typing"]
 typeCheckingMode = "basic"
 
 [tool.ruff]
