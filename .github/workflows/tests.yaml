@@ -20,7 +20,6 @@ jobs:
           - {python: '3.11'}
           - {python: '3.10'}
           - {python: '3.9'}
-          - {python: '3.8'}
           - {name: PyPy, python: 'pypy-3.10', tox: pypy310}
           - {name: Minimum Versions, python: '3.12', tox: py-min}
           - {name: Development Versions, python: '3.9', tox: py-dev}

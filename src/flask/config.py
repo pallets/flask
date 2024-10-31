@@ -150,22 +150,19 @@ class Config(dict):  # type: ignore[type-arg]
         .. versionadded:: 2.1
         """
         prefix = f"{prefix}_"
-        len_prefix = len(prefix)
 
         for key in sorted(os.environ):
             if not key.startswith(prefix):
                 continue
 
             value = os.environ[key]
+            key = key.removeprefix(prefix)
 
             try:
                 value = loads(value)
             except Exception:
                 # Keep the value as a string if loading failed.
                 pass
-
-            # Change to key.removeprefix(prefix) on Python >= 3.9.
-            key = key[len_prefix:]
 
             if "__" not in key:
                 # A non-nested key, set directly.
