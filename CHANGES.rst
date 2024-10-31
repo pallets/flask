@@ -4,6 +4,8 @@ Version 3.1.0
 Unreleased
 
 -   Drop support for Python 3.8. :pr:`5623`
+-   Update minimum dependency versions to latest feature releases.
+    Werkzeug >= 3.1, ItsDangerous >= 2.2, Blinker >= 1.8. :pr:`5624`
 -   Provide a configuration option to control automatic option
     responses. :pr:`5496`
 -   ``Flask.open_resource``/``open_instance_resource`` and
