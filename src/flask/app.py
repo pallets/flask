@@ -1245,7 +1245,7 @@ class Flask(App):
 
         # extend existing headers with provided headers
         if headers:
-            rv.headers.update(headers)  # type: ignore[arg-type]
+            rv.headers.update(headers)
 
         return rv
 

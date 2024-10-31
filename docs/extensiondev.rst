@@ -294,7 +294,8 @@ ecosystem remain consistent and compatible.
     indicate minimum compatibility support. For example,
     ``sqlalchemy>=1.4``.
 9.  Indicate the versions of Python supported using ``python_requires=">=version"``.
-    Flask itself supports Python >=3.8 as of April 2023, but this will update over time.
+    Flask itself supports Python >=3.9 as of October 2024, and this will update
+    over time.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _Discord Chat: https://discord.gg/pallets

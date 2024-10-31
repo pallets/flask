@@ -706,15 +706,6 @@ def _endpoint_from_view_func(view_func: ft.RouteCallable) -> str:
     return view_func.__name__
 
 
-def _path_is_relative_to(path: pathlib.PurePath, base: str) -> bool:
-    # Path.is_relative_to doesn't exist until Python 3.9
-    try:
-        path.relative_to(base)
-        return True
-    except ValueError:
-        return False
-
-
 def _find_package_path(import_name: str) -> str:
     """Find the path that contains the package or module."""
     root_mod_name, _, _ = import_name.partition(".")
@@ -745,7 +736,7 @@ def _find_package_path(import_name: str) -> str:
                 search_location = next(
                     location
                     for location in root_spec.submodule_search_locations
-                    if _path_is_relative_to(package_path, location)
+                    if package_path.is_relative_to(location)
                 )
             else:
                 # Pick the first path.
@@ -777,7 +768,7 @@ def find_package(import_name: str) -> tuple[str | None, str]:
     py_prefix = os.path.abspath(sys.prefix)
 
     # installed to the system
-    if _path_is_relative_to(pathlib.PurePath(package_path), py_prefix):
+    if pathlib.PurePath(package_path).is_relative_to(py_prefix):
         return py_prefix, package_path
 
     site_parent, site_folder = os.path.split(package_path)
