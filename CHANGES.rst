@@ -11,6 +11,10 @@ Unreleased
 -   ``Flask.open_resource``/``open_instance_resource`` and
     ``Blueprint.open_resource`` take an ``encoding`` parameter to use when
     opening in text mode. It defaults to ``utf-8``. :issue:`5504`
+-   ``Request.max_content_length`` can be customized per-request instead of only
+    through the ``MAX_CONTENT_LENGTH`` config. Added
+    ``MAX_FORM_MEMORY_SIZE`` and ``MAX_FORM_PARTS`` config. Added documentation
+    about resource limits to the security page. :issue:`5625`
 
 
 Version 3.0.3
