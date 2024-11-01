@@ -1,9 +1,43 @@
 Security Considerations
 =======================
 
-Web applications usually face all kinds of security problems and it's very
-hard to get everything right.  Flask tries to solve a few of these things
-for you, but there are a couple more you have to take care of yourself.
+Web applications face many types of potential security problems, and it can be
+hard to get everything right, or even to know what "right" is in general. Flask
+tries to solve a few of these things by default, but there are other parts you
+may have to take care of yourself. Many of these solutions are tradeoffs, and
+will depend on each application's specific needs and threat model. Many hosting
+platforms may take care of certain types of problems without the need for the
+Flask application to handle them.
+
+Resource Use
+------------
+
+A common category of attacks is "Denial of Service" (DoS or DDoS). This is a
+very broad category, and different variants target different layers in a
+deployed application. In general, something is done to increase how much
+processing time or memory is used to handle each request, to the point where
+there are not enough resources to handle legitimate requests.
+
+Flask provides a few configuration options to handle resource use. They can
+also be set on individual requests to customize only that request. The
+documentation for each goes into more detail.
+
+-   :data:`MAX_CONTENT_LENGTH` or :attr:`.Request.max_content_length` controls
+    how much data will be read from a request. It is not set by default,
+    although it will still block truly unlimited streams unless the WSGI server
+    indicates support.
+-   :data:`MAX_FORM_MEMORY_SIZE` or :attr:`.Request.max_form_memory_size`
+    controls how large any non-file ``multipart/form-data`` field can be. It is
+    set to 500kB by default.
+-   :data:`MAX_FORM_PARTS` or :attr:`.Request.max_form_parts` controls how many
+    ``multipart/form-data`` fields can be parsed. It is set to 1000 by default.
+    Combined with the default `max_form_memory_size`, this means that a form
+    will occupy at most 500MB of memory.
+
+Regardless of these settings, you should also review what settings are available
+from your operating system, container deployment (Docker etc), WSGI server, HTTP
+server, and hosting platform. They typically have ways to set process resource
+limits, timeouts, and other checks regardless of how Flask is configured.
 
 .. _security-xss:
 
