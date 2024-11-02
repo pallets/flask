@@ -3,8 +3,8 @@ name = "flask-example-celery"
 version = "1.0.0"
 description = "Example Flask application with Celery background tasks."
 readme = "README.md"
-requires-python = ">=3.8"
-dependencies = ["flask>=2.2.2", "celery[redis]>=5.2.7"]
+classifiers = ["Private :: Do Not Upload"]
+dependencies = ["flask", "celery[redis]"]
 
 [build-system]
 requires = ["flit_core<4"]

@@ -3,8 +3,9 @@ name = "js_example"
 version = "1.1.0"
 description = "Demonstrates making AJAX requests to Flask."
 readme = "README.rst"
-license = {file = "LICENSE.rst"}
+license = {file = "LICENSE.txt"}
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
+classifiers = ["Private :: Do Not Upload"]
 dependencies = ["flask"]
 
 [project.urls]
