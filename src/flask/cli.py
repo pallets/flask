@@ -495,7 +495,7 @@ def _env_file_callback(
 
     # Don't check FLASK_SKIP_DOTENV, that only disables automatically
     # loading .env and .flaskenv files.
-    load_dotenv(value)
+    load_dotenv(value, override=True)
     return value
 
 
@@ -527,10 +527,6 @@ class FlaskGroup(AppGroup):
         files to set environment variables. Will also change the working
         directory to the directory containing the first file found.
     :param set_debug_flag: Set the app's debug flag.
-
-    .. versionchanged:: 3.1.0
-        Environment file specified through -e/--env-file gets
-        prioity over default .env, .flaskenv files
 
     .. versionchanged:: 2.2
         Added the ``-A/--app``, ``--debug/--no-debug``, ``-e/--env-file`` options.
@@ -658,23 +654,17 @@ class FlaskGroup(AppGroup):
         # when importing, blocking whatever command is being called.
         os.environ["FLASK_RUN_FROM_CLI"] = "true"
 
-        if "obj" not in extra and "obj" not in self.context_settings:
-            extra["obj"] = ScriptInfo(
-                create_app=self.create_app, set_debug_flag=self.set_debug_flag
-            )
-
-        # The make_context function goes ahead to parse the arguments
-        # which also includes the -e option. Since that option gets
-        # priority over default config files (See #5532), we need to
-        # call this before attempting to load the default config.
-        ctx = super().make_context(info_name, args, parent=parent, **extra)
-
         # Attempt to load .env and .flask env files. The --env-file
         # option can cause another file to be loaded.
         if get_load_dotenv(self.load_dotenv):
             load_dotenv()
 
-        return ctx
+        if "obj" not in extra and "obj" not in self.context_settings:
+            extra["obj"] = ScriptInfo(
+                create_app=self.create_app, set_debug_flag=self.set_debug_flag
+            )
+
+        return super().make_context(info_name, args, parent=parent, **extra)
 
     def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
         if not args and self.no_args_is_help:
@@ -694,7 +684,9 @@ def _path_is_ancestor(path: str, other: str) -> bool:
     return os.path.join(path, other[len(path) :].lstrip(os.sep)) == other
 
 
-def load_dotenv(path: str | os.PathLike[str] | None = None) -> bool:
+def load_dotenv(
+    path: str | os.PathLike[str] | None = None, override: bool = False
+) -> bool:
     """Load "dotenv" files in order of precedence to set environment variables.
 
     If an env var is already set it is not overwritten, so earlier files in the
@@ -706,6 +698,10 @@ def load_dotenv(path: str | os.PathLike[str] | None = None) -> bool:
 
     :param path: Load the file at this location instead of searching.
     :return: ``True`` if a file was loaded.
+
+    .. versionchanged:: 3.1.0
+        Added optional parameter 'override' to override existing
+        variables
 
     .. versionchanged:: 2.0
         The current directory is not changed to the location of the
@@ -737,7 +733,7 @@ def load_dotenv(path: str | os.PathLike[str] | None = None) -> bool:
     # the default files.
     if path is not None:
         if os.path.isfile(path):
-            return dotenv.load_dotenv(path, encoding="utf-8")
+            return dotenv.load_dotenv(path, encoding="utf-8", override=override)
 
         return False
 
@@ -749,7 +745,7 @@ def load_dotenv(path: str | os.PathLike[str] | None = None) -> bool:
         if not path:
             continue
 
-        dotenv.load_dotenv(path, encoding="utf-8")
+        dotenv.load_dotenv(path, encoding="utf-8", override=override)
         loaded = True
 
     return loaded  # True if at least one file was located and loaded.
