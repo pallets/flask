@@ -528,6 +528,10 @@ class FlaskGroup(AppGroup):
         directory to the directory containing the first file found.
     :param set_debug_flag: Set the app's debug flag.
 
+    .. versionchanged:: 3.1.0
+        Environment file specified through -e/--env-file gets
+        prioity over default .env, .flaskenv files
+
     .. versionchanged:: 2.2
         Added the ``-A/--app``, ``--debug/--no-debug``, ``-e/--env-file`` options.
 
@@ -654,17 +658,23 @@ class FlaskGroup(AppGroup):
         # when importing, blocking whatever command is being called.
         os.environ["FLASK_RUN_FROM_CLI"] = "true"
 
-        # Attempt to load .env and .flask env files. The --env-file
-        # option can cause another file to be loaded.
-        if get_load_dotenv(self.load_dotenv):
-            load_dotenv()
-
         if "obj" not in extra and "obj" not in self.context_settings:
             extra["obj"] = ScriptInfo(
                 create_app=self.create_app, set_debug_flag=self.set_debug_flag
             )
 
-        return super().make_context(info_name, args, parent=parent, **extra)
+        # The make_context function goes ahead to parse the arguments
+        # which also includes the -e option. Since that option gets
+        # priority over default config files (See #5532), we need to
+        # call this before attempting to load the default config.
+        ctx = super().make_context(info_name, args, parent=parent, **extra)
+
+        # Attempt to load .env and .flask env files. The --env-file
+        # option can cause another file to be loaded.
+        if get_load_dotenv(self.load_dotenv):
+            load_dotenv()
+
+        return ctx
 
     def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
         if not args and self.no_args_is_help:

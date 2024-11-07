@@ -565,6 +565,21 @@ def test_disable_dotenv_from_env(monkeypatch, runner):
     assert "FOO" not in os.environ
 
 
+@need_dotenv
+def test_custom_dotenv_takes_priority(monkeypatch, runner):
+    monkeypatch.chdir(test_path)
+    runner.invoke(FlaskGroup(), "-e .customenv")
+
+    # .customenv is loaded
+    assert "BAZ" in os.environ
+
+    # .customenv takes priority over .flaskenv
+    assert os.environ["BAR"] == "custombar"
+
+    # .customenv takes priority over .env
+    assert os.environ["FOO"] == "customenv"
+
+
 def test_run_cert_path():
     # no key
     with pytest.raises(click.BadParameter):

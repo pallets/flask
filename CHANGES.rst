@@ -17,6 +17,8 @@ Unreleased
     about resource limits to the security page. :issue:`5625`
 -   Add support for the ``Partitioned`` cookie attribute (CHIPS), with the
     ``SESSION_COOKIE_PARTITIONED`` config. :issue`5472`
+-   Give priority to file specified through the -e/--env-file option
+    over default .env & .flaskenv files in CLI.
 
 
 Version 3.0.3

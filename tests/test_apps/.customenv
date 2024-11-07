@@ -1,0 +1,4 @@
+FOO=customenv
+BAZ=1
+BAR=custombar
+EGGS=custom
