@@ -17,6 +17,9 @@ Unreleased
     about resource limits to the security page. :issue:`5625`
 -   Add support for the ``Partitioned`` cookie attribute (CHIPS), with the
     ``SESSION_COOKIE_PARTITIONED`` config. :issue`5472`
+-   ``-e path`` takes precedence over default ``.env`` and ``.flaskenv`` files.
+    ``load_dotenv`` loads default files in addition to a path unless
+    ``load_defaults=False`` is passed. :issue:`5628`
 
 
 Version 3.0.3
