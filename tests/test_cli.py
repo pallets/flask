@@ -398,7 +398,12 @@ def test_flaskgroup_nested(app, runner):
 def test_no_command_echo_loading_error():
     from flask.cli import cli
 
-    runner = CliRunner(mix_stderr=False)
+    try:
+        runner = CliRunner(mix_stderr=False)
+    except (DeprecationWarning, TypeError):
+        # Click >= 8.2
+        runner = CliRunner()
+
     result = runner.invoke(cli, ["missing"])
     assert result.exit_code == 2
     assert "FLASK_APP" in result.stderr
@@ -408,7 +413,12 @@ def test_no_command_echo_loading_error():
 def test_help_echo_loading_error():
     from flask.cli import cli
 
-    runner = CliRunner(mix_stderr=False)
+    try:
+        runner = CliRunner(mix_stderr=False)
+    except (DeprecationWarning, TypeError):
+        # Click >= 8.2
+        runner = CliRunner()
+
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
     assert "FLASK_APP" in result.stderr
@@ -420,7 +430,13 @@ def test_help_echo_exception():
         raise Exception("oh no")
 
     cli = FlaskGroup(create_app=create_app)
-    runner = CliRunner(mix_stderr=False)
+
+    try:
+        runner = CliRunner(mix_stderr=False)
+    except (DeprecationWarning, TypeError):
+        # Click >= 8.2
+        runner = CliRunner()
+
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
     assert "Exception: oh no" in result.stderr
@@ -537,7 +553,7 @@ def test_load_dotenv(monkeypatch):
     # test env file encoding
     assert os.environ["HAM"] == "火腿"
     # Non existent file should not load
-    assert not load_dotenv("non-existent-file")
+    assert not load_dotenv("non-existent-file", load_defaults=False)
 
 
 @need_dotenv
