@@ -315,14 +315,20 @@ class SecureCookieSessionInterface(SessionInterface):
     def get_signing_serializer(self, app: Flask) -> URLSafeTimedSerializer | None:
         if not app.secret_key:
             return None
-        signer_kwargs = dict(
-            key_derivation=self.key_derivation, digest_method=self.digest_method
-        )
+
+        keys: list[str | bytes] = [app.secret_key]
+
+        if fallbacks := app.config["SECRET_KEY_FALLBACKS"]:
+            keys.extend(fallbacks)
+
         return URLSafeTimedSerializer(
-            app.secret_key,
+            keys,  # type: ignore[arg-type]
             salt=self.salt,
             serializer=self.serializer,
-            signer_kwargs=signer_kwargs,
+            signer_kwargs={
+                "key_derivation": self.key_derivation,
+                "digest_method": self.digest_method,
+            },
         )
 
     def open_session(self, app: Flask, request: Request) -> SecureCookieSession | None:

@@ -180,6 +180,7 @@ class Flask(App):
             "TESTING": False,
             "PROPAGATE_EXCEPTIONS": None,
             "SECRET_KEY": None,
+            "SECRET_KEY_FALLBACKS": None,
             "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
             "USE_X_SENDFILE": False,
             "SERVER_NAME": None,
