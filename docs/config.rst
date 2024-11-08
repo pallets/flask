@@ -125,6 +125,22 @@ The following configuration values are used internally by Flask:
 
     Default: ``None``
 
+.. py:data:: SECRET_KEY_FALLBACKS
+
+    A list of old secret keys that can still be used for unsigning, most recent
+    first. This allows a project to implement key rotation without invalidating
+    active sessions or other recently-signed secrets.
+
+    Keys should be removed after an appropriate period of time, as checking each
+    additional key adds some overhead.
+
+    Flask's built-in secure cookie session supports this. Extensions that use
+    :data:`SECRET_KEY` may not support this yet.
+
+    Default: ``None``
+
+    .. versionadded:: 3.1
+
 .. py:data:: SESSION_COOKIE_NAME
 
     The name of the session cookie. Can be changed in case you already have a

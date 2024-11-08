@@ -1,5 +1,6 @@
 import gc
 import re
+import typing as t
 import uuid
 import warnings
 import weakref
@@ -367,6 +368,27 @@ def test_missing_session(app):
         assert flask.session.get("missing_key") is None
         expect_exception(flask.session.__setitem__, "foo", 42)
         expect_exception(flask.session.pop, "foo")
+
+
+def test_session_secret_key_fallbacks(app, client) -> None:
+    @app.post("/")
+    def set_session() -> str:
+        flask.session["a"] = 1
+        return ""
+
+    @app.get("/")
+    def get_session() -> dict[str, t.Any]:
+        return dict(flask.session)
+
+    # Set session with initial secret key
+    client.post()
+    assert client.get().json == {"a": 1}
+    # Change secret key, session can't be loaded and appears empty
+    app.secret_key = "new test key"
+    assert client.get().json == {}
+    # Add initial secret key as fallback, session can be loaded
+    app.config["SECRET_KEY_FALLBACKS"] = ["test key"]
+    assert client.get().json == {"a": 1}
 
 
 def test_session_expiration(app, client):
