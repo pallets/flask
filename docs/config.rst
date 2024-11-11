@@ -260,13 +260,22 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: SERVER_NAME
 
-    Inform the application what host and port it is bound to. Required
-    for subdomain route matching support.
+    Inform the application what host and port it is bound to.
 
-    If set, ``url_for`` can generate external URLs with only an application
-    context instead of a request context.
+    Must be set if ``subdomain_matching`` is enabled, to be able to extract the
+    subdomain from the request.
+
+    Must be set for ``url_for`` to generate external URLs outside of a
+    request context.
 
     Default: ``None``
+
+    .. versionchanged:: 3.1
+        Does not restrict requests to only this domain, for both
+        ``subdomain_matching`` and ``host_matching``.
+
+    .. versionchanged:: 1.0
+        Does not implicitly enable ``subdomain_matching``.
 
     .. versionchanged:: 2.3
         Does not affect ``SESSION_COOKIE_DOMAIN``.

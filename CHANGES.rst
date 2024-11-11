@@ -23,6 +23,9 @@ Unreleased
 -   Support key rotation with the ``SECRET_KEY_FALLBACKS`` config, a list of old
     secret keys that can still be used for unsigning. Extensions will need to
     add support. :issue:`5621`
+-   Fix how setting ``host_matching=True`` or ``subdomain_matching=False``
+    interacts with ``SERVER_NAME``. Setting ``SERVER_NAME`` no longer restricts
+    requests to only that domain. :issue:`5553`
 
 
 Version 3.0.3
