@@ -951,7 +951,10 @@ def test_nesting_url_prefixes(
 
 
 def test_nesting_subdomains(app, client) -> None:
-    subdomain = "api"
+    app.subdomain_matching = True
+    app.config["SERVER_NAME"] = "example.test"
+    client.allow_subdomain_redirects = True
+
     parent = flask.Blueprint("parent", __name__)
     child = flask.Blueprint("child", __name__)
 
@@ -960,42 +963,31 @@ def test_nesting_subdomains(app, client) -> None:
         return "child"
 
     parent.register_blueprint(child)
-    app.register_blueprint(parent, subdomain=subdomain)
+    app.register_blueprint(parent, subdomain="api")
 
-    client.allow_subdomain_redirects = True
-
-    domain_name = "domain.tld"
-    app.config["SERVER_NAME"] = domain_name
-    response = client.get("/child/", base_url="http://api." + domain_name)
-
+    response = client.get("/child/", base_url="http://api.example.test")
     assert response.status_code == 200
 
 
 def test_child_and_parent_subdomain(app, client) -> None:
-    child_subdomain = "api"
-    parent_subdomain = "parent"
+    app.subdomain_matching = True
+    app.config["SERVER_NAME"] = "example.test"
+    client.allow_subdomain_redirects = True
+
     parent = flask.Blueprint("parent", __name__)
-    child = flask.Blueprint("child", __name__, subdomain=child_subdomain)
+    child = flask.Blueprint("child", __name__, subdomain="api")
 
     @child.route("/")
     def index():
         return "child"
 
     parent.register_blueprint(child)
-    app.register_blueprint(parent, subdomain=parent_subdomain)
+    app.register_blueprint(parent, subdomain="parent")
 
-    client.allow_subdomain_redirects = True
-
-    domain_name = "domain.tld"
-    app.config["SERVER_NAME"] = domain_name
-    response = client.get(
-        "/", base_url=f"http://{child_subdomain}.{parent_subdomain}.{domain_name}"
-    )
-
+    response = client.get("/", base_url="http://api.parent.example.test")
     assert response.status_code == 200
 
-    response = client.get("/", base_url=f"http://{parent_subdomain}.{domain_name}")
-
+    response = client.get("/", base_url="http://parent.example.test")
     assert response.status_code == 404
 
 
