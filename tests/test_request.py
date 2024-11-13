@@ -52,3 +52,19 @@ def test_limit_config(app: Flask):
         assert r.max_content_length == 90
         assert r.max_form_memory_size == 30
         assert r.max_form_parts == 4
+
+
+def test_trusted_hosts_config(app: Flask) -> None:
+    app.config["TRUSTED_HOSTS"] = ["example.test", ".other.test"]
+
+    @app.get("/")
+    def index() -> str:
+        return ""
+
+    client = app.test_client()
+    r = client.get(base_url="http://example.test")
+    assert r.status_code == 200
+    r = client.get(base_url="http://a.other.test")
+    assert r.status_code == 200
+    r = client.get(base_url="http://bad.test")
+    assert r.status_code == 400
