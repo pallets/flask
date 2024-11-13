@@ -5,7 +5,7 @@ from flask import template_rendered
 @pytest.mark.parametrize(
     ("path", "template_name"),
     (
-        ("/", "xhr.html"),
+        ("/", "fetch.html"),
         ("/plain", "xhr.html"),
         ("/fetch", "fetch.html"),
         ("/jquery", "jquery.html"),

@@ -37,6 +37,7 @@ response is sent.
     :caption: ``flaskr/db.py``
 
     import sqlite3
+    from datetime import datetime
 
     import click
     from flask import current_app, g
@@ -132,6 +133,11 @@ Add the Python functions that will run these SQL commands to the
         init_db()
         click.echo('Initialized the database.')
 
+
+    sqlite3.register_converter(
+        "timestamp", lambda v: datetime.fromisoformat(v.decode())
+    )
+
 :meth:`open_resource() <Flask.open_resource>` opens a file relative to
 the ``flaskr`` package, which is useful since you won't necessarily know
 where that location is when deploying the application later. ``get_db``
@@ -141,6 +147,10 @@ read from the file.
 :func:`click.command` defines a command line command called ``init-db``
 that calls the ``init_db`` function and shows a success message to the
 user. You can read :doc:`/cli` to learn more about writing commands.
+
+The call to :func:`sqlite3.register_converter` tells Python how to
+interpret timestamp values in the database. We convert the value to a
+:class:`datetime.datetime`.
 
 
 Register with the Application
