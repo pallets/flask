@@ -1,7 +1,7 @@
 Version 3.1.0
 -------------
 
-Unreleased
+Released 2024-11-13
 
 -   Drop support for Python 3.8. :pr:`5623`
 -   Update minimum dependency versions to latest feature releases.
@@ -16,7 +16,7 @@ Unreleased
     ``MAX_FORM_MEMORY_SIZE`` and ``MAX_FORM_PARTS`` config. Added documentation
     about resource limits to the security page. :issue:`5625`
 -   Add support for the ``Partitioned`` cookie attribute (CHIPS), with the
-    ``SESSION_COOKIE_PARTITIONED`` config. :issue`5472`
+    ``SESSION_COOKIE_PARTITIONED`` config. :issue:`5472`
 -   ``-e path`` takes precedence over default ``.env`` and ``.flaskenv`` files.
     ``load_dotenv`` loads default files in addition to a path unless
     ``load_defaults=False`` is passed. :issue:`5628`
