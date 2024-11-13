@@ -6,7 +6,7 @@
 #
 build==1.2.2.post1
     # via -r build.in
-packaging==24.1
+packaging==24.2
     # via build
 pyproject-hooks==1.2.0
     # via build

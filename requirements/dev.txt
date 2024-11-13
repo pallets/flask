@@ -49,7 +49,7 @@ filelock==3.16.1
     # via
     #   tox
     #   virtualenv
-identify==2.6.1
+identify==2.6.2
     # via pre-commit
 idna==3.10
     # via
@@ -83,7 +83,7 @@ nodeenv==1.9.1
     #   -r /Users/david/Projects/flask/requirements/typing.txt
     #   pre-commit
     #   pyright
-packaging==24.1
+packaging==24.2
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   -r /Users/david/Projects/flask/requirements/tests.txt
@@ -118,7 +118,7 @@ pygments==2.18.0
     #   sphinx-tabs
 pyproject-api==1.8.0
     # via tox
-pyright==1.1.387
+pyright==1.1.389
     # via -r /Users/david/Projects/flask/requirements/typing.txt
 pytest==8.3.3
     # via
