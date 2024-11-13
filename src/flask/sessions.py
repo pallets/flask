@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections.abc as c
 import hashlib
 import typing as t
 from collections.abc import MutableMapping
@@ -20,8 +21,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
     from .wrappers import Response
 
 
-# TODO generic when Python > 3.8
-class SessionMixin(MutableMapping):  # type: ignore[type-arg]
+class SessionMixin(MutableMapping[str, t.Any]):
     """Expands a basic dictionary with session attributes."""
 
     @property
@@ -49,8 +49,7 @@ class SessionMixin(MutableMapping):  # type: ignore[type-arg]
     accessed = True
 
 
-# TODO generic when Python > 3.8
-class SecureCookieSession(CallbackDict, SessionMixin):  # type: ignore[type-arg]
+class SecureCookieSession(CallbackDict[str, t.Any], SessionMixin):
     """Base class for sessions based on signed cookies.
 
     This session backend will set the :attr:`modified` and
@@ -72,7 +71,10 @@ class SecureCookieSession(CallbackDict, SessionMixin):  # type: ignore[type-arg]
     #: different users.
     accessed = False
 
-    def __init__(self, initial: t.Any = None) -> None:
+    def __init__(
+        self,
+        initial: c.Mapping[str, t.Any] | c.Iterable[tuple[str, t.Any]] | None = None,
+    ) -> None:
         def on_update(self: te.Self) -> None:
             self.modified = True
             self.accessed = True
