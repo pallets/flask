@@ -24,6 +24,7 @@ from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
 from werkzeug.serving import is_running_from_reloader
 from werkzeug.wrappers import Response as BaseResponse
+from werkzeug.wsgi import get_host
 
 from . import cli
 from . import typing as ft
@@ -183,6 +184,7 @@ class Flask(App):
             "SECRET_KEY_FALLBACKS": None,
             "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
             "USE_X_SENDFILE": False,
+            "TRUSTED_HOSTS": None,
             "SERVER_NAME": None,
             "APPLICATION_ROOT": "/",
             "SESSION_COOKIE_NAME": "session",
@@ -441,6 +443,11 @@ class Flask(App):
         .. versionadded:: 0.6
         """
         if request is not None:
+            if (trusted_hosts := self.config["TRUSTED_HOSTS"]) is not None:
+                request.trusted_hosts = trusted_hosts
+
+            # Check trusted_hosts here until bind_to_environ does.
+            request.host = get_host(request.environ, request.trusted_hosts)  # pyright: ignore
             subdomain = None
             server_name = self.config["SERVER_NAME"]
 

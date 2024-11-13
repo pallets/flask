@@ -26,6 +26,8 @@ Unreleased
 -   Fix how setting ``host_matching=True`` or ``subdomain_matching=False``
     interacts with ``SERVER_NAME``. Setting ``SERVER_NAME`` no longer restricts
     requests to only that domain. :issue:`5553`
+-   ``Request.trusted_hosts`` is checked during routing, and can be set through
+    the ``TRUSTED_HOSTS`` config. :issue:`5636`
 
 
 Version 3.0.3

@@ -258,6 +258,21 @@ The following configuration values are used internally by Flask:
 
     Default: ``None``
 
+.. py:data:: TRUSTED_HOSTS
+
+    Validate :attr:`.Request.host` and other attributes that use it against
+    these trusted values. Raise a :exc:`~werkzeug.exceptions.SecurityError` if
+    the host is invalid, which results in a 400 error. If it is ``None``, all
+    hosts are valid. Each value is either an exact match, or can start with
+    a dot ``.`` to match any subdomain.
+
+    Validation is done during routing against this value. ``before_request`` and
+    ``after_request`` callbacks will still be called.
+
+    Default: ``None``
+
+    .. versionadded:: 3.1
+
 .. py:data:: SERVER_NAME
 
     Inform the application what host and port it is bound to.
