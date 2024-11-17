@@ -3,7 +3,7 @@ name = "Flask"
 version = "3.1.0"
 description = "A simple framework for building complex web applications."
 readme = "README.md"
-license = {file = "LICENSE.txt"}
+license = {text = "BSD-3-Clause"}
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
