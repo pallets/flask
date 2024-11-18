@@ -58,6 +58,7 @@ include = [
     "tests/",
     "CHANGES.rst",
     "CONTRIBUTING.rst",
+    "LICENSE.txt",
     "tox.ini",
 ]
 exclude = [
