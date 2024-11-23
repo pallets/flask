@@ -12,6 +12,8 @@ Released 2025-05-13
     ``AsyncIterable``. This is not accurate for Flask, but makes typing easier
     for Quart. :pr:`5659`
 
+-   Remove previously deprecated code: ``__version__``. :pr:`5648`
+
 
 Version 3.1.0
 -------------
