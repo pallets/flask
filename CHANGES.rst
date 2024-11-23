@@ -3,6 +3,8 @@ Version 3.2.0
 
 Unreleased
 
+-   Remove previously deprecated code: ``__version__``. :pr:`5648`
+
 
 Version 3.1.0
 -------------
