@@ -50,7 +50,7 @@ def __getattr__(name: str) -> t.Any:
 
         warnings.warn(
             "The '__version__' attribute is deprecated and will be removed in"
-            " Flask 3.1. Use feature detection or"
+            " Flask 3.2. Use feature detection or"
             " 'importlib.metadata.version(\"flask\")' instead.",
             DeprecationWarning,
             stacklevel=2,
