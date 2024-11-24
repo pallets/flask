@@ -3,6 +3,8 @@ Version 3.1.1
 
 Unreleased
 
+-   Fix type hint for `cli_runner.invoke`. :issue:`5645`
+
 
 Version 3.1.0
 -------------
