@@ -17,7 +17,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
 _no_app_msg = """\
 Working outside of application context.
 
-This typically means that you attempted to use functionality that needed
+This typically means that you attempted to use functionality that's needed
 the current application. To solve this, set up an application context
 with app.app_context(). See the documentation for more information.\
 """
@@ -35,7 +35,7 @@ g: _AppCtxGlobals = LocalProxy(  # type: ignore[assignment]
 _no_req_msg = """\
 Working outside of request context.
 
-This typically means that you attempted to use functionality that needed
+This typically means that you attempted to use functionality that's needed
 an active HTTP request. Consult the documentation on testing for
 information about how to avoid this problem.\
 """
