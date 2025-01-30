@@ -684,7 +684,9 @@ class FlaskGroup(AppGroup):
         return super().make_context(info_name, args, parent=parent, **extra)
 
     def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
-        if not args and self.no_args_is_help:
+        if (not args and self.no_args_is_help) or (
+            len(args) == 1 and args[0] in self.get_help_option_names(ctx)
+        ):
             # Attempt to load --env-file and --app early in case they
             # were given as env vars. Otherwise no_args_is_help will not
             # see commands from app.cli.
