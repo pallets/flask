@@ -3,14 +3,14 @@ name = "Flask"
 version = "3.2.0.dev"
 description = "A simple framework for building complex web applications."
 readme = "README.md"
-license = {file = "LICENSE.txt"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "Framework :: Flask",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
@@ -44,7 +44,7 @@ dotenv = ["python-dotenv"]
 flask = "flask.cli:main"
 
 [build-system]
-requires = ["flit_core<4"]
+requires = ["flit_core>=3.11,<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
