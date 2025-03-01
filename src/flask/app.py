@@ -1247,11 +1247,18 @@ class Flask(App):
                     ).with_traceback(sys.exc_info()[2]) from None
             else:
                 raise TypeError(
-                    "The view function did not return a valid"
-                    " response. The return type must be a string,"
-                    " dict, list, tuple with headers or status,"
-                    " Response instance, or WSGI callable, but it was a"
-                    f" {type(rv).__name__}."
+                    f"The view function for {request.endpoint!r} did not return"
+                    " a valid response.\n\n Valid return types are:\n"
+                    "- str or bytes: converted to a response with the string as body\n"
+                    "- dict or list: converted to a JSON response\n"
+                    "- tuple: either (body, status, headers), (body, status),"
+                    " or (body, headers)\n where body is any of the other types,"
+                    " status is an integer, and headers is a dict\n"
+                    "- Response instance: used as-is\n"
+                    "- WSGI callable: called with the WSGI environment\n\n"
+                    f"it was a {type(rv).__name__}.\n See "
+                    "https://flask.palletsprojects.com/en/latest/quickstart/#about-responses"
+                    " for more details."
                 )
 
         rv = t.cast(Response, rv)
