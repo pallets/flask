@@ -9,5 +9,6 @@ python:
     - method: pip
       path: .
 sphinx:
+  configuration: docs/conf.py
   builder: dirhtml
   fail_on_warning: true
