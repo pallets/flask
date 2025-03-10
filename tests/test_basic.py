@@ -381,14 +381,21 @@ def test_session_secret_key_fallbacks(app, client) -> None:
     def get_session() -> dict[str, t.Any]:
         return dict(flask.session)
 
-    # Set session with initial secret key
+    # Set session with initial secret key, and two valid expiring keys
+    app.secret_key, app.config["SECRET_KEY_FALLBACKS"] = (
+        "0 key",
+        ["-1 key", "-2 key"],
+    )
     client.post()
     assert client.get().json == {"a": 1}
     # Change secret key, session can't be loaded and appears empty
-    app.secret_key = "new test key"
+    app.secret_key = "? key"
     assert client.get().json == {}
-    # Add initial secret key as fallback, session can be loaded
-    app.config["SECRET_KEY_FALLBACKS"] = ["test key"]
+    # Rotate the valid keys, session can be loaded
+    app.secret_key, app.config["SECRET_KEY_FALLBACKS"] = (
+        "+1 key",
+        ["0 key", "-1 key"],
+    )
     assert client.get().json == {"a": 1}
 
 

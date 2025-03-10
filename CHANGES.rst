@@ -3,6 +3,8 @@ Version 3.1.1
 
 Unreleased
 
+-   Fix signing key selection order when key rotation is enabled via
+    ``SECRET_KEY_FALLBACKS``. :ghsa:`4grg-w6v8-c28g`
 -   Fix type hint for `cli_runner.invoke`. :issue:`5645`
 -   ``flask --help`` loads the app and plugins first to make sure all commands
     are shown. :issue:5673`
