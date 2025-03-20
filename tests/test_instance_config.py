@@ -1,8 +1,43 @@
+import importlib.util
 import os
 
 import pytest
 
 import flask
+
+
+@pytest.fixture(params=(True, False))
+def limit_loader(request, monkeypatch):
+    """Patch importlib.util.find_spec to give loader without get_filename or archive.
+
+    This provides for tests where a system has custom loaders, e.g. Google App
+    Engine's HardenedModulesHook, which have neither the `get_filename` method
+    nor the `archive` attribute.
+
+    This fixture will run the testcase twice, once with and once without the
+    limitation/mock.
+    """
+    if not request.param:
+        return
+
+    class LimitedLoader:
+        def __init__(self, loader):
+            self.loader = loader
+
+        def __getattr__(self, name):
+            if name in {"archive", "get_filename"}:
+                raise AttributeError(f"Mocking a loader which does not have {name!r}.")
+            return getattr(self.loader, name)
+
+    original_find_spec = importlib.util.find_spec
+
+    def mock_find_spec(name, package=None):
+        spec = original_find_spec(name, package)
+        if spec and spec.loader:
+            spec.loader = LimitedLoader(spec.loader)
+        return spec
+
+    monkeypatch.setattr(importlib.util, "find_spec", mock_find_spec)
 
 
 def test_explicit_instance_paths(modules_tmp_path):
