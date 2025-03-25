@@ -314,7 +314,6 @@ class Blueprint(Scaffold):
             )
 
         first_bp_registration = not any(bp is self for bp in app.blueprints.values())
-        first_name_registration = name not in app.blueprints
 
         app.blueprints[name] = self
         self._got_registered_once = True
@@ -328,7 +327,7 @@ class Blueprint(Scaffold):
             )
 
         # Merge blueprint data into parent.
-        if first_bp_registration or first_name_registration:
+        if first_bp_registration:
             self._merge_blueprint_funcs(app, name)
 
         for deferred in self.deferred_functions:
